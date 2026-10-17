@@ -56,36 +56,114 @@ public final class MeasurementsTab {
     private final FrameLayout page;
     private final Button[] tabs=new Button[4];
     private int selected=1;
+    private int analysisSection=0;
     private final PhysicalPane physical;
     private final LivePane live;
     private final AnalysisPane analysis;
     private final AnalysisResultsPane analysisResults;
+    private final LinearLayout analysisShell;
+    private final FrameLayout analysisPage;
+    private final Button[] analysisTabs=new Button[3];
+    private final ScrollView searchView;
+    private final ScrollView particlesView;
     private final View[] views;
 
     public MeasurementsTab(Context c,HazRobHost host){
         this.c=c;this.host=host;
-        root=UiKit.vbox(c);root.setBackgroundColor(BG);root.setPadding(UiKit.dp(c,5),UiKit.dp(c,4),UiKit.dp(c,5),UiKit.dp(c,4));
+        root=UiKit.vbox(c);root.setBackgroundColor(BG);
+        root.setPadding(UiKit.dp(c,5),UiKit.dp(c,5),UiKit.dp(c,5),UiKit.dp(c,5));
         LinearLayout bar=UiKit.hbox(c);
-        String[] names={"الفيزيائية","القياس الحي","التحليل","النتائج"};
+        String[] names={"🔎 البحث والتتبع","📊 التحليل","🌡 الفيزيائية","◌ الجزيئات"};
         for(int i=0;i<4;i++){
-            final int x=i;tabs[i]=UiKit.button(c,names[i]);tabs[i].setOnClickListener(v->show(x));bar.addView(tabs[i],UiKit.weight(1));
+            final int index=i;tabs[i]=UiKit.button(c,names[i]);
+            tabs[i].setTextSize(11);
+            tabs[i].setOnClickListener(v->show(index));
+            bar.addView(tabs[i],UiKit.weight(1));
         }
         root.addView(bar,UiKit.full(c));
         page=new FrameLayout(c);root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));
         physical=new PhysicalPane();live=new LivePane();analysis=new AnalysisPane();analysisResults=new AnalysisResultsPane();
-        views=new View[]{physical.view,live.view,analysis.view,analysisResults.view};show(1);
+        searchView=buildSearchLanding();
+        particlesView=buildParticlesLanding();
+        analysisShell=UiKit.vbox(c);
+        LinearLayout sections=UiKit.hbox(c);
+        String[] sectionNames={"⏱ القياس الآني","🧪 ChemCore","🏅 المرشحون"};
+        for(int i=0;i<3;i++){
+            final int index=i;analysisTabs[i]=UiKit.button(c,sectionNames[i]);
+            analysisTabs[i].setTextSize(11);
+            analysisTabs[i].setOnClickListener(v->showAnalysisSection(index));
+            sections.addView(analysisTabs[i],UiKit.weight(1));
+        }
+        analysisShell.addView(sections,UiKit.full(c));
+        analysisPage=new FrameLayout(c);
+        analysisShell.addView(analysisPage,new LinearLayout.LayoutParams(-1,0,1f));
+        views=new View[]{searchView,analysisShell,physical.view,particlesView};
+        showAnalysisSection(0);
+        show(1);
+    }
+
+    private ScrollView buildSearchLanding(){
+        ScrollView scroll=new ScrollView(c);
+        LinearLayout content=UiKit.vbox(c);
+        content.setPadding(UiKit.dp(c,10),UiKit.dp(c,12),UiKit.dp(c,10),UiKit.dp(c,12));
+        scroll.addView(content);
+        content.addView(UiKit.title(c,"🔎 البحث والتتبع"),UiKit.full(c));
+        content.addView(card("استكشاف الغازات مستمر عند تشغيل الحساسات، دون الحاجة إلى جلسة موثقة."),UiKit.full(c));
+        content.addView(card("اختيار مادة حسب العائلة الكيميائية أو الاسم أو CAS: قيد ربط فهرس المكتبة في هذه المرحلة."),UiKit.full(c));
+        Button candidates=UiKit.button(c,"🏅 عرض مرشحي ChemCore واختيار مادة للتتبع");
+        candidates.setOnClickListener(v->{show(1);showAnalysisSection(2);});
+        content.addView(candidates,UiKit.full(c));
+        content.addView(card("تظهر إشارة الاتجاه المرجح على شاشة القيادة فقط. عدم وجود ترشيح لا يعني خلو المكان من الغاز."),UiKit.full(c));
+        return scroll;
+    }
+
+    private ScrollView buildParticlesLanding(){
+        ScrollView scroll=new ScrollView(c);
+        LinearLayout content=UiKit.vbox(c);
+        content.setPadding(UiKit.dp(c,10),UiKit.dp(c,12),UiKit.dp(c,10),UiKit.dp(c,12));
+        scroll.addView(content);
+        content.addView(UiKit.title(c,"◌ الجزيئات والأغبرة"),UiKit.full(c));
+        content.addView(card("وحدة قياس PM غير مركبة حالياً."),UiKit.full(c));
+        content.addView(card("سيتم عرض القنوات التي يدعمها الحساس الحقيقي فقط، مع القياس الآني والتقارير الذكية بعد تركيبه."),UiKit.full(c));
+        return scroll;
     }
 
     public View view(){return root;}
     public void refresh(){
-        // Rendering all four hidden panes at 150 ms rebuilt large candidate lists and caused UI stalls.
-        // Update only the visible pane; showing another pane triggers its own first refresh.
-        switch(selected){case 0:physical.refresh();break;case 1:live.refresh();break;case 2:analysis.refresh();break;case 3:analysisResults.refresh();break;default:break;}
+        switch(selected){
+            case 1:
+                if(analysisSection==0)live.refresh();
+                else if(analysisSection==1)analysis.refresh();
+                else analysisResults.refresh();
+                break;
+            case 2:physical.refresh();break;
+            default:break;
+        }
     }
-    private void show(int i){
-        selected=Math.max(0,Math.min(3,i));page.removeAllViews();page.addView(views[selected],new FrameLayout.LayoutParams(-1,-1));
-        for(int n=0;n<tabs.length;n++){
-            boolean on=n==selected;tabs[n].setTextColor(on?Color.WHITE:0xFF263238);tabs[n].setBackgroundColor(on?0xFF263238:0xFFECEFF1);
+    private void showAnalysisSection(int index){
+        analysisSection=Math.max(0,Math.min(2,index));
+        if(analysisPage==null)return;
+        View target=analysisSection==0?live.view:analysisSection==1?analysis.view:analysisResults.view;
+        if(target.getParent() instanceof android.view.ViewGroup)((android.view.ViewGroup)target.getParent()).removeView(target);
+        analysisPage.removeAllViews();
+        analysisPage.addView(target,new FrameLayout.LayoutParams(-1,-1));
+        for(int i=0;i<analysisTabs.length;i++){
+            boolean active=i==analysisSection;
+            analysisTabs[i].setTextColor(active?Color.WHITE:0xFFCFD8DC);
+            analysisTabs[i].setBackgroundColor(active?0xFF126BD7:0xFF182431);
+        }
+        if(selected==1)refresh();
+    }
+    private void show(int index){
+        selected=Math.max(0,Math.min(3,index));
+        View target=views[selected];
+        if(target.getParent() instanceof android.view.ViewGroup)((android.view.ViewGroup)target.getParent()).removeView(target);
+        page.removeAllViews();
+        page.addView(target,new FrameLayout.LayoutParams(-1,-1));
+        for(int i=0;i<tabs.length;i++){
+            boolean active=i==selected;
+            tabs[i].setTextColor(active?Color.WHITE:0xFFCFD8DC);
+            tabs[i].setBackgroundColor(active?0xFF126BD7:0xFF182431);
         }
         refresh();
     }
