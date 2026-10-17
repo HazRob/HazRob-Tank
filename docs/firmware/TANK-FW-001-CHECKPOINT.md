@@ -26,3 +26,10 @@ Servo model, neutral pulse, rotation polarity, PWM frequency, speed limits and c
 
 ## Status
 P0-P1 complete. No source modifications claimed by this checkpoint.
+
+## Confirmed board and physical-direction contract (2026-10-17)
+- Main controller: ESP32 DOIT DevKit V1; provisional servo signal GPIO16 left and GPIO17 right.
+- Both continuous-rotation servos mounted at rear, on opposite sides; do not infer shaft polarity from logical wheel direction.
+- API contract: `driveSet(+L,+R)` advances both tracks; `(-L,-R)` reverses; `(+L,-R)` pivots right and `(-L,+R)` pivots left, subject to real-world verification.
+- Independent `SERVO_LEFT_INVERT` and `SERVO_RIGHT_INVERT` configuration, with neutral pulse calibration for each servo. Default polarity must be validated with tracks raised off the ground; correct in firmware rather than swapping UI controls.
+- Bench test: neutral, forward, reverse, pivot left/right, braking, direction reversal, link-loss watchdog, emergency stop. Test without load first.
