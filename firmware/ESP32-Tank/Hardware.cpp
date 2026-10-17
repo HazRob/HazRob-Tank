@@ -38,6 +38,9 @@ void driveUpdate(){
   }
   if(now-driveAt<Cfg::SERVO_STEP_MS)return;
   driveAt=now;
+  if(recoveryPhase==RecoveryPhase::DRIVING&&transportLost&&staleStop&&now-cmdAt<=1500UL&&historyUsed){
+    recoveryPhase=RecoveryPhase::BRAKING;phaseStarted=now;
+  }
   if(recoveryPhase==RecoveryPhase::BRAKING&&af(curL)<0.5f&&af(curR)<0.5f){
     recoveryPhase=RecoveryPhase::RECONNECT_WAIT;phaseStarted=now;
   }
