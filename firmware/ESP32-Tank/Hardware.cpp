@@ -31,10 +31,10 @@ float lim(float v){return constrain(v,-(float)settings.speed,(float)settings.spe
 void servoWrite(ServoTrack &s){float v=*s.cur*(s.invert?-1.0f:1.0f);uint16_t us=constrain((int)(s.neutral+v*s.range/100.0f),1000,2000);ledcWrite(s.channel,(uint32_t)us*65535UL/20000UL);}
 void driveUpdate(){
   uint32_t now=millis();
-  if(recoveryPhase==RecoveryPhase::DRIVING&&transportLost&&now-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS&&!staleStop){
+  if(recoveryPhase==RecoveryPhase::DRIVING&&now-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS&&!staleStop){
     staleStop=true;targetL=targetR=0;
     bool moved=false;for(uint16_t i=0;i<historyUsed;i++){if(motionHistory[i].left||motionHistory[i].right){moved=true;break;}}
-    if(moved){recoveryPhase=RecoveryPhase::BRAKING;phaseStarted=now;}
+    if(moved&&transportLost){recoveryPhase=RecoveryPhase::BRAKING;phaseStarted=now;}
   }
   if(now-driveAt<Cfg::SERVO_STEP_MS)return;
   driveAt=now;
