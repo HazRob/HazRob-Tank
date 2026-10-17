@@ -214,6 +214,12 @@ void setup(){
 }
 
 void loop(){
+  static bool previouslyConnected=false;
+  static RadioProfile lastObservedProfile=RadioProfile::DIRECT;
+  if(lastObservedProfile!=radioProfile){previouslyConnected=false;lastObservedProfile=radioProfile;motionStop();}
+  bool connected=radioProfile==RadioProfile::DIRECT?(WiFi.softAPgetStationNum()>0):remoteMqttConnected();
+  if(connected)previouslyConnected=true;
+  transportLinkState(previouslyConnected&&!connected);
   hwUpdate();web.handleClient();profileUpdate();
   if(radioProfile==RadioProfile::REMOTE){remoteUpdate();gatewayUpdate();remoteMqttUpdate();}
   else gatewayUpdate();
