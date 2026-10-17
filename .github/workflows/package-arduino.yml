@@ -1,0 +1,41 @@
+name: Package HazRob Tank Arduino sketches
+on:
+  push:
+    branches: [develop]
+    paths:
+      - 'firmware/ESP32-Tank/**'
+      - 'firmware/Cam-tank/**'
+      - '.github/workflows/package-arduino.yml'
+  workflow_dispatch:
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create independent Arduino ZIP packages
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+          root=Path('firmware')
+          out=Path('dist')
+          out.mkdir(exist_ok=True)
+          for sketch,filename in [('ESP32-Tank','HazRob-ESP32-Tank-Arduino.zip'),('Cam-tank','HazRob-CAM-Tank-Arduino.zip')]:
+              folder=root/sketch
+              ino=folder/(sketch+'.ino')
+              assert ino.is_file(),f'Missing sketch {ino}'
+              files=sorted(p for p in folder.iterdir() if p.is_file() and p.suffix.lower() in ('.ino','.cpp','.h','.md'))
+              assert any(p.suffix=='.cpp' for p in files)
+              with zipfile.ZipFile(out/filename,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+                  for p in files:
+                      z.write(p,arcname=f'{sketch}/{p.name}')
+              print(filename, 'files:',len(files),'bytes:',(out/filename).stat().st_size)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-ESP32-Tank-Arduino
+          path: dist/HazRob-ESP32-Tank-Arduino.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-CAM-Tank-Arduino
+          path: dist/HazRob-CAM-Tank-Arduino.zip
