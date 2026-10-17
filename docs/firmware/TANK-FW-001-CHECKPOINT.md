@@ -45,3 +45,9 @@ P0-P1 complete. No source modifications claimed by this checkpoint.
 - GitHub commits: 8106162 (recovery configuration), c9ed41d (history and reverse playback), aad57a0 (idle guard).
 - ESP32-Tank firmware now has a 5-second rolling record, 5-second wait, reverse replay at 50% speed for twice each segment duration, and cancellation by explicit stop/E-stop or heartbeat.
 - INCOMPLETE: actual transport-loss detection/reconnection across AP and MQTT, source compilation, servo neutral/polarity tests, timing under load and physical obstacle-safety tests. No claim of readiness for flashing.
+
+## Transport recovery integration audit — 2026-10-17
+Commits: 4f195e7 (gate recovery on transport loss), b067fa1 (transport API), 1eae9fe (AP station/MQTT link detection).
+Static source checks performed: recovery constants present (5000ms history, 5000ms reconnect wait, 50% playback), 20ms sampling, two-tick playback per recorded tick, link-loss guard, explicit stop/E-stop, cancellation on reconnect. These are source inspections, NOT compiler, hardware or functional tests.
+Behavior: Direct mode treats disappearance of last associated AP station as loss; remote mode uses MQTT connected state. Once a connection was observed, disconnection initiates braking and a five-second wait, then one reverse playback. A recovered transport cancels wait/playback. Merely timing out drive commands without confirmed transport loss does not initiate automatic reversal.
+Outstanding critical validation: Arduino-ESP32 2.x build; tests on ESP32 DOIT board; correct servo directions; Wi-Fi AP station association vs active operator control; remote MQTT reconnection; behavior during long blocking TLS reconnect; 20ms timing accuracy under sensor load; motor current/physical clearance and rear collision detection. DO NOT deploy autonomous reverse until verified. Reversal is not encoder-based and cannot guarantee returning to prior position.
