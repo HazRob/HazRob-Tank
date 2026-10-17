@@ -16,6 +16,9 @@ constexpr uint16_t SERVO_L_RANGE_US=500,SERVO_R_RANGE_US=500;
 constexpr uint16_t SERVO_HZ=50,SERVO_STEP_MS=20,SERVO_REVERSE_PAUSE_MS=100;
 constexpr float SERVO_STEP=12.0f; // ~180 ms from neutral to full speed
 constexpr uint32_t CONTROL_COMMAND_TIMEOUT_MS=500,ADS_REPROBE_MS=3000;
+constexpr uint32_t RECOVERY_WAIT_MS=5000,RECOVERY_HISTORY_MS=5000;
+constexpr uint8_t RECOVERY_SPEED_PERCENT=50;
+
 
 // The analytical ADC bus is separated from the environmental bus so BME/BMP faults do not
 // electrically or logically share the ADS1/ADS2 I2C path. Both use ESP32 hardware I2C controllers.
