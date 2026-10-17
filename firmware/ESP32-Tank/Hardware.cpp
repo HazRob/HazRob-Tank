@@ -33,7 +33,8 @@ void driveUpdate(){
   uint32_t now=millis();
   if(recoveryPhase==RecoveryPhase::DRIVING&&now-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS&&!staleStop){
     staleStop=true;targetL=targetR=0;
-    if(historyUsed){recoveryPhase=RecoveryPhase::BRAKING;phaseStarted=now;}
+    bool moved=false;for(uint16_t i=0;i<historyUsed;i++){if(motionHistory[i].left||motionHistory[i].right){moved=true;break;}}
+    if(moved){recoveryPhase=RecoveryPhase::BRAKING;phaseStarted=now;}
   }
   if(now-driveAt<Cfg::SERVO_STEP_MS)return;
   driveAt=now;
@@ -60,7 +61,7 @@ void driveUpdate(){
     else v=0;
     servoWrite(s);
   }
-  if(recoveryPhase==RecoveryPhase::DRIVING)historyRecord();
+  if(recoveryPhase==RecoveryPhase::DRIVING&&!staleStop)historyRecord();
 }
 void motionStopInternal(){recoveryCancel();cmdAt=millis();staleStop=false;}
 void motionStopImmediate(){recoveryCancel();targetL=targetR=curL=curR=0;for(auto &s:tracks){s.pauseUntil=0;servoWrite(s);}}
