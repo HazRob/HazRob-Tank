@@ -40,3 +40,8 @@ P0-P1 complete. No source modifications claimed by this checkpoint.
 - IR acquisition, alerts, safety gating, old safety option files/endpoints removed; Echo warning-only. BME remains direct GPIO13/14.
 - P5 static inspection is INCOMPLETE. No compilation, no bench tests, no APK compatibility validation. Arduino-ESP32 2.x LEDC API assumed; GPIO16/17 and polarity require physical verification.
 - IMPORTANT: hardware neutral calibration, servo power isolation, and cloud/app protocol review still pending. Do not flash on assembled drivetrain until tested.
+
+## Reverse recovery implementation — 2026-10-17
+- GitHub commits: 8106162 (recovery configuration), c9ed41d (history and reverse playback), aad57a0 (idle guard).
+- ESP32-Tank firmware now has a 5-second rolling record, 5-second wait, reverse replay at 50% speed for twice each segment duration, and cancellation by explicit stop/E-stop or heartbeat.
+- INCOMPLETE: actual transport-loss detection/reconnection across AP and MQTT, source compilation, servo neutral/polarity tests, timing under load and physical obstacle-safety tests. No claim of readiness for flashing.
