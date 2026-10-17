@@ -1,0 +1,96 @@
+name: Build HazRob Tank 0.1 Android APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-tank-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout Tank overlays
+        uses: actions/checkout@v4
+        with:
+          path: tank
+
+      - name: Require read-only source repository token
+        env:
+          SOURCE_REPO_TOKEN: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+        run: |
+          test -n "$SOURCE_REPO_TOKEN" || { echo "::error::Set HAZROB_SOURCE_READ_TOKEN with read-only access to sohpany/SERVOC-Android"; exit 1; }
+
+      - name: Checkout pinned original Android baseline
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+
+      - name: Overlay Tank changes and set independent package identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('source/app/build.gradle')
+          s=p.read_text()
+          assert "applicationId 'com.servoc.app'" in s
+          assert "versionName '0.10.2'" in s
+          s=s.replace("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'")
+          s=s.replace("versionName '0.10.2'","versionName '0.1'")
+          s=s.replace("versionCode 30","versionCode 1")
+          # Sign debug APK with Android's standard ephemeral debug key, not the original product key.
+          s=s.replace("debug { signingConfig signingConfigs.prototype }","debug { }")
+          p.write_text(s)
+          manifest=Path('source/app/src/main/AndroidManifest.xml')
+          t=manifest.read_text()
+          if 'android:label=' in t:
+              import re
+              t=re.sub(r'android:label="[^"]*"', 'android:label="HazRob Tank"', t, count=1)
+          manifest.write_text(t)
+          PY
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android platform
+        run: |
+          echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null || true
+          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+
+      - name: Run unit tests
+        working-directory: source
+        run: gradle --no-daemon :app:testDebugUnitTest
+
+      - name: Assemble debug APK
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Verify and stage APK
+        run: |
+          set -euo pipefail
+          APK=source/app/build/outputs/apk/debug/app-debug.apk
+          /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner verify --verbose "$APK"
+          mkdir -p out
+          cp "$APK" out/HazRob-tank0.1-debug.apk
+          sha256sum out/HazRob-tank0.1-debug.apk > out/SHA256SUMS.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-tank0.1-debug-apk
+          path: out/
+          if-no-files-found: error
+          retention-days: 30
