@@ -14,9 +14,9 @@ Baseline: ESP32-Tank 0.1.0 (copied HR069 source). Target: ESP32-Tank 0.1.1-dev.
 ## Execution plan
 - [x] P0: inspect Config.h, Hardware.cpp, SafetyOptions.cpp, Alerts.cpp and current hardware pin map.
 - [x] P1: write approved scope and checkpoint before edits.
-- [ ] P2: replace Config.h motor/IR/ultrasonic stop definitions and update version.
-- [ ] P3: replace Hardware.cpp L298N with two servo PWM outputs, short ramps, reverse dwell, watchdog ramp; delete IR and motion blocking; simplify JSON.
-- [ ] P4: remove obsolete IR alert and safety-auto-stop code and endpoints; inspect dependent files for references.
+- [x] P2: replace Config.h motor/IR/ultrasonic stop definitions and update version.
+- [x] P3: replace Hardware.cpp L298N with two servo PWM outputs, short ramps, reverse dwell, watchdog ramp; delete IR and motion blocking; simplify JSON.
+- [x] P4: remove obsolete IR alert and safety-auto-stop code and endpoints; inspect dependent files for references.
 - [ ] P5: static search for orphan symbols and verify endpoint compatibility.
 - [ ] P6: compile with pinned Arduino-ESP32 board/toolchain; hardware bench tests with servos disconnected from drivetrain.
 - [ ] P7: record release 0.1.1-dev changelog and actual test status.
@@ -33,3 +33,10 @@ P0-P1 complete. No source modifications claimed by this checkpoint.
 - API contract: `driveSet(+L,+R)` advances both tracks; `(-L,-R)` reverses; `(+L,-R)` pivots right and `(-L,+R)` pivots left, subject to real-world verification.
 - Independent `SERVO_LEFT_INVERT` and `SERVO_RIGHT_INVERT` configuration, with neutral pulse calibration for each servo. Default polarity must be validated with tracks raised off the ground; correct in firmware rather than swapping UI controls.
 - Bench test: neutral, forward, reverse, pivot left/right, braking, direction reversal, link-loss watchdog, emergency stop. Test without load first.
+
+## Implementation checkpoint (2026-10-17)
+- Commits: 67966b7 (main refactor), 9f45d1a (cleanup), ef59852 (last IR JSON removal).
+- Source edited on develop only. Config and drive implementation updated; old L298N GPIO code removed; independent PWM channels 6/7 on GPIO16/17; nonblocking ramp, reverse dwell and 500ms watchdog deceleration; E-stop immediate.
+- IR acquisition, alerts, safety gating, old safety option files/endpoints removed; Echo warning-only. BME remains direct GPIO13/14.
+- P5 static inspection is INCOMPLETE. No compilation, no bench tests, no APK compatibility validation. Arduino-ESP32 2.x LEDC API assumed; GPIO16/17 and polarity require physical verification.
+- IMPORTANT: hardware neutral calibration, servo power isolation, and cloud/app protocol review still pending. Do not flash on assembled drivetrain until tested.
