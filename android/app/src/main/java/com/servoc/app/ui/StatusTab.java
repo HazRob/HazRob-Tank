@@ -138,7 +138,7 @@ public final class StatusTab {
         else echoText+="⚠ قياس غير صالح • "+echo.optString("status","unknown")+" • timeouts "+echo.optLong("timeouts",0)+" • pulse "+echo.optLong("pulse_us",0)+" µs"+" • ↑ "+echo.optLong("no_rise",0)+" ↓ "+echo.optLong("no_fall",0)+" HIGH "+echo.optLong("stuck_high",0);
         String voltage=battery==null||battery.isNull("voltage_v")?"○ لا قراءة":String.format(Locale.US,"%.2f V (تقديري)",battery.optDouble("voltage_v",Double.NaN));
         String microphone=sound==null||sound.isNull("rms_v")?"○ لا قراءة":String.format(Locale.US,"● RMS %.3f V",sound.optDouble("rms_v",Double.NaN));
-        hardware.append("\n"+echoText+"\nBATTERY GPIO33   "+voltage+"\nMIC GPIO36   "+microphone+"\nL298N   "+(drive==null?"○ غير متاح":drive.optBoolean("stale_stop",false)?"⚠ مهلة توقف":"● أوامر متاحة (لا يوجد تأكيد دوران)")+"\nALERT GPIO26   منطق تحكم؛ خرج صوتي غير مثبت");
+        hardware.append("\n"+echoText+"\nBATTERY GPIO33   "+voltage+"\nMIC GPIO36   "+microphone+"\nSERVO GPIO16/17   "+(drive==null?"○ غير متاح":drive.optBoolean("stale_stop",false)?"⚠ مهلة توقف":"● أوامر متاحة (لا يوجد تأكيد دوران)")+"\nALERT GPIO26   منطق تحكم؛ خرج صوتي غير مثبت");
         renderCamera();scheduleCameraProbe();
     }
 
