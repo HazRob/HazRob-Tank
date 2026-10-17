@@ -59,7 +59,6 @@ else if(t=="alert"){int severity=(int)ji(j,"severity",-1);uint32_t ttlMs=(uint32
 else if(t=="alert_test")Alerts::test();
 else if(t=="camera_flash"){String m=js(j,"mode","off");ok=setCameraFlash(m);p="{\"mode\":\""+m+"\"}";}
 else if(t=="safety_auto_stop_get")p=safetyAutoStopPayload();
-else if(t=="safety_auto_stop_set"){motionStop();bool enabled=ji(j,"enabled",0)!=0;safetyAutoStopSet(enabled,true);p=safetyAutoStopPayload();}
 else if(t=="config_get")p=settingsJson();
 else if(t=="config_set"){SettingsPatch patch;String cam=js(j,"cam");if(kp(j,"cam")>=0&&cam.length()){patch.hasCam=true;patch.cam=cam;}if(kp(j,"speed")>=0){patch.hasSpeed=true;patch.speed=(int)ji(j,"speed",settings.speed);}if(kp(j,"warm")>=0){patch.hasWarm=true;patch.warm=(int)ji(j,"warm",settings.warm);}if(kp(j,"measure")>=0){patch.hasMeasure=true;patch.measure=(int)ji(j,"measure",settings.measure);}applySettings(patch,true);p=settingsJson();}
 else{ok=false;err="unknown_command";}

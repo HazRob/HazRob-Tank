@@ -1,6 +1,5 @@
 #include "Hardware.h"
 #include "Alerts.h"
-#include "SafetyOptions.h"
 #include <Preferences.h>
 #include <Wire.h>
 #include <WiFi.h>
@@ -11,14 +10,27 @@ Preferences nv;
 TwoWire EnvWire(1);
 float af(float v){return v<0?-v:v;}int ri(float v){return (int)(v>=0?v+.5f:v-.5f);}bool ff(float v){return v==v&&v>-1e30f&&v<1e30f;}
 
-/* drive: direct operator command -> PWM, no acceleration/retrace shaping */
-float curL=0,curR=0;uint32_t cmdAt=0;bool staleStop=false;
-float lim(float v){float m=constrain(settings.speed,20,100);return constrain(v,-m,m);}
-void motorWrite(uint8_t en,uint8_t a,uint8_t b,float v,bool inv){int c=constrain(ri(v),-100,100);if(inv)c=-c;int d=map(abs(c),0,100,0,255);if(c>0){digitalWrite(a,HIGH);digitalWrite(b,LOW);}else if(c<0){digitalWrite(a,LOW);digitalWrite(b,HIGH);}else{digitalWrite(a,LOW);digitalWrite(b,LOW);d=0;}analogWrite(en,d);}
-void driveWrite(){motorWrite(Cfg::DRIVE_L_EN,Cfg::DRIVE_L_IN1,Cfg::DRIVE_L_IN2,curL,Cfg::DRIVE_L_INVERT);motorWrite(Cfg::DRIVE_R_EN,Cfg::DRIVE_R_IN1,Cfg::DRIVE_R_IN2,curR,Cfg::DRIVE_R_INVERT);}
-void driveUpdate(){uint32_t n=millis();if(!staleStop&&n-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS&&(af(curL)>.1f||af(curR)>.1f)){curL=curR=0;staleStop=true;driveWrite();}}
-void motionStopInternal(){curL=curR=0;staleStop=false;driveWrite();}
-
+/* nonblocking independent track servos */
+float curL=0,curR=0,targetL=0,targetR=0;uint32_t cmdAt=0,driveAt=0;bool staleStop=false;
+struct ServoTrack{uint8_t pin,channel;bool invert;uint16_t neutral,range;float *cur,*target;uint32_t pauseUntil=0;};
+ServoTrack tracks[]={{Cfg::SERVO_L_PIN,6,Cfg::SERVO_L_INVERT,Cfg::SERVO_L_NEUTRAL_US,Cfg::SERVO_L_RANGE_US,&curL,&targetL},
+                    {Cfg::SERVO_R_PIN,7,Cfg::SERVO_R_INVERT,Cfg::SERVO_R_NEUTRAL_US,Cfg::SERVO_R_RANGE_US,&curR,&targetR}};
+float lim(float v){return constrain(v,-(float)settings.speed,(float)settings.speed);}
+void servoWrite(ServoTrack &s){float v=*s.cur*(s.invert?-1.0f:1.0f);uint16_t us=constrain((int)(s.neutral+v*s.range/100.0f),1000,2000);ledcWrite(s.channel,(uint32_t)us*65535UL/20000UL);}
+void driveUpdate(){
+  uint32_t now=millis();
+  if(now-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS&&!staleStop){targetL=targetR=0;staleStop=true;}
+  if(now-driveAt<Cfg::SERVO_STEP_MS)return;driveAt=now;
+  for(auto &s:tracks){
+    float &v=*s.cur,t=*s.target;
+    if(v*t<0){t=constrain(t,-100.0f,100.0f);v+=constrain(-v,-Cfg::SERVO_STEP,Cfg::SERVO_STEP);if(abs(v)<0.5f){v=0;s.pauseUntil=now+Cfg::SERVO_REVERSE_PAUSE_MS;}}
+    else if((int32_t)(now-s.pauseUntil)>=0)v+=constrain(t-v,-Cfg::SERVO_STEP,Cfg::SERVO_STEP);
+    else v=0;
+    servoWrite(s);
+  }
+}
+void motionStopInternal(){targetL=targetR=0;cmdAt=millis();staleStop=false;}
+void motionStopImmediate(){targetL=targetR=curL=curR=0;for(auto &s:tracks){s.pauseUntil=0;servoWrite(s);}}
 /* energy basis; Android owns SOC estimation */
 uint32_t energyAt=0,driveEqMs=0,mqOnTotalMs=0;
 void energyUpdate(){uint32_t n=millis();if(!energyAt){energyAt=n;return;}uint32_t dt=n-energyAt;if(dt<100)return;energyAt=n;dt=min(dt,1000UL);uint16_t load=(uint16_t)constrain((int)(af(curL)+af(curR)),0,200);driveEqMs+=(uint32_t)(((uint64_t)dt*load)/200U);if(digitalRead(Cfg::RELAY_MQ)==Cfg::RELAY_ON)mqOnTotalMs+=dt;}
@@ -81,13 +93,12 @@ void envUpdate(){
   }
 }
 
-/* sound / LDR / downward IR cliff */
+/* sound / LDR */
 uint16_t isqrt(uint32_t x){uint32_t op=x,res=0,one=1UL<<30;while(one>op)one>>=2;while(one){if(op>=res+one){op-=res+one;res=(res>>1)+one;}else res>>=1;one>>=2;}return (uint16_t)res;}
 float soundRms=NAN,soundP2P=NAN;uint32_t soundAt=0;
 void soundUpdate(){uint32_t n=millis();if(n-soundAt<Cfg::SOUND_PERIOD)return;soundAt=n;uint32_t sum=0,sq=0;uint16_t lo=4095,hi=0;for(uint16_t k=0;k<Cfg::SOUND_SAMPLES;k++){uint16_t x=analogRead(Cfg::SOUND_PIN);sum+=x;sq+=(uint32_t)x*x;lo=min(lo,x);hi=max(hi,x);}uint32_t mean=sum/Cfg::SOUND_SAMPLES,var=sq/Cfg::SOUND_SAMPLES;var=var>mean*mean?var-mean*mean:0;constexpr float V=3.3f/4095.0f;soundRms=isqrt(var)*V;soundP2P=(hi-lo)*V;}
-bool irWarning=Cfg::IR_FAIL_SAFE_STARTUP,irGroundDetected=false;uint8_t irLevel=HIGH,irLostCount=0,irGroundCount=0;uint32_t irAt=0;bool ultraWarning=false,ultraStop=false;
-void hazardAlert(){Alerts::setIr(irWarning||ultraWarning);}
-void irUpdate(){uint32_t n=millis();if(n-irAt<Cfg::IR_PERIOD)return;irAt=n;irLevel=digitalRead(Cfg::IR_PIN);bool groundNow=irLevel==Cfg::IR_GROUND_ACTIVE;if(groundNow){irLostCount=0;if(irGroundCount<255)irGroundCount++;if(irGroundCount>=Cfg::IR_CLIFF_CLEAR_SAMPLES){irGroundDetected=true;irWarning=false;}}else{irGroundCount=0;if(irLostCount<255)irLostCount++;if(irLostCount>=Cfg::IR_CLIFF_ASSERT_SAMPLES){irGroundDetected=false;irWarning=true;}}hazardAlert();}
+bool ultraWarning=false;
+void hazardAlert(){Alerts::setProximity(ultraWarning);}
 uint8_t ldrLevel=HIGH;uint32_t ldrAt=0;void ldrUpdate(){uint32_t n=millis();if(n-ldrAt<Cfg::LDR_PERIOD)return;ldrAt=n;ldrLevel=digitalRead(Cfg::LDR_PIN);}
 
 /* battery ADC1 */
@@ -112,9 +123,9 @@ void ultraUpdate(){
       ultraCm=d*0.01715f;
       ultraLastOkAt=now;ultraStatus="ok";
       ultraWarning=ff(ultraCm)&&ultraCm>1&&ultraCm<=Cfg::ULTRA_WARN_CM;
-      ultraStop=ff(ultraCm)&&ultraCm>1&&ultraCm<=Cfg::ULTRA_STOP_CM;
+      
     }else{
-      ultraCm=NAN;ultraWarning=false;ultraStop=false;ultraStatus="invalid_pulse";
+      ultraCm=NAN;ultraWarning=false;ultraStatus="invalid_pulse";
       ultraInvalidPulseCount++;
     }
     hazardAlert();
@@ -125,7 +136,7 @@ void ultraUpdate(){
       bool sawRise=ultraRiseUsIsr!=0;
       ultraAwaiting=false;ultraEchoReady=false;ultraRiseUsIsr=ultraFallUsIsr=0;
       interrupts();
-      ultraCm=NAN;ultraLastPulseUs=0;ultraWarning=false;ultraStop=false;
+      ultraCm=NAN;ultraLastPulseUs=0;ultraWarning=false;
       ultraTimeoutCount++;
       if(sawRise){ultraNoFallCount++;ultraStatus="no_falling_edge";}
       else{ultraNoRiseCount++;ultraStatus="no_rising_edge";}
@@ -137,7 +148,7 @@ void ultraUpdate(){
   ultraAt=now;
   // Report held-high ECHO as an electrical diagnostic, never as a valid distance.
   if(digitalRead(Cfg::ULTRA_ECHO_PIN)==HIGH){
-    ultraCm=NAN;ultraLastPulseUs=0;ultraWarning=false;ultraStop=false;
+    ultraCm=NAN;ultraLastPulseUs=0;ultraWarning=false;
     ultraStuckHighCount++;ultraTimeoutCount++;ultraStatus="echo_high_before_trigger";
     hazardAlert();return;
   }
@@ -168,26 +179,17 @@ void loadSettings(){nv.begin(Cfg::NVS,false);settings.cam=nv.getString("camIP",C
 String envJson(){uint32_t age=envLastOkAt?millis()-envLastOkAt:0;String j="{\"ok\":"+String(bj(envOk()))+",\"t\":"+num(temp,2)+",\"h\":"+num(hum,2)+",\"p\":"+num(press,1);j+=",\"type\":"+String(envType)+",\"addr\":"+String(envAddr)+",\"chip_id\":"+String(envId)+",\"status\":\""+String(envStatus)+"\",\"ack_0x76\":"+String(bj(envAck76))+",\"ack_0x77\":"+String(bj(envAck77))+",\"last_addr\":"+String(envLastAddr)+",\"last_chip_id\":"+String(envLastId)+",\"read_failures\":"+String(envReadFails)+",\"last_ok_age_ms\":"+String(age)+",\"reprobe_ms\":"+String(ENV_REPROBE_MS)+",\"total_read_errors\":"+String(envReadErrorTotal)+",\"bus_recoveries\":"+String(envBusRecoveries)+",\"i2c_timeout_ms\":25"+",\"bus\":{\"sda\":"+String(Cfg::ENV_SDA)+",\"scl\":"+String(Cfg::ENV_SCL)+",\"hz\":"+String(Cfg::ENV_I2C_HZ)+"}}";return j;}
 String acquisitionJson(){return "{\"model\":\"ADS1115\",\"rate_sps\":"+String(Cfg::ADS_RATE_SPS)+",\"gain\":\"GAIN_TWOTHIRDS\",\"full_scale_v\":"+num(Cfg::ADS_FULL_SCALE_V,3)+",\"supply_v\":"+num(Cfg::ADS_SUPPLY_V,3)+",\"conversions_per_channel\":"+String(Cfg::ADC_SAMPLES)+",\"scan_period_ms\":"+String(Cfg::MQ_PERIOD)+",\"channels\":"+String(Cfg::MQ_N)+",\"sequential\":true,\"bus_sda\":"+String(Cfg::SDA)+",\"bus_scl\":"+String(Cfg::SCL)+"}";}
 String mqJson(bool avg){bool powered=avg?measurePower:mqPowerOn;String j="{";uint32_t nowUs=micros();for(uint8_t i=0;i<Cfg::MQ_N;i++){if(i)j+=",";const auto&c=Cfg::mq[i];j+="\""+String(c.name)+"\":{";if(avg){if(!cnt[i])j+="\"ok\":false";else{float n=cnt[i],rs=rsSum[i]/n;j+="\"ok\":true,\"raw\":"+num(rawSum[i]/n,1)+",\"adc\":"+num(adcSum[i]/n,3)+",\"ao\":"+num(aoSum[i]/n,3)+",\"rs\":"+num(rs,3)+",\"ratio\":"+num(rs/c.r0,3);}}else{j+="\"ok\":"+String(bj(mq[i].ok))+",\"raw\":"+String(mq[i].raw)+",\"adc\":"+num(mq[i].adc,3)+",\"ao\":"+num(mq[i].ao,3)+",\"rs\":"+num(mq[i].rs,3)+",\"ratio\":"+num(mq[i].ratio,3);if(mq[i].sampleUs)j+=",\"sample_us\":"+String(mq[i].sampleUs)+",\"scan_cycle\":"+String(mq[i].scanCycle)+",\"channel_offset_us\":"+String(mq[i].channelOffsetUs)+",\"age_us\":"+String(nowUs-mq[i].sampleUs);}j+=",\"powered\":"+String(bj(powered))+",\"relay\":1,\"row\":1,\"ads\":"+String(c.ads)+",\"ch\":"+String(c.ch)+",\"r0\":"+num(c.r0,3)+",\"r0_calibrated\":true,\"r0_source\":\""+String(Cfg::R0_SOURCE)+"\",\"r0_reference_validated\":"+String(bj(Cfg::R0_REFERENCE_GAS_VALIDATED))+",\"r0_session\":\""+String(Cfg::R0_SESSION)+"\",\"r0_samples\":"+String(Cfg::R0_SAMPLES)+",\"r0_environment_compensated\":"+String(bj(Cfg::R0_ENVIRONMENT_COMPENSATED))+"}";}return j+"}";}
-String driveJson(){bool hazard=irWarning||ultraStop,blocked=safetyAutoStopEnabled()&&hazard;return "{\"driver\":\"L298N\",\"left\":"+String(ri(curL))+",\"right\":"+String(ri(curR))+",\"command_age_ms\":"+String(millis()-cmdAt)+",\"stale_stop\":"+String(bj(staleStop))+",\"safety_auto_stop\":"+String(bj(safetyAutoStopEnabled()))+",\"forward_hazard\":"+String(bj(hazard))+",\"forward_blocked\":"+String(bj(blocked))+",\"forward_block_reason\":\""+String(blocked?(irWarning?"cliff":ultraStop?"collision":""):"")+"\""+",\"pins\":{\"l_en\":"+String(Cfg::DRIVE_L_EN)+",\"l_in1\":"+String(Cfg::DRIVE_L_IN1)+",\"l_in2\":"+String(Cfg::DRIVE_L_IN2)+",\"r_en\":"+String(Cfg::DRIVE_R_EN)+",\"r_in1\":"+String(Cfg::DRIVE_R_IN1)+",\"r_in2\":"+String(Cfg::DRIVE_R_IN2)+"}}";}
+String driveJson(){return "{\\"driver\\":\\"dual_continuous_servo\\",\\"left\\":"+String(ri(curL))+",\\"right\\":"+String(ri(curR))+",\\"target_left\\":"+String(ri(targetL))+",\\"target_right\\":"+String(ri(targetR))+",\\"stale_stop\\":"+String(bj(staleStop))+",\\"pins\\":{\\"left\\":"+String(Cfg::SERVO_L_PIN)+",\\"right\\":"+String(Cfg::SERVO_R_PIN)+"}}";}
 String healthJson(){return "{\"battery\":{\"v\":"+num(batteryV,2)+",\"raw\":"+String(batteryRaw)+",\"estimated\":true},\"internal_temp\":{\"installed\":false,\"c\":null,\"gpio\":null},\"proximity\":{\"cm\":"+num(ultraCm,1)+",\"valid\":"+String(bj(ff(ultraCm)&&ultraCm>0))+",\"pulse_us\":"+String(ultraLastPulseUs)+",\"timeouts\":"+String(ultraTimeoutCount)+",\"status\":\""+String(ultraStatus)+"\""+",\"echo_level\":"+String(digitalRead(Cfg::ULTRA_ECHO_PIN))+",\"no_rise\":"+String(ultraNoRiseCount)+",\"no_fall\":"+String(ultraNoFallCount)+",\"stuck_high\":"+String(ultraStuckHighCount)+",\"invalid_pulse\":"+String(ultraInvalidPulseCount)+",\"last_ok_age_ms\":"+(ultraLastOkAt?String(millis()-ultraLastOkAt):String("null"))+",\"warning\":"+String(bj(ultraWarning))+",\"stop_zone\":"+String(bj(ultraStop))+",\"auto_stop_enabled\":"+String(bj(safetyAutoStopEnabled()))+",\"forward_blocked\":"+String(bj(safetyAutoStopEnabled()&&ultraStop))+",\"warning_cm\":"+num(Cfg::ULTRA_WARN_CM,1)+",\"stop_cm\":"+num(Cfg::ULTRA_STOP_CM,1)+",\"trig\":"+String(Cfg::ULTRA_TRIG_PIN)+",\"echo\":"+String(Cfg::ULTRA_ECHO_PIN)+"},\"energy_basis\":{\"uptime_ms\":"+String(millis())+",\"drive_eq_ms\":"+String(driveEqMs)+",\"mq_on_ms\":"+String(mqOnTotalMs)+"}}";}
 String lightJson(){return "{\"installed\":true,\"gpio\":"+String(Cfg::LDR_PIN)+",\"mode\":\"lm393_threshold\",\"level\":"+String(ldrLevel)+",\"quantitative_lux\":false,\"lux\":null}";}
-String irJson(){return "{\"status\":\""+String(irGroundDetected?"ground":"cliff")+"\",\"warning\":"+String(bj(irWarning))+",\"cliff_warning\":"+String(bj(irWarning))+",\"ground_detected\":"+String(bj(irGroundDetected))+",\"raw_level\":"+String(irLevel)+",\"level\":"+String(irLevel)+",\"ground_active_level\":"+String(Cfg::IR_GROUND_ACTIVE)+",\"gpio\":"+String(Cfg::IR_PIN)+",\"reference_height_cm\":"+num(Cfg::IR_REFERENCE_HEIGHT_CM,1)+",\"assert_samples\":"+String(Cfg::IR_CLIFF_ASSERT_SAMPLES)+",\"clear_samples\":"+String(Cfg::IR_CLIFF_CLEAR_SAMPLES)+"}";}
 const char* measurementStateName(){switch(stage){case WARM:return"warmup";case MEASURE:return"measuring";case READY:return"ready";case ERROR:return"error";default:return"idle";}}
 String measurementJson(){uint16_t remaining=stage==MEASURE&&settings.measure>measureElapsedSec?settings.measure-measureElapsedSec:0;return "{\"state\":\""+String(measurementStateName())+"\",\"mask\":"+String(measurePower?1:0)+",\"power\":"+String(bj(measurePower))+",\"manual_power\":true,\"manual_warmup\":true,\"duration_s\":"+String(settings.measure)+",\"elapsed_s\":"+String(measureElapsedSec)+",\"remaining_s\":"+String(remaining)+",\"error\":\""+String(measureErrorName())+"\",\"valid_channels\":"+String(validChannels())+",\"mq\":"+mqJson(true)+"}";}
 }
 
-void hwBegin(){loadSettings();Alerts::begin();pinMode(Cfg::RELAY_MQ,OUTPUT);relayRaw(false);pinMode(Cfg::IR_PIN,INPUT);pinMode(Cfg::LDR_PIN,INPUT);pinMode(Cfg::SOUND_PIN,INPUT);pinMode(Cfg::BATTERY_PIN,INPUT);pinMode(Cfg::ULTRA_TRIG_PIN,OUTPUT);digitalWrite(Cfg::ULTRA_TRIG_PIN,LOW);pinMode(Cfg::ULTRA_ECHO_PIN,INPUT);attachInterrupt(digitalPinToInterrupt(Cfg::ULTRA_ECHO_PIN),ultraEchoIsr,CHANGE);analogReadResolution(12);analogSetPinAttenuation(Cfg::SOUND_PIN,ADC_11db);analogSetPinAttenuation(Cfg::BATTERY_PIN,ADC_11db);pinMode(Cfg::DRIVE_L_EN,OUTPUT);pinMode(Cfg::DRIVE_L_IN1,OUTPUT);pinMode(Cfg::DRIVE_L_IN2,OUTPUT);pinMode(Cfg::DRIVE_R_EN,OUTPUT);pinMode(Cfg::DRIVE_R_IN1,OUTPUT);pinMode(Cfg::DRIVE_R_IN2,OUTPUT);digitalWrite(Cfg::DRIVE_L_IN1,LOW);digitalWrite(Cfg::DRIVE_L_IN2,LOW);digitalWrite(Cfg::DRIVE_R_IN1,LOW);digitalWrite(Cfg::DRIVE_R_IN2,LOW);analogWrite(Cfg::DRIVE_L_EN,0);analogWrite(Cfg::DRIVE_R_EN,0);cmdAt=energyAt=millis();driveWrite();Wire.begin(Cfg::SDA,Cfg::SCL);Wire.setClock(Cfg::ADS_I2C_HZ);EnvWire.begin(Cfg::ENV_SDA,Cfg::ENV_SCL);EnvWire.setClock(Cfg::ENV_I2C_HZ);EnvWire.setTimeOut(25);adsBegin(0);adsBegin(1);adsHealthAt=millis();envBegin();}
-void hwUpdate(){driveUpdate();energyUpdate();adsHealthUpdate();mqUpdate();envUpdate();soundUpdate();irUpdate();ldrUpdate();batteryUpdate();ultraUpdate();measureUpdate();Alerts::update();}
-void driveSet(int l,int r){
-    float requestedL=lim(l),requestedR=lim(r);
-    // IR/ultrasonic warnings remain active, but automatic motion blocking is disabled in RC2.
-    // E-STOP, explicit stop and command-loss watchdog remain independent and active.
-    bool forwardRequested=(requestedL+requestedR)>0.1f;
-    bool forwardBlocked=safetyAutoStopEnabled()&&(irWarning||ultraStop);
-    if(forwardBlocked&&forwardRequested){curL=curR=0;}else{curL=requestedL;curR=requestedR;}
-    cmdAt=millis();staleStop=false;driveWrite();
-}
-void motionStop(){motionStopInternal();}void emergencyStop(){motionStopInternal();resetMeasurement();relayRaw(false);Alerts::emergencyStop();}
+void hwBegin(){loadSettings();Alerts::begin();pinMode(Cfg::RELAY_MQ,OUTPUT);relayRaw(false);pinMode(Cfg::LDR_PIN,INPUT);pinMode(Cfg::SOUND_PIN,INPUT);pinMode(Cfg::BATTERY_PIN,INPUT);pinMode(Cfg::ULTRA_TRIG_PIN,OUTPUT);digitalWrite(Cfg::ULTRA_TRIG_PIN,LOW);pinMode(Cfg::ULTRA_ECHO_PIN,INPUT);attachInterrupt(digitalPinToInterrupt(Cfg::ULTRA_ECHO_PIN),ultraEchoIsr,CHANGE);analogReadResolution(12);analogSetPinAttenuation(Cfg::SOUND_PIN,ADC_11db);analogSetPinAttenuation(Cfg::BATTERY_PIN,ADC_11db);for(auto &s:tracks){ledcSetup(s.channel,Cfg::SERVO_HZ,16);ledcAttachPin(s.pin,s.channel);servoWrite(s);}cmdAt=driveAt=energyAt=millis();Wire.begin(Cfg::SDA,Cfg::SCL);Wire.setClock(Cfg::ADS_I2C_HZ);EnvWire.begin(Cfg::ENV_SDA,Cfg::ENV_SCL);EnvWire.setClock(Cfg::ENV_I2C_HZ);EnvWire.setTimeOut(25);adsBegin(0);adsBegin(1);adsHealthAt=millis();envBegin();}
+void hwUpdate(){driveUpdate();energyUpdate();adsHealthUpdate();mqUpdate();envUpdate();soundUpdate();ldrUpdate();batteryUpdate();ultraUpdate();measureUpdate();Alerts::update();}
+void driveSet(int l,int r){targetL=lim(l);targetR=lim(r);cmdAt=millis();staleStop=false;}
+void motionStop(){motionStopInternal();}void emergencyStop(){motionStopImmediate();resetMeasurement();relayRaw(false);Alerts::emergencyStop();}
 bool relaySetMask(uint8_t on){if(on>1)return false;if(stage==MEASURE||stage==WARM)resetMeasurement();relayRaw(on);return true;}void sensorPowerOff(){resetMeasurement();relayRaw(false);}
 bool measureStart(){clearSums();measureError=ME_NONE;measureElapsedSec=0;measurePower=mqPowerOn;stageAt=sampleAt=millis();if(!measurePower){measureError=ME_POWER_OFF;stage=ERROR;return false;}if(!ads1ok&&!ads2ok){measureError=ME_ADS_MISSING;stage=ERROR;return false;}stage=MEASURE;return true;}void measureCancel(){resetMeasurement();Alerts::setGas(0);}
 bool alertSet(uint8_t s,uint32_t ttl){if(s>2)return false;Alerts::setGas(s,ttl);return true;}void alertTest(){Alerts::test();}

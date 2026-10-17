@@ -6,7 +6,7 @@ enum Level : uint8_t {
   NONE=0,
   TEST=1,
   LINK=2,
-  IR=3,
+  PROXIMITY=3,
   GAS_WARNING=4,
   GAS_DANGER=5,
   ESTOP=6
@@ -14,7 +14,7 @@ enum Level : uint8_t {
 
 void begin();
 void update();
-void setIr(bool active);
+void setProximity(bool active);
 void setLink(bool active);
 void setGas(uint8_t severity,uint32_t ttlMs=3000);
 void emergencyStop();

@@ -2,19 +2,19 @@
 #include <Arduino.h>
 
 namespace Cfg{
-constexpr char FW[]="HazRob 0.10.2";
-constexpr char ENGINEERING_REVISION[]="HR069-R1";
+constexpr char FW[]="ESP32-Tank 0.1.1-dev";
+constexpr char ENGINEERING_REVISION[]="TANK-SERVO-R1";
 constexpr uint8_t API=4;
-constexpr char HW_PROFILE[]="hazrob-0.10.2-hr069-1r8mq-l298n6-batt-ultra-ir-ldr-env2-v2";
+constexpr char HW_PROFILE[]="tank-doit-v1-2servo-8mq-echo-bme";
 constexpr char SSID[]="HazRob",NVS[]="servoc",CAM[]="192.168.4.2";
 
-// L298N 4WD differential drive: two motors per physical side in parallel.
-// Field behavior confirmed reversed steering handedness while straight forward/reverse remained correct.
-// Logical LEFT therefore maps to L298N channel B and logical RIGHT to channel A, while both
-// direction inversions remain false.
-constexpr uint8_t DRIVE_L_EN=17,DRIVE_L_IN1=19,DRIVE_L_IN2=32;
-constexpr uint8_t DRIVE_R_EN=16,DRIVE_R_IN1=18,DRIVE_R_IN2=27;
-constexpr bool DRIVE_L_INVERT=false,DRIVE_R_INVERT=false;
+// Rear-mounted continuous-rotation servos; polarity is calibrated per track.
+constexpr uint8_t SERVO_L_PIN=16,SERVO_R_PIN=17;
+constexpr bool SERVO_L_INVERT=false,SERVO_R_INVERT=true; // provisional; verify wheels raised
+constexpr uint16_t SERVO_L_NEUTRAL_US=1500,SERVO_R_NEUTRAL_US=1500;
+constexpr uint16_t SERVO_L_RANGE_US=500,SERVO_R_RANGE_US=500;
+constexpr uint16_t SERVO_HZ=50,SERVO_STEP_MS=20,SERVO_REVERSE_PAUSE_MS=100;
+constexpr float SERVO_STEP=12.0f; // ~180 ms from neutral to full speed
 constexpr uint32_t CONTROL_COMMAND_TIMEOUT_MS=500,ADS_REPROBE_MS=3000;
 
 // The analytical ADC bus is separated from the environmental bus so BME/BMP faults do not
@@ -30,22 +30,11 @@ constexpr uint8_t ALERT_PIN=26;
 constexpr bool ALERT_OUTPUT_INSTALLED=false;
 constexpr uint8_t ALERT_ACTIVE=HIGH,ALERT_INACTIVE=LOW;
 constexpr uint8_t SOUND_PIN=36;          // MAX4466 ADC1
-constexpr uint8_t IR_PIN=35;             // downward-looking lower-front ground/cliff sensor
 constexpr uint8_t LDR_PIN=34;            // LM393 digital light-threshold output; NOT quantitative lux
 constexpr uint8_t BATTERY_PIN=33;        // ADC1, divider required
 constexpr uint8_t ULTRA_TRIG_PIN=23;      // front ultrasonic trigger
 constexpr uint8_t ULTRA_ECHO_PIN=39;      // input only; reduce 5 V echo to <=3.3 V
 
-// The configured active level represents GROUND PRESENT, not an obstacle-ahead event.
-// Operator-calibrated MH-B output: HIGH = ground present; LOW = ground absent/cliff.
-// There is no automatic validation of sensor wiring or calibration.
-// Verify the detector manually before enabling automatic forward-stop.
-constexpr uint8_t IR_GROUND_ACTIVE=HIGH;
-constexpr bool IR_FAIL_SAFE_STARTUP=true;
-constexpr uint8_t IR_CLIFF_ASSERT_SAMPLES=3;
-constexpr uint8_t IR_CLIFF_CLEAR_SAMPLES=2;
-// Digital IR is calibrated physically at the installed downward reference height; it does not measure distance.
-constexpr float IR_REFERENCE_HEIGHT_CM=4.0f;
 
 // Future quantitative illuminance: prefer BH1750 on an explicitly assigned bus after installation.
 constexpr bool LUX_SENSOR_INSTALLED=false;
@@ -82,11 +71,10 @@ constexpr uint8_t ADC_SAMPLES=4;
 constexpr bool TRACKING_CONTINUOUS=true;
 
 // Compact device-health timing / conversion constants.
-constexpr uint16_t SOUND_PERIOD=100,SOUND_SAMPLES=128,ENV_PERIOD=1000,IR_PERIOD=50,LDR_PERIOD=100;
+constexpr uint16_t SOUND_PERIOD=100,SOUND_SAMPLES=128,ENV_PERIOD=1000,LDR_PERIOD=100;
 constexpr uint16_t BATTERY_PERIOD=1000,ULTRA_PERIOD=150;
 constexpr uint32_t ULTRA_TIMEOUT_US=25000;
 constexpr float ULTRA_WARN_CM=10.0f;
-constexpr float ULTRA_STOP_CM=5.0f;
 // 47k/10k divider reference. Final assembled divider and ADC correction are calibrated in device settings later.
 constexpr float BAT_R_TOP=47000.0f,BAT_R_BOTTOM=10000.0f,BAT_DIV=(BAT_R_TOP+BAT_R_BOTTOM)/BAT_R_BOTTOM;
 }
