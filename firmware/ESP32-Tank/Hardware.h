@@ -27,6 +27,7 @@ void measureCancel();
 bool alertSet(uint8_t severity,uint32_t ttlMs=3000);
 void alertTest();
 
+void transportLinkState(bool lost);
 void linkHeartbeat();
 void linkSetArmed(bool armed);
 
