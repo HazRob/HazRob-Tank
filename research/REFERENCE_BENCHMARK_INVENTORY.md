@@ -39,3 +39,14 @@
 - UCI 224: Gas Sensor Array Drift Dataset — 13,910 records and 16 sensors; DOI 10.24432/C5RP6W; https://archive.ics.uci.edu/dataset/224 . Same original collection as UCI 270; **do not double count**.
 
 Metadata counts and source links confirmed from UCI repository pages, not downloaded or quality-controlled in this turn. Dataset licensing and original paper citation obligations must be checked before redistribution. The GitHub organization repository search exposed HazRob-Tank but did not locate a distinct accessible reference-library repository; repository availability/access remains unresolved. Do not claim exhaustive inventory yet.
+
+## External GitHub repository discovery — 2026-10-18 (not yet ingested)
+
+- https://github.com/mismiklik-iff/E-Nose-Dataset-for-Multi-Component-Liquid-Condiment-Concentration-Prediction — reports 9,200 8-MOS sensor trials, 1,550 single-component and 7,650 mixtures. Labels are **liquid condiment mixture proportions**, NOT calibrated airborne gas ppm; eligible for composition/temporal research only, not gas-ppm benchmark without gas-phase ground truth.
+- https://github.com/TakMashhido/Gas-Sensors-Measurements-Dataset — CSV reported 6,400 records, MQ2/3/5/6/7/8/135 and gas labels. **No verified per-record concentration field**; keep OUT of labeled-concentration benchmark until checked, but consider separate gas-classification benchmark.
+- https://github.com/camberbatch/Breath_analysis — calibration and multi-component VOC measurements across two instruments; verify analyte concentration units, calibration and sample IDs before admission. Medical breath class labels alone do not establish chemical identity/concentration.
+- https://github.com/anemo-labs/SmellDB — 32-channel odor classification resource with API-key-mediated download; verify concentration labels and access/licensing before admission.
+- https://github.com/infochemistry-ai/digital-nose — README advertises sensor mixture data but download link is placeholder; **not a verified accessible dataset**.
+- https://github.com/RonishNadar/electronic-nose — MQ acquisition and preprocessing code; do not count as labeled measurement corpus without verified released raw files.
+
+**Strict counting:** A CSV row or timestamp is not automatically an independent experimental exposure. Duplicate releases and repeated exports must be cross-referenced. External dataset discovery does not imply download, licensing clearance, validation or measured compatibility with HazRob MQ hardware.
