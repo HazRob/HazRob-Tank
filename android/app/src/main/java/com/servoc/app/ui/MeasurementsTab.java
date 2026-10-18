@@ -175,7 +175,7 @@ public final class MeasurementsTab {
         chemicalRows.removeAllViews();
         try{
             ChemicalRepository repo=new ChemicalRepository(host.database());
-            List<ChemicalRepository.Chemical> results=repo.search(query,250);
+            List<ChemicalRepository.Chemical> results=repo.search(query,1000);
             int shown=0;
             for(ChemicalRepository.Chemical chemical:results){
                 if(!"جميع العائلات".equals(family)&&!matchesFamily(family,chemical.chemicalClass))continue;
@@ -193,6 +193,7 @@ public final class MeasurementsTab {
                 chemicalRows.addView(item,UiKit.full(c));
             }
             if(shown==0)chemicalRows.addView(card("لا توجد مواد مطابقة للبحث."),UiKit.full(c));
+            else if(shown>40)chemicalRows.addView(card("تُعرض أول 40 نتيجة. اكتب جزءًا من الاسم أو رقم CAS لتضييق البحث."),UiKit.full(c));
         }catch(Exception ex){chemicalRows.addView(card("تعذر قراءة فهرس المواد."),UiKit.full(c));}
     }
 
