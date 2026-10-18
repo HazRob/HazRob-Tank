@@ -8,7 +8,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 01.3 | Sensitivity curves | PROTOTYPE | research/techniques/01.3/ (synthetic tests; manufacturer curves pending) |
 | 01.4 | Heater cycles | PROTOTYPE | research/techniques/01.4/ (software phase tagging; physical heater control unverified) |
 | 01.5 | Environmental correction | PROTOTYPE | research/techniques/01.5/ (synthetic tests; real controlled exposures needed) |
-| 01.6 | Signal quality | NOT_STARTED | — |
+| 01.6 | Signal quality | PROTOTYPE | research/techniques/01.6/ (13 unit cases authored; Tank ADC hardware validation pending) |
 | 01.7 | Drift monitoring | NOT_STARTED | — |
 | 02.1 | Filtering | NOT_STARTED | — |
 | 02.2 | Scaling | NOT_STARTED | — |
