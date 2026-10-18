@@ -79,6 +79,7 @@ public final class MeasurementsTab {
     private TextView chemicalCount;
     private final List<ChemicalRepository.Chemical> visibleChemicals=new java.util.ArrayList<>();
     private Spinner familySpinner;
+    private Spinner sortSpinner;
     private EditText chemicalSearch;
     private String chosenChemical="";
     private final ScrollView particlesView;
@@ -138,6 +139,11 @@ public final class MeasurementsTab {
         familySpinner.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_spinner_dropdown_item,
             new String[]{"جميع العائلات","الكحولات","الهيدروكربونات","المركبات الكبريتية","المركبات النيتروجينية","أخرى"}));
         content.addView(familySpinner,UiKit.full(c));
+        sortSpinner=new Spinner(c);
+        sortSpinner.setBackgroundColor(0xFFE9EDF1);
+        sortSpinner.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_spinner_dropdown_item,
+            new String[]{"الترتيب: الاسم أ–ي","الترتيب: الاسم ي–أ","الترتيب: رقم CAS"}));
+        content.addView(sortSpinner,UiKit.full(c));
         chemicalCount=card("المواد المطابقة: —");
         content.addView(chemicalCount,UiKit.full(c));
         HorizontalScrollView horizontal=new HorizontalScrollView(c);
@@ -179,6 +185,10 @@ public final class MeasurementsTab {
             public void onItemSelected(AdapterView<?> p,View v,int position,long id){refreshChemicalSearch();}
             public void onNothingSelected(AdapterView<?> p){}
         });
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            public void onItemSelected(AdapterView<?> p,View v,int position,long id){refreshChemicalSearch();}
+            public void onNothingSelected(AdapterView<?> p){}
+        });
         Button candidates=UiKit.button(c,"🏅 أفضل مرشحي ChemCore — اختر مادة للتتبع");
         candidates.setOnClickListener(v->{show(1);showAnalysisSection(2);});
         content.addView(candidates,UiKit.full(c));
@@ -197,7 +207,7 @@ public final class MeasurementsTab {
     }
 
     private void refreshChemicalSearch(){
-        if(chemicalRows==null||chemicalSearch==null||familySpinner==null)return;
+        if(chemicalRows==null||chemicalSearch==null||familySpinner==null||sortSpinner==null)return;
         String query=chemicalSearch.getText().toString().trim();
         String family=String.valueOf(familySpinner.getSelectedItem());
         try{
@@ -210,6 +220,20 @@ public final class MeasurementsTab {
                 visibleChemicals.add(chemical);
                 String label=chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name;
                 labels.add("🧪 "+label+"    |    "+(chemical.cas==null?"—":chemical.cas)+"    |    "+(chemical.chemicalClass==null?"—":chemical.chemicalClass));
+            }
+            int sort=sortSpinner.getSelectedItemPosition();
+            if(sort!=0){
+                java.util.Collections.sort(visibleChemicals,(a,b)->{
+                    String left=sort==2?(a.cas==null?"":a.cas):(a.arabicName!=null&&!a.arabicName.isEmpty()?a.arabicName:a.name);
+                    String right=sort==2?(b.cas==null?"":b.cas):(b.arabicName!=null&&!b.arabicName.isEmpty()?b.arabicName:b.name);
+                    int cmp=String.CASE_INSENSITIVE_ORDER.compare(left==null?"":left,right==null?"":right);
+                    return sort==1?-cmp:cmp;
+                });
+                labels.clear();
+                for(ChemicalRepository.Chemical chemical:visibleChemicals){
+                    String label=chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name;
+                    labels.add("🧪 "+label+"    |    "+(chemical.cas==null?"—":chemical.cas)+"    |    "+(chemical.chemicalClass==null?"—":chemical.chemicalClass));
+                }
             }
             chemicalRows.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,labels));
             chemicalRows.setSelection(0);
