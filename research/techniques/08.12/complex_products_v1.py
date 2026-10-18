@@ -2,7 +2,7 @@
 from math import sqrt,isfinite
 def compare(sample,references):
     x=list(sample)
-    if not x or not references or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not isfinite(v) for v in x):raise ValueError("finite sample and references required")
+    if not x or not isinstance(references,dict) or not references or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not isfinite(v) for v in x):raise ValueError("finite sample and reference mapping required")
     results=[]
     for name,signature in references.items():
         y=list(signature)
