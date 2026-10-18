@@ -2,7 +2,7 @@
 from itertools import combinations
 from math import factorial,isfinite
 def explain(predict,baseline,query,max_features=8):
-    a=list(baseline);b=list(query);n=len(a)
+    if not callable(predict) or not isinstance(max_features,int) or isinstance(max_features,bool) or max_features<1:\n        raise ValueError("invalid predictor or max_features")\n    a=list(baseline);b=list(query);n=len(a)
     if n<1 or n!=len(b) or n>max_features or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not isfinite(v) for v in a+b):raise ValueError("invalid feature vectors")
     def value(subset):
         x=[b[j] if j in subset else a[j] for j in range(n)]
