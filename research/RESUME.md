@@ -1,3 +1,6 @@
+# Checkpoint update 2026-10-18
+01.1 ADC-to-Rs: PROTOTYPE. Source, 11 unit tests, and README committed under research/techniques/01.1/. Actual Tank hardware topology/ADS1115 gain/RL not verified. Next sequential item: 01.2 R0 calibration audit; first inspect legacy code and verify sensor heater cycles, R0 units, calibration gas and actual data. No production changes.
+
 # EXCLUSIVE SCOPE: HazRob Tank ChemCore
 Never resume this roadmap in HazRob-Lab or the original HazRob repository. Current owner: HazRob/HazRob-Tank. Historical evidence links in HazRob-Lab are references only, not Tank implementation.
 
@@ -5,7 +8,7 @@ Never resume this roadmap in HazRob-Lab or the original HazRob repository. Curre
 Date 2026-10-18 | Roadmap 1.0 | Repo HazRob/HazRob-Tank
 
 ## NEXT
-01.1 ADC-to-Rs conversion audit, status NOT_STARTED under the new roadmap. Legacy results exist but have not been independently audited for these gates.
+01.1 completed as research PROTOTYPE (not hardware validated); next 01.2 R0 calibration audit. Legacy results exist but have not been independently audited for these gates.
 
 ## Exact next actions
 1. Read research/MASTER_PLAN.md and research/STATUS_LEDGER.md.
