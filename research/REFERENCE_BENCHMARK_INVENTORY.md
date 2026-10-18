@@ -30,3 +30,12 @@
 5. Run all compatible technique evaluations and publish per-technique metrics and limitations. No production changes.
 
 **No comprehensive evaluation has yet been run in this inventory phase.**
+
+## External primary-source discovery (2026-10-18; metadata only, NOT ingested)
+
+- UCI 270: Gas Sensor Array Drift at Different Concentrations — **13,910 labeled measurements**, 16 sensors, 6 gases, variable known concentrations; DOI 10.24432/C5MK6M; https://archive.ics.uci.edu/dataset/270 . Note: overlaps UCI 224; deduplicate original experiments across dataset releases.
+- UCI 322: Gas sensor array under dynamic gas mixtures — **4,178,504 time-stamped records**, 16 TGS sensors, ethylene/methane and ethylene/CO mixtures, concentration set points, ~12h per mixture; DOI 10.24432/C5WP4C; https://archive.ics.uci.edu/dataset/322 . These are NOT 4.18 million independent experiments. Different TGS types from HazRob MQ sensors.
+- UCI 308: Gas sensor array under flow modulation — **58 time series**, 16 sensors, acetone/ethanol binary mixtures with concentrations; DOI 10.24432/C5BG7G; https://archive.ics.uci.edu/dataset/308 .
+- UCI 224: Gas Sensor Array Drift Dataset — 13,910 records and 16 sensors; DOI 10.24432/C5RP6W; https://archive.ics.uci.edu/dataset/224 . Same original collection as UCI 270; **do not double count**.
+
+Metadata counts and source links confirmed from UCI repository pages, not downloaded or quality-controlled in this turn. Dataset licensing and original paper citation obligations must be checked before redistribution. The GitHub organization repository search exposed HazRob-Tank but did not locate a distinct accessible reference-library repository; repository availability/access remains unresolved. Do not claim exhaustive inventory yet.
