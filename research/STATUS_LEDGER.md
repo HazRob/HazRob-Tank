@@ -19,7 +19,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 02.7 | Feature selection | PROTOTYPE | research/techniques/02.7/ (training-only Fisher ranking; 14 tests authored) |
 | 02.8 | Provenance schema | PROTOTYPE | research/techniques/02.8/ (canonical metadata digest; 14 tests authored) |
 | 03.1 | PCA | PROTOTYPE | research/techniques/03.1/ (training-only PCA; 14 tests authored) |
-| 03.2 | Similarity | NOT_STARTED | — |
+| 03.2 | Similarity | PROTOTYPE | research/techniques/03.2/ (16/16 local tests; real Tank validation pending) |
 | 03.3 | Class overlap | NOT_STARTED | — |
 | 03.4 | LDA/PLS-DA | NOT_STARTED | — |
 | 03.5 | Sensor importance | NOT_STARTED | — |
