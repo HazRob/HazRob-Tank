@@ -38,7 +38,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 04.10 | Benchmarking | PROTOTYPE | research/techniques/04.10/ (grouped holdout and descriptive metrics; 16 tests authored) |
 | 05.1 | Single-sensor calibration | PROTOTYPE | research/techniques/05.1/ (known-gas log-log calibration; 16 tests authored) |
 | 05.2 | Multipoint calibration | PROTOTYPE | research/techniques/05.2/ (monotone piecewise log-log interpolation; 16 tests authored) |
-| 05.3 | Nonlinear regression | NOT_STARTED | — |
+| 05.3 | Nonlinear regression | PROTOTYPE | research/techniques/05.3/ (quadratic log-log calibration; 16 tests authored) |
 | 05.4 | Multisensor regression | NOT_STARTED | — |
 | 05.5 | PLS regression | NOT_STARTED | — |
 | 05.6 | Tree regression | NOT_STARTED | — |
