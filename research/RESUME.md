@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 04.5 SVM PARTIAL_PROTOTYPE committed. Linear one-vs-rest hinge-loss subgradient baseline, 16 synthetic tests authored; kernel/RBF SVM and vetted solver comparison pending. Clean checkout and real Tank validation pending. NEXT 04.6 Random Forest. No production changes.
+
 # Checkpoint 2026-10-18: 04.4 logistic regression PROTOTYPE committed. Multiclass softmax full-batch gradient descent, L2 regularization, train-only scaling, 16 synthetic tests authored; clean checkout and real Tank validation pending. Scores uncalibrated; convergence not independently verified. NEXT 04.5 SVM. No production changes.
 
 # Checkpoint 2026-10-18: 04.3 KNN PROTOTYPE committed. Frozen training fingerprints, uniform and inverse-distance voting, deterministic tie flag, 16 synthetic tests authored; clean checkout and Tank grouped holdout evaluation pending. NEXT 04.4 logistic regression. No production changes.
