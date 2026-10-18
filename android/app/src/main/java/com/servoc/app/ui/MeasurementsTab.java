@@ -342,7 +342,7 @@ public final class MeasurementsTab {
 
         LivePane(){
             view=new ScrollView(c);view.setVerticalScrollBarEnabled(true);view.setScrollbarFadingEnabled(false);box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,10));view.addView(box);
-            box.addView(UiKit.title(c,"القياس الحي • HR069"),UiKit.full(c));
+            box.addView(UiKit.title(c,"القياس اللحظي • HazRob Tank"),UiKit.full(c));
             LinearLayout row1=UiKit.hbox(c);powerCard=kpi("MQ\n—");arrayCard=kpi("المصفوفة\n—");row1.addView(powerCard,UiKit.weight(1));row1.addView(arrayCard,UiKit.weight(1));box.addView(row1,UiKit.full(c));
             LinearLayout row2=UiKit.hbox(c);gasCard=kpi("الاستجابة\n—");sessionCard=kpi("الجلسة\n—");row2.addView(gasCard,UiKit.weight(1));row2.addView(sessionCard,UiKit.weight(1));box.addView(row2,UiKit.full(c));
             progress=new ProgressBar(c,null,android.R.attr.progressBarStyleHorizontal);progress.setMax(1000);progress.setProgress(0);box.addView(progress,UiKit.full(c));
@@ -414,7 +414,7 @@ public final class MeasurementsTab {
         boolean technicalVisible=false;
 
         AnalysisPane(){
-            view=new ScrollView(c);box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,10));view.addView(box);
+            view=new ScrollView(c);view.setVerticalScrollBarEnabled(true);view.setScrollbarFadingEnabled(false);box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,10));view.addView(box);
             box.addView(UiKit.title(c,"ChemCore • لوحة التحليل"),UiKit.full(c));
             box.addView(UiKit.small(c,"المرشحون مرتّبون بحسب أدلة ChemCore المحفوظة؛ ترتيبهم لا يعني إثبات الهوية أو اعتماد PPM."),UiKit.full(c));
             candidatePreview=card("المرشحون: —");candidatePreview.setTextIsSelectable(true);box.addView(candidatePreview,UiKit.full(c));
@@ -422,7 +422,7 @@ public final class MeasurementsTab {
             LinearLayout r2=UiKit.hbox(c);confidence=kpi("الثقة\n—");evidence=kpi("الدليل\n—");r2.addView(confidence,UiKit.weight(1));r2.addView(evidence,UiKit.weight(1));box.addView(r2,UiKit.full(c));
             quantitative=kpi("PPM الكمي\n—");box.addView(quantitative,UiKit.full(c));
             quality=card("جودة التحليل: —");box.addView(quality,UiKit.full(c));
-            LinearLayout nav=UiKit.hbox(c);Button openResults=UiKit.button(c,"فتح النتائج التفصيلية");openResults.setOnClickListener(v->show(3));nav.addView(openResults,UiKit.weight(1.4f));technicalToggle=UiKit.button(c,"التفاصيل التقنية");technicalToggle.setOnClickListener(v->{technicalVisible=!technicalVisible;technical.setVisibility(technicalVisible?View.VISIBLE:View.GONE);technicalToggle.setText(technicalVisible?"إخفاء التفاصيل":"التفاصيل التقنية");});nav.addView(technicalToggle,UiKit.weight(1));box.addView(nav,UiKit.full(c));
+            LinearLayout nav=UiKit.hbox(c);Button openResults=UiKit.button(c,"فتح النتائج التفصيلية");openResults.setOnClickListener(v->showAnalysisSection(2));nav.addView(openResults,UiKit.weight(1.4f));technicalToggle=UiKit.button(c,"التفاصيل التقنية");technicalToggle.setOnClickListener(v->{technicalVisible=!technicalVisible;technical.setVisibility(technicalVisible?View.VISIBLE:View.GONE);technicalToggle.setText(technicalVisible?"إخفاء التفاصيل":"التفاصيل التقنية");});nav.addView(technicalToggle,UiKit.weight(1));box.addView(nav,UiKit.full(c));
             technical=card("");technical.setTextIsSelectable(true);technical.setVisibility(View.GONE);box.addView(technical,UiKit.full(c));
             LinearLayout exp=UiKit.hbox(c);Button pdf=UiKit.button(c,"PDF");pdf.setOnClickListener(v->export("pdf"));exp.addView(pdf,UiKit.weight(1));Button xls=UiKit.button(c,"Excel");xls.setOnClickListener(v->export("xlsx"));exp.addView(xls,UiKit.weight(1));Button raw=UiKit.button(c,"Raw");raw.setOnClickListener(v->export("raw"));exp.addView(raw,UiKit.weight(1));box.addView(exp,UiKit.full(c));
             decisions=new ChemCoreDecisionRepository(host.database());
