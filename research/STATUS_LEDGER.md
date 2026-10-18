@@ -47,7 +47,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 05.9 | Unseen concentrations | PROTOTYPE | research/techniques/05.9/ (held-out ppm levels, interpolation/extrapolation metrics and abstention; 16 tests authored) |
 | 06.1 | Evidence fusion | PARTIAL_PROTOTYPE | research/techniques/06.1/ (dependence-group log opinion pooling; 16 tests authored) |
 | 06.2 | Bayesian inference | PARTIAL_PROTOTYPE | research/techniques/06.2/ (supplied priors and likelihoods; conditional independence assumption; 16 tests authored) |
-| 06.3 | Probability calibration | NOT_STARTED | — |
+| 06.3 | Probability calibration | PARTIAL_PROTOTYPE | research/techniques/06.3/ (temperature scaling and ECE; 16 tests authored, not run) |
 | 06.4 | Conformal prediction | NOT_STARTED | — |
 | 06.5 | Open-set recognition | NOT_STARTED | — |
 | 06.6 | OOD detection | NOT_STARTED | — |
@@ -84,3 +84,5 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 09.6 | Motion decisions | NOT_STARTED | — |
 
 Update rows only with verified evidence, preserve historical decisions, and update RESUME.md each session.
+
+Additional research proposal: [Negative Evidence & Sensor-Guided Exclusion](NEGATIVE_EVIDENCE_PROPOSAL.md) — PROPOSED, to be studied with 06.1/06.2/06.7/06.9; no hard chemical-family elimination.
