@@ -1,3 +1,11 @@
+# CURRENT CHECKPOINT 2026-10-19 — BATCH 04 G1 COMPLETE (40/80)
+
+40/80 research techniques CI-verified software unit PASS; 598 executed tests; none G3 scientifically validated. Batch04 04.8/04.9/04.10/05.1–05.7 first CI https://github.com/HazRob/HazRob-Tank/actions/runs/39176503631 FAILED on 04.9 invalid curve, fixed malformed-reference rejection vs legitimate out-of-range masking. Earlier 04.9 syntax error fixed before first CI. Final CI https://github.com/HazRob/HazRob-Tank/actions/runs/39176571203 on b86a045775047a437de1547e1fbed6f81b7eed60 success (10/10 jobs ×16 tests =160). Source, data/empirical gaps: research/BATCH_RESULTS_80.md; machine register: research/PROGRESS_80.json; Arabic gates/plan: research/EXECUTION_PLAN_80_AR.md. No production modifications.
+
+NEXT BATCH 05 IDs 05.8,05.9,06.1,06.2,06.3,06.4,06.5,06.6,06.7,06.8. Confirm partial model scope, inspect source/tests, run 10 clean CI jobs, fix real failures, archive accurate counts. G2/G3 remains separate, 05 ppm calibration requires real known-gas standards.
+
+---
+
 # CURRENT CHECKPOINT 2026-10-19 — BATCH 03 G1 COMPLETE
 
 30/80 techniques pass reproducible isolated G1 software tests; 438 unit tests total; ZERO G3 real-gas/device validations. Batch03 03.6–03.8,04.1–04.7 initially FAILED CI #39176204448 due a preexisting missing closing parenthesis in 04.1; fixed in commit fa693d4d3678caf50c1b39fda7a14f4176909b95. Final #39176274539 PASS 10 jobs/160 tests. Evidence and science/data limitations: research/BATCH_RESULTS_80.md; canonical progress: research/PROGRESS_80.json; plan: research/EXECUTION_PLAN_80_AR.md.
