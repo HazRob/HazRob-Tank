@@ -1,3 +1,15 @@
+# CHECKPOINT CURRENT — 2026-10-19 (Yemen): 80-technique scientific plan / batch 01 G1 COMPLETE
+
+Canonical plan: research/EXECUTION_PLAN_80_AR.md (8×10 batches, G0 design / G1 executable unit tests / G2 data / G3 independent scientific validation). Machine progress: research/PROGRESS_80.json. Accumulated evidence: research/BATCH_RESULTS_80.md. Original 80-technique IDs validated against STATUS_LEDGER.md; MASTER_PLAN.md reconciled to 80.
+
+BATCH 01 (01.1–01.7, 02.1–02.3) independently verified in GitHub Actions https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866 (tested commit b33230ce56a75a93c25a81c124b3757ea801fe32): all 10 jobs and their real test steps SUCCESS; precise log counts 11+11+17+12+12+13+12+15+13+14 = 130 PASS, 0 FAIL. Fixed actual 01.3 inverse extrapolation wrong-end segment and added four regression cases; default extrapolation remains forbidden.
+
+G2 local read-only check of user-provided UCI1081 archive: 90 labeled exposures, 810000 finite scalars, 90 unique records, 18 gas×concentration categories with 5 reps, 0 nonnumeric/NaN/Inf, file SHA256 813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab. Script research/benchmarks/uci1081_source_qc_v1.py. Missing calibration R0/RL/BME/heater metadata prevents full real-data validation for first ten. ZERO techniques have completed G3 in this program.
+
+NEXT: BATCH 02 IDs 02.4, 02.5, 02.6, 02.7, 02.8, 03.1, 03.2, 03.3, 03.4, 03.5. Read source/test/README; repair mathematically demonstrable bugs with regression tests; run all 10 in independent CI jobs, examine per-job counts; update ledger, progress JSON, batch result log and this checkpoint. Do NOT alter production ChemCore, ESP32 firmware, APK, or HazRob original. Do not claim real validation solely from tests.
+
+---
+
 # Verified CI batch 01 — 2026-10-18
 
 Techniques 01.1–01.5: GitHub Actions run https://github.com/HazRob/HazRob-Tank/actions/runs/39135356937 on main SHA 5a6e4382f4612215390bae9dccfe446c486b2e0e completed SUCCESS. All five independent jobs succeeded, including their 'Execute technique tests' step. This establishes clean-checkout software-unit-test PASS for these five only, NOT Tank hardware, gas calibration, or external-reference benchmark validation. Next batch 01.6, 01.7, 02.1, 02.2, 02.3. No production changes.
