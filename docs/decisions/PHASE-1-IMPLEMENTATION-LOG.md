@@ -77,3 +77,7 @@ Last updated: 2026-10-17 23:56 UTC. Work branch: `develop`. Original SERVOC-Andr
 - `b9d6bf5b0d7adeb180785b1508435b923538c939`: fix chemical-family `أخرى` filter so it excludes already-classified compounds.
 - `c8ac5d0bdc9f02f40162a22adb1906fff5c16212`: chosen chemical is committed only after the positive tracking confirmation; cancelling does not mutate tracking selection.
 - These are source fixes; Android compile, CI and hardware validation remain unverified.
+
+## Checkpoint P1-11 — ChemCore navigation correction
+- `017b0d9ab6f6a4f46ed11cd07be34bc888bd972a`: ChemCore detail button now opens the nested `المرشحون` pane (`showAnalysisSection(2)`) instead of mistakenly opening top-level `الجزيئات` (`show(3)`); persistent scrollbars added to analysis/result panes; live title updated for Tank.
+- Source-only verification; compilation and APK build remain unconfirmed.
