@@ -1,0 +1,32 @@
+# Reference Benchmark — verified inventory (2026-10-18)
+
+**Status: PARTIAL INVENTORY.** The policy is exhaustive inclusion; this document is not a claim that all library sources have been discovered or ingested.
+
+## Verified local raw source: UCI 1081
+
+- Local user-provided archive: `gas+sensor+array+low-concentration.zip`; member `gsalc.csv`.
+- Direct CSV parse: **90 rows**, each **9,002 columns** = chemical label + concentration label + 9,000 sensor-time values.
+- Labels: acetone, ethanol, ethyl acetate, hexane, isopropanol, toluene.
+- Concentrations: 50 ppb, 100 ppb, 200 ppb.
+- Complete factorial grid: **6 substances × 3 concentrations × 5 repetitions = 90 labeled traces**.
+- If 10 sensors × 900 time points per trace as specified in the pre-existing local benchmark report, then **810,000 scalar response readings**, **not 810,000 independent experiments**.
+- Initial eligibility: all 90 traces qualify on known identity, known concentration and usable fingerprint format, subject to per-value quality control and source license verification. Source-level independence and device/session IDs are not established from this CSV alone.
+- MQ135 is a sensor overlap, but other sensors in this dataset are not equivalent to HazRob Tank MQ inventory. Do not map incompatible sensors as if interchangeable.
+- Prior local artifact `HazRob_UCI1081_Real_Benchmark.zip` contains existing subset benchmark results; its report warns that best-of-175 feature-subset selection on the same CV causes optimistic bias. Treat those scores as exploratory, **not** final held-out benchmark scores.
+
+## Additional files found locally — pending data-level inventory
+
+- `HazRob_ChemCore_Central_Library_HR069_2026-10-04.xlsx`: library workbook; determine which records are experimental labeled measurements versus reference curves.
+- `HazRob_Report_000004_20261001_232420_١١٢٧٥٦.xlsx`: experiment report; inspect gas ground-truth identity and concentration before admitting.
+- `HazRob_Dataset_Acquisition_2026-10-18.zip`: dataset acquisition manifest, not raw measurements. Lists MQ7_6400, UCI1081, UCI308, UCI360, Zenodo mixture and drift resources, among others; listed does not mean downloaded or eligible.
+- `HazRob_Tank_ChemCore_Legacy_Research_2026-10-18.zip` and other research archives: assess source provenance and avoid treating synthetic tests as independently measured datasets.
+
+## Next required steps
+
+1. Inspect all available reference datasets and enumerate **all** eligible records, preserving all repetitions and concentrations; document unavailable downloads.
+2. Verify channel ordering, response units, per-source R0/BME availability, labels and measurement quality.
+3. Build immutable source manifests and a reproducible loader; log excluded rows with explicit reasons.
+4. Implement grouped holdouts by source/session/device/experiment; no temporal or repeated-exposure leakage.
+5. Run all compatible technique evaluations and publish per-technique metrics and limitations. No production changes.
+
+**No comprehensive evaluation has yet been run in this inventory phase.**
