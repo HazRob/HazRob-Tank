@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 04.9 Physics + ML PARTIAL_PROTOTYPE committed. Candidate-specific MQ reference residual features at independently known concentration, 16 synthetic tests authored. ML model integration, unknown-concentration handling, clean-checkout test execution and real Tank validation pending. NEXT 04.10 benchmarking. No production changes.
+
 # Checkpoint 2026-10-18: 04.8 MLP PROTOTYPE committed. Single-hidden-layer tanh/softmax network, full-batch backpropagation, train-only standardization, L2, 16 synthetic tests authored. Clean-checkout execution and real Tank validation pending. NEXT 04.9 physics + ML. No production changes.
 
 # Checkpoint 2026-10-18: 04.7 XGBoost investigation PARTIAL_PROTOTYPE committed. Simplified multiclass gradient-boosted decision stumps, explicitly NOT XGBoost; 16 synthetic tests authored, clean checkout and real Tank evaluation pending. True XGBoost objective, Hessian-based splits, trees and validation remain outstanding. NEXT 04.8 MLP. No production changes.
