@@ -23,7 +23,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 03.3 | Class overlap | PROTOTYPE | research/techniques/03.3/ (nearest-neighbor ambiguity; 16 tests authored) |
 | 03.4 | LDA/PLS-DA | PARTIAL_PROTOTYPE | research/techniques/03.4/ (binary-only baselines; multiclass/multicomponent pending) |
 | 03.5 | Sensor importance | PROTOTYPE | research/techniques/03.5/ (training-only univariate ranking; 14 tests authored) |
-| 03.6 | Sensor subsets | NOT_STARTED | — |
+| 03.6 | Sensor subsets | PROTOTYPE | research/techniques/03.6/ (exhaustive subset ambiguity; 16 tests authored) |
 | 03.7 | Concentration confounding | NOT_STARTED | — |
 | 03.8 | Identifiability limits | NOT_STARTED | — |
 | 04.1 | Curve matching | NOT_STARTED | — |
