@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 02.4 temporal features PROTOTYPE committed, 16/16 synthetic local tests passed. Features include observed-peak rise and recovery times, slope and area. Actual Tank exposure timing and gas validation pending. NEXT: 02.5 fingerprints; inspect existing legacy fingerprint research before writing duplicate algorithms. No production changes.
+
 # Checkpoint 2026-10-18: 02.3 static feature extraction PROTOTYPE committed; baseline/exposure Rs summary, relative and log-fold changes, 14 test cases authored. Clean-checkout test run and real Tank validation pending. NEXT: 02.4 temporal features. No production changes.
 
 # Checkpoint 2026-10-18: 02.2 scaling PROTOTYPE committed under research/techniques/02.2/. Standard and robust scalers fit on training data only; 13 test cases authored but clean-checkout run not verified. Next sequential item 02.3 static features. Tank research only, no production changes.
