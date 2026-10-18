@@ -8,7 +8,7 @@ def folds(rows):
              "test_indices":[i for i,r in enumerate(data) if r["session"]==s]} for s in sessions]
 def summarize(session_results):
     rows=list(session_results)
-    if not rows or any(not isinstance(x,dict) or not isinstance(x.get("n"),int) or x["n"]<=0 or not isinstance(x.get("correct"),int) or not 0<=x["correct"]<=x["n"] for x in rows):raise ValueError("valid session counts required")
+    if not rows or any(not isinstance(x,dict) or not isinstance(x.get("n"),int) or isinstance(x["n"],bool) or x["n"]<=0 or not isinstance(x.get("correct"),int) or isinstance(x["correct"],bool) or not 0<=x["correct"]<=x["n"] for x in rows):raise ValueError("valid session counts required")
     return {"n_sessions":len(rows),"micro_accuracy":sum(r["correct"] for r in rows)/sum(r["n"] for r in rows),
             "macro_session_accuracy":sum(r["correct"]/r["n"] for r in rows)/len(rows),
             "warning":"Descriptive only; model fitting and calibration must be train-fold-only."}
