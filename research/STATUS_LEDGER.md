@@ -4,8 +4,8 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
 | 01.1 | ADC to Rs | PROTOTYPE | research/techniques/01.1/ (11/11 local unit tests; hardware audit pending) |
-| 01.2 | R0 calibration | NOT_STARTED | — |
-| 01.3 | Sensitivity curves | NOT_STARTED | — |
+| 01.2 | R0 calibration | PROTOTYPE | research/techniques/01.2/ (hardware calibration pending) |
+| 01.3 | Sensitivity curves | PROTOTYPE | research/techniques/01.3/ (synthetic tests; manufacturer curves pending) |
 | 01.4 | Heater cycles | NOT_STARTED | — |
 | 01.5 | Environmental correction | NOT_STARTED | — |
 | 01.6 | Signal quality | NOT_STARTED | — |
