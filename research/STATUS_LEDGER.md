@@ -50,11 +50,11 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 06.3 | Probability calibration | PARTIAL_PROTOTYPE | research/techniques/06.3/ (temperature scaling and ECE; 16 tests authored, not run) |
 | 06.4 | Conformal prediction | PARTIAL_PROTOTYPE | research/techniques/06.4/ (split conformal closed-world candidate sets; 16 tests authored) |
 | 06.5 | Open-set recognition | PARTIAL_PROTOTYPE | research/techniques/06.5/ (nearest-centroid open-set baseline; 16 synthetic tests authored) |
-| 06.6 | OOD detection | NOT_STARTED | — |
-| 06.7 | Evidence conflicts | NOT_STARTED | — |
-| 06.8 | SHAP | NOT_STARTED | — |
-| 06.9 | Abstention | NOT_STARTED | — |
-| 07.1 | Cross-session tests | NOT_STARTED | — |
+| 06.6 | OOD detection | PARTIAL_PROTOTYPE | research/techniques/06.6/ (minimal baseline; smoke tests authored; real validation pending) |
+| 06.7 | Evidence conflicts | PARTIAL_PROTOTYPE | research/techniques/06.7/ (minimal baseline; smoke tests authored; real validation pending) |
+| 06.8 | SHAP | PARTIAL_PROTOTYPE | research/techniques/06.8/ (minimal baseline; smoke tests authored; real validation pending) |
+| 06.9 | Abstention | PARTIAL_PROTOTYPE | research/techniques/06.9/ (minimal baseline; smoke tests authored; real validation pending) |
+| 07.1 | Cross-session tests | PARTIAL_PROTOTYPE | research/techniques/07.1/ (minimal baseline; smoke tests authored; real validation pending) |
 | 07.2 | Cross-device tests | NOT_STARTED | — |
 | 07.3 | Cross-concentration tests | NOT_STARTED | — |
 | 07.4 | Drift detection | NOT_STARTED | — |
