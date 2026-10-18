@@ -22,7 +22,7 @@ def predict_ratio(curve,concentration_ppm):
         c0,r0=pts[i];c1,r1=pts[i+1]
         if c0<=concentration_ppm<=c1:
             t=(log10(concentration_ppm)-log10(c0))/(log10(c1)-log10(c0))
-            return 10**(log10(r0)+t*(log10(r1)-log10(r0))
+            return 10**(log10(r0)+t*(log10(r1)-log10(r0)))
     raise ValueError("no interval")
 
 def rank_curve_candidates(observed_ratios, reference_curves, concentration_ppm, *, min_channels=2):
