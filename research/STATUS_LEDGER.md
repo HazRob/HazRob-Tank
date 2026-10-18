@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 1.7 | 2026-10-19 | 80 planned; 60 G1 software PASS (927 verified unit tests); 0 independently chemical/device validated. Evidence: BATCH_RESULTS_80.md.
+Version 1.8 | 2026-10-19 | 80 planned; 70 G1 software PASS (1089 verified tests); 0 independently chemical/device validated. Evidence: BATCH_RESULTS_80.md.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -63,16 +63,16 @@ Version 1.7 | 2026-10-19 | 80 planned; 60 G1 software PASS (927 verified unit te
 | 07.7 | Transfer learning | PARTIAL_PROTOTYPE | research/techniques/07.7/ (minimal baseline; synthetic smoke tests authored); CI batch06 17/17 behavioral tests PASS; device/gas G3 pending |
 | 07.8 | Active learning/DoE | PARTIAL_PROTOTYPE | research/techniques/07.8/ (minimal baseline; synthetic smoke tests authored); CI batch06 17/17 behavioral tests PASS; device/gas G3 pending |
 | 07.9 | Continual learning | PARTIAL_PROTOTYPE | research/techniques/07.9/ (minimal baseline; synthetic smoke tests authored); CI batch06 17/17 behavioral tests PASS; device/gas G3 pending |
-| 07.10 | Resource profiling | PARTIAL_PROTOTYPE | research/techniques/07.10/ (minimal baseline; synthetic smoke tests authored) |
-| 08.1 | 1D-CNN | PARTIAL_PROTOTYPE | research/techniques/08.1/ (minimal baseline; synthetic smoke tests authored) |
-| 08.2 | TCN | PARTIAL_PROTOTYPE | research/techniques/08.2/ (minimal primitives; synthetic smoke tests authored) |
-| 08.3 | LSTM/GRU | PARTIAL_PROTOTYPE | research/techniques/08.3/ (minimal primitives; synthetic smoke tests authored) |
-| 08.4 | GNN | PARTIAL_PROTOTYPE | research/techniques/08.4/ (minimal primitives; synthetic smoke tests authored) |
-| 08.5 | Temporal ensemble | PARTIAL_PROTOTYPE | research/techniques/08.5/ (minimal primitives; synthetic smoke tests authored) |
-| 08.6 | Simulation | PARTIAL_PROTOTYPE | research/techniques/08.6/ (minimal primitives; synthetic smoke tests authored) |
-| 08.7 | Sim-to-real | PARTIAL_PROTOTYPE | research/techniques/08.7/ (minimal baseline; synthetic smoke tests authored) |
-| 08.8 | Mixture detection | PARTIAL_PROTOTYPE | research/techniques/08.8/ (minimal baseline; synthetic smoke tests authored) |
-| 08.9 | Unmixing | PARTIAL_PROTOTYPE | research/techniques/08.9/ (minimal baseline; synthetic smoke tests authored) |
+| 07.10 | Resource profiling | PARTIAL_PROTOTYPE | research/techniques/07.10/ (minimal baseline; synthetic smoke tests authored); CI batch07 15/15 behavior checks PASS; research primitive, G3 pending |
+| 08.1 | 1D-CNN | PARTIAL_PROTOTYPE | research/techniques/08.1/ (minimal baseline; synthetic smoke tests authored); CI batch07 16/16 behavior checks PASS; research primitive, G3 pending |
+| 08.2 | TCN | PARTIAL_PROTOTYPE | research/techniques/08.2/ (minimal primitives; synthetic smoke tests authored); CI batch07 16/16 behavior checks PASS; research primitive, G3 pending |
+| 08.3 | LSTM/GRU | PARTIAL_PROTOTYPE | research/techniques/08.3/ (minimal primitives; synthetic smoke tests authored); CI batch07 17/17 behavior checks PASS; research primitive, G3 pending |
+| 08.4 | GNN | PARTIAL_PROTOTYPE | research/techniques/08.4/ (minimal primitives; synthetic smoke tests authored); CI batch07 16/16 behavior checks PASS; research primitive, G3 pending |
+| 08.5 | Temporal ensemble | PARTIAL_PROTOTYPE | research/techniques/08.5/ (minimal primitives; synthetic smoke tests authored); CI batch07 17/17 behavior checks PASS; research primitive, G3 pending |
+| 08.6 | Simulation | PARTIAL_PROTOTYPE | research/techniques/08.6/ (minimal primitives; synthetic smoke tests authored); CI batch07 16/16 behavior checks PASS; research primitive, G3 pending |
+| 08.7 | Sim-to-real | PARTIAL_PROTOTYPE | research/techniques/08.7/ (minimal baseline; synthetic smoke tests authored); CI batch07 15/15 behavior checks PASS; research primitive, G3 pending |
+| 08.8 | Mixture detection | PARTIAL_PROTOTYPE | research/techniques/08.8/ (minimal baseline; synthetic smoke tests authored); CI batch07 17/17 behavior checks PASS; research primitive, G3 pending |
+| 08.9 | Unmixing | PARTIAL_PROTOTYPE | research/techniques/08.9/ (minimal baseline; synthetic smoke tests authored); CI batch07 17/17 behavior checks PASS; research primitive, G3 pending |
 | 08.10 | Multi-analyte regression | PARTIAL_PROTOTYPE | research/techniques/08.10/ (minimal baseline; synthetic smoke tests authored) |
 | 08.11 | Interference | PARTIAL_PROTOTYPE | research/techniques/08.11/ (minimal baseline; synthetic smoke tests authored) |
 | 08.12 | Complex products | PARTIAL_PROTOTYPE | research/techniques/08.12/ (minimal baseline; synthetic smoke tests authored) |
