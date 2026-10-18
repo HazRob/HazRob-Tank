@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
+Version 1.1 | 2026-10-18 | 80 planned items (79 original + 10.1); research prototypes are not scientifically validated.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 04.6 | Random Forest | PROTOTYPE | research/techniques/04.6/ (bagged Gini trees; 16 tests authored) |
 | 04.7 | XGBoost | PARTIAL_PROTOTYPE | research/techniques/04.7/ (simplified gradient-boosted stumps, NOT XGBoost; 16 tests authored) |
 | 04.8 | MLP | PROTOTYPE | research/techniques/04.8/ (single-hidden-layer tanh/softmax network; 16 tests authored) |
-| 04.9 | Physics+ML | NOT_STARTED | — |
+| 04.9 | Physics+ML | PARTIAL_PROTOTYPE | research/techniques/04.9/ (candidate-conditioned physics residual features only; no fitted ML model; 16 synthetic tests authored, not verified executed) |
 | 04.10 | Benchmarking | PROTOTYPE | research/techniques/04.10/ (grouped holdout and descriptive metrics; 16 tests authored) |
 | 05.1 | Single-sensor calibration | PROTOTYPE | research/techniques/05.1/ (known-gas log-log calibration; 16 tests authored) |
 | 05.2 | Multipoint calibration | PROTOTYPE | research/techniques/05.2/ (monotone piecewise log-log interpolation; 16 tests authored) |
@@ -86,3 +86,13 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 Update rows only with verified evidence, preserve historical decisions, and update RESUME.md each session.
 
 Additional research proposal: [Negative Evidence & Sensor-Guided Exclusion](NEGATIVE_EVIDENCE_PROPOSAL.md) — PROPOSED, to be studied with 06.1/06.2/06.7/06.9; no hard chemical-family elimination.
+
+## Technique 80 — new research extension
+
+| ID | Technique | Status | Evidence |
+|---|---|---|---|
+| 10.1 | Negative Evidence & Sensor-Guided Exclusion | PROPOSED | research/NEGATIVE_EVIDENCE_PROPOSAL.md; no standalone validated implementation, no device-specific sensitivity/specificity characterization |
+
+**Scope of 10.1:** calibrated sensor-specific non-detection likelihoods conditional on chemical identity, concentration, sensor detection capability, response latency, environmental conditions, cross-sensitivity and quality flags. Output should down-weight supported hypotheses, not hard-eliminate chemical families. Requires real blank/positive controls and grouped validation before use. Prior research primitive in 06.7 does not make 10.1 complete.
+
+**Audit outcome:** 80 items are **on the roadmap**, not 80 validated or fully implemented techniques. All preexisting ledger entries retain their evidence tier. Technique 04.9 correction reconciles ledger with its actual README and RESUME history. The reference benchmark starter is not proof of any 79/80-technique execution or accuracy.
