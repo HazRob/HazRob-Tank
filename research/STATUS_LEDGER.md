@@ -55,11 +55,11 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 06.8 | SHAP | PARTIAL_PROTOTYPE | research/techniques/06.8/ (minimal baseline; smoke tests authored; real validation pending) |
 | 06.9 | Abstention | PARTIAL_PROTOTYPE | research/techniques/06.9/ (minimal baseline; smoke tests authored; real validation pending) |
 | 07.1 | Cross-session tests | PARTIAL_PROTOTYPE | research/techniques/07.1/ (minimal baseline; smoke tests authored; real validation pending) |
-| 07.2 | Cross-device tests | NOT_STARTED | — |
-| 07.3 | Cross-concentration tests | NOT_STARTED | — |
-| 07.4 | Drift detection | NOT_STARTED | — |
-| 07.5 | Drift compensation | NOT_STARTED | — |
-| 07.6 | Domain adaptation | NOT_STARTED | — |
+| 07.2 | Cross-device tests | PARTIAL_PROTOTYPE | research/techniques/07.2/ (minimal baseline; smoke tests authored, not executed) |
+| 07.3 | Cross-concentration tests | PARTIAL_PROTOTYPE | research/techniques/07.3/ (minimal baseline; smoke tests authored, not executed) |
+| 07.4 | Drift detection | PARTIAL_PROTOTYPE | research/techniques/07.4/ (minimal baseline; smoke tests authored, not executed) |
+| 07.5 | Drift compensation | PARTIAL_PROTOTYPE | research/techniques/07.5/ (minimal baseline; smoke tests authored, not executed) |
+| 07.6 | Domain adaptation | PARTIAL_PROTOTYPE | research/techniques/07.6/ (minimal baseline; smoke tests authored, not executed) |
 | 07.7 | Transfer learning | NOT_STARTED | — |
 | 07.8 | Active learning/DoE | NOT_STARTED | — |
 | 07.9 | Continual learning | NOT_STARTED | — |
