@@ -3,7 +3,7 @@ Version 1.2 | 2026-10-19 | 80 planned items; batch01 (10 techniques) verified un
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
-| 01.1 | ADC to Rs | PROTOTYPE | research/techniques/01.1/ (11/11 local unit tests; hardware audit pending) ; GitHub Actions batch01 11/11 verified unit PASS; empirical validation pending |
+| 01.1 | ADC to Rs | PROTOTYPE | research/techniques/01.1/ (11/11 local unit tests; hardware audit pending); GitHub Actions batch01 11/11 verified unit PASS; empirical validation pending |
 | 01.2 | R0 calibration | PROTOTYPE | research/techniques/01.2/ (hardware calibration pending) ; GitHub Actions batch01 11/11 verified unit PASS; empirical validation pending |
 | 01.3 | Sensitivity curves | PROTOTYPE | research/techniques/01.3/ (synthetic tests; manufacturer curves pending) ; GitHub Actions batch01 17/17 verified unit PASS; empirical validation pending |
 | 01.4 | Heater cycles | PROTOTYPE | research/techniques/01.4/ (software phase tagging; physical heater control unverified) ; GitHub Actions batch01 12/12 verified unit PASS; empirical validation pending |
@@ -11,7 +11,7 @@ Version 1.2 | 2026-10-19 | 80 planned items; batch01 (10 techniques) verified un
 | 01.6 | Signal quality | PROTOTYPE | research/techniques/01.6/ (13 unit cases authored; Tank ADC hardware validation pending) ; GitHub Actions batch01 13/13 verified unit PASS; empirical validation pending |
 | 01.7 | Drift monitoring | PROTOTYPE | research/techniques/01.7/ (12 unit cases authored; controlled baseline validation pending) ; GitHub Actions batch01 12/12 verified unit PASS; empirical validation pending |
 | 02.1 | Filtering | PROTOTYPE | research/techniques/02.1/ (15/15 local unit tests; Tank temporal response validation pending) ; GitHub Actions batch01 15/15 verified unit PASS; empirical validation pending |
-| 02.2 | Scaling | PROTOTYPE | research/techniques/02.2/ (13 unit cases authored; clean-checkout and real-data validation pending) ; GitHub Actions batch01 13/13 verified unit PASS; empirical validation pending |
+| 02.2 | Scaling | PROTOTYPE | research/techniques/02.2/ (train-only scaling; real-data validation pending) ; GitHub Actions batch01 13/13 verified unit PASS; empirical validation pending |
 | 02.3 | Static features | PROTOTYPE | research/techniques/02.3/ (14 test cases authored; real-data validation pending) ; GitHub Actions batch01 14/14 verified unit PASS; empirical validation pending |
 | 02.4 | Temporal features | PROTOTYPE | research/techniques/02.4/ (16/16 synthetic local tests; real time-series validation pending) |
 | 02.5 | Fingerprints | PROTOTYPE | research/techniques/02.5/ (8-sensor log-fold vector; legacy parity and real validation pending) |
