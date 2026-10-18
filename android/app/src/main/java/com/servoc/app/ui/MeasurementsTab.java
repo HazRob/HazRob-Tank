@@ -72,6 +72,8 @@ public final class MeasurementsTab {
     private final FrameLayout analysisPage;
     private final Button[] analysisTabs=new Button[3];
     private final ScrollView searchView;
+    private final android.os.Handler searchHandler=new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable pendingSearch;
     private LinearLayout chemicalRows;
     private Spinner familySpinner;
     private EditText chemicalSearch;
@@ -138,7 +140,11 @@ public final class MeasurementsTab {
         content.addView(chemicalRows,UiKit.full(c));
         chemicalSearch.addTextChangedListener(new TextWatcher(){
             public void beforeTextChanged(CharSequence x,int st,int count,int after){}
-            public void onTextChanged(CharSequence x,int st,int before,int count){refreshChemicalSearch();}
+            public void onTextChanged(CharSequence x,int st,int before,int count){
+                if(pendingSearch!=null)searchHandler.removeCallbacks(pendingSearch);
+                pendingSearch=()->refreshChemicalSearch();
+                searchHandler.postDelayed(pendingSearch,250);
+            }
             public void afterTextChanged(Editable x){}
         });
         familySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
@@ -180,10 +186,9 @@ public final class MeasurementsTab {
                 item.setOnClickListener(v->{
                     chosenChemical=label;
                     int id=chemical.legacyId==null?-1:chemical.legacyId.intValue();
-                    if(id>=0)host.setTrackingTarget(id,label);
                     new AlertDialog.Builder(c).setTitle(label)
                         .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nتفعيل التتبع يتطلب معرف المادة المدعوم في منظومة التتبع.")
-                        .setPositiveButton(id>=0?"تتبع المادة":"إغلاق",(d,w)->{})
+                        .setPositiveButton(id>=0?"تتبع المادة":"إغلاق",(d,w)->{if(id>=0)host.setTrackingTarget(id,label);})
                         .show();
                 });
                 chemicalRows.addView(item,UiKit.full(c));
