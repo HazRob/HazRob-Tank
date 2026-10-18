@@ -33,7 +33,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 04.5 | SVM | PARTIAL_PROTOTYPE | research/techniques/04.5/ (linear OVR hinge-loss baseline; kernels pending) |
 | 04.6 | Random Forest | PROTOTYPE | research/techniques/04.6/ (bagged Gini trees; 16 tests authored) |
 | 04.7 | XGBoost | PARTIAL_PROTOTYPE | research/techniques/04.7/ (simplified gradient-boosted stumps, NOT XGBoost; 16 tests authored) |
-| 04.8 | MLP | NOT_STARTED | — |
+| 04.8 | MLP | PROTOTYPE | research/techniques/04.8/ (single-hidden-layer tanh/softmax network; 16 tests authored) |
 | 04.9 | Physics+ML | NOT_STARTED | — |
 | 04.10 | Benchmarking | NOT_STARTED | — |
 | 05.1 | Single-sensor calibration | NOT_STARTED | — |
