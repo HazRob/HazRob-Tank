@@ -62,6 +62,26 @@ jobs:
           manifest.write_text(t)
           PY
 
+      - name: Embed offline ChemCore Stable library in APK
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 tools/build_hr069_embedded_stable.py --out-dir app/src/main/assets/generated/chemcore/embedded_stable
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          folder=Path('app/src/main/assets/generated/chemcore/embedded_stable')
+          manifest=json.loads((folder/'manifest.json').read_text())
+          payload=(folder/manifest['payload_file']).read_bytes()
+          assert len(payload)==manifest['payload_size_bytes']
+          assert hashlib.sha256(payload).hexdigest()==manifest['payload_sha256']
+          assert manifest['chemical_count']==652
+          assert manifest['library_version']=='1.0.0-hr069r1'
+          assert manifest['calibration_count']==0
+          print('Embedded ChemCore verified:',manifest['library_version'],len(payload),'bytes')
+          PY
+
       - name: Check Tank firmware API4 routes and Android command contract
         shell: bash
         run: |
