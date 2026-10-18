@@ -137,6 +137,16 @@ jobs:
           set -euo pipefail
           APK=source/app/build/outputs/apk/debug/app-debug.apk
           /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner verify --verbose "$APK"
+          python3 - <<'PY'
+          import zipfile
+          apk='source/app/build/outputs/apk/debug/app-debug.apk'
+          root='assets/generated/chemcore/embedded_stable/'
+          with zipfile.ZipFile(apk) as z:
+              names=set(z.namelist())
+              assert root+'manifest.json' in names, 'ChemCore manifest absent from APK'
+              assert root+'chemcore-stable-snapshot.json' in names, 'ChemCore payload absent from APK'
+              print('PASS: ChemCore Stable manifest and snapshot packaged in APK')
+          PY
           mkdir -p out
           cp "$APK" out/HazRob-Tank-v2-debug.apk
           sha256sum out/HazRob-Tank-v2-debug.apk > out/SHA256SUMS.txt
