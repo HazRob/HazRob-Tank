@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 1.4 | 2026-10-19 | 80 planned; 30 CI-verified unit PASS (438 unit tests), 0 independently scientifically validated. Evidence: [BATCH_RESULTS_80.md](BATCH_RESULTS_80.md).
+Version 1.5 | 2026-10-19 | 80 planned; 40 unit-verified G1 PASS (598 tests), 0 experimentally validated; see BATCH_RESULTS_80.md.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -33,16 +33,16 @@ Version 1.4 | 2026-10-19 | 80 planned; 30 CI-verified unit PASS (438 unit tests)
 | 04.5 | SVM | PARTIAL_PROTOTYPE | research/techniques/04.5/ (linear OVR hinge-loss baseline; kernels pending); CI batch03 16/16 unit PASS; G3 pending |
 | 04.6 | Random Forest | PROTOTYPE | research/techniques/04.6/ (bagged Gini trees; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
 | 04.7 | XGBoost | PARTIAL_PROTOTYPE | research/techniques/04.7/ (simplified gradient-boosted stumps, NOT XGBoost; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
-| 04.8 | MLP | PROTOTYPE | research/techniques/04.8/ (single-hidden-layer tanh/softmax network; 16 tests authored) |
-| 04.9 | Physics+ML | PARTIAL_PROTOTYPE | research/techniques/04.9/ (candidate-conditioned physics residual features only; no fitted ML model; 16 synthetic tests authored, not verified executed) |
-| 04.10 | Benchmarking | PROTOTYPE | research/techniques/04.10/ (grouped holdout and descriptive metrics; 16 tests authored) |
-| 05.1 | Single-sensor calibration | PROTOTYPE | research/techniques/05.1/ (known-gas log-log calibration; 16 tests authored) |
-| 05.2 | Multipoint calibration | PROTOTYPE | research/techniques/05.2/ (monotone piecewise log-log interpolation; 16 tests authored) |
-| 05.3 | Nonlinear regression | PROTOTYPE | research/techniques/05.3/ (quadratic log-log calibration; 16 tests authored) |
-| 05.4 | Multisensor regression | PROTOTYPE | research/techniques/05.4/ (known-gas multichannel ridge regression; 16 tests authored) |
-| 05.5 | PLS regression | PROTOTYPE | research/techniques/05.5/ (known-gas PLS1 latent components; 16 tests authored) |
-| 05.6 | Tree regression | PROTOTYPE | research/techniques/05.6/ (bagged CART log-ppm regression; 16 tests authored) |
-| 05.7 | Identity-conditional estimates | PROTOTYPE | research/techniques/05.7/ (confidence/margin gate and gas-specific calibrator routing; 16 tests authored) |
+| 04.8 | MLP | PROTOTYPE | research/techniques/04.8/ (single-hidden-layer tanh/softmax network; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
+| 04.9 | Physics+ML | PARTIAL_PROTOTYPE | research/techniques/04.9/ (candidate-conditioned physics residual features only; no fitted ML model; 16 synthetic tests authored, not verified executed); CI batch04 16/16 unit PASS; G3 pending |
+| 04.10 | Benchmarking | PROTOTYPE | research/techniques/04.10/ (grouped holdout and descriptive metrics; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
+| 05.1 | Single-sensor calibration | PROTOTYPE | research/techniques/05.1/ (known-gas log-log calibration; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
+| 05.2 | Multipoint calibration | PROTOTYPE | research/techniques/05.2/ (monotone piecewise log-log interpolation; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
+| 05.3 | Nonlinear regression | PROTOTYPE | research/techniques/05.3/ (quadratic log-log calibration; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
+| 05.4 | Multisensor regression | PROTOTYPE | research/techniques/05.4/ (known-gas multichannel ridge regression; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
+| 05.5 | PLS regression | PROTOTYPE | research/techniques/05.5/ (known-gas PLS1 latent components; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
+| 05.6 | Tree regression | PROTOTYPE | research/techniques/05.6/ (bagged CART log-ppm regression; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
+| 05.7 | Identity-conditional estimates | PROTOTYPE | research/techniques/05.7/ (confidence/margin gate and gas-specific calibrator routing; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
 | 05.8 | LOD/LOQ | PARTIAL_PROTOTYPE | research/techniques/05.8/ (blank-sigma screening only; not validated ppm LOD/LOQ; 16 tests authored) |
 | 05.9 | Unseen concentrations | PROTOTYPE | research/techniques/05.9/ (held-out ppm levels, interpolation/extrapolation metrics and abstention; 16 tests authored) |
 | 06.1 | Evidence fusion | PARTIAL_PROTOTYPE | research/techniques/06.1/ (dependence-group log opinion pooling; 16 tests authored) |
