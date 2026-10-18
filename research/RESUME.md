@@ -1,3 +1,11 @@
+# CURRENT CHECKPOINT 2026-10-19 — BATCH 03 G1 COMPLETE
+
+30/80 techniques pass reproducible isolated G1 software tests; 438 unit tests total; ZERO G3 real-gas/device validations. Batch03 03.6–03.8,04.1–04.7 initially FAILED CI #39176204448 due a preexisting missing closing parenthesis in 04.1; fixed in commit fa693d4d3678caf50c1b39fda7a14f4176909b95. Final #39176274539 PASS 10 jobs/160 tests. Evidence and science/data limitations: research/BATCH_RESULTS_80.md; canonical progress: research/PROGRESS_80.json; plan: research/EXECUTION_PLAN_80_AR.md.
+
+NEXT batch04: 04.8,04.9,04.10,05.1,05.2,05.3,05.4,05.5,05.6,05.7. Audit source and test method, execute isolated G1 per technique, document pending G2/G3, never describe simplified 04.7 stumps as real XGBoost. No production changes.
+
+---
+
 # CHECKPOINT CURRENT — 2026-10-19: BATCH 02 G1 COMPLETE (20 of 80 verified)
 
 See research/EXECUTION_PLAN_80_AR.md and research/PROGRESS_80.json (canonical machine progress), research/BATCH_RESULTS_80.md (per-technique evidence). Batch02 02.4,02.5,02.6,02.7,02.8,03.1,03.2,03.3,03.4,03.5: CI https://github.com/HazRob/HazRob-Tank/actions/runs/39175957251 tested commit faa4e3f4a41ea0ab149096b46925e9c7532d3f02; 10/10 independently isolated jobs PASS; exact logs 16+14+16+14+14+14+16+16+14+14=148 tests PASS. Cumulative first two batches: 20/80 technique G1 gates, 278 tests. G3 empirical validation remains 0/80; 03.4 LDA/PLS-DA remains binary-only PARTIAL_PROTOTYPE. Dataset UCI1081 is not Tank MQ8 and lacks verified sessions, R0, timebase and BME; no calibration or safety assertions. No production modifications.
