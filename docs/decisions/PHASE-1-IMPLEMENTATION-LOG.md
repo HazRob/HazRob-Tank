@@ -43,3 +43,10 @@ Last updated: 2026-10-17 23:56 UTC. Work branch: `develop`. Original SERVOC-Andr
 - Original `MainActivity` calls `enter()` at startup already; offline review requires an explicit UI affordance and guarding transport-only features, not yet implemented.
 - Other legacy panes still contain explicit dark backgrounds; palette harmonization and contrast regression remain open.
 - No build/test run has been triggered after these commits. All changes require compilation and device verification.
+
+## Checkpoint P1-05 — v2 packaging and offline preview (COMMITTED, NOT VERIFIED)
+- `8e94f349e8b09462e2d7ee30f49d4582f0deaab6`: dedicated `.github/workflows/build-tank-android-v2.yml` with Android versionName 2.0/versionCode 2 and Tank unit-test overlay copied into original pinned checkout. Workflow requires `HAZROB_SOURCE_READ_TOKEN`.
+- `a0b252e63dfdffc6a716b52643bcb7222a3010b0`: MainActivity overlay adds an upper header **↪ دخول** preview shortcut to measurements even without robot link, plus light shell header. Existing startup already calls `enter()`; the shortcut is navigation, not an authentication bypass.
+- Workflow has NOT been dispatched; no CI run, compile verification, emulator/device validation, firmware-in-the-loop test, or v2 APK artifact exists yet.
+- Release gate: run Gradle unit tests and assembleDebug, verify APK signature, test all UI screens and navigation offline, then ESP32 API4 protocol/motor/sensor/camera tests with hardware; do not publish a 'tested v2' until gates pass.
+- Pending: ensure ChemicalRepository-backed search is UI-thread safe at scale, check chemical taxonomy and capability flags, wire chart dialogs to actual chart data, full visual contrast sweep, session lifecycle and smart reports.
