@@ -1,0 +1,31 @@
+name: Research batch 01 (01.1-01.5)
+on:
+  push:
+    paths:
+      - '.github/workflows/research-batch-01-tests.yml'
+      - 'research/techniques/01.1/**'
+      - 'research/techniques/01.2/**'
+      - 'research/techniques/01.3/**'
+      - 'research/techniques/01.4/**'
+      - 'research/techniques/01.5/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research-unit-tests:
+    name: ${{ matrix.technique }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        technique: ['01.1', '01.2', '01.3', '01.4', '01.5']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install research dependencies
+        run: python -m pip install numpy
+      - name: Execute technique tests
+        working-directory: research/techniques/${{ matrix.technique }}
+        run: python -m unittest discover -v -p 'test_*.py'
