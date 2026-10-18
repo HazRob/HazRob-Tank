@@ -2,7 +2,7 @@
 from math import isfinite
 def estimate(observed,response_columns,iterations=100,step_size=0.01):
     y=list(observed);columns=[list(c) for c in response_columns]
-    if not y or not columns or not isinstance(iterations,int) or iterations<1 or not isinstance(step_size,(int,float)) or not isfinite(step_size) or step_size<=0:raise ValueError("invalid model")
+    if not y or not columns or not isinstance(iterations,int) or isinstance(iterations,bool) or not 1<=iterations<=10000 or not isinstance(step_size,(int,float)) or isinstance(step_size,bool) or not isfinite(step_size) or step_size<=0:raise ValueError("invalid model")
     n=len(y)
     if any(len(c)!=n for c in columns) or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not isfinite(v) for v in y+[v for c in columns for v in c]):raise ValueError("finite aligned vectors required")
     weights=[0.]*len(columns)
