@@ -184,11 +184,10 @@ public final class MeasurementsTab {
                 Button item=UiKit.button(c,"🧪 "+label+"  |  CAS "+(chemical.cas==null?"—":chemical.cas));
                 item.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
                 item.setOnClickListener(v->{
-                    chosenChemical=label;
                     int id=chemical.legacyId==null?-1:chemical.legacyId.intValue();
                     new AlertDialog.Builder(c).setTitle(label)
                         .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nتفعيل التتبع يتطلب معرف المادة المدعوم في منظومة التتبع.")
-                        .setPositiveButton(id>=0?"تتبع المادة":"إغلاق",(d,w)->{if(id>=0)host.setTrackingTarget(id,label);})
+                        .setPositiveButton(id>=0?"تتبع المادة":"إغلاق",(d,w)->{if(id>=0){chosenChemical=label;host.setTrackingTarget(id,label);}})
                         .show();
                 });
                 chemicalRows.addView(item,UiKit.full(c));
