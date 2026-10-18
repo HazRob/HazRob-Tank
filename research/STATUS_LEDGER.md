@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 1.3 | 2026-10-19 | 80 planned; 20 techniques CI unit PASS (130+148=278 tests) from batches 01 and 02; zero independent scientific validations in this program. [Evidence](BATCH_RESULTS_80.md).
+Version 1.4 | 2026-10-19 | 80 planned; 30 CI-verified unit PASS (438 unit tests), 0 independently scientifically validated. Evidence: [BATCH_RESULTS_80.md](BATCH_RESULTS_80.md).
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -23,16 +23,16 @@ Version 1.3 | 2026-10-19 | 80 planned; 20 techniques CI unit PASS (130+148=278 t
 | 03.3 | Class overlap | PROTOTYPE | research/techniques/03.3/ (nearest-neighbor ambiguity; 16 tests authored); GitHub Actions batch02 16/16 unit PASS; empirical validation pending |
 | 03.4 | LDA/PLS-DA | PARTIAL_PROTOTYPE | research/techniques/03.4/ (binary-only baselines; multiclass/multicomponent pending); GitHub Actions batch02 14/14 unit PASS; empirical validation pending |
 | 03.5 | Sensor importance | PROTOTYPE | research/techniques/03.5/ (training-only univariate ranking; 14 tests authored); GitHub Actions batch02 14/14 unit PASS; empirical validation pending |
-| 03.6 | Sensor subsets | PROTOTYPE | research/techniques/03.6/ (exhaustive subset ambiguity; 16 tests authored) |
-| 03.7 | Concentration confounding | PROTOTYPE | research/techniques/03.7/ (within-gas log-concentration correlation; 16 tests authored) |
-| 03.8 | Identifiability limits | PROTOTYPE | research/techniques/03.8/ (cross-class near-collision and abstention candidate; 16 tests authored) |
-| 04.1 | Curve matching | PROTOTYPE | research/techniques/04.1/ (log-log MQ reference interpolation; 16 tests authored) |
-| 04.2 | Fingerprint matching | PROTOTYPE | research/techniques/04.2/ (nearest-reference fingerprint ranking; 16 tests authored) |
-| 04.3 | KNN | PROTOTYPE | research/techniques/04.3/ (uniform/inverse-distance voting; 16 tests authored) |
-| 04.4 | Logistic regression | PROTOTYPE | research/techniques/04.4/ (multiclass softmax L2; 16 tests authored) |
-| 04.5 | SVM | PARTIAL_PROTOTYPE | research/techniques/04.5/ (linear OVR hinge-loss baseline; kernels pending) |
-| 04.6 | Random Forest | PROTOTYPE | research/techniques/04.6/ (bagged Gini trees; 16 tests authored) |
-| 04.7 | XGBoost | PARTIAL_PROTOTYPE | research/techniques/04.7/ (simplified gradient-boosted stumps, NOT XGBoost; 16 tests authored) |
+| 03.6 | Sensor subsets | PROTOTYPE | research/techniques/03.6/ (exhaustive subset ambiguity; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
+| 03.7 | Concentration confounding | PROTOTYPE | research/techniques/03.7/ (within-gas log-concentration correlation; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
+| 03.8 | Identifiability limits | PROTOTYPE | research/techniques/03.8/ (cross-class near-collision and abstention candidate; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
+| 04.1 | Curve matching | PROTOTYPE | research/techniques/04.1/ (log-log MQ reference interpolation; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
+| 04.2 | Fingerprint matching | PROTOTYPE | research/techniques/04.2/ (nearest-reference fingerprint ranking; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
+| 04.3 | KNN | PROTOTYPE | research/techniques/04.3/ (uniform/inverse-distance voting; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
+| 04.4 | Logistic regression | PROTOTYPE | research/techniques/04.4/ (multiclass softmax L2; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
+| 04.5 | SVM | PARTIAL_PROTOTYPE | research/techniques/04.5/ (linear OVR hinge-loss baseline; kernels pending); CI batch03 16/16 unit PASS; G3 pending |
+| 04.6 | Random Forest | PROTOTYPE | research/techniques/04.6/ (bagged Gini trees; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
+| 04.7 | XGBoost | PARTIAL_PROTOTYPE | research/techniques/04.7/ (simplified gradient-boosted stumps, NOT XGBoost; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
 | 04.8 | MLP | PROTOTYPE | research/techniques/04.8/ (single-hidden-layer tanh/softmax network; 16 tests authored) |
 | 04.9 | Physics+ML | PARTIAL_PROTOTYPE | research/techniques/04.9/ (candidate-conditioned physics residual features only; no fitted ML model; 16 synthetic tests authored, not verified executed) |
 | 04.10 | Benchmarking | PROTOTYPE | research/techniques/04.10/ (grouped holdout and descriptive metrics; 16 tests authored) |
