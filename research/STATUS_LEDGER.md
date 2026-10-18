@@ -75,11 +75,11 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 08.9 | Unmixing | PARTIAL_PROTOTYPE | research/techniques/08.9/ (minimal baseline; synthetic smoke tests authored) |
 | 08.10 | Multi-analyte regression | PARTIAL_PROTOTYPE | research/techniques/08.10/ (minimal baseline; synthetic smoke tests authored) |
 | 08.11 | Interference | PARTIAL_PROTOTYPE | research/techniques/08.11/ (minimal baseline; synthetic smoke tests authored) |
-| 08.12 | Complex products | NOT_STARTED | — |
-| 09.1 | Robotic olfaction | NOT_STARTED | — |
-| 09.2 | Gas mapping | NOT_STARTED | — |
-| 09.3 | Source localization | NOT_STARTED | — |
-| 09.4 | Active sampling | NOT_STARTED | — |
+| 08.12 | Complex products | PARTIAL_PROTOTYPE | research/techniques/08.12/ (minimal baseline; synthetic smoke tests authored) |
+| 09.1 | Robotic olfaction | PARTIAL_PROTOTYPE | research/techniques/09.1/ (minimal baseline; synthetic smoke tests authored) |
+| 09.2 | Gas mapping | PARTIAL_PROTOTYPE | research/techniques/09.2/ (minimal baseline; synthetic smoke tests authored) |
+| 09.3 | Source localization | PARTIAL_PROTOTYPE | research/techniques/09.3/ (minimal baseline; synthetic smoke tests authored) |
+| 09.4 | Active sampling | PARTIAL_PROTOTYPE | research/techniques/09.4/ (minimal baseline; synthetic smoke tests authored) |
 | 09.5 | Spatiotemporal fusion | NOT_STARTED | — |
 | 09.6 | Motion decisions | NOT_STARTED | — |
 
