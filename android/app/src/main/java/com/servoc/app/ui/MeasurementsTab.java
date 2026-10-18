@@ -381,7 +381,11 @@ public final class MeasurementsTab {
         private TableRow auxRow(String name,String unit){TableRow r=new TableRow(c);r.setBackgroundColor(0xFFF1F3F6);r.addView(tableCell(name,false));r.addView(tableCell("—",false));r.addView(tableCell(unit,false));r.addView(tableCell("—",false));return r;}
         private TextView tableCell(String text,boolean header){TextView v=new TextView(c);v.setText(text);v.setTextColor(TEXT);v.setTextSize(header?12:11);v.setPadding(UiKit.dp(c,4),UiKit.dp(c,7),UiKit.dp(c,4),UiKit.dp(c,7));if(header){v.setBackgroundColor(0xFFFFD36A);v.setTypeface(Typeface.DEFAULT_BOLD);}return v;}
         private void reset(String state){for(int i=0;i<PhysicalCatalog.COUNT;i++){values[i].setText("—");states[i].setText(state);states[i].setTextColor(MUTED);}soundRms.setText("—");soundP2p.setText("—");soundRmsState.setText(state);soundP2pState.setText(state);}
-        private void setPhysical(int index,double value,String source){if(Double.isFinite(value)){values[index].setText(String.format(Locale.US,index==14?"%.1f":"%.2f",value));states[index].setText(source);states[index].setTextColor(GOOD);}else{values[index].setText("—");states[index].setText(source);states[index].setTextColor(WARN);}}
+        private void setPhysical(int index,double value,String source){if(Double.isFinite(value)){values[index].setText(String.format(Locale.US,index==14?"%.1f":"%.2f",value));states[index].setText(source);states[index].setTextColor(GOOD);
+                com.servoc.app.measurements.PhysicalReferencePolicy.Result reference=
+                    com.servoc.app.measurements.PhysicalReferencePolicy.evaluate(index,value,true,false,false,0L,false);
+                if(reference.exceeded){exposureStyle(values[index],true);states[index].setText(reference.explanation);exposureStyle(states[index],true);}
+                else{exposureStyle(values[index],false);}}else{values[index].setText("—");states[index].setText(source);states[index].setTextColor(WARN);}}
         void refresh(){
             JSONObject d=host.latestDiagnostics();if(d==null){reset("غير متصل");envDiagnostic.setText("ENV • غير متصل");return;}reset("غير مركب");
             JSONObject e=d.optJSONObject("env");
