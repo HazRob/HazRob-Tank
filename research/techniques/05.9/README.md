@@ -1,0 +1,7 @@
+# 05.9 Unseen Concentrations — HazRob Tank
+
+**PROTOTYPE:** model-agnostic split/evaluation harness for concentration levels absent from training. Holds out *entire known ppm levels*, including all replicate records at each held-out level, to prevent trivial concentration-level leakage. Classifies held-out target levels as interpolation strictly inside the training concentration interval, or extrapolation at/outside the boundaries. Computes MAE, RMSE and mean absolute log10 error **only among returned positive predictions**, alongside estimation coverage/abstention counts for each region. Report errors and coverage together; a model that abstains on all difficult cases is not necessarily superior.
+
+This module does **not** fit or execute any 05.1–05.8 model; an external evaluator must train only on returned train records, predict test rows and pass aligned values here. Session/device leakage can still occur if measurements from the same acquisition session are in both sets; combine with grouped session/device holdouts and nested tuning. Repeated near-identical readings are not independent. No uncertainty intervals, performance claims, actual Tank results or operational safety decisions. Models designed to abstain outside calibrated range should show low extrapolation coverage, not be forced to predict.
+
+16 synthetic tests authored; clean-checkout execution and real Tank validation pending. Run `cd research/techniques/05.9 && python -m unittest -v`. No production modifications.
