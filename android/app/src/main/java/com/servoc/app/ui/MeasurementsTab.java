@@ -186,7 +186,7 @@ public final class MeasurementsTab {
                 item.setOnClickListener(v->{
                     int id=chemical.legacyId==null?-1:chemical.legacyId.intValue();
                     new AlertDialog.Builder(c).setTitle(label)
-                        .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nتفعيل التتبع يتطلب معرف المادة المدعوم في منظومة التتبع.")
+                        .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+"\nالمصدر: "+(chemical.source==null?"—":chemical.source)+"\nالتتبع: "+(id>=0?"متاح":"غير متاح لهذه المادة"))
                         .setPositiveButton(id>=0?"تتبع المادة":"إغلاق",(d,w)->{if(id>=0){chosenChemical=label;host.setTrackingTarget(id,label);}})
                         .show();
                 });
