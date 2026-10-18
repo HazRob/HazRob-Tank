@@ -18,7 +18,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 02.6 | 3D/4D features | PROTOTYPE | research/techniques/02.6/ (time-aligned trajectories; 16 unit cases authored) |
 | 02.7 | Feature selection | PROTOTYPE | research/techniques/02.7/ (training-only Fisher ranking; 14 tests authored) |
 | 02.8 | Provenance schema | PROTOTYPE | research/techniques/02.8/ (canonical metadata digest; 14 tests authored) |
-| 03.1 | PCA | NOT_STARTED | — |
+| 03.1 | PCA | PROTOTYPE | research/techniques/03.1/ (training-only PCA; 14 tests authored) |
 | 03.2 | Similarity | NOT_STARTED | — |
 | 03.3 | Class overlap | NOT_STARTED | — |
 | 03.4 | LDA/PLS-DA | NOT_STARTED | — |
