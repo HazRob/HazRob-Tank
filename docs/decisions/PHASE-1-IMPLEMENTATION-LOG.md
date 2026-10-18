@@ -56,3 +56,9 @@ Last updated: 2026-10-17 23:56 UTC. Work branch: `develop`. Original SERVOC-Andr
 - `83fd2386a9623888f7e751e28a3e2126942c47b7`: v2 workflow configured to run on pushes to `develop` when Android or workflow files change, in addition to manual dispatch.
 - **Verification is not complete:** GitHub workflow status could not be retrieved from the available GitHub interface. Check repository Actions for `Build HazRob Tank v2 Android APK`. Do not claim build success or provide an APK before confirming the run.
 - Current release blockers: functional ChemCore capability mapping; chart data/dialog verification; field-session one-to-one approval lifecycle; physical snapshot export; whole-app palette regression; firmware API4 contract and hardware tests.
+
+## Checkpoint P1-07 — ESP32-Tank API4 source compatibility audit
+- Commit `b542a72fca227ce31796c2ef6fe501ce0ce2b3d2`: `docs/firmware/ANDROID-V2-ESP32-TANK-API4-COMPATIBILITY.md`.
+- Inspected Tank firmware `Config.h`, `ESP32-Tank.ino`, `SettingsOps.cpp` against Android `RobotApi.java` and `RobotProtocolV4.java`.
+- Direct HTTP command paths and query parameters align for drive, stop, ESTOP, relay, measurement, telemetry and settings. Settings bounds, watchdog and measurement state contract documented.
+- **Not tested:** actual JSON payloads from powered hardware, remote MQTT end-to-end, Wi-Fi resilience, camera or servo direction. Static route matching is not a substitute for integration testing.
