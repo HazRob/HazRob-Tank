@@ -1,0 +1,56 @@
+name: HazRob Tank batch 07 — ten behavior-gated research primitives
+on:
+  push:
+    paths:
+      - '.github/workflows/research-batch-07-ten.yml'
+      - 'research/techniques/07.10/**'
+      - 'research/techniques/08.1/**'
+      - 'research/techniques/08.2/**'
+      - 'research/techniques/08.3/**'
+      - 'research/techniques/08.4/**'
+      - 'research/techniques/08.5/**'
+      - 'research/techniques/08.6/**'
+      - 'research/techniques/08.7/**'
+      - 'research/techniques/08.8/**'
+      - 'research/techniques/08.9/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  behavioral-unit-gate:
+    name: G1 technique ${{ matrix.technique }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        technique: ['07.10', '08.1', '08.2', '08.3', '08.4', '08.5', '08.6', '08.7', '08.8', '08.9']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile, execute and record substantive tests
+        working-directory: research/techniques/${{ matrix.technique }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q .
+          python -m unittest discover -v -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/unittest.log"
+          if ! grep -Eq '^Ran (1[0-9]|[2-9][0-9]|[1-9][0-9][0-9]+) tests?' "$RUNNER_TEMP/unittest.log"; then
+            echo 'ERROR: fewer than 10 actual tests detected' >&2
+            exit 1
+          fi
+          if ! grep -Eq '^OK$' "$RUNNER_TEMP/unittest.log"; then
+            echo 'ERROR: unittest outcome was not OK' >&2
+            exit 1
+          fi
+          echo "## ${{ matrix.technique }}: executed substantive tests" >> "$GITHUB_STEP_SUMMARY"
+          grep -E '^Ran [0-9]+ tests?|^OK$|^FAILED' "$RUNNER_TEMP/unittest.log" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: batch07-${{ matrix.technique }}-test-output
+          path: ${{ runner.temp }}/unittest.log
+          if-no-files-found: warn
+          retention-days: 90
