@@ -28,7 +28,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 03.8 | Identifiability limits | PROTOTYPE | research/techniques/03.8/ (cross-class near-collision and abstention candidate; 16 tests authored) |
 | 04.1 | Curve matching | PROTOTYPE | research/techniques/04.1/ (log-log MQ reference interpolation; 16 tests authored) |
 | 04.2 | Fingerprint matching | PROTOTYPE | research/techniques/04.2/ (nearest-reference fingerprint ranking; 16 tests authored) |
-| 04.3 | KNN | NOT_STARTED | — |
+| 04.3 | KNN | PROTOTYPE | research/techniques/04.3/ (uniform/inverse-distance voting; 16 tests authored) |
 | 04.4 | Logistic regression | NOT_STARTED | — |
 | 04.5 | SVM | NOT_STARTED | — |
 | 04.6 | Random Forest | NOT_STARTED | — |
