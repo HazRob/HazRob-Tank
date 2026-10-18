@@ -26,7 +26,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 03.6 | Sensor subsets | PROTOTYPE | research/techniques/03.6/ (exhaustive subset ambiguity; 16 tests authored) |
 | 03.7 | Concentration confounding | PROTOTYPE | research/techniques/03.7/ (within-gas log-concentration correlation; 16 tests authored) |
 | 03.8 | Identifiability limits | PROTOTYPE | research/techniques/03.8/ (cross-class near-collision and abstention candidate; 16 tests authored) |
-| 04.1 | Curve matching | NOT_STARTED | — |
+| 04.1 | Curve matching | PROTOTYPE | research/techniques/04.1/ (log-log MQ reference interpolation; 16 tests authored) |
 | 04.2 | Fingerprint matching | NOT_STARTED | — |
 | 04.3 | KNN | NOT_STARTED | — |
 | 04.4 | Logistic regression | NOT_STARTED | — |
