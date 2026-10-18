@@ -50,3 +50,14 @@ Metadata counts and source links confirmed from UCI repository pages, not downlo
 - https://github.com/RonishNadar/electronic-nose — MQ acquisition and preprocessing code; do not count as labeled measurement corpus without verified released raw files.
 
 **Strict counting:** A CSV row or timestamp is not automatically an independent experimental exposure. Duplicate releases and repeated exports must be cross-referenced. External dataset discovery does not imply download, licensing clearance, validation or measured compatibility with HazRob MQ hardware.
+
+## Source-file and schema verification — 2026-10-18
+
+| Source | Directly checked | Result | Benchmark eligibility |
+|---|---|---|---|
+| TakMashhido/Gas-Sensors-Measurements-Dataset | GitHub CSV file view, 6401 lines (header + 6400 observations), 252 KB | Headers: Serial Number, MQ2, MQ3, MQ5, MQ6, MQ7, MQ8, MQ135, Gas. No concentration field. | Gas-class-only (gas labels include Smoke, Perfume, Mixture, NoGas; not necessarily single chemical identities). NOT eligible for known-analyte-known-ppm test. |
+| camberbatch/Breath_analysis | Repository README and named raw CSV files | MS_1_calibration_data.csv n-heptane, propan-1-ol, ethylbenzene; Chapter 4 two-system calibration-transfer files for n-heptane, propan-1-ol, o-xylene; Chapter 3 breath-study patient labels (118 participants). | Calibration/mixed VOC files are CANDIDATES pending raw concentration/units verification. Medical-study rows NOT known-analyte-known-concentration samples. |
+| anemo-labs/SmellDB | Repository README | 3000 labelled samples, 32 sensor channels, 12 semantic odor classes, 115 s/sample, API-first download. | Odor classification only unless molecular identities and concentration labels separately documented; NOT known-ppm benchmark. |
+| mismiklik-iff/E-Nose-Dataset-for-Multi-Component-Liquid-Condiment-Concentration-Prediction | Raw files could not be accessed in this inspection | Reported liquid composition dataset, gas ppm not established. | Pending raw access; exclude from quantified gas-concentration benchmark. |
+
+**Verification boundary:** GitHub file page and README inspection only for external sources. This pass did NOT download the 6400-row MQ CSV or the breath-analysis CSVs into the local benchmark, and did NOT execute numerical ChemCore tests. A source that has no concentration field is never assigned invented ppm. No source is yet certified as a HazRob Tank device-equivalent calibration source.
