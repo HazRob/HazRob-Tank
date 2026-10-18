@@ -77,6 +77,7 @@ public final class MeasurementsTab {
     private Runnable pendingSearch;
     private ListView chemicalRows;
     private TextView chemicalCount;
+    private ArrayAdapter<String> chemicalAdapter;
     private final List<ChemicalRepository.Chemical> visibleChemicals=new java.util.ArrayList<>();
     private Spinner familySpinner;
     private Spinner sortSpinner;
@@ -162,6 +163,8 @@ public final class MeasurementsTab {
         tableBox.addView(chemicalRows,new LinearLayout.LayoutParams(-1,UiKit.dp(c,410)));
         horizontal.addView(tableBox,new android.widget.FrameLayout.LayoutParams(-2,-2));
         content.addView(horizontal,UiKit.full(c));
+        chemicalAdapter=new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,new java.util.ArrayList<String>());
+        chemicalRows.setAdapter(chemicalAdapter);
         chemicalRows.setOnItemClickListener((parent,view,position,id)->{
             if(position<0||position>=visibleChemicals.size())return;
             ChemicalRepository.Chemical chemical=visibleChemicals.get(position);
@@ -235,12 +238,15 @@ public final class MeasurementsTab {
                     labels.add("🧪 "+label+"    |    "+(chemical.cas==null?"—":chemical.cas)+"    |    "+(chemical.chemicalClass==null?"—":chemical.chemicalClass));
                 }
             }
-            chemicalRows.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,labels));
+            chemicalAdapter.clear();
+            chemicalAdapter.addAll(labels);
+            chemicalAdapter.notifyDataSetChanged();
             chemicalRows.setSelection(0);
             chemicalCount.setText("المواد المطابقة: "+visibleChemicals.size()+(results.size()==5000?" • الحد الأقصى للفهرس 5000":""));
         }catch(Exception ex){
             visibleChemicals.clear();
-            chemicalRows.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,new String[]{"تعذر قراءة فهرس المواد."}));
+            chemicalAdapter.clear();
+            chemicalAdapter.notifyDataSetChanged();
             chemicalCount.setText("المواد المطابقة: —");
         }
     }
