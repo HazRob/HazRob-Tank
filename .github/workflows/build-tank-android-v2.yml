@@ -2,6 +2,11 @@ name: Build HazRob Tank v2 Android APK
 
 on:
   workflow_dispatch:
+  push:
+    branches: [develop]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-tank-android-v2.yml'
 
 permissions:
   contents: read
