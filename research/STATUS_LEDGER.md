@@ -40,7 +40,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 05.2 | Multipoint calibration | PROTOTYPE | research/techniques/05.2/ (monotone piecewise log-log interpolation; 16 tests authored) |
 | 05.3 | Nonlinear regression | PROTOTYPE | research/techniques/05.3/ (quadratic log-log calibration; 16 tests authored) |
 | 05.4 | Multisensor regression | PROTOTYPE | research/techniques/05.4/ (known-gas multichannel ridge regression; 16 tests authored) |
-| 05.5 | PLS regression | NOT_STARTED | — |
+| 05.5 | PLS regression | PROTOTYPE | research/techniques/05.5/ (known-gas PLS1 latent components; 16 tests authored) |
 | 05.6 | Tree regression | NOT_STARTED | — |
 | 05.7 | Identity-conditional estimates | NOT_STARTED | — |
 | 05.8 | LOD/LOQ | NOT_STARTED | — |
