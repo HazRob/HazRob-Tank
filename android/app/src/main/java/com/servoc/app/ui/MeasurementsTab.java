@@ -505,12 +505,15 @@ public final class MeasurementsTab {
             colorState(readiness,ready,exploratory);
             quality.setText("MQ صالح "+q.validMqChannels+"/8 • R0 "+q.r0NormalizedChannels+"/8 • M4-ref "+q.referenceValidatedChannels+"/8 • ENV "+(q.environmentReady?"جاهز":"محجوب"));quality.setTextColor(q.validMqChannels>=6?GOOD:WARN);
             String id=host.lastMeasurementSessionId();JSONObject p=id==null||id.isEmpty()?null:decisions.latestPayloadForSession(id);if(p!=null&&p.optJSONObject("lab_quality")==null){decisions.attachLabQuality(id,q.toJson(),System.currentTimeMillis());p=decisions.latestPayloadForSession(id);}
-            if(p==null){topCandidate.setText("المرشح الأول\n—");confidence.setText("الثقة\n—");evidence.setText("الدليل\n—");quantitative.setText("PPM الكمي\nلا توجد جلسة محللة");candidatePreview.setText("لا توجد نتيجة ChemCore مرتبطة بجلسة مكتملة.");technical.setText("لا توجد تفاصيل تقنية.");return;}
+            if(p==null){topCandidate.setText("المرشح الأول\n—");confidence.setText("الثقة\n—");evidence.setText("الدليل\n—");quantitative.setText("PPM الكمي\nلا توجد جلسة محللة");exposureStyle(quantitative,false);candidatePreview.setText("لا توجد نتيجة ChemCore مرتبطة بجلسة مكتملة.");technical.setText("لا توجد تفاصيل تقنية.");return;}
             String chemical=p.optString("chemical","—"),tier=p.optString("evidence_tier","—"),outcome=p.optString("outcome","—");double post=p.optDouble("top_posterior",Double.NaN),runner=p.optDouble("runner_up_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN),ood=p.optDouble("ood_score",Double.NaN),entropy=p.optDouble("normalized_entropy",Double.NaN);
             topCandidate.setText("المرشح الأول\n"+chemical);topCandidate.setTextColor(INFO);
             confidence.setText("الثقة\n"+pct(post)+" • Δ "+pct(margin));confidence.setTextColor(Double.isFinite(post)&&post>=0.7?GOOD:Double.isFinite(post)&&post>=0.4?WARN:BAD);
             evidence.setText("الدليل\n"+tier+" • "+outcome);evidence.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
             boolean reportable=p.optBoolean("ppm_reportable",false);double ppm=p.optDouble("ppm",Double.NaN);String ppmText=reportable&&Double.isFinite(ppm)?String.format(Locale.US,"%.2f ppm • قابل للتقرير",ppm):"محجوب • "+p.optString("ppm_withheld_reason","بوابة كمية غير مكتملة");quantitative.setText("PPM الكمي\n"+ppmText);quantitative.setTextColor(reportable?GOOD:WARN);
+            JSONObject exposure=p.optJSONObject("gas_exposure_ppm");
+            if(reportable&&Double.isFinite(ppm)&&exposureExceeded(exposure))exposureStyle(quantitative,true);
+            else quantitative.setTypeface(Typeface.DEFAULT,Typeface.NORMAL);
             quality.setText("جودة التحليل • MQ "+q.validMqChannels+"/8 • ENV "+(q.environmentReady?"READY":"WITHHELD")+" • OOD "+fmt(ood)+" • Entropy "+fmt(entropy)+" • Runner "+pct(runner));
             candidatePreview.setText(compactCandidates(p,4));
             technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,4));
