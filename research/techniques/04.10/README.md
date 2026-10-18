@@ -1,0 +1,7 @@
+# 04.10 Benchmarking — HazRob Tank research prototype
+
+**Benchmark infrastructure, not benchmark results.** Provides explicit grouped holdout partitioning by session/device/group key, descriptive multiclass confusion matrix, overall accuracy (abstentions count as errors), coverage, selective accuracy, balanced recall and per-class precision/recall/F1. Compares **predictions already produced on the same holdout rows**; it does not train or invoke classifiers. Sixteen synthetic unit tests authored.
+
+Protocol: lock sensor IDs, units, R0 and heater phases; group repeated readings by independent session and device; reserve final untouched test groups; fit normalization, calibration and hyperparameters only within training groups; evaluate 04.1–04.9 on identical eligible rows, document coverage and unknown-concentration constraints; report accuracy/coverage tradeoffs, per-gas errors, latency/memory on target device and confidence intervals across independent groups. **Do not compare model rankings using unequal subsets of gases/sensors/conditions**. Unknown gases and mixtures require explicit open-set tests. A real-data benchmark is pending.
+
+Important: this prototype's balanced recall includes classes appearing only in predictions with zero support filtered out. Precision/F1 are undefined (None) where denominators vanish. This is not a statistical validation or a claim of superior performance. Clean checkout test execution and real Tank validation pending. No production changes. Status PROTOTYPE.
