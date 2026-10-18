@@ -81,3 +81,7 @@ Last updated: 2026-10-17 23:56 UTC. Work branch: `develop`. Original SERVOC-Andr
 ## Checkpoint P1-11 — ChemCore navigation correction
 - `017b0d9ab6f6a4f46ed11cd07be34bc888bd972a`: ChemCore detail button now opens the nested `المرشحون` pane (`showAnalysisSection(2)`) instead of mistakenly opening top-level `الجزيئات` (`show(3)`); persistent scrollbars added to analysis/result panes; live title updated for Tank.
 - Source-only verification; compilation and APK build remain unconfirmed.
+
+## Checkpoint P1-12 — physical table contrast
+- `f5d2a8a999d7f7481c56c2daa2c58f54c543f2af`: PhysicalPane now uses dark text on light cells, amber header backgrounds, gray alternating auxiliary rows and readable disconnected-state text. Removes legacy dark table styling.
+- Not yet runtime-tested or compiled; full v2 release gates still open.
