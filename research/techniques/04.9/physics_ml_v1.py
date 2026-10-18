@@ -45,9 +45,15 @@ def augment_physics_features(observed, gas_curves, concentration_ppm, sensor_ids
         for s in ids:
             if s not in curves:
                 residuals.append(None);masks.append(False);continue
-            try:pred=_interpolate(curves[s],concentration_ppm)
-            except ValueError:
+            # Invalid calibration curves are a data-integrity error, never
+            # silently equivalent to a missing/out-of-domain sensor channel.
+            try:
+                valid_curve=_curve(curves[s])
+            except (TypeError,ValueError) as exc:
+                raise ValueError("invalid reference curve for "+gas+"/"+s) from exc
+            if not valid_curve[0][0]<=concentration_ppm<=valid_curve[-1][0]:
                 residuals.append(None);masks.append(False);continue
+            pred=_interpolate(valid_curve,concentration_ppm)
             residuals.append(log10(observed[s]/pred));masks.append(True)
         candidates[gas]={"log10_residuals":residuals,"valid_mask":masks,
                          "valid_channels":sum(masks)}
