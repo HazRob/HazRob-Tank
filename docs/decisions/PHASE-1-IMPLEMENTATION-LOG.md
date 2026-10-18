@@ -34,3 +34,12 @@ Last updated: 2026-10-17 23:56 UTC. Work branch: `develop`. Original SERVOC-Andr
 - No new APK has been built for these commits yet.
 - No device/hardware integration testing has been performed for this phase.
 - Do not claim search, session approval, smart reports or source direction are complete based on the shell.
+
+## Checkpoint P1-04 — requested light UI, chemical lookup, PM layout (COMMITTED, NOT CI-VERIFIED)
+- `784bf2adbb1bf0ae053dc918503a509195dcc4f1`: `MeasurementsTab.java` adds real ChemicalRepository search by name/CAS, chemical-family dropdown, selectable chemicals and tracking hook for legacy-identified chemicals, RTL scroll views with always-visible scrollbars, PM1/PM2.5/PM10 structured table, chart selector and report control.
+- `4b3dcb4c7c2073284fda84c1a79c1198d5fefeb7`: `UiKit.java` shared light palette: white/gray surfaces, black text, amber-yellow buttons, RTL inherited.
+- PM values remain blank when hardware absent; chart selector is wired to a placeholder only, not real series yet. Reports remain disabled without PM data.
+- Chemical family filter uses actual `chemicalClass` strings but is heuristic, pending verified taxonomy; analytical-capability columns still need database-backed availability mapping.
+- Original `MainActivity` calls `enter()` at startup already; offline review requires an explicit UI affordance and guarding transport-only features, not yet implemented.
+- Other legacy panes still contain explicit dark backgrounds; palette harmonization and contrast regression remain open.
+- No build/test run has been triggered after these commits. All changes require compilation and device verification.
