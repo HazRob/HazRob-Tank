@@ -44,7 +44,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 05.6 | Tree regression | PROTOTYPE | research/techniques/05.6/ (bagged CART log-ppm regression; 16 tests authored) |
 | 05.7 | Identity-conditional estimates | PROTOTYPE | research/techniques/05.7/ (confidence/margin gate and gas-specific calibrator routing; 16 tests authored) |
 | 05.8 | LOD/LOQ | PARTIAL_PROTOTYPE | research/techniques/05.8/ (blank-sigma screening only; not validated ppm LOD/LOQ; 16 tests authored) |
-| 05.9 | Unseen concentrations | NOT_STARTED | — |
+| 05.9 | Unseen concentrations | PROTOTYPE | research/techniques/05.9/ (held-out ppm levels, interpolation/extrapolation metrics and abstention; 16 tests authored) |
 | 06.1 | Evidence fusion | NOT_STARTED | — |
 | 06.2 | Bayesian inference | NOT_STARTED | — |
 | 06.3 | Probability calibration | NOT_STARTED | — |
