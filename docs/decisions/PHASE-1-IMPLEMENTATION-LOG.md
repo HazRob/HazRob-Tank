@@ -72,3 +72,8 @@ Last updated: 2026-10-17 23:56 UTC. Work branch: `develop`. Original SERVOC-Andr
 - `f63d48cb2f0d0060582b55c78d390b32336b670f`: all measurement ScrollViews with the recognized constructors now expose persistent vertical scrollbars; physical table alternating rows use white/gray; PM chart selector has an actual opening dialog with an explicit empty-data state (no simulated graph).
 - Still open: real PM sensor ingestion, chart rendering from actual samples, complete light-theme audit across other tabs, documented sessions and reports, build/firmware-in-loop verification.
 - Release remains **NOT VERIFIED**. Do not publish APK or assert runtime correctness until CI and integration tests pass.
+
+## Checkpoint P1-10 — chemical filter and confirmation correctness
+- `b9d6bf5b0d7adeb180785b1508435b923538c939`: fix chemical-family `أخرى` filter so it excludes already-classified compounds.
+- `c8ac5d0bdc9f02f40162a22adb1906fff5c16212`: chosen chemical is committed only after the positive tracking confirmation; cancelling does not mutate tracking selection.
+- These are source fixes; Android compile, CI and hardware validation remain unverified.
