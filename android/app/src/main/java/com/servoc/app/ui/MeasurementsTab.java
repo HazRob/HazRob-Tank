@@ -342,6 +342,21 @@ public final class MeasurementsTab {
         TextView t=card(title);t.setTextSize(14);t.setTypeface(Typeface.DEFAULT_BOLD);return t;
     }
     private void colorState(TextView t,boolean good,boolean warning){t.setTextColor(good?GOOD:warning?WARN:BAD);}
+    /** Highlight only confirmed, comparable exposure/flammability exceedances. */
+    private boolean exposureExceeded(JSONObject result){
+        if(result==null||!result.optBoolean("input_gate_passed",false))return false;
+        String toxic=result.optString("toxicity_state","");
+        return result.optBoolean("lfl_threshold_crossed",false)
+            || result.optInt("crossed_reference_count",0)>0
+            || "LFL_REACHED_OR_EXCEEDED".equals(result.optString("flammability_state",""))
+            || "CURRENT_CONCENTRATION_ABOVE_REFERENCE".equals(toxic)
+            || "TIME_INTEGRATED_REFERENCE_CROSSED".equals(toxic);
+    }
+    private void exposureStyle(TextView view,boolean exceeded){
+        view.setTextColor(exceeded?Color.RED:TEXT);
+        view.setTypeface(Typeface.DEFAULT,exceeded?Typeface.BOLD:Typeface.NORMAL);
+    }
+
 
     private final class PhysicalPane {
         final ScrollView view;
@@ -538,11 +553,13 @@ public final class MeasurementsTab {
             if(lastRenderedAt>0&&now-lastRenderedAt<750L)return;
             lastRenderedAt=now;
             String id=host.lastMeasurementSessionId();JSONObject p=id==null||id.isEmpty()?null:decisions.latestPayloadForSession(id);candidateList.removeAllViews();screeningList.removeAllViews();tracking.setText(host.trackingTargetId()>=0?"التتبع • "+host.trackingTargetName()+" (#"+host.trackingTargetId()+") • فرضية مشغل":"التتبع • لا يوجد");
-            if(p==null){startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");technical.setText("—");return;}
+            if(p==null){startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");exposureStyle(safetyCard,false);technical.setText("—");return;}
             String chemical=p.optString("chemical","—"),outcome=p.optString("outcome","—"),tier=p.optString("evidence_tier","—");double post=p.optDouble("top_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN);boolean ppmOk=p.optBoolean("ppm_reportable",false);double ppm=p.optDouble("ppm",Double.NaN);
             decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+" • Δ "+pct(margin)+" • "+tier+(ppmOk&&Double.isFinite(ppm)?" • "+String.format(Locale.US,"%.2f ppm",ppm):" • PPM محجوب"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
             JSONObject s=p.optJSONObject("screening_144");screeningCard.setText("فحص 144 • "+(s==null?"غير متاح":s.optString("state","—")+" • "+s.optInt("evaluated_count",0)+"/"+s.optInt("target_count",144)));
             JSONObject g=p.optJSONObject("gas_exposure_ppm");safetyCard.setText(g==null?"السلامة والتعرض • محجوب/غير متاح":"السلامة والتعرض • "+g.optString("toxicity_state",g.optString("state","—"))+" • الاشتعال "+g.optString("flammability_state","—")+" • أولوية "+fmt(g.optDouble("hazard_priority_percent",Double.NaN))+"%");
+            exposureStyle(safetyCard,exposureExceeded(g));
+            if(ppmOk&&Double.isFinite(ppm)&&exposureExceeded(g))exposureStyle(decisionCard,true);
             renderCandidates(p);if(showAll144)renderScreening(s,p);technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,8));
         }
         /** Operator can select a target from the local ChemCore catalogue before R0
