@@ -165,7 +165,7 @@ public final class MeasurementsTab {
         if(family.equals("الهيدروكربونات"))return v.contains("hydrocarbon")||v.contains("alkane")||v.contains("aromatic")||v.contains("هيدروكربون");
         if(family.equals("المركبات الكبريتية"))return v.contains("sulfur")||v.contains("sulph")||v.contains("كبريت");
         if(family.equals("المركبات النيتروجينية"))return v.contains("nitrogen")||v.contains("amine")||v.contains("نيتروجين");
-        return family.equals("أخرى");
+        return family.equals("أخرى")&&!matchesFamily("الكحولات",group)&&!matchesFamily("الهيدروكربونات",group)&&!matchesFamily("المركبات الكبريتية",group)&&!matchesFamily("المركبات النيتروجينية",group);
     }
 
     private void refreshChemicalSearch(){
