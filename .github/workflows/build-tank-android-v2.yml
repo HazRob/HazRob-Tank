@@ -79,11 +79,11 @@ jobs:
         working-directory: source
         run: |
           set -euo pipefail
-          python3 tools/build_hr069_embedded_stable.py --out-dir app/src/main/assets/generated/chemcore/embedded_stable
+          python3 tools/build_hr069_embedded_stable.py --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable
           python3 - <<'PY'
           import hashlib,json
           from pathlib import Path
-          folder=Path('app/src/main/assets/generated/chemcore/embedded_stable')
+          folder=Path('app/build/generated/hazrobAssets/generated/chemcore/embedded_stable')
           manifest=json.loads((folder/'manifest.json').read_text())
           payload=(folder/manifest['payload_file']).read_bytes()
           assert len(payload)==manifest['payload_size_bytes']
