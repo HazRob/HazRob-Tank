@@ -31,7 +31,7 @@ def _stump(x,residuals,l2):
             rv=sum(residuals[i] for i in right)/(len(right)+l2)
             loss=sum((residuals[i]-(lv if i in left else rv))**2 for i in range(n))
             candidate=(loss,j,threshold,lv,rv)
-            if candidate[:3]<best[:3]:best=candidate
+            if candidate[0]<best[0]-1e-12 or (abs(candidate[0]-best[0])<=1e-12 and best[1] is not None and candidate[1:3]<best[1:3]):best=candidate
     return {"feature":best[1],"threshold":best[2],"left":best[3],"right":best[4]}
 
 def _apply(stump,row):
