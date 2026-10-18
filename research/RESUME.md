@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 03.3 class overlap PROTOTYPE committed. Descriptive leave-one-out nearest same/other class ambiguity and margins, 16 tests authored. Clean-checkout execution and controlled Tank cross-session data validation pending. NEXT 03.4 LDA/PLS-DA. No production changes.
+
 # Checkpoint 2026-10-18: 03.2 similarity analysis PROTOTYPE committed. Cosine, Euclidean, Manhattan, scaled Euclidean and nearest reference. 16/16 local synthetic unit tests passed. Clean GitHub checkout and real Tank cross-session/concentration validation pending. NEXT 03.3 class overlap. No production changes.
 
 # Checkpoint 2026-10-18: 03.1 PCA PROTOTYPE committed. Pure Python symmetric Jacobi covariance eigensolver, explained variance and projection, 14 tests authored; clean checkout and numerical reference verification pending. NEXT 03.2 similarity analysis. No production changes.
