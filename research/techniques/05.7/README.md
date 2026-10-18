@@ -1,0 +1,7 @@
+# 05.7 Identity-Conditional Concentration Estimation — HazRob Tank
+
+**PROTOTYPE:** conservative decision gate connecting an **external** gas-identity probability distribution to a **gas-specific** calibrated concentration estimator. It does not train or calibrate identity probabilities. For a unique top gas, require minimum top probability and top-vs-runner-up margin; otherwise abstain. Require a corresponding gas-specific calibrator that returns a recognized within-range status and finite positive ppm. Missing calibrator, rejected observation or out-of-range result produces an explicit abstention reason.
+
+**Critical:** confidence thresholds do not turn uncalibrated classifier scores into probabilities. Even calibrated marginal probabilities do not certify conditional concentration accuracy; misidentification can yield severely wrong ppm. A single-label input of 1.0 does not prove identity; upstream must explicitly represent unknown/OOD candidates. Gas mixtures and unknown substances are not supported. Status is a research estimate, **not an exposure or safety alarm**. Evaluate end-to-end on held-out identities, concentrations, sessions, devices, interferents and unknowns; quantify both abstention and dangerous misrouting.
+
+16 synthetic tests authored, clean-checkout execution and real Tank validation pending. Run `cd research/techniques/05.7 && python -m unittest -v`. No production modifications.
