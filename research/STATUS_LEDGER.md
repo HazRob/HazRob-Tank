@@ -13,7 +13,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 02.1 | Filtering | PROTOTYPE | research/techniques/02.1/ (15/15 local unit tests; Tank temporal response validation pending) |
 | 02.2 | Scaling | PROTOTYPE | research/techniques/02.2/ (13 unit cases authored; clean-checkout and real-data validation pending) |
 | 02.3 | Static features | PROTOTYPE | research/techniques/02.3/ (14 test cases authored; real-data validation pending) |
-| 02.4 | Temporal features | NOT_STARTED | — |
+| 02.4 | Temporal features | PROTOTYPE | research/techniques/02.4/ (16/16 synthetic local tests; real time-series validation pending) |
 | 02.5 | Fingerprints | NOT_STARTED | — |
 | 02.6 | 3D/4D features | NOT_STARTED | — |
 | 02.7 | Feature selection | NOT_STARTED | — |
