@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 04.4 logistic regression PROTOTYPE committed. Multiclass softmax full-batch gradient descent, L2 regularization, train-only scaling, 16 synthetic tests authored; clean checkout and real Tank validation pending. Scores uncalibrated; convergence not independently verified. NEXT 04.5 SVM. No production changes.
+
 # Checkpoint 2026-10-18: 04.3 KNN PROTOTYPE committed. Frozen training fingerprints, uniform and inverse-distance voting, deterministic tie flag, 16 synthetic tests authored; clean checkout and Tank grouped holdout evaluation pending. NEXT 04.4 logistic regression. No production changes.
 
 # Checkpoint 2026-10-18: 04.2 fingerprint matching PROTOTYPE committed. Training-only multichannel exemplar library, scaled Euclidean nearest-reference per class and optional abstention threshold; 16 synthetic tests authored. Clean-checkout execution and real Tank held-out evaluation pending. NEXT 04.3 KNN. No production changes.
