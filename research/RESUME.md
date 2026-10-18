@@ -1,3 +1,7 @@
+# Verified CI batch 01 — 2026-10-18
+
+Techniques 01.1–01.5: GitHub Actions run https://github.com/HazRob/HazRob-Tank/actions/runs/39135356937 on main SHA 5a6e4382f4612215390bae9dccfe446c486b2e0e completed SUCCESS. All five independent jobs succeeded, including their 'Execute technique tests' step. This establishes clean-checkout software-unit-test PASS for these five only, NOT Tank hardware, gas calibration, or external-reference benchmark validation. Next batch 01.6, 01.7, 02.1, 02.2, 02.3. No production changes.
+
 # Checkpoint 2026-10-18: 09.5 spatiotemporal fusion and 09.6 motion decisions PARTIAL_PROTOTYPE minimal research baselines committed, README and smoke tests authored, not verified executed. 09.6 returns operator-review intent only, never motor commands. Roadmap through 09.6 has research artifacts, but NOT completed scientific validation. NEXT audit full 79-technique status ledger, run clean-checkout tests, assess evidence/quality gaps, then controlled real-world validation. No production changes.
 
 # Checkpoint 2026-10-18: Batch 08.12–09.4 PARTIAL_PROTOTYPE minimal research baselines committed: complex product similarity, plume encounters, gas grid mapping, spatial response centroid and waypoint ranking. All five have README and synthetic smoke tests authored, not verified run. No validated chemical composition, source location, safe autonomous navigation or production changes. NEXT 09.5 spatiotemporal fusion.
