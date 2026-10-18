@@ -14,6 +14,15 @@ def fit_alignment(source,target):
     return {"source_mean":sm,"source_std":ss,"target_mean":tm,"target_std":ts,"n":n,
             "warning":"Unsupervised marginal alignment may remove gas signal or cause negative transfer."}
 def target_to_source(model,row):
+    required=("source_mean","source_std","target_mean","target_std")
+    if not isinstance(model,dict) or not isinstance(model.get("n"),int) or isinstance(model["n"],bool) or model["n"]<1:
+        raise ValueError("invalid alignment model")
+    n=model["n"]
+    if any(not isinstance(model.get(k),(tuple,list)) or len(model[k])!=n for k in required):
+        raise ValueError("alignment dimension mismatch")
+    if any(not isinstance(v,(int,float)) or isinstance(v,bool) or not isfinite(v) or (k.endswith("_std") and v<=0) for k in required for v in model[k]):
+        raise ValueError("invalid alignment statistics")
     x=list(row)
-    if len(x)!=model["n"] or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not isfinite(v) for v in x):raise ValueError("invalid query")
+    if len(x)!=n or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not isfinite(v) for v in x):
+        raise ValueError("invalid query")
     return [(v-t)/ts*ss+s for v,t,ts,ss,s in zip(x,model["target_mean"],model["target_std"],model["source_std"],model["source_mean"])]
