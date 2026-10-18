@@ -19,6 +19,7 @@ import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -74,7 +75,9 @@ public final class MeasurementsTab {
     private final ScrollView searchView;
     private final android.os.Handler searchHandler=new android.os.Handler(android.os.Looper.getMainLooper());
     private Runnable pendingSearch;
-    private LinearLayout chemicalRows;
+    private ListView chemicalRows;
+    private TextView chemicalCount;
+    private final List<ChemicalRepository.Chemical> visibleChemicals=new java.util.ArrayList<>();
     private Spinner familySpinner;
     private EditText chemicalSearch;
     private String chosenChemical="";
@@ -135,9 +138,34 @@ public final class MeasurementsTab {
         familySpinner.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_spinner_dropdown_item,
             new String[]{"جميع العائلات","الكحولات","الهيدروكربونات","المركبات الكبريتية","المركبات النيتروجينية","أخرى"}));
         content.addView(familySpinner,UiKit.full(c));
-        content.addView(card("المادة | CAS | المرجع المتاح"),UiKit.full(c));
-        chemicalRows=UiKit.vbox(c);
-        content.addView(chemicalRows,UiKit.full(c));
+        chemicalCount=card("المواد المطابقة: —");
+        content.addView(chemicalCount,UiKit.full(c));
+        HorizontalScrollView horizontal=new HorizontalScrollView(c);
+        horizontal.setHorizontalScrollBarEnabled(true);
+        horizontal.setScrollbarFadingEnabled(false);
+        LinearLayout tableBox=UiKit.vbox(c);
+        tableBox.setMinimumWidth(UiKit.dp(c,650));
+        TextView header=card("المادة الكيميائية                 | رقم CAS                 | العائلة الكيميائية");
+        header.setBackgroundColor(0xFFFFD36A);
+        tableBox.addView(header,UiKit.full(c));
+        chemicalRows=new ListView(c);
+        chemicalRows.setVerticalScrollBarEnabled(true);
+        chemicalRows.setScrollbarFadingEnabled(false);
+        chemicalRows.setFastScrollEnabled(true);
+        chemicalRows.setDividerHeight(UiKit.dp(c,1));
+        tableBox.addView(chemicalRows,new LinearLayout.LayoutParams(-1,UiKit.dp(c,410)));
+        horizontal.addView(tableBox,new android.widget.FrameLayout.LayoutParams(-2,-2));
+        content.addView(horizontal,UiKit.full(c));
+        chemicalRows.setOnItemClickListener((parent,view,position,id)->{
+            if(position<0||position>=visibleChemicals.size())return;
+            ChemicalRepository.Chemical chemical=visibleChemicals.get(position);
+            String label=(chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name);
+            int legacyId=chemical.legacyId==null?-1:chemical.legacyId.intValue();
+            new AlertDialog.Builder(c).setTitle(label)
+                .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+"\nالمصدر: "+(chemical.source==null?"—":chemical.source)+"\nالتتبع: "+(legacyId>=0?"متاح":"غير متاح لهذه المادة"))
+                .setPositiveButton(legacyId>=0?"تتبع المادة":"إغلاق",(d,w)->{if(legacyId>=0){chosenChemical=label;host.setTrackingTarget(legacyId,label);}})
+                .show();
+        });
         chemicalSearch.addTextChangedListener(new TextWatcher(){
             public void beforeTextChanged(CharSequence x,int st,int count,int after){}
             public void onTextChanged(CharSequence x,int st,int before,int count){
@@ -172,29 +200,25 @@ public final class MeasurementsTab {
         if(chemicalRows==null||chemicalSearch==null||familySpinner==null)return;
         String query=chemicalSearch.getText().toString().trim();
         String family=String.valueOf(familySpinner.getSelectedItem());
-        chemicalRows.removeAllViews();
         try{
             ChemicalRepository repo=new ChemicalRepository(host.database());
-            List<ChemicalRepository.Chemical> results=repo.search(query,1000);
-            int shown=0;
+            List<ChemicalRepository.Chemical> results=repo.search(query,5000);
+            visibleChemicals.clear();
+            java.util.ArrayList<String> labels=new java.util.ArrayList<>();
             for(ChemicalRepository.Chemical chemical:results){
                 if(!"جميع العائلات".equals(family)&&!matchesFamily(family,chemical.chemicalClass))continue;
-                if(shown++>=40)break;
-                String label=(chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name);
-                Button item=UiKit.button(c,"🧪 "+label+"  |  CAS "+(chemical.cas==null?"—":chemical.cas));
-                item.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
-                item.setOnClickListener(v->{
-                    int id=chemical.legacyId==null?-1:chemical.legacyId.intValue();
-                    new AlertDialog.Builder(c).setTitle(label)
-                        .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+"\nالمصدر: "+(chemical.source==null?"—":chemical.source)+"\nالتتبع: "+(id>=0?"متاح":"غير متاح لهذه المادة"))
-                        .setPositiveButton(id>=0?"تتبع المادة":"إغلاق",(d,w)->{if(id>=0){chosenChemical=label;host.setTrackingTarget(id,label);}})
-                        .show();
-                });
-                chemicalRows.addView(item,UiKit.full(c));
+                visibleChemicals.add(chemical);
+                String label=chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name;
+                labels.add("🧪 "+label+"    |    "+(chemical.cas==null?"—":chemical.cas)+"    |    "+(chemical.chemicalClass==null?"—":chemical.chemicalClass));
             }
-            if(shown==0)chemicalRows.addView(card("لا توجد مواد مطابقة للبحث."),UiKit.full(c));
-            else if(shown>40)chemicalRows.addView(card("تُعرض أول 40 نتيجة. اكتب جزءًا من الاسم أو رقم CAS لتضييق البحث."),UiKit.full(c));
-        }catch(Exception ex){chemicalRows.addView(card("تعذر قراءة فهرس المواد."),UiKit.full(c));}
+            chemicalRows.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,labels));
+            chemicalRows.setSelection(0);
+            chemicalCount.setText("المواد المطابقة: "+visibleChemicals.size()+(results.size()==5000?" • الحد الأقصى للفهرس 5000":""));
+        }catch(Exception ex){
+            visibleChemicals.clear();
+            chemicalRows.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,new String[]{"تعذر قراءة فهرس المواد."}));
+            chemicalCount.setText("المواد المطابقة: —");
+        }
     }
 
     private ScrollView buildParticlesLanding(){
