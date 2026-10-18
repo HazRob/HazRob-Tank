@@ -1,0 +1,7 @@
+# 06.2 Bayesian Inference — HazRob Tank
+
+**PARTIAL_PROTOTYPE:** explicit Bayesian posterior update for supplied class priors and class-conditional likelihoods. Uses log-space accumulation and log-sum-exp normalization for numerical stability, with a configurable floor for zero likelihoods. Multiple evidence items are combined **only if the caller explicitly declares conditional independence**; the module does not validate that declaration, and shared MQ sensor data or shared training can violate it. Duplicate evidence identifiers are rejected. A single joint likelihood is required for dependent evidence, and can be supplied as one evidence item if independently estimated.
+
+Crucial distinction: P(evidence|gas) is NOT P(gas|evidence), and classifier confidence scores are NOT likelihoods. Neither likelihood functions nor priors are learned here. Inputs must originate from independent experiments or justified generative models; real-world prevalence, unknown gases, mixture hypotheses and environment may invalidate the closed-world posterior. Output is **model-conditional** and NOT empirically calibrated, chemically verified or fit for alarms. Zero-likelihood floor is a numerical approximation, not a substitute for modeling impossible events. Validation requires held-out gas identities, concentration levels, sessions, devices, interferents and open-set/OOD testing.
+
+16 synthetic tests authored; clean-checkout execution and real Tank validation pending. Run `cd research/techniques/06.2 && python -m unittest -v`. No production changes.
