@@ -62,3 +62,8 @@ Last updated: 2026-10-17 23:56 UTC. Work branch: `develop`. Original SERVOC-Andr
 - Inspected Tank firmware `Config.h`, `ESP32-Tank.ino`, `SettingsOps.cpp` against Android `RobotApi.java` and `RobotProtocolV4.java`.
 - Direct HTTP command paths and query parameters align for drive, stop, ESTOP, relay, measurement, telemetry and settings. Settings bounds, watchdog and measurement state contract documented.
 - **Not tested:** actual JSON payloads from powered hardware, remote MQTT end-to-end, Wi-Fi resilience, camera or servo direction. Static route matching is not a substitute for integration testing.
+
+## Checkpoint P1-08 — simplified firmware compatibility gate
+- `f8b4193ec287357d848e42afc227785fedf8ef3a` and fix `29f21378e76311e2015d0d3a7904c11429c8c210`: v2 GitHub Actions workflow now runs a simple source-level API4 compatibility assertion before Gradle, comparing actual ESP32-Tank HTTP route registrations with Android RobotApi command strings, plus API version and 500ms drive watchdog.
+- This is deliberately a small deterministic contract check, not a simulation of firmware runtime.
+- CI results are not yet verified; never equate adding a test with passing it.
