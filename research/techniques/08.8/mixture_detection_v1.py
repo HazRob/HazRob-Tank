@@ -2,7 +2,9 @@
 from math import sqrt,isfinite
 def assess(observed,signatures,threshold=0.25):
     x=list(observed)
-    if not x or not signatures or not isinstance(threshold,(int,float)) or not isfinite(threshold) or threshold<0:raise ValueError("invalid inputs")
+    if not x or not isinstance(signatures,dict) or not signatures or not isinstance(threshold,(int,float)) or isinstance(threshold,bool) or not isfinite(threshold) or threshold<0:raise ValueError("invalid inputs")
+    if any(not isinstance(k,str) or not k for k in signatures):
+        raise ValueError("invalid signature labels")
     n=len(x)
     if any(not isinstance(v,(int,float)) or isinstance(v,bool) or not isfinite(v) for v in x):raise ValueError("finite observed vector required")
     for s in signatures.values():
