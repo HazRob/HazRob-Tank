@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 01.6 signal-quality prototype committed (missing data, saturation, out-of-range, insufficient data, MAD diagnostics). 13 test cases authored, not yet rerun in clean checkout. Hardware ADC configuration and real Tank data validation pending. NEXT sequential item 01.7 drift monitoring. No production changes.
+
 # Checkpoint 2026-10-18: 01.5 environmental correction research prototype committed under research/techniques/01.5/. BME280 temperature, RH, pressure conditional normalization; coefficients must be fit from controlled data. Twelve test cases authored but clean checkout not yet run. No field validation or production changes. NEXT: 01.6 signal quality.
 
 # Checkpoint 2026-10-18: 01.4 heater-phase segmentation prototype committed with 12 software test cases; test execution and physical heater profiles remain unverified. NEXT: 01.5 environmental correction (temperature/humidity/pressure) with BME280 and real calibration data; avoid unvalidated compensation coefficients. Tank only; no production changes.
