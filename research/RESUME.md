@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 04.1 curve matching PROTOTYPE committed. Log-log piecewise interpolation of externally supplied MQ Rs/R0 curves and candidate ranking at independently known concentration; 16 synthetic tests authored, clean checkout pending. No real factory curves or measured Tank datasets bundled; unknown concentration/mixtures not handled. NEXT 04.2 fingerprint matching. No production changes.
+
 # Checkpoint 2026-10-18: 03.8 identifiability limits PROTOTYPE committed. Empirical cross-class near-collision analysis and conservative query screening with uncalibrated distance threshold; 16 synthetic tests authored, clean checkout pending. Stage 03 has eight research implementations (03.4 PARTIAL_PROTOTYPE), no real Tank validation. NEXT 04.1 curve matching. No production changes.
 
 # Checkpoint 2026-10-18: 03.7 concentration confounding PROTOTYPE committed. Within-gas Pearson correlation with log10 independently known ppm and insufficient-data flags; 16 synthetic tests authored, clean checkout pending. Does not establish causality, classification or concentration estimation. NEXT 03.8 identifiability limits. No production changes.
