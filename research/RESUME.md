@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 03.8 identifiability limits PROTOTYPE committed. Empirical cross-class near-collision analysis and conservative query screening with uncalibrated distance threshold; 16 synthetic tests authored, clean checkout pending. Stage 03 has eight research implementations (03.4 PARTIAL_PROTOTYPE), no real Tank validation. NEXT 04.1 curve matching. No production changes.
+
 # Checkpoint 2026-10-18: 03.7 concentration confounding PROTOTYPE committed. Within-gas Pearson correlation with log10 independently known ppm and insufficient-data flags; 16 synthetic tests authored, clean checkout pending. Does not establish causality, classification or concentration estimation. NEXT 03.8 identifiability limits. No production changes.
 
 # Checkpoint 2026-10-18: 03.6 sensor subsets PROTOTYPE committed. Exhaustive nonempty sensor combinations and leave-one-out descriptive ambiguity, 16 synthetic tests authored. Selection bias warning; nested grouped CV and real Tank validation pending. NEXT 03.7 concentration confounding. No production changes.
