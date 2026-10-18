@@ -1,0 +1,29 @@
+import unittest
+from identifiability_v1 import identifiability_report,screen_query
+class IdentifiabilityTests(unittest.TestCase):
+    def setUp(self):
+        self.x=[[0],[.1],[.2],[10]];self.y=["A","A","B","B"]
+    def test_collision(self):self.assertEqual(identifiability_report(self.x,self.y,threshold=.11)["collision_pair_count"],1)
+    def test_ambiguous(self):self.assertEqual(identifiability_report(self.x,self.y,threshold=.11)["ambiguous_sample_indices"],[1,2])
+    def test_no_collision(self):self.assertEqual(identifiability_report(self.x,self.y,threshold=.05)["collision_pair_count"],0)
+    def test_zero_threshold(self):self.assertEqual(identifiability_report([[1],[1]],["A","B"],threshold=0)["collision_pair_count"],1)
+    def test_nearest(self):self.assertAlmostEqual(identifiability_report(self.x,self.y,threshold=.11)["nearest_other_class_distances"][1],.1)
+    def test_scaled(self):self.assertEqual(identifiability_report([[0],[2]],["A","B"],scales=[2],threshold=1)["collision_pair_count"],1)
+    def test_screen_ambiguous(self):self.assertEqual(screen_query([0],[[0],[.1]],["A","B"],threshold=.2)["decision"],"AMBIGUOUS")
+    def test_screen_single(self):self.assertEqual(screen_query([0],[[0],[10]],["A","B"],threshold=.2)["decision"],"SINGLE_REFERENCE_CLASS")
+    def test_screen_none(self):self.assertEqual(screen_query([5],[[0],[10]],["A","B"],threshold=.2)["decision"],"INSUFFICIENT_EVIDENCE")
+    def test_bad_threshold(self):
+        with self.assertRaises(ValueError):identifiability_report(self.x,self.y,threshold=-1)
+    def test_bad_scales(self):
+        with self.assertRaises(ValueError):identifiability_report(self.x,self.y,scales=[0])
+    def test_bad_labels(self):
+        with self.assertRaises(ValueError):identifiability_report(self.x,["A"]*4)
+    def test_ragged(self):
+        with self.assertRaises(ValueError):identifiability_report([[0],[1,2]],["A","B"])
+    def test_nan(self):
+        with self.assertRaises(ValueError):identifiability_report([[float("nan")],[0]],["A","B"])
+    def test_bad_query(self):
+        with self.assertRaises(ValueError):screen_query([0],[[0,1]],["A"])
+    def test_bad_query_threshold(self):
+        with self.assertRaises(ValueError):screen_query([0],[[0]],["A"],threshold=float("nan"))
+if __name__=="__main__":unittest.main()
