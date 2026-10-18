@@ -1,0 +1,52 @@
+name: HazRob Tank batch 02 — ten technique unit gates
+on:
+  push:
+    paths:
+      - '.github/workflows/research-batch-02-ten.yml'
+      - 'research/techniques/02.4/**'
+      - 'research/techniques/02.5/**'
+      - 'research/techniques/02.6/**'
+      - 'research/techniques/02.7/**'
+      - 'research/techniques/02.8/**'
+      - 'research/techniques/03.1/**'
+      - 'research/techniques/03.2/**'
+      - 'research/techniques/03.3/**'
+      - 'research/techniques/03.4/**'
+      - 'research/techniques/03.5/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit-gate:
+    name: unit gate ${{ matrix.technique }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        technique: ['02.4', '02.5', '02.6', '02.7', '02.8', '03.1', '03.2', '03.3', '03.4', '03.5']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and run isolated technique tests
+        working-directory: research/techniques/${{ matrix.technique }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q .
+          python -m unittest discover -v -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/unittest.log"
+          if ! grep -Eq '^Ran [1-9][0-9]* tests?' "$RUNNER_TEMP/unittest.log"; then
+            echo 'ERROR: No verifiable tests executed' >&2
+            exit 1
+          fi
+          echo "## ${{ matrix.technique }} unit test results" >> "$GITHUB_STEP_SUMMARY"
+          grep -E '^Ran [0-9]+ tests?|^OK$|^FAILED' "$RUNNER_TEMP/unittest.log" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: batch02-${{ matrix.technique }}-unit-log
+          path: ${{ runner.temp }}/unittest.log
+          if-no-files-found: warn
+          retention-days: 90
