@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 03.2 similarity analysis PROTOTYPE committed. Cosine, Euclidean, Manhattan, scaled Euclidean and nearest reference. 16/16 local synthetic unit tests passed. Clean GitHub checkout and real Tank cross-session/concentration validation pending. NEXT 03.3 class overlap. No production changes.
+
 # Checkpoint 2026-10-18: 03.1 PCA PROTOTYPE committed. Pure Python symmetric Jacobi covariance eigensolver, explained variance and projection, 14 tests authored; clean checkout and numerical reference verification pending. NEXT 03.2 similarity analysis. No production changes.
 
 # Checkpoint 2026-10-18: 02.8 provenance schema PROTOTYPE committed. Metadata validation, UTC, calibration/device/session/sensor and canonical SHA-256 digest; 14 tests authored. Stage 02 now has eight research prototypes; clean checkout and real Tank validation pending. NEXT 03.1 PCA. No production changes.
