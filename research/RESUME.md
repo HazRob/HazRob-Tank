@@ -1,3 +1,11 @@
+# CURRENT CHECKPOINT 2026-10-19 — BATCH 05 G1 COMPLETE (50/80)
+
+Plan research/EXECUTION_PLAN_80_AR.md; machine state research/PROGRESS_80.json; full evidence research/BATCH_RESULTS_80.md. 50/80 G1 verified research software prototypes, 756 actual passing unit cases across completed batch runs. Batch05 05.8/05.9/06.1–06.8 final CI https://github.com/HazRob/HazRob-Tank/actions/runs/39177070616 commit 1bfd90c6aaa7f53c094f1bae2702d990cb7e0234, 10 jobs, 158/158 tests. 06.6/06.7/06.8 had previous superficial 3/2/2 export-only smoke tests; replaced with meaningful 15/16/15 cases; corrected malformed detection-reference validation and SHAP parameter validation. ZERO G3 independently validated. No production alterations.
+
+NEXT batch06 = 06.9,07.1,07.2,07.3,07.4,07.5,07.6,07.7,07.8,07.9. Its existing tests may be smoke/export-only: inspect and add boundary/behavior regression tests, do NOT mark a smoke-only CI success as robust G1. Check test coverage + data/sensor constraints; run 10 isolated CI and record result, then update all registers. Stage07 cross-device/drift validation requires independent devices/sessions and BME/ambient logs not yet available.
+
+---
+
 # CURRENT CHECKPOINT 2026-10-19 — BATCH 04 G1 COMPLETE (40/80)
 
 40/80 research techniques CI-verified software unit PASS; 598 executed tests; none G3 scientifically validated. Batch04 04.8/04.9/04.10/05.1–05.7 first CI https://github.com/HazRob/HazRob-Tank/actions/runs/39176503631 FAILED on 04.9 invalid curve, fixed malformed-reference rejection vs legitimate out-of-range masking. Earlier 04.9 syntax error fixed before first CI. Final CI https://github.com/HazRob/HazRob-Tank/actions/runs/39176571203 on b86a045775047a437de1547e1fbed6f81b7eed60 success (10/10 jobs ×16 tests =160). Source, data/empirical gaps: research/BATCH_RESULTS_80.md; machine register: research/PROGRESS_80.json; Arabic gates/plan: research/EXECUTION_PLAN_80_AR.md. No production modifications.
