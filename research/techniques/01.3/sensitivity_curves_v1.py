@@ -39,9 +39,16 @@ def ppm_from_ratio(points, ratio, *, allow_extrapolation=False):
         raise ValueError("outside calibrated ratio range")
     for x,y in p:
         if ratio==y: return x
-    j=0
-    while j<len(p)-2 and not min(ys[j],ys[j+1])<=ratio<=max(ys[j],ys[j+1]):
-        j+=1
+    # When explicitly extrapolating, select the endpoint *adjacent* to the
+    # observation. A search over in-range segments alone silently picks the
+    # final segment for both tails, which is wrong for non-power-law curves.
+    if ratio<low or ratio>high:
+        before_first=(ys[0]>ys[-1] and ratio>ys[0]) or (ys[0]<ys[-1] and ratio<ys[0])
+        j=0 if before_first else len(p)-2
+    else:
+        j=0
+        while j<len(p)-2 and not min(ys[j],ys[j+1])<=ratio<=max(ys[j],ys[j+1]):
+            j+=1
     x0,y0=p[j];x1,y1=p[j+1]
     t=log(ratio/y0)/log(y1/y0)
     return exp(log(x0)+t*log(x1/x0))
