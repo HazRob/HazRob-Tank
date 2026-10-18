@@ -4,6 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.widget.EditText;
 import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.Editable;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.view.Gravity;
+import android.widget.HorizontalScrollView;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.View;
@@ -47,8 +54,8 @@ import java.util.TimeZone;
 
 /** HazRob 0.10.2 / HR069 operator measurement + ChemCore dashboard. */
 public final class MeasurementsTab {
-    private static final int BG=0xFF0E1116,CARD=0xFF171D24,CARD_ALT=0xFF11171D;
-    private static final int TEXT=0xFFECEFF1,MUTED=0xFFB0BEC5,GOOD=0xFF81C784,WARN=0xFFFFB74D,BAD=0xFFFF7043,INFO=0xFF90CAF9;
+    private static final int BG=0xFFF7F8FA,CARD=0xFFFFFFFF,CARD_ALT=0xFFE8EBEF;
+    private static final int TEXT=0xFF101820,MUTED=0xFF4B5563,GOOD=0xFF167443,WARN=0xFF955000,BAD=0xFFB42318,INFO=0xFF1455A3;
 
     private final Context c;
     private final HazRobHost host;
@@ -65,6 +72,10 @@ public final class MeasurementsTab {
     private final FrameLayout analysisPage;
     private final Button[] analysisTabs=new Button[3];
     private final ScrollView searchView;
+    private LinearLayout chemicalRows;
+    private Spinner familySpinner;
+    private EditText chemicalSearch;
+    private String chosenChemical="";
     private final ScrollView particlesView;
     private final View[] views;
 
@@ -104,27 +115,117 @@ public final class MeasurementsTab {
 
     private ScrollView buildSearchLanding(){
         ScrollView scroll=new ScrollView(c);
+        scroll.setVerticalScrollBarEnabled(true);
+        scroll.setScrollbarFadingEnabled(false);
+        scroll.setFillViewport(true);
         LinearLayout content=UiKit.vbox(c);
-        content.setPadding(UiKit.dp(c,10),UiKit.dp(c,12),UiKit.dp(c,10),UiKit.dp(c,12));
+        content.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        content.setPadding(UiKit.dp(c,10),UiKit.dp(c,12),UiKit.dp(c,10),UiKit.dp(c,18));
         scroll.addView(content);
         content.addView(UiKit.title(c,"🔎 البحث والتتبع"),UiKit.full(c));
-        content.addView(card("استكشاف الغازات مستمر عند تشغيل الحساسات، دون الحاجة إلى جلسة موثقة."),UiKit.full(c));
-        content.addView(card("اختيار مادة حسب العائلة الكيميائية أو الاسم أو CAS: قيد ربط فهرس المكتبة في هذه المرحلة."),UiKit.full(c));
-        Button candidates=UiKit.button(c,"🏅 عرض مرشحي ChemCore واختيار مادة للتتبع");
+        content.addView(card("اختر مادة من المكتبة الكيميائية أو انتقل إلى أفضل مرشحي ChemCore."),UiKit.full(c));
+        chemicalSearch=UiKit.input(c,"");
+        chemicalSearch.setHint("بحث بالاسم أو رقم CAS أو الصيغة");
+        chemicalSearch.setSingleLine(true);
+        content.addView(chemicalSearch,UiKit.full(c));
+        familySpinner=new Spinner(c);
+        familySpinner.setBackgroundColor(0xFFE9EDF1);
+        familySpinner.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_spinner_dropdown_item,
+            new String[]{"جميع العائلات","الكحولات","الهيدروكربونات","المركبات الكبريتية","المركبات النيتروجينية","أخرى"}));
+        content.addView(familySpinner,UiKit.full(c));
+        content.addView(card("المادة | CAS | المرجع المتاح"),UiKit.full(c));
+        chemicalRows=UiKit.vbox(c);
+        content.addView(chemicalRows,UiKit.full(c));
+        chemicalSearch.addTextChangedListener(new TextWatcher(){
+            public void beforeTextChanged(CharSequence x,int st,int count,int after){}
+            public void onTextChanged(CharSequence x,int st,int before,int count){refreshChemicalSearch();}
+            public void afterTextChanged(Editable x){}
+        });
+        familySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            public void onItemSelected(AdapterView<?> p,View v,int position,long id){refreshChemicalSearch();}
+            public void onNothingSelected(AdapterView<?> p){}
+        });
+        Button candidates=UiKit.button(c,"🏅 أفضل مرشحي ChemCore — اختر مادة للتتبع");
         candidates.setOnClickListener(v->{show(1);showAnalysisSection(2);});
         content.addView(candidates,UiKit.full(c));
-        content.addView(card("تظهر إشارة الاتجاه المرجح على شاشة القيادة فقط. عدم وجود ترشيح لا يعني خلو المكان من الغاز."),UiKit.full(c));
+        refreshChemicalSearch();
         return scroll;
+    }
+
+    private boolean matchesFamily(String family,String group){
+        if(group==null||group.trim().isEmpty())return family.equals("أخرى");
+        String v=group.toLowerCase(Locale.ROOT);
+        if(family.equals("الكحولات"))return v.contains("alcohol")||v.contains("كحول");
+        if(family.equals("الهيدروكربونات"))return v.contains("hydrocarbon")||v.contains("alkane")||v.contains("aromatic")||v.contains("هيدروكربون");
+        if(family.equals("المركبات الكبريتية"))return v.contains("sulfur")||v.contains("sulph")||v.contains("كبريت");
+        if(family.equals("المركبات النيتروجينية"))return v.contains("nitrogen")||v.contains("amine")||v.contains("نيتروجين");
+        return family.equals("أخرى");
+    }
+
+    private void refreshChemicalSearch(){
+        if(chemicalRows==null||chemicalSearch==null||familySpinner==null)return;
+        String query=chemicalSearch.getText().toString().trim();
+        String family=String.valueOf(familySpinner.getSelectedItem());
+        chemicalRows.removeAllViews();
+        try{
+            ChemicalRepository repo=new ChemicalRepository(host.database());
+            List<ChemicalRepository.Chemical> results=repo.search(query,250);
+            int shown=0;
+            for(ChemicalRepository.Chemical chemical:results){
+                if(!"جميع العائلات".equals(family)&&!matchesFamily(family,chemical.chemicalClass))continue;
+                if(shown++>=40)break;
+                String label=(chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name);
+                Button item=UiKit.button(c,"🧪 "+label+"  |  CAS "+(chemical.cas==null?"—":chemical.cas));
+                item.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
+                item.setOnClickListener(v->{
+                    chosenChemical=label;
+                    int id=chemical.legacyId==null?-1:chemical.legacyId.intValue();
+                    if(id>=0)host.setTrackingTarget(id,label);
+                    new AlertDialog.Builder(c).setTitle(label)
+                        .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nتفعيل التتبع يتطلب معرف المادة المدعوم في منظومة التتبع.")
+                        .setPositiveButton(id>=0?"تتبع المادة":"إغلاق",(d,w)->{})
+                        .show();
+                });
+                chemicalRows.addView(item,UiKit.full(c));
+            }
+            if(shown==0)chemicalRows.addView(card("لا توجد مواد مطابقة للبحث."),UiKit.full(c));
+        }catch(Exception ex){chemicalRows.addView(card("تعذر قراءة فهرس المواد."),UiKit.full(c));}
     }
 
     private ScrollView buildParticlesLanding(){
         ScrollView scroll=new ScrollView(c);
+        scroll.setVerticalScrollBarEnabled(true);
+        scroll.setScrollbarFadingEnabled(false);
         LinearLayout content=UiKit.vbox(c);
-        content.setPadding(UiKit.dp(c,10),UiKit.dp(c,12),UiKit.dp(c,10),UiKit.dp(c,12));
+        content.setPadding(UiKit.dp(c,10),UiKit.dp(c,12),UiKit.dp(c,10),UiKit.dp(c,18));
         scroll.addView(content);
         content.addView(UiKit.title(c,"◌ الجزيئات والأغبرة"),UiKit.full(c));
-        content.addView(card("وحدة قياس PM غير مركبة حالياً."),UiKit.full(c));
-        content.addView(card("سيتم عرض القنوات التي يدعمها الحساس الحقيقي فقط، مع القياس الآني والتقارير الذكية بعد تركيبه."),UiKit.full(c));
+        content.addView(card("تركيز الجزيئات المعلقة  •  µg/m³"),UiKit.full(c));
+        TableLayout table=new TableLayout(c);table.setStretchAllColumns(true);
+        String[][] rows={{"القناة","القراءة","الوحدة"},{"PM1.0","—","µg/m³"},{"PM2.5","—","µg/m³"},{"PM10","—","µg/m³"}};
+        for(int i=0;i<rows.length;i++){
+            TableRow row=new TableRow(c);
+            row.setBackgroundColor(i%2==0?0xFFF1F3F6:Color.WHITE);
+            for(String value:rows[i]){
+                TextView cell=UiKit.text(c,value);cell.setTextColor(TEXT);cell.setTextSize(13);
+                cell.setGravity(Gravity.CENTER);row.addView(cell);
+            }
+            table.addView(row);
+        }
+        content.addView(table,UiKit.full(c));
+        content.addView(UiKit.title(c,"📈 المخططات"),UiKit.full(c));
+        Spinner charts=new Spinner(c);
+        charts.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_spinner_dropdown_item,new String[]{"التغير الزمني للتركيز","مقارنة أحجام الجزيئات","توزيع الجزيئات"}));
+        content.addView(charts,UiKit.full(c));
+        TextView chart=card("لا توجد عينات لعرض المخطط.");
+        content.addView(chart,UiKit.full(c));
+        charts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            public void onItemSelected(AdapterView<?> p,View v,int position,long id){chart.setText("📈 "+charts.getSelectedItem()+"\nلا توجد عينات مسجلة.");}
+            public void onNothingSelected(AdapterView<?> p){}
+        });
+        Button report=UiKit.button(c,"📄 التقرير الذكي للجزيئات");
+        report.setEnabled(false);
+        content.addView(report,UiKit.full(c));
         return scroll;
     }
 
@@ -149,8 +250,8 @@ public final class MeasurementsTab {
         analysisPage.addView(target,new FrameLayout.LayoutParams(-1,-1));
         for(int i=0;i<analysisTabs.length;i++){
             boolean active=i==analysisSection;
-            analysisTabs[i].setTextColor(active?Color.WHITE:0xFFCFD8DC);
-            analysisTabs[i].setBackgroundColor(active?0xFF126BD7:0xFF182431);
+            analysisTabs[i].setTextColor(TEXT);
+            analysisTabs[i].setBackgroundColor(active?0xFFFFBE32:0xFFE4E7EC);
         }
         if(selected==1)refresh();
     }
@@ -162,8 +263,8 @@ public final class MeasurementsTab {
         page.addView(target,new FrameLayout.LayoutParams(-1,-1));
         for(int i=0;i<tabs.length;i++){
             boolean active=i==selected;
-            tabs[i].setTextColor(active?Color.WHITE:0xFFCFD8DC);
-            tabs[i].setBackgroundColor(active?0xFF126BD7:0xFF182431);
+            tabs[i].setTextColor(TEXT);
+            tabs[i].setBackgroundColor(active?0xFFFFBE32:0xFFE4E7EC);
         }
         refresh();
     }
