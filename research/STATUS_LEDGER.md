@@ -65,11 +65,11 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 07.9 | Continual learning | PARTIAL_PROTOTYPE | research/techniques/07.9/ (minimal baseline; synthetic smoke tests authored) |
 | 07.10 | Resource profiling | PARTIAL_PROTOTYPE | research/techniques/07.10/ (minimal baseline; synthetic smoke tests authored) |
 | 08.1 | 1D-CNN | PARTIAL_PROTOTYPE | research/techniques/08.1/ (minimal baseline; synthetic smoke tests authored) |
-| 08.2 | TCN | NOT_STARTED | — |
-| 08.3 | LSTM/GRU | NOT_STARTED | — |
-| 08.4 | GNN | NOT_STARTED | — |
-| 08.5 | Temporal ensemble | NOT_STARTED | — |
-| 08.6 | Simulation | NOT_STARTED | — |
+| 08.2 | TCN | PARTIAL_PROTOTYPE | research/techniques/08.2/ (minimal primitives; synthetic smoke tests authored) |
+| 08.3 | LSTM/GRU | PARTIAL_PROTOTYPE | research/techniques/08.3/ (minimal primitives; synthetic smoke tests authored) |
+| 08.4 | GNN | PARTIAL_PROTOTYPE | research/techniques/08.4/ (minimal primitives; synthetic smoke tests authored) |
+| 08.5 | Temporal ensemble | PARTIAL_PROTOTYPE | research/techniques/08.5/ (minimal primitives; synthetic smoke tests authored) |
+| 08.6 | Simulation | PARTIAL_PROTOTYPE | research/techniques/08.6/ (minimal primitives; synthetic smoke tests authored) |
 | 08.7 | Sim-to-real | NOT_STARTED | — |
 | 08.8 | Mixture detection | NOT_STARTED | — |
 | 08.9 | Unmixing | NOT_STARTED | — |
