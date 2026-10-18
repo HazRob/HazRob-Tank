@@ -222,7 +222,7 @@ public final class MeasurementsTab {
                 labels.add("🧪 "+label+"    |    "+(chemical.cas==null?"—":chemical.cas)+"    |    "+(chemical.chemicalClass==null?"—":chemical.chemicalClass));
             }
             int sort=sortSpinner.getSelectedItemPosition();
-            if(sort!=0){
+            if(sort>=0){
                 java.util.Collections.sort(visibleChemicals,(a,b)->{
                     String left=sort==2?(a.cas==null?"":a.cas):(a.arabicName!=null&&!a.arabicName.isEmpty()?a.arabicName:a.name);
                     String right=sort==2?(b.cas==null?"":b.cas):(b.arabicName!=null&&!b.arabicName.isEmpty()?b.arabicName:b.name);
