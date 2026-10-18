@@ -62,6 +62,33 @@ jobs:
           manifest.write_text(t)
           PY
 
+      - name: Check Tank firmware API4 routes and Android command contract
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          fw=Path('tank/firmware/ESP32-Tank/ESP32-Tank.ino').read_text()
+          cfg=Path('tank/firmware/ESP32-Tank/Config.h').read_text()
+          api=Path('tank/android/app/src/main/java/com/servoc/app/communication/RobotApi.java').read_text()
+          required={
+              '/drive':['/drive?l=','&r='],
+              '/estop':['/estop'],
+              '/estop/reset':['/estop/reset'],
+              '/relay':['/relay?mask='],
+              '/measure':['/measure?cmd=start','/measure?cmd=cancel'],
+              '/data':['/data'],
+              '/diag':['/diag'],
+              '/cfg':['/cfg'],
+          }
+          for route, tokens in required.items():
+              assert f'web.on("{route}"' in fw, f'Firmware route missing: {route}'
+              for token in tokens: assert token in api, f'Android command missing: {token}'
+          assert re.search(r'constexpr\\s+uint8_t\\s+API=4\\s*;',cfg), 'Expected firmware API4'
+          assert 'CONTROL_COMMAND_TIMEOUT_MS=500' in cfg, 'Firmware drive watchdog changed'
+          print('PASS: static ESP32-Tank API4 direct-route contract')
+          PY
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
