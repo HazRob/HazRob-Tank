@@ -223,7 +223,14 @@ public final class MeasurementsTab {
         charts.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_spinner_dropdown_item,new String[]{"التغير الزمني للتركيز","مقارنة أحجام الجزيئات","توزيع الجزيئات"}));
         content.addView(charts,UiKit.full(c));
         TextView chart=card("لا توجد عينات لعرض المخطط.");
+        chart.setOnClickListener(v->new AlertDialog.Builder(c)
+            .setTitle(String.valueOf(charts.getSelectedItem()))
+            .setMessage("لا توجد عينات جزيئات مسجلة لعرض مخطط فعلي.")
+            .setPositiveButton("إغلاق",null).show());
         content.addView(chart,UiKit.full(c));
+        Button openChart=UiKit.button(c,"📈 عرض المخطط");
+        openChart.setOnClickListener(v->chart.performClick());
+        content.addView(openChart,UiKit.full(c));
         charts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> p,View v,int position,long id){chart.setText("📈 "+charts.getSelectedItem()+"\nلا توجد عينات مسجلة.");}
             public void onNothingSelected(AdapterView<?> p){}
@@ -289,11 +296,11 @@ public final class MeasurementsTab {
         double lastSoundRms=Double.NaN,lastSoundP2p=Double.NaN;
 
         PhysicalPane(){
-            view=new ScrollView(c);LinearLayout box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,8));view.addView(box);
+            view=new ScrollView(c);view.setVerticalScrollBarEnabled(true);view.setScrollbarFadingEnabled(false);LinearLayout box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,8));view.addView(box);
             box.addView(UiKit.title(c,"القياسات الفيزيائية والتشخيصية"),UiKit.full(c));
             TableLayout table=new TableLayout(c);table.setStretchAllColumns(true);table.setShrinkAllColumns(true);table.addView(headerRow());
             for(int i=0;i<PhysicalCatalog.COUNT;i++){
-                TableRow row=new TableRow(c);row.setBackgroundColor((i&1)==0?0xFF161C23:0xFF1B222B);
+                TableRow row=new TableRow(c);row.setBackgroundColor((i&1)==0?0xFFF1F3F6:0xFFFFFFFF);
                 row.addView(tableCell(PhysicalCatalog.NAMES_AR[i],false));values[i]=tableCell("—",false);row.addView(values[i]);row.addView(tableCell(PhysicalCatalog.UNITS[i],false));states[i]=tableCell("غير مركب",false);row.addView(states[i]);table.addView(row);
             }
             TableRow rms=auxRow("MAX4466 RMS","V");soundRms=(TextView)rms.getChildAt(1);soundRmsState=(TextView)rms.getChildAt(3);table.addView(rms);
@@ -335,7 +342,7 @@ public final class MeasurementsTab {
         final Button powerToggle,start,cancel,save;
 
         LivePane(){
-            view=new ScrollView(c);box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,10));view.addView(box);
+            view=new ScrollView(c);view.setVerticalScrollBarEnabled(true);view.setScrollbarFadingEnabled(false);box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,10));view.addView(box);
             box.addView(UiKit.title(c,"القياس الحي • HR069"),UiKit.full(c));
             LinearLayout row1=UiKit.hbox(c);powerCard=kpi("MQ\n—");arrayCard=kpi("المصفوفة\n—");row1.addView(powerCard,UiKit.weight(1));row1.addView(arrayCard,UiKit.weight(1));box.addView(row1,UiKit.full(c));
             LinearLayout row2=UiKit.hbox(c);gasCard=kpi("الاستجابة\n—");sessionCard=kpi("الجلسة\n—");row2.addView(gasCard,UiKit.weight(1));row2.addView(sessionCard,UiKit.weight(1));box.addView(row2,UiKit.full(c));
