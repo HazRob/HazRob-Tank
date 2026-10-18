@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 02.6 3D/4D time-aligned response trajectories PROTOTYPE committed; 16 tests authored, clean checkout and real-data verification pending. This is not a reproduction of MQDataScience methods. NEXT: 02.7 feature selection. No production changes.
+
 # Checkpoint 2026-10-18: 02.5 fingerprints PROTOTYPE committed. Ordered 8-sensor log-fold Rs response vector and cosine baseline, 14 test cases authored. Legacy fingerprint_v1 parity NOT verified; real Tank sensor order and heater-phase data pending. NEXT: 02.6 3D/4D features. No production changes.
 
 # Checkpoint 2026-10-18: 02.4 temporal features PROTOTYPE committed, 16/16 synthetic local tests passed. Features include observed-peak rise and recovery times, slope and area. Actual Tank exposure timing and gas validation pending. NEXT: 02.5 fingerprints; inspect existing legacy fingerprint research before writing duplicate algorithms. No production changes.
