@@ -11,7 +11,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 01.6 | Signal quality | PROTOTYPE | research/techniques/01.6/ (13 unit cases authored; Tank ADC hardware validation pending) |
 | 01.7 | Drift monitoring | PROTOTYPE | research/techniques/01.7/ (12 unit cases authored; controlled baseline validation pending) |
 | 02.1 | Filtering | PROTOTYPE | research/techniques/02.1/ (15/15 local unit tests; Tank temporal response validation pending) |
-| 02.2 | Scaling | NOT_STARTED | — |
+| 02.2 | Scaling | PROTOTYPE | research/techniques/02.2/ (13 unit cases authored; clean-checkout and real-data validation pending) |
 | 02.3 | Static features | NOT_STARTED | — |
 | 02.4 | Temporal features | NOT_STARTED | — |
 | 02.5 | Fingerprints | NOT_STARTED | — |
