@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 04.10 benchmarking PROTOTYPE committed. Grouped holdout partitioning and descriptive accuracy/coverage/selective accuracy/confusion/per-class metrics for externally supplied predictions; no real benchmark performed. 16 synthetic tests authored, clean checkout and real Tank evaluation pending. Stage 04 research code 04.1–04.10 present, with 04.5/04.7/04.9 PARTIAL_PROTOTYPE; not validated or production-ready. NEXT 05.1 single-sensor calibration. No production changes.
+
 # Checkpoint 2026-10-18: 04.9 Physics + ML PARTIAL_PROTOTYPE committed. Candidate-specific MQ reference residual features at independently known concentration, 16 synthetic tests authored. ML model integration, unknown-concentration handling, clean-checkout test execution and real Tank validation pending. NEXT 04.10 benchmarking. No production changes.
 
 # Checkpoint 2026-10-18: 04.8 MLP PROTOTYPE committed. Single-hidden-layer tanh/softmax network, full-batch backpropagation, train-only standardization, L2, 16 synthetic tests authored. Clean-checkout execution and real Tank validation pending. NEXT 04.9 physics + ML. No production changes.
