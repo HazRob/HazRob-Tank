@@ -1,3 +1,11 @@
+# CHECKPOINT CURRENT — 2026-10-19: BATCH 02 G1 COMPLETE (20 of 80 verified)
+
+See research/EXECUTION_PLAN_80_AR.md and research/PROGRESS_80.json (canonical machine progress), research/BATCH_RESULTS_80.md (per-technique evidence). Batch02 02.4,02.5,02.6,02.7,02.8,03.1,03.2,03.3,03.4,03.5: CI https://github.com/HazRob/HazRob-Tank/actions/runs/39175957251 tested commit faa4e3f4a41ea0ab149096b46925e9c7532d3f02; 10/10 independently isolated jobs PASS; exact logs 16+14+16+14+14+14+16+16+14+14=148 tests PASS. Cumulative first two batches: 20/80 technique G1 gates, 278 tests. G3 empirical validation remains 0/80; 03.4 LDA/PLS-DA remains binary-only PARTIAL_PROTOTYPE. Dataset UCI1081 is not Tank MQ8 and lacks verified sessions, R0, timebase and BME; no calibration or safety assertions. No production modifications.
+
+NEXT BATCH 03: 03.6,03.7,03.8,04.1,04.2,04.3,04.4,04.5,04.6,04.7. Inspect source/test/README and mathematically identifiable weaknesses; fix actual bugs with regressions; run ten isolated jobs and obtain test counts from GitHub CI; update progress, ledger, batch results and this RESUME. Keep G1/G2/G3 separate.
+
+---
+
 # CHECKPOINT CURRENT — 2026-10-19 (Yemen): 80-technique scientific plan / batch 01 G1 COMPLETE
 
 Canonical plan: research/EXECUTION_PLAN_80_AR.md (8×10 batches, G0 design / G1 executable unit tests / G2 data / G3 independent scientific validation). Machine progress: research/PROGRESS_80.json. Accumulated evidence: research/BATCH_RESULTS_80.md. Original 80-technique IDs validated against STATUS_LEDGER.md; MASTER_PLAN.md reconciled to 80.
