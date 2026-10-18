@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 1.2 | 2026-10-19 | 80 planned items; batch01 (10 techniques) verified unit PASS 130/130 in CI run #39175394866, 0 of 80 empirically validated by this program. [Evidence](BATCH_RESULTS_80.md).
+Version 1.3 | 2026-10-19 | 80 planned; 20 techniques CI unit PASS (130+148=278 tests) from batches 01 and 02; zero independent scientific validations in this program. [Evidence](BATCH_RESULTS_80.md).
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -13,16 +13,16 @@ Version 1.2 | 2026-10-19 | 80 planned items; batch01 (10 techniques) verified un
 | 02.1 | Filtering | PROTOTYPE | research/techniques/02.1/ (15/15 local unit tests; Tank temporal response validation pending) ; GitHub Actions batch01 15/15 verified unit PASS; empirical validation pending |
 | 02.2 | Scaling | PROTOTYPE | research/techniques/02.2/ (train-only scaling; real-data validation pending) ; GitHub Actions batch01 13/13 verified unit PASS; empirical validation pending |
 | 02.3 | Static features | PROTOTYPE | research/techniques/02.3/ (14 test cases authored; real-data validation pending) ; GitHub Actions batch01 14/14 verified unit PASS; empirical validation pending |
-| 02.4 | Temporal features | PROTOTYPE | research/techniques/02.4/ (16/16 synthetic local tests; real time-series validation pending) |
-| 02.5 | Fingerprints | PROTOTYPE | research/techniques/02.5/ (8-sensor log-fold vector; legacy parity and real validation pending) |
-| 02.6 | 3D/4D features | PROTOTYPE | research/techniques/02.6/ (time-aligned trajectories; 16 unit cases authored) |
-| 02.7 | Feature selection | PROTOTYPE | research/techniques/02.7/ (training-only Fisher ranking; 14 tests authored) |
-| 02.8 | Provenance schema | PROTOTYPE | research/techniques/02.8/ (canonical metadata digest; 14 tests authored) |
-| 03.1 | PCA | PROTOTYPE | research/techniques/03.1/ (training-only PCA; 14 tests authored) |
-| 03.2 | Similarity | PROTOTYPE | research/techniques/03.2/ (16/16 local tests; real Tank validation pending) |
-| 03.3 | Class overlap | PROTOTYPE | research/techniques/03.3/ (nearest-neighbor ambiguity; 16 tests authored) |
-| 03.4 | LDA/PLS-DA | PARTIAL_PROTOTYPE | research/techniques/03.4/ (binary-only baselines; multiclass/multicomponent pending) |
-| 03.5 | Sensor importance | PROTOTYPE | research/techniques/03.5/ (training-only univariate ranking; 14 tests authored) |
+| 02.4 | Temporal features | PROTOTYPE | research/techniques/02.4/ (16/16 synthetic local tests; real time-series validation pending); GitHub Actions batch02 16/16 unit PASS; empirical validation pending |
+| 02.5 | Fingerprints | PROTOTYPE | research/techniques/02.5/ (8-sensor log-fold vector; legacy parity and real validation pending); GitHub Actions batch02 14/14 unit PASS; empirical validation pending |
+| 02.6 | 3D/4D features | PROTOTYPE | research/techniques/02.6/ (time-aligned trajectories; 16 unit cases authored); GitHub Actions batch02 16/16 unit PASS; empirical validation pending |
+| 02.7 | Feature selection | PROTOTYPE | research/techniques/02.7/ (training-only Fisher ranking; 14 tests authored); GitHub Actions batch02 14/14 unit PASS; empirical validation pending |
+| 02.8 | Provenance schema | PROTOTYPE | research/techniques/02.8/ (canonical metadata digest; 14 tests authored); GitHub Actions batch02 14/14 unit PASS; empirical validation pending |
+| 03.1 | PCA | PROTOTYPE | research/techniques/03.1/ (training-only PCA; 14 tests authored); GitHub Actions batch02 14/14 unit PASS; empirical validation pending |
+| 03.2 | Similarity | PROTOTYPE | research/techniques/03.2/ (16/16 local tests; real Tank validation pending); GitHub Actions batch02 16/16 unit PASS; empirical validation pending |
+| 03.3 | Class overlap | PROTOTYPE | research/techniques/03.3/ (nearest-neighbor ambiguity; 16 tests authored); GitHub Actions batch02 16/16 unit PASS; empirical validation pending |
+| 03.4 | LDA/PLS-DA | PARTIAL_PROTOTYPE | research/techniques/03.4/ (binary-only baselines; multiclass/multicomponent pending); GitHub Actions batch02 14/14 unit PASS; empirical validation pending |
+| 03.5 | Sensor importance | PROTOTYPE | research/techniques/03.5/ (training-only univariate ranking; 14 tests authored); GitHub Actions batch02 14/14 unit PASS; empirical validation pending |
 | 03.6 | Sensor subsets | PROTOTYPE | research/techniques/03.6/ (exhaustive subset ambiguity; 16 tests authored) |
 | 03.7 | Concentration confounding | PROTOTYPE | research/techniques/03.7/ (within-gas log-concentration correlation; 16 tests authored) |
 | 03.8 | Identifiability limits | PROTOTYPE | research/techniques/03.8/ (cross-class near-collision and abstention candidate; 16 tests authored) |
