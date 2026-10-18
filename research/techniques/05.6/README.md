@@ -1,0 +1,7 @@
+# 05.6 Tree-Based Regression — HazRob Tank
+
+**PROTOTYPE:** bagged CART regression trees for a single independently identified gas. Uses per-channel log10(Rs/R0) input, log10(ppm) target, bootstrapped training rows, randomized candidate feature subsets, squared-error splits, configurable depth/leaf count and seeded reproducibility. Ensemble output is the mean of tree log-concentration estimates (a geometric-mean ppm estimate); returns tree-to-tree dispersion in log10 units. **This dispersion is not calibrated predictive uncertainty.**
+
+Requires >=3 known concentration levels and at least max(6,D+2) training samples, aligned sensor IDs and independently measured concentration standards. Unlike smooth 05.4 ridge and 05.5 PLS models, CART partitions feature space and yields piecewise constant estimates. It does not extrapolate in a physically meaningful way. Checking the output concentration range does not detect unseen feature patterns or sensor drift. Evaluate with held-out concentration levels, sessions and devices, using training-only tuning and consistent splits across 05.1–05.6. Unknown gases, mixtures, humidity, heater phase, cross-sensitivity and class imbalance are not handled. No operational alarms.
+
+16 synthetic unit tests authored; clean-checkout execution and real Tank validation pending. Run `cd research/techniques/05.6 && python -m unittest -v`. No production changes.
