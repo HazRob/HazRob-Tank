@@ -49,7 +49,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 06.2 | Bayesian inference | PARTIAL_PROTOTYPE | research/techniques/06.2/ (supplied priors and likelihoods; conditional independence assumption; 16 tests authored) |
 | 06.3 | Probability calibration | PARTIAL_PROTOTYPE | research/techniques/06.3/ (temperature scaling and ECE; 16 tests authored, not run) |
 | 06.4 | Conformal prediction | PARTIAL_PROTOTYPE | research/techniques/06.4/ (split conformal closed-world candidate sets; 16 tests authored) |
-| 06.5 | Open-set recognition | NOT_STARTED | — |
+| 06.5 | Open-set recognition | PARTIAL_PROTOTYPE | research/techniques/06.5/ (nearest-centroid open-set baseline; 16 synthetic tests authored) |
 | 06.6 | OOD detection | NOT_STARTED | — |
 | 06.7 | Evidence conflicts | NOT_STARTED | — |
 | 06.8 | SHAP | NOT_STARTED | — |
