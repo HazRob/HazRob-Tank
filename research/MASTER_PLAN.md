@@ -2,12 +2,12 @@
 This roadmap belongs exclusively to the independent HazRob Tank project. It does NOT authorize development or changes to the original HazRob ChemCore. External HazRob-Lab studies are historical research evidence only and must be reviewed and explicitly imported before use.
 
 # HazRob ChemCore — Scientific execution plan
-Version 1.0 | 2026-10-18 | Research only
+Version 2.0 | 2026-10-19 | Research only. See [Arabic evidence-gated 80-technique execution plan](EXECUTION_PLAN_80_AR.md) and [machine-readable progress](PROGRESS_80.json).
 
 ## Dependencies
 01 measurement -> 02 signal processing -> 03 identifiability -> 04 classification and 05 quantification in parallel -> 06 uncertainty and evidence fusion. Stage 07 validation starts from day one and continues throughout; advanced adaptation follows baselines. 08 temporal neural and mixture models requires validated baselines; 09 robotic mapping needs pose/time/airflow ground truth. Revisit prior stages whenever evidence warrants.
 
-## Complete inventory: 79 techniques across 9 stages
+## Complete inventory: 80 techniques across 10 stages (79 original + research extension 10.1)
 
 ### Stage 01 — Measurement
 - 01.1 ADC to Rs
@@ -106,6 +106,9 @@ Version 1.0 | 2026-10-18 | Research only
 - 09.5 Spatiotemporal fusion
 - 09.6 Motion decisions
 
+### Stage 10 — Calibrated non-detection evidence
+- 10.1 Negative Evidence & Sensor-Guided Exclusion (PARTIAL_PROTOTYPE; no empirical sensor detection-power calibration)
+
 ## Required workflow for EACH technique
 1. Define scientific question, sensor physics, inputs, units, outputs, assumptions and failure modes.
 2. Audit data provenance, license, calibration, heater protocol, gas/concentration/session/environment metadata and leakage.
@@ -124,6 +127,9 @@ references/tech12_nested_subset_validation_2026-10-18.md (03.6); references/tech
 
 ## Limitations and restrictions
 UCI 1081 has 10 sensors and 90 experiments; it is not the HazRob 8-MQ array (MQ2 MQ3 MQ4 MQ5 MQ7 MQ8 MQ9 MQ135). MQ7/MQ9 heater cycles require special treatment. No extrapolation from replicate CV to independent field performance. Do not edit production ChemCore, APK or firmware; HazRob Tank stays independent.
+
+## Batched checkpoint policy
+Proceed in eight fixed batches of ten technique IDs, preserving ledger order. For each batch, perform clean-checkout CI tests for all ten, audit scientific evidence separately, document failures and data gaps, update PROGRESS_80.json, BATCH_RESULTS_80.md, STATUS_LEDGER.md and RESUME.md, then send one user-facing results report. Source-of-truth and acceptance gates are in EXECUTION_PLAN_80_AR.md. G1 software-test success is not scientific validation or deployment approval.
 
 ## Per-item deliverables
 Question; data manifest; baseline; source/tests; held-out results or explicit data gap; decision; verifiable commit; ledger row; RESUME checkpoint.
