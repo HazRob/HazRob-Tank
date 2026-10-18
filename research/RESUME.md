@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 03.7 concentration confounding PROTOTYPE committed. Within-gas Pearson correlation with log10 independently known ppm and insufficient-data flags; 16 synthetic tests authored, clean checkout pending. Does not establish causality, classification or concentration estimation. NEXT 03.8 identifiability limits. No production changes.
+
 # Checkpoint 2026-10-18: 03.6 sensor subsets PROTOTYPE committed. Exhaustive nonempty sensor combinations and leave-one-out descriptive ambiguity, 16 synthetic tests authored. Selection bias warning; nested grouped CV and real Tank validation pending. NEXT 03.7 concentration confounding. No production changes.
 
 # Checkpoint 2026-10-18: 03.5 sensor importance PROTOTYPE committed. Per-sensor univariate Fisher score, constant flag, train-only ranking and held-out projection; 14 synthetic tests authored, not verified from clean checkout. Requires Tank cross-session/device/concentration validation and ablation studies. NEXT 03.6 sensor subsets. No production changes.
