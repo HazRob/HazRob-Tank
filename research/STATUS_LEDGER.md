@@ -70,11 +70,11 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 08.4 | GNN | PARTIAL_PROTOTYPE | research/techniques/08.4/ (minimal primitives; synthetic smoke tests authored) |
 | 08.5 | Temporal ensemble | PARTIAL_PROTOTYPE | research/techniques/08.5/ (minimal primitives; synthetic smoke tests authored) |
 | 08.6 | Simulation | PARTIAL_PROTOTYPE | research/techniques/08.6/ (minimal primitives; synthetic smoke tests authored) |
-| 08.7 | Sim-to-real | NOT_STARTED | — |
-| 08.8 | Mixture detection | NOT_STARTED | — |
-| 08.9 | Unmixing | NOT_STARTED | — |
-| 08.10 | Multi-analyte regression | NOT_STARTED | — |
-| 08.11 | Interference | NOT_STARTED | — |
+| 08.7 | Sim-to-real | PARTIAL_PROTOTYPE | research/techniques/08.7/ (minimal baseline; synthetic smoke tests authored) |
+| 08.8 | Mixture detection | PARTIAL_PROTOTYPE | research/techniques/08.8/ (minimal baseline; synthetic smoke tests authored) |
+| 08.9 | Unmixing | PARTIAL_PROTOTYPE | research/techniques/08.9/ (minimal baseline; synthetic smoke tests authored) |
+| 08.10 | Multi-analyte regression | PARTIAL_PROTOTYPE | research/techniques/08.10/ (minimal baseline; synthetic smoke tests authored) |
+| 08.11 | Interference | PARTIAL_PROTOTYPE | research/techniques/08.11/ (minimal baseline; synthetic smoke tests authored) |
 | 08.12 | Complex products | NOT_STARTED | — |
 | 09.1 | Robotic olfaction | NOT_STARTED | — |
 | 09.2 | Gas mapping | NOT_STARTED | — |
