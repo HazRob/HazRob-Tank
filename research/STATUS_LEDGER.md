@@ -91,7 +91,7 @@ Additional research proposal: [Negative Evidence & Sensor-Guided Exclusion](NEGA
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
-| 10.1 | Negative Evidence & Sensor-Guided Exclusion | PROPOSED | research/NEGATIVE_EVIDENCE_PROPOSAL.md; no standalone validated implementation, no device-specific sensitivity/specificity characterization |
+| 10.1 | Negative Evidence & Sensor-Guided Exclusion | PARTIAL_PROTOTYPE | research/techniques/10.1/ (8/8 local synthetic unit tests executed; sensor detection-power calibration, correlated evidence correction and Tank validation pending) |
 
 **Scope of 10.1:** calibrated sensor-specific non-detection likelihoods conditional on chemical identity, concentration, sensor detection capability, response latency, environmental conditions, cross-sensitivity and quality flags. Output should down-weight supported hypotheses, not hard-eliminate chemical families. Requires real blank/positive controls and grouped validation before use. Prior research primitive in 06.7 does not make 10.1 complete.
 
