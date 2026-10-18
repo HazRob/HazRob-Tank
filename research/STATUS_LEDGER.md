@@ -30,7 +30,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 04.2 | Fingerprint matching | PROTOTYPE | research/techniques/04.2/ (nearest-reference fingerprint ranking; 16 tests authored) |
 | 04.3 | KNN | PROTOTYPE | research/techniques/04.3/ (uniform/inverse-distance voting; 16 tests authored) |
 | 04.4 | Logistic regression | PROTOTYPE | research/techniques/04.4/ (multiclass softmax L2; 16 tests authored) |
-| 04.5 | SVM | NOT_STARTED | — |
+| 04.5 | SVM | PARTIAL_PROTOTYPE | research/techniques/04.5/ (linear OVR hinge-loss baseline; kernels pending) |
 | 04.6 | Random Forest | NOT_STARTED | — |
 | 04.7 | XGBoost | NOT_STARTED | — |
 | 04.8 | MLP | NOT_STARTED | — |
