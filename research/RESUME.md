@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 03.6 sensor subsets PROTOTYPE committed. Exhaustive nonempty sensor combinations and leave-one-out descriptive ambiguity, 16 synthetic tests authored. Selection bias warning; nested grouped CV and real Tank validation pending. NEXT 03.7 concentration confounding. No production changes.
+
 # Checkpoint 2026-10-18: 03.5 sensor importance PROTOTYPE committed. Per-sensor univariate Fisher score, constant flag, train-only ranking and held-out projection; 14 synthetic tests authored, not verified from clean checkout. Requires Tank cross-session/device/concentration validation and ablation studies. NEXT 03.6 sensor subsets. No production changes.
 
 # Checkpoint 2026-10-18: 03.4 LDA/PLS-DA PARTIAL_PROTOTYPE committed: binary ridge LDA and one-component binary PLS1-DA, 14 synthetic tests authored; no clean checkout verification. Full multiclass LDA and multicomponent PLS-DA, reference comparison and real Tank data validation pending. NEXT 03.5 sensor importance; return to complete 03.4 before any final scientific approval. No production changes.
