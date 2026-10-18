@@ -1,0 +1,7 @@
+# 06.4 Split Conformal Prediction — HazRob Tank
+
+**PARTIAL_PROTOTYPE.** Model-agnostic split conformal classification on precomputed multiclass probabilities and independent true-label calibration observations. Nonconformity score is 1 - probability assigned to true label. Uses finite-sample quantile rank ceil((n+1)*(1-alpha)); if rank > n, threshold is +infinity and all known classes are included. Output is a **set of candidate class indices**, not a forced single identity. Evaluate empirical coverage and average set size on untouched held-out test data.
+
+The classical >= 1-alpha marginal coverage statement requires exchangeability of calibration/test examples and a fixed trained classifier; it is **not** per-class or per-session guaranteed. Sensor drift, cross-device/domain shifts, temperature/humidity, unknown gases, mixtures, correlated time-series and reused calibration data can invalidate coverage. Candidate universe is closed-world: unknown gases are not handled. For safety decisions, a singleton set is not a certified identity. An empty set is explicit abstention, and large sets convey ambiguity. Data must be split by session/device and concentration; calibrate only on data not used to train or tune the base model. Class order must remain fixed.
+
+16 synthetic tests authored, clean-checkout execution and real Tank validation pending. Run `cd research/techniques/06.4 && python -m unittest -v`. No production modifications.
