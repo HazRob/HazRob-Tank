@@ -1,0 +1,7 @@
+# 06.1 Evidence Fusion — HazRob Tank
+
+**PARTIAL_PROTOTYPE:** a conservative research log-opinion pool over candidate gas labels, with explicit dependence groups. Accepts strictly positive normalized source distributions and a strictly positive normalized prior. Averages source log-evidence relative to the prior *within* each declared dependence group, and caps each group's total strength to mitigate double counting. Requires at least two declared groups by default, otherwise abstains. Output is **heuristic fused scores, NOT calibrated probabilities, a Bayesian posterior or verified gas identity**.
+
+Dependence grouping is a user-supplied hypothesis: two distinct groups are NOT automatically independent; curves, fingerprints and ML models may all share the same MQ sensor measurements and training data. Avoid interpreting agreement as independent corroboration. The method cannot establish genuine conditional independence, and no uncertainty, unknown-gas rejection, OOD detection, or contradiction severity model is supplied yet (later 06.x). Source score calibration and alignment across identical candidate sets are prerequisites for scientific evaluation. Assess group sensitivity and out-of-sample calibration, especially unknown gases, mixtures, interferents, drift, temperature/humidity and session/device splits. No production alarm logic.
+
+16 synthetic tests authored; clean-checkout execution and real Tank validation pending. Run `cd research/techniques/06.1 && python -m unittest -v`. No production modifications.
