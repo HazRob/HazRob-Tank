@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 04.7 XGBoost investigation PARTIAL_PROTOTYPE committed. Simplified multiclass gradient-boosted decision stumps, explicitly NOT XGBoost; 16 synthetic tests authored, clean checkout and real Tank evaluation pending. True XGBoost objective, Hessian-based splits, trees and validation remain outstanding. NEXT 04.8 MLP. No production changes.
+
 # Checkpoint 2026-10-18: 04.6 Random Forest PROTOTYPE committed. Bootstrapped Gini decision trees with random feature subsets and deterministic seed; 16 synthetic tests authored, clean checkout and real Tank grouped holdout validation pending. NEXT 04.7 XGBoost. No production changes.
 
 # Checkpoint 2026-10-18: 04.5 SVM PARTIAL_PROTOTYPE committed. Linear one-vs-rest hinge-loss subgradient baseline, 16 synthetic tests authored; kernel/RBF SVM and vetted solver comparison pending. Clean checkout and real Tank validation pending. NEXT 04.6 Random Forest. No production changes.
