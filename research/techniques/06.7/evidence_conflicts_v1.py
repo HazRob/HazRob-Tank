@@ -3,7 +3,7 @@ from math import isfinite
 def assess(candidate, readings, response_matrix, *, minimum_detection_power=0.95):
     if not isinstance(candidate,str) or not candidate or not 0<minimum_detection_power<=1:raise ValueError("invalid candidate/threshold")
     if not isinstance(readings,dict) or not isinstance(response_matrix,dict):raise ValueError("mapping required")
-    contradictions=[];unknown=[];supports=[]
+    if candidate in response_matrix and not isinstance(response_matrix[candidate],dict):\n        raise ValueError("malformed candidate response matrix")\n    contradictions=[];unknown=[];supports=[]
     for sensor,observed in readings.items():
         if observed not in ("DETECTED","NOT_DETECTED","FAULT","NOT_MEASURED"):raise ValueError("invalid observation state")
         rule=response_matrix.get(candidate,{}).get(sensor)
