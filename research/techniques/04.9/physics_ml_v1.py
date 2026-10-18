@@ -21,7 +21,7 @@ def _interpolate(points, ppm):
     for (x0,y0),(x1,y1) in zip(p,p[1:]):
         if x0<=ppm<=x1:
             t=(log10(ppm)-log10(x0))/(log10(x1)-log10(x0))
-            return 10**(log10(y0)+t*(log10(y1)-log10(y0))
+            return 10**(log10(y0)+t*(log10(y1)-log10(y0)))
     raise ValueError("unreachable")
 
 def augment_physics_features(observed, gas_curves, concentration_ppm, sensor_ids):
