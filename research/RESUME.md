@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 02.2 scaling PROTOTYPE committed under research/techniques/02.2/. Standard and robust scalers fit on training data only; 13 test cases authored but clean-checkout run not verified. Next sequential item 02.3 static features. Tank research only, no production changes.
+
 # Checkpoint 2026-10-18: 02.1 filtering PROTOTYPE committed. Three causal filters (median, moving average, EMA), 15/15 local tests passed. Need real Tank time-series and clean checkout validation. Next 02.2 scaling. Tank research only; no production changes.
 
 # Checkpoint 2026-10-18: 01.7 baseline drift monitoring prototype committed (robust median and log-change, stability gate; no automatic R0 changes). Twelve test cases authored, clean-checkout execution pending. Stage 01 research prototypes 01.1–01.7 now recorded; none chemically or hardware validated. NEXT sequential item 02.1 signal filtering. No production changes.
