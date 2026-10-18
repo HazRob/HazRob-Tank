@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 05.3 nonlinear regression PROTOTYPE committed. Quadratic log-log response fit for independently known gas/ppm with monotonic inverse and range abstention; 16 synthetic tests authored, clean-checkout execution and real Tank validation pending. NEXT 05.4 multisensor regression. No production changes.
+
 # Checkpoint 2026-10-18: 05.2 multipoint calibration PROTOTYPE committed. Known gas/sensor, >=3 independent calibration levels, monotone piecewise log-log forward/inverse interpolation, no extrapolation. 16 synthetic tests authored; clean-checkout execution and real Tank calibration validation pending. NEXT 05.3 nonlinear regression. No production changes.
 
 # Checkpoint 2026-10-18: 05.1 single-sensor calibration PROTOTYPE committed. Known gas, one MQ sensor, >=3 distinct independently known ppm standards; log-log power-law OLS; no extrapolation; R0/Rs ohms. 16 synthetic tests authored, clean-checkout execution and real Tank validation pending. NEXT 05.2 multipoint calibration. No production changes.
