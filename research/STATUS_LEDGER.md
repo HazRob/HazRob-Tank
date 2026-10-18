@@ -36,7 +36,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 04.8 | MLP | PROTOTYPE | research/techniques/04.8/ (single-hidden-layer tanh/softmax network; 16 tests authored) |
 | 04.9 | Physics+ML | NOT_STARTED | — |
 | 04.10 | Benchmarking | PROTOTYPE | research/techniques/04.10/ (grouped holdout and descriptive metrics; 16 tests authored) |
-| 05.1 | Single-sensor calibration | NOT_STARTED | — |
+| 05.1 | Single-sensor calibration | PROTOTYPE | research/techniques/05.1/ (known-gas log-log calibration; 16 tests authored) |
 | 05.2 | Multipoint calibration | NOT_STARTED | — |
 | 05.3 | Nonlinear regression | NOT_STARTED | — |
 | 05.4 | Multisensor regression | NOT_STARTED | — |
