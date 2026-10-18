@@ -67,3 +67,8 @@ Last updated: 2026-10-17 23:56 UTC. Work branch: `develop`. Original SERVOC-Andr
 - `f8b4193ec287357d848e42afc227785fedf8ef3a` and fix `29f21378e76311e2015d0d3a7904c11429c8c210`: v2 GitHub Actions workflow now runs a simple source-level API4 compatibility assertion before Gradle, comparing actual ESP32-Tank HTTP route registrations with Android RobotApi command strings, plus API version and 500ms drive watchdog.
 - This is deliberately a small deterministic contract check, not a simulation of firmware runtime.
 - CI results are not yet verified; never equate adding a test with passing it.
+
+## Checkpoint P1-09 — scrolling and PM chart window
+- `f63d48cb2f0d0060582b55c78d390b32336b670f`: all measurement ScrollViews with the recognized constructors now expose persistent vertical scrollbars; physical table alternating rows use white/gray; PM chart selector has an actual opening dialog with an explicit empty-data state (no simulated graph).
+- Still open: real PM sensor ingestion, chart rendering from actual samples, complete light-theme audit across other tabs, documented sessions and reports, build/firmware-in-loop verification.
+- Release remains **NOT VERIFIED**. Do not publish APK or assert runtime correctness until CI and integration tests pass.
