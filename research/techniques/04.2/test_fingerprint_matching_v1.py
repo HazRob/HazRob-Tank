@@ -1,0 +1,29 @@
+import unittest
+from fingerprint_matching_v1 import fit_fingerprint_library,match_fingerprint
+class FingerprintTests(unittest.TestCase):
+    def setUp(self):
+        self.lib=fit_fingerprint_library([[0,0],[1,1],[10,10],[11,11]],["A","A","B","B"],["MQ2","MQ3"])
+    def test_match_a(self):self.assertEqual(match_fingerprint([.1,.1],self.lib)["ranking"][0]["gas_label"],"A")
+    def test_match_b(self):self.assertEqual(match_fingerprint([10.1,10.1],self.lib)["ranking"][0]["gas_label"],"B")
+    def test_one_per_class(self):self.assertEqual(len(match_fingerprint([0,0],self.lib)["ranking"]),2)
+    def test_distance(self):self.assertEqual(match_fingerprint([0,0],self.lib)["ranking"][0]["distance"],0)
+    def test_top_k(self):self.assertEqual(len(match_fingerprint([0,0],self.lib,top_k=1)["ranking"]),1)
+    def test_abstain(self):self.assertEqual(match_fingerprint([100,100],self.lib,abstention_distance=1)["decision"],"ABSTAIN_DISTANCE")
+    def test_no_abstain(self):self.assertEqual(match_fingerprint([0,0],self.lib,abstention_distance=1)["decision"],"REFERENCE_MATCH_ONLY")
+    def test_bad_ids(self):
+        with self.assertRaises(ValueError):fit_fingerprint_library([[1,2]],["A"],["MQ2","MQ2"])
+    def test_bad_label(self):
+        with self.assertRaises(ValueError):fit_fingerprint_library([[1,2]],[None],["MQ2","MQ3"])
+    def test_bad_scale(self):
+        with self.assertRaises(ValueError):fit_fingerprint_library([[1,2]],["A"],["MQ2","MQ3"],scales=[1,0])
+    def test_bad_observation(self):
+        with self.assertRaises(ValueError):match_fingerprint([1],self.lib)
+    def test_nan(self):
+        with self.assertRaises(ValueError):match_fingerprint([float("nan"),1],self.lib)
+    def test_bad_k(self):
+        with self.assertRaises(ValueError):match_fingerprint([1,1],self.lib,top_k=0)
+    def test_bad_threshold(self):
+        with self.assertRaises(ValueError):match_fingerprint([1,1],self.lib,abstention_distance=-1)
+    def test_training_only(self):self.assertEqual(len(self.lib["references"]),4)
+    def test_deterministic(self):self.assertEqual(match_fingerprint([2,2],self.lib),match_fingerprint([2,2],self.lib))
+if __name__=="__main__":unittest.main()
