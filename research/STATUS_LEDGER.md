@@ -80,8 +80,8 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 09.2 | Gas mapping | PARTIAL_PROTOTYPE | research/techniques/09.2/ (minimal baseline; synthetic smoke tests authored) |
 | 09.3 | Source localization | PARTIAL_PROTOTYPE | research/techniques/09.3/ (minimal baseline; synthetic smoke tests authored) |
 | 09.4 | Active sampling | PARTIAL_PROTOTYPE | research/techniques/09.4/ (minimal baseline; synthetic smoke tests authored) |
-| 09.5 | Spatiotemporal fusion | NOT_STARTED | — |
-| 09.6 | Motion decisions | NOT_STARTED | — |
+| 09.5 | Spatiotemporal fusion | PARTIAL_PROTOTYPE | research/techniques/09.5/ (minimal baseline; synthetic smoke tests authored) |
+| 09.6 | Motion decisions | PARTIAL_PROTOTYPE | research/techniques/09.6/ (minimal baseline; synthetic smoke tests authored) |
 
 Update rows only with verified evidence, preserve historical decisions, and update RESUME.md each session.
 
