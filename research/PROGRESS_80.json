@@ -11,7 +11,7 @@
   },
   "batch_size": 10,
   "total_techniques": 80,
-  "completed_software_batches": 0,
+  "completed_software_batches": 1,
   "batches": [
     {
       "batch": 1,
@@ -27,9 +27,12 @@
         "02.2",
         "02.3"
       ],
-      "unit_gate": "PENDING",
-      "empirical_gate": "PENDING",
-      "github_run": null
+      "unit_gate": "PASS",
+      "empirical_gate": "NOT_VALIDATED",
+      "github_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "unit_test_count": 130,
+      "data_audit": "research/BATCH_RESULTS_80.md"
     },
     {
       "batch": 2,
@@ -165,11 +168,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/01.1/",
-      "unit_gate": "PASS_PREVIOUS_BATCH",
-      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39135356937",
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "NEEDS_DATA",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 11,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "01.2",
@@ -177,11 +183,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/01.2/",
-      "unit_gate": "PASS_PREVIOUS_BATCH",
-      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39135356937",
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "NEEDS_DATA",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 11,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "01.3",
@@ -189,11 +198,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/01.3/",
-      "unit_gate": "PASS_PREVIOUS_BATCH",
-      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39135356937",
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "NEEDS_DATA",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 17,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "01.4",
@@ -201,11 +213,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/01.4/",
-      "unit_gate": "PASS_PREVIOUS_BATCH",
-      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39135356937",
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "NEEDS_DATA",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 12,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "01.5",
@@ -213,11 +228,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/01.5/",
-      "unit_gate": "PASS_PREVIOUS_BATCH",
-      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39135356937",
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "NEEDS_DATA",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 12,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "01.6",
@@ -225,11 +243,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/01.6/",
-      "unit_gate": "NOT_VERIFIED",
-      "unit_evidence": null,
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "PARTIAL_SIGNAL_ONLY",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 13,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "01.7",
@@ -237,11 +258,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/01.7/",
-      "unit_gate": "NOT_VERIFIED",
-      "unit_evidence": null,
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "NEEDS_DATA",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 12,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "02.1",
@@ -249,11 +273,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/02.1/",
-      "unit_gate": "NOT_VERIFIED",
-      "unit_evidence": null,
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "PARTIAL_SIGNAL_ONLY",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 15,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "02.2",
@@ -261,11 +288,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/02.2/",
-      "unit_gate": "NOT_VERIFIED",
-      "unit_evidence": null,
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "PARTIAL_SIGNAL_ONLY",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 13,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "02.3",
@@ -273,11 +303,14 @@
       "batch": 1,
       "implementation_status": "PROTOTYPE",
       "source_dir": "research/techniques/02.3/",
-      "unit_gate": "NOT_VERIFIED",
-      "unit_evidence": null,
-      "data_gate": "NEEDS_DATA_ASSESSMENT",
+      "unit_gate": "PASS",
+      "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175394866",
+      "data_gate": "NEEDS_DATA",
       "empirical_gate": "NOT_VALIDATED",
-      "limitations": "See STATUS_LEDGER.md"
+      "limitations": "See STATUS_LEDGER.md",
+      "unit_test_count": 14,
+      "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
+      "verified_date": "2026-10-19"
     },
     {
       "id": "02.4",
@@ -1119,5 +1152,6 @@
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md"
     }
-  ]
+  ],
+  "verified_unit_tests": 130
 }
