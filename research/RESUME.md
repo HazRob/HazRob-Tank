@@ -1,3 +1,11 @@
+# CURRENT CHECKPOINT 2026-10-19 — BATCH 07 G1 PASS (70/80)
+
+Verified 70/80 research software G1 gates and 1089 actual unit assertions/cases across seven independently linked CI batch runs, ZERO G3 independent Tank gas reference validation. Batch07 07.10 and 08.1–08.9, 10 isolated jobs, 162/162 test cases PASS on GitHub Actions https://github.com/HazRob/HazRob-Tank/actions/runs/39178553937 commit 3868943da762d42f623669b0997db1eff7b0917e. Added behavioral regression tests to all ten (prior smoke-only) and repaired validation faults 07.10,08.3,08.8 and nondivisor endmember omission/compute budget in 08.9. Note 08.1–08.9 are untrained primitives/synthetic models, NOT complete trained CNN/TCN/LSTM/GNN or validated unmixers. Source details research/BATCH_RESULTS_80.md and research/PROGRESS_80.json.
+
+NEXT batch08 FINAL: 08.10,08.11,08.12,09.1,09.2,09.3,09.4,09.5,09.6,10.1. Existing 10.1 already has synthetic tests; inspect actual smoke tests for 08.10–09.6 and augment. Require 10 isolated real CI jobs, preserve G1 vs G3, append reports/progress/ledger/checkpoint. Then prioritize architecture integration and grouped real dataset evaluation, NOT claim eighty full scientific techniques are built. No production changes.
+
+---
+
 # CURRENT CHECKPOINT 2026-10-19 — BATCH 06 G1 VERIFIED COMPLETE (60/80)
 
 Canonical plan: research/EXECUTION_PLAN_80_AR.md; progress: research/PROGRESS_80.json; per-technique evidence: research/BATCH_RESULTS_80.md; statuses: research/STATUS_LEDGER.md. Batch06 IDs 06.9,07.1–07.9, CI https://github.com/HazRob/HazRob-Tank/actions/runs/39178053177 on exact SHA 3d2aa344016408fb03714b5f39e000f08e8df488: 10/10 jobs SUCCESS, 171/171 behavioral unit tests from individual CI logs. Previously superficial test suites received new substantive cases; repaired bool count misuse (07.1/07.2), fitted-model validation (07.4/07.5/07.6), boolean concentration/weight misuse (07.8). Cumulative G1 60/80, 927 actual tests. G3 chemically validated 0/80. No production changes.
