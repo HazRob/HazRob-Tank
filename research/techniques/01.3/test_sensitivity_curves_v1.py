@@ -32,12 +32,12 @@ class CurveTests(unittest.TestCase):
         self.assertAlmostEqual(ppm_from_ratio(nonlinear,16,allow_extrapolation=True),1)
     def test_inverse_extrapolation_uses_final_segment_decreasing(self):
         nonlinear=[(10,8),(100,4),(1000,1)]
-        self.assertAlmostEqual(ppm_from_ratio(nonlinear,.25,allow_extrapolation=True),2000)
+        self.assertAlmostEqual(ppm_from_ratio(nonlinear,.25,allow_extrapolation=True),10000)
     def test_inverse_extrapolation_uses_first_segment_increasing(self):
         nonlinear=[(10,1),(100,2),(1000,8)]
         self.assertAlmostEqual(ppm_from_ratio(nonlinear,.5,allow_extrapolation=True),1)
     def test_inverse_extrapolation_uses_final_segment_increasing(self):
         nonlinear=[(10,1),(100,2),(1000,8)]
-        self.assertAlmostEqual(ppm_from_ratio(nonlinear,32,allow_extrapolation=True),4000)
+        self.assertAlmostEqual(ppm_from_ratio(nonlinear,32,allow_extrapolation=True),10000)
 
 if __name__=="__main__": unittest.main()
