@@ -61,7 +61,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 07.5 | Drift compensation | PARTIAL_PROTOTYPE | research/techniques/07.5/ (minimal baseline; smoke tests authored, not executed) |
 | 07.6 | Domain adaptation | PARTIAL_PROTOTYPE | research/techniques/07.6/ (minimal baseline; smoke tests authored, not executed) |
 | 07.7 | Transfer learning | PARTIAL_PROTOTYPE | research/techniques/07.7/ (minimal baseline; synthetic smoke tests authored) |
-| 07.8 | Active learning/DoE | NOT_STARTED | — |
+| 07.8 | Active learning/DoE | PARTIAL_PROTOTYPE | research/techniques/07.8/ (minimal baseline; synthetic smoke tests authored) |
 | 07.9 | Continual learning | PARTIAL_PROTOTYPE | research/techniques/07.9/ (minimal baseline; synthetic smoke tests authored) |
 | 07.10 | Resource profiling | PARTIAL_PROTOTYPE | research/techniques/07.10/ (minimal baseline; synthetic smoke tests authored) |
 | 08.1 | 1D-CNN | PARTIAL_PROTOTYPE | research/techniques/08.1/ (minimal baseline; synthetic smoke tests authored) |
