@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 05.8 LOD/LOQ PARTIAL_PROTOTYPE committed. One-sided blank-sigma signal thresholds (3x/10x) only, not validated analytical detection or quantitation limits; quantifiable always false. 16 synthetic tests authored, clean-checkout execution and real Tank validation pending. NEXT 05.9 unseen concentrations. No production changes.
+
 # Checkpoint 2026-10-18: 05.7 identity-conditional concentration gate PROTOTYPE committed. External gas identity probabilities and confidence/margin checks route to known-gas calibrator, explicit abstention on uncertainty or invalid/out-of-range ppm. Probabilities not calibrated by this module; 16 synthetic tests authored, clean-checkout execution and real Tank validation pending. NEXT 05.8 LOD/LOQ. No production changes.
 
 # Checkpoint 2026-10-18: 05.6 tree regression PROTOTYPE committed. Known-gas bagged CART regression on multichannel log10(Rs/R0), mean log10(ppm), tree dispersion (not calibrated uncertainty); 16 synthetic tests authored, clean-checkout execution and real Tank validation pending. NEXT 05.7 identity-conditional concentration estimates. No production changes.
