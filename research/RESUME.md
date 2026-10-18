@@ -1,3 +1,5 @@
+# Checkpoint 2026-10-18: 05.6 tree regression PROTOTYPE committed. Known-gas bagged CART regression on multichannel log10(Rs/R0), mean log10(ppm), tree dispersion (not calibrated uncertainty); 16 synthetic tests authored, clean-checkout execution and real Tank validation pending. NEXT 05.7 identity-conditional concentration estimates. No production changes.
+
 # Checkpoint 2026-10-18: 05.5 PLS regression PROTOTYPE committed. Known-gas PLS1 with train-only standardization and latent components; 16 synthetic tests authored, clean-checkout execution and real Tank validation pending. NEXT 05.6 tree regression. No production changes.
 
 # Checkpoint 2026-10-18: 05.4 multisensor regression PROTOTYPE committed. Known gas, aligned MQ Rs/R0 log-features, ridge linear regression of log10(ppm), training-only standardization, range abstention; 16 synthetic tests authored, clean-checkout execution and real Tank validation pending. NEXT 05.5 PLS regression. No production changes.
