@@ -14,7 +14,7 @@ Version 1.0 | 2026-10-18 | 79 items. Legacy research not automatically complete.
 | 02.2 | Scaling | PROTOTYPE | research/techniques/02.2/ (13 unit cases authored; clean-checkout and real-data validation pending) |
 | 02.3 | Static features | PROTOTYPE | research/techniques/02.3/ (14 test cases authored; real-data validation pending) |
 | 02.4 | Temporal features | PROTOTYPE | research/techniques/02.4/ (16/16 synthetic local tests; real time-series validation pending) |
-| 02.5 | Fingerprints | NOT_STARTED | — |
+| 02.5 | Fingerprints | PROTOTYPE | research/techniques/02.5/ (8-sensor log-fold vector; legacy parity and real validation pending) |
 | 02.6 | 3D/4D features | NOT_STARTED | — |
 | 02.7 | Feature selection | NOT_STARTED | — |
 | 02.8 | Provenance schema | NOT_STARTED | — |
