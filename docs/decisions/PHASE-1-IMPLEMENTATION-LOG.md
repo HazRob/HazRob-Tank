@@ -50,3 +50,9 @@ Last updated: 2026-10-17 23:56 UTC. Work branch: `develop`. Original SERVOC-Andr
 - Workflow has NOT been dispatched; no CI run, compile verification, emulator/device validation, firmware-in-the-loop test, or v2 APK artifact exists yet.
 - Release gate: run Gradle unit tests and assembleDebug, verify APK signature, test all UI screens and navigation offline, then ESP32 API4 protocol/motor/sensor/camera tests with hardware; do not publish a 'tested v2' until gates pass.
 - Pending: ensure ChemicalRepository-backed search is UI-thread safe at scale, check chemical taxonomy and capability flags, wire chart dialogs to actual chart data, full visual contrast sweep, session lifecycle and smart reports.
+
+## Checkpoint P1-06 — search correctness and automatic CI trigger
+- `aacec9ccf09579424ef5b3887ebf1806b78ea288`: chemical search now debounced 250ms to reduce repeated database reads while typing; selecting a row no longer starts tracking immediately. Only the positive confirmation action invokes `host.setTrackingTarget` for compatible legacy IDs.
+- `83fd2386a9623888f7e751e28a3e2126942c47b7`: v2 workflow configured to run on pushes to `develop` when Android or workflow files change, in addition to manual dispatch.
+- **Verification is not complete:** GitHub workflow status could not be retrieved from the available GitHub interface. Check repository Actions for `Build HazRob Tank v2 Android APK`. Do not claim build success or provide an APK before confirming the run.
+- Current release blockers: functional ChemCore capability mapping; chart data/dialog verification; field-session one-to-one approval lifecycle; physical snapshot export; whole-app palette regression; firmware API4 contract and hardware tests.
