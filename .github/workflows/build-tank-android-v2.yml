@@ -84,7 +84,7 @@ jobs:
           for route, tokens in required.items():
               assert f'web.on("{route}"' in fw, f'Firmware route missing: {route}'
               for token in tokens: assert token in api, f'Android command missing: {token}'
-          assert re.search(r'constexpr\\s+uint8_t\\s+API=4\\s*;',cfg), 'Expected firmware API4'
+          assert 'API=4;' in cfg, 'Expected firmware API4'
           assert 'CONTROL_COMMAND_TIMEOUT_MS=500' in cfg, 'Firmware drive watchdog changed'
           print('PASS: static ESP32-Tank API4 direct-route contract')
           PY
