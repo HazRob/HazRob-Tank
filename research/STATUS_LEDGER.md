@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 2.1 | 2026-10-19 | G1 remains 80/80 (1,261 unit tests). G2-01 and G2-02: 19 distinct research techniques executed or had evaluation metrics exercised on real UCI1081 *external* sensor data; 02.5 Tank MQ8 fingerprint BLOCKED (schema mismatch). 05.9 tested baseline scoring, NOT fitted ppm regression. ZERO Tank-device G3 validations. Detailed report: G2_REAL_DATA_BATCH02_AR.md and machine register PROGRESS_80.json.
+Version 2.2 | 2026-10-19 | G1 80/80 (1261 unit cases); G2 3×10 reviewed: 20 external-source executions, 10 physically blocked; G3 independent Tank-device validation 0/80. See G2_REAL_DATA_BATCH03_AR.md.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -107,3 +107,6 @@ Evidence: [G2_REAL_DATA_BATCH01_AR.md](G2_REAL_DATA_BATCH01_AR.md), source doi 1
 - Evidence: [successful CI #39182059102](https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102), source archive SHA-256 verified, 8/8 new integration/invariant tests passed, structured numerical evidence [here](benchmarks/results/uci1081_g2_batch02_2026-10-19.json).
 - Findings include poor open-set rejection of actually unseen gas labels (11/90), and failed transfer of temperature-calibrated softmax across two concentration-holdout test levels. These are research negative findings, **not operational validation**.
 - Preserve implementation statuses as before and keep all G3 **NOT_VALIDATED**. No original HazRob, APK, ESP32 or production ChemCore updates.
+
+## G2-03 — physical evidence eligibility (2026-10-19)
+Reviewed exactly 10 technique IDs `01.1,01.2,01.3,01.4,01.5,01.6,01.7,02.1,02.3,05.1`. Only generic numerical causal filtering `02.1` can run without interpreting undefined source units. Successful real UCI1081 90-exposure/900-channel-window GitHub Actions run [#39184775420](https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420), 13/13 method tests passed, SHA-verified original source. Remaining nine lack source MQ Rs/R0 or ADC topology, heater schedules and/or BME; their experimental G2 is BLOCKED, software G1 remains PASS. Full empirical and invalid-input risk table [G2_REAL_DATA_BATCH03_AR.md](G2_REAL_DATA_BATCH03_AR.md), machine status [PROGRESS_80.json](PROGRESS_80.json). These are external-array numerical diagnostics and must not promote any technique to G3.
