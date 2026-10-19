@@ -1,0 +1,214 @@
+{
+  "schema_version": "1.0",
+  "run_date": "2026-10-19",
+  "source": "UCI1081 Gas Sensor Array Low-Concentration",
+  "source_doi": "10.24432/C5CK6F",
+  "source_license": "CC BY 4.0",
+  "source_zip_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "units": "ppb labels; electrical sensor raw response units unspecified",
+  "sensors": [
+    "TGS2603",
+    "TGS2630",
+    "TGS813",
+    "TGS822",
+    "MQ135",
+    "MQ137",
+    "MQ138",
+    "2M012",
+    "VOCS-P",
+    "2SH12"
+  ],
+  "exposures": 90,
+  "channels": 10,
+  "timesteps_per_sensor": 900,
+  "external_sensor_array_not_hazrob_tank": true,
+  "actual_repository_modules": [
+    "02.2",
+    "04.2",
+    "04.3",
+    "04.4",
+    "04.6"
+  ],
+  "fixed_preplanned_features": [
+    "late10",
+    "early_late_delta20"
+  ],
+  "test_protocols": [
+    "replicate_ordinal_proxy",
+    "leave_one_concentration_ppb"
+  ],
+  "github_actions_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
+  "tested_commit": "94a04c5365ee833f08d78e27e1da66d3588acccc",
+  "full_per_gas_confusion_artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732/artifacts/12155474319",
+  "empirical_Tank_validation": false,
+  "notes": [
+    "20 evaluated configurations (not 20 independent datasets).",
+    "Replicate ordinal is inferred, not an independent session or device key.",
+    "Concentration held out at 50, 100 or 200 ppb, but same source device/session metadata unknown.",
+    "Fixed hyperparameters; exploratory sample is too small for operational deployment.",
+    "Class probabilities not calibrated; no known external gas standards or OOD tests.",
+    "Exact code in research/benchmarks/uci1081_actual_modules_v1.py; scores from successful GitHub CI log."
+  ],
+  "results": [
+    {
+      "feature_set": "late10",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "majority",
+      "correct": 15,
+      "total": 90,
+      "accuracy": 0.16666666666666666
+    },
+    {
+      "feature_set": "late10",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "fingerprint_04.2",
+      "correct": 81,
+      "total": 90,
+      "accuracy": 0.9
+    },
+    {
+      "feature_set": "late10",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "knn3_04.3",
+      "correct": 72,
+      "total": 90,
+      "accuracy": 0.8
+    },
+    {
+      "feature_set": "late10",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "softmax_04.4",
+      "correct": 68,
+      "total": 90,
+      "accuracy": 0.7555555555555555
+    },
+    {
+      "feature_set": "late10",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "forest_04.6",
+      "correct": 69,
+      "total": 90,
+      "accuracy": 0.7666666666666667
+    },
+    {
+      "feature_set": "late10",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "majority",
+      "correct": 15,
+      "total": 90,
+      "accuracy": 0.16666666666666666
+    },
+    {
+      "feature_set": "late10",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "fingerprint_04.2",
+      "correct": 61,
+      "total": 90,
+      "accuracy": 0.6777777777777778
+    },
+    {
+      "feature_set": "late10",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "knn3_04.3",
+      "correct": 59,
+      "total": 90,
+      "accuracy": 0.6555555555555556
+    },
+    {
+      "feature_set": "late10",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "softmax_04.4",
+      "correct": 65,
+      "total": 90,
+      "accuracy": 0.7222222222222222
+    },
+    {
+      "feature_set": "late10",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "forest_04.6",
+      "correct": 58,
+      "total": 90,
+      "accuracy": 0.6444444444444445
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "majority",
+      "correct": 15,
+      "total": 90,
+      "accuracy": 0.16666666666666666
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "fingerprint_04.2",
+      "correct": 71,
+      "total": 90,
+      "accuracy": 0.7888888888888889
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "knn3_04.3",
+      "correct": 66,
+      "total": 90,
+      "accuracy": 0.7333333333333333
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "softmax_04.4",
+      "correct": 79,
+      "total": 90,
+      "accuracy": 0.8777777777777778
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "replicate_ordinal_proxy",
+      "model": "forest_04.6",
+      "correct": 68,
+      "total": 90,
+      "accuracy": 0.7555555555555555
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "majority",
+      "correct": 15,
+      "total": 90,
+      "accuracy": 0.16666666666666666
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "fingerprint_04.2",
+      "correct": 59,
+      "total": 90,
+      "accuracy": 0.6555555555555556
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "knn3_04.3",
+      "correct": 48,
+      "total": 90,
+      "accuracy": 0.5333333333333333
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "softmax_04.4",
+      "correct": 73,
+      "total": 90,
+      "accuracy": 0.8111111111111111
+    },
+    {
+      "feature_set": "early_late_delta20",
+      "protocol": "leave_one_concentration_ppb",
+      "model": "forest_04.6",
+      "correct": 36,
+      "total": 90,
+      "accuracy": 0.4
+    }
+  ]
+}
