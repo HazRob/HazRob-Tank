@@ -74,8 +74,8 @@
 - [ثمانية اختبارات معمارية وتقسيمات ومقاييس](benchmarks/test_uci1081_g2_batch02_v1.py)
 - [GitHub Actions: تشغيل ناجح ومعاينة السجلات](https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102)
 - [ملف النتائج المهيكلة المراجع وقيودها](benchmarks/results/uci1081_g2_batch02_2026-10-19.json)
-- [أثر نتائج JSON التفصيلي في GitHub Actions](https://github.com/HazRob/HazRob-Tank/actions/runs/39181932819/artifacts/12156168987)؛ مدة الحفظ تخضع لإعدادات Actions.
-- يجب اعتماد تشغيل CI النهائي المذكور أعلاه في أي إسناد علمي؛ النتائج المكررة من تشغيل سابق في اليوم نفسه تُطابق الكود مع تغيّر تسمية الحقل `Pearson r` فقط.
+- [أثر نتائج JSON التفصيلي في GitHub Actions](https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102/artifacts/12156686219)؛ مدة الحفظ تخضع لإعدادات Actions.
+- اعتمد تشغيل CI النهائي المذكور أعلاه في أي إسناد علمي؛ ويحتوي أثره على ملف JSON التفصيلي ومصفوفات النتائج. لا تؤدي نتائج الاختبارات المرجعية إلى اعتماد G3.
 
 ## قرارات القبول والتقدم
 
