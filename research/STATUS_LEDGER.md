@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 1.9 | 2026-10-19 | All 80 research technique primitives have G1 unit PASS across eight clean-checkout CI batches (1261 total tests); 0 independent chemical/device G3 validations. Evidence: BATCH_RESULTS_80.md.
+Version 2.0 | 2026-10-19 | All 80 G1 unit PASS (1261 verified tests). First 10 original research modules additionally exercised against measured external UCI1081 array (G2-surrogate only): 02.2,02.4,02.7,03.1,03.2,03.5,04.2,04.3,04.4,04.6. Zero Tank-device G3 validated. See G2_REAL_DATA_BATCH01_AR.md and PROGRESS_80.json.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -96,3 +96,7 @@ Additional research proposal: [Negative Evidence & Sensor-Guided Exclusion](NEGA
 **Scope of 10.1:** calibrated sensor-specific non-detection likelihoods conditional on chemical identity, concentration, sensor detection capability, response latency, environmental conditions, cross-sensitivity and quality flags. Output should down-weight supported hypotheses, not hard-eliminate chemical families. Requires real blank/positive controls and grouped validation before use. Prior research primitive in 06.7 does not make 10.1 complete.
 
 **Audit outcome:** 80 items are **on the roadmap**, not 80 validated or fully implemented techniques. All preexisting ledger entries retain their evidence tier. Technique 04.9 correction reconciles ledger with its actual README and RESUME history. The reference benchmark starter is not proof of any 79/80-technique execution or accuracy.
+
+## First empirical source-data benchmark — IMPORTANT NON-PROMOTION (2026-10-19)
+
+Evidence: [G2_REAL_DATA_BATCH01_AR.md](G2_REAL_DATA_BATCH01_AR.md), source doi 10.24432/C5CK6F, verified action runs [classification](https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732) and [diagnostics](https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713). Ten research modules ran on 90 measured external-array exposures using non-overlapping experimental-row tests and held-out concentration levels. Device and session independence NOT established; the UCI source sensors are not the Tank MQ8 array. Their status remains PROTOTYPE: **G2 partial external reference evidence**, NOT G3 device validation or calibrated gas accuracy. See individual evidence links in PROGRESS_80.json.
