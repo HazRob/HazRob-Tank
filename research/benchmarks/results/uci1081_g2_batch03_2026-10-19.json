@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "date_local": "2026-10-19",
+  "study": "UCI1081 DOI 10.24432/C5CK6F",
+  "source_license": "CC BY 4.0",
+  "source_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "source_external_array": true,
+  "not_hazrob_tank": true,
+  "source_signal_units": "UNKNOWN",
+  "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+  "ci_commit": "51b3973e0cad6c6dd85b6d155330c64a2c4f04dc",
+  "artifact_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420/artifacts/12157448158",
+  "supplemental_tests": 13,
+  "tests_pass": 13,
+  "target_ids": [
+    "01.1",
+    "01.2",
+    "01.3",
+    "01.4",
+    "01.5",
+    "01.6",
+    "01.7",
+    "02.1",
+    "02.3",
+    "05.1"
+  ],
+  "eligible_executed": [
+    "02.1"
+  ],
+  "blocked": [
+    "01.1",
+    "01.2",
+    "01.3",
+    "01.4",
+    "01.5",
+    "01.6",
+    "01.7",
+    "02.3",
+    "05.1"
+  ],
+  "source_exposure_records": 90,
+  "channel_exposure_windows": 900,
+  "sensor_numeric_samples": 810000,
+  "filtering_metrics": {
+    "raw": {
+      "median_baseline_mad": 0.0025,
+      "mean_baseline_mad": 0.0028866666666666693,
+      "median_absolute_baseline_to_late_exposure_change": 0.0195
+    },
+    "causal_median_5": {
+      "median_baseline_mad": 0.002,
+      "mean_baseline_mad": 0.0025694444444444436,
+      "median_absolute_baseline_to_late_exposure_change": 0.0195,
+      "median_mad_ratio_to_raw": 0.8,
+      "median_crossing_delay_samples": 3,
+      "n_pairs": 869
+    },
+    "causal_moving_average_5": {
+      "median_baseline_mad": 0.0017500000000000293,
+      "mean_baseline_mad": 0.0025326666666666653,
+      "median_absolute_baseline_to_late_exposure_change": 0.0193,
+      "median_mad_ratio_to_raw": 0.7,
+      "median_crossing_delay_samples": 3,
+      "n_pairs": 876
+    },
+    "causal_ema_alpha_0_25": {
+      "median_baseline_mad": 0.0015967177825711998,
+      "mean_baseline_mad": 0.00243555000081229,
+      "median_absolute_baseline_to_late_exposure_change": 0.01932314064429902,
+      "median_mad_ratio_to_raw": 0.6386871130284794,
+      "median_crossing_delay_samples": 5,
+      "n_pairs": 876
+    }
+  },
+  "qc_scope": "Generic causal filtering with known 1Hz time order; NOT ADC range, measured Rs, drift, BME or gas identification",
+  "Tank_G3_independent_validation_count": 0,
+  "warning": "9 blocked is scientifically correct, not nine numeric algorithm failures. Source has no verified ADC/R0/heater/BME/ohm provenance."
+}
