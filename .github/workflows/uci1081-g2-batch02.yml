@@ -1,0 +1,63 @@
+name: HazRob Tank G2-02 — ten-technique external reference evaluation
+on:
+  push:
+    paths:
+      - '.github/workflows/uci1081-g2-batch02.yml'
+      - 'research/benchmarks/uci1081_g2_batch02_v1.py'
+      - 'research/benchmarks/test_uci1081_g2_batch02_v1.py'
+      - 'research/benchmarks/uci1081_actual_modules_v1.py'
+      - 'research/techniques/02.5/**'
+      - 'research/techniques/03.3/**'
+      - 'research/techniques/03.6/**'
+      - 'research/techniques/03.7/**'
+      - 'research/techniques/03.8/**'
+      - 'research/techniques/04.10/**'
+      - 'research/techniques/05.9/**'
+      - 'research/techniques/06.3/**'
+      - 'research/techniques/06.5/**'
+      - 'research/techniques/07.3/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  g2-measured-external-10:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify structural and leakage invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q research/benchmarks research/techniques
+          python -m unittest discover -s research/benchmarks -p 'test_uci1081_g2_batch02_v1.py' -v 2>&1 | tee preflight-tests.log
+          grep -q '^OK$' preflight-tests.log
+      - name: Download original labelled gas exposures and verify exact source hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 \
+            'https://archive.ics.uci.edu/static/public/1081/gas%2Bsensor%2Barray%2Blow-concentration.zip' \
+            --output uci1081_original.zip
+          echo '813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab  uci1081_original.zip' | sha256sum --check
+      - name: Execute versioned Tank research modules and fixed evaluation protocols
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/benchmarks/uci1081_g2_batch02_v1.py \
+            uci1081_original.zip --output uci1081_g2_batch02_results.json \
+            2>&1 | tee measured-g2-batch02.log
+          python -c 'import json;p=json.load(open("uci1081_g2_batch02_results.json"));assert p["02.5_sensor_schema_gate"]["status"]=="BLOCKED_INCOMPATIBLE_SENSOR_SCHEMA";assert len(p["06.3_three_way_train_calibrate_test"])==3;assert len(p["06.5_leave_one_gas_out"])==6'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: uci1081-g2-batch02-evidence
+          path: |
+            preflight-tests.log
+            measured-g2-batch02.log
+            uci1081_g2_batch02_results.json
+          if-no-files-found: warn
+          retention-days: 90
