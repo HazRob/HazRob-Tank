@@ -324,6 +324,7 @@ def main():
     result=run(a.uci270_original_zip)
     Path(a.output).write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+"\n",encoding="utf-8")
     print("SOURCE OK SHA256",ZIP_SHA256,"records",result["record_count"],"derived features",result["feature_count"])
+    print("SOURCE_GAS_COUNTS_B1_B2_B10", {b:result["gas_counts_by_temporal_batch"][b] for b in ("1","2","10")})
     print("TECHNIQUES",result["technique_ids"])
     print("03.4",result["03.4"])
     print("07.1",result["07.1"])
