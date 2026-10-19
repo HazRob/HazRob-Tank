@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 1.8 | 2026-10-19 | 80 planned; 70 G1 software PASS (1089 verified tests); 0 independently chemical/device validated. Evidence: BATCH_RESULTS_80.md.
+Version 1.9 | 2026-10-19 | All 80 research technique primitives have G1 unit PASS across eight clean-checkout CI batches (1261 total tests); 0 independent chemical/device G3 validations. Evidence: BATCH_RESULTS_80.md.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -73,15 +73,15 @@ Version 1.8 | 2026-10-19 | 80 planned; 70 G1 software PASS (1089 verified tests)
 | 08.7 | Sim-to-real | PARTIAL_PROTOTYPE | research/techniques/08.7/ (minimal baseline; synthetic smoke tests authored); CI batch07 15/15 behavior checks PASS; research primitive, G3 pending |
 | 08.8 | Mixture detection | PARTIAL_PROTOTYPE | research/techniques/08.8/ (minimal baseline; synthetic smoke tests authored); CI batch07 17/17 behavior checks PASS; research primitive, G3 pending |
 | 08.9 | Unmixing | PARTIAL_PROTOTYPE | research/techniques/08.9/ (minimal baseline; synthetic smoke tests authored); CI batch07 17/17 behavior checks PASS; research primitive, G3 pending |
-| 08.10 | Multi-analyte regression | PARTIAL_PROTOTYPE | research/techniques/08.10/ (minimal baseline; synthetic smoke tests authored) |
-| 08.11 | Interference | PARTIAL_PROTOTYPE | research/techniques/08.11/ (minimal baseline; synthetic smoke tests authored) |
-| 08.12 | Complex products | PARTIAL_PROTOTYPE | research/techniques/08.12/ (minimal baseline; synthetic smoke tests authored) |
-| 09.1 | Robotic olfaction | PARTIAL_PROTOTYPE | research/techniques/09.1/ (minimal baseline; synthetic smoke tests authored) |
-| 09.2 | Gas mapping | PARTIAL_PROTOTYPE | research/techniques/09.2/ (minimal baseline; synthetic smoke tests authored) |
-| 09.3 | Source localization | PARTIAL_PROTOTYPE | research/techniques/09.3/ (minimal baseline; synthetic smoke tests authored) |
-| 09.4 | Active sampling | PARTIAL_PROTOTYPE | research/techniques/09.4/ (minimal baseline; synthetic smoke tests authored) |
-| 09.5 | Spatiotemporal fusion | PARTIAL_PROTOTYPE | research/techniques/09.5/ (minimal baseline; synthetic smoke tests authored) |
-| 09.6 | Motion decisions | PARTIAL_PROTOTYPE | research/techniques/09.6/ (minimal baseline; synthetic smoke tests authored) |
+| 08.10 | Multi-analyte regression | PARTIAL_PROTOTYPE | research/techniques/08.10/ (minimal baseline; synthetic smoke tests authored); CI batch08 17/17 behavioral unit PASS; research-only, G3 not validated |
+| 08.11 | Interference | PARTIAL_PROTOTYPE | research/techniques/08.11/ (minimal baseline; synthetic smoke tests authored); CI batch08 15/15 behavioral unit PASS; research-only, G3 not validated |
+| 08.12 | Complex products | PARTIAL_PROTOTYPE | research/techniques/08.12/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated |
+| 09.1 | Robotic olfaction | PARTIAL_PROTOTYPE | research/techniques/09.1/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated |
+| 09.2 | Gas mapping | PARTIAL_PROTOTYPE | research/techniques/09.2/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated |
+| 09.3 | Source localization | PARTIAL_PROTOTYPE | research/techniques/09.3/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated |
+| 09.4 | Active sampling | PARTIAL_PROTOTYPE | research/techniques/09.4/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated |
+| 09.5 | Spatiotemporal fusion | PARTIAL_PROTOTYPE | research/techniques/09.5/ (minimal baseline; synthetic smoke tests authored); CI batch08 17/17 behavioral unit PASS; research-only, G3 not validated |
+| 09.6 | Motion decisions | PARTIAL_PROTOTYPE | research/techniques/09.6/ (minimal baseline; synthetic smoke tests authored); CI batch08 18/18 behavioral unit PASS; research-only, G3 not validated |
 
 Update rows only with verified evidence, preserve historical decisions, and update RESUME.md each session.
 
@@ -91,7 +91,7 @@ Additional research proposal: [Negative Evidence & Sensor-Guided Exclusion](NEGA
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
-| 10.1 | Negative Evidence & Sensor-Guided Exclusion | PARTIAL_PROTOTYPE | research/techniques/10.1/ (8/8 local synthetic unit tests executed; sensor detection-power calibration, correlated evidence correction and Tank validation pending) |
+| 10.1 | Negative Evidence & Sensor-Guided Exclusion | PARTIAL_PROTOTYPE | research/techniques/10.1/ (8/8 local synthetic unit tests executed; sensor detection-power calibration, correlated evidence correction and Tank validation pending); CI batch08 25/25 behavioral unit PASS; research-only, G3 not validated |
 
 **Scope of 10.1:** calibrated sensor-specific non-detection likelihoods conditional on chemical identity, concentration, sensor detection capability, response latency, environmental conditions, cross-sensitivity and quality flags. Output should down-weight supported hypotheses, not hard-eliminate chemical families. Requires real blank/positive controls and grouped validation before use. Prior research primitive in 06.7 does not make 10.1 complete.
 
