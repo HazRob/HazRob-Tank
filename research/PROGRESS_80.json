@@ -318,7 +318,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 13,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "02.3",
@@ -348,7 +358,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "faa4e3f4a41ea0ab149096b46925e9c7532d3f02",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "02.5",
@@ -393,7 +413,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 14,
       "tested_commit": "faa4e3f4a41ea0ab149096b46925e9c7532d3f02",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "02.8",
@@ -423,7 +453,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 14,
       "tested_commit": "faa4e3f4a41ea0ab149096b46925e9c7532d3f02",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "03.2",
@@ -438,7 +478,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "faa4e3f4a41ea0ab149096b46925e9c7532d3f02",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "03.3",
@@ -483,7 +533,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 14,
       "tested_commit": "faa4e3f4a41ea0ab149096b46925e9c7532d3f02",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "03.6",
@@ -558,7 +618,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "04.3",
@@ -573,7 +643,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "04.4",
@@ -588,7 +668,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "04.5",
@@ -618,7 +708,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "sensor_domain_caveat": "External ten-sensor array, only MQ135 overlap; no Tank MQ8 G3",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
+        "full_report": "research/G2_REAL_DATA_BATCH01_AR.md",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "04.7",
@@ -1387,5 +1487,27 @@
     }
   ],
   "verified_unit_tests": 1261,
-  "next_phase": "G2_data_provenance_and_G3_real_data_evaluation"
+  "next_phase": "G2_data_provenance_and_G3_real_data_evaluation",
+  "external_reference_progress": {
+    "completed_research_batches": 1,
+    "techniques_with_first_real_external_array_evidence": 10,
+    "technique_ids": [
+      "02.2",
+      "02.4",
+      "02.7",
+      "03.1",
+      "03.2",
+      "03.5",
+      "04.2",
+      "04.3",
+      "04.4",
+      "04.6"
+    ],
+    "records_per_dataset": 90,
+    "total_exposures_unique": 90,
+    "total_sensor_scalar_observations": 810000,
+    "scientific_Tank_G3_accepted_count": 0,
+    "report": "research/G2_REAL_DATA_BATCH01_AR.md",
+    "warning": "EXTERNAL_REFERENCE_EVIDENCE is NOT G3 Tank scientific qualification; no independent session/device IDs."
+  }
 }
