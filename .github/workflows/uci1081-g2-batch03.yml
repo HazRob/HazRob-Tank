@@ -1,0 +1,52 @@
+name: HazRob Tank G2-03 — ten-technique eligibility and real signal filtering
+on:
+  push:
+    paths:
+      - '.github/workflows/uci1081-g2-batch03.yml'
+      - 'research/benchmarks/uci1081_g2_batch03_v1.py'
+      - 'research/benchmarks/test_uci1081_g2_batch03_v1.py'
+      - 'research/techniques/02.1/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  g2-03-physical-source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and verify compatibility and signal metrics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q research/benchmarks research/techniques/02.1
+          python -m unittest discover -s research/benchmarks -p 'test_uci1081_g2_batch03_v1.py' -v 2>&1 | tee test_results.txt
+          grep -Eq '^Ran (1[0-9]|[2-9][0-9]) tests?' test_results.txt
+          grep -Eq '^OK$' test_results.txt
+      - name: Download exact UCI1081 measurements and verify source hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 \
+            'https://archive.ics.uci.edu/static/public/1081/gas%2Bsensor%2Barray%2Blow-concentration.zip' \
+            --output uci1081_original.zip
+          echo '813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab  uci1081_original.zip' | sha256sum --check
+      - name: Run external raw response filtering and nine physical-eligibility blocks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/benchmarks/uci1081_g2_batch03_v1.py \
+            uci1081_original.zip --output uci1081_g2_batch03_results.json | tee run_results.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: g2-03-ten-technique-eligibility-and-real-filter-results
+          path: |
+            test_results.txt
+            run_results.log
+            uci1081_g2_batch03_results.json
+          if-no-files-found: warn
+          retention-days: 90
