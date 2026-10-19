@@ -143,7 +143,7 @@ def summarize(predictions):
         tp=sum(true==gas and pred==gas for true,pred,_,_ in predictions)
         fn=sum(true==gas and pred!=gas for true,pred,_,_ in predictions)
         fp=sum(true!=gas and pred==gas for true,pred,_,_ in predictions)
-        recall[gas]=tp/(tp+fn) if tp+fn else None
+        recall[gas]=tp/(tp+fn) if tp+fn else 0.0
         precision[gas]=tp/(tp+fp) if tp+fp else 0.0
         f1[gas]=2*tp/(2*tp+fp+fn) if (2*tp+fp+fn) else 0.0
     by_ppb={
