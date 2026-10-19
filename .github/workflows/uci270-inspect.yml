@@ -1,0 +1,23 @@
+name: HazRob Tank UCI270 original source inspector
+on:
+  push:
+    paths:
+      - '.github/workflows/uci270-inspect.yml'
+      - 'research/benchmarks/uci270_inspect_v1.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-external-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download original UCI 270 gas drift archive
+        run: |
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 'https://archive.ics.uci.edu/static/public/270/gas+sensor+array+drift+dataset+at+different+concentrations.zip' --output uci270_original.zip
+      - name: Inventory exact archive bytes and sample original rows
+        run: python research/benchmarks/uci270_inspect_v1.py uci270_original.zip
