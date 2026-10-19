@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0",
+  "source_doi": "10.24432/C5CK6F",
+  "source_license": "CC BY 4.0",
+  "source_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713",
+  "tested_commit": "d3ca81ca61571e47e7067bd1d034a7b41dfacd23",
+  "scientific_tier": "external_reference_diagnostic_only",
+  "Tank_hardware_validation": false,
+  "temporal_02_4": {
+    "windows": 900,
+    "valid": 900,
+    "rise_defined": 900,
+    "recovery_undefined": 510,
+    "median_rise_10_90_s": 205.1805555555556
+  },
+  "selection_02_7": {
+    "50": [
+      "early_delta_MQ137",
+      "late_delta_MQ137",
+      "early_delta_TGS813",
+      "early_delta_TGS822",
+      "late_delta_TGS822"
+    ],
+    "100": [
+      "early_delta_MQ137",
+      "late_delta_MQ137",
+      "early_delta_TGS813",
+      "late_delta_MQ135",
+      "late_delta_TGS813"
+    ],
+    "200": [
+      "early_delta_MQ137",
+      "late_delta_MQ137",
+      "early_delta_TGS822",
+      "early_delta_TGS813",
+      "early_delta_MQ135"
+    ]
+  },
+  "sensor_importance_03_5": {
+    "50": [
+      "VOCS-P",
+      "2M012",
+      "MQ137",
+      "MQ135",
+      "TGS2630"
+    ],
+    "100": [
+      "VOCS-P",
+      "2M012",
+      "MQ137",
+      "MQ135",
+      "TGS822"
+    ],
+    "200": [
+      "VOCS-P",
+      "2M012",
+      "MQ137",
+      "TGS2630",
+      "MQ135"
+    ]
+  },
+  "pca_03_1": {
+    "50": [
+      0.49859113388598125,
+      0.1998661199046676
+    ],
+    "100": [
+      0.6206048427387703,
+      0.14244784783959483
+    ],
+    "200": [
+      0.48100884858454734,
+      0.18240864794952502
+    ]
+  },
+  "similarity_03_2": {
+    "50": {
+      "correct": 14,
+      "total": 30,
+      "median_margin": -0.024391929987858774
+    },
+    "100": {
+      "correct": 21,
+      "total": 30,
+      "median_margin": 0.1332143626850123
+    },
+    "200": {
+      "correct": 24,
+      "total": 30,
+      "median_margin": 0.8213436495499307
+    }
+  },
+  "notes": [
+    "Sensor importance is not chemically causal.",
+    "PCA/scaling fitted on training concentrations only.",
+    "Similarity nearest reference uses true labels only when calculating held-out correctness.",
+    "Source has no independent Tank device calibration.",
+    "All responses are from UCI reference sensors, not original HazRob Tank 8-MQ array."
+  ]
+}
