@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 2.2 | 2026-10-19 | G1 80/80 (1261 unit cases); G2 3×10 reviewed: 20 external-source executions, 10 physically blocked; G3 independent Tank-device validation 0/80. See G2_REAL_DATA_BATCH03_AR.md.
+Version 2.3 | 2026-10-19 | G1: 80/80 research unit PASS (1261 original tests); G2 40 distinct technique IDs audited in 4 source-evidence batches (28 real external sensor array values, 11 blocked, 1 theoretical); Tank MQ8 G3=0/80. See G2_REAL_DATA_BATCH04_AR.md and PROGRESS_80.json.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -110,3 +110,18 @@ Evidence: [G2_REAL_DATA_BATCH01_AR.md](G2_REAL_DATA_BATCH01_AR.md), source doi 1
 
 ## G2-03 — physical evidence eligibility (2026-10-19)
 Reviewed exactly 10 technique IDs `01.1,01.2,01.3,01.4,01.5,01.6,01.7,02.1,02.3,05.1`. Only generic numerical causal filtering `02.1` can run without interpreting undefined source units. Successful real UCI1081 90-exposure/900-channel-window GitHub Actions run [#39184775420](https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420), 13/13 method tests passed, SHA-verified original source. Remaining nine lack source MQ Rs/R0 or ADC topology, heater schedules and/or BME; their experimental G2 is BLOCKED, software G1 remains PASS. Full empirical and invalid-input risk table [G2_REAL_DATA_BATCH03_AR.md](G2_REAL_DATA_BATCH03_AR.md), machine status [PROGRESS_80.json](PROGRESS_80.json). These are external-array numerical diagnostics and must not promote any technique to G3.
+
+## G2-04 external chronological-drift evidence (2026-10-19)
+
+**Official UCI270:** 13,910 measured external sensor records across ten time batches, 128 precomputed attributes from 16 sensor channels. [Detailed Arabic report](G2_REAL_DATA_BATCH04_AR.md), [commit-pinned numeric summary](benchmarks/results/uci270_g2_batch04_2026-10-19.json), [successful GitHub CI #39201607716](https://github.com/HazRob/HazRob-Tank/actions/runs/39201607716).
+
+- 03.4: actual binary LDA/PLS1DA time-held-out, accuracy 619/1200 and 332/1200, NOT multiclass completed.
+- 07.1: ten source temporal-batch proxy folds (NOT true independent session ID); 07.2: BLOCKED one original instrument, cannot hold out an unseen device.
+- 07.4,07.5: matched acetone 200 ppm shift and offset checks, 50 separate target test exposures, no physical attribution of drift.
+- 07.6: unlabeled marginal alignment, heldout centroid movement diagnostic only.
+- 07.7: target-labelled 60-reference nearest-centroid adaptation 923/3540 -> 978/3540; not neural transfer learning.
+- 07.8: uncalibrated offline uncertainty ranking; no acquisition decision verified.
+- 07.9: sequential labels after evaluation, overall 4327/13465 fixed vs 4980/13465 incremental; severe batch-level variance.
+- 07.10: theoretical 448-byte prototype estimate only; NO device RAM, timing, RF/camera interaction or power measurement.
+
+**All above preserve PROTOTYPE/PARTIAL_PROTOTYPE and `empirical_gate=NOT_VALIDATED`.** UCI224 is the same original 13,910-measurement drift source; must not count again. Current external-source registered exposures across UCI1081 and UCI270 = 14,000, all outside Tank MQ8 and with no demonstrated device-transfer qualification.
