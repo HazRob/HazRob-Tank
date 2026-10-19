@@ -1,7 +1,7 @@
 """Research-only time-aligned spatial response fusion with causal windows."""
 from math import isfinite
 def fuse(samples, *, window_seconds=2.0, max_pose_age_seconds=1.0):
-    if not isinstance(window_seconds,(int,float)) or not isfinite(window_seconds) or window_seconds<=0 or not isinstance(max_pose_age_seconds,(int,float)) or not isfinite(max_pose_age_seconds) or max_pose_age_seconds<0:raise ValueError("invalid windows")
+    if not isinstance(window_seconds,(int,float)) or isinstance(window_seconds,bool) or not isfinite(window_seconds) or window_seconds<=0 or not isinstance(max_pose_age_seconds,(int,float)) or isinstance(max_pose_age_seconds,bool) or not isfinite(max_pose_age_seconds) or max_pose_age_seconds<0:raise ValueError("invalid windows")
     data=list(samples)
     if not data:raise ValueError("samples required")
     rows=[]
