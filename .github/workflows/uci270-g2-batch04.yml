@@ -1,0 +1,58 @@
+name: HazRob Tank G2-04 — ten UCI270 chronological-drift evidence gates
+on:
+  push:
+    paths:
+      - '.github/workflows/uci270-g2-batch04.yml'
+      - 'research/benchmarks/uci270_source_adapter_v1.py'
+      - 'research/benchmarks/uci270_g2_batch04_v1.py'
+      - 'research/benchmarks/test_uci270_g2_batch04_v1.py'
+      - 'research/techniques/03.4/**'
+      - 'research/techniques/07.1/**'
+      - 'research/techniques/07.2/**'
+      - 'research/techniques/07.4/**'
+      - 'research/techniques/07.5/**'
+      - 'research/techniques/07.6/**'
+      - 'research/techniques/07.7/**'
+      - 'research/techniques/07.8/**'
+      - 'research/techniques/07.9/**'
+      - 'research/techniques/07.10/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  authentic-gas-reference-evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify protocol, refusal and source invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q research/benchmarks
+          python -m unittest discover -s research/benchmarks -p 'test_uci270_g2_batch04_v1.py' -v 2>&1 | tee protocol_tests.log
+          grep -q '^OK$' protocol_tests.log
+      - name: Download pinned original UCI270 archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 'https://archive.ics.uci.edu/static/public/270/gas+sensor+array+drift+dataset+at+different+concentrations.zip' -o uci270_original.zip
+          echo '98fe3a30981a222dd4518fbcc3dddd45d5c0ce9b03ef6dc6fe5cf7a04cfbff5e  uci270_original.zip' | sha256sum --check
+      - name: Exercise ten G2 research techniques on measured UCI drift batches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/benchmarks/uci270_g2_batch04_v1.py uci270_original.zip --output uci270_g2_batch04_results.json | tee uci270_g2_batch04.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: uci270-g2-batch04-ten-technique-research-results
+          path: |
+            protocol_tests.log
+            uci270_g2_batch04.log
+            uci270_g2_batch04_results.json
+          if-no-files-found: warn
+          retention-days: 90
