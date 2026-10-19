@@ -1,0 +1,49 @@
+name: HazRob Tank UCI1081 actual research modules — external sensor benchmark
+on:
+  push:
+    paths:
+      - '.github/workflows/uci1081-actual-modules.yml'
+      - 'research/benchmarks/uci1081_actual_modules_v1.py'
+      - 'research/benchmarks/test_uci1081_actual_modules_v1.py'
+      - 'research/techniques/02.2/**'
+      - 'research/techniques/04.2/**'
+      - 'research/techniques/04.3/**'
+      - 'research/techniques/04.4/**'
+      - 'research/techniques/04.6/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  external-reference-measurement-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify synthetic protocol and metric tests
+        run: python -m unittest discover -s research/benchmarks -p 'test_uci1081_actual_modules_v1.py' -v
+      - name: Download UCI1081 original CC-BY-4.0 dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 \
+            'https://archive.ics.uci.edu/static/public/1081/gas%2Bsensor%2Barray%2Blow-concentration.zip' \
+            --output uci1081_original.zip
+          echo '813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab  uci1081_original.zip' | sha256sum --check
+      - name: Benchmark frozen research algorithms under exposure-level holdouts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/benchmarks/uci1081_actual_modules_v1.py \
+            uci1081_original.zip --output uci1081_actual_modules_result.json | tee uci1081_run.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: uci1081-reference-external-array-exploratory-evidence
+          path: |
+            uci1081_actual_modules_result.json
+            uci1081_run.log
+          if-no-files-found: warn
+          retention-days: 90
