@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 2.0 | 2026-10-19 | All 80 G1 unit PASS (1261 verified tests). First 10 original research modules additionally exercised against measured external UCI1081 array (G2-surrogate only): 02.2,02.4,02.7,03.1,03.2,03.5,04.2,04.3,04.4,04.6. Zero Tank-device G3 validated. See G2_REAL_DATA_BATCH01_AR.md and PROGRESS_80.json.
+Version 2.1 | 2026-10-19 | G1 remains 80/80 (1,261 unit tests). G2-01 and G2-02: 19 distinct research techniques executed or had evaluation metrics exercised on real UCI1081 *external* sensor data; 02.5 Tank MQ8 fingerprint BLOCKED (schema mismatch). 05.9 tested baseline scoring, NOT fitted ppm regression. ZERO Tank-device G3 validations. Detailed report: G2_REAL_DATA_BATCH02_AR.md and machine register PROGRESS_80.json.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -100,3 +100,10 @@ Additional research proposal: [Negative Evidence & Sensor-Guided Exclusion](NEGA
 ## First empirical source-data benchmark — IMPORTANT NON-PROMOTION (2026-10-19)
 
 Evidence: [G2_REAL_DATA_BATCH01_AR.md](G2_REAL_DATA_BATCH01_AR.md), source doi 10.24432/C5CK6F, verified action runs [classification](https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732) and [diagnostics](https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713). Ten research modules ran on 90 measured external-array exposures using non-overlapping experimental-row tests and held-out concentration levels. Device and session independence NOT established; the UCI source sensors are not the Tank MQ8 array. Their status remains PROTOTYPE: **G2 partial external reference evidence**, NOT G3 device validation or calibrated gas accuracy. See individual evidence links in PROGRESS_80.json.
+
+## G2-02 experimental reference batch — 2026-10-19
+
+- [G2_REAL_DATA_BATCH02_AR.md](G2_REAL_DATA_BATCH02_AR.md) records 9 research techniques exercised with real external-source measurements, and 02.5 blocked because external 10-channel data are not actual eight-MQ Tank resistance/baseline recordings. The 9 exercised: 03.3,03.6,03.7,03.8,04.10,05.9,06.3,06.5,07.3. **05.9 is concentration-blind metric integration only**, not a calibrated ppm model.
+- Evidence: [successful CI #39182059102](https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102), source archive SHA-256 verified, 8/8 new integration/invariant tests passed, structured numerical evidence [here](benchmarks/results/uci1081_g2_batch02_2026-10-19.json).
+- Findings include poor open-set rejection of actually unseen gas labels (11/90), and failed transfer of temperature-calibrated softmax across two concentration-holdout test levels. These are research negative findings, **not operational validation**.
+- Preserve implementation statuses as before and keep all G3 **NOT_VALIDATED**. No original HazRob, APK, ESP32 or production ChemCore updates.
