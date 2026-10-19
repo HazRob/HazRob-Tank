@@ -1727,7 +1727,6 @@
       "05.1"
     ],
     "measured_exposure_records_per_dataset": 90,
-    "unique_exposures_across_two_benchmarks": 90,
     "source_doi": "10.24432/C5CK6F",
     "source_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
     "total_sensor_scalar_observations": 810000,
@@ -1743,9 +1742,10 @@
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420"
     ],
-    "warning": "19 actual external-source exercises include 05.9 baseline metric integration only, not a trained ppm model; 02.5 blocked. No independent device/session groups, no Tank MQ8 G3 scientific validation.",
+    "warning": "20 actual measured external-source algorithm/evidence executions span the SAME 90 UCI1081 exposure records, including 05.9 baseline metric integration only and 02.1 generic filtering only; 10 distinct techniques scientifically blocked by source schema or missing physical calibration. No independent source-device/session groups; G3 Tank scientific validation 0/80.",
     "warnings_by_batch": {
       "G2-03": "Nine physically grounded MQ techniques BLOCKED for missing reliable ADC/RL/R0/heater/BME/ohm fields; 02.1 generic filtering executed on external-source signals only."
-    }
+    },
+    "unique_exposures_across_all_G2_batches": 90
   }
 }
