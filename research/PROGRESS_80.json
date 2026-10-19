@@ -378,12 +378,20 @@
       "source_dir": "research/techniques/02.5/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175957251",
-      "data_gate": "NEEDS_TANK_MQ_BASELINE",
+      "data_gate": "BLOCKED_NEEDS_TANK_MQ8_RS_BASELINE",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 14,
       "tested_commit": "faa4e3f4a41ea0ab149096b46925e9c7532d3f02",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_INCOMPATIBLE_SENSOR_SCHEMA",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "required": "eight real Tank MQ resistance streams and baseline pairs",
+        "source": "UCI1081 external ten-sensor array, only MQ135 type overlaps",
+        "counted_as_real_external_execution": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md"
+      }
     },
     {
       "id": "02.6",
@@ -498,12 +506,21 @@
       "source_dir": "research/techniques/03.3/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175957251",
-      "data_gate": "PARTIAL_PROXY_DATA",
+      "data_gate": "PARTIAL_EXTERNAL_REFERENCE_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "faa4e3f4a41ea0ab149096b46925e9c7532d3f02",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "measured_exposures": 90,
+        "not_tank_sensor_array": true,
+        "scientifically_validated": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md"
+      }
     },
     {
       "id": "03.4",
@@ -553,12 +570,21 @@
       "source_dir": "research/techniques/03.6/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39176274539",
-      "data_gate": "PARTIAL_PROXY_DATA",
+      "data_gate": "PARTIAL_EXTERNAL_REFERENCE_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXTERNAL_REFERENCE_EVALUATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "measured_exposures": 90,
+        "not_tank_sensor_array": true,
+        "scientifically_validated": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md"
+      }
     },
     {
       "id": "03.7",
@@ -568,12 +594,21 @@
       "source_dir": "research/techniques/03.7/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39176274539",
-      "data_gate": "PARTIAL_PROXY_DATA",
+      "data_gate": "PARTIAL_EXTERNAL_REFERENCE_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "measured_exposures": 90,
+        "not_tank_sensor_array": true,
+        "scientifically_validated": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md"
+      }
     },
     {
       "id": "03.8",
@@ -583,12 +618,21 @@
       "source_dir": "research/techniques/03.8/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39176274539",
-      "data_gate": "PARTIAL_PROXY_DATA",
+      "data_gate": "PARTIAL_EXTERNAL_REFERENCE_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "measured_exposures": 90,
+        "not_tank_sensor_array": true,
+        "scientifically_validated": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md"
+      }
     },
     {
       "id": "04.1",
@@ -773,12 +817,21 @@
       "source_dir": "research/techniques/04.10/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39176571203",
-      "data_gate": "NEEDS_CALIBRATED_REFERENCE_DATA",
+      "data_gate": "PARTIAL_EXTERNAL_REFERENCE_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXTERNAL_REFERENCE_BENCHMARK",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "measured_exposures": 90,
+        "not_tank_sensor_array": true,
+        "scientifically_validated": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md"
+      }
     },
     {
       "id": "05.1",
@@ -908,12 +961,22 @@
       "source_dir": "research/techniques/05.9/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39177070616",
-      "data_gate": "NEEDS_INDEPENDENT_CALIBRATION_AND_GROUPED_VALIDATION",
+      "data_gate": "PARTIAL_EXTERNAL_REFERENCE_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "METRIC_INTEGRATION_ONLY",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "measured_exposures": 90,
+        "not_tank_sensor_array": true,
+        "scientifically_validated": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md",
+        "note": "concentration-blind baseline through evaluation metrics, NOT fitted ppm estimator"
+      }
     },
     {
       "id": "06.1",
@@ -953,12 +1016,21 @@
       "source_dir": "research/techniques/06.3/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39177070616",
-      "data_gate": "NEEDS_INDEPENDENT_CALIBRATION_AND_GROUPED_VALIDATION",
+      "data_gate": "PARTIAL_EXTERNAL_REFERENCE_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXTERNAL_REFERENCE_CALIBRATION_EXPERIMENT",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "measured_exposures": 90,
+        "not_tank_sensor_array": true,
+        "scientifically_validated": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md"
+      }
     },
     {
       "id": "06.4",
@@ -983,12 +1055,21 @@
       "source_dir": "research/techniques/06.5/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39177070616",
-      "data_gate": "NEEDS_INDEPENDENT_CALIBRATION_AND_GROUPED_VALIDATION",
+      "data_gate": "PARTIAL_EXTERNAL_REFERENCE_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXTERNAL_REFERENCE_OPEN_SET_EXPERIMENT",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "measured_exposures": 90,
+        "not_tank_sensor_array": true,
+        "scientifically_validated": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md"
+      }
     },
     {
       "id": "06.6",
@@ -1088,12 +1169,21 @@
       "source_dir": "research/techniques/07.3/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39178053177",
-      "data_gate": "PARTIAL_PROXY_DATA",
+      "data_gate": "PARTIAL_EXTERNAL_REFERENCE_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 15,
       "tested_commit": "3d2aa344016408fb03714b5f39e000f08e8df488",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXTERNAL_REFERENCE_SPLIT_VERIFIED",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+        "measured_exposures": 90,
+        "not_tank_sensor_array": true,
+        "scientifically_validated": false,
+        "report": "research/G2_REAL_DATA_BATCH02_AR.md"
+      }
     },
     {
       "id": "07.4",
@@ -1489,25 +1579,48 @@
   "verified_unit_tests": 1261,
   "next_phase": "G2_data_provenance_and_G3_real_data_evaluation",
   "external_reference_progress": {
-    "completed_research_batches": 1,
-    "techniques_with_first_real_external_array_evidence": 10,
+    "completed_research_batches": 2,
+    "reviewed_G2_techniques": 20,
+    "techniques_with_first_real_external_array_evidence": 19,
     "technique_ids": [
       "02.2",
       "02.4",
       "02.7",
       "03.1",
       "03.2",
+      "03.3",
       "03.5",
+      "03.6",
+      "03.7",
+      "03.8",
       "04.2",
       "04.3",
       "04.4",
-      "04.6"
+      "04.6",
+      "04.10",
+      "05.9",
+      "06.3",
+      "06.5",
+      "07.3"
     ],
-    "records_per_dataset": 90,
-    "total_exposures_unique": 90,
+    "blocked_techniques": [
+      "02.5"
+    ],
+    "measured_exposure_records_per_dataset": 90,
+    "unique_exposures_across_two_benchmarks": 90,
+    "source_doi": "10.24432/C5CK6F",
+    "source_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
     "total_sensor_scalar_observations": 810000,
     "scientific_Tank_G3_accepted_count": 0,
-    "report": "research/G2_REAL_DATA_BATCH01_AR.md",
-    "warning": "EXTERNAL_REFERENCE_EVIDENCE is NOT G3 Tank scientific qualification; no independent session/device IDs."
+    "reports": [
+      "research/G2_REAL_DATA_BATCH01_AR.md",
+      "research/G2_REAL_DATA_BATCH02_AR.md"
+    ],
+    "runs": [
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102"
+    ],
+    "warning": "19 actual external-source exercises include 05.9 baseline metric integration only, not a trained ppm model; 02.5 blocked. No independent device/session groups, no Tank MQ8 G3 scientific validation."
   }
 }
