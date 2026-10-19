@@ -31,7 +31,7 @@ def mean_vector(rows):
 def source_and_target(rows):
     src=[r for r in rows if r["batch"] in (1,2)]
     tgt=[r for r in rows if r["batch"]==10]
-    if len(src)!=1689 or len(tgt)!=3600:raise AssertionError("source/target counts")
+    if not src or not tgt:raise ValueError("need source batches 1/2 and target batch 10")
     return src,tgt
 
 def labels_report(rows):
@@ -287,6 +287,8 @@ def binary_discriminant(rows):
 
 def run(path):
     rows,meta=parse_original(path)
+    if sum(r["batch"] in (1,2) for r in rows)!=1689 or sum(r["batch"]==10 for r in rows)!=3600:
+        raise AssertionError("source-specific temporal batch totals do not match verified inventory")
     if sorted({r["batch"] for r in rows})!=list(range(1,11)):
         raise AssertionError("bad source batch groups")
     return {"project":"HazRob Tank external G2 drift benchmark",
