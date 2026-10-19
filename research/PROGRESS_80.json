@@ -198,7 +198,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 11,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNSUPPORTED",
+        "limitation": "Required actual ADC/resistance/MQ-R0/heater/environment metadata unavailable",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "01.2",
@@ -213,7 +224,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 11,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNSUPPORTED",
+        "limitation": "Required actual ADC/resistance/MQ-R0/heater/environment metadata unavailable",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "01.3",
@@ -228,7 +250,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 17,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNSUPPORTED",
+        "limitation": "Required actual ADC/resistance/MQ-R0/heater/environment metadata unavailable",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "01.4",
@@ -243,7 +276,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 12,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNSUPPORTED",
+        "limitation": "Required actual ADC/resistance/MQ-R0/heater/environment metadata unavailable",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "01.5",
@@ -258,7 +302,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 12,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNSUPPORTED",
+        "limitation": "Required actual ADC/resistance/MQ-R0/heater/environment metadata unavailable",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "01.6",
@@ -273,7 +328,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 13,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNSUPPORTED",
+        "limitation": "Required actual ADC/resistance/MQ-R0/heater/environment metadata unavailable",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "01.7",
@@ -288,7 +354,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 12,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNSUPPORTED",
+        "limitation": "Required actual ADC/resistance/MQ-R0/heater/environment metadata unavailable",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "02.1",
@@ -303,7 +380,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 15,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNKNOWN_NUMERIC_SOURCE_SIGNAL",
+        "limitation": "Only generic causal signal filtering, no chemical/safety validation",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "02.2",
@@ -343,7 +431,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 14,
       "tested_commit": "b33230ce56a75a93c25a81c124b3757ea801fe32",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNSUPPORTED",
+        "limitation": "Required actual ADC/resistance/MQ-R0/heater/environment metadata unavailable",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "02.4",
@@ -846,7 +945,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "research_only": true,
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
+        "report": "research/G2_REAL_DATA_BATCH03_AR.md",
+        "interpreted_measurement_units": "UNSUPPORTED",
+        "limitation": "Required actual ADC/resistance/MQ-R0/heater/environment metadata unavailable",
+        "executed_date": "2026-10-19"
+      }
     },
     {
       "id": "05.2",
@@ -1579,10 +1689,11 @@
   "verified_unit_tests": 1261,
   "next_phase": "G2_data_provenance_and_G3_real_data_evaluation",
   "external_reference_progress": {
-    "completed_research_batches": 2,
-    "reviewed_G2_techniques": 20,
-    "techniques_with_first_real_external_array_evidence": 19,
+    "completed_research_batches": 3,
+    "reviewed_G2_techniques": 30,
+    "techniques_with_first_real_external_array_evidence": 20,
     "technique_ids": [
+      "02.1",
       "02.2",
       "02.4",
       "02.7",
@@ -1593,18 +1704,27 @@
       "03.6",
       "03.7",
       "03.8",
+      "04.10",
       "04.2",
       "04.3",
       "04.4",
       "04.6",
-      "04.10",
       "05.9",
       "06.3",
       "06.5",
       "07.3"
     ],
     "blocked_techniques": [
-      "02.5"
+      "01.1",
+      "01.2",
+      "01.3",
+      "01.4",
+      "01.5",
+      "01.6",
+      "01.7",
+      "02.3",
+      "02.5",
+      "05.1"
     ],
     "measured_exposure_records_per_dataset": 90,
     "unique_exposures_across_two_benchmarks": 90,
@@ -1614,13 +1734,18 @@
     "scientific_Tank_G3_accepted_count": 0,
     "reports": [
       "research/G2_REAL_DATA_BATCH01_AR.md",
-      "research/G2_REAL_DATA_BATCH02_AR.md"
+      "research/G2_REAL_DATA_BATCH02_AR.md",
+      "research/G2_REAL_DATA_BATCH03_AR.md"
     ],
     "runs": [
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713",
-      "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102"
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420"
     ],
-    "warning": "19 actual external-source exercises include 05.9 baseline metric integration only, not a trained ppm model; 02.5 blocked. No independent device/session groups, no Tank MQ8 G3 scientific validation."
+    "warning": "19 actual external-source exercises include 05.9 baseline metric integration only, not a trained ppm model; 02.5 blocked. No independent device/session groups, no Tank MQ8 G3 scientific validation.",
+    "warnings_by_batch": {
+      "G2-03": "Nine physically grounded MQ techniques BLOCKED for missing reliable ADC/RL/R0/heater/BME/ohm fields; 02.1 generic filtering executed on external-source signals only."
+    }
   }
 }
