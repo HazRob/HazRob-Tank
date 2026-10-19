@@ -165,7 +165,7 @@ def train_only_subset_and_overlap(rows,x_late,x_delta):
         observed=[(key,val) for key,val in summary["correlations"].items() if val is not None]
         strongest=max(observed,key=lambda q:(abs(q[1]),q[0])) if observed else None
         top_by_gas[gas]={"n":summary["n"],"concentration_levels":summary["n_concentrations"],
-                         "strongest_abs_correlation":({"sensor":strongest[0],"rho_pearson_log_ppm":strongest[1]}
+                         "strongest_abs_correlation":({"sensor":strongest[0],"r_pearson_log_ppm":strongest[1]}
                                                        if strongest else None)}
     return {
         "03.3_03.6_03.8_fold_diagnostics":fold_results,
@@ -312,3 +312,8 @@ if __name__=="__main__":
     for r in result["06.5_leave_one_gas_out"]:
         print("06.5",r["gas_left_as_unknown"],"unknown_reject",r["unknown_reject_rate"],
               "known_accept",r["known_accept_rate"])
+    # Durable machine-readable record extracted from a successful CI job and
+    # committed unchanged under research/benchmarks/results/.
+    print("G2_BATCH02_JSON_BEGIN")
+    print(json.dumps(result,sort_keys=True,ensure_ascii=False,allow_nan=False))
+    print("G2_BATCH02_JSON_END")
