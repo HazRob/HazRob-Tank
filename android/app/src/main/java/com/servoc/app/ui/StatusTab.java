@@ -14,6 +14,7 @@ import com.servoc.app.camera.RemoteVideoReadiness;
 import com.servoc.app.chemical.GasEngine;
 import com.servoc.app.chemical.ResearchCurveRegistry;
 import com.servoc.app.chemcore.ChemCoreMolecularSeedImporter;
+import com.servoc.app.chemcore.ChemCoreQsprRuntimeRegistry;
 import com.servoc.app.chemcore.library.ChemCoreLibraryManager;
 import com.servoc.app.chemcore.library.ChemCoreLibraryStore;
 import com.servoc.app.communication.RemoteConnection;
@@ -39,15 +40,15 @@ public final class StatusTab {
     private volatile boolean updateBusy=false;
 
     public StatusTab(Context c,HazRobHost host){
-        this.context=c.getApplicationContext();this.host=host;appUpdater=new AppUpdateManager(c);libraryUpdater=new ChemCoreLibraryManager(c);scroll=new ScrollView(c);LinearLayout root=UiKit.vbox(c);root.setPadding(UiKit.dp(c,8),UiKit.dp(c,6),UiKit.dp(c,8),UiKit.dp(c,10));root.setBackgroundColor(0xFF0E1116);scroll.addView(root);
+        this.context=c.getApplicationContext();this.host=host;appUpdater=new AppUpdateManager(c);libraryUpdater=new ChemCoreLibraryManager(c);scroll=new ScrollView(c);LinearLayout root=UiKit.vbox(c);root.setPadding(UiKit.dp(c,8),UiKit.dp(c,6),UiKit.dp(c,8),UiKit.dp(c,10));root.setBackgroundColor(0xFFF7F8FA);scroll.addView(root);
         root.addView(UiKit.title(c,"الحالة"),UiKit.full(c));
         updateButton=UiKit.button(c,initialUpdateLabel());updateButton.setOnClickListener(v->runUnifiedUpdate());root.addView(updateButton,UiKit.full(c));
-        TextView updateNote=UiKit.small(c,"زر التحديث متاح لجميع المستخدمين ويبحث عن تحديثات التطبيق ومكتبة ChemCore المستقرة. إدارة المكتبة وتطويرها ومصدر التحديث والرجوع للإصدارات السابقة تبقى داخل تبويب المطور فقط.");updateNote.setTextColor(0xFFB0BEC5);root.addView(updateNote,UiKit.full(c));
+        TextView updateNote=UiKit.small(c,"زر التحديث متاح لجميع المستخدمين ويبحث عن تحديثات التطبيق ومكتبة ChemCore المستقرة. إدارة المكتبة وتطويرها ومصدر التحديث والرجوع للإصدارات السابقة تبقى داخل تبويب المطور فقط.");updateNote.setTextColor(0xFF46515E);root.addView(updateNote,UiKit.full(c));
         master=card(c,root);network=card(c,root);hardware=card(c,root);sensors=card(c,root);science=card(c,root);camera=card(c,root);
         science.setText("Scientific   MQ "+HazRobHardwareProfile.MQ.length+"/8   •   Curves "+GasEngine.curveCount()+"+"+ResearchCurveRegistry.count()+"   •   Models "+ModelRuntimeRegistry.nativeCount()+"/"+MqDataScience76Catalog.COUNT+" Native");
     }
     public View view(){return scroll;}
-    private static TextView card(Context c,LinearLayout root){TextView t=UiKit.text(c,"—");t.setTextSize(14);t.setBackgroundColor(0xFF151A20);root.addView(t,UiKit.full(c));return t;}
+    private static TextView card(Context c,LinearLayout root){TextView t=UiKit.text(c,"—");t.setTextSize(14);t.setBackgroundColor(0xFFFFFFFF);root.addView(t,UiKit.full(c));return t;}
     private boolean remoteMode(){return "remote".equalsIgnoreCase(host.preferences().getString("connection_mode","direct"));}
 
     private String initialUpdateLabel(){
@@ -121,7 +122,15 @@ public final class StatusTab {
         if(!updateBusy){String completed=appUpdater.recentCompletionLabel();if(!completed.isEmpty())updateButton.setText(completed);}
         int warm=Math.max(0,host.preferences().getInt("warm",60)),analysis=Math.max(0,host.preferences().getInt("measure",30));
         ChemCoreLibraryManager.Status lib=libraryUpdater.status();
-        science.setText("Scientific   MQ "+HazRobHardwareProfile.MQ.length+"/8   •   Curves "+GasEngine.curveCount()+"+"+ResearchCurveRegistry.count()+"   •   Models "+ModelRuntimeRegistry.nativeCount()+"/"+MqDataScience76Catalog.COUNT+" Native\nChemCore Library   "+(lib.version.isEmpty()?"—":lib.version)+"   •   "+lib.sourceLabel+"\nTiming   Warm "+warm+" s   •   Analysis "+analysis+" s   •   Tracking CONTINUOUS");
+        ChemCoreQsprRuntimeRegistry.Status qspr=ChemCoreQsprRuntimeRegistry.status();
+        String boot=host.database().getMeta("tank_v3_chemcore_bootstrap","NOT_STARTED");
+        String seedOrigin=host.database().getMeta("tank_v3_chemcore_seed_origin","—");
+        boolean activeStable=libraryUpdater.activePayload()!=null;
+        science.setText("Scientific   MQ "+HazRobHardwareProfile.MQ.length+"/8   •   Curves "+GasEngine.curveCount()+"+"+ResearchCurveRegistry.count()+"   •   Models "+ModelRuntimeRegistry.nativeCount()+"/"+MqDataScience76Catalog.COUNT+" Native"+
+            "\nChemCore Knowledge   "+(lib.version.isEmpty()?"—":lib.version)+" • "+(activeStable?"snapshot active":"embedded fallback only")+
+            "\nBootstrap   "+boot+" • molecular: "+seedOrigin+
+            "\nQSPR runtime   targets "+qspr.descriptorCompleteLiveTargets+" • models "+qspr.enabledSensorModels+" • candidates "+qspr.liveCandidates+
+            "\nTiming   Warm "+warm+" s   •   Analysis "+analysis+" s   •   Tracking CONTINUOUS");
         JSONObject d=host.latestDiagnostics();
         if(d==null){master.setText("HazRob App   v"+BuildConfig.VERSION_NAME+" ("+BuildConfig.VERSION_CODE+")\nMaster ESP32   ● OFFLINE");master.setTextColor(0xFFFF7043);renderNetwork(null);hardware.setText("ADS / ENV / MQ / Echo /  LDR / Battery / Sound / SERVO GPIO16/17 / Alert   — • غير متصل");sensors.setText("MQ   —");renderCamera();scheduleCameraProbe();return;}
         master.setText("HazRob App   v"+BuildConfig.VERSION_NAME+" ("+BuildConfig.VERSION_CODE+")\nMaster ESP32   ● ONLINE\nFirmware   "+d.optString("firmware","HazRob")+"\nAPI   "+d.optInt("api_version",0)+"\nProfile   "+d.optString("hardware_profile",HazRobHardwareProfile.ID)+"\nHeap   "+d.optLong("heap",0)+" B");master.setTextColor(0xFF81C784);
