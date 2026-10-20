@@ -160,7 +160,7 @@ def simulate_first_order(profile,gas,ppm,time_s,exposure_start_s,exposure_stop_s
     return states
 
 
-def compare_sim_to_real(time_s,simulated_ratio,measured_rs_ohm,r0_ohm,
+def compare_sim_to_real(time_s,measured_time_s,simulated_ratio,measured_rs_ohm,r0_ohm,
                         simulated_instance_ids,measured_instance_ids,
                         measurement_reference_id):
     """08.7: no fitting or rescaling of validation records, exact aligned times.
@@ -169,6 +169,10 @@ def compare_sim_to_real(time_s,simulated_ratio,measured_rs_ohm,r0_ohm,
     simulator without separately audited calibration and independent sessions.
     """
     times=_times(time_s)
+    measured_times=_times(measured_time_s)
+    if measured_times.shape!=times.shape or not np.allclose(
+            measured_times,times,rtol=0.,atol=1e-9):
+        raise ValueError("independent measured and simulated timestamps are not aligned")
     if not isinstance(measurement_reference_id,str) or not measurement_reference_id.strip():
         raise ValueError("independent measurement reference ID required")
     ids1=tuple(simulated_instance_ids)
