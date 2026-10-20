@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.servoc.app.camera.CameraApi;
+import com.servoc.app.auth.TankModePolicy;
 import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
 import com.servoc.app.communication.RobotApi;
@@ -84,24 +85,38 @@ public final class MainActivity extends Activity implements HazRobHost {
         enter();
     }
 
+    private boolean isOffline(){return TankModePolicy.isOffline(prefs==null?null:prefs.getString("connection_mode","direct"));}
     private void loadSensorBaselines(){for(String key:SensorHealthEngine.INSTALLED){String v=db.getMeta("health_baseline_"+key,"");try{double q=Double.parseDouble(v);if(Double.isFinite(q)&&q>0)sensorHealth.setBaseline(key,q);}catch(Exception ignored){}}}
-    private void enter(){entered=true;buildTabs();setContentView(buildShell());showTab(0);scheduleComms();startLinkService();if(foreground)controlTab.startCamera();}
-    private void buildTabs(){controlTab=new ControlTab(this,this);fieldSessionsTab=new FieldSessionsTab(this,this);measurementsTab=new MeasurementsTab(this,this);reportsTab=new ReportsTab(this,this);statusTab=new StatusTab(this,this);settingsTab=new SettingsTab(this,this);developerTab=new DeveloperTab(this,this,()->{developerMode=true;refreshAllTabs();});tabViews=new View[]{withRefresh(controlTab.view()),withRefresh(fieldSessionsTab.view()),withRefresh(measurementsTab.view()),withRefresh(reportsTab.view()),withRefresh(statusTab.view()),withRefresh(settingsTab.view()),withRefresh(developerTab.view())};}
-    private View withRefresh(View content){LinearLayout box=UiKit.vbox(this);LinearLayout bar=UiKit.hbox(this);Button refresh=UiKit.button(this,"↻ تحديث");refresh.setTextSize(12);refresh.setOnClickListener(v->requestManualRefresh());bar.addView(refresh,new LinearLayout.LayoutParams(UiKit.dp(this,110),UiKit.dp(this,40)));TextView hint=UiKit.small(this,"تحديث البيانات الحية");hint.setTextColor(0xFF90A4AE);hint.setGravity(Gravity.CENTER_VERTICAL);bar.addView(hint,new LinearLayout.LayoutParams(0,-2,1f));box.addView(bar,UiKit.full(this));box.addView(content,new LinearLayout.LayoutParams(-1,0,1f));return box;}
+    private void enter(){entered=true;buildTabs();setContentView(buildShell());showTab(0);if(!isOffline()){scheduleComms();startLinkService();if(foreground)controlTab.startCamera();}else{try{stopService(new Intent(this,RobotLinkService.class));}catch(Exception ignored){}}}
+    private void buildTabs(){controlTab=new ControlTab(this,this);fieldSessionsTab=new FieldSessionsTab(this,this);measurementsTab=new MeasurementsTab(this,this);reportsTab=new ReportsTab(this,this);statusTab=new StatusTab(this,this);settingsTab=new SettingsTab(this,this);developerTab=new DeveloperTab(this,this,()->{developerMode=true;refreshAllTabs();});tabViews=new View[]{controlTab.view(),withRefresh(fieldSessionsTab.view(),8),withRefresh(measurementsTab.view(),54),withRefresh(reportsTab.view(),8),withRefresh(statusTab.view(),8),withRefresh(settingsTab.view(),8),withRefresh(developerTab.view(),54)};}
+    /** Compact refresh overlay in the upper-left of each non-driving tab's CONTENT; no extra row. */
+    private View withRefresh(View content,int topMarginDp){
+        FrameLayout frame=new FrameLayout(this);
+        frame.addView(content,new FrameLayout.LayoutParams(-1,-1));
+        Button refresh=UiKit.button(this,"🔄");
+        refresh.setTextSize(18);refresh.setContentDescription("تحديث");
+        refresh.setMinWidth(UiKit.dp(this,44));refresh.setMinHeight(UiKit.dp(this,44));
+        UiKit.secondary(refresh);
+        refresh.setOnClickListener(v->requestManualRefresh());
+        FrameLayout.LayoutParams p=new FrameLayout.LayoutParams(UiKit.dp(this,44),UiKit.dp(this,44),Gravity.TOP|Gravity.LEFT);
+        p.leftMargin=UiKit.dp(this,6);p.topMargin=UiKit.dp(this,topMarginDp);
+        frame.addView(refresh,p);
+        return frame;
+    }
 
     private View buildShell(){
-        LinearLayout root=UiKit.vbox(this);root.setBackgroundColor(0xFFF7F8FA);root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);LinearLayout header=UiKit.hbox(this);header.setPadding(UiKit.dp(this,8),UiKit.dp(this,4),UiKit.dp(this,8),UiKit.dp(this,2));String mode="remote".equalsIgnoreCase(prefs.getString("connection_mode","direct"))?"عن بُعد":"مباشر";TextView title=UiKit.title(this,"HazRob Tank v2 • "+mode);title.setTextColor(Color.BLACK);header.addView(title,new LinearLayout.LayoutParams(0,-2,1f));Button preview=UiKit.button(this,"↪ دخول");preview.setTextSize(12);preview.setOnClickListener(v->showTab(2));header.addView(preview,new LinearLayout.LayoutParams(-2,UiKit.dp(this,44)));globalStatus=UiKit.small(this,"غير متصل");globalStatus.setTextColor(0xFF955000);globalStatus.setGravity(Gravity.END);header.addView(globalStatus,new LinearLayout.LayoutParams(-2,-2));root.addView(header,UiKit.full(this));
+        LinearLayout root=UiKit.vbox(this);root.setBackgroundColor(0xFFF7F8FA);root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);LinearLayout header=UiKit.hbox(this);header.setPadding(UiKit.dp(this,8),UiKit.dp(this,4),UiKit.dp(this,8),UiKit.dp(this,2));String mode=isOffline()?"دون اتصال":("remote".equalsIgnoreCase(prefs.getString("connection_mode","direct"))?"عن بُعد":"مباشر");TextView title=UiKit.title(this,"HazRob Tank V3 • "+mode);title.setTextColor(Color.BLACK);header.addView(title,new LinearLayout.LayoutParams(0,-2,1f));Button preview=UiKit.button(this,"↪ دخول");preview.setTextSize(12);preview.setOnClickListener(v->showTab(2));header.addView(preview,new LinearLayout.LayoutParams(-2,UiKit.dp(this,44)));globalStatus=UiKit.small(this,"غير متصل");globalStatus.setTextColor(0xFF955000);globalStatus.setGravity(Gravity.END);header.addView(globalStatus,new LinearLayout.LayoutParams(-2,-2));root.addView(header,UiKit.full(this));
         HorizontalScrollView tabsScroll=new HorizontalScrollView(this);tabsScroll.setHorizontalScrollBarEnabled(false);LinearLayout tabs=UiKit.hbox(this);String[] names={"القيادة","الجلسات","القياسات","التقارير","الحالة","الإعدادات","المطور"};tabButtons=new Button[names.length];for(int i=0;i<names.length;i++){final int x=i;Button bt=UiKit.button(this,names[i]);bt.setTextSize(12);bt.setOnClickListener(v->showTab(x));tabButtons[i]=bt;tabs.addView(bt,new LinearLayout.LayoutParams(UiKit.dp(this,110),UiKit.dp(this,44)));}tabsScroll.addView(tabs);root.addView(tabsScroll,new LinearLayout.LayoutParams(-1,-2));page=new FrameLayout(this);root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));TextView footer=UiKit.small(this,"HazRob "+ReleaseAudit.VERSION+" • إعداد المشروع/ "+ReleaseAudit.PROJECT_PREPARERS+".");footer.setTextSize(10);footer.setGravity(Gravity.CENTER);footer.setTextColor(0xFF607D8B);root.addView(footer,new LinearLayout.LayoutParams(-1,-2));return root;
     }
 
     private void showTab(int index){
         if(!entered||index<0||index>=tabViews.length)return;
         if(selectedTab==0&&index!=0)controlTab.stopCamera();
-        selectedTab=index;page.removeAllViews();page.addView(tabViews[index],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabButtons.length;i++){tabButtons[i].setTextColor(i==index?0xFF90CAF9:Color.DKGRAY);tabButtons[i].setBackgroundColor(i==index?0xFF263238:0xFFE0E0E0);}if(index==6&&!developerTab.isUnlocked())developerTab.requestUnlock();if(index==0&&foreground)controlTab.startCamera();if(index==1)fieldSessionsTab.refresh();else if(index==3)reportsTab.refresh();else refreshVisibleTab();
+        selectedTab=index;page.removeAllViews();page.addView(tabViews[index],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabButtons.length;i++){tabButtons[i].setTextColor(i==index?0xFF90CAF9:Color.DKGRAY);tabButtons[i].setBackgroundColor(i==index?0xFF263238:0xFFE0E0E0);}if(index==6&&!developerTab.isUnlocked())developerTab.requestUnlock();if(index==0&&foreground&&!isOffline())controlTab.startCamera();if(index==1)fieldSessionsTab.refresh();else if(index==3)reportsTab.refresh();else refreshVisibleTab();
     }
 
     private void queueDriveSend(){
-        if(!entered)return;
+        if(!entered||isOffline())return;
         driveDirty.set(true);
         if(!driveDispatching.compareAndSet(false,true))return;
         workers.execute(()->{
@@ -118,27 +133,28 @@ public final class MainActivity extends Activity implements HazRobHost {
         });
     }
     private void scheduleComms(){
-        if(commsScheduled)return;commsScheduled=true;
+        if(commsScheduled||isOffline())return;commsScheduled=true;
         // Preserve validated 20 Hz drive scheduling; RobotApi coalesces unchanged commands.
         workers.scheduleAtFixedRate(()->{if(entered&&foreground)queueDriveSend();},0,50,TimeUnit.MILLISECONDS);
         workers.scheduleAtFixedRate(()->pollTelemetry(false),0,150,TimeUnit.MILLISECONDS);
     }
-    private void requestManualRefresh(){workers.execute(()->pollTelemetry(true));}
+    private void requestManualRefresh(){if(isOffline()){refreshAllTabs();showToast("وضع الاستعراض دون اتصال • لا توجد قراءات حية");return;}workers.execute(()->pollTelemetry(true));}
     private void pollTelemetry(boolean manual){
-        if(!entered)return;if(!telemetryPolling.compareAndSet(false,true)){if(manual)showToast("التحديث جارٍ");return;}
+        if(!entered||isOffline())return;if(!telemetryPolling.compareAndSet(false,true)){if(manual)showToast("التحديث جارٍ");return;}
         try{long now=SystemClock.elapsedRealtime();JSONObject snap=robotApi.snapshot(left,right);latestDiag=snap;sensorHealth.accept(snap,now);updateGasAlert(snap,now);telemetryRecorder.accept(snap,left,right,developerMode&&selectedTab==6);ui.post(this::onTelemetryUpdated);if(manual)showToast("تم تحديث البيانات الحية");}
         catch(Exception e){latestDiag=null;gasAlertCoordinator.reset();lastGasAlertLevel=GasAlertCoordinator.NONE;gasAlertSentAt=0;if(phoneAlertTone!=null)phoneAlertTone.clear();ui.post(this::onTelemetryUpdated);if(manual)showToast("تعذر التحديث: "+e.getClass().getSimpleName());}
         finally{telemetryPolling.set(false);}
     }
     private void updateGasAlert(JSONObject snap,long now){
+        if(isOffline())return;
         int warm=Math.max(0,prefs.getInt("warm",60));int level=gasAlertCoordinator.evaluate(snap,sensorHealth,warm,now);
         JSONObject ir=snap==null?null:snap.optJSONObject("ir"),device=snap==null?null:snap.optJSONObject("device"),proximity=device==null?null:device.optJSONObject("proximity");boolean hazard=(ir!=null&&ir.optBoolean("cliff_warning",ir.optBoolean("warning",false)))||(proximity!=null&&proximity.optBoolean("warning",false));int phoneLevel=Math.max(level,hazard?GasAlertCoordinator.WARNING:GasAlertCoordinator.NONE);if(phoneAlertTone!=null)phoneAlertTone.update(phoneLevel,now);
         boolean changed=level!=lastGasAlertLevel,refresh=level>0&&now-gasAlertSentAt>=1000;if(!changed&&!refresh)return;lastGasAlertLevel=level;gasAlertSentAt=now;try{robotApi.setAlertLevel(level,3000);}catch(Exception ignored){}
     }
-    private void onTelemetryUpdated(){JSONObject d=latestDiag;if(globalStatus==null)return;if(d==null){globalStatus.setText("غير متصل");globalStatus.setTextColor(0xFFFFB74D);}else{JSONObject ir=d.optJSONObject("ir"),drv=d.optJSONObject("drive"),device=d.optJSONObject("device"),proximity=device==null?null:device.optJSONObject("proximity");boolean cliff=ir!=null&&ir.optBoolean("cliff_warning",ir.optBoolean("warning",false)),near=proximity!=null&&proximity.optBoolean("warning",false),stale=drv!=null&&drv.optBoolean("stale_stop",false),gas=lastGasAlertLevel>0;globalStatus.setText("متصل"+(stale?" • توقف لانقطاع أوامر القيادة":gas?" • ⚠ غازات":cliff?" • ⚠ خطر سقوط":near?" • ⚠ جسم قريب":""));globalStatus.setTextColor(stale?0xFFFFB74D:gas?0xFFFF7043:cliff||near?0xFFFF7043:0xFF81C784);}refreshVisibleTab();}
+    private void onTelemetryUpdated(){if(isOffline()){latestDiag=null;if(globalStatus!=null){globalStatus.setText("دون اتصال");globalStatus.setTextColor(0xFF955000);}refreshVisibleTab();return;}JSONObject d=latestDiag;if(globalStatus==null)return;if(d==null){globalStatus.setText("غير متصل");globalStatus.setTextColor(0xFFFFB74D);}else{JSONObject ir=d.optJSONObject("ir"),drv=d.optJSONObject("drive"),device=d.optJSONObject("device"),proximity=device==null?null:device.optJSONObject("proximity");boolean cliff=ir!=null&&ir.optBoolean("cliff_warning",ir.optBoolean("warning",false)),near=proximity!=null&&proximity.optBoolean("warning",false),stale=drv!=null&&drv.optBoolean("stale_stop",false),gas=lastGasAlertLevel>0;globalStatus.setText("متصل"+(stale?" • توقف لانقطاع أوامر القيادة":gas?" • ⚠ غازات":cliff?" • ⚠ خطر سقوط":near?" • ⚠ جسم قريب":""));globalStatus.setTextColor(stale?0xFFFFB74D:gas?0xFFFF7043:cliff||near?0xFFFF7043:0xFF81C784);}refreshVisibleTab();}
     private void refreshVisibleTab(){if(!entered)return;if(selectedTab==0)controlTab.refresh();else if(selectedTab==2)measurementsTab.refresh();else if(selectedTab==4)statusTab.refresh();else if(selectedTab==5)settingsTab.refresh();else if(selectedTab==6)developerTab.refresh();}
 
-    @Override protected void onResume(){super.onResume();if(!"remote".equalsIgnoreCase(prefs.getString("connection_mode","direct")))WifiRoute.bindConnectedWifi(this);foreground=true;if(entered){startLinkService();if(selectedTab==0)controlTab.startCamera();refreshVisibleTab();}}
+    @Override protected void onResume(){super.onResume();if(!isOffline()&&!"remote".equalsIgnoreCase(prefs.getString("connection_mode","direct")))WifiRoute.bindConnectedWifi(this);foreground=true;if(entered){if(!isOffline()){startLinkService();if(selectedTab==0)controlTab.startCamera();}refreshVisibleTab();}}
     @Override protected void onPause(){
         foreground=false;
         if(entered){
@@ -147,21 +163,20 @@ public final class MainActivity extends Activity implements HazRobHost {
             left=right=0;
             motionHistory.record(0,0,SystemClock.elapsedRealtime());
             if(controlTab!=null){controlTab.resetJoystick();controlTab.stopCamera();}
-            queueDriveSend();
-            workers.execute(()->{try{robotApi.motionStop();}catch(Exception ignored){}});
+            if(!isOffline()){queueDriveSend();workers.execute(()->{try{robotApi.motionStop();}catch(Exception ignored){}});}
         }
         super.onPause();
     }
-    @Override protected void onDestroy(){entered=false;if(controlTab!=null)controlTab.releaseCamera();try{if(lastGasAlertLevel!=GasAlertCoordinator.NONE)robotApi.setAlertLevel(GasAlertCoordinator.NONE,500);}catch(Exception ignored){}if(phoneAlertTone!=null)try{phoneAlertTone.close();}catch(Exception ignored){}workers.shutdownNow();WifiRoute.unbind(this);if(db!=null)db.close();super.onDestroy();}
-    private void startLinkService(){try{RobotLinkService.start(getApplicationContext());}catch(Exception ignored){}}
+    @Override protected void onDestroy(){entered=false;if(controlTab!=null)controlTab.releaseCamera();try{if(!isOffline()&&lastGasAlertLevel!=GasAlertCoordinator.NONE)robotApi.setAlertLevel(GasAlertCoordinator.NONE,500);}catch(Exception ignored){}if(phoneAlertTone!=null)try{phoneAlertTone.close();}catch(Exception ignored){}workers.shutdownNow();WifiRoute.unbind(this);if(db!=null)db.close();super.onDestroy();}
+    private void startLinkService(){if(isOffline())return;try{RobotLinkService.start(getApplicationContext());}catch(Exception ignored){}}
 
     @Override public RobotApi robotApi(){return robotApi;}@Override public SharedPreferences preferences(){return prefs;}@Override public ExperimentsDb database(){return db;}@Override public ExecutorService io(){return workers;}@Override public String operatorRole(){return developerMode&&selectedTab==6?"DEVELOPER":"USER";}@Override public JSONObject latestDiagnostics(){return latestDiag;}@Override public void setLatestDiagnostics(JSONObject value){latestDiag=value;}@Override public void showToast(String text){ui.post(()->android.widget.Toast.makeText(this,text,android.widget.Toast.LENGTH_SHORT).show());}
-    @Override public void emergencyStop(){left=right=0;motionHistory.record(0,0,SystemClock.elapsedRealtime());if(controlTab!=null)controlTab.resetJoystick();workers.execute(()->{try{robotApi.emergencyStop();}catch(Exception ignored){}});}
-    @Override public void setDriveCommand(int l,int r){int nl=Math.max(-100,Math.min(100,l)),nr=Math.max(-100,Math.min(100,r));left=nl;right=nr;motionHistory.record(nl,nr,SystemClock.elapsedRealtime());queueDriveSend();}
+    @Override public void emergencyStop(){left=right=0;motionHistory.record(0,0,SystemClock.elapsedRealtime());if(controlTab!=null)controlTab.resetJoystick();if(isOffline()){showToast("دون اتصال • لم يرسل أمر إلى الروبوت");return;}workers.execute(()->{try{robotApi.emergencyStop();}catch(Exception ignored){}});}
+    @Override public void setDriveCommand(int l,int r){if(isOffline()){left=right=0;return;}int nl=Math.max(-100,Math.min(100,l)),nr=Math.max(-100,Math.min(100,r));left=nl;right=nr;motionHistory.record(nl,nr,SystemClock.elapsedRealtime());queueDriveSend();}
     @Override public int driveLeft(){return left;}@Override public int driveRight(){return right;}
-    @Override public void setCameraHost(String host){cameraApi.setHost(host);prefs.edit().putString("camera",cameraApi.host()).apply();if(entered&&selectedTab==0&&foreground)controlTab.startCamera();}@Override public String cameraHost(){return cameraApi.host();}@Override public boolean cameraReachable(){return cameraApi.ping();}@Override public JSONObject cameraDiagnostics(){return cameraApi.status();}
+    @Override public void setCameraHost(String host){cameraApi.setHost(host);prefs.edit().putString("camera",cameraApi.host()).apply();if(entered&&selectedTab==0&&foreground)controlTab.startCamera();}@Override public String cameraHost(){return cameraApi.host();}@Override public boolean cameraReachable(){return !isOffline()&&cameraApi.ping();}@Override public JSONObject cameraDiagnostics(){return isOffline()?null:cameraApi.status();}
     @Override public String flashMode(){return flashMode;}
-    @Override public void setFlashMode(String mode){final String requested="on".equals(CameraApi.normalizeMode(mode))?"on":"off";workers.execute(()->{boolean ok=cameraApi.flash(requested);if(ok){flashMode=requested;prefs.edit().putString("flash_mode",requested).apply();if(controlTab!=null)ui.post(controlTab::refresh);showToast("الفلاش: "+flashAr(requested));}else showToast("تعذر إرسال أمر الفلاش");});}
+    @Override public void setFlashMode(String mode){if(isOffline()){showToast("الفلاش غير متاح دون اتصال");return;}final String requested="on".equals(CameraApi.normalizeMode(mode))?"on":"off";workers.execute(()->{boolean ok=cameraApi.flash(requested);if(ok){flashMode=requested;prefs.edit().putString("flash_mode",requested).apply();if(controlTab!=null)ui.post(controlTab::refresh);showToast("الفلاش: "+flashAr(requested));}else showToast("تعذر إرسال أمر الفلاش");});}
     @Override public void testPhoneAlert(){if(phoneAlertTone==null){showToast("تنبيه الهاتف غير متاح على هذا الجهاز");return;}try{phoneAlertTone.test();showToast("اختبار صوت الهاتف — STREAM_ALARM");}catch(Exception e){showToast("تعذر تشغيل اختبار صوت الهاتف");}}
 
     @Override public SensorHealthEngine.Snapshot sensorHealth(String key){return sensorHealth.snapshot(key);}
