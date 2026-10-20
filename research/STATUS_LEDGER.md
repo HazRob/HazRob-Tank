@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 2.4 | 2026-10-20 | G1 80/80 PASS (1261 unit cases); G2 50 reviewed IDs across 5 batches: 32 external-source numeric/metadata operations (02.6 numeric-only physically noncompliant), 17 blocked, 1 theoretical. Source UCI1081+UCI270+UCI308=14,058 distinct external exposure records. Tank MQ8 G3=0/80. See G2_REAL_DATA_BATCH05_AR.md and PROGRESS_80.json.
+Version 2.5 | 2026-10-20 | G1 80/80 PASS (1261 historical unit cases); G2 60 reviewed IDs across 6 batches: 39 external-source numeric/metadata operations (some physically noncompliant), 19 blocked, 2 theoretical; three unique UCI source collections = 14,058 external exposure records. Tank MQ8 G3=0/80. See G2_REAL_DATA_BATCH06_AR.md and PROGRESS_80.json.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -125,3 +125,15 @@ Reviewed exactly 10 technique IDs `01.1,01.2,01.3,01.4,01.5,01.6,01.7,02.1,02.3,
 - 07.10: theoretical 448-byte prototype estimate only; NO device RAM, timing, RF/camera interaction or power measurement.
 
 **All above preserve PROTOTYPE/PARTIAL_PROTOTYPE and `empirical_gate=NOT_VALIDATED`.** UCI224 is the same original 13,910-measurement drift source; must not count again. Current external-source registered exposures across UCI1081 and UCI270 = 14,000, all outside Tank MQ8 and with no demonstrated device-transfer qualification.
+
+## G2-06 — UCI308 temporal and robotic eligibility audit (2026-10-20)
+
+IDs **08.1–08.7; 09.1–09.3** reviewed, all ten distinct IDs. [Detailed Arabic report](G2_REAL_DATA_BATCH06_AR.md), [permanent numeric result](benchmarks/results/uci308_g2_batch06_2026-10-20.json), [successful original-data CI #39494554254](https://github.com/HazRob/HazRob-Tank/actions/runs/39494554254), commit `62fcfa23d8da457c2b640e3408cb46ff854b2997`.
+
+- **08.1,08.2,08.3,08.4**: original external-source numeric forward primitives only; NOT trained CNN/TCN/GRU/GNN. First three processed 928 genuine source-sensor traces each; 08.4 used 58 source exposure feature vectors with arbitrary adjacency.
+- **08.5**: trained auxiliary fixed hyperparameter softmax on 3 signal-time windows and actual-source 5-batch held-out 4-category analysis; temporal ensemble 36/58 correct; early 32/58; late 30/58. No independent device, no calibrated probability, no Tank transfer.
+- **08.6**: synthetic first-order response only; NO measured-source validation. **08.7**: numeric gap of physically incompatible toy output vs dR source, not valid sim-to-real.
+- **09.1**: 50 numeric source dR threshold events in 58 stationary-rig experiments, NOT verified plume encounters. **09.2,09.3 BLOCKED** by missing XY/pose/location/wind/leak-source truth; no fabrication of coordinates.
+- Source as previous UCI308: 58 real exposures ×16 source sensors ×7500 original points = 6,960,000 authentic scalar measurements; these 58 are **already counted in prior G2-05**, and therefore do NOT increase the unique exposure count.
+
+**Status restriction:** all G1 original software status remains PROTOTYPE/PARTIAL_PROTOTYPE. None are scientifically certified Tank techniques (G3 remains 0/80). Preserve `research/PROGRESS_80.json` per-ID status and the exact CI SHA.
