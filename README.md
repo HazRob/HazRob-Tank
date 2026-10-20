@@ -1,3 +1,10 @@
+## V3 independent test artifacts (2026-10-20)
+
+- Android debug APK (not a signed stable/upgrade release): `HazRob-Tank-V3-debug.apk`, built and tested by [CI 39490117129](https://github.com/HazRob/HazRob-Tank/actions/runs/39490117129). Its GitHub Actions artifact is ZIP-wrapped for archive download, but the extracted distributable is **the standalone .apk**. SHA256 `09d06f276ccc0758113491a5042dfec4587152a3c7479604b71433f82d3aa1c6`.
+- Main ESP32 Tank Arduino sketch: `HazRob-Tank-V3-ESP32-Arduino.zip` — extract/open `ESP32-Tank/ESP32-Tank.ino`; pinned board core **2.0.17**; [full compile + bundled firmware binaries CI 39479359692](https://github.com/HazRob/HazRob-Tank/actions/runs/39479359692).
+- Independent camera Arduino sketch: `HazRob-Tank-V3-ESP32-CAM-Arduino.zip` — extract/open `Cam-tank/Cam-tank.ino`; board **AI Thinker ESP32-CAM**, pinned core **3.3.11**; [compiled CI 39492657140](https://github.com/HazRob/HazRob-Tank/actions/runs/39492657140), source ZIP SHA256 `463d945dfece9c5b32015b5db5789ade0e35c012ce04bcf56146e2aa4248d08e`. Camera version `Cam-tank 0.1.3-v3-dev`.
+- Every Arduino ZIP is a **sketch directory** (not a library). Extract it and open the matching `.ino` in Arduino IDE. All are **UNRELEASED candidates**: safe servo/hardware, camera streaming, end-to-end R0 and stable APK upgrade signing remain separate release qualification blockers; remote camera publishing is NAPT-gated and not available with the current 2.x main controller config.
+
 # HazRob Tank — Independent Tracked Robot
 
 > **Development handoff, 2026-10-18.** This README is the authoritative starting point for the next conversation and **v3 development**. Do not release another APK until the additional requested changes and acceptance tests are complete.
