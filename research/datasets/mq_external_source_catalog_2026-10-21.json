@@ -1,0 +1,237 @@
+{
+  "schema": "hazrob-mq-external-sources-audit-1.0",
+  "date": "2026-10-21",
+  "scope": "Tank research only",
+  "target_eight_MQ": [
+    "MQ2",
+    "MQ3",
+    "MQ4",
+    "MQ5",
+    "MQ7",
+    "MQ8",
+    "MQ9",
+    "MQ135"
+  ],
+  "g3_tank_validated_count": 0,
+  "source_count": 9,
+  "number_of_experimentally_downloaded_archives": 0,
+  "number_of_directly_fetched_external_csv_files": 1,
+  "sources": [
+    {
+      "id": "MQ-EXT-01",
+      "name": "Food Freshness E-Nose",
+      "url": "https://zenodo.org/records/17285312",
+      "doi": "10.5281/zenodo.17285312",
+      "sensors": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ7",
+        "MQ8",
+        "MQ9",
+        "MQ135"
+      ],
+      "signal": "unverified_archive",
+      "labels": "food freshness/time",
+      "accessible": "archive_listed_not_downloaded",
+      "unit_status": "NOT_VERIFIED",
+      "experimental_status": "reported_real",
+      "independent_ppm": false,
+      "rows": null,
+      "duplicate_of": null
+    },
+    {
+      "id": "MQ-EXT-02",
+      "name": "Beef quality Rs time series (v3)",
+      "url": "https://data.mendeley.com/datasets/mwmhh766fc/3",
+      "doi": "10.17632/mwmhh766fc.3",
+      "sensors": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ8",
+        "MQ9",
+        "MQ135"
+      ],
+      "signal": "Rs_ohm,temperature,humidity",
+      "labels": "beef freshness/TVC",
+      "accessible": "dataset_landing_verified_raw_not_downloaded",
+      "unit_status": "ARTICLE_SAYS_OHMS",
+      "experimental_status": "reported_real",
+      "independent_ppm": false,
+      "rows": null,
+      "duplicate_of": null
+    },
+    {
+      "id": "MQ-EXT-03",
+      "name": "MultimodalGasData original / GitHub mirror",
+      "url": "https://data.mendeley.com/datasets/zkwgkjkjn9/2",
+      "mirror_url": "https://github.com/TakMashhido/Gas-Sensors-Measurements-Dataset/blob/main/Gas_Sensors_Measurements.csv",
+      "doi": "10.17632/zkwgkjkjn9.2",
+      "sensors": [
+        "MQ2",
+        "MQ3",
+        "MQ5",
+        "MQ7",
+        "MQ8",
+        "MQ135"
+      ],
+      "signal": "raw_10bit_ADC",
+      "labels": [
+        "NoGas",
+        "Perfume",
+        "Smoke",
+        "Mixture"
+      ],
+      "accessible": "github_mirror_raw_fetched_original_not_byte_compared",
+      "unit_status": "ARTICLE_10BIT_ADC",
+      "experimental_status": "reported_real",
+      "independent_ppm": false,
+      "rows": 6400,
+      "independent_exposures_unknown": true,
+      "classes": {
+        "NoGas": 1600,
+        "Perfume": 1600,
+        "Smoke": 1600,
+        "Mixture": 1600
+      },
+      "github_raw_blob_sha": "451fdd05a18db8531abc219089de071ccc0dd461",
+      "duplicate_of": "Mendeley original scientific dataset; do not sum mirror rows",
+      "statistical_parity_verified": "seven means/minima/maxima identical to MultimodalGasData Table 3"
+    },
+    {
+      "id": "MQ-EXT-04",
+      "name": "Chinese Brewed Vinegar OdorNet (v2)",
+      "url": "https://data.mendeley.com/datasets/w5fcvyj398/2",
+      "doi": "10.17632/w5fcvyj398.2",
+      "sensors": [
+        "MQ2",
+        "MQ5",
+        "MQ8"
+      ],
+      "related_nonidentical_models": [
+        "MQ7B",
+        "MQ9B"
+      ],
+      "signal": "12bit_ADC_20Hz",
+      "labels": "six vinegar brands",
+      "accessible": "metadata_verified_raw_not_downloaded",
+      "unit_status": "ADC_12BIT_2.5V_4.7kOHM",
+      "experimental_status": "reported_real",
+      "independent_ppm": false,
+      "independent_trials_reported": 150,
+      "rows": null,
+      "duplicate_of": null
+    },
+    {
+      "id": "MQ-EXT-05",
+      "name": "Beef Quality Four Classes ESP32",
+      "url": "https://data.mendeley.com/datasets/n8mc3nspfn/1",
+      "doi": "10.17632/n8mc3nspfn.1",
+      "sensors": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ135"
+      ],
+      "signal": "ADC_or_Rs_to_be_confirmed",
+      "labels": "beef freshness/TVC",
+      "accessible": "metadata_verified_raw_not_downloaded",
+      "unit_status": "CONFLICTING_DESCRIPTION",
+      "experimental_status": "reported_real",
+      "independent_ppm": false,
+      "rows": null,
+      "duplicate_of": null
+    },
+    {
+      "id": "MQ-EXT-06",
+      "name": "Air Quality ADL activity dataset",
+      "url": "https://data.mendeley.com/datasets/kn3x9rz3kd/1",
+      "doi": "10.17632/kn3x9rz3kd.1",
+      "sensors": [
+        "MQ2",
+        "MQ9",
+        "MQ135"
+      ],
+      "signal": "six_sensor_measurements",
+      "labels": "indoor activities",
+      "accessible": "metadata_verified_raw_not_downloaded",
+      "unit_status": "NOT_VERIFIED",
+      "experimental_status": "reported_real",
+      "independent_ppm": false,
+      "rows": 1845,
+      "duplicate_of": null
+    },
+    {
+      "id": "MQ-EXT-07",
+      "name": "Chemotronix/Zindi three-device CO2 challenge",
+      "url": "https://zindi.world/competitions/air-quality-prediction-from-low-cost-iot-devices/data",
+      "description_url": "https://github.com/Nonso-Analytics/Air-Quality-Prediction--Hackade-Hackathon",
+      "sensors": [
+        "MQ7",
+        "MQ9",
+        "MQ135"
+      ],
+      "signal": "analog_raw_temperature_humidity",
+      "labels": "CO2_ppm_from_reference_meter_as_claimed",
+      "accessible": "registration_terms_required_not_downloaded",
+      "unit_status": "CO2_TARGET_ONLY",
+      "experimental_status": "reported_real",
+      "independent_ppm": "claim_not_verified",
+      "rows": 7307,
+      "duplicate_of": null
+    },
+    {
+      "id": "MQ-EXT-08",
+      "name": "Advanced gas detection Proteus simulation",
+      "url": "https://data.mendeley.com/datasets/jmhr42p7sf/1",
+      "sensors": [
+        "MQ5",
+        "MQ135"
+      ],
+      "related_non_tank": [
+        "MQ6"
+      ],
+      "signal": "simulated_time_series",
+      "labels": "gas simulated levels",
+      "accessible": "metadata_verified_raw_not_downloaded",
+      "unit_status": "simulation",
+      "experimental_status": "simulation_only",
+      "independent_ppm": false,
+      "rows": 100422,
+      "duplicate_of": null
+    },
+    {
+      "id": "MQ-EXT-09",
+      "name": "CO six levels MQ e-nose 2026 publication",
+      "url": "https://doi.org/10.3390/electronics15081671",
+      "sensors": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ7",
+        "MQ8",
+        "MQ135"
+      ],
+      "signal": "reported_ADC",
+      "labels": "CO concentration classes",
+      "accessible": "author_request_only_not_public_raw",
+      "unit_status": "ppm_reported_not_independently_audited",
+      "experimental_status": "reported_real",
+      "independent_ppm": "study_claim_not_audited",
+      "rows": 2484,
+      "duplicate_of": null
+    }
+  ],
+  "notes": [
+    "Source metadata does not validate source file, authenticity of chemistry reference or gas ppm",
+    "External row != independent exposure; do not add these row counts to preexisting 14,238 UCI exposure ledger",
+    "MQ7B/MQ9B not interchangeable with MQ7/MQ9",
+    "Source MQ-EXT-03 GitHub mirror statistical parity with Mendeley publication, not full byte equality",
+    "Source MQ-EXT-08 is a simulation, never promote as real measurement"
+  ]
+}
