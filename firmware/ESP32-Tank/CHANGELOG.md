@@ -1,3 +1,9 @@
+## 0.1.3-v3-dev — 2026-10-20
+- SAFETY CHANGE: automatic reverse-path/history replay after lost operator connection is **disabled**; its 5-second waiting and reverse movement are removed from Tank V3 firmware.
+- Connection loss or **500 ms without a fresh motor command** brings both continuous-rotation servos to their neutral pulse immediately, marks `stale_stop=true`, and requires a fresh operator command to resume.
+- Explicit disarming also neutralizes both servos; E-STOP continues to latch independently.
+- Source update is not proof of hardware safety: ESP32 compile, servo-neutral/polarity test with tracks raised, loss-of-link and physical watchdog tests required before deployment.
+
 # ESP32-Tank changelog
 
 ## 0.1.2-dev — 2026-10-17
