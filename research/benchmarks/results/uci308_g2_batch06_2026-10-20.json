@@ -1,0 +1,125 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-10-20",
+  "study": "UCI308 G2-06 actual sensor signals",
+  "doi": "10.24432/C5BG7G",
+  "license": "CC BY 4.0",
+  "source_sha256": "7b062960dbef1a9e8aefc62bc7dbac09bdadb8cbb40793cf2b8e122da1862f90",
+  "source_exposures": 58,
+  "source_sensor_channels": 16,
+  "raw_points_per_sensor": 7500,
+  "raw_scalar_signal_count": 6960000,
+  "source_sensor_family": "External laboratory array, not HazRob MQ8",
+  "tested_commit": "62fcfa23d8da457c2b640e3408cb46ff854b2997",
+  "github_actions_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39494554254",
+  "artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/39494554254/artifacts/12297755543",
+  "protocol_unit_tests_passed": 14,
+  "status_by_technique": {
+    "08.1": "EXTERNAL_NUMERIC_FIXED_CONVOLUTION_NOT_TRAINED_CNN",
+    "08.2": "EXTERNAL_NUMERIC_CAUSAL_CONVOLUTION_NOT_TRAINED_TCN",
+    "08.3": "EXTERNAL_NUMERIC_FIXED_GRU_CELL_NOT_TRAINED_RNN",
+    "08.4": "EXTERNAL_NUMERIC_ARBITRARY_GRAPH_NOT_PHYSICAL",
+    "08.5": "TRAINED_AUXILIARY_SOFTMAX_AND_TEMPORAL_ENSEMBLE_UNCALIBRATED",
+    "08.6": "THEORETICAL_SYNTHETIC_ONLY",
+    "08.7": "NUMERIC_WITH_INCOMPATIBLE_PHYSICAL_UNITS",
+    "09.1": "EXTERNAL_NUMERIC_FIXED_STATIONARY_RIG_NOT_ROBOTIC_PLUME",
+    "09.2": "BLOCKED_NO_SPATIAL_COORDINATES",
+    "09.3": "BLOCKED_NO_ROBOT_POSE_WIND_SOURCE_GROUND_TRUTH"
+  },
+  "numeric_audit": {
+    "08.1": {
+      "n": 928,
+      "median": 0.2765797105704697,
+      "min": -0.0813432130872483,
+      "max": 0.7493643766302966
+    },
+    "08.2": {
+      "n": 928,
+      "median": 0.1174,
+      "min": -0.136975,
+      "max": 0.6051488968055584
+    },
+    "08.3": {
+      "n": 928,
+      "median": 0.012206878823531308,
+      "min": -0.014471160832862172,
+      "max": 0.06333981250464737
+    },
+    "08.4": {
+      "n": 58,
+      "median": 0.57638734375,
+      "min": 0.0000021875,
+      "max": 1.7770039583333335
+    },
+    "08.6": {
+      "n_synthetic": 300
+    },
+    "08.7": {
+      "n": 58,
+      "median_numeric_gap": 0.09712421589953295,
+      "min": 0.028860271306001644,
+      "max": 0.4928277250601197,
+      "physically_compatible": false
+    },
+    "09.1": {
+      "test_rig_exposures": 58,
+      "exposures_with_numeric_event": 50,
+      "n_numeric_events": 50,
+      "threshold_dR": 0.05,
+      "plume_ground_truth": false
+    }
+  },
+  "08.5_heldout_by_source_batch": [
+    {
+      "batch": "day-1-morning",
+      "train": 39,
+      "test": 19,
+      "early_correct": 11,
+      "late_correct": 9,
+      "ensemble_correct": 12
+    },
+    {
+      "batch": "day-2-afternoon",
+      "train": 48,
+      "test": 10,
+      "early_correct": 5,
+      "late_correct": 7,
+      "ensemble_correct": 6
+    },
+    {
+      "batch": "day-2-morning",
+      "train": 48,
+      "test": 10,
+      "early_correct": 6,
+      "late_correct": 5,
+      "ensemble_correct": 5
+    },
+    {
+      "batch": "day-3-morning",
+      "train": 47,
+      "test": 11,
+      "early_correct": 7,
+      "late_correct": 6,
+      "ensemble_correct": 9
+    },
+    {
+      "batch": "day-4-afternoon",
+      "train": 50,
+      "test": 8,
+      "early_correct": 3,
+      "late_correct": 3,
+      "ensemble_correct": 4
+    }
+  ],
+  "08.5_totals": {
+    "n": 58,
+    "correct_early": 32,
+    "correct_late": 30,
+    "correct_temporal_ensemble": 36,
+    "accuracy_early": 0.5517241379310345,
+    "accuracy_late": 0.5172413793103449,
+    "accuracy_ensemble": 0.6206896551724138
+  },
+  "scientific_status": "G2_EXTERNAL_NUMERIC_ONLY; G3_TANK=0",
+  "caveat": "Same source time batches, no independent device/real Tank MQ8 calibration; numerical forward primitives not trained CNN/TCN/GRU/GNN."
+}
