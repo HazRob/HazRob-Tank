@@ -82,6 +82,14 @@ public final class StatusTab {
                     libraryUpdated=true;libraryVersion=r.version;
                     ChemCoreMolecularSeedImporter.Result applied=ChemCoreMolecularSeedImporter.importVerifiedPayload(libraryUpdater.activePayload(),host.database());
                     if(!applied.available)libraryIssue="ثبتت المكتبة لكن لم توجد طبقة جزيئية قابلة للتطبيق: "+applied.message;
+                    try{
+                        ChemCoreQsprRuntimeRegistry.Status models=ChemCoreQsprRuntimeRegistry.rebuild(host.database());
+                        host.database().putMeta("tank_v3_chemcore_qspr_status",models.summary());
+                        host.database().putMeta("tank_v3_chemcore_bootstrap",applied.available?"READY":"PARTIAL_NO_MOLECULAR_SEED");
+                    }catch(Exception seedError){
+                        host.database().putMeta("tank_v3_chemcore_bootstrap","ERROR");
+                        libraryIssue="ثبتت المكتبة لكن تعذرت إعادة بناء QSPR: "+seedError.getClass().getSimpleName();
+                    }
                 }else libraryIssue=r.reason;
             }
         }catch(Exception e){libraryIssue=safe(e);}
