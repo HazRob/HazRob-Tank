@@ -1,5 +1,5 @@
 # HazRob Tank V3 — Implementation Plan and Durable Checkpoint
-**Initiated:** 2026-10-20 | **Branch:** `feature/tank-v3-implementation` | **Base:** develop | **State:** IN PROGRESS — NOT RELEASED
+**Most recent successfully tested Android code:** `25d12dab1080f1dce8e0303b3adda78a1d977b69` — [CI 39478645439](https://github.com/HazRob/HazRob-Tank/actions/runs/39478645439) SUCCESS. Firmware build on `54728175` — [CI 39476938209](https://github.com/HazRob/HazRob-Tank/actions/runs/39476938209) SUCCESS. Subsequent ESP32 packaging workflow run may be pending.\n\n**Initiated:** 2026-10-20 | **Branch:** `feature/tank-v3-implementation` | **Base:** develop | **State:** IN PROGRESS — NOT RELEASED
 
 ## Governing requirements / provenance
 - **Source of truth:** [V3 backlog](../requirements/V3-ANDROID-BACKLOG-2026-10-20.md) covering T3-001…T3-024, including owner-approved physical card UI, alert transitions, refresh icon, fixed 20-minute clean-air field R0 procedure, chart viewer, and independent PM tab.
@@ -36,23 +36,23 @@
 | ID | State | Note |
 | --- | --- | --- |
 | T3-001 | BLOCKED_EXTERNAL | Persistent signing keystore/secrets not established; CI build can check compilation without publishing a release |
-| T3-002 | IMPLEMENTED_UNVERIFIED | develop has broken offline enum mapping and auto-comms |
-| T3-003 | IMPLEMENTED_UNVERIFIED | Tank firmware eliminates autonomous reverse playback and neutral-stops at transport loss / 500ms; ESP32 compile + hardware test pending |
+| T3-002 | CI_VERIFIED_DEVICE_PENDING | V3 offline selection, service and RobotApi network hard gate; Android tests pass at 25d12dab, physical phone/network test pending |
+| T3-003 | FIRMWARE_COMPILED_HARDWARE_PENDING | No autonomous replay; neutral stop on link loss or 500ms timeout; ESP32 Arduino-2.0.17 full compile SUCCESS run 39476938209; actual servos and E-STOP untested |
 | T3-004 | PARTIAL_IMPLEMENTED | V3 strings and branding |
 | T3-005 | PARTIAL_IMPLEMENTED | RTL and inherited dark styling |
 | T3-006 | PARTIAL_IMPLEMENTED | Field session approval and UI |
-| T3-007 | IMPLEMENTED_UNVERIFIED | APPROVED-only report aggregation |
-| T3-008 | PARTIAL_IMPLEMENTED | Instant vs field isolation |
+| T3-007 | CI_VERIFIED_DEVICE_PENDING | APPROVED-only site/session reports, history and graph scope; Android successful CI 39478645439; database/phone export test pending |
+| T3-008 | CI_VERIFIED_DEVICE_PENDING | Instant locally saved snapshot and independent log not linked to field sessions; Android CI 39477075161/39478645439 successful |
 | T3-009 | IMPLEMENTED_UNVERIFIED | Preserve fingerprint/curve/formula/algorithm computation; display all available computed ppm estimates and method sources; device test pending |
 | T3-010 | PARTIAL_IMPLEMENTED | Source/report evidence ranking and finite estimated ppm displayed; regulatory exceedance guards retained; physical/UI verification pending |
-| T3-011 | PARTIAL_IMPLEMENTED | Physical PDF references |
-| T3-012 | QUEUED | PDF/XLSX charts and report quality |
+| T3-011 | CI_VERIFIED_DEVICE_PENDING | Physical PDF snapshot at click implemented and Android CI successful; verify Arabic rendering / data units on phone |
+| T3-012 | PARTIAL_IMPLEMENTED | Existing PDF/Excel site/session writers, 20 real-source graph selector and large dialog compile; 20-case chart/export quality acceptance not done |
 | T3-013 | PENDING_DEVICE | ChemCore embedded in prior successful build; active runtime not device-tested |
-| T3-014 | PENDING_HARDWARE | API4 static checked earlier; real robot testing pending |
+| T3-014 | ESP32_COMPILED_HARDWARE_PENDING | Firmware API4 Arduino core compile run 39476938209 plus Android static route test; Tank peripheral/network hardware test pending |
 | T3-015 | MAINTAIN_EXISTING | PM fourth subtab exists; no physical PM hardware |
-| T3-016 | QUEUED | Full regressions and real Android |
-| T3-017 | QUEUED | User/developer data separation |
-| T3-018 | QUEUED | Android install/Play Protect diagnostics |
+| T3-016 | CI_REGRESSION_PASSED_DEVICE_PENDING | Android unit and UI source contracts passed CI 39478645439; real Android scrolling/layout/offline/performance untested |
+| T3-017 | PARTIAL_IMPLEMENTED | Approved-only USER field reports and source-level developer isolation in place; full local-vs-central sync/data migration tests pending |
+| T3-018 | BLOCKED_DEVICE | Android release installation and Play Protect diagnosis require stable keystore and physical target phone |
 | T3-019 | DEFERRED_CONDITIONAL | Research integration is not a V3 ship blocker |
 | T3-020 | IMPLEMENTED_UNVERIFIED | Physical cards 2/row |
 | T3-021 | PARTIAL_IMPLEMENTED | Gray normal/red+white on valid instantaneous threshold crossing |
