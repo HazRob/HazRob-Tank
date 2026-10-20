@@ -55,7 +55,7 @@ public final class StatusTab {
         String completed=appUpdater.recentCompletionLabel();
         if(!completed.isEmpty())return completed;
         ChemCoreLibraryManager.Status lib=libraryUpdater.status();
-        return "تحديث • App "+BuildConfig.VERSION_NAME+" • ChemCore "+(lib.version.isEmpty()?"—":lib.version);
+        return "فحص ChemCore "+(lib.version.isEmpty()?"—":lib.version)+" • تحديث APK عند تهيئة توقيع V3";
     }
 
     private void runUnifiedUpdate(){
@@ -94,6 +94,17 @@ public final class StatusTab {
             }
         }catch(Exception e){libraryIssue=safe(e);}
         final boolean libUpdated=libraryUpdated;final String libVersion=libraryVersion;final String libIssue=libraryIssue;
+        // No V3 upgrade-safe APK signer/manifest is yet configured. Keep library updates
+        // usable, but never invoke the legacy updater with an empty manifest/foreign signer.
+        if(BuildConfig.APP_UPDATE_MANIFEST_URL==null||BuildConfig.APP_UPDATE_MANIFEST_URL.trim().isEmpty()){
+            scroll.post(()->{
+                updateBusy=false;updateButton.setEnabled(true);
+                String prefix=libUpdated?"تم تحديث ChemCore "+libVersion:
+                    !libIssue.isEmpty()?"ChemCore: "+libIssue:"اكتمل فحص ChemCore";
+                updateButton.setText(prefix+" • تحديث APK ينتظر إعداد إصدار Tank الموقّع");
+            });
+            return;
+        }
         appUpdater.updateNow(s->scroll.post(()->renderUnifiedUpdateState(s,libUpdated,libVersion,libIssue)));
     }
 
