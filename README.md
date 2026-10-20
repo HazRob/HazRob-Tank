@@ -2,6 +2,15 @@
 
 > **Development handoff, 2026-10-18.** This README is the authoritative starting point for the next conversation and **v3 development**. Do not release another APK until the additional requested changes and acceptance tests are complete.
 
+## V3 active implementation checkpoint — 2026-10-20 (NOT RELEASED)
+
+- **Current work branch:** [`feature/tank-v3-implementation`](https://github.com/HazRob/HazRob-Tank/tree/feature/tank-v3-implementation). **No V3 release APK** has been published, the branch has not been merged into develop, and do not present any debug Actions artifact as a user-ready signed release.
+- **Continue after interruption:** [V3 execution plan](docs/implementation/V3-EXECUTION-PLAN.md) and [chronological execution log](docs/implementation/V3-EXECUTION-LOG.md). Read these **before** making further edits; each records source commits, passing/failing CI, blockers, and per-requirement status.
+- **Last completely compiled/tested V3 candidate:** `dafa0101553be2a3874a79ad50684eb8d5e57a73`, [GitHub Actions run 39472037922](https://github.com/HazRob/HazRob-Tank/actions/runs/39472037922) **SUCCESS** (unit tests, assembleDebug, ChemCore snapshot, API4 contract); persistent signing remains **SKIPPED / not configured**. Important: a subsequent documentation-only commit is not another Java compilation.
+- **Implemented in V3 source (unverified on a real device):** offline mode with hard network block, 6 compact refresh overlays excluding drive, 2-up physical emoji cards, calibrated-only 90 dBA instantaneous red card display, 20-minute user clean-air R0 workflow and confirmed local save provenance/normalizer, dedicated site management vs approved reporting, approved-only field/site report data filtering, enlarged true-data report charts, frozen on-click physical PDF.
+- **Outstanding release blockers:** stable Tank APK signing keystore/secrets, actual Android UI inspection (no emulator), complete site/session migration and safety tests, real 20-minute sensor calibration/ RL validation and ChemCore live activation, tracked robot motion watchdog/E-STOP/link-loss hardware tests, app installation/Play Protect diagnostics, plus still-pending backlog functionality.
+- The original `sohpany/SERVOC-Android` remains read-only, pinned to `6281d3e`; no four-wheel code or deprecated simulator workflows should be introduced. Current V3 candidate `com.hazrob.tank` versionName `3.0`, versionCode `3` for CI.
+
 ## Project identity and separation
 
 - Repository: **HazRob/HazRob-Tank**, working branch **develop**.
