@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-10-20",
+  "updated_at": "2026-10-21",
   "project": "HazRob Tank research only",
   "canonical_status_source": "research/STATUS_LEDGER.md",
   "plan": "research/EXECUTION_PLAN_80_AR.md",
@@ -564,7 +564,15 @@
       "g2_review_date": "2026-10-20",
       "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
       "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
-      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Earlier G2-05 batch documentation; per-technique entry backfilled for resume correctness."
+      }
     },
     {
       "id": "03.1",
@@ -773,7 +781,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+        "source": "UCI1081 (other UCI sources assessed where relevant)",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Cannot substitute source TGS/MQ responses for calibrated Tank MQ8 Rs/R0, sensor detection power or spatial robot telemetry."
+      }
     },
     {
       "id": "04.2",
@@ -863,7 +879,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "executed_date": "2026-10-20",
+        "scientific_Tank_G3": false,
+        "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      }
     },
     {
       "id": "04.6",
@@ -903,7 +930,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "executed_date": "2026-10-20",
+        "scientific_Tank_G3": false,
+        "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      }
     },
     {
       "id": "04.8",
@@ -918,7 +956,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "executed_date": "2026-10-20",
+        "scientific_Tank_G3": false,
+        "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      }
     },
     {
       "id": "04.9",
@@ -933,7 +982,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+        "source": "UCI1081 (other UCI sources assessed where relevant)",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Cannot substitute source TGS/MQ responses for calibrated Tank MQ8 Rs/R0, sensor detection power or spatial robot telemetry."
+      }
     },
     {
       "id": "04.10",
@@ -998,7 +1055,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+        "source": "UCI1081 (other UCI sources assessed where relevant)",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Cannot substitute source TGS/MQ responses for calibrated Tank MQ8 Rs/R0, sensor detection power or spatial robot telemetry."
+      }
     },
     {
       "id": "05.3",
@@ -1013,7 +1078,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+        "source": "UCI1081 (other UCI sources assessed where relevant)",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Cannot substitute source TGS/MQ responses for calibrated Tank MQ8 Rs/R0, sensor detection power or spatial robot telemetry."
+      }
     },
     {
       "id": "05.4",
@@ -1033,7 +1106,15 @@
       "g2_review_date": "2026-10-20",
       "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
       "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
-      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Earlier G2-05 batch documentation; per-technique entry backfilled for resume correctness."
+      }
     },
     {
       "id": "05.5",
@@ -1053,7 +1134,15 @@
       "g2_review_date": "2026-10-20",
       "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
       "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
-      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Earlier G2-05 batch documentation; per-technique entry backfilled for resume correctness."
+      }
     },
     {
       "id": "05.6",
@@ -1073,7 +1162,15 @@
       "g2_review_date": "2026-10-20",
       "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
       "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
-      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Earlier G2-05 batch documentation; per-technique entry backfilled for resume correctness."
+      }
     },
     {
       "id": "05.7",
@@ -1093,7 +1190,15 @@
       "g2_review_date": "2026-10-20",
       "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
       "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
-      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Earlier G2-05 batch documentation; per-technique entry backfilled for resume correctness."
+      }
     },
     {
       "id": "05.8",
@@ -1108,7 +1213,17 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXTERNAL_NUMERIC_PROXY_NOT_PHYSICAL_LOD_LOQ",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "scientific_Tank_G3": false,
+        "warning": "Pooled baseline summaries are NOT known independent blank gas controls. No ppm LOD/LOQ or validated false-alarm rate."
+      }
     },
     {
       "id": "05.9",
@@ -1148,7 +1263,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "executed_date": "2026-10-20",
+        "scientific_Tank_G3": false,
+        "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      }
     },
     {
       "id": "06.2",
@@ -1163,7 +1289,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "executed_date": "2026-10-20",
+        "scientific_Tank_G3": false,
+        "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      }
     },
     {
       "id": "06.3",
@@ -1202,7 +1339,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "executed_date": "2026-10-20",
+        "scientific_Tank_G3": false,
+        "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      }
     },
     {
       "id": "06.5",
@@ -1241,7 +1389,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 15,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "executed_date": "2026-10-20",
+        "scientific_Tank_G3": false,
+        "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      }
     },
     {
       "id": "06.7",
@@ -1256,7 +1415,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+        "source": "UCI1081 (other UCI sources assessed where relevant)",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Cannot substitute source TGS/MQ responses for calibrated Tank MQ8 Rs/R0, sensor detection power or spatial robot telemetry."
+      }
     },
     {
       "id": "06.8",
@@ -1271,7 +1438,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 15,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "executed_date": "2026-10-20",
+        "scientific_Tank_G3": false,
+        "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      }
     },
     {
       "id": "06.9",
@@ -1286,7 +1464,18 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 18,
       "tested_commit": "3d2aa344016408fb03714b5f39e000f08e8df488",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+        "source": "UCI1081 DOI 10.24432/C5CK6F",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "not_tank_sensor_array": true,
+        "verified_on_main": true,
+        "executed_date": "2026-10-20",
+        "scientific_Tank_G3": false,
+        "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      }
     },
     {
       "id": "07.1",
@@ -1923,7 +2112,15 @@
       "g2_review_date": "2026-10-20",
       "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
       "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
-      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Earlier G2-05 batch documentation; per-technique entry backfilled for resume correctness."
+      }
     },
     {
       "id": "08.12",
@@ -1938,7 +2135,14 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_WHOLE_PRODUCT_LABELS",
+        "source": "UCI1081",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+        "report": "research/G2_REAL_DATA_BATCH07_AR.md",
+        "scientific_Tank_G3": false
+      }
     },
     {
       "id": "09.1",
@@ -2082,7 +2286,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+        "source": "UCI1081 (other UCI sources assessed where relevant)",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Cannot substitute source TGS/MQ responses for calibrated Tank MQ8 Rs/R0, sensor detection power or spatial robot telemetry."
+      }
     },
     {
       "id": "09.5",
@@ -2097,7 +2309,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 17,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+        "source": "UCI1081 (other UCI sources assessed where relevant)",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Cannot substitute source TGS/MQ responses for calibrated Tank MQ8 Rs/R0, sensor detection power or spatial robot telemetry."
+      }
     },
     {
       "id": "09.6",
@@ -2112,7 +2332,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 18,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+        "source": "UCI1081 (other UCI sources assessed where relevant)",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Cannot substitute source TGS/MQ responses for calibrated Tank MQ8 Rs/R0, sensor detection power or spatial robot telemetry."
+      }
     },
     {
       "id": "10.1",
@@ -2127,15 +2355,23 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 25,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "external_reference_g2": {
+        "status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+        "source": "UCI1081 (other UCI sources assessed where relevant)",
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+        "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+        "scientific_Tank_G3": false,
+        "warning": "Cannot substitute source TGS/MQ responses for calibrated Tank MQ8 Rs/R0, sensor detection power or spatial robot telemetry."
+      }
     }
   ],
   "verified_unit_tests": 1261,
-  "next_phase": "G2_data_provenance_and_G3_real_data_evaluation",
+  "next_phase": "G3_READINESS_CREATE_TANK_DEVICE_SCHEMA_CALIBRATION_AND_GOLD_STANDARD_EXPOSURES",
   "external_reference_progress": {
-    "completed_research_batches": 6,
-    "reviewed_G2_techniques": 60,
-    "techniques_with_first_real_external_array_evidence": 39,
+    "completed_research_batches": 8,
+    "reviewed_G2_techniques": 80,
+    "techniques_with_first_real_external_array_evidence": 49,
     "technique_ids": [
       "02.1",
       "02.2",
@@ -2154,10 +2390,20 @@
       "04.2",
       "04.3",
       "04.4",
+      "04.5",
       "04.6",
+      "04.7",
+      "04.8",
+      "05.8",
       "05.9",
+      "06.1",
+      "06.2",
       "06.3",
+      "06.4",
       "06.5",
+      "06.6",
+      "06.8",
+      "06.9",
       "07.1",
       "07.3",
       "07.4",
@@ -2188,15 +2434,25 @@
       "02.3",
       "02.5",
       "02.8",
+      "04.1",
+      "04.9",
       "05.1",
+      "05.2",
+      "05.3",
       "05.4",
       "05.5",
       "05.6",
       "05.7",
+      "06.7",
       "07.2",
       "08.11",
+      "08.12",
       "09.2",
-      "09.3"
+      "09.3",
+      "09.4",
+      "09.5",
+      "09.6",
+      "10.1"
     ],
     "measured_exposure_records_per_dataset": 90,
     "source_doi": "10.24432/C5CK6F",
@@ -2209,7 +2465,9 @@
       "research/G2_REAL_DATA_BATCH03_AR.md",
       "research/G2_REAL_DATA_BATCH04_AR.md",
       "research/G2_REAL_DATA_BATCH05_AR.md",
-      "research/G2_REAL_DATA_BATCH06_AR.md"
+      "research/G2_REAL_DATA_BATCH06_AR.md",
+      "research/G2_REAL_DATA_BATCH07_AR.md",
+      "research/G2_REAL_DATA_BATCH08_AR.md"
     ],
     "runs": [
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
@@ -2218,14 +2476,18 @@
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39201607716",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
-      "https://github.com/HazRob/HazRob-Tank/actions/runs/39494554254"
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39494554254",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39498554224",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783"
     ],
-    "warning": "60 distinct G2 technique IDs reviewed across 6 batches; UCI309 180 exposures are NEW independent source records but its 10 IDs ALREADY counted in G2-06 UCI308. Total unique source exposures 14238 across 4 source collections, not Tank-device data; G3=0/80.",
+    "warning": "Completed 80 distinct G2 source-eligibility and exploratory technique reviews in 8 ten-ID batches: 49 numeric/metadata external data executions (several only proxies/noncompliant), 29 scientifically blocked, 2 analytical-only. Four independent external datasets TOTAL 14238 source exposures with no double-counting; Tank G3 remains ZERO.",
     "warnings_by_batch": {
       "G2-03": "Nine physically grounded MQ techniques BLOCKED for missing reliable ADC/RL/R0/heater/BME/ohm fields; 02.1 generic filtering executed on external-source signals only.",
       "G2-04": "One external 16-sensor array across ten temporal batches, 8 authentic-value techniques, 07.10 theoretical-only, 07.2 blocked for lack of independent device. Source donor description research-only conflicts with current CC BY website.",
       "G2-05": "UCI308 prepared dilution is liquid vol.% not gas ppm; 02.6 source dR not verified log Rs/R0. 08.8 measured-source mixture detection failed (sensitivity 6/20, specificity 14/30). Six techniques blocked; no Tank G3.",
-      "G2-06": "Six real UCI308 signal operations, one simulation-vs-dR numeric noncompliant, one theoretical simulation and two blocked spatial/robot techniques; 08.5 source temporal ensemble 36/58, no trained CNN/TCN/GRU/GNN, G3=0/80."
+      "G2-06": "Six real UCI308 signal operations, one simulation-vs-dR numeric noncompliant, one theoretical simulation and two blocked spatial/robot techniques; 08.5 source temporal ensemble 36/58, no trained CNN/TCN/GRU/GNN, G3=0/80.",
+      "G2-07": "Nine actual-source numerical experiments, one blocked whole-product reference; trained primitives and their limitations; no Tank G3, unknown source sessions.",
+      "G2-08": "05.8 source-baseline threshold screening is NON-PHYSICAL LOD proxy; nine modules scientifically BLOCKED for missing Tank sensor Rs/R0/detection-power/spatial metadata. No Tank G3."
     },
     "unique_exposures_across_all_G2_batches": 14238,
     "analytical_only_techniques": [
@@ -2240,27 +2502,25 @@
       "UCI309": 180
     },
     "total_independent_source_collections": 4,
-    "last_batch_source": "UCI308",
-    "last_batch_sha256": "7b062960dbef1a9e8aefc62bc7dbac09bdadb8cbb40793cf2b8e122da1862f90",
+    "last_batch_source": "UCI1081",
+    "last_batch_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
     "last_batch_evidence": {
       "reviewed": 10,
-      "signal_executed": 6,
-      "numerical_noncompliant": 1,
-      "synthetic_only": 1,
-      "blocked": 2,
+      "external_numeric_proxy_only": 1,
+      "blocked": 9,
       "scientifically_validated": 0,
-      "source_unique_exposures": 58,
-      "tested_sha": "62fcfa23d8da457c2b640e3408cb46ff854b2997",
-      "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39494554254",
-      "report": "research/G2_REAL_DATA_BATCH06_AR.md"
+      "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498565783",
+      "protocol_unit_tests_passed": 9,
+      "report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "results": "research/benchmarks/results/uci1081_g2_batch08_2026-10-20.json"
     },
     "numerically_executed_with_noncompliant_chemical_inputs": [
       "02.6",
       "08.7"
     ],
     "reviewed_total_breakdown": {
-      "external_numeric_or_metadata": 39,
-      "scientifically_blocked": 19,
+      "external_numeric_or_metadata": 49,
+      "scientifically_blocked": 29,
       "analytical_only": 2
     },
     "additional_external_source_evidence": {
