@@ -104,13 +104,14 @@ public final class FieldSessionRepository {
             }
             int complete=0;
             try(Cursor c=w.rawQuery(
-                "SELECT ms.session_id,ms.ended_ts,ms.operator_role,ms.kind FROM field_session_measurements f "+
+                "SELECT ms.session_id,ms.ended_ts,ms.operator_role,ms.kind,ms.analytics,ms.payload FROM field_session_measurements f "+
                 "JOIN measurement_sessions ms ON ms.session_id=f.measurement_session_id WHERE f.field_session_id=?",
                 new String[]{id})){
                 while(c.moveToNext()){
                     complete++;
                     String sid=c.getString(0),ended=nz(c.getString(1)),role=nz(c.getString(2)),kind=nz(c.getString(3));
                     if(!"USER".equals(role)||!kind.startsWith("field_")||ended.trim().isEmpty())return false;
+                    if(!FieldSessionApprovalPolicy.completedSuccessfully(nz(c.getString(4)),nz(c.getString(5))))return false;
                     try(Cursor samples=w.rawQuery("SELECT 1 FROM telemetry_samples WHERE session_id=? LIMIT 1",new String[]{sid})){
                         if(!samples.moveToFirst())return false;
                     }
