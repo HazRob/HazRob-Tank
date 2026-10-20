@@ -20,6 +20,8 @@ import android.widget.TextView;
 import com.servoc.app.camera.CameraApi;
 import com.servoc.app.auth.TankModePolicy;
 import com.servoc.app.calibration.ManualR0Calibration;
+import com.servoc.app.chemcore.ChemCoreMolecularSeedImporter;
+import com.servoc.app.chemcore.ChemCoreQsprRuntimeRegistry;
 import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
 import com.servoc.app.communication.RobotApi;
@@ -85,7 +87,22 @@ public final class MainActivity extends Activity implements HazRobHost {
         super.onCreate(b);HazRobStorageBootstrap.ensure(this);com.servoc.app.chemcore.library.ChemCoreEmbeddedStableInstaller.ensureInstalled(getApplicationContext());prefs=getSharedPreferences("servoc",MODE_PRIVATE);ManualR0Calibration.load(prefs);userLibrary=new HazRobUserLibrary(this);robotApi=new RobotApi(prefs.getString("robot","192.168.4.1"));cameraApi=new CameraApi(prefs.getString("camera","192.168.4.2"));flashMode="on".equals(prefs.getString("flash_mode","off"))?"on":"off";trackingTarget=prefs.getInt("tracking_id",-1);trackingName=prefs.getString("tracking_name","");db=new ExperimentsDb(this);telemetryRecorder=new TelemetryRecorder(db);try{phoneAlertTone=new PhoneAlertTone();}catch(Exception ignored){phoneAlertTone=null;}loadSensorBaselines();
         String mode=getIntent()==null?null:getIntent().getStringExtra("connection_mode");if(mode!=null&&!mode.trim().isEmpty())prefs.edit().putString("connection_mode",mode).apply();
         RobotApi.setTankOffline(isOffline());
-        workers.execute(()->{ChemicalSeedBootstrap.ensureNiosh(getApplicationContext(),db);ExposureSeedBootstrap.ensureOshaZ1(getApplicationContext(),db);ui.post(this::refreshAllTabs);});
+        workers.execute(()->{
+            try{
+                ChemicalSeedBootstrap.ensureNiosh(getApplicationContext(),db);
+                ExposureSeedBootstrap.ensureOshaZ1(getApplicationContext(),db);
+                db.putMeta("tank_v3_chemcore_bootstrap","IMPORTING");
+                ChemCoreMolecularSeedImporter.Result seed=ChemCoreMolecularSeedImporter.importBestAvailable(getApplicationContext(),db);
+                db.putMeta("tank_v3_chemcore_seed_origin",seed.origin);
+                db.putMeta("tank_v3_chemcore_seed_result",seed.message);
+                ChemCoreQsprRuntimeRegistry.Status model=ChemCoreQsprRuntimeRegistry.rebuild(db);
+                db.putMeta("tank_v3_chemcore_qspr_status",model.summary());
+                db.putMeta("tank_v3_chemcore_bootstrap",seed.available?"READY":"PARTIAL_NO_MOLECULAR_SEED");
+            }catch(Exception ex){
+                db.putMeta("tank_v3_chemcore_bootstrap","ERROR");
+                db.putMeta("tank_v3_chemcore_bootstrap_error",ex.getClass().getSimpleName()+": "+String.valueOf(ex.getMessage()));
+            }finally{ui.post(this::refreshAllTabs);}
+        });
         enter();
     }
 
