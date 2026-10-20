@@ -1,3 +1,15 @@
+# QSPR / PUBCHEM MOLECULAR INVERSION — RESEARCH EVIDENCE CHECKPOINT (2026-10-21)
+
+**This checkpoint belongs to PR #4's research branch, NOT merged main.**
+- Detailed Arabic literature audit: `research/references/PUBCHEM_QSPR_INVERSE_MOLECULAR_EVIDENCE_2026-10-21_AR.md`.
+- Machine-readable 10-record reference registry: `research/references/qspr_pubchem_inverse_molecular_registry_2026-10-21.json`.
+- **Finding:** NASA/JPL polymer-carbon electronic nose forward QSAR/QSPR and inverse unknown-event hypothesis generation (candidate SF6), MOS materials QSPR/ML response prediction, PubChem molecular descriptor metadata. **NO DIRECT verified commercially packaged MQ2–MQ135 PubChem/QSPR unknown-gas chemical identification study** as of this literature audit.
+- **Proposed experiment:** Use already-held UCI1081 (90 unique external exposure events) MQ135-only channel, associate molecule descriptors with candidate compounds, compare baseline classifier vs forward QSPR model + inverse candidate ranking, concentration-heldout folds, independent leave-one-molecule-out transfer stress test. **Never provide the test record's true gas descriptor as a row input; that leaks the answer.** This experiment is PLANNED, not performed.
+- **Main source limitation:** no data-proven physical Tank calibration. `Tank G3 0/80`; no APK / ESP32 / ESP32-CAM / production ChemCore change. Existing UCI1081 samples must NOT be counted again. Any future 81st technique needs gap analysis and review; start with existing ID `04.9`.
+- **Resume order:** QSPR review doc → JSON registry → `research/datasets/mq_external_source_catalog_2026-10-21.json` → original research `PROGRESS_80.json` and `RESUME.md` on main → design/freeze grouped benchmark then execute, log both positive and negative outcomes.
+
+---
+
 # NEW EXTERNAL MQ MEASUREMENT SOURCE AUDIT — 2026-10-21 (PR #4 DRAFT, NOT MERGED)
 
 - **New branch:** `research/mq-open-measurements-audit-20261021`; base main `632745078a48b12d9de68b0ce66ba214cc87c4d4`.
