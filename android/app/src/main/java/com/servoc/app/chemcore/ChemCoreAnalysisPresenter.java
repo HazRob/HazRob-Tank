@@ -30,7 +30,7 @@ public final class ChemCoreAnalysisPresenter {
         s.append("\nTop candidate: ").append(p.optString("chemical","—"));
         s.append("\nPPM: ");
         if(Double.isFinite(value))s.append(fmt(value)).append(ppm?" ppm • REPORTABLE":" ppm • COMPUTED ESTIMATE (WITHHELD from regulatory conclusions)");
-        else s.append("NO NUMERIC RESULT • ").append(p.optString("ppm_withheld_reason","no_ppm_estimate_available"));
+        else s.append("WITHHELD • ").append(p.optString("ppm_withheld_reason","no_ppm_estimate_available"));
         s.append("\nPosterior: ").append(pct01(p.optDouble("top_posterior",Double.NaN)));
         s.append(" • runner-up: ").append(pct01(p.optDouble("runner_up_posterior",Double.NaN)));
         s.append(" • margin: ").append(pct01(p.optDouble("posterior_separation_margin",Double.NaN)));
