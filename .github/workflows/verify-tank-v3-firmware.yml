@@ -1,0 +1,54 @@
+name: Verify HazRob Tank V3 ESP32 Firmware
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/tank-v3-implementation]
+    paths:
+      - 'firmware/ESP32-Tank/**'
+      - '.github/workflows/verify-tank-v3-firmware.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-esp32-tank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assert operator-only motion safety contract
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          config=Path('firmware/ESP32-Tank/Config.h').read_text()
+          src=Path('firmware/ESP32-Tank/Hardware.cpp').read_text()
+          ino=Path('firmware/ESP32-Tank/ESP32-Tank.ino').read_text()
+          assert 'CONTROL_COMMAND_TIMEOUT_MS=500' in config
+          assert 'if(transportLost || now-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS)' in src
+          assert 'motionStopImmediate();' in src
+          assert 'RecoveryPhase::REPLAY' not in src
+          assert 'RECOVERY_SPEED_PERCENT' not in src
+          assert 'void linkSetArmed(bool a)' in src and 'motionStopImmediate();staleStop=true' in src
+          assert 'web.on("/estop"' in ino and 'safetyLatchEstop();emergencyStop();' in ino
+          print('PASS: source-level safety policy: 500ms watchdog, neutral stop, no autonomous reverse playback')
+          PY
+
+      - uses: arduino/setup-arduino-cli@v2
+
+      - name: Install pinned Arduino-ESP32 2.x board core
+        run: |
+          set -euo pipefail
+          INDEX=https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index --additional-urls "$INDEX"
+          arduino-cli core install esp32:esp32@2.0.17 --additional-urls "$INDEX"
+
+      - name: Compile ESP32 Tank source (DOIT ESP32 DevKit V1)
+        run: |
+          set -euo pipefail
+          arduino-cli compile --warnings all --fqbn esp32:esp32:esp32 firmware/ESP32-Tank
+
+      - name: Firmware compile checkpoint
+        run: |
+          echo 'Source-only V3 firmware build validated. No ESP32 flash or physical safety test performed.'
