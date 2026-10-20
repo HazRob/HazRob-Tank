@@ -1,0 +1,33 @@
+name: HazRob Tank G2-08 physical eligibility and baseline screening
+on:
+  push:
+    paths:
+      - '.github/workflows/g2-batch08-eligibility.yml'
+      - 'research/benchmarks/*batch08*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  g2-08:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify blank-proxy protocol invariants
+        run: |
+          python -m unittest discover -s research/benchmarks -p 'test_g2_batch08_eligibility_v1.py' -v
+      - name: Download original source
+        run: |
+          curl --fail --location --retry 3 --max-time 180 'https://archive.ics.uci.edu/static/public/1081/gas%2Bsensor%2Barray%2Blow-concentration.zip' -o uci1081_original.zip
+          echo '813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab  uci1081_original.zip' | sha256sum --check
+      - name: Evaluate ten research techniques
+        run: python research/benchmarks/g2_batch08_eligibility_v1.py uci1081_original.zip --output g2_batch08.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: g2-batch08-evidence
+          path: g2_batch08.json
+          if-no-files-found: error
+          retention-days: 90
