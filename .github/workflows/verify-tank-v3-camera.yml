@@ -1,0 +1,85 @@
+name: Verify HazRob Tank V3 ESP32-CAM Arduino Sketch
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/tank-v3-implementation]
+    paths:
+      - 'firmware/Cam-tank/**'
+      - '.github/workflows/verify-tank-v3-camera.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-cam-tank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install pinned Arduino ESP32 camera core
+        run: |
+          set -euo pipefail
+          INDEX=https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index --additional-urls "$INDEX"
+          arduino-cli core install esp32:esp32@3.3.11 --additional-urls "$INDEX"
+
+      - name: Compile Cam-tank AI Thinker ESP32-CAM
+        run: |
+          set -euo pipefail
+          arduino-cli compile --warnings all --fqbn esp32:esp32:esp32cam --output-dir camera-build firmware/Cam-tank
+
+      - name: Verify independent Arduino sketch project
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root=Path('firmware/Cam-tank')
+          ino=root/'Cam-tank.ino'
+          assert ino.exists()
+          text=ino.read_text(encoding='utf-8')
+          assert 'Cam-tank 0.1.3-v3-dev' in text
+          assert 'WiFi.mode(WIFI_STA)' in text
+          assert '192,168,4,2' in text
+          assert 'mjpeg.begin()' in text
+          assert not (root/'RemoteVideoSecrets.h').exists(), 'Do not publish camera secrets'
+          assert (root/'RemoteVideoSecrets.example.h').exists()
+          print('PASS: independent Arduino sketch with no device-specific secret file')
+          PY
+
+      - name: Package direct Arduino IDE sketch ZIP + checksums
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile,hashlib
+          src=Path('firmware/Cam-tank')
+          dst=Path('unreleased-camera')
+          dst.mkdir(exist_ok=True)
+          name='HazRob-Tank-V3-ESP32-CAM-Arduino.zip'
+          with zipfile.ZipFile(dst/name,'w',zipfile.ZIP_DEFLATED) as z:
+              for f in sorted(src.iterdir()):
+                  if f.is_file() and f.suffix.lower() in {'.ino','.cpp','.h','.md'} and not f.name.endswith('Secrets.h'):
+                      z.write(f,arcname='Cam-tank/'+f.name)
+          with zipfile.ZipFile(dst/name) as z:
+              assert 'Cam-tank/Cam-tank.ino' in z.namelist()
+              assert 'Cam-tank/RemoteVideo.cpp' in z.namelist()
+          bins=sorted(Path('camera-build').glob('*.bin'))
+          assert bins,'Camera sketch compiled but no binary outputs found'
+          for f in bins:
+              (dst/f.name).write_bytes(f.read_bytes())
+          (dst/'SHA256SUMS.txt').write_text(''.join(
+              hashlib.sha256(f.read_bytes()).hexdigest()+'  '+f.name+'\n'
+              for f in sorted(dst.iterdir()) if f.is_file() and f.name!='SHA256SUMS.txt'))
+          print('PACKAGED:',[p.name for p in sorted(dst.iterdir())])
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V3-ESP32-CAM-UNRELEASED-Arduino
+          path: unreleased-camera/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Warning — Not a tested hardware release
+        run: echo 'ESP32-CAM compiled. Camera optical, PSRAM, WiFi and remote video behavior remain real-hardware acceptance gates.'
