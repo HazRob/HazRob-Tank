@@ -773,7 +773,16 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "fa693d4d3678caf50c1b39fda7a14f4176909b95",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "g2_missing_requirements": [
+        "matched MQ sensor curves with documented R0 protocol",
+        "independently controlled concentration and Rs/R0"
+      ]
     },
     {
       "id": "04.2",
@@ -948,7 +957,16 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "g2_missing_requirements": [
+        "matched MQ curves and R0",
+        "candidate-blind complete physics-plus-ML implementation"
+      ]
     },
     {
       "id": "04.10",
@@ -1013,7 +1031,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "g2_missing_requirements": [
+        "verified MQ Rs/R0 and at least three calibration levels with independent validation"
+      ]
     },
     {
       "id": "05.3",
@@ -1028,7 +1054,16 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "g2_missing_requirements": [
+        "at least four distinct positive single-gas levels",
+        "MQ Rs/R0 provenance"
+      ]
     },
     {
       "id": "05.4",
@@ -1123,7 +1158,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "EXTERNAL_BASELINE_PROXY_NOT_FORMAL_LOD",
+      "g2_missing_requirements": [
+        "independent certified blanks and low-level standards for formal LOD/LOQ"
+      ]
     },
     {
       "id": "05.9",
@@ -1291,7 +1334,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "1bfd90c6aaa7f53c094f1bae2702d990cb7e0234",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "g2_missing_requirements": [
+        "gas/concentration/condition-specific calibrated sensor detection power"
+      ]
     },
     {
       "id": "06.8",
@@ -2002,7 +2053,16 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "g2_missing_requirements": [
+        "measured waypoint coordinates with calibrated uncertainty/risk",
+        "actual sampling outcomes"
+      ]
     },
     {
       "id": "09.5",
@@ -2017,7 +2077,16 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 17,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "g2_missing_requirements": [
+        "time-synchronized robot pose and gas response",
+        "sensor transport lag and spatial ground truth"
+      ]
     },
     {
       "id": "09.6",
@@ -2032,7 +2101,15 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 18,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "g2_missing_requirements": [
+        "synchronized obstacle/cliff/localization/communication telemetry and fault outcomes"
+      ]
     },
     {
       "id": "10.1",
@@ -2047,15 +2124,24 @@
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 25,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 8,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH08_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "g2_missing_requirements": [
+        "held-out sensor detection and non-detection likelihoods",
+        "validated multi-sensor dependence model"
+      ]
     }
   ],
   "verified_unit_tests": 1261,
-  "next_phase": "G2_data_provenance_and_G3_real_data_evaluation",
+  "next_phase": "complete_algorithmic_gaps_and_endpoint_matched_validation",
   "external_reference_progress": {
-    "completed_research_batches": 7,
-    "reviewed_G2_techniques": 70,
-    "techniques_with_first_real_external_array_evidence": 48,
+    "completed_research_batches": 8,
+    "reviewed_G2_techniques": 80,
+    "techniques_with_first_real_external_array_evidence": 49,
     "technique_ids": [
       "02.1",
       "02.2",
@@ -2078,6 +2164,7 @@
       "04.6",
       "04.7",
       "04.8",
+      "05.8",
       "05.9",
       "06.1",
       "06.2",
@@ -2117,16 +2204,25 @@
       "02.3",
       "02.5",
       "02.8",
+      "04.1",
+      "04.9",
       "05.1",
+      "05.2",
+      "05.3",
       "05.4",
       "05.5",
       "05.6",
       "05.7",
+      "06.7",
       "07.2",
       "08.11",
       "08.12",
       "09.2",
-      "09.3"
+      "09.3",
+      "09.4",
+      "09.5",
+      "09.6",
+      "10.1"
     ],
     "measured_exposure_records_per_dataset": 90,
     "source_doi": "10.24432/C5CK6F",
@@ -2140,7 +2236,8 @@
       "research/G2_REAL_DATA_BATCH04_AR.md",
       "research/G2_REAL_DATA_BATCH05_AR.md",
       "research/G2_REAL_DATA_BATCH06_AR.md",
-      "research/G2_REAL_DATA_BATCH07_AR.md"
+      "research/G2_REAL_DATA_BATCH07_AR.md",
+      "research/G2_REAL_DATA_BATCH08_AR.md"
     ],
     "runs": [
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
@@ -2150,16 +2247,20 @@
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39201607716",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39494554254",
-      "https://github.com/HazRob/HazRob-Tank/actions/runs/39495907309"
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39495907309",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282"
     ],
-    "warning": "70 unique ID reviews; 48 external numeric/metadata, 20 blocked, 2 theoretical. No Tank G3. Existing UCI1081 exposures reused, not new measurements.",
+    "warning": "80 G2 input/evidence audits complete, NOT 80 fully implemented or validated algorithms. 49 external numeric/metadata (some proxy or physically noncompliant), 29 blocked, 2 theoretical. Four unique source datasets: 14238 exposures. Tank G3=0/80.",
     "warnings_by_batch": {
       "G2-03": "Nine physically grounded MQ techniques BLOCKED for missing reliable ADC/RL/R0/heater/BME/ohm fields; 02.1 generic filtering executed on external-source signals only.",
       "G2-04": "One external 16-sensor array across ten temporal batches, 8 authentic-value techniques, 07.10 theoretical-only, 07.2 blocked for lack of independent device. Source donor description research-only conflicts with current CC BY website.",
       "G2-05": "UCI308 prepared dilution is liquid vol.% not gas ppm; 02.6 source dR not verified log Rs/R0. 08.8 measured-source mixture detection failed (sensitivity 6/20, specificity 14/30). Six techniques blocked; no Tank G3.",
-      "G2-06": "Six real UCI308 signal operations, one simulation-vs-dR numeric noncompliant, one theoretical simulation and two blocked spatial/robot techniques; 08.5 source temporal ensemble 36/58, no trained CNN/TCN/GRU/GNN, G3=0/80."
+      "G2-06": "Six real UCI308 signal operations, one simulation-vs-dR numeric noncompliant, one theoretical simulation and two blocked spatial/robot techniques; 08.5 source temporal ensemble 36/58, no trained CNN/TCN/GRU/GNN, G3=0/80.",
+      "G2-07": "MLP 69/90, softmax 73/90, boosted stumps not XGBoost 34/90; abstention accepts only 8/90; shifted-concentration conformal no guaranteed coverage.",
+      "G2-08": "05.8 source-baseline proxy screening only, never quantified ppm or formal LoD; nine endpoints remain blocked. UCI309 has documented resistance conversion and mean GCMS ppm, not Tank MQ R0 or robot pose."
     },
-    "unique_exposures_across_all_G2_batches": 14058,
+    "unique_exposures_across_all_G2_batches": 14238,
     "analytical_only_techniques": [
       "07.10",
       "08.6"
@@ -2168,28 +2269,31 @@
     "unique_measured_exposure_records_by_source": {
       "UCI1081": 90,
       "UCI270": 13910,
-      "UCI308": 58
+      "UCI308": 58,
+      "UCI309": 180
     },
-    "total_independent_source_collections": 3,
+    "total_independent_source_collections": 4,
     "last_batch_source": "UCI1081",
     "last_batch_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
     "last_batch_evidence": {
       "reviewed": 10,
-      "signal_executed": 9,
-      "blocked": 1,
+      "signal_executed": 1,
+      "blocked": 9,
       "scientifically_validated": 0,
-      "tested_sha": "a5f46d0935b1e1f85d133ecae842506f8e21cd05",
-      "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495907309",
-      "report": "research/G2_REAL_DATA_BATCH07_AR.md"
+      "tested_sha": "7fc5f32acd7400b8d90d8712f68bd11b343931df",
+      "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+      "report": "research/G2_REAL_DATA_BATCH08_AR.md"
     },
     "numerically_executed_with_noncompliant_chemical_inputs": [
       "02.6",
       "08.7"
     ],
     "reviewed_total_breakdown": {
-      "external_numeric_or_metadata": 48,
-      "scientifically_blocked": 20,
+      "external_numeric_or_metadata": 49,
+      "scientifically_blocked": 29,
       "analytical_only": 2
-    }
+    },
+    "source_count_correction": "UCI309 extension evidence already exists in parent fe2eb862, run 39495144282. Count its 180 experiments once, not its 360 raw/downsampled files; retain original results unchanged.",
+    "legacy_scalar_fields_scope": "measured_exposure_records_per_dataset/source_doi/source_sha256/total_sensor_scalar_observations above are historical UCI1081 fields only; use unique_measured_exposure_records_by_source for cross-source counts."
   }
 }

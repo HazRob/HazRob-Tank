@@ -1,3 +1,13 @@
+# CURRENT CHECKPOINT — G2 INVENTORY 80/80 REVIEWED — 2026-10-20
+
+Branch: research/complete-g2-07-08-20261020. G2-07 and G2-08 complete and tested; read their reports and JSON before changing results. Counts: 49 external numeric/metadata, 29 blocked for intended endpoint, 2 theoretical; NOT 80 complete algorithms. G1 historical baseline 80/80, 1261 tests; changed conformal module 16/16 and batch05 CI PASS. Tank G3 0/80. Four source collections, 14238 unique exposures including existing UCI309 extension.
+
+NEXT: COMPLETION_PLAN_80_V3_AR.md -> NEXT_ACTIONS_80.json. Priority is finishing named algorithms and reference equivalence, then matched real-data validation. No production changes. Existing main is concurrently updated: merge by reviewed PR, never overwrite its newer records. Protocol reruns and failed outcomes must be retained.
+
+Evidence: https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153 and https://github.com/HazRob/HazRob-Tank/actions/runs/39495907309 .
+
+---
+
 # CURRENT CHECKPOINT — G2-07 COMPLETE — 2026-10-20
 
 70/80 G2 reviews: 48 external numeric/metadata, 20 blocked, 2 analytical-only. Tank G3 0/80. Work branch research/complete-g2-07-08-20261020; do not overwrite concurrent main updates. See G2_REAL_DATA_BATCH07_AR.md and https://github.com/HazRob/HazRob-Tank/actions/runs/39495907309. Next ten: 04.1,04.9,05.2,05.3,05.8,06.7,09.4,09.5,09.6,10.1. Source eligibility first.

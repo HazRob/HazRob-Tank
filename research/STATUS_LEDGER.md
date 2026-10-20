@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 2.7 | 2026-10-20 | G1 baseline 80/80; G2 reviewed 70/80: 48 external numeric/metadata, 20 blocked, 2 analytical-only; Tank G3 0/80. See G2_REAL_DATA_BATCH07_AR.md.
+Version 2.8 | 2026-10-20 | G1 baseline 80/80; G2 reviewed 80/80: 49 external numeric/metadata, 29 blocked, 2 theoretical; Tank G3 0/80. Full implementation remains open. See COMPLETION_PLAN_80_V3_AR.md.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -26,7 +26,7 @@ Version 2.7 | 2026-10-20 | G1 baseline 80/80; G2 reviewed 70/80: 48 external num
 | 03.6 | Sensor subsets | PROTOTYPE | research/techniques/03.6/ (exhaustive subset ambiguity; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
 | 03.7 | Concentration confounding | PROTOTYPE | research/techniques/03.7/ (within-gas log-concentration correlation; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
 | 03.8 | Identifiability limits | PROTOTYPE | research/techniques/03.8/ (cross-class near-collision and abstention candidate; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
-| 04.1 | Curve matching | PROTOTYPE | research/techniques/04.1/ (log-log MQ reference interpolation; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
+| 04.1 | Curve matching | PROTOTYPE | research/techniques/04.1/ (log-log MQ reference interpolation; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
 | 04.2 | Fingerprint matching | PROTOTYPE | research/techniques/04.2/ (nearest-reference fingerprint ranking; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
 | 04.3 | KNN | PROTOTYPE | research/techniques/04.3/ (uniform/inverse-distance voting; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
 | 04.4 | Logistic regression | PROTOTYPE | research/techniques/04.4/ (multiclass softmax L2; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
@@ -34,16 +34,16 @@ Version 2.7 | 2026-10-20 | G1 baseline 80/80; G2 reviewed 70/80: 48 external num
 | 04.6 | Random Forest | PROTOTYPE | research/techniques/04.6/ (bagged Gini trees; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending |
 | 04.7 | XGBoost | PARTIAL_PROTOTYPE | research/techniques/04.7/ (simplified gradient-boosted stumps, NOT XGBoost; 16 tests authored); CI batch03 16/16 unit PASS; G3 pending  G2-07: see G2_REAL_DATA_BATCH07_AR.md; not Tank validated |
 | 04.8 | MLP | PROTOTYPE | research/techniques/04.8/ (single-hidden-layer tanh/softmax network; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending  G2-07: see G2_REAL_DATA_BATCH07_AR.md; not Tank validated |
-| 04.9 | Physics+ML | PARTIAL_PROTOTYPE | research/techniques/04.9/ (candidate-conditioned physics residual features only; no fitted ML model; 16 synthetic tests authored, not verified executed); CI batch04 16/16 unit PASS; G3 pending |
+| 04.9 | Physics+ML | PARTIAL_PROTOTYPE | research/techniques/04.9/ (candidate-conditioned physics residual features only; no fitted ML model; 16 synthetic tests authored, not verified executed); CI batch04 16/16 unit PASS; G3 pending  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
 | 04.10 | Benchmarking | PROTOTYPE | research/techniques/04.10/ (grouped holdout and descriptive metrics; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
 | 05.1 | Single-sensor calibration | PROTOTYPE | research/techniques/05.1/ (known-gas log-log calibration; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
-| 05.2 | Multipoint calibration | PROTOTYPE | research/techniques/05.2/ (monotone piecewise log-log interpolation; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
-| 05.3 | Nonlinear regression | PROTOTYPE | research/techniques/05.3/ (quadratic log-log calibration; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending |
+| 05.2 | Multipoint calibration | PROTOTYPE | research/techniques/05.2/ (monotone piecewise log-log interpolation; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
+| 05.3 | Nonlinear regression | PROTOTYPE | research/techniques/05.3/ (quadratic log-log calibration; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
 | 05.4 | Multisensor regression | PROTOTYPE | research/techniques/05.4/ (known-gas multichannel ridge regression; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending; G2-05 UCI308 BLOCKED required physical fields; see G2_REAL_DATA_BATCH05_AR.md |
 | 05.5 | PLS regression | PROTOTYPE | research/techniques/05.5/ (known-gas PLS1 latent components; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending; G2-05 UCI308 BLOCKED required physical fields; see G2_REAL_DATA_BATCH05_AR.md |
 | 05.6 | Tree regression | PROTOTYPE | research/techniques/05.6/ (bagged CART log-ppm regression; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending; G2-05 UCI308 BLOCKED required physical fields; see G2_REAL_DATA_BATCH05_AR.md |
 | 05.7 | Identity-conditional estimates | PROTOTYPE | research/techniques/05.7/ (confidence/margin gate and gas-specific calibrator routing; 16 tests authored); CI batch04 16/16 unit PASS; G3 pending; G2-05 UCI308 BLOCKED required physical fields; see G2_REAL_DATA_BATCH05_AR.md |
-| 05.8 | LOD/LOQ | PARTIAL_PROTOTYPE | research/techniques/05.8/ (blank-sigma screening only; not validated ppm LOD/LOQ; 16 tests authored); CI batch05 16/16 unit PASS; G3 pending |
+| 05.8 | LOD/LOQ | PARTIAL_PROTOTYPE | research/techniques/05.8/ (blank-sigma screening only; not validated ppm LOD/LOQ; 16 tests authored); CI batch05 16/16 unit PASS; G3 pending  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
 | 05.9 | Unseen concentrations | PROTOTYPE | research/techniques/05.9/ (held-out ppm levels, interpolation/extrapolation metrics and abstention; 16 tests authored); CI batch05 16/16 unit PASS; G3 pending |
 | 06.1 | Evidence fusion | PARTIAL_PROTOTYPE | research/techniques/06.1/ (dependence-group log opinion pooling; 16 tests authored); CI batch05 16/16 unit PASS; G3 pending  G2-07: see G2_REAL_DATA_BATCH07_AR.md; not Tank validated |
 | 06.2 | Bayesian inference | PARTIAL_PROTOTYPE | research/techniques/06.2/ (supplied priors and likelihoods; conditional independence assumption; 16 tests authored); CI batch05 16/16 unit PASS; G3 pending  G2-07: see G2_REAL_DATA_BATCH07_AR.md; not Tank validated |
@@ -51,7 +51,7 @@ Version 2.7 | 2026-10-20 | G1 baseline 80/80; G2 reviewed 70/80: 48 external num
 | 06.4 | Conformal prediction | PARTIAL_PROTOTYPE | research/techniques/06.4/ (split conformal closed-world candidate sets; 16 tests authored); CI batch05 16/16 unit PASS; G3 pending  G2-07: see G2_REAL_DATA_BATCH07_AR.md; not Tank validated |
 | 06.5 | Open-set recognition | PARTIAL_PROTOTYPE | research/techniques/06.5/ (nearest-centroid open-set baseline; 16 synthetic tests authored); CI batch05 16/16 unit PASS; G3 pending |
 | 06.6 | OOD detection | PARTIAL_PROTOTYPE | research/techniques/06.6/ (minimal baseline; smoke tests authored; real validation pending); CI batch05 15/15 unit PASS; G3 pending  G2-07: see G2_REAL_DATA_BATCH07_AR.md; not Tank validated |
-| 06.7 | Evidence conflicts | PARTIAL_PROTOTYPE | research/techniques/06.7/ (minimal baseline; smoke tests authored; real validation pending); CI batch05 16/16 unit PASS; G3 pending |
+| 06.7 | Evidence conflicts | PARTIAL_PROTOTYPE | research/techniques/06.7/ (minimal baseline; smoke tests authored; real validation pending); CI batch05 16/16 unit PASS; G3 pending  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
 | 06.8 | SHAP | PARTIAL_PROTOTYPE | research/techniques/06.8/ (minimal baseline; smoke tests authored; real validation pending); CI batch05 15/15 unit PASS; G3 pending  G2-07: see G2_REAL_DATA_BATCH07_AR.md; not Tank validated |
 | 06.9 | Abstention | PARTIAL_PROTOTYPE | research/techniques/06.9/ (minimal baseline; smoke tests authored; real validation pending); CI batch06 18/18 behavioral tests PASS; device/gas G3 pending  G2-07: see G2_REAL_DATA_BATCH07_AR.md; not Tank validated |
 | 07.1 | Cross-session tests | PARTIAL_PROTOTYPE | research/techniques/07.1/ (minimal baseline; smoke tests authored; real validation pending); CI batch06 18/18 behavioral tests PASS; device/gas G3 pending |
@@ -79,9 +79,9 @@ Version 2.7 | 2026-10-20 | G1 baseline 80/80; G2 reviewed 70/80: 48 external num
 | 09.1 | Robotic olfaction | PARTIAL_PROTOTYPE | research/techniques/09.1/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated |
 | 09.2 | Gas mapping | PARTIAL_PROTOTYPE | research/techniques/09.2/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated |
 | 09.3 | Source localization | PARTIAL_PROTOTYPE | research/techniques/09.3/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated |
-| 09.4 | Active sampling | PARTIAL_PROTOTYPE | research/techniques/09.4/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated |
-| 09.5 | Spatiotemporal fusion | PARTIAL_PROTOTYPE | research/techniques/09.5/ (minimal baseline; synthetic smoke tests authored); CI batch08 17/17 behavioral unit PASS; research-only, G3 not validated |
-| 09.6 | Motion decisions | PARTIAL_PROTOTYPE | research/techniques/09.6/ (minimal baseline; synthetic smoke tests authored); CI batch08 18/18 behavioral unit PASS; research-only, G3 not validated |
+| 09.4 | Active sampling | PARTIAL_PROTOTYPE | research/techniques/09.4/ (minimal baseline; synthetic smoke tests authored); CI batch08 16/16 behavioral unit PASS; research-only, G3 not validated  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
+| 09.5 | Spatiotemporal fusion | PARTIAL_PROTOTYPE | research/techniques/09.5/ (minimal baseline; synthetic smoke tests authored); CI batch08 17/17 behavioral unit PASS; research-only, G3 not validated  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
+| 09.6 | Motion decisions | PARTIAL_PROTOTYPE | research/techniques/09.6/ (minimal baseline; synthetic smoke tests authored); CI batch08 18/18 behavioral unit PASS; research-only, G3 not validated  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
 
 Update rows only with verified evidence, preserve historical decisions, and update RESUME.md each session.
 
@@ -91,7 +91,7 @@ Additional research proposal: [Negative Evidence & Sensor-Guided Exclusion](NEGA
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
-| 10.1 | Negative Evidence & Sensor-Guided Exclusion | PARTIAL_PROTOTYPE | research/techniques/10.1/ (8/8 local synthetic unit tests executed; sensor detection-power calibration, correlated evidence correction and Tank validation pending); CI batch08 25/25 behavioral unit PASS; research-only, G3 not validated |
+| 10.1 | Negative Evidence & Sensor-Guided Exclusion | PARTIAL_PROTOTYPE | research/techniques/10.1/ (8/8 local synthetic unit tests executed; sensor detection-power calibration, correlated evidence correction and Tank validation pending); CI batch08 25/25 behavioral unit PASS; research-only, G3 not validated  G2-08: see G2_REAL_DATA_BATCH08_AR.md; not Tank validated |
 
 **Scope of 10.1:** calibrated sensor-specific non-detection likelihoods conditional on chemical identity, concentration, sensor detection capability, response latency, environmental conditions, cross-sensitivity and quality flags. Output should down-weight supported hypotheses, not hard-eliminate chemical families. Requires real blank/positive controls and grouped validation before use. Prior research primitive in 06.7 does not make 10.1 complete.
 

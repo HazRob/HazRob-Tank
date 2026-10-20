@@ -1,0 +1,1530 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-10-20",
+  "scope": "research only",
+  "status": "PLAN_NOT_CLAIM_OF_COMPLETION",
+  "total": 80,
+  "batches": 8,
+  "tasks": [
+    {
+      "id": "03.4",
+      "name": "LDA/PLS-DA",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال LDA متعدد الفئات وPLS-DA متعدد المكونات ومقارنة المخرجات بمرجع عددي مستقل.",
+      "required_data": "تعرضات متعددة الهوية والتركيز والجلسة مع مجموعات مستقلة",
+      "acceptance": "مقارنة مرجع مستقل وحجب مجموعات كامل وتحليل الالتباس دون اختيار ميزات على الاختبار",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.5",
+      "name": "SVM",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_RESEARCH_EVALUATED_NOT_TANK_VALIDATED",
+      "next_deliverable": "مقارنة SVM الخطي بحل مرجعي وتقارب الدالة الهدف، ثم RBF مع ضبط داخل التدريب فقط.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.7",
+      "name": "XGBoost",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_RESEARCH_EVALUATED_NOT_TANK_VALIDATED",
+      "next_deliverable": "تنفيذ XGBoost الفعلي واعتماد حزمته ونسخته؛ الاحتفاظ بالأشجار الجذعية كمرجع منفصل.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.9",
+      "name": "Physics+ML",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "next_deliverable": "مصنف physics+ML كامل بميزات لجميع المرشحين دون تمرير هوية الغاز الصحيحة وقت الاختبار.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.1",
+      "name": "1D-CNN",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "next_deliverable": "تنفيذ CNN قابلة للتدريب؛ فصل التعرضات قبل إنشاء النوافذ وتسجيل منحنى التدريب والوزن النهائي.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.2",
+      "name": "TCN",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "next_deliverable": "تنفيذ TCN قابلة للتدريب واختبار سببية المسار كله بما يشمل التطبيع واستخراج الميزات.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.3",
+      "name": "LSTM/GRU",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "next_deliverable": "تنفيذ LSTM/GRU كاملة قابلة للتدريب مع اختبار تدرجات واستقرار ومقارنة مرجعية.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.4",
+      "name": "GNN",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "next_deliverable": "تعريف مصدر حواف الرسم ومقارنة GNN مدربة مع رسم بلا حواف وخط أساس دون رسم.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.6",
+      "name": "Simulation",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "SYNTHETIC_ONLY_THEORETICAL",
+      "next_deliverable": "تقدير الحساسية وثابت الزمن من منحنيات معايرة ثم اختبار على تعرضات محجوبة.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.7",
+      "name": "Sim-to-real",
+      "next_batch": 1,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "NUMERIC_ONLY_NONCOMPLIANT_PHYSICAL_MODEL",
+      "next_deliverable": "مقارنة simulator والقياس في وحدات ومعلمات متطابقة مع رفض المدخلات غير المتكافئة.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "01.1",
+      "name": "ADC to Rs",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "next_deliverable": "استكمال وتدقيق ADC to Rs مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "سجل كهربائي متحقق: ADC وRL والجهد والتقسيم وRs/R0 والأطوار والبيئة",
+      "acceptance": "مطابقة تحويلات الوحدات والقيم بقياسات مرجعية؛ رفض التشبع والحقول الناقصة",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "01.2",
+      "name": "R0 calibration",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "next_deliverable": "استكمال وتدقيق R0 calibration مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "سجل كهربائي متحقق: ADC وRL والجهد والتقسيم وRs/R0 والأطوار والبيئة",
+      "acceptance": "مطابقة تحويلات الوحدات والقيم بقياسات مرجعية؛ رفض التشبع والحقول الناقصة",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "01.3",
+      "name": "Sensitivity curves",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "next_deliverable": "استكمال وتدقيق Sensitivity curves مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "سجل كهربائي متحقق: ADC وRL والجهد والتقسيم وRs/R0 والأطوار والبيئة",
+      "acceptance": "مطابقة تحويلات الوحدات والقيم بقياسات مرجعية؛ رفض التشبع والحقول الناقصة",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "01.4",
+      "name": "Heater cycles",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "next_deliverable": "استكمال وتدقيق Heater cycles مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "سجل كهربائي متحقق: ADC وRL والجهد والتقسيم وRs/R0 والأطوار والبيئة",
+      "acceptance": "مطابقة تحويلات الوحدات والقيم بقياسات مرجعية؛ رفض التشبع والحقول الناقصة",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "01.5",
+      "name": "Environmental correction",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "next_deliverable": "استكمال وتدقيق Environmental correction مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "سجل كهربائي متحقق: ADC وRL والجهد والتقسيم وRs/R0 والأطوار والبيئة",
+      "acceptance": "مطابقة تحويلات الوحدات والقيم بقياسات مرجعية؛ رفض التشبع والحقول الناقصة",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "01.6",
+      "name": "Signal quality",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "next_deliverable": "استكمال وتدقيق Signal quality مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "سجل كهربائي متحقق: ADC وRL والجهد والتقسيم وRs/R0 والأطوار والبيئة",
+      "acceptance": "مطابقة تحويلات الوحدات والقيم بقياسات مرجعية؛ رفض التشبع والحقول الناقصة",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "01.7",
+      "name": "Drift monitoring",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "next_deliverable": "استكمال وتدقيق Drift monitoring مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "سجل كهربائي متحقق: ADC وRL والجهد والتقسيم وRs/R0 والأطوار والبيئة",
+      "acceptance": "مطابقة تحويلات الوحدات والقيم بقياسات مرجعية؛ رفض التشبع والحقول الناقصة",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "02.1",
+      "name": "Filtering",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Filtering مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات Tank زمنية موسومة مع ترتيب MQ وتوقيت/خط أساس موثق",
+      "acceptance": "fit على التدريب فقط؛ ثبات ترتيب القنوات واختبارات السببية والمفقود والتشبع",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "02.2",
+      "name": "Scaling",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Scaling مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات Tank زمنية موسومة مع ترتيب MQ وتوقيت/خط أساس موثق",
+      "acceptance": "fit على التدريب فقط؛ ثبات ترتيب القنوات واختبارات السببية والمفقود والتشبع",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "02.3",
+      "name": "Static features",
+      "next_batch": 2,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "next_deliverable": "استكمال وتدقيق Static features مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات Tank زمنية موسومة مع ترتيب MQ وتوقيت/خط أساس موثق",
+      "acceptance": "fit على التدريب فقط؛ ثبات ترتيب القنوات واختبارات السببية والمفقود والتشبع",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "02.4",
+      "name": "Temporal features",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Temporal features مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات Tank زمنية موسومة مع ترتيب MQ وتوقيت/خط أساس موثق",
+      "acceptance": "fit على التدريب فقط؛ ثبات ترتيب القنوات واختبارات السببية والمفقود والتشبع",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "02.5",
+      "name": "Fingerprints",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_INCOMPATIBLE_SENSOR_SCHEMA",
+      "next_deliverable": "استكمال وتدقيق Fingerprints مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات Tank زمنية موسومة مع ترتيب MQ وتوقيت/خط أساس موثق",
+      "acceptance": "fit على التدريب فقط؛ ثبات ترتيب القنوات واختبارات السببية والمفقود والتشبع",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "02.6",
+      "name": "3D/4D features",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXTERNAL_NUMERIC_ONLY_INPUT_SCHEMA_NONCOMPLIANT",
+      "next_deliverable": "استكمال وتدقيق 3D/4D features مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات Tank زمنية موسومة مع ترتيب MQ وتوقيت/خط أساس موثق",
+      "acceptance": "fit على التدريب فقط؛ ثبات ترتيب القنوات واختبارات السببية والمفقود والتشبع",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "02.7",
+      "name": "Feature selection",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Feature selection مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات Tank زمنية موسومة مع ترتيب MQ وتوقيت/خط أساس موثق",
+      "acceptance": "fit على التدريب فقط؛ ثبات ترتيب القنوات واختبارات السببية والمفقود والتشبع",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "02.8",
+      "name": "Provenance schema",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "next_deliverable": "استكمال وتدقيق Provenance schema مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات Tank زمنية موسومة مع ترتيب MQ وتوقيت/خط أساس موثق",
+      "acceptance": "fit على التدريب فقط؛ ثبات ترتيب القنوات واختبارات السببية والمفقود والتشبع",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "03.1",
+      "name": "PCA",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق PCA مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات متعددة الهوية والتركيز والجلسة مع مجموعات مستقلة",
+      "acceptance": "مقارنة مرجع مستقل وحجب مجموعات كامل وتحليل الالتباس دون اختيار ميزات على الاختبار",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "03.2",
+      "name": "Similarity",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Similarity مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات متعددة الهوية والتركيز والجلسة مع مجموعات مستقلة",
+      "acceptance": "مقارنة مرجع مستقل وحجب مجموعات كامل وتحليل الالتباس دون اختيار ميزات على الاختبار",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "03.3",
+      "name": "Class overlap",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+      "next_deliverable": "استكمال وتدقيق Class overlap مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات متعددة الهوية والتركيز والجلسة مع مجموعات مستقلة",
+      "acceptance": "مقارنة مرجع مستقل وحجب مجموعات كامل وتحليل الالتباس دون اختيار ميزات على الاختبار",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "03.5",
+      "name": "Sensor importance",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Sensor importance مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات متعددة الهوية والتركيز والجلسة مع مجموعات مستقلة",
+      "acceptance": "مقارنة مرجع مستقل وحجب مجموعات كامل وتحليل الالتباس دون اختيار ميزات على الاختبار",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "03.6",
+      "name": "Sensor subsets",
+      "next_batch": 3,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXTERNAL_REFERENCE_EVALUATION",
+      "next_deliverable": "استكمال وتدقيق Sensor subsets مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات متعددة الهوية والتركيز والجلسة مع مجموعات مستقلة",
+      "acceptance": "مقارنة مرجع مستقل وحجب مجموعات كامل وتحليل الالتباس دون اختيار ميزات على الاختبار",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "03.7",
+      "name": "Concentration confounding",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+      "next_deliverable": "استكمال وتدقيق Concentration confounding مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات متعددة الهوية والتركيز والجلسة مع مجموعات مستقلة",
+      "acceptance": "مقارنة مرجع مستقل وحجب مجموعات كامل وتحليل الالتباس دون اختيار ميزات على الاختبار",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "03.8",
+      "name": "Identifiability limits",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+      "next_deliverable": "استكمال وتدقيق Identifiability limits مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "تعرضات متعددة الهوية والتركيز والجلسة مع مجموعات مستقلة",
+      "acceptance": "مقارنة مرجع مستقل وحجب مجموعات كامل وتحليل الالتباس دون اختيار ميزات على الاختبار",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.1",
+      "name": "Curve matching",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "next_deliverable": "استكمال وتدقيق Curve matching مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.2",
+      "name": "Fingerprint matching",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Fingerprint matching مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.3",
+      "name": "KNN",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق KNN مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.4",
+      "name": "Logistic regression",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Logistic regression مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.6",
+      "name": "Random Forest",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Random Forest مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.8",
+      "name": "MLP",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXTERNAL_RESEARCH_EVALUATED_NOT_TANK_VALIDATED",
+      "next_deliverable": "استكمال وتدقيق MLP مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "04.10",
+      "name": "Benchmarking",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "EXTERNAL_REFERENCE_BENCHMARK",
+      "next_deliverable": "استكمال وتدقيق Benchmarking مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "وسوم غاز مستقلة ومجموعات جلسة/جهاز/تركيز واضحة",
+      "acceptance": "مقارنة baseline بتقسيمات ثابتة وconfusion لكل غاز وmacro-F1 وفواصل على مستوى التعرض",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "05.1",
+      "name": "Single-sensor calibration",
+      "next_batch": 4,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "next_deliverable": "استكمال وتدقيق Single-sensor calibration مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "Rs/R0 موثقة وتراكيز غازية مرجعية وblanks وتكرارات مستقلة",
+      "acceptance": "خطأ وانحياز/دقة لكل مجال تركيز وتغطية/امتناع ومنع الاستقراء غير المتحقق",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "05.2",
+      "name": "Multipoint calibration",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "next_deliverable": "استكمال وتدقيق Multipoint calibration مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "Rs/R0 موثقة وتراكيز غازية مرجعية وblanks وتكرارات مستقلة",
+      "acceptance": "خطأ وانحياز/دقة لكل مجال تركيز وتغطية/امتناع ومنع الاستقراء غير المتحقق",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "05.3",
+      "name": "Nonlinear regression",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "next_deliverable": "استكمال وتدقيق Nonlinear regression مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "Rs/R0 موثقة وتراكيز غازية مرجعية وblanks وتكرارات مستقلة",
+      "acceptance": "خطأ وانحياز/دقة لكل مجال تركيز وتغطية/امتناع ومنع الاستقراء غير المتحقق",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "05.4",
+      "name": "Multisensor regression",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "next_deliverable": "استكمال وتدقيق Multisensor regression مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "Rs/R0 موثقة وتراكيز غازية مرجعية وblanks وتكرارات مستقلة",
+      "acceptance": "خطأ وانحياز/دقة لكل مجال تركيز وتغطية/امتناع ومنع الاستقراء غير المتحقق",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "05.5",
+      "name": "PLS regression",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "next_deliverable": "استكمال وتدقيق PLS regression مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "Rs/R0 موثقة وتراكيز غازية مرجعية وblanks وتكرارات مستقلة",
+      "acceptance": "خطأ وانحياز/دقة لكل مجال تركيز وتغطية/امتناع ومنع الاستقراء غير المتحقق",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "05.6",
+      "name": "Tree regression",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "next_deliverable": "استكمال وتدقيق Tree regression مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "Rs/R0 موثقة وتراكيز غازية مرجعية وblanks وتكرارات مستقلة",
+      "acceptance": "خطأ وانحياز/دقة لكل مجال تركيز وتغطية/امتناع ومنع الاستقراء غير المتحقق",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "05.7",
+      "name": "Identity-conditional estimates",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "next_deliverable": "استكمال وتدقيق Identity-conditional estimates مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "Rs/R0 موثقة وتراكيز غازية مرجعية وblanks وتكرارات مستقلة",
+      "acceptance": "خطأ وانحياز/دقة لكل مجال تركيز وتغطية/امتناع ومنع الاستقراء غير المتحقق",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "05.8",
+      "name": "LOD/LOQ",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_BASELINE_PROXY_NOT_FORMAL_LOD",
+      "next_deliverable": "فصل عتبات screening عن حد الكشف الرسمي؛ blanks مستقلة ومعايير منخفضة وشمول عدم اليقين.",
+      "required_data": "Rs/R0 موثقة وتراكيز غازية مرجعية وblanks وتكرارات مستقلة",
+      "acceptance": "خطأ وانحياز/دقة لكل مجال تركيز وتغطية/امتناع ومنع الاستقراء غير المتحقق",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "05.9",
+      "name": "Unseen concentrations",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PROTOTYPE",
+      "current_g2_status": "METRIC_INTEGRATION_ONLY",
+      "next_deliverable": "استكمال وتدقيق Unseen concentrations مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "Rs/R0 موثقة وتراكيز غازية مرجعية وblanks وتكرارات مستقلة",
+      "acceptance": "خطأ وانحياز/دقة لكل مجال تركيز وتغطية/امتناع ومنع الاستقراء غير المتحقق",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "06.1",
+      "name": "Evidence fusion",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_RESEARCH_EVALUATED_NOT_TANK_VALIDATED",
+      "next_deliverable": "معايرة دمج مجموعات الأدلة على بيانات محجوبة واختبار زيادة الثقة عند تكرار دليل مترابط.",
+      "required_data": "تدريب ومعايرة واختبار منفصلة مع غازات مجهولة وحالات فشل",
+      "acceptance": "تقييم الثقة والرفض والتغطية على بيانات محجوبة دون تغيير العتبة بعد الاطلاع عليها",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "06.2",
+      "name": "Bayesian inference",
+      "next_batch": 5,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_RESEARCH_EVALUATED_NOT_TANK_VALIDATED",
+      "next_deliverable": "تقدير likelihood مشتركة من التدريب وتقييم posterior على وسوم محجوبة؛ لا استخدام posterior كـlikelihood.",
+      "required_data": "تدريب ومعايرة واختبار منفصلة مع غازات مجهولة وحالات فشل",
+      "acceptance": "تقييم الثقة والرفض والتغطية على بيانات محجوبة دون تغيير العتبة بعد الاطلاع عليها",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "06.3",
+      "name": "Probability calibration",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_REFERENCE_CALIBRATION_EXPERIMENT",
+      "next_deliverable": "قياس NLL وBrier وECE قبل المعايرة وبعدها على اختبار مستقل وحفظ النتائج السلبية.",
+      "required_data": "تدريب ومعايرة واختبار منفصلة مع غازات مجهولة وحالات فشل",
+      "acceptance": "تقييم الثقة والرفض والتغطية على بيانات محجوبة دون تغيير العتبة بعد الاطلاع عليها",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "06.4",
+      "name": "Conformal prediction",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_RESEARCH_EVALUATED_NOT_TANK_VALIDATED",
+      "next_deliverable": "قياس تغطية المجموعات وحجمها والامتناع حسب الغاز والتركيز؛ لا ضمان exchangeability تحت تغير المجال.",
+      "required_data": "تدريب ومعايرة واختبار منفصلة مع غازات مجهولة وحالات فشل",
+      "acceptance": "تقييم الثقة والرفض والتغطية على بيانات محجوبة دون تغيير العتبة بعد الاطلاع عليها",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "06.5",
+      "name": "Open-set recognition",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_REFERENCE_OPEN_SET_EXPERIMENT",
+      "next_deliverable": "حجب غازات كاملة، وفصل ضبط عتبة الرفض عن الاختبار، وقياس قبول الغاز المجهول خطأً.",
+      "required_data": "تدريب ومعايرة واختبار منفصلة مع غازات مجهولة وحالات فشل",
+      "acceptance": "تقييم الثقة والرفض والتغطية على بيانات محجوبة دون تغيير العتبة بعد الاطلاع عليها",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "06.6",
+      "name": "OOD detection",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_RESEARCH_EVALUATED_NOT_TANK_VALIDATED",
+      "next_deliverable": "تمييز اختبار غاز مجهول عن تغير التركيز المعروف؛ مصفوفة كشف/رفض لكل نوع تغير.",
+      "required_data": "تدريب ومعايرة واختبار منفصلة مع غازات مجهولة وحالات فشل",
+      "acceptance": "تقييم الثقة والرفض والتغطية على بيانات محجوبة دون تغيير العتبة بعد الاطلاع عليها",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "06.7",
+      "name": "Evidence conflicts",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "next_deliverable": "جمع detection power مشروطًا بالغاز والتركيز والزمن والبيئة قبل حساب تناقض عدم الكشف.",
+      "required_data": "تدريب ومعايرة واختبار منفصلة مع غازات مجهولة وحالات فشل",
+      "acceptance": "تقييم الثقة والرفض والتغطية على بيانات محجوبة دون تغيير العتبة بعد الاطلاع عليها",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "06.8",
+      "name": "SHAP",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_RESEARCH_EVALUATED_NOT_TANK_VALIDATED",
+      "next_deliverable": "تحديد نموذج وميزات ومرجع Shapley صراحة؛ اختبار الجمع والحساسية لمرجع المقارنة.",
+      "required_data": "تدريب ومعايرة واختبار منفصلة مع غازات مجهولة وحالات فشل",
+      "acceptance": "تقييم الثقة والرفض والتغطية على بيانات محجوبة دون تغيير العتبة بعد الاطلاع عليها",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "06.9",
+      "name": "Abstention",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_RESEARCH_EVALUATED_NOT_TANK_VALIDATED",
+      "next_deliverable": "منحنى risk-coverage وضبط عتبة الامتناع على calibration فقط مع فواصل عدم يقين.",
+      "required_data": "تدريب ومعايرة واختبار منفصلة مع غازات مجهولة وحالات فشل",
+      "acceptance": "تقييم الثقة والرفض والتغطية على بيانات محجوبة دون تغيير العتبة بعد الاطلاع عليها",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.1",
+      "name": "Cross-session tests",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Cross-session tests مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.2",
+      "name": "Cross-device tests",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_ONE_PHYSICAL_DEVICE",
+      "next_deliverable": "جمع أجهزة مستقلة فعليًا؛ لا استبدال معرف الجهاز برقم batch أو نسخة من الصف نفسه.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.3",
+      "name": "Cross-concentration tests",
+      "next_batch": 6,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_REFERENCE_SPLIT_VERIFIED",
+      "next_deliverable": "استكمال وتدقيق Cross-concentration tests مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.4",
+      "name": "Drift detection",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Drift detection مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.5",
+      "name": "Drift compensation",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Drift compensation مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.6",
+      "name": "Domain adaptation",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "استكمال وتدقيق Domain adaptation مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.7",
+      "name": "Transfer learning",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "تعلم تمثيل قابل للنقل ومقارنة نقل موجب/سالب؛ الرأس البسيط الحالي ليس neural fine-tuning.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.8",
+      "name": "Active learning/DoE",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "دورة اختيار تجربة وتنفيذها ثم إعادة التعلم؛ ترتيب عينات ثابتة ليس DoE مثبتًا.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.9",
+      "name": "Continual learning",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "next_deliverable": "تقييم زمني قبل إظهار الوسوم وتوثيق النسيان الكارثي وإمكانية الرجوع للنموذج السابق.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "07.10",
+      "name": "Resource profiling",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXECUTED_ANALYTICAL_ONLY_NOT_TANK_PROFILE",
+      "next_deliverable": "قياس RAM والزمن والطاقة فعليًا على المتحكم المستهدف؛ فصل القياس عن حساب عدد المعاملات.",
+      "required_data": "جلسات/أجهزة وأزمنة فعلية متعددة؛ batches وحدها لا تثبت الاستقلال",
+      "acceptance": "تقييم زمني/عبر الأجهزة مع قياس نقل سلبي وعدم استخدام وسوم الاختبار في التحديث",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.5",
+      "name": "Temporal ensemble",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "next_deliverable": "استكمال وتدقيق Temporal ensemble مقابل مرجع مستقل ثم تطبيق معيار القبول أدناه.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.8",
+      "name": "Mixture detection",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "next_deliverable": "إعادة تصميم عتبة مخاليط على calibration منفصلة؛ اختبار الحساسية والإنذارات الكاذبة للمواد النقية.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.9",
+      "name": "Unmixing",
+      "next_batch": 7,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "next_deliverable": "اختبار عدم قابلية الفصل والرتبة والتداخل على مخاليط بمعايير مستقلة.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.10",
+      "name": "Multi-analyte regression",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "next_deliverable": "تقدير تراكيز مكونات متعددة بوحدات غازية صحيحة وإبلاغ خطأ كل مكون والامتناع.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.11",
+      "name": "Interference",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS",
+      "next_deliverable": "تجارب متقابلة لنفس الغاز والتركيز مع المتداخل وبدونه مع ضبط الحرارة والرطوبة.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "08.12",
+      "name": "Complex products",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_NO_PRODUCT_REFERENCES",
+      "next_deliverable": "مراجع منتجات كاملة مستقلة والدفعة/التركيبة موسومة؛ لا استنتاج المكونات من التشابه وحده.",
+      "required_data": "سلاسل زمنية/مخاليط وتجارب مناسبة للهدف وتراكيز بوحدات صحيحة",
+      "acceptance": "تنفيذ الخوارزمية المسماة كاملة ومقارنة مرجعية وحجب التعرضات قبل تقطيع النوافذ",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "09.1",
+      "name": "Robotic olfaction",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "next_deliverable": "تجارب plume مرتبطة بموضع وزمن/رياح وتأخر الحساس؛ فصل جهاز ثابت عن شم روبوتي.",
+      "required_data": "موضع وزمن ورياح/تدفق وتأخر حساسات وقياسات مكانية مرجعية",
+      "acceptance": "قياس أخطاء المكان والتأخر والإخفاق؛ لا اعتبار مجرد تشغيل الدالة تحققًا ميدانيًا",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "09.2",
+      "name": "Gas mapping",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_ROBOT_SPATIAL_SOURCE_FIELDS",
+      "next_deliverable": "خريطة غاز مع عدم يقين ومقارنة بقياسات مكانية مستقلة وحساب تأخر النقل.",
+      "required_data": "موضع وزمن ورياح/تدفق وتأخر حساسات وقياسات مكانية مرجعية",
+      "acceptance": "قياس أخطاء المكان والتأخر والإخفاق؛ لا اعتبار مجرد تشغيل الدالة تحققًا ميدانيًا",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "09.3",
+      "name": "Source localization",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_MISSING_ROBOT_SPATIAL_SOURCE_FIELDS",
+      "next_deliverable": "تقدير مصدر مع إحداثيات حقيقة مرجعية ومقاييس مسافة الخطأ ونسبة الإخفاق.",
+      "required_data": "موضع وزمن ورياح/تدفق وتأخر حساسات وقياسات مكانية مرجعية",
+      "acceptance": "قياس أخطاء المكان والتأخر والإخفاق؛ لا اعتبار مجرد تشغيل الدالة تحققًا ميدانيًا",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "09.4",
+      "name": "Active sampling",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "next_deliverable": "مقارنة أخذ عينات نشط بمسار مرجعي متساوي الميزانية مع قياس فائدة المعلومات.",
+      "required_data": "موضع وزمن ورياح/تدفق وتأخر حساسات وقياسات مكانية مرجعية",
+      "acceptance": "قياس أخطاء المكان والتأخر والإخفاق؛ لا اعتبار مجرد تشغيل الدالة تحققًا ميدانيًا",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "09.5",
+      "name": "Spatiotemporal fusion",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "next_deliverable": "تعويض تأخر الحساس والنقل وعدم يقين الموضع وإثبات عدم تسرب المستقبل.",
+      "required_data": "موضع وزمن ورياح/تدفق وتأخر حساسات وقياسات مكانية مرجعية",
+      "acceptance": "قياس أخطاء المكان والتأخر والإخفاق؛ لا اعتبار مجرد تشغيل الدالة تحققًا ميدانيًا",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "09.6",
+      "name": "Motion decisions",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "next_deliverable": "اختبارات fault-injection وسجل روبوت واقعي؛ استمرار فصل التوصية عن أوامر المحركات.",
+      "required_data": "موضع وزمن ورياح/تدفق وتأخر حساسات وقياسات مكانية مرجعية",
+      "acceptance": "قياس أخطاء المكان والتأخر والإخفاق؛ لا اعتبار مجرد تشغيل الدالة تحققًا ميدانيًا",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    },
+    {
+      "id": "10.1",
+      "name": "Negative Evidence & Sensor-Guided Exclusion",
+      "next_batch": 8,
+      "state": "PLANNED_NOT_IMPLEMENTED_BY_THIS_PLAN",
+      "current_implementation": "PARTIAL_PROTOTYPE",
+      "current_g2_status": "BLOCKED_REQUIRED_ENDPOINT_INPUTS",
+      "next_deliverable": "إزالة افتراض الاستقلال غير المثبت: تجميع/likelihood مشتركة مع detection power مستقلة لكل شرط.",
+      "required_data": "احتمالات كشف وعدم كشف وحالة حساسات ومعلومات اعتماد بينها",
+      "acceptance": "منع الاستبعاد القطعي وتقييم معايرة posterior وcoverage وترابط الأدلة",
+      "required_outputs": [
+        "versioned source and regression tests",
+        "frozen split and configuration",
+        "result JSON with source/code hashes",
+        "negative results and uncertainty",
+        "ledger/checkpoint update"
+      ],
+      "tank_g3": "NOT_VALIDATED"
+    }
+  ]
+}

@@ -93,3 +93,7 @@ Actual research modules 02.2,02.4,02.7,03.1,03.2,03.5,04.2,04.3,04.4,04.6 execut
 - [UCI308 source schema inspection](https://github.com/HazRob/HazRob-Tank/actions/runs/39435016417); [G2-05 run](https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553); [full report](G2_REAL_DATA_BATCH05_AR.md). Original raw archive not committed to repository; SHA and scripts enable reproducibility.
 - **Three nonoverlapping external source collections now reviewed:** UCI1081 (90), UCI270 (13910), UCI308 (58) = **14,058 distinct source exposure records**; do not recount the original UCI224 copy of UCI270. These are NOT 14,058 Tank 8-MQ exposures.
 
+
+
+## 2026-10-20 reconciliation
+UCI309 extension already verified in run 39495144282 and results/uci309_g2_batch06_2026-10-20.json. Add 180 unique exposures once, giving 14238 across four sources. UCI309 contains TGS resistance conversion and GCMS mean ppm; do not claim those fields absent. Current Tank MQ calibration/robot pose requirements remain unmet. G2-07/08 reuse UCI1081 without adding samples. See G2_REAL_DATA_BATCH08_AR.md.
