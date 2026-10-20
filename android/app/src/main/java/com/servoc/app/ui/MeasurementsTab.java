@@ -407,6 +407,9 @@ public final class MeasurementsTab {
                 }else row.addView(new View(c),new LinearLayout.LayoutParams(0,1,1f));
                 box.addView(row,UiKit.full(c));
             }
+            Button physicalPdf=UiKit.button(c,"📄 تقرير القياسات الفيزيائية PDF");
+            physicalPdf.setOnClickListener(v->host.requestPhysicalSnapshotPdf());
+            box.addView(physicalPdf,UiKit.full(c));
             envDiagnostic=UiKit.small(c,"ENV • بانتظار الاتصال");
             envDiagnostic.setTextColor(MUTED);envDiagnostic.setTextIsSelectable(true);envDiagnostic.setBackgroundColor(CARD);
             box.addView(envDiagnostic,UiKit.full(c));
