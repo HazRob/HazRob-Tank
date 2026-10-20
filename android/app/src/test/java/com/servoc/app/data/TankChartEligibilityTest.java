@@ -33,16 +33,25 @@ public final class TankChartEligibilityTest {
         assertFalse(TankChartEligibility.hasData(2,s,null));
     }
     @Test public void allTwentySelectorsHaveAnEvidenceBackedEligibilityPath()throws Exception{
-        String env="{\\"temperature\\":22.0,\\"humidity\\":45.0,\\"pressure\\":1007.0}";
-        String mq="{\\"mq2\\":{\\"ratio\\":0.75},\\"mq3\\":{\\"ratio\\":1.20},\\"mq4\\":{\\"ratio\\":0.90}}";
-        String sound="{\\"sound\\":{\\"rms_v\\":0.07,\\"p2p_v\\":0.23}}";
+        String env=new JSONObject().put("temperature",22.0).put("humidity",45.0)
+            .put("pressure",1007.0).toString();
+        String mq=new JSONObject()
+            .put("mq2",new JSONObject().put("ratio",0.75))
+            .put("mq3",new JSONObject().put("ratio",1.20))
+            .put("mq4",new JSONObject().put("ratio",0.90)).toString();
+        String sound=new JSONObject().put("sound",new JSONObject()
+            .put("rms_v",0.07).put("p2p_v",0.23)).toString();
         SessionSeries.Series capture=series(env,env,sound,mq);
-        JSONObject result=new JSONObject(
-            "{\\"candidates\\":[{\\"label\\":\\"Test A\\",\\"posterior\\":0.65}],"+
-            "\\"screening_144\\":{\\"rows\\":[{\\"status\\":\\"SUPPORTED\\"}]},"+
-            "\\"gas_exposure_ppm\\":{\\"input_gate_passed\\":true,\\"percent_lfl\\":19.0}}");
+        JSONObject result=new JSONObject()
+            .put("candidates",new org.json.JSONArray().put(new JSONObject()
+                .put("label","Test A").put("posterior",0.65)))
+            .put("screening_144",new JSONObject().put("rows",
+                new org.json.JSONArray().put(new JSONObject().put("status","SUPPORTED"))))
+            .put("gas_exposure_ppm",new JSONObject()
+                .put("input_gate_passed",true).put("percent_lfl",19.0));
         for(int chart=0;chart<20;chart++)
-            assertTrue("Real-data selector "+chart+" missing a route",TankChartEligibility.hasData(chart,capture,result));
+            assertTrue("Real-data selector "+chart+" missing a route",
+                TankChartEligibility.hasData(chart,capture,result));
     }
     @Test public void missingEvidenceNeverOffersAnEmptyGraph()throws Exception{
         for(int chart=0;chart<20;chart++)
