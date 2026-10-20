@@ -23,6 +23,6 @@ class ConformalTests(unittest.TestCase):
     def test_bad_predict_shape(self):
         with self.assertRaises(ValueError):predict_set([.1,.2,.7],fit_split_conformal(P,Y))
     def test_bad_eval(self):
-        with self.assertRaises(ValueError):evaluate_sets([[]],[0])
+        with self.assertRaises(ValueError):evaluate_sets([[True]],[0])
     def test_repeatable(self):self.assertEqual(fit_split_conformal(P,Y),fit_split_conformal(P,Y))
 if __name__=="__main__":unittest.main()
