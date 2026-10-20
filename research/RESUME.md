@@ -1,3 +1,9 @@
+# CURRENT CHECKPOINT — G2-07 COMPLETE — 2026-10-20
+
+70/80 G2 reviews: 48 external numeric/metadata, 20 blocked, 2 analytical-only. Tank G3 0/80. Work branch research/complete-g2-07-08-20261020; do not overwrite concurrent main updates. See G2_REAL_DATA_BATCH07_AR.md and https://github.com/HazRob/HazRob-Tank/actions/runs/39495907309. Next ten: 04.1,04.9,05.2,05.3,05.8,06.7,09.4,09.5,09.6,10.1. Source eligibility first.
+
+---
+
 # CURRENT CHECKPOINT — 2026-10-20: G2-05 UCI308 TEN-TECHNIQUE AUDIT COMPLETE
 
 **STATUS**: 80/80 original G1 software research prototype tests PASS (1261 baseline tests). G2 across FIVE 10-ID batches: **50/80 distinct IDs reviewed**, 32 external-sensor signal/metadata operations (one: 02.6 numeric-only with chemically NONCOMPLIANT logRs input), 17 scientifically blocked and 1 theoretical-only. **Tank MQ8 independently calibrated G3 = 0/80**. All work confined to `HazRob/HazRob-Tank/research/`, no Android/ESP32/production ChemCore modification.
