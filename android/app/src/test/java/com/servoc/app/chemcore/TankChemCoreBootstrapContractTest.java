@@ -33,4 +33,11 @@ public final class TankChemCoreBootstrapContractTest {
         assertTrue(settings.contains("ChemCoreQsprRuntimeRegistry.rebuild(host.database())"));
     }
 
+    @Test public void missingSignedTankApkManifestNeverStartsLegacyUpdater()throws Exception{
+        String status=text("ui/StatusTab.java");
+        assertTrue(status.contains("BuildConfig.APP_UPDATE_MANIFEST_URL.trim().isEmpty()"));
+        assertTrue(status.contains("تحديث APK ينتظر إعداد إصدار Tank الموقّع"));
+        assertTrue(status.contains("appUpdater.updateNow"));
+    }
+
 }
