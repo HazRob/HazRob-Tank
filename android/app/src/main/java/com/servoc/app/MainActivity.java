@@ -224,6 +224,7 @@ public final class MainActivity extends Activity implements HazRobHost {
         try{selected=new FieldSessionRepository(db).fieldSessionById(fs);}
         catch(Exception e){showToast("تعذر قراءة الجلسة");return;}
         if(selected==null){showToast("هذه الجلسة غير موجودة");return;}
+        if(!selected.approved()){showToast("لا يمكن تصدير تقرير لجلسة غير معتمدة");return;}
         pendingFieldSessionId=fs;
         boolean pdf="pdf".equalsIgnoreCase(format);
         Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);
