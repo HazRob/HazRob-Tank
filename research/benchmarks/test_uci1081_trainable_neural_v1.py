@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import torch
 from uci1081_trainable_neural_v1 import (
-    CNN1D,CausalTCN,GRUSensor,SensorGNN,train_only_adjacency,
+    CNN1D,CausalTCN,GRUSensor,LSTMSensor,SensorGNN,train_only_adjacency,
     fit_time_scaling,apply_time_scaling,fit_predict,measured_trace_features,
     KINDS
 )
@@ -18,6 +18,22 @@ class NeuralAlgorithmsTests(unittest.TestCase):
         self.assertEqual(tuple(CausalTCN(6)(self.data).shape),(5,6))
     def test_gru_shape(self):
         self.assertEqual(tuple(GRUSensor(6)(self.data).shape),(5,6))
+    def test_lstm_shape(self):
+        self.assertEqual(tuple(LSTMSensor(6)(self.data).shape),(5,6))
+    def test_lstm_gradients(self):
+        model=LSTMSensor(3)
+        model(self.data).sum().backward()
+        self.assertTrue(any(p.grad is not None and p.grad.abs().sum()>0
+                            for p in model.parameters()))
+    def test_lstm_prefix_no_future_dependency(self):
+        model=LSTMSensor(3).eval()
+        before=self.data.clone()
+        after=before.clone()
+        after[:,:,10:]+=1000.
+        with torch.no_grad():
+            a=model(before[:,:,:10])
+            b=model(after[:,:,:10])
+        self.assertTrue(torch.allclose(a,b,rtol=0,atol=1e-7))
     def test_gnn_shape(self):
         self.assertEqual(tuple(SensorGNN(6,np.eye(10))(self.data).shape),(5,6))
     def test_true_causality(self):
