@@ -12,62 +12,40 @@ float af(float v){return v<0?-v:v;}int ri(float v){return (int)(v>=0?v+.5f:v-.5f
 
 /* nonblocking independent track servos */
 float curL=0,curR=0,targetL=0,targetR=0;uint32_t cmdAt=0,driveAt=0;bool staleStop=false;
-struct MotionSample{int8_t left,right;};
-constexpr uint16_t HISTORY_SIZE=Cfg::RECOVERY_HISTORY_MS/Cfg::SERVO_STEP_MS;
-MotionSample motionHistory[HISTORY_SIZE]={};
-uint16_t historyWrite=0,historyUsed=0,playIndex=0,playRemaining=0;
-uint8_t playbackTicks=0;
-enum class RecoveryPhase:uint8_t{DRIVING,BRAKING,RECONNECT_WAIT,REPLAY,COMPLETE};
-RecoveryPhase recoveryPhase=RecoveryPhase::DRIVING;
-uint32_t phaseStarted=0;bool transportLost=false;
-void historyClear(){historyWrite=historyUsed=0;}
-void recoveryCancel(){recoveryPhase=RecoveryPhase::DRIVING;historyClear();targetL=targetR=0;transportLost=false;}
-void historyRecord(){motionHistory[historyWrite]={(int8_t)ri(curL),(int8_t)ri(curR)};historyWrite=(historyWrite+1)%HISTORY_SIZE;if(historyUsed<HISTORY_SIZE)historyUsed++;}
+// Safety policy V3: transport loss / 500ms drive-command timeout means neutral STOP.
+// Historical reverse-path playback on connection loss is explicitly disabled.
+bool transportLost=false;
 
 struct ServoTrack{uint8_t pin,channel;bool invert;uint16_t neutral,range;float *cur,*target;uint32_t pauseUntil=0;};
 ServoTrack tracks[]={{Cfg::SERVO_L_PIN,6,Cfg::SERVO_L_INVERT,Cfg::SERVO_L_NEUTRAL_US,Cfg::SERVO_L_RANGE_US,&curL,&targetL},
                     {Cfg::SERVO_R_PIN,7,Cfg::SERVO_R_INVERT,Cfg::SERVO_R_NEUTRAL_US,Cfg::SERVO_R_RANGE_US,&curR,&targetR}};
 float lim(float v){return constrain(v,-(float)settings.speed,(float)settings.speed);}
 void servoWrite(ServoTrack &s){float v=*s.cur*(s.invert?-1.0f:1.0f);uint16_t us=constrain((int)(s.neutral+v*s.range/100.0f),1000,2000);ledcWrite(s.channel,(uint32_t)us*65535UL/20000UL);}
+void motionStopImmediate(){
+  targetL=targetR=curL=curR=0;
+  for(auto &s:tracks){s.pauseUntil=0;servoWrite(s);}
+}
 void driveUpdate(){
   uint32_t now=millis();
-  if(recoveryPhase==RecoveryPhase::DRIVING&&now-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS&&!staleStop){
-    staleStop=true;targetL=targetR=0;
-    bool moved=false;for(uint16_t i=0;i<historyUsed;i++){if(motionHistory[i].left||motionHistory[i].right){moved=true;break;}}
-    if(moved&&transportLost){recoveryPhase=RecoveryPhase::BRAKING;phaseStarted=now;}
+  // A transport outage or 500ms without a fresh drive command immediately neutralizes
+  // both continuous-rotation servos. Never replay history or reverse autonomously.
+  if(transportLost || now-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS){
+    if(!staleStop){staleStop=true;motionStopImmediate();}
+    return;
   }
   if(now-driveAt<Cfg::SERVO_STEP_MS)return;
   driveAt=now;
-  if(recoveryPhase==RecoveryPhase::DRIVING&&transportLost&&staleStop&&now-cmdAt<=1500UL&&historyUsed){
-    recoveryPhase=RecoveryPhase::BRAKING;phaseStarted=now;
-  }
-  if(recoveryPhase==RecoveryPhase::BRAKING&&af(curL)<0.5f&&af(curR)<0.5f){
-    recoveryPhase=RecoveryPhase::RECONNECT_WAIT;phaseStarted=now;
-  }
-  if(recoveryPhase==RecoveryPhase::RECONNECT_WAIT&&now-phaseStarted>=Cfg::RECOVERY_WAIT_MS){
-    playIndex=historyWrite;playRemaining=historyUsed;playbackTicks=0;
-    recoveryPhase=playRemaining?RecoveryPhase::REPLAY:RecoveryPhase::COMPLETE;
-  }
-  if(recoveryPhase==RecoveryPhase::REPLAY){
-    if(playRemaining){
-      if(playbackTicks==0){playIndex=(playIndex+HISTORY_SIZE-1)%HISTORY_SIZE;playbackTicks=2;}
-      MotionSample sample=motionHistory[playIndex];
-      targetL=-sample.left*Cfg::RECOVERY_SPEED_PERCENT/100.0f;
-      targetR=-sample.right*Cfg::RECOVERY_SPEED_PERCENT/100.0f;
-      if(--playbackTicks==0)playRemaining--;
-    }else{targetL=targetR=0;recoveryPhase=RecoveryPhase::COMPLETE;}
-  }
   for(auto &s:tracks){
     float &v=*s.cur,t=*s.target;
-    if(v*t<0){v+=constrain(-v,-Cfg::SERVO_STEP,Cfg::SERVO_STEP);if(af(v)<0.5f){v=0;s.pauseUntil=now+Cfg::SERVO_REVERSE_PAUSE_MS;}}
-    else if((int32_t)(now-s.pauseUntil)>=0)v+=constrain(t-v,-Cfg::SERVO_STEP,Cfg::SERVO_STEP);
+    if(v*t<0){
+      v+=constrain(-v,-Cfg::SERVO_STEP,Cfg::SERVO_STEP);
+      if(af(v)<0.5f){v=0;s.pauseUntil=now+Cfg::SERVO_REVERSE_PAUSE_MS;}
+    }else if((int32_t)(now-s.pauseUntil)>=0)v+=constrain(t-v,-Cfg::SERVO_STEP,Cfg::SERVO_STEP);
     else v=0;
     servoWrite(s);
   }
-  if(recoveryPhase==RecoveryPhase::DRIVING&&!staleStop)historyRecord();
 }
-void motionStopInternal(){recoveryCancel();cmdAt=millis();staleStop=false;}
-void motionStopImmediate(){recoveryCancel();targetL=targetR=curL=curR=0;for(auto &s:tracks){s.pauseUntil=0;servoWrite(s);}}
+void motionStopInternal(){targetL=targetR=0;cmdAt=millis();staleStop=false;}
 /* energy basis; Android owns SOC estimation */
 uint32_t energyAt=0,driveEqMs=0,mqOnTotalMs=0;
 void energyUpdate(){uint32_t n=millis();if(!energyAt){energyAt=n;return;}uint32_t dt=n-energyAt;if(dt<100)return;energyAt=n;dt=min(dt,1000UL);uint16_t load=(uint16_t)constrain((int)(af(curL)+af(curR)),0,200);driveEqMs+=(uint32_t)(((uint64_t)dt*load)/200U);if(digitalRead(Cfg::RELAY_MQ)==Cfg::RELAY_ON)mqOnTotalMs+=dt;}
@@ -225,13 +203,13 @@ String measurementJson(){uint16_t remaining=stage==MEASURE&&settings.measure>mea
 
 void hwBegin(){loadSettings();Alerts::begin();pinMode(Cfg::RELAY_MQ,OUTPUT);relayRaw(false);pinMode(Cfg::LDR_PIN,INPUT);pinMode(Cfg::SOUND_PIN,INPUT);pinMode(Cfg::BATTERY_PIN,INPUT);pinMode(Cfg::ULTRA_TRIG_PIN,OUTPUT);digitalWrite(Cfg::ULTRA_TRIG_PIN,LOW);pinMode(Cfg::ULTRA_ECHO_PIN,INPUT);attachInterrupt(digitalPinToInterrupt(Cfg::ULTRA_ECHO_PIN),ultraEchoIsr,CHANGE);analogReadResolution(12);analogSetPinAttenuation(Cfg::SOUND_PIN,ADC_11db);analogSetPinAttenuation(Cfg::BATTERY_PIN,ADC_11db);for(auto &s:tracks){ledcSetup(s.channel,Cfg::SERVO_HZ,16);ledcAttachPin(s.pin,s.channel);servoWrite(s);}cmdAt=driveAt=energyAt=millis();Wire.begin(Cfg::SDA,Cfg::SCL);Wire.setClock(Cfg::ADS_I2C_HZ);EnvWire.begin(Cfg::ENV_SDA,Cfg::ENV_SCL);EnvWire.setClock(Cfg::ENV_I2C_HZ);EnvWire.setTimeOut(25);adsBegin(0);adsBegin(1);adsHealthAt=millis();envBegin();}
 void hwUpdate(){driveUpdate();energyUpdate();adsHealthUpdate();mqUpdate();envUpdate();soundUpdate();ldrUpdate();batteryUpdate();ultraUpdate();measureUpdate();Alerts::update();}
-void driveSet(int l,int r){if(recoveryPhase!=RecoveryPhase::DRIVING)recoveryCancel();transportLost=false;targetL=lim(l);targetR=lim(r);cmdAt=millis();staleStop=false;}
+void driveSet(int l,int r){if(transportLost){motionStopImmediate();staleStop=true;return;}targetL=lim(l);targetR=lim(r);cmdAt=millis();staleStop=false;}
 void motionStop(){motionStopInternal();}void emergencyStop(){motionStopImmediate();resetMeasurement();relayRaw(false);Alerts::emergencyStop();}
 bool relaySetMask(uint8_t on){if(on>1)return false;if(stage==MEASURE||stage==WARM)resetMeasurement();relayRaw(on);return true;}void sensorPowerOff(){resetMeasurement();relayRaw(false);}
 bool measureStart(){clearSums();measureError=ME_NONE;measureElapsedSec=0;measurePower=mqPowerOn;stageAt=sampleAt=millis();if(!measurePower){measureError=ME_POWER_OFF;stage=ERROR;return false;}if(!ads1ok&&!ads2ok){measureError=ME_ADS_MISSING;stage=ERROR;return false;}stage=MEASURE;return true;}void measureCancel(){resetMeasurement();Alerts::setGas(0);}
 bool alertSet(uint8_t s,uint32_t ttl){if(s>2)return false;Alerts::setGas(s,ttl);return true;}void alertTest(){Alerts::test();}
-void linkHeartbeat(){linkArmed=true;linkAt=millis();transportLost=false;if(recoveryPhase==RecoveryPhase::RECONNECT_WAIT||recoveryPhase==RecoveryPhase::REPLAY){recoveryCancel();staleStop=true;}Alerts::setLink(false);}void transportLinkState(bool lost){if(lost&&linkArmed)transportLost=true;else if(!lost){transportLost=false;if(recoveryPhase==RecoveryPhase::RECONNECT_WAIT||recoveryPhase==RecoveryPhase::REPLAY){recoveryCancel();staleStop=true;}}}
-void linkSetArmed(bool a){if(!a){recoveryCancel();staleStop=true;}linkArmed=a;linkAt=a?millis():0;Alerts::setLink(false);}
+void linkHeartbeat(){linkArmed=true;linkAt=millis();transportLost=false;Alerts::setLink(false);}void transportLinkState(bool lost){if(lost&&linkArmed){if(!transportLost){transportLost=true;motionStopImmediate();staleStop=true;}}else if(!lost)transportLost=false;}
+void linkSetArmed(bool a){if(!a){motionStopImmediate();staleStop=true;}linkArmed=a;linkAt=a?millis():0;Alerts::setLink(false);}
 void saveSettings(){nv.putString("camIP",settings.cam);nv.putInt("speed",settings.speed);nv.putUInt("warmup",settings.warm);nv.putUInt("measure",settings.measure);}
 String settingsJson(){return "{\"cam\":\""+settings.cam+"\",\"speed\":"+String(settings.speed)+",\"warm\":"+String(settings.warm)+",\"measure\":"+String(settings.measure)+",\"drive_driver\":\"dual_continuous_servo\",\"warm_manual\":true,\"mq_power_manual\":true}";}
 String dataJson(){String j="{\"env\":"+envJson()+",\"device\":"+healthJson()+",\"sound\":{\"rms\":"+num(soundRms,3)+",\"rms_v\":"+num(soundRms,3)+",\"p2p\":"+num(soundP2P,3)+",\"p2p_v\":"+num(soundP2P,3)+",\"db_spl\":null,\"db_estimated\":false,\"calibrated_db_spl\":false,\"gain_reference\":null,\"gain_state\":\"trimmer_endpoint_fixed_unquantified\"}+",\"ldr\":"+lightJson()+",\"alert\":"+Alerts::json()+",\"relay\":{\"mask\":"+String(mqPowerOn?1:0)+",\"on\":"+String(bj(mqPowerOn))+",\"gpio\":"+String(Cfg::RELAY_MQ)+",\"power_ms\":"+String(mqPowerMs())+",\"channels\":1},\"adc\":{\"ads1\":"+String(bj(ads1ok))+",\"ads2\":"+String(bj(ads2ok))+",\"acquisition\":"+acquisitionJson()+"},\"drive\":"+driveJson()+",\"mq\":"+mqJson(false)+",\"measurement\":"+measurementJson()+"}";return j;}
