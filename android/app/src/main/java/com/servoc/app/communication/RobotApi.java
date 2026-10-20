@@ -55,6 +55,7 @@ public final class RobotApi {
     public JSONObject getJson(String path,int timeoutMs)throws Exception{return new JSONObject(getText(path,timeoutMs));}
 
     public synchronized void drive(int left,int right)throws Exception{
+        requireTransport();
         // The foreground service latches drive after backgrounding until a neutral command is seen.
         // This prevents a stale joystick value from resuming motion when the activity returns.
         if(!operatorForeground){if(left==0&&right==0)lastDirectDriveLeft=lastDirectDriveRight=0;return;}
