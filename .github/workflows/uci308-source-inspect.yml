@@ -1,0 +1,38 @@
+name: HazRob Tank UCI308 archive provenance inspection
+on:
+  push:
+    paths:
+      - '.github/workflows/uci308-source-inspect.yml'
+      - 'research/benchmarks/uci308_inspect_v1.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download authoritative UCI 308 archive
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 \
+            'https://archive.ics.uci.edu/static/public/308/gas%2Bsensor%2Barray%2Bunder%2Bflow%2Bmodulation.zip' \
+            -o uci308_original.zip
+          sha256sum uci308_original.zip
+      - name: Inspect file schema and metadata only
+        run: |
+          set -euo pipefail
+          python research/benchmarks/uci308_inspect_v1.py uci308_original.zip --output uci308_inspect.json | tee uci308_inspect.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: uci308-provenance-schema-inspect
+          path: |
+            uci308_inspect.json
+            uci308_inspect.log
+          if-no-files-found: warn
+          retention-days: 90
