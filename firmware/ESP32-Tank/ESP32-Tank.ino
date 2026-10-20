@@ -18,6 +18,16 @@ int8_t pendingProfile=-1;
 bool pendingPersistMode=false;
 uint32_t pendingProfileAt=0,wifiAt=0;
 bool naptEnabled=false;
+/** Arduino-ESP32 2.x has no WiFi.AP.enableNAPT API. Keep status honest.
+ *  The ESP32 itself can still use STA for remote MQTT; Wi-Fi client NAT remains unavailable.
+ */
+bool setApNapt(bool enable){
+#if defined(ESP_ARDUINO_VERSION_MAJOR) && ESP_ARDUINO_VERSION_MAJOR >= 3
+  return WiFi.AP.enableNAPT(enable);
+#else
+  return !enable;
+#endif
+}
 constexpr int8_t HAZROB_WIFI_TX_POWER_QDBM=80; // 20 dBm requested maximum; actual RF output remains PHY/regulatory limited.
 
 void reply(int code,const char* type,const String& body){web.send(code,type,body);}
@@ -55,7 +65,7 @@ void applyRadioProfile(RadioProfile next,bool persistMode){
     // A repeated Direct request is a no-op at the radio boundary. Do not bounce HazRob.
     if(directApStable()){
       remoteMqttDisconnect();
-      if(naptEnabled)WiFi.AP.enableNAPT(false);
+      if(naptEnabled)setApNapt(false);
       naptEnabled=false;
       remoteSetTransportEnabled(false,false);
       radioProfile=RadioProfile::DIRECT;
@@ -63,7 +73,7 @@ void applyRadioProfile(RadioProfile next,bool persistMode){
       return;
     }
     remoteMqttDisconnect();
-    if(naptEnabled)WiFi.AP.enableNAPT(false);
+    if(naptEnabled)setApNapt(false);
     naptEnabled=false;
     // Stop WAN transport first; saved SSID/password remain untouched.
     remoteSetTransportEnabled(false,persistMode);
@@ -85,9 +95,9 @@ void profileUpdate(){
 }
 
 void gatewayUpdate(){
-  if(radioProfile!=RadioProfile::REMOTE){if(naptEnabled){WiFi.AP.enableNAPT(false);naptEnabled=false;}return;}
+  if(radioProfile!=RadioProfile::REMOTE){if(naptEnabled){setApNapt(false);naptEnabled=false;}return;}
   bool ready=remoteInternetReady();
-  if(ready!=naptEnabled&&WiFi.AP.enableNAPT(ready))naptEnabled=ready;
+  if(ready!=naptEnabled&&setApNapt(ready))naptEnabled=ready;
 }
 
 void wifiWatch(){
@@ -105,7 +115,7 @@ String scanJson(){
   constexpr uint32_t LIMIT_MS=2000;uint32_t started=millis();WiFi.scanDelete();
   int n=WiFi.scanNetworks(true,true,false,120);
   while(n==WIFI_SCAN_RUNNING&&millis()-started<LIMIT_MS){hwUpdate();remoteUpdate();gatewayUpdate();remoteMqttUpdate();delay(5);n=WiFi.scanComplete();}
-  bool timed=n==WIFI_SCAN_RUNNING;if(timed||n<0)n=0;uint32_t elapsed=min(millis()-started,LIMIT_MS);
+  bool timed=n==WIFI_SCAN_RUNNING;if(timed||n<0)n=0;uint32_t elapsed=millis()-started;if(elapsed>LIMIT_MS)elapsed=LIMIT_MS;
   String j="{\"ok\":true,\"duration_ms\":"+String(elapsed)+",\"timed_out\":"+(timed?"true":"false")+",\"networks\":[";
   for(int i=0;i<n;i++){if(i)j+=',';j+="{\"ssid\":\""+esc(WiFi.SSID(i))+"\",\"rssi\":"+String(WiFi.RSSI(i))+",\"secure\":"+(WiFi.encryptionType(i)==WIFI_AUTH_OPEN?"false":"true")+",\"channel\":"+String(WiFi.channel(i))+"}";}
   WiFi.scanDelete();return j+"]}";
@@ -139,7 +149,7 @@ void setup(){
     // Local Direct takeover is immediate at the command-authority boundary: stop cloud commands
     // before the short deferred radio-profile transition completes.
     remoteMqttDisconnect();
-    if(naptEnabled){WiFi.AP.enableNAPT(false);naptEnabled=false;}
+    if(naptEnabled){setApNapt(false);naptEnabled=false;}
     remoteSetTransportEnabled(false,false);
     reply(200,"application/json","{\"ok\":true,\"switching_to\":\"direct\",\"remote_authority_revoked\":true,\"wan_retained\":true}");requestRadioProfile(RadioProfile::DIRECT,false);
   });
@@ -155,7 +165,7 @@ void setup(){
     motionStop();
     if(directApStable())return reply(200,"application/json","{\"ok\":true,\"radio_profile\":\"direct\",\"already_direct\":true,\"wan_retained\":true}");
     remoteMqttDisconnect();
-    if(naptEnabled){WiFi.AP.enableNAPT(false);naptEnabled=false;}
+    if(naptEnabled){setApNapt(false);naptEnabled=false;}
     remoteSetTransportEnabled(false,false);
     reply(200,"application/json","{\"ok\":true,\"switching_to\":\"direct\",\"remote_authority_revoked\":true,\"wan_retained\":true}");
     requestRadioProfile(RadioProfile::DIRECT,false);
@@ -195,7 +205,7 @@ void setup(){
   });
   web.on("/remote/clear",HTTP_POST,[]{
     if(web.arg("confirm")!="1")return reply(400,"application/json","{\"ok\":false}");
-    motionStop();remoteMqttDisconnect();if(naptEnabled)WiFi.AP.enableNAPT(false);naptEnabled=false;remoteClear();
+    motionStop();remoteMqttDisconnect();if(naptEnabled)setApNapt(false);naptEnabled=false;remoteClear();
     reply(200,"application/json","{\"ok\":true,\"radio_profile\":\"direct\",\"wan_retained\":false}");requestRadioProfile(RadioProfile::DIRECT,false);
   });
 
