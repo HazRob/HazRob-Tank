@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "study": "Authentic UCI1081 held-out concentration classical algorithm comparator",
+  "doi": "10.24432/C5CK6F",
+  "source_archive_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "gas_classes": 6,
+  "distinct_external_exposures": 90,
+  "target_concentrations_ppb": [
+    50,
+    100,
+    200
+  ],
+  "features": "20 early/late exposure deltas from 10 external sensors",
+  "training_only_standardization": true,
+  "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498888832",
+  "artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498888832/artifacts/12299301415",
+  "tested_sha": "7a3199b019cecec9acd383cd1076e47fb0cb8d9d",
+  "class_labels_unseen_concentration_only": true,
+  "independent_device_validation": false,
+  "Tank_G3_validated": false,
+  "scores": [
+    {
+      "name": "majority",
+      "correct": 15,
+      "total": 90,
+      "accuracy": 0.16666666666666666,
+      "macro_f1_rounded": 0.0476,
+      "fold_correct": [
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "name": "softmax_ref",
+      "correct": 73,
+      "total": 90,
+      "accuracy": 0.8111111111111111,
+      "macro_f1_rounded": 0.8099,
+      "fold_correct": [
+        19,
+        27,
+        27
+      ]
+    },
+    {
+      "name": "lda_multiclass",
+      "correct": 73,
+      "total": 90,
+      "accuracy": 0.8111111111111111,
+      "macro_f1_rounded": 0.8122,
+      "fold_correct": [
+        14,
+        29,
+        30
+      ]
+    },
+    {
+      "name": "plsda_multicomponent",
+      "correct": 44,
+      "total": 90,
+      "accuracy": 0.4888888888888889,
+      "macro_f1_rounded": 0.4257,
+      "fold_correct": [
+        7,
+        22,
+        15
+      ]
+    },
+    {
+      "name": "svm_linear",
+      "correct": 74,
+      "total": 90,
+      "accuracy": 0.8222222222222222,
+      "macro_f1_rounded": 0.8183,
+      "fold_correct": [
+        21,
+        28,
+        25
+      ]
+    },
+    {
+      "name": "svm_rbf",
+      "correct": 51,
+      "total": 90,
+      "accuracy": 0.5666666666666667,
+      "macro_f1_rounded": 0.5081,
+      "fold_correct": [
+        16,
+        20,
+        15
+      ]
+    },
+    {
+      "name": "xgboost_multiclass",
+      "correct": 38,
+      "total": 90,
+      "accuracy": 0.4222222222222222,
+      "macro_f1_rounded": 0.3883,
+      "fold_correct": [
+        6,
+        18,
+        14
+      ]
+    }
+  ],
+  "warning": "rounded F1 transcribed from successful GitHub CI; full confusion/precision fields in run artifact; fixed hyperparameters are not optimized; source array does not match Tank MQ8."
+}
