@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  */
 public final class TankV3OperatorLayoutContractTest {
     private String src(String file) throws Exception {
-        return new String(Files.readAllBytes(Paths.get("app/src/main/java/com/servoc/app/"+file)),StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/"+file)),StandardCharsets.UTF_8);
     }
     @Test public void refreshNeverAddsAButtonToDrivingTab() throws Exception {
         String main=src("MainActivity.java");
