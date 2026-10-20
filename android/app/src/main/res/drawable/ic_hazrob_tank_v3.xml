@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Independent HazRob Tank V3: tracked chassis, camera and sensing signal -->
+    <path android:fillColor="#112635" android:pathData="M0,0 L108,0 L108,108 L0,108 Z"/>
+    <path android:fillColor="#405969" android:pathData="M18,69 L90,69 L96,74 L96,82 L90,87 L18,87 L12,82 L12,74 Z"/>
+    <path android:fillColor="#F6B83D" android:pathData="M21,71 L87,71 L91,75 L91,81 L87,85 L21,85 L17,81 L17,75 Z"/>
+    <path android:fillColor="#112635" android:pathData="M24,75 L84,75 L87,78 L84,81 L24,81 L21,78 Z"/>
+    <path android:fillColor="#E8F1F5" android:pathData="M26,48 L82,48 L88,53 L86,69 L22,69 L20,53 Z"/>
+    <path android:fillColor="#168A93" android:pathData="M30,52 L78,52 L82,56 L80,64 L28,64 L26,56 Z"/>
+    <path android:fillColor="#112635" android:pathData="M44,52 L64,52 L68,56 L68,62 L64,66 L44,66 L40,62 L40,56 Z"/>
+    <path android:fillColor="#F6B83D" android:pathData="M47,55 L61,55 L64,58 L64,61 L61,64 L47,64 L44,61 L44,58 Z"/>
+    <path android:fillColor="#112635" android:pathData="M50,57 L58,57 L61,60 L58,62 L50,62 L47,60 Z"/>
+    <path android:fillColor="#F6B83D" android:pathData="M51,23 L57,23 L57,34 L51,34 Z"/>
+    <path android:fillColor="#F6B83D" android:pathData="M47,32 L61,32 L65,36 L65,40 L61,44 L47,44 L43,40 L43,36 Z"/>
+    <path android:fillColor="#112635" android:pathData="M50,35 L58,35 L61,38 L58,41 L50,41 L47,38 Z"/>
+    <path android:fillColor="#56CED0" android:pathData="M33,27 L37,27 L37,31 L33,31 Z"/>
+    <path android:fillColor="#56CED0" android:pathData="M27,33 L31,33 L31,37 L27,37 Z"/>
+    <path android:fillColor="#56CED0" android:pathData="M71,27 L75,27 L75,31 L71,31 Z"/>
+    <path android:fillColor="#56CED0" android:pathData="M77,33 L81,33 L81,37 L77,37 Z"/>
+</vector>
