@@ -32,6 +32,11 @@ Date: 2026-10-20 | State: DRAFT FOR OWNER REVIEW | Scope: independent Android ap
 | T3-018 | P2 | App install / security behavior | PARTIAL_IN_V2 | Diagnose package conflict and Play Protect warning through signature, manifest permissions and distribution integrity; do not instruct bypassing protection. |
 | T3-019 | P2 | Research technique future integration | PROPOSED_FOR_V3 only on owner approval | Treat ChemCore 80-technique research, G1/G2 benchmarks and Tank hardware G3 separately from app stable runtime; integrate only techniques satisfying scientific/physical validation and explicit owner approval. |
 
+## Owner-requested additional requirements (sequential review)
+| ID | Priority | Area | V2 assessment | V3 acceptance criterion |
+|---|---|---|---|---|
+| T3-020 | P1 | Measurements > الفيزيائية visual redesign | MISSING_IN_V2_APK | Replace the conventional four-column physical-measurement TableLayout/TableRow view with a modern responsive RTL grid/list of individual measurement cards; each physical measurement has a clear relevant emoji/icon, readable Arabic title, real live value and unit, source/quality/connection status, and a validated warning visual state. Responsive portrait/landscape with no clipping. Preserve all PhysicalCatalog measurements and diagnostic values including MAX4466 RMS/P-P; distinguish unsupported/uninstalled values from disconnected; never invent measurement values or limit crossings. User to approve final look before implementation. Cross-reference T3-005 (visual style) and T3-011 (physical references/PDF). |
+ 
 ## Source-specific findings
 - `android/app/src/main/java/com/servoc/app/measurement/TankAcquisitionPolicy.java` has NEW/WARMUP/MEASURING/COMPLETED/CANCELLED/APPROVED but this is a stand-alone policy, not proof of durable session-state integration.
 - V2 inherited `FieldSessionsTab` uses active/closed sessions with add/close buttons, not two required management/report panes nor approval status.
@@ -44,6 +49,6 @@ Date: 2026-10-20 | State: DRAFT FOR OWNER REVIEW | Scope: independent Android ap
 
 ## Change-control protocol
 - This backlog captures previously documented requirements and review findings; it is **not approval to implement or release**.
-- Add owner-requested new changes with incremental IDs `T3-020+` plus affected tab, acceptance test, dependencies and priority.
+- Owner-requested item T3-020 recorded after comparing against the exact V2 APK source commit; assign further new requests T3-021+ with affected tab, acceptance test, dependencies and priority.
 - No APK release until V3 owner requirements are frozen, unit/integration checks pass, Android actual-device UI is reviewed, hardware safety tests are performed and stable signing is configured.
 - No emulator or screenshot workflow reinstatement.
