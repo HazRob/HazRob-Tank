@@ -62,16 +62,16 @@ public final class DeveloperR0Tab {
         scroll=new ScrollView(c);scroll.setFillViewport(true);
         LinearLayout root=UiKit.vbox(c);
         root.setPadding(UiKit.dp(c,10),UiKit.dp(c,8),UiKit.dp(c,10),UiKit.dp(c,20));
-        root.setBackgroundColor(0xFF0E1116);scroll.addView(root);
+        root.setBackgroundColor(0xFFF7F8FA);scroll.addView(root);
 
         root.addView(UiKit.title(c,"معايرة R0 — ثمانية حساسات"),UiKit.full(c));
         TextView instructions=UiKit.small(c,
-            "هذه معايرة هواء نظيف خاصة بروبوتك؛ يمكن تعديل R0 وحفظها دون إنترنت. وحدة Rs وR0 الحالية هي كيلو أوم (kΩ) وفق افتراض RL = 10 kΩ في الفيرموير، وليست أوم. " +
+            "هذه معايرة هواء نظيف خاصة بروبوتك عند اتصال الحساسات؛ يمكن تعديل قيم R0 المحفوظة يدويًا دون إنترنت. وحدة Rs وR0 الحالية هي كيلو أوم (kΩ) وفق افتراض RL = 10 kΩ في الفيرموير، وليست أوم. " +
             "تحقق من قيمة مقاومة الحمل RL الفعلية على كل لوحة MQ قبل اعتماد القيمة؛ 1000 Ω = 1 kΩ. أدخل القيمة بوحدة kΩ بعد ثبات تغذية الحساسات وإحمائها. " +
-            "لا يتم اعتماد قراءة Rs على أنها R0 تلقائيًا. R0 وحدها لا تحقق معايرة PPM مرجعية. " +
+            "يتيح الوضع التلقائي حساب خط أساس تشغيلي ميداني من قراءات Rs في الهواء النظيف؛ أما الإدخال اليدوي فيبقى خيارًا مستقلًا. R0 وحدها لا تحقق معايرة PPM مرجعية. " +
             "الحفظ معطل أثناء التسجيل/التحليل النشط حتى لا تتغير المعايرة وسط الجلسة. " +
             "حفظ القيم يؤثر في التحليلات الجديدة فقط؛ جلسات القياس المحفوظة لا تُعدّل.");
-        instructions.setTextColor(0xFFFFC107);root.addView(instructions,UiKit.full(c));
+        instructions.setTextColor(0xFF855300);root.addView(instructions,UiKit.full(c));
 
         LinearLayout automatic=UiKit.card(c);
         automatic.addView(UiKit.title(c,"المعايرة التلقائية للمستخدم • 20 دقيقة"),UiKit.full(c));
@@ -97,7 +97,7 @@ public final class DeveloperR0Tab {
             entry[i].setSingleLine(true);
             entry[i].setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
             card.addView(entry[i],UiKit.full(c));
-            info[i]=UiKit.small(c,"");info[i].setTextColor(0xFFB0BEC5);
+            info[i]=UiKit.small(c,"");info[i].setTextColor(0xFF4B5563);
             card.addView(info[i],UiKit.full(c));
             LinearLayout actions=UiKit.hbox(c);
             Button save=UiKit.button(c,"حفظ R0");
@@ -114,7 +114,7 @@ public final class DeveloperR0Tab {
         }
         Button saveAll=UiKit.button(c,"حفظ جميع قيم R0 الثماني");
         saveAll.setOnClickListener(v->saveAll());root.addView(saveAll,UiKit.full(c));
-        summary=UiKit.small(c,"");summary.setTextColor(Color.LTGRAY);
+        summary=UiKit.small(c,"");summary.setTextColor(0xFF4B5563);
         root.addView(summary,UiKit.full(c));
         reloadFields();refresh();
     }
