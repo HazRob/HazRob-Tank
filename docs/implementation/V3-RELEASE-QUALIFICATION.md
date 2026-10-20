@@ -7,8 +7,9 @@ Refer to [execution log](V3-EXECUTION-LOG.md), [implementation plan](V3-EXECUTIO
 | Item | Evidence | Status |
 | --- | --- | --- |
 | Tank ESP32-Tank sketch compiles on pinned Arduino-ESP32 2.0.17 | [CI run 39476938209](https://github.com/HazRob/HazRob-Tank/actions/runs/39476938209) on `54728175d2e...` | PASSED |
+| Separate firmware candidate ZIP + ESP32 binary images + SHA256 | [CI run 39479359692](https://github.com/HazRob/HazRob-Tank/actions/runs/39479359692), artifact `HazRob-ESP32-Tank-V3-UNRELEASED-firmware-candidate` | CI PASSED; explicitly **NOT approved for flash/deployment** |
 | Android V3 test + debug assembly + embedded 652 Chemical ChemCore payload manifest | [CI run 39478101674](https://github.com/HazRob/HazRob-Tank/actions/runs/39478101674) on `d3be7c82de...` | PASSED for that commit |
-| Android UI test contracts, approved-only history and technical report changes on latest HEAD | [UI regression run 39478645439](https://github.com/HazRob/HazRob-Tank/actions/runs/39478645439) | PENDING at documentation checkpoint |
+| Android UI test contracts, approved-only history and technical report changes | [UI regression run 39478645439](https://github.com/HazRob/HazRob-Tank/actions/runs/39478645439) at `25d12dab` | CI PASSED; physical display still untested |
 | Real stable signed APK with persistent administrator certificate | Private GitHub Actions secrets not yet configured | BLOCKED |
 | Upgrade V2→V3 with intact sites, sessions, measurements, settings and R0 | Requires same signing identity + on-device data | BLOCKED |
 | Real ESP32 hardware flash/run | Owner-held hardware required | NOT TESTED |
