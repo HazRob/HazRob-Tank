@@ -1545,7 +1545,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "EXTERNAL_SOURCE_SIGNAL_OPERATION_ONLY",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "08.2",
@@ -1575,7 +1588,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "EXTERNAL_SOURCE_SIGNAL_OPERATION_ONLY",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "08.3",
@@ -1605,7 +1631,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "EXTERNAL_SOURCE_SIGNAL_OPERATION_ONLY",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "08.4",
@@ -1635,7 +1674,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "EXTERNAL_SOURCE_SIGNAL_OPERATION_ONLY",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "08.5",
@@ -1665,7 +1717,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "EXTERNAL_SOURCE_SIGNAL_OPERATION_ONLY",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "08.6",
@@ -1695,7 +1760,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "TOY_SIMULATION_NOT_PHYSICALLY_VALIDATED",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "08.7",
@@ -1725,7 +1803,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "NUMERIC_ONLY_NOT_PHYSICALLY_VALIDATED",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "08.8",
@@ -1877,7 +1968,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "EXTERNAL_SOURCE_SIGNAL_OPERATION_ONLY",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "09.2",
@@ -1907,7 +2011,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "BLOCKED_FOR_SOURCE_SPATIAL_GROUND_TRUTH",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "09.3",
@@ -1937,7 +2054,20 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "UCI308 external reference only; 08.1–08.4 untrained primitives, 08.6 synthetic, 08.7 incompatible units, 09.1 not plume localization, 09.2–09.3 lack coordinates."
-      }
+      },
+      "additional_external_reference_evidence": [
+        {
+          "source_id": "UCI309",
+          "source_doi": "10.24432/C5JS5P",
+          "source_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+          "status": "BLOCKED_FOR_SOURCE_SPATIAL_GROUND_TRUTH",
+          "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+          "report": "research/G2_UCI309_EXTENSION_AR.md",
+          "original_exposures": 180,
+          "same_G2_technique_id_not_new_review": true,
+          "scientific_Tank_G3": false
+        }
+      ]
     },
     {
       "id": "09.4",
@@ -2090,14 +2220,14 @@
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39494554254"
     ],
-    "warning": "60 unique research ID reviews: 39 external numerical/metadata (incl 02.6/08.7 noncompliant physics), 19 blocked, 2 theoretical; 3 verified original UCI datasets, 14058 unique source exposures, Tank G3=0/80.",
+    "warning": "60 distinct G2 technique IDs reviewed across 6 batches; UCI309 180 exposures are NEW independent source records but its 10 IDs ALREADY counted in G2-06 UCI308. Total unique source exposures 14238 across 4 source collections, not Tank-device data; G3=0/80.",
     "warnings_by_batch": {
       "G2-03": "Nine physically grounded MQ techniques BLOCKED for missing reliable ADC/RL/R0/heater/BME/ohm fields; 02.1 generic filtering executed on external-source signals only.",
       "G2-04": "One external 16-sensor array across ten temporal batches, 8 authentic-value techniques, 07.10 theoretical-only, 07.2 blocked for lack of independent device. Source donor description research-only conflicts with current CC BY website.",
       "G2-05": "UCI308 prepared dilution is liquid vol.% not gas ppm; 02.6 source dR not verified log Rs/R0. 08.8 measured-source mixture detection failed (sensitivity 6/20, specificity 14/30). Six techniques blocked; no Tank G3.",
       "G2-06": "Six real UCI308 signal operations, one simulation-vs-dR numeric noncompliant, one theoretical simulation and two blocked spatial/robot techniques; 08.5 source temporal ensemble 36/58, no trained CNN/TCN/GRU/GNN, G3=0/80."
     },
-    "unique_exposures_across_all_G2_batches": 14058,
+    "unique_exposures_across_all_G2_batches": 14238,
     "analytical_only_techniques": [
       "07.10",
       "08.6"
@@ -2106,9 +2236,10 @@
     "unique_measured_exposure_records_by_source": {
       "UCI1081": 90,
       "UCI270": 13910,
-      "UCI308": 58
+      "UCI308": 58,
+      "UCI309": 180
     },
-    "total_independent_source_collections": 3,
+    "total_independent_source_collections": 4,
     "last_batch_source": "UCI308",
     "last_batch_sha256": "7b062960dbef1a9e8aefc62bc7dbac09bdadb8cbb40793cf2b8e122da1862f90",
     "last_batch_evidence": {
@@ -2131,6 +2262,34 @@
       "external_numeric_or_metadata": 39,
       "scientifically_blocked": 19,
       "analytical_only": 2
+    },
+    "additional_external_source_evidence": {
+      "UCI309": {
+        "date": "2026-10-20",
+        "report": "research/G2_UCI309_EXTENSION_AR.md",
+        "dataset_doi": "10.24432/C5JS5P",
+        "source_original_exposures": 180,
+        "raw_files": 180,
+        "downsampled_duplicate_views": 180,
+        "source_original_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+        "previously_reviewed_G2_techniques": [
+          "08.1",
+          "08.2",
+          "08.3",
+          "08.4",
+          "08.5",
+          "08.6",
+          "08.7",
+          "09.1",
+          "09.2",
+          "09.3"
+        ],
+        "not_new_technique_review_batch": true,
+        "source_sensors_not_tank": true,
+        "source_mean_gcms_gas_ppm_labels": true,
+        "validation_Tank_G3": 0,
+        "github_actions": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282"
+      }
     }
   }
 }
