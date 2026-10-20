@@ -19,7 +19,7 @@ public final class TankAutoR0MathTest {
         TankAutoR0Math m=new TankAutoR0Math();
         m.accept(0,0,100);m.accept(0,0,100);
         m.accept(0,1,200);m.accept(0,2,400);
-        assertEquals(200.0,m.proposedR0(0),1e-7); // (100+100+200+400)/4
+        assertEquals((100.0+200.0+400.0)/3.0,m.proposedR0(0),1e-7); // 3 equal-duration windows, not 4 pooled readings
         assertTrue(Double.isNaN(m.proposedR0(1)));
         m.accept(1,0,0);m.accept(1,1,-2);m.accept(1,2,Double.NaN);
         assertEquals(0,m.validProposals().containsKey("mq3")?1:0);
