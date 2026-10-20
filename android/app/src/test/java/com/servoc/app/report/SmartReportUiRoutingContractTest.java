@@ -19,7 +19,7 @@ public final class SmartReportUiRoutingContractTest {
         assertTrue(s.contains("host.requestFieldSessionExport(format,chosenSessionId)"));
         assertTrue(s.contains("الجلسات المعتمدة للموقع"));
         assertFalse(s.contains("host.requestExport(f,selectedId);"));
-        assertTrue(s.contains("ExperimentQueries.recentUser(host.database(),100)"));
+        assertTrue(s.contains("ExperimentQueries.approvedFieldReports(host.database(),100)"));
     }
 
     @Test public void userSessionTabRoutesThroughSameReportScope()throws Exception{
