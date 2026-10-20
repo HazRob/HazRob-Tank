@@ -43,9 +43,9 @@ def predict_set(probabilities, model):
 def evaluate_sets(prediction_sets, true_labels):
     sets=list(prediction_sets);labels=list(true_labels)
     if not sets or len(sets)!=len(labels):raise ValueError("aligned evaluation data required")
-    if any(not isinstance(s,(list,tuple,set)) or not s or
+    if any(not isinstance(s,(list,tuple,set)) or
            any(not isinstance(v,int) or isinstance(v,bool) or v<0 for v in s)
-           for s in sets):raise ValueError("nonempty integer-index sets required")
+           for s in sets):raise ValueError("integer-index sets required (empty prediction sets are valid abstentions)")
     if any(not isinstance(y,int) or isinstance(y,bool) or y<0 for y in labels):
         raise ValueError("invalid labels")
     return {"n":len(sets),"empirical_coverage":sum(y in s for s,y in zip(sets,labels))/len(sets),
