@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0",
+  "project": "HazRob Tank research-only",
+  "date": "2026-10-20",
+  "dataset": "UCI309 gas sensor array exposed to turbulent gas mixtures",
+  "doi": "10.24432/C5JS5P",
+  "license": "CC BY 4.0; Jordi Fonollosa 2014",
+  "original_archive_sha256": "5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e",
+  "source_zip_bytes": 23403793,
+  "source_experiment_count": 180,
+  "archive_file_count": 360,
+  "raw_files": 180,
+  "downsampled_views": 180,
+  "unique_mixture_configurations": 30,
+  "repetitions_per_configuration": 6,
+  "source_sensors": [
+    "TGS2600",
+    "TGS2602_A",
+    "TGS2602_B",
+    "TGS2620_A",
+    "TGS2612",
+    "TGS2620_B",
+    "TGS2611",
+    "TGS2610"
+  ],
+  "source_rate_hz_raw": 50,
+  "source_rate_hz_downsampled": 10,
+  "analysis_rate_hz": 1,
+  "source_environment_fields": [
+    "temperature Celsius",
+    "relative humidity percent"
+  ],
+  "gas_mean_gcms_ppm_levels": {
+    "ethylene": {
+      "n": 0,
+      "L": 31,
+      "M": 46,
+      "H": 96
+    },
+    "CO": {
+      "n": 0,
+      "L": 270,
+      "M": 397,
+      "H": 460
+    },
+    "methane": {
+      "n": 0,
+      "L": 51,
+      "M": 115,
+      "H": 131
+    }
+  },
+  "sensor_resistance_formula": "Rs(kOhm)=10*(3110-A)/A, from original UCI309 source",
+  "g2_batch": "G2-06 UCI309 independent extension to UCI308; SAME ten IDs, no duplicate progress count",
+  "technique_ids": [
+    "08.1",
+    "08.2",
+    "08.3",
+    "08.4",
+    "08.5",
+    "08.6",
+    "08.7",
+    "09.1",
+    "09.2",
+    "09.3"
+  ],
+  "numeric_real_source": {
+    "08.1": {
+      "source_channels_processed": 1440,
+      "status": "fixed_kernel_forward_only"
+    },
+    "08.2": {
+      "source_channels_processed": 1440,
+      "status": "fixed_causal_filter_forward_only"
+    },
+    "08.3": {
+      "source_channels_processed": 1440,
+      "status": "fixed_scalar_GRU_forward_only"
+    },
+    "08.4": {
+      "exposures_processed": 180,
+      "status": "index_chain_graph_nonphysical"
+    },
+    "08.5": {
+      "task": "CO vs methane, secondary active source",
+      "held_out_full_configurations": 24,
+      "source_exposures_scored": 144,
+      "early_correct": 120,
+      "late_correct": 127,
+      "ensemble_correct": 122,
+      "accuracy_early": 0.8333333333333334,
+      "accuracy_late": 0.8819444444444444,
+      "accuracy_ensemble": 0.8472222222222222,
+      "status": "training_on_other_source_configurations_only; two uncalibrated KNN vote vectors averaged",
+      "negative_result": "Equal averaging worsened heldout correct classifications compared with late window alone"
+    },
+    "09.1": {
+      "source_channels_processed": 1440,
+      "status": "fixed_stationary_sensor_excursions_not_robot_plume"
+    }
+  },
+  "toy_only": {
+    "08.6": {
+      "simulated_profiles": 180,
+      "status": "NOT_PHYSICALLY_CALIBRATED"
+    },
+    "08.7": {
+      "number_of_sim_vs_real_comparisons": 180,
+      "arbitrary_normalized_gap_rmse": 0.3290580035822726,
+      "status": "NUMERIC_ONLY_NOT_VALIDATED_SIM_TO_REAL"
+    }
+  },
+  "blocked": {
+    "09.2": "No time-stamped mobile robot x/y sensor positions/wind map for gas grid mapping",
+    "09.3": "No moving sensor trajectory with known true source coordinates for source localization"
+  },
+  "github_actions": {
+    "source_inspect": "https://github.com/HazRob/HazRob-Tank/actions/runs/39494117821",
+    "first_real_run_failed": "https://github.com/HazRob/HazRob-Tank/actions/runs/39494978930",
+    "final_success": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282",
+    "tested_commit": "d94de38042143da48cc0b164cec29296783c2a20",
+    "artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282/artifacts/12297611683",
+    "pre_run_synthetic_protocol_tests": 12
+  },
+  "scientific_Tank_G3_validated": 0,
+  "limitations": [
+    "Original gas ppm values are GC-MS estimates of mean gas exposure per level, NOT 300-second instantaneous concentrations.",
+    "All 180 experiments from one external fixed wind tunnel instrument; Figaro TGS sensors NOT HazRob Tank MQ8.",
+    "08.5 CO-versus-methane task restricted to 144 trials with nonzero secondary gas and does not establish full multi-gas recognition.",
+    "Holdout is by all six trials per complete mixture flow configuration; no independent sensor hardware held out.",
+    "08.1/08.2/08.3/08.4 are static numerical primitives, not end-to-end trained CNN TCN GRU GNN.",
+    "08.6 simulator has arbitrary sensitivity and tau, 08.7 metrics not transferable to physical ppm.",
+    "Source contains no actual roaming robotic sensor XY; 09.2 and 09.3 genuinely BLOCKED.",
+    "Do NOT add UCI309's 180 raw and 180 downsample files as 360 separate exposures."
+  ]
+}
