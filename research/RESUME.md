@@ -1,3 +1,19 @@
+# V3 IMPLEMENTATION CONTINUATION CHECKPOINT — 2026-10-21 (RESEARCH BRANCH ONLY)
+
+**DO NOT treat this section as merged to main.** Branch: `research/chemcore80-v3-implementation-20261021`; draft review: https://github.com/HazRob/HazRob-Tank/pull/3; base `main` SHA `632745078a48b12d9de68b0ce66ba214cc87c4d4`.
+
+**Implemented:** Added real trainable unidirectional torch LSTM to 08.3 beside GRU; research-only candidate-conditioned physics+sklearn classifier 04.9; bounded first-order response simulator 08.6; physical-sensor/-timestamp aligned Rs/R0 comparator 08.7. Other 6 previously trained applications in the first V3 batch remain available in research benchmarks. None is experimentally verified on Tank. 04.9/08.6/08.7 are *synthetic-test research prototypes*, not independently calibrated Tank models.
+
+**VERIFIED CI:** UCI1081 neural including LSTM https://github.com/HazRob/HazRob-Tank/actions/runs/39507221819 **SUCCESS 20/20 algorithm tests**, original ZIP SHA256 authenticated. New LSTM **59/90 = 65.6%**, macro-F1 **0.6313**, folds **16+22+21**; GRU 69/90 on same external source and protocol. Physics/simulation/real comparison https://github.com/HazRob/HazRob-Tank/actions/runs/39507222065 **SUCCESS 22/22 synthetic tests**. Retain first failed physics run https://github.com/HazRob/HazRob-Tank/actions/runs/39506758830 (2 floating-grid-boundary errors), fixed in `00023c0b1c14ce14accaa8125d52d7272621c6e7`.
+
+**CANONICAL DETAILED ARABIC CHECKPOINT:** `research/V3_IMPLEMENTATION_CHECKPOINT_2026-10-21_AR.md`. Machine-readable research result: `research/benchmarks/results/v3_implementation_batch01_continuation_2026-10-21.json`. Before next edit read that document and compare this research branch to main and open PR #1/#2. No automatic merge of diverged branches.
+
+**SCOPE REMAINS:** original G1 80/80 and historical 1261 tests, G2 reviewed 80/80 (49 external numeric/metadata, 29 blocked, 2 theoretical), independent scientifically validated Tank G3 **0/80**. Source UCI total 14238 distinct exposures unchanged; APK/firmware/production ChemCore untouched.
+
+**NEXT RESEARCH WORK:** develop numbered stable V2 technique interfaces and parity/regression tests for authentic LDA/PLS-DA, SVM, XGBoost, CNN, TCN, GRU/LSTM, GNN; complete physically grounded calibration before validating 04.9,08.6,08.7; preserve per-batch ten-ID reporting and grouped heldout source evidence. The independent G3 source ingestion experiment lives on a SEPARATE unfinished branch, not this PR.
+
+---
+
 # CURRENT CHECKPOINT — 2026-10-21: EIGHT G2 UCI BATCHES COMPLETE + TRAINED ALGORITHM EXTENSION + G3 DATA READINESS
 
 **CANONICAL COUNT:** 80/80 distinct technique IDs completed G2 source-eligibility review: **49 external sensor numeric/metadata operations** (some proxy or nonphysical), **29 blocked** for missing required measured physical fields, **2 theoretical/simulated-only**. Original 80/80 G1 unit-pass baseline contains **1261 historical tests**. Four distinct UCI external datasets add **14,238 unique exposure records**: UCI1081 90 + UCI270 13,910 + UCI308 58 + UCI309 180; do not double count UCI224 or UCI309 raw/downsampled. No actual Tank 8-MQ device reference exposures ingested, so **G3 physical scientific validation 0/80**. [Canonical JSON](PROGRESS_80.json). All production APK, firmware, ChemCore and original HazRob unaffected.
