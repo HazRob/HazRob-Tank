@@ -10,6 +10,7 @@ HazRob Tank is an **independent tracked hazardous-gas research robot**. Its Andr
 - **[الفهرس العربي الشامل للمراجع](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/INDEX.md)** — بيانات MQ وMOS والتقنيات والأبحاث والمنتجات والمراجع الجزيئية
 - **[فهرس المصادر الآلي الموحد JSON](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/external-research/master_catalog.json)** — المعرّفات وروابط البيانات وبيان صلاحيتها وسلسلة المصدر
 - **[دليل سياسة المكتبة والحوكمة](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/README.md)**
+- **[فهرس المجموعات المرجعية التاريخية](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/LEGACY_COLLECTIONS.md)** — روابط مراجع HR069 وTank والمكتبات القديمة دون ازدواج
 - **[نقطة استئناف أبحاث وتجميع المراجع](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/external-research/RESUME.md)**
 
 تم توحيد **56 سجلاً مرجعياً جديداً** بتاريخ 2026-10-21: عشرون مصدراً لبيانات MQ/MOS، وأربع وعشرون دراسة/نظاماً/منتجاً تحليلياً، وعشرة مراجع QSPR/PubChem، ومكتبتان برمجيتان، إضافة إلى أربع مراجعات موثقة. السجلات غير متساوية المستوى: بعضها قياسات فعلية فُحصت، وبعضها دراسات أو صفحات وصف لأرشيفات لم تُنزَّل بعد، وبعضها منتجات أو محاكاة. **لا يجوز عدّ 56 سجلاً على أنها 56 تجربة مستقلة**.
