@@ -1,3 +1,27 @@
+# QSPR / PUBCHEM MOLECULAR INVERSION — RESEARCH EVIDENCE CHECKPOINT (2026-10-21)
+
+**This checkpoint belongs to PR #4's research branch, NOT merged main.**
+- Detailed Arabic literature audit: `research/references/PUBCHEM_QSPR_INVERSE_MOLECULAR_EVIDENCE_2026-10-21_AR.md`.
+- Machine-readable 10-record reference registry: `research/references/qspr_pubchem_inverse_molecular_registry_2026-10-21.json`.
+- **Finding:** NASA/JPL polymer-carbon electronic nose forward QSAR/QSPR and inverse unknown-event hypothesis generation (candidate SF6), MOS materials QSPR/ML response prediction, PubChem molecular descriptor metadata. **NO DIRECT verified commercially packaged MQ2–MQ135 PubChem/QSPR unknown-gas chemical identification study** as of this literature audit.
+- **Proposed experiment:** Use already-held UCI1081 (90 unique external exposure events) MQ135-only channel, associate molecule descriptors with candidate compounds, compare baseline classifier vs forward QSPR model + inverse candidate ranking, concentration-heldout folds, independent leave-one-molecule-out transfer stress test. **Never provide the test record's true gas descriptor as a row input; that leaks the answer.** This experiment is PLANNED, not performed.
+- **Main source limitation:** no data-proven physical Tank calibration. `Tank G3 0/80`; no APK / ESP32 / ESP32-CAM / production ChemCore change. Existing UCI1081 samples must NOT be counted again. Any future 81st technique needs gap analysis and review; start with existing ID `04.9`.
+- **Resume order:** QSPR review doc → JSON registry → `research/datasets/mq_external_source_catalog_2026-10-21.json` → original research `PROGRESS_80.json` and `RESUME.md` on main → design/freeze grouped benchmark then execute, log both positive and negative outcomes.
+
+---
+
+# NEW EXTERNAL MQ MEASUREMENT SOURCE AUDIT — 2026-10-21 (PR #4 DRAFT, NOT MERGED)
+
+- **New branch:** `research/mq-open-measurements-audit-20261021`; base main `632745078a48b12d9de68b0ce66ba214cc87c4d4`.
+- **Research PR:** https://github.com/HazRob/HazRob-Tank/pull/4 (DRAFT, unmerged).
+- **Source audit:** `research/datasets/MQ_OPEN_MEASUREMENTS_AUDIT_2026-10-21_AR.md`; machine-readable inventory: `research/datasets/mq_external_source_catalog_2026-10-21.json`.
+- **Key discovery:** Zenodo 17285312 metadata lists **all eight MQ types used by Tank**; download ZIP and verify actual units/sessions before eligibility. Mendeley beef `mwmhh766fc` v3 has seven of eight MQ and measured Rs ohms with temperature/humidity, valuable for noise/drift. Public MultimodalGasData GitHub CSV fetched and audited: 6400 rows, 7 sensors including 6/8 Tank; all seven summary statistics match original research and 4 classes contain 1600 rows each. **Likely mirror — do not double count.**
+- **Excluded from quantitative ppm:** Food labels, headspace smoke/perfume, Proteus simulation, and 2026 CO paper author-request-only data. Zindi reference-CO2 7307 row training data candidate has site terms; not ingested.
+- **Actual source ingest status:** one external GitHub CSV inspected remotely; other archives not downloaded. No lab standards calibrated or tests run using these discoveries yet. Scientific Tank G3 remains **0/80**.
+- **Next action:** download original Zenodo and Mendeley releases; store SHA256, archive manifest, licenses and raw-to-derived transforms; check sensor channel type, known reference gas concentration, and independent session grouping. Then plan reproducible MQ-specific experiments for technique IDs 01–10 without touching production ChemCore.
+
+---
+
 # CURRENT CHECKPOINT — 2026-10-21: EIGHT G2 UCI BATCHES COMPLETE + TRAINED ALGORITHM EXTENSION + G3 DATA READINESS
 
 **CANONICAL COUNT:** 80/80 distinct technique IDs completed G2 source-eligibility review: **49 external sensor numeric/metadata operations** (some proxy or nonphysical), **29 blocked** for missing required measured physical fields, **2 theoretical/simulated-only**. Original 80/80 G1 unit-pass baseline contains **1261 historical tests**. Four distinct UCI external datasets add **14,238 unique exposure records**: UCI1081 90 + UCI270 13,910 + UCI308 58 + UCI309 180; do not double count UCI224 or UCI309 raw/downsampled. No actual Tank 8-MQ device reference exposures ingested, so **G3 physical scientific validation 0/80**. [Canonical JSON](PROGRESS_80.json). All production APK, firmware, ChemCore and original HazRob unaffected.
