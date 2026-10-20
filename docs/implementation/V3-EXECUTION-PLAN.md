@@ -19,6 +19,11 @@
 | P5 Research separation | CONDITIONAL | T3-019 | proposals only; do not merge unvalidated research techniques into production ChemCore | explicit owner scientific acceptance |
 | P6 Release qualification | BLOCKER | ALL | full unit/integration CI, manual device evidence, hardware safety review, stable APK signature, version, embedded ChemCore hash, upgrade, README change log, release asset | ALL BLOCKERS CLOSED before release |
 
+## Interim execution checkpoint (2026-10-20, build verification ongoing)
+- Source development has progressed beyond V3-01 to user field APPROVED lifecycle, approved-only field/site exports and physical PDF export; see [V3-EXECUTION-LOG.md](V3-EXECUTION-LOG.md).
+- Implementation statuses in this ledger are **SOURCE STATE**, not acceptance/physical verification. All important UI, signing, ChemCore activation, hardware and real-device gates remain open.
+- Most recent source at checkpoint: `dafa0101553be2a3874a79ad50684eb8d5e57a73`; [candidate CI run 39472037922](https://github.com/HazRob/HazRob-Tank/actions/runs/39472037922) pending final observation.
+
 ## Work-package dependency order
 1. Establish this durable checkpoint on a **V3 feature branch**. No premature APK release.
 2. Produce V3 CI as build/test/diagnostic pipeline and distinguish signed release vs development artifact; use GitHub Actions but no simulator.
@@ -31,16 +36,16 @@
 | ID | State | Note |
 | --- | --- | --- |
 | T3-001 | BLOCKED_EXTERNAL | Persistent signing keystore/secrets not established; CI build can check compilation without publishing a release |
-| T3-002 | QUEUED | develop has broken offline enum mapping and auto-comms |
+| T3-002 | IMPLEMENTED_UNVERIFIED | develop has broken offline enum mapping and auto-comms |
 | T3-003 | QUEUED | Physical robot E-STOP/500ms watchdog verification outstanding |
-| T3-004 | QUEUED | V3 strings and branding |
-| T3-005 | QUEUED | RTL and inherited dark styling |
-| T3-006 | QUEUED | Field session approval and UI |
-| T3-007 | QUEUED | APPROVED-only report aggregation |
-| T3-008 | QUEUED | Instant vs field isolation |
+| T3-004 | PARTIAL_IMPLEMENTED | V3 strings and branding |
+| T3-005 | PARTIAL_IMPLEMENTED | RTL and inherited dark styling |
+| T3-006 | IMPLEMENTED_UNVERIFIED | Field session approval and UI |
+| T3-007 | IMPLEMENTED_UNVERIFIED | APPROVED-only report aggregation |
+| T3-008 | PARTIAL_IMPLEMENTED | Instant vs field isolation |
 | T3-009 | QUEUED | Search capability provenance |
 | T3-010 | QUEUED | ChemCore evidence highlighting |
-| T3-011 | QUEUED | Physical PDF references |
+| T3-011 | IMPLEMENTED_UNVERIFIED | Physical PDF references |
 | T3-012 | QUEUED | PDF/XLSX charts and report quality |
 | T3-013 | PENDING_DEVICE | ChemCore embedded in prior successful build; active runtime not device-tested |
 | T3-014 | PENDING_HARDWARE | API4 static checked earlier; real robot testing pending |
@@ -49,11 +54,11 @@
 | T3-017 | QUEUED | User/developer data separation |
 | T3-018 | QUEUED | Android install/Play Protect diagnostics |
 | T3-019 | DEFERRED_CONDITIONAL | Research integration is not a V3 ship blocker |
-| T3-020 | QUEUED | Physical cards 2/row |
-| T3-021 | QUEUED | Gray normal/red+white on valid instantaneous threshold crossing |
-| T3-022 | QUEUED | Single icon top-left non-drive tabs |
-| T3-023 | QUEUED | Fixed 20-minute user R0 capture and one confirm/save |
-| T3-024 | QUEUED | Chart selector / modal full-size chart |
+| T3-020 | IMPLEMENTED_UNVERIFIED | Physical cards 2/row |
+| T3-021 | PARTIAL_IMPLEMENTED | Gray normal/red+white on valid instantaneous threshold crossing |
+| T3-022 | IMPLEMENTED_UNVERIFIED | Single icon top-left non-drive tabs |
+| T3-023 | IMPLEMENTED_UNVERIFIED | Fixed 20-minute user R0 capture and one confirm/save |
+| T3-024 | IMPLEMENTED_UNVERIFIED | Chart selector / modal full-size chart |
 
 ## Resume after interruption — precise instructions
 1. Read **this file first** and [V3 backlog](../requirements/V3-ANDROID-BACKLOG-2026-10-20.md); inspect branch HEAD SHA and all commits since creation.
