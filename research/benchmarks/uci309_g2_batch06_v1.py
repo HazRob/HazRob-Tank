@@ -58,6 +58,7 @@ def parse_downsample(path):
         for name in names:
             idx,eth,other,level=EXPERIMENT_REGEX.fullmatch(name.rsplit("/",1)[-1]).groups()
             data=[]
+            seen_whole_seconds=set()
             with io.TextIOWrapper(z.open(name),encoding="utf-8-sig",newline="") as f:
                 for line in f:
                     if not line.strip():continue
@@ -75,11 +76,17 @@ def parse_downsample(path):
                         raise ValueError("out of range for documented UCI Rs transformation")
                     # Use 1Hz only for heavy feature extraction. Preserve source
                     # 10Hz recordings logically as one view of each exposure.
-                    if abs(t-round(t))<.00001 and 5<=t<=299:
-                        rs=[10*(3110-a)/a for a in vals[3:]] # measured source kOhm
-                        data.append((round(t),tmp,rh,rs))
+                    if 5<=t<300:
+                        second=int(t)
+                        # Source 0.1-s timestamps have small noninteger phase
+                        # shifts, so exact integer matching silently discards
+                        # many seconds. Keep the first source sample per 1s bin.
+                        if second not in seen_whole_seconds:
+                            seen_whole_seconds.add(second)
+                            rs=[10*(3110-a)/a for a in vals[3:]] # source kOhm
+                            data.append((second,tmp,rh,rs))
             if len(data)<250 or any(data[i][0]>=data[i+1][0] for i in range(len(data)-1)):
-                raise ValueError("insufficient monotonic 1Hz points "+name)
+                raise ValueError("insufficient monotonic 1Hz points %s: n=%s first=%s last=%s"%(name,len(data),data[0][0] if data else None,data[-1][0] if data else None))
             def values_between(lo,hi):
                 return [item for item in data if lo<=item[0]<hi]
             base=values_between(10,50)
