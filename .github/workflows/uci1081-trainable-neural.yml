@@ -1,0 +1,53 @@
+name: HazRob Tank true CNN TCN GRU GNN training — external UCI1081
+on:
+  push:
+    paths:
+      - '.github/workflows/uci1081-trainable-neural.yml'
+      - 'research/benchmarks/uci1081_trainable_neural_v1.py'
+      - 'research/benchmarks/test_uci1081_trainable_neural_v1.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-locked-real-neural-training:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU-only PyTorch and scientific dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'numpy==2.2.6' 'scikit-learn==1.6.1'
+          python -m pip install 'torch==2.5.1+cpu' --index-url https://download.pytorch.org/whl/cpu
+      - name: Test temporal causality and true gradient-based training
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/benchmarks -p 'test_uci1081_trainable_neural_v1.py' -v
+      - name: Authenticate source by SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 \
+            'https://archive.ics.uci.edu/static/public/1081/gas%2Bsensor%2Barray%2Blow-concentration.zip' \
+            --output uci1081_original.zip
+          echo '813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab  uci1081_original.zip' | sha256sum --check
+      - name: Train all four real neural families on 3 heldout concentration levels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/benchmarks/uci1081_trainable_neural_v1.py \
+            uci1081_original.zip --output uci1081_neural_trained_result.json | tee neural_metrics.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: uci1081-true-cnn-tcn-gru-gnn-frozen-benchmark
+          path: |
+            uci1081_neural_trained_result.json
+            neural_metrics.txt
+          if-no-files-found: warn
+          retention-days: 90
