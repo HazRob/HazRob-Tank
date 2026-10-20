@@ -33,6 +33,7 @@ import com.servoc.app.calibration.ManualR0Calibration;
 import com.servoc.app.calibration.FieldR0Baseline;
 import com.servoc.app.calibration.SqliteCalibrationProvider;
 import com.servoc.app.chemical.ChemicalRepository;
+import com.servoc.app.chemical.TankChemicalEvidence;
 import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 import com.servoc.app.chemcore.ChemCoreLabQuality;
@@ -132,7 +133,7 @@ public final class MeasurementsTab {
         content.setPadding(UiKit.dp(c,10),UiKit.dp(c,12),UiKit.dp(c,10),UiKit.dp(c,18));
         scroll.addView(content);
         content.addView(UiKit.title(c,"🔎 البحث والتتبع"),UiKit.full(c));
-        content.addView(card("اختر مادة من المكتبة الكيميائية أو انتقل إلى أفضل مرشحي ChemCore."),UiKit.full(c));
+        content.addView(card("اختر مادة من المكتبة أو انتقل إلى مرشحي ChemCore. اضغط على المادة للتحقق من دليل PPM والبصمة والمنحنى والتعريف الجزيئي. وجود معرف PubChem أو منحنى لا يثبت صحة PPM."),UiKit.full(c));
         chemicalSearch=UiKit.input(c,"");
         chemicalSearch.setHint("بحث بالاسم أو رقم CAS أو الصيغة");
         chemicalSearch.setSingleLine(true);
@@ -171,9 +172,10 @@ public final class MeasurementsTab {
             if(position<0||position>=visibleChemicals.size())return;
             ChemicalRepository.Chemical chemical=visibleChemicals.get(position);
             String label=(chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name);
+            TankChemicalEvidence.Flags evidence=TankChemicalEvidence.inspect(host.database(),chemical);
             int legacyId=chemical.legacyId==null?-1:chemical.legacyId.intValue();
             new AlertDialog.Builder(c).setTitle(label)
-                .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+"\nالمصدر: "+(chemical.source==null?"—":chemical.source)+"\nالتتبع: "+(legacyId>=0?"متاح":"غير متاح لهذه المادة"))
+                .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+"\nالمصدر: "+(chemical.source==null?"—":chemical.source)+"\n\nإمكانات الأدلة المتحققة:\n"+evidence.describe()+"\n\nالتتبع: "+(legacyId>=0?"متاح":"غير متاح لهذه المادة"))
                 .setPositiveButton(legacyId>=0?"تتبع المادة":"إغلاق",(d,w)->{if(legacyId>=0){chosenChemical=label;host.setTrackingTarget(legacyId,label);}})
                 .show();
         });
