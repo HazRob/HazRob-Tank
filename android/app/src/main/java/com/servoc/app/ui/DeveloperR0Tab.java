@@ -36,6 +36,8 @@ public final class DeveloperR0Tab {
     private final Handler clock=new Handler(Looper.getMainLooper());
     private TankAutoR0Math autoSampler;
     private boolean automaticActive=false,awaitingSave=false;
+    private volatile boolean disposed=false;
+    private AlertDialog automaticSaveDialog;
     private long automaticStartMs;
     private final long[] lastCycles=new long[TankAutoR0Math.SENSOR_COUNT];
     private Map<String,Double> proposedAutomatic;
@@ -190,7 +192,7 @@ public final class DeveloperR0Tab {
     }
 
     private void startAutomatic(){
-        if(automaticActive||awaitingSave||calibrationChangeBlocked())return;
+        if(disposed||automaticActive||awaitingSave||calibrationChangeBlocked())return;
         JSONObject current=host.latestDiagnostics();
         if(current==null||current.optJSONObject("mq")==null){
             host.showToast("اتصل بروبوت Tank قبل بدء معايرة R0");return;
@@ -201,6 +203,7 @@ public final class DeveloperR0Tab {
             try{
                 host.robotApi().mqPower(true);
                 scroll.post(()->{
+                    if(disposed)return; // Do not restart acquisition after Activity destruction.
                     autoSampler=new TankAutoR0Math();
                     java.util.Arrays.fill(lastCycles,-1L);
                     automaticStartMs=SystemClock.elapsedRealtime();
@@ -211,7 +214,7 @@ public final class DeveloperR0Tab {
                     clock.post(autoTick);
                 });
             }catch(Exception ex){
-                scroll.post(()->{autoStart.setEnabled(true);autoProgress.setText("تعذر تشغيل حساسات MQ");});
+                scroll.post(()->{if(disposed)return;autoStart.setEnabled(true);autoProgress.setText("تعذر تشغيل حساسات MQ");});
             }
         });
     }
@@ -264,7 +267,7 @@ public final class DeveloperR0Tab {
         }
         content.append("\nسيعتمد التطبيق وChemCore القيم الجديدة في التحليلات القادمة فقط.");
         autoProgress.setText("اكتملت معايرة "+proposedAutomatic.size()+" حساسات • بانتظار موافقة الحفظ");
-        new AlertDialog.Builder(context)
+        automaticSaveDialog=new AlertDialog.Builder(context)
             .setTitle("حفظ واعتماد قيم R0")
             .setMessage(content.toString())
             .setNegativeButton("إلغاء",(dialog,which)->{
@@ -275,6 +278,20 @@ public final class DeveloperR0Tab {
             .setCancelable(false)
             .show();
     }
+    /** Cancel orphaned timers and dialogs before the host Activity is destroyed. */
+    public void release(){
+        disposed=true;
+        automaticActive=false;
+        awaitingSave=false;
+        proposedAutomatic=null;
+        clock.removeCallbacks(autoTick);
+        scroll.setKeepScreenOn(false);
+        if(automaticSaveDialog!=null){
+            automaticSaveDialog.dismiss();
+            automaticSaveDialog=null;
+        }
+    }
+
     private void saveAutomatic(){
         if(!awaitingSave||proposedAutomatic==null)return;
         Map<String,Double> valuesToSave=proposedAutomatic;
