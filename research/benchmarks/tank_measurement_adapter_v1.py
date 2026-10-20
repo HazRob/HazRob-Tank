@@ -95,8 +95,8 @@ def validate_exposure(item):
         if not _finite(env.get("temperature_c"),zero_ok=False) or not _finite(env.get("pressure_hpa"),positive=True):
             raise ValueError("invalid BME temperature/pressure")
     sha=item.get("source_sha256")
-    if sha is not None and (not isinstance(sha,str) or len(sha)!=64 or
-                            any(c not in "0123456789abcdef" for c in sha)):
+    if not isinstance(sha,str) or len(sha)!=64 or
+                            any(c not in "0123456789abcdef" for c in sha):
         raise ValueError("source digest must be 64 lowercase SHA256 hex chars")
     return {
         "schema_valid":True,"record_id":item["record_id"],
