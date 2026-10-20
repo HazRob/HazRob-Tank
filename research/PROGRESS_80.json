@@ -669,6 +669,31 @@
         "report": "research/G2_REAL_DATA_BATCH04_AR.md",
         "scientific_Tank_G3": false,
         "caution": "source TGS 16-sensor array/derived features; no independent Tank device validation"
+      },
+      "trained_external_model_evidence": {
+        "status": "GENUINE_TRAINED_EXTERNAL_REFERENCE_IMPLEMENTATION",
+        "family": "multiclass LDA + multi-component PLS-DA",
+        "measured_external_predictions_correct": [
+          73,
+          44
+        ],
+        "original_source": "UCI1081 90 distinct exposures (not Tank)",
+        "uci1081_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500432575",
+        "uci270_chronological_target_batch10_correct": {
+          "train_batch1_2": [
+            993,
+            644
+          ],
+          "train_batch1_to_5": [
+            1086,
+            734
+          ],
+          "shared_test_n": 3600,
+          "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500445305"
+        },
+        "report": "research/G2_UCI_TRAINED_MODELS_AR.md",
+        "not_production_implementation": true,
+        "Tank_G3_validated": false
       }
     },
     {
@@ -890,6 +915,31 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      },
+      "trained_external_model_evidence": {
+        "status": "GENUINE_TRAINED_EXTERNAL_REFERENCE_IMPLEMENTATION",
+        "family": "sklearn SVC linear + RBF",
+        "measured_external_predictions_correct": [
+          74,
+          51
+        ],
+        "original_source": "UCI1081 90 distinct exposures (not Tank)",
+        "uci1081_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500432575",
+        "uci270_chronological_target_batch10_correct": {
+          "train_batch1_2": [
+            1955,
+            1471
+          ],
+          "train_batch1_to_5": [
+            1353,
+            1456
+          ],
+          "shared_test_n": 3600,
+          "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500445305"
+        },
+        "report": "research/G2_UCI_TRAINED_MODELS_AR.md",
+        "not_production_implementation": true,
+        "Tank_G3_validated": false
       }
     },
     {
@@ -941,6 +991,28 @@
         "executed_date": "2026-10-20",
         "scientific_Tank_G3": false,
         "warning": "Non-independent source sessions; prototype model limits and unknown-gas calibration remain."
+      },
+      "trained_external_model_evidence": {
+        "status": "GENUINE_TRAINED_EXTERNAL_REFERENCE_IMPLEMENTATION",
+        "family": "real xgboost.XGBClassifier; original boosted-stumps primitive remains separate",
+        "measured_external_predictions_correct": [
+          38
+        ],
+        "original_source": "UCI1081 90 distinct exposures (not Tank)",
+        "uci1081_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500432575",
+        "uci270_chronological_target_batch10_correct": {
+          "train_batch1_2": [
+            895
+          ],
+          "train_batch1_to_5": [
+            941
+          ],
+          "shared_test_n": 3600,
+          "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500445305"
+        },
+        "report": "research/G2_UCI_TRAINED_MODELS_AR.md",
+        "not_production_implementation": true,
+        "Tank_G3_validated": false
       }
     },
     {
@@ -1747,7 +1819,19 @@
           "same_G2_technique_id_not_new_review": true,
           "scientific_Tank_G3": false
         }
-      ]
+      ],
+      "trained_external_model_evidence": {
+        "status": "GENUINE_TRAINED_EXTERNAL_REFERENCE_IMPLEMENTATION",
+        "family": "trainable torch Conv1d CNN",
+        "measured_external_predictions_correct": [
+          55
+        ],
+        "original_source": "UCI1081 90 distinct exposures (not Tank)",
+        "uci1081_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500453867",
+        "report": "research/G2_UCI_TRAINED_MODELS_AR.md",
+        "not_production_implementation": true,
+        "Tank_G3_validated": false
+      }
     },
     {
       "id": "08.2",
@@ -1790,7 +1874,19 @@
           "same_G2_technique_id_not_new_review": true,
           "scientific_Tank_G3": false
         }
-      ]
+      ],
+      "trained_external_model_evidence": {
+        "status": "GENUINE_TRAINED_EXTERNAL_REFERENCE_IMPLEMENTATION",
+        "family": "trainable causal dilated-convolution TCN",
+        "measured_external_predictions_correct": [
+          55
+        ],
+        "original_source": "UCI1081 90 distinct exposures (not Tank)",
+        "uci1081_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500453867",
+        "report": "research/G2_UCI_TRAINED_MODELS_AR.md",
+        "not_production_implementation": true,
+        "Tank_G3_validated": false
+      }
     },
     {
       "id": "08.3",
@@ -1833,7 +1929,19 @@
           "same_G2_technique_id_not_new_review": true,
           "scientific_Tank_G3": false
         }
-      ]
+      ],
+      "trained_external_model_evidence": {
+        "status": "GENUINE_TRAINED_EXTERNAL_REFERENCE_IMPLEMENTATION",
+        "family": "trainable torch GRU",
+        "measured_external_predictions_correct": [
+          69
+        ],
+        "original_source": "UCI1081 90 distinct exposures (not Tank)",
+        "uci1081_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500453867",
+        "report": "research/G2_UCI_TRAINED_MODELS_AR.md",
+        "not_production_implementation": true,
+        "Tank_G3_validated": false
+      }
     },
     {
       "id": "08.4",
@@ -1876,7 +1984,22 @@
           "same_G2_technique_id_not_new_review": true,
           "scientific_Tank_G3": false
         }
-      ]
+      ],
+      "trained_external_model_evidence": {
+        "status": "GENUINE_TRAINED_EXTERNAL_REFERENCE_IMPLEMENTATION",
+        "family": "trainable correlation-edge message passing GNN",
+        "measured_external_predictions_correct": [
+          24
+        ],
+        "original_source": "UCI1081 90 distinct exposures (not Tank)",
+        "uci1081_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39500453867",
+        "gnn_identity_correct": [
+          30
+        ],
+        "report": "research/G2_UCI_TRAINED_MODELS_AR.md",
+        "not_production_implementation": true,
+        "Tank_G3_validated": false
+      }
     },
     {
       "id": "08.5",
@@ -2367,7 +2490,7 @@
     }
   ],
   "verified_unit_tests": 1261,
-  "next_phase": "G3_READINESS_CREATE_TANK_DEVICE_SCHEMA_CALIBRATION_AND_GOLD_STANDARD_EXPOSURES",
+  "next_phase": "ACQUIRE_TRUE_TANK_DEVICE_CONTROLLED_REFERENCE_MEASUREMENTS_AND_TEST_CHEMCORE_80",
   "external_reference_progress": {
     "completed_research_batches": 8,
     "reviewed_G2_techniques": 80,
@@ -2551,5 +2674,36 @@
         "github_actions": "https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282"
       }
     }
+  },
+  "trained_external_reference_summary": {
+    "modules_with_additional_genuinely_trained_research_reference": 7,
+    "technique_ids": [
+      "03.4",
+      "04.5",
+      "04.7",
+      "08.1",
+      "08.2",
+      "08.3",
+      "08.4"
+    ],
+    "benchmark_file": "research/benchmarks/results/uci_trained_models_main_2026-10-21.json",
+    "report": "research/G2_UCI_TRAINED_MODELS_AR.md",
+    "main_ci_runs": [
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39500432575",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39500453867",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39500445305"
+    ],
+    "no_new_source_exposures": true,
+    "Tank_G3_validated_count": 0
+  },
+  "G3_readiness": {
+    "research_schema": "research/benchmarks/tank_measurement_adapter_v1.py",
+    "schema_tests": "research/benchmarks/test_tank_measurement_adapter_v1.py",
+    "protocol": "research/G3_TANK_MEASUREMENT_PROTOCOL_AR.md",
+    "ci_success": "https://github.com/HazRob/HazRob-Tank/actions/runs/39501104506",
+    "syntax_and_unit_tests_pass": 26,
+    "ready_for_physical_measurements": "SCHEMA_ONLY",
+    "accepted_Tank_device_scientific_validations": 0,
+    "warning": "Structural validity on synthetic records does not establish gas accuracy or a full real lab dataset."
   }
 }
