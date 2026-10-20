@@ -358,52 +358,151 @@ public final class MeasurementsTab {
     }
 
 
+    /** Tank V3 physical measurements: two clean cards per row; PM belongs only to its own subtab. */
     private final class PhysicalPane {
+        private static final int NORMAL_BG=0xFFEDF0F2,ALERT_BG=0xFFC62828;
         final ScrollView view;
-        final TextView[] values=new TextView[PhysicalCatalog.COUNT],states=new TextView[PhysicalCatalog.COUNT];
+        final TextView[] values=new TextView[PhysicalCatalog.COUNT],states=new TextView[PhysicalCatalog.COUNT],titles=new TextView[PhysicalCatalog.COUNT];
+        final LinearLayout[] cards=new LinearLayout[PhysicalCatalog.COUNT];
         final TextView envDiagnostic,soundRms,soundRmsState,soundP2p,soundP2pState;
+        final TextView[] extraTitles=new TextView[2];
+        final LinearLayout[] extraCards=new LinearLayout[2];
         double lastSoundRms=Double.NaN,lastSoundP2p=Double.NaN;
+        final String[] icons={"🌡️","💧","🌤️","☀️","💡","🔊","📳","☢️","🔆","🌫️","😷","🌪️","💨","🧭","⛰️"};
 
         PhysicalPane(){
-            view=new ScrollView(c);view.setVerticalScrollBarEnabled(true);view.setScrollbarFadingEnabled(false);LinearLayout box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,8));view.addView(box);
-            box.addView(UiKit.title(c,"القياسات الفيزيائية والتشخيصية"),UiKit.full(c));
-            TableLayout table=new TableLayout(c);table.setStretchAllColumns(true);table.setShrinkAllColumns(true);table.addView(headerRow());
+            view=new ScrollView(c);view.setVerticalScrollBarEnabled(true);view.setScrollbarFadingEnabled(false);
+            LinearLayout box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,6),UiKit.dp(c,7),UiKit.dp(c,6),UiKit.dp(c,12));view.addView(box);
+            box.addView(UiKit.title(c,"🌡️ القياسات الفيزيائية والتشخيصية"),UiKit.full(c));
+            java.util.ArrayList<LinearLayout> visibleCards=new java.util.ArrayList<>();
             for(int i=0;i<PhysicalCatalog.COUNT;i++){
-                TableRow row=new TableRow(c);row.setBackgroundColor((i&1)==0?0xFFF1F3F6:0xFFFFFFFF);
-                row.addView(tableCell(PhysicalCatalog.NAMES_AR[i],false));values[i]=tableCell("—",false);row.addView(values[i]);row.addView(tableCell(PhysicalCatalog.UNITS[i],false));states[i]=tableCell("غير مركب",false);row.addView(states[i]);table.addView(row);
+                if(i==9||i==10||i==11){
+                    // Particle measurements have a dedicated fourth measurement subtab.
+                    values[i]=UiKit.small(c,"—");states[i]=UiKit.small(c,"في تبويب الجزيئات");
+                    continue;
+                }
+                TextView[] parts=new TextView[3];
+                LinearLayout card=createPhysicalCard(icons[i]+" "+PhysicalCatalog.NAMES_AR[i],PhysicalCatalog.UNITS[i],parts);
+                cards[i]=card;titles[i]=parts[0];values[i]=parts[1];states[i]=parts[2];
+                visibleCards.add(card);
             }
-            TableRow rms=auxRow("MAX4466 RMS","V");soundRms=(TextView)rms.getChildAt(1);soundRmsState=(TextView)rms.getChildAt(3);table.addView(rms);
-            TableRow p2p=auxRow("MAX4466 P-P","V");soundP2p=(TextView)p2p.getChildAt(1);soundP2pState=(TextView)p2p.getChildAt(3);table.addView(p2p);
-            box.addView(table,UiKit.full(c));
-            envDiagnostic=UiKit.small(c,"ENV • بانتظار الاتصال");envDiagnostic.setTextColor(MUTED);envDiagnostic.setTextIsSelectable(true);envDiagnostic.setBackgroundColor(CARD);box.addView(envDiagnostic,UiKit.full(c));
+            TextView[] rmsParts=new TextView[3];
+            extraCards[0]=createPhysicalCard("🎙️ MAX4466 RMS","V",rmsParts);
+            extraTitles[0]=rmsParts[0];soundRms=rmsParts[1];soundRmsState=rmsParts[2];
+            visibleCards.add(extraCards[0]);
+            TextView[] peakParts=new TextView[3];
+            extraCards[1]=createPhysicalCard("📈 MAX4466 P-P","V",peakParts);
+            extraTitles[1]=peakParts[0];soundP2p=peakParts[1];soundP2pState=peakParts[2];
+            visibleCards.add(extraCards[1]);
+            for(int i=0;i<visibleCards.size();i+=2){
+                LinearLayout row=UiKit.hbox(c);
+                LinearLayout.LayoutParams left=new LinearLayout.LayoutParams(0,-2,1f);
+                left.setMargins(UiKit.dp(c,3),UiKit.dp(c,3),UiKit.dp(c,3),UiKit.dp(c,3));
+                row.addView(visibleCards.get(i),left);
+                if(i+1<visibleCards.size()){
+                    LinearLayout.LayoutParams right=new LinearLayout.LayoutParams(0,-2,1f);
+                    right.setMargins(UiKit.dp(c,3),UiKit.dp(c,3),UiKit.dp(c,3),UiKit.dp(c,3));
+                    row.addView(visibleCards.get(i+1),right);
+                }else row.addView(new View(c),new LinearLayout.LayoutParams(0,1,1f));
+                box.addView(row,UiKit.full(c));
+            }
+            envDiagnostic=UiKit.small(c,"ENV • بانتظار الاتصال");
+            envDiagnostic.setTextColor(MUTED);envDiagnostic.setTextIsSelectable(true);envDiagnostic.setBackgroundColor(CARD);
+            box.addView(envDiagnostic,UiKit.full(c));
         }
-        private TableRow headerRow(){TableRow r=new TableRow(c);r.addView(tableCell("القياس",true));r.addView(tableCell("القيمة",true));r.addView(tableCell("الوحدة",true));r.addView(tableCell("الحالة / المصدر",true));return r;}
-        private TableRow auxRow(String name,String unit){TableRow r=new TableRow(c);r.setBackgroundColor(0xFFF1F3F6);r.addView(tableCell(name,false));r.addView(tableCell("—",false));r.addView(tableCell(unit,false));r.addView(tableCell("—",false));return r;}
-        private TextView tableCell(String text,boolean header){TextView v=new TextView(c);v.setText(text);v.setTextColor(TEXT);v.setTextSize(header?12:11);v.setPadding(UiKit.dp(c,4),UiKit.dp(c,7),UiKit.dp(c,4),UiKit.dp(c,7));if(header){v.setBackgroundColor(0xFFFFD36A);v.setTypeface(Typeface.DEFAULT_BOLD);}return v;}
-        private void reset(String state){for(int i=0;i<PhysicalCatalog.COUNT;i++){values[i].setText("—");exposureStyle(values[i],false);states[i].setText(state);states[i].setTextColor(MUTED);states[i].setTypeface(Typeface.DEFAULT,Typeface.NORMAL);}soundRms.setText("—");soundP2p.setText("—");soundRmsState.setText(state);soundP2pState.setText(state);}
-        private void setPhysical(int index,double value,String source){if(Double.isFinite(value)){values[index].setText(String.format(Locale.US,index==14?"%.1f":"%.2f",value));states[index].setText(source);states[index].setTextColor(GOOD);states[index].setTypeface(Typeface.DEFAULT,Typeface.NORMAL);
-                com.servoc.app.measurements.PhysicalReferencePolicy.Result reference=
-                    com.servoc.app.measurements.PhysicalReferencePolicy.evaluate(index,value,true,false,false,0L,false);
-                if(reference.exceeded){exposureStyle(values[index],true);states[index].setText(reference.explanation);exposureStyle(states[index],true);}
-                else{exposureStyle(values[index],false);}}else{values[index].setText("—");exposureStyle(values[index],false);states[index].setText(source);states[index].setTextColor(WARN);states[index].setTypeface(Typeface.DEFAULT,Typeface.NORMAL);}}
+        private LinearLayout createPhysicalCard(String label,String unit,TextView[] out){
+            LinearLayout card=UiKit.vbox(c);
+            card.setPadding(UiKit.dp(c,10),UiKit.dp(c,10),UiKit.dp(c,10),UiKit.dp(c,10));
+            card.setBackgroundColor(NORMAL_BG);
+            TextView heading=UiKit.small(c,label+" • "+unit);heading.setTextSize(12);heading.setTextColor(TEXT);
+            heading.setMaxLines(2);card.addView(heading,UiKit.full(c));
+            TextView number=UiKit.title(c,"—");number.setTextSize(23);number.setTextColor(TEXT);
+            card.addView(number,UiKit.full(c));
+            TextView detail=UiKit.small(c,"غير مركب");detail.setTextSize(10);detail.setTextColor(MUTED);
+            detail.setMaxLines(3);card.addView(detail,UiKit.full(c));
+            out[0]=heading;out[1]=number;out[2]=detail;return card;
+        }
+        private void cardAlert(int i,boolean alert){
+            if(cards[i]==null)return;
+            cards[i].setBackgroundColor(alert?ALERT_BG:NORMAL_BG);
+            int color=alert?Color.WHITE:TEXT;
+            titles[i].setTextColor(color);values[i].setTextColor(color);
+            states[i].setTextColor(alert?Color.WHITE:MUTED);
+            values[i].setTypeface(Typeface.DEFAULT,alert?Typeface.BOLD:Typeface.NORMAL);
+        }
+        private void reset(String state){
+            for(int i=0;i<PhysicalCatalog.COUNT;i++){
+                values[i].setText("—");states[i].setText(state);
+                if(cards[i]!=null)cardAlert(i,false);
+            }
+            soundRms.setText("—");soundP2p.setText("—");
+            soundRmsState.setText(state);soundP2pState.setText(state);
+            for(int i=0;i<extraCards.length;i++){
+                extraCards[i].setBackgroundColor(NORMAL_BG);extraTitles[i].setTextColor(TEXT);
+            }
+            soundRms.setTextColor(TEXT);soundP2p.setTextColor(TEXT);
+            soundRmsState.setTextColor(MUTED);soundP2pState.setTextColor(MUTED);
+        }
+        private void setPhysical(int index,double value,String source){
+            if(!Double.isFinite(value)){
+                values[index].setText("—");states[index].setText(source);cardAlert(index,false);return;
+            }
+            values[index].setText(String.format(Locale.US,index==14?"%.1f":"%.2f",value));
+            states[index].setText(source);
+            // Do not classify uncalibrated instant values as OSHA exposure exceedances.
+            com.servoc.app.measurements.PhysicalReferencePolicy.Result result=
+                com.servoc.app.measurements.PhysicalReferencePolicy.evaluate(index,value,true,false,false,0L,false);
+            cardAlert(index,result.exceeded);
+            if(result.exceeded)states[index].setText(result.explanation);
+        }
         void refresh(){
-            JSONObject d=host.latestDiagnostics();if(d==null){reset("غير متصل");envDiagnostic.setText("ENV • غير متصل");return;}reset("غير مركب");
+            JSONObject d=host.latestDiagnostics();
+            if(d==null){reset("غير متصل");envDiagnostic.setText("ENV • غير متصل");return;}
+            reset("غير مركب");
             JSONObject e=d.optJSONObject("env");
-            // BME/BMP always displays the latest actual telemetry; never hold a stale value.
-            // Transient failure remains explicitly visible for hardware/I2C troubleshooting.
             envDiagnostic.setText(envDiagnosticText(e));
             if(e!=null&&e.optBoolean("ok",false)){
-                String type=e.optString("type","ENV"),src=type+" • "+e.optString("address","—")+" • "+e.optString("chip_id","—");double t=e.optDouble("temperature",Double.NaN),h=e.optDouble("humidity",Double.NaN),p=e.optDouble("pressure",Double.NaN);
-                setPhysical(0,t,src+" • ● حية");setPhysical(1,h,Double.isFinite(h)?src+" • ● حية":"غير متاح في "+type);setPhysical(2,p,src+" • ● حية");
-                if(Double.isFinite(p)&&p>0)setPhysical(14,44330.0*(1.0-Math.pow(p/1013.25,0.1903)),"مشتق من الضغط • ● حية");else states[14].setText("ضغط غير صالح");
+                String type=e.optString("type","ENV"),src=type+" • "+e.optString("address","—")+" • "+e.optString("chip_id","—");
+                double t=e.optDouble("temperature",Double.NaN),h=e.optDouble("humidity",Double.NaN),p=e.optDouble("pressure",Double.NaN);
+                setPhysical(0,t,src+" • ● حية");
+                setPhysical(1,h,Double.isFinite(h)?src+" • ● حية":"غير متاح في "+type);
+                setPhysical(2,p,src+" • ● حية");
+                if(Double.isFinite(p)&&p>0)setPhysical(14,44330.0*(1.0-Math.pow(p/1013.25,0.1903)),"مشتق من الضغط • ● حية");
+                else states[14].setText("ضغط غير صالح");
             }else{
-                String reason=envReason(e);states[0].setText(reason);states[1].setText(reason);states[2].setText(reason);states[14].setText("يتطلب ضغطًا صالحًا");states[0].setTextColor(WARN);states[1].setTextColor(WARN);states[2].setTextColor(WARN);
+                String reason=envReason(e);states[0].setText(reason);states[1].setText(reason);
+                states[2].setText(reason);states[14].setText("يتطلب ضغطًا صالحًا");
             }
-            JSONObject ldr=d.optJSONObject("ldr");if(ldr!=null&&ldr.optBoolean("installed",false)){states[3].setText("LDR • عتبة فقط");states[3].setTextColor(WARN);states[4].setText("لا توجد معايرة lm");}
-            JSONObject s=d.optJSONObject("sound");double rms=s==null?Double.NaN:s.optDouble("rms_v",Double.NaN),p2p=s==null?Double.NaN:s.optDouble("p2p_v",Double.NaN);
-            if(Double.isFinite(rms)){lastSoundRms=Double.isFinite(lastSoundRms)?0.70*lastSoundRms+0.30*rms:rms;soundRms.setText(String.format(Locale.US,"%.4f",lastSoundRms));soundRmsState.setText("MAX4466 • RMS ممهّد للعرض");soundRmsState.setTextColor(GOOD);}else{lastSoundRms=Double.NaN;soundRmsState.setText("لا توجد قراءة");}
-            if(Double.isFinite(p2p)){lastSoundP2p=Double.isFinite(lastSoundP2p)?0.70*lastSoundP2p+0.30*p2p:p2p;soundP2p.setText(String.format(Locale.US,"%.4f",lastSoundP2p));soundP2pState.setText("MAX4466 • ممهّد للعرض");soundP2pState.setTextColor(GOOD);}else{lastSoundP2p=Double.NaN;soundP2pState.setText("لا توجد قراءة");}
-            double db=s==null?Double.NaN:s.optDouble("db_spl",Double.NaN);if(Double.isFinite(db)){values[5].setText(String.format(Locale.US,"%.1f",db));states[5].setText("MAX4466 • dB SPL تقديري");states[5].setTextColor(GOOD);}else{values[5].setText("—");states[5].setText(Double.isFinite(rms)||Double.isFinite(p2p)?"MAX4466 • بانتظار dB SPL":"MAX4466 غير متصل");states[5].setTextColor(WARN);}
+            JSONObject ldr=d.optJSONObject("ldr");
+            if(ldr!=null&&ldr.optBoolean("installed",false)){
+                states[3].setText("LDR • عتبة فقط، لا قياس lux");
+                states[4].setText("لا توجد معايرة lm");
+            }
+            JSONObject sound=d.optJSONObject("sound");
+            double rms=sound==null?Double.NaN:sound.optDouble("rms_v",Double.NaN);
+            double p2p=sound==null?Double.NaN:sound.optDouble("p2p_v",Double.NaN);
+            if(Double.isFinite(rms)){
+                lastSoundRms=Double.isFinite(lastSoundRms)?0.70*lastSoundRms+0.30*rms:rms;
+                soundRms.setText(String.format(Locale.US,"%.4f",lastSoundRms));
+                soundRmsState.setText("MAX4466 • RMS ممهّد للعرض");
+            }else{lastSoundRms=Double.NaN;soundRmsState.setText("لا توجد قراءة");}
+            if(Double.isFinite(p2p)){
+                lastSoundP2p=Double.isFinite(lastSoundP2p)?0.70*lastSoundP2p+0.30*p2p:p2p;
+                soundP2p.setText(String.format(Locale.US,"%.4f",lastSoundP2p));
+                soundP2pState.setText("MAX4466 • P-P ممهّد للعرض");
+            }else{lastSoundP2p=Double.NaN;soundP2pState.setText("لا توجد قراءة");}
+            // An actually calibrated A-weighted channel can trigger a 90 dBA instant UI warning.
+            double dba=sound==null?Double.NaN:sound.optDouble("dba",Double.NaN);
+            boolean calibrated=sound!=null&&sound.optBoolean("calibrated_dba",false);
+            if(calibrated&&Double.isFinite(dba)){
+                setPhysical(5,dba,"dBA معاير • عتبة تنبيه 90");
+                cardAlert(5,dba>90.0);
+                if(dba>90.0)states[5].setText("تجاوز عتبة التنبيه اللحظي 90 dBA");
+            }else{
+                double db=sound==null?Double.NaN:sound.optDouble("db_spl",Double.NaN);
+                if(Double.isFinite(db))setPhysical(5,db,"MAX4466 • dB SPL غير معاير");
+                else states[5].setText(Double.isFinite(rms)||Double.isFinite(p2p)?"MAX4466 • لا توجد قراءة dB معايرة":"MAX4466 غير متصل");
+            }
         }
     }
 
