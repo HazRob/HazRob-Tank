@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.servoc.app.ReleaseAudit;
 import com.servoc.app.analytics.AnalyticsSnapshot;
 import com.servoc.app.calibration.AcceptedR0Normalizer;
+import com.servoc.app.calibration.ManualR0Calibration;
 import com.servoc.app.calibration.FieldR0Baseline;
 import com.servoc.app.calibration.SqliteCalibrationProvider;
 import com.servoc.app.chemical.ChemicalRepository;
@@ -584,8 +585,8 @@ public final class MeasurementsTab {
             else if(warn.level==InstantMqWarningEngine.Level.ELEVATED){head.setBackgroundColor(0xFFD32F2F);head.setTextColor(Color.WHITE);head.setText("⚠ "+hw.key.toUpperCase(Locale.US)+" • "+warn.alert);}
             else if(warn.level==InstantMqWarningEngine.Level.RESPONSE){head.setBackgroundColor(0xFF00695C);head.setTextColor(Color.WHITE);head.setText("↕ "+hw.key.toUpperCase(Locale.US)+" • استجابة مرصودة");}
             else{head.setBackgroundColor(0xFF1565C0);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+(baseline?" • جاهز":" • baseline مدمج"));}
-            double ratio=AcceptedR0Normalizer.ratio(hw.key,q),acceptedR0=FieldR0Baseline.value(hw.key),fwR0=q.optDouble("r0",Double.NaN);boolean fwSync=Double.isFinite(fwR0)&&Double.isFinite(acceptedR0)&&acceptedR0>0&&Math.abs(fwR0-acceptedR0)/acceptedR0<=0.001;String delta=Double.isFinite(warn.delta)?String.format(Locale.US,"%+.1f%%",100.0*warn.delta):"—";String trend="—";if(health!=null&&Double.isFinite(health.baselineRatio)&&health.baselineRatio>0&&Double.isFinite(ratio))trend=ratio>health.baselineRatio?"↑":"↓";
-            data.setText("Δ "+delta+" • اتجاه "+trend+" • Noise CV "+(health!=null&&Double.isFinite(health.noiseCv)?String.format(Locale.US,"%.1f%%",100*health.noiseCv):"—")+"\nRaw "+num(q,"raw",0)+" • Vadc "+num(q,"adc",3)+" V • Vao "+num(q,"ao",3)+" V\nRs "+num(q,"rs",3)+" • Rs/R0 "+(Double.isFinite(ratio)?String.format(Locale.US,"%.3f",ratio):"—")+" • R0 "+String.format(Locale.US,"%.3f kΩ",acceptedR0)+"\n"+(fwSync?"R0 متزامن":"App R0 authority")+" • "+SensorHealthEngine.stateAr(health.state));
+            double ratio=AcceptedR0Normalizer.ratio(hw.key,q),acceptedR0=ManualR0Calibration.get(hw.key),fwR0=q.optDouble("firmware_r0",Double.NaN);boolean fwSync=Double.isFinite(fwR0)&&Double.isFinite(acceptedR0)&&acceptedR0>0&&Math.abs(fwR0-acceptedR0)/acceptedR0<=0.001;String delta=Double.isFinite(warn.delta)?String.format(Locale.US,"%+.1f%%",100.0*warn.delta):"—";String trend="—";if(health!=null&&Double.isFinite(health.baselineRatio)&&health.baselineRatio>0&&Double.isFinite(ratio))trend=ratio>health.baselineRatio?"↑":"↓";
+            data.setText("Δ "+delta+" • اتجاه "+trend+" • Noise CV "+(health!=null&&Double.isFinite(health.noiseCv)?String.format(Locale.US,"%.1f%%",100*health.noiseCv):"—")+"\nRaw "+num(q,"raw",0)+" • Vadc "+num(q,"adc",3)+" V • Vao "+num(q,"ao",3)+" V\nRs "+num(q,"rs",3)+" • Rs/R0 "+(Double.isFinite(ratio)?String.format(Locale.US,"%.3f",ratio):"—")+" • R0 "+(Double.isFinite(acceptedR0)?String.format(Locale.US,"%.3f kΩ",acceptedR0):"—")+"\n"+(fwSync?"R0 متزامن":"App R0 authority")+" • "+SensorHealthEngine.stateAr(health.state));
         }
     }
 
