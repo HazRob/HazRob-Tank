@@ -1,0 +1,58 @@
+name: HazRob Tank G2-06 official UCI309 10-technique research validation
+on:
+  push:
+    paths:
+      - '.github/workflows/uci309-g2-batch06.yml'
+      - 'research/benchmarks/uci309_g2_batch06_v1.py'
+      - 'research/benchmarks/test_uci309_g2_batch06_v1.py'
+      - 'research/benchmarks/uci1081_actual_modules_v1.py'
+      - 'research/techniques/08.1/**'
+      - 'research/techniques/08.2/**'
+      - 'research/techniques/08.3/**'
+      - 'research/techniques/08.4/**'
+      - 'research/techniques/08.5/**'
+      - 'research/techniques/08.6/**'
+      - 'research/techniques/08.7/**'
+      - 'research/techniques/09.1/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  uci309-real-turbulent-mixture-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify G2 protocol invariants and separation of synthetic fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q research/benchmarks/uci309_g2_batch06_v1.py research/benchmarks/test_uci309_g2_batch06_v1.py
+          python -m unittest discover -v -s research/benchmarks -p 'test_uci309_g2_batch06_v1.py' 2>&1 | tee uci309_g2_batch06_unit.log
+          grep -Eq '^Ran (1[0-9]|[2-9][0-9]+) tests?' uci309_g2_batch06_unit.log
+          grep -Eq '^OK$' uci309_g2_batch06_unit.log
+      - name: Download ORIGINAL UCI309 and verify immutable source hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 240 \
+            'https://archive.ics.uci.edu/static/public/309/gas%2Bsensor%2Barray%2Bexposed%2Bto%2Bturbulent%2Bgas%2Bmixtures.zip' -o uci309_original.zip
+          echo '5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e  uci309_original.zip' | sha256sum --check
+      - name: Execute 10 G2 technique eligibility decisions with 180 real experiments
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/benchmarks/uci309_g2_batch06_v1.py uci309_original.zip --output uci309_g2_batch06_result.json | tee uci309_g2_batch06_execution.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: uci309-g2-batch06-real-source-benchmark-results
+          path: |
+            uci309_g2_batch06_unit.log
+            uci309_g2_batch06_result.json
+            uci309_g2_batch06_execution.log
+          if-no-files-found: warn
+          retention-days: 90
