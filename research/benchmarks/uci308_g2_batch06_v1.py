@@ -186,9 +186,7 @@ def temporal_ensemble_by_batch(rows,raw):
         labels=model["classes"]
         count_early=0;count_late=0;count_ens=0
         for r in test:
-            proba=[list(softmax.predict_softmax([x],model)[0]["softmax_scores"].values())
-                    for x in rows_by_exp[r["exp"]]]
-            # Verify iteration order matches class order, never conflate scores.
+            # Match posterior columns explicitly to the model class order.
             score_dict=softmax.predict_softmax(rows_by_exp[r["exp"]],model)
             proba=[[d["softmax_scores"][label] for label in labels]
                    for d in score_dict]
@@ -203,7 +201,7 @@ def temporal_ensemble_by_batch(rows,raw):
                         "correct_late_window":count_late,
                         "correct_ensemble":count_ens})
     tested=sum(v["test_exposures"] for v in outputs)
-    if tested!=58:raise AssertionError("all source experiments must be tested once")
+    if tested!=len(rows):raise AssertionError("all source experiments must be tested once")
     return {"status":"TRAINED_AUXILIARY_SOFTMAX_PLUS_08.5_TEMPORAL_AGGREGATION_NOT_CALIBRATED",
             "folds":outputs,"n_heldout_source_exposures":tested,
             "n_correct_early_window":sum(v["correct_early_window"] for v in outputs),
