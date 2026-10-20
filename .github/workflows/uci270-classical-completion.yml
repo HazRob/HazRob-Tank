@@ -1,0 +1,49 @@
+name: HazRob Tank actual SVM LDA PLS-DA XGBoost on UCI270 chronological drift
+on:
+  push:
+    paths:
+      - '.github/workflows/uci270-classical-completion.yml'
+      - 'research/benchmarks/uci270_completed_classical_v1.py'
+      - 'research/benchmarks/test_uci270_completed_classical_v1.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verified-source-chronological-drift-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Use pinned numerical dependencies
+        run: python -m pip install 'numpy==2.2.6' 'scikit-learn==1.6.1' 'xgboost==2.1.4'
+      - name: Execute ten behavior/protocol contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/benchmarks -p 'test_uci270_completed_classical_v1.py' -v
+      - name: Fetch official real UCI270 and require source digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 \
+            'https://archive.ics.uci.edu/static/public/270/gas+sensor+array+drift+dataset+at+different+concentrations.zip' \
+            -o uci270_original.zip
+          echo '98fe3a30981a222dd4518fbcc3dddd45d5c0ce9b03ef6dc6fe5cf7a04cfbff5e  uci270_original.zip' | sha256sum --check
+      - name: Test authentic chronological holdout source batches against batch10
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/benchmarks/uci270_completed_classical_v1.py \
+            uci270_original.zip --output uci270_classical_drift_result.json | tee uci270_drift_metrics.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: uci270-genuine-lda-plsda-svm-xgboost-drift
+          path: |
+            uci270_classical_drift_result.json
+            uci270_drift_metrics.txt
+          if-no-files-found: warn
+          retention-days: 90
