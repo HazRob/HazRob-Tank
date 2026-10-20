@@ -140,6 +140,9 @@ jobs:
         with:
           gradle-version: '9.5.0'
 
+      - name: Test real SQLite approved report scoping (no Android emulator)
+        run: python3 tank/tools/verify_approved_report_sql.py
+
       - name: Run unit tests
         working-directory: source
         run: gradle --no-daemon :app:testDebugUnitTest
