@@ -47,7 +47,8 @@ public final class HR069R1FieldUXRegressionsTest {
         assertTrue(code.contains("availableCharts.clear()"));
         assertTrue(code.contains("chartView.setVisibility(View.GONE)"));
         assertTrue(code.contains("host.io().execute(()->{"));
-        assertTrue(code.contains("if((needsChem&&chemOk)||(!needsChem&&seriesOk))"));
+        assertTrue(code.contains("TankChartEligibility.hasData(i,series,chemcore)"));
+        assertTrue(code.contains("TankChartEligibility.hasData(pos,ss,cc)"));
     }
     @Test public void echoAndDeveloperCalibrationRemainsClear()throws Exception {
         String control=source("ui/ControlTab.java");
