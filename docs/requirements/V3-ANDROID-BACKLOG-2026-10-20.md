@@ -43,6 +43,25 @@ Date: 2026-10-20 | State: DRAFT FOR OWNER REVIEW | Scope: independent Android ap
 
 | T3-023 | P1 | Developer > معايرة R0 automated USER field baseline | MISSING_IN_V2_APK | **Owner clarification 2026-10-20:** this is a simple guided **user-level clean-air automatic R0 baseline workflow**, NOT an attempt to reproduce manufacturer laboratory calibration. V3 flow: (1) user positions the robot in reasonably clean ventilated air and confirms it; application verifies ESP32/ADS/channels and keeps motors stationary; (2) switches on MQ heater rail via existing relay and monitors warm-up/quality for each channel; (3) once adequately stable, collects valid timestamped Rs samples from all eight MQ over three proposed 30-second capture windows (adjustable), discarding duplicates, invalid rails and spikes; (4) estimates each *operational field normalization baseline* independently using geometric mean Rs per window followed by equal log-domain window weighting, following previous three-session field-baseline methodology; (5) presents old vs proposed values in kΩ, percent deviation, sample count, spread/drift and BME context and blocks invalid channels; (6) explicit developer approval to save locally, provenance and rollback, without changing previously recorded sessions. Keep manual mode. The clean-air estimate is a device-local operating baseline called 'field R0', **not** independently validated manufacturer reference-gas R0 or quantitative ppm calibration. Check actual installed RL and heater configuration before trusting Rs and interpret MQ7/MQ9 conservatively because existing firmware currently drives the whole MQ rail at one fixed voltage with no separate heater-cycle control; mark affected channels provisional rather than fabricating precision. Reuse existing /data Rs/valid/sample_us/scan_cycle where feasible, but test real sampling cadence and data loss; firmware changes only if needed and separately approved. No factory/laboratory calibration procedure, no compulsory certified gas sample, no implicit upload to central chemical library. |
 
+### T3-023 proposed 20-minute calibration sequence (2026-10-20; AWAITING OWNER CONFIRMATION)
+The owner compared two patterns for automatic user-field R0: (A) three successive 5-minute warm-up, 3-minute measurement, 3-minute powered-off sequences; and (B) **one 5-minute warm-up**, followed by **three 3-minute measurement windows**, separated by **two 3-minute pauses while leaving sensor power ON**.
+
+**Recommendation: choose B (continuous heater power), not A**. V2/Tank ESP32 firmware has only a single MQ relay (GPIO25), so powering down all eight between captures adds cooldown/reheat transients that confound estimates of a reproducible clean-air operating baseline. Nominal schedule:
+- 00:00–05:00 initial warm-up and quality monitoring (5 minutes is a *minimum candidate*, not a guaranteed sufficient stabilization for all MQ models).
+- 05:00–08:00 capture window #1.
+- 08:00–11:00 powered-ON pause, continue telemetry quality/drift monitoring; exclude interval from the three averaged windows.
+- 11:00–14:00 capture window #2.
+- 14:00–17:00 powered-ON pause as above.
+- 17:00–20:00 capture window #3.
+- On completion compare each window's per-sensor valid Rs distribution / geometric mean, sample count and dispersion. Compute a logged geometric aggregate of **three validated window means** per sensor (consistent with existing `FieldR0Baseline` three-session approach), *not* a single fabricated Rs. If needed use additional preheat or recapture for any channel with drift/outliers before offering manual approval and rollback; do not silently commit eight channels.
+
+Important technical qualifications:
+- **User field baseline**, not manufacturer/reference-gas R0 or ppm proof. For some MQ gases datasheets R0 is defined at a gas reference condition: record method precisely and do not silently map unlike R0 semantics.
+- MQ7/MQ9 in current hardware share fixed 5V heater rail with six other MQs; original non-B MQ-7 and MQ-9 literature specifies separate high/low heater-voltage stages. Without that circuitry do not represent their values as manufacturer-cycle calibrated R0; show *fixed-heater field baseline (provisional)* and gate claims accordingly.
+- ESP32 presently exposes per-sensor `rs`, `ok`, `sample_us`, and `scan_cycle` in `/data`; app must capture unique valid samples and safeguard the sequence from disconnects; 3-minute sample windows are an app design proposal, not proven end-to-end acquisition.
+- Historical firmware assumption `RL=10kΩ` globally must be checked against actual sensor modules, and ambient context recorded.
+- Owner has requested a comparative recommendation, not authorized an application/firmware edit or finalized this choice yet.
+
 ## Source-specific findings
 - `android/app/src/main/java/com/servoc/app/measurement/TankAcquisitionPolicy.java` has NEW/WARMUP/MEASURING/COMPLETED/CANCELLED/APPROVED but this is a stand-alone policy, not proof of durable session-state integration.
 - V2 inherited `FieldSessionsTab` uses active/closed sessions with add/close buttons, not two required management/report panes nor approval status.
