@@ -24,13 +24,13 @@ public final class TankAutoR0MathTest {
         m.accept(1,0,0);m.accept(1,1,-2);m.accept(1,2,Double.NaN);
         assertEquals(0,m.validProposals().containsKey("mq3")?1:0);
     }
-    @Test public void unevenWindowSampleCountsUsePooledArithmeticMean(){
+    @Test public void threeEqualDurationWindowsReceiveEqualWeightDespiteDropouts(){
         TankAutoR0Math m=new TankAutoR0Math();
         m.accept(0,0,100);
         m.accept(0,1,400);m.accept(0,1,500);
         m.accept(0,2,900);
-        // Not geometric and not equal weighting of different-sized windows.
-        assertEquals(475.0,m.proposedR0(0),1e-8);
+        // Window means 100, 450, 900 -> 483.333... even with unequal sample counts.
+        assertEquals((100.0+450.0+900.0)/3.0,m.proposedR0(0),1e-8);
         assertEquals(1,m.count(0,0));assertEquals(2,m.count(0,1));assertEquals(1,m.count(0,2));
     }
     @Test public void validChannelDoesNotRequireOtherSensors(){
