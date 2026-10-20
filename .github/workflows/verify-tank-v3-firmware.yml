@@ -47,7 +47,38 @@ jobs:
       - name: Compile ESP32 Tank source (DOIT ESP32 DevKit V1)
         run: |
           set -euo pipefail
-          arduino-cli compile --warnings all --fqbn esp32:esp32:esp32 firmware/ESP32-Tank
+          arduino-cli compile --warnings all --fqbn esp32:esp32:esp32 --output-dir firmware-build firmware/ESP32-Tank
+
+      - name: Package UNRELEASED V3 test firmware and Arduino sources
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,zipfile
+          root=Path('firmware/ESP32-Tank')
+          builds=Path('firmware-build')
+          fw=sorted(builds.glob('*.bin'))
+          if not fw: raise SystemExit('No ESP32 binary produced by compiler')
+          dst=Path('unreleased-firmware')
+          dst.mkdir(exist_ok=True)
+          bundle=dst/'HazRob-ESP32-Tank-V3-UNRELEASED-Arduino.zip'
+          with zipfile.ZipFile(bundle,'w',zipfile.ZIP_DEFLATED) as z:
+              for p in sorted(root.iterdir()):
+                  if p.is_file() and p.suffix.lower() in ('.ino','.cpp','.h','.md'):
+                      z.write(p,arcname=f'ESP32-Tank/{p.name}')
+          for p in fw:
+              (dst/p.name).write_bytes(p.read_bytes())
+          manifest=dst/'SHA256SUMS.txt'
+          manifest.write_text(''.join(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}\n' for p in sorted(dst.iterdir()) if p.is_file() and p.name!='SHA256SUMS.txt'))
+          print('UNRELEASED candidate artifacts:',[p.name for p in dst.iterdir()])
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-ESP32-Tank-V3-UNRELEASED-firmware-candidate
+          path: unreleased-firmware/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Firmware compile checkpoint
         run: |
