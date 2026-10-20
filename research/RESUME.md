@@ -1,3 +1,25 @@
+# CURRENT CHECKPOINT — 2026-10-20: G2-05 UCI308 TEN-TECHNIQUE AUDIT COMPLETE
+
+**STATUS**: 80/80 original G1 software research prototype tests PASS (1261 baseline tests). G2 across FIVE 10-ID batches: **50/80 distinct IDs reviewed**, 32 external-sensor signal/metadata operations (one: 02.6 numeric-only with chemically NONCOMPLIANT logRs input), 17 scientifically blocked and 1 theoretical-only. **Tank MQ8 independently calibrated G3 = 0/80**. All work confined to `HazRob/HazRob-Tank/research/`, no Android/ESP32/production ChemCore modification.
+
+**G2-05 ten IDs**: 02.6,02.8,05.4,05.5,05.6,05.7,08.8,08.9,08.10,08.11. Official **UCI308** DOI 10.24432/C5BG7G (CC BY 4.0; Ziyatdinov & Fonollosa), SHA256 `7b062960dbef1a9e8aefc62bc7dbac09bdadb8cbb40793cf2b8e122da1862f90`. 58 REAL external lab exposure experiments, 16 sensors each, 7500 raw values/channel = 928 original sensor records / 6,960,000 raw sensor readings, five measurement time batches. 12 classes of pure acetone, pure ethanol, mixtures and air. **Gas component labels are vol.% liquid dilutions in water, NOT headspace ppm**. Device is not Tank MQ8; dR signal is not verified log(Rs/R0).
+
+**EVIDENCE**: source-schema audit https://github.com/HazRob/HazRob-Tank/actions/runs/39435016417. Complete G2-05 experiment SUCCESS https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553 at SHA `6db703dd856c07544f8f96efd8af4f01211bedfd`; 13/13 synthetic protocol checks passed, original archive SHA checked, raw-source values validated, five leave-one-time-batch-out folds completed, full Actions artifact #12272830172. Numerical-only: 02.6 on 58 3D raw dR trajectories but **NOT physically eligible** for log-Rs analytical claims; 08.8 mixture suspicion and 08.9/08.10 on 20 source mixture exposures each. **IMPORTANT NEGATIVE RESULT**: 08.8 fixed threshold sensitivity 6/20=30%, pure-source specificity 14/30=46.7% (16/30 false mixture flags). Not operationally reliable; do not silently tune threshold on test fold. Six blocked for missing source provenance or paired interference or true gas ppm and MQ R0. No concentrations validated.
+
+**PERMANENT RECORDS**:
+- Arabic full G2-05 report: `research/G2_REAL_DATA_BATCH05_AR.md`
+- Machine-readable numeric result: `research/benchmarks/results/uci308_g2_batch05_2026-10-20.json`
+- Source code/tests: `research/benchmarks/uci308_g2_batch05_v1.py` / `test_uci308_g2_batch05_v1.py`
+- Canonical multi-batch counts: `research/PROGRESS_80.json`; STATUS_LEDGER.md v2.4; BATCH_RESULTS_80.md; REFERENCE_BENCHMARK_INVENTORY.md updated.
+
+**UNIQUE EXPOSURES (no double counting)**: UCI1081 90 + UCI270 13910 + UCI308 58 = 14,058 external-source exposure records. UCI224 must NOT be added because same experiment as UCI270. These are source exposure ROWS, not Tanks and not all temporal scalar readings.
+
+**NEXT G2-06 PROPOSED TEN DISTINCT UNREVIEWED IDs**: 08.1,08.2,08.3,08.4,08.5,08.6,08.7,09.1,09.2,09.3 (verify none in PROGRESS_80.json previously). Before testing review actual module requirements. UCI308 has a rich time axis but ONLY 58 exposures; it lacks wind direction, robot pose, GPS and physically validated ppm. Do not claim CNN/TCN/GNN trained if a module is only a toy baseline. If a technique requires fields absent in source, mark blocked with exact missing fields and pursue more suitable source (e.g. UCI309 turbulent mix source), preserving sample grouping and original licenses. Continue in sets of ten only. Following G2-06, 20 remaining IDs.
+
+**RECOVERY ORDER**: top of RESUME.md → PROGRESS_80.json → G2_REAL_DATA_BATCH05_AR.md → benchmarks/results/uci308_g2_batch05_2026-10-20.json → CI #39435979553 → REFERENCE_BENCHMARK_INVENTORY.md → EXECUTION_PLAN_80_AR.md. Do not replay completed G2-05 and double-count data. Keep G1/G2/G3 conceptually separate.
+
+---
+
 # CURRENT CHECKPOINT — 2026-10-19: G2-04 TEN-TECHNIQUE UCI270 CHRONOLOGICAL DRIFT EVIDENCE COMPLETE
 
 **SUMMARY AND TRUTH CONDITIONS:** Initial G1 remains 80/80 unit gates PASS (1,261 original software cases); G2 has now reviewed **40 distinct technique IDs** across FOUR ten-ID batches. Of these, **28** had an operation on authentic external-source experimental records or their metadata (G2-04: seven numeric sensor-derived operations plus 07.1 source temporal metadata split), **11** cannot be scientifically exercised due absent physical/source fields or multiple devices (G2-04: 07.2), and **1** is theoretical resource arithmetic only (G2-04: 07.10). This G2 reviewed count is NOT 40 validated operational algorithms. **Tank MQ8 G3 independently calibrated scientific validation = 0/80.** No APK/ESP32 firmware/production ChemCore modifications.
