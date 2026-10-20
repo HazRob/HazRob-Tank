@@ -99,6 +99,26 @@ def main():
     section("الحالة","12-status",scroll=True)
     section("الإعدادات","13-settings",scroll=True)
     section("القيادة","14-driving-return",scroll=True)
+    if tap_button("المطور", scroll=True):
+        capture("15-developer-gate")
+        try:
+            pin_code = re.search(r'DEVELOPER_PIN\s*=\s*"([0-9]+)"', Path("source/app/src/main/java/com/servoc/app/auth/RoleGate.java").read_text())
+            tree, _ = view()
+            inputs = [node for node in tree.iter("node") if node.attrib.get("class") == "android.widget.EditText"] if tree is not None else []
+            if pin_code and inputs:
+                p = bounds_center(inputs[0].attrib.get("bounds", ""))
+                if p:
+                    adb("shell", "input", "tap", str(p[0]), str(p[1]))
+                    adb("shell", "input", "text", pin_code.group(1))
+                    if tap_button("دخول"):
+                        capture("16-developer-default")
+                        section("التجارب", "17-developer-experiments")
+                        section("المختبر", "18-developer-lab")
+                        section("معايرة R0", "19-developer-r0")
+                        section("الاتصال", "20-developer-network")
+                        section("المكتبة", "21-developer-library")
+        except Exception as exc:
+            LOG.append({"developer_view_note": str(exc)[:200]})
     (OUT/"capture-log.json").write_text(json.dumps({"device":adb("shell","getprop","ro.product.model").strip(),
        "notes":["Real Android Views rendered on emulator from V2 source.",
                 "Simulator-only bypass of first-run SAF folder selection; original screens otherwise unchanged.",
