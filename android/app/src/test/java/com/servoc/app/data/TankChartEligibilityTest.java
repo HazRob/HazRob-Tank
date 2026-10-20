@@ -32,6 +32,24 @@ public final class TankChartEligibilityTest {
         assertTrue(TankChartEligibility.hasData(1,s,null));
         assertFalse(TankChartEligibility.hasData(2,s,null));
     }
+    @Test public void allTwentySelectorsHaveAnEvidenceBackedEligibilityPath()throws Exception{
+        String env="{\\"temperature\\":22.0,\\"humidity\\":45.0,\\"pressure\\":1007.0}";
+        String mq="{\\"mq2\\":{\\"ratio\\":0.75},\\"mq3\\":{\\"ratio\\":1.20},\\"mq4\\":{\\"ratio\\":0.90}}";
+        String sound="{\\"sound\\":{\\"rms_v\\":0.07,\\"p2p_v\\":0.23}}";
+        SessionSeries.Series capture=series(env,env,sound,mq);
+        JSONObject result=new JSONObject(
+            "{\\"candidates\\":[{\\"label\\":\\"Test A\\",\\"posterior\\":0.65}],"+
+            "\\"screening_144\\":{\\"rows\\":[{\\"status\\":\\"SUPPORTED\\"}]},"+
+            "\\"gas_exposure_ppm\\":{\\"input_gate_passed\\":true,\\"percent_lfl\\":19.0}}");
+        for(int chart=0;chart<20;chart++)
+            assertTrue("Real-data selector "+chart+" missing a route",TankChartEligibility.hasData(chart,capture,result));
+    }
+    @Test public void missingEvidenceNeverOffersAnEmptyGraph()throws Exception{
+        for(int chart=0;chart<20;chart++)
+            assertFalse("Missing-data selector "+chart+" should be unavailable",
+                TankChartEligibility.hasData(chart,null,new JSONObject()));
+    }
+
     @Test public void chemcoreKindsRequireOwnEvidence()throws Exception{
         JSONObject cc=new JSONObject("{\"candidates\":[{\"label\":\"A\",\"posterior\":0.7}]}");
         assertTrue(TankChartEligibility.hasData(3,null,cc));
