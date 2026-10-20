@@ -148,6 +148,8 @@ Started 2026-10-20. Branch `feature/tank-v3-implementation`. All work in Tank re
 2. If unit tests pass, mark T3-023 CI VERIFIED (DEVICE PENDING) in `V3-EXECUTION-PLAN.md`, retain the 20-minute real-hardware test and saved-R0-to-ChemCore test as acceptance requirements.
 3. Do not merge to `develop` or call V3 a release without permanent signing and real servo/sensor/phone trials.
 
+- **V3-08 CI closure 2026-10-20:** [run 39487569876](https://github.com/HazRob/HazRob-Tank/actions/runs/39487569876) **SUCCESS** at `f43007c1557f26301612317bfab1d7263725dbad`: three fixed-window arithmetic R0 numeric tests, all other Android tests, approved-only SQLite check, APK debug assembly and ChemCore payload check. Release-signing stage still SKIPPED. Real 20-minute eight-sensor test remains NOT TESTED.
+
 ## Known constraints and risk register
 1. V3 debug diagnostic APK is signed with ephemeral debug key and cannot be assumed upgrade-compatible. Do not tell user to disable Play Protect.
 2. Persistent signing repository secrets not provisioned: `TANK_KEYSTORE_BASE64`, `TANK_KEY_ALIAS`, `TANK_KEYSTORE_PASSWORD`, `TANK_KEY_PASSWORD`. Administrator required; never upload secret content via chat.
