@@ -39,15 +39,15 @@
 | T3-002 | CI_VERIFIED_DEVICE_PENDING | V3 offline selection, service and RobotApi network hard gate; Android tests pass at 25d12dab, physical phone/network test pending |
 | T3-003 | FIRMWARE_COMPILED_HARDWARE_PENDING | No autonomous replay; neutral stop on link loss or 500ms timeout; ESP32 Arduino-2.0.17 full compile SUCCESS run 39476938209; actual servos and E-STOP untested |
 | T3-004 | PARTIAL_IMPLEMENTED | V3 strings and branding |
-| T3-005 | PARTIAL_IMPLEMENTED | RTL and inherited dark styling |
-| T3-006 | PARTIAL_IMPLEMENTED | Field session approval and UI |
-| T3-007 | CI_VERIFIED_DEVICE_PENDING | APPROVED-only site/session reports, history and graph scope; Android successful CI 39478645439; database/phone export test pending |
+| T3-005 | PARTIAL_CI_VERIFIED | Measurements, Reports, Status, R0 developer and now Settings use light cards; Android build pending latest status; real phone layout test still required |
+| T3-006 | CI_VERIFIED_DEVICE_PENDING | Session approval now requires completed READY USER capture with real samples and coherent terminal metadata; JVM guards passed CI 39480818787; real SQLite/device check pending |
+| T3-007 | CI_VERIFIED_DEVICE_PENDING | SQLite approved-only report scope before LIMIT, history/graphs and site/session exports; CI 39480963016 passed, no real phone export validation |
 | T3-008 | CI_VERIFIED_DEVICE_PENDING | Instant locally saved snapshot and independent log not linked to field sessions; Android CI 39477075161/39478645439 successful |
 | T3-009 | IMPLEMENTED_UNVERIFIED | Preserve fingerprint/curve/formula/algorithm computation; display all available computed ppm estimates and method sources; device test pending |
 | T3-010 | PARTIAL_IMPLEMENTED | Source/report evidence ranking and finite estimated ppm displayed; regulatory exceedance guards retained; physical/UI verification pending |
 | T3-011 | CI_VERIFIED_DEVICE_PENDING | Physical PDF snapshot at click implemented and Android CI successful; verify Arabic rendering / data units on phone |
 | T3-012 | PARTIAL_IMPLEMENTED | Existing PDF/Excel site/session writers, 20 real-source graph selector and large dialog compile; 20-case chart/export quality acceptance not done |
-| T3-013 | PENDING_DEVICE | ChemCore embedded in prior successful build; active runtime not device-tested |
+| T3-013 | CI_VERIFIED_DEVICE_PENDING | Stable snapshot install followed by molecular import and QSPR runtime rebuild at boot; Status shows active library/model counts, CI 39481514424 passed; runtime on phone pending |
 | T3-014 | ESP32_COMPILED_HARDWARE_PENDING | Firmware API4 Arduino core compile run 39476938209 plus Android static route test; Tank peripheral/network hardware test pending |
 | T3-015 | MAINTAIN_EXISTING | PM fourth subtab exists; no physical PM hardware |
 | T3-016 | CI_REGRESSION_PASSED_DEVICE_PENDING | Android unit and UI source contracts passed CI 39478645439; real Android scrolling/layout/offline/performance untested |
@@ -57,8 +57,8 @@
 | T3-020 | IMPLEMENTED_UNVERIFIED | Physical cards 2/row |
 | T3-021 | PARTIAL_IMPLEMENTED | Gray normal/red+white on valid instantaneous threshold crossing |
 | T3-022 | IMPLEMENTED_UNVERIFIED | Single icon top-left non-drive tabs |
-| T3-023 | IMPLEMENTED_UNVERIFIED | Fixed 20-minute user R0 capture and one confirm/save |
-| T3-024 | IMPLEMENTED_UNVERIFIED | Chart selector / modal full-size chart |
+| T3-023 | CI_VERIFIED_DEVICE_PENDING | 20-minute R0 flow plus automatic source preservation in historical series; CI 39481674270 passed; real 20-minute sensor/ppm tests pending |
+| T3-024 | IMPLEMENTED_CI_PENDING | 20 chart slots dynamically filtered for matching real MQ/environment/sound/chemcore evidence; old contract revised; latest CI pending, device plots pending |
 
 ## Resume after interruption — precise instructions
 1. Read **this file first** and [V3 backlog](../requirements/V3-ANDROID-BACKLOG-2026-10-20.md); inspect branch HEAD SHA and all commits since creation.
