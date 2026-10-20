@@ -45,8 +45,8 @@
 | T3-008 | CI_VERIFIED_DEVICE_PENDING | Instant locally saved snapshot and independent log not linked to field sessions; Android CI 39477075161/39478645439 successful |
 | T3-009 | IMPLEMENTED_UNVERIFIED | Preserve fingerprint/curve/formula/algorithm computation; display all available computed ppm estimates and method sources; device test pending |
 | T3-010 | PARTIAL_IMPLEMENTED | Source/report evidence ranking and finite estimated ppm displayed; regulatory exceedance guards retained; physical/UI verification pending |
-| T3-011 | CI_VERIFIED_DEVICE_PENDING | Physical PDF snapshot at click implemented and Android CI successful; verify Arabic rendering / data units on phone |
-| T3-012 | PARTIAL_IMPLEMENTED | Existing PDF/Excel site/session writers, 20 real-source graph selector and large dialog compile; 20-case chart/export quality acceptance not done |
+| T3-011 | CI_VERIFIED_DEVICE_PENDING | Physical snapshot PDF uses bidi-aware Arabic StaticLayout and independent numeric column; freezes original telemetry across SAF picker and Activity recreation, prevents overlapping export and excludes PM/uncalibrated dBA; [CI 39489391940](https://github.com/HazRob/HazRob-Tank/actions/runs/39489391940) SUCCESS. Real PDF output/print inspection still required |
+| T3-012 | PARTIAL_CI_VERIFIED_DEVICE_PENDING | Existing field PDF/XLSX and 20 eligible chart selectors; physical snapshot PDF Arabic RTL source implemented/tested CI 39489391940. Full report PDF/Excel readability and charts need physical Android acceptance |
 | T3-013 | CI_VERIFIED_DEVICE_PENDING | Stable snapshot install followed by molecular import and QSPR runtime rebuild at boot; Status shows active library/model counts, CI 39481514424 passed; runtime on phone pending |
 | T3-014 | ESP32_COMPILED_HARDWARE_PENDING | Firmware API4 Arduino core compile run 39476938209 plus Android static route test; Tank peripheral/network hardware test pending |
 | T3-015 | MAINTAIN_EXISTING | PM fourth subtab exists; no physical PM hardware |
@@ -55,7 +55,7 @@
 | T3-018 | BLOCKED_DEVICE | Android release installation and Play Protect diagnosis require stable keystore and physical target phone |
 | T3-019 | DEFERRED_CONDITIONAL | Research integration is not a V3 ship blocker |
 | T3-020 | IMPLEMENTED_UNVERIFIED | Physical cards 2/row |
-| T3-021 | PARTIAL_IMPLEMENTED | Gray normal/red+white on valid instantaneous threshold crossing |
+| T3-021 | PARTIAL_CI_VERIFIED_DEVICE_PENDING | Gray normal / red-and-white instantaneous threshold behavior; API4 preserves only explicitly calibrated dBA without inventing values from MAX4466 voltage, with JVM test [39489391940](https://github.com/HazRob/HazRob-Tank/actions/runs/39489391940) PASS. Physical limits for other measured channels and real sensor alerts still require validation |
 | T3-022 | IMPLEMENTED_UNVERIFIED | Single icon top-left non-drive tabs |
 | T3-023 | CI_VERIFIED_DEVICE_PENDING | Fixed 20-minute 5+3/3/3/3/3 ON calibration and **mean of three arithmetic 3-minute Rs window means per sensor**, accepted 2026-10-20 after scientific review. Single old/new kΩ confirmation and local ChemCore authority retained. Source and tests run [39487569876](https://github.com/HazRob/HazRob-Tank/actions/runs/39487569876) **SUCCESS** at `f43007c1557f26301612317bfab1d7263725dbad`; real eight-MQ 20-minute experiment and physical R0/PPM validity still pending. |
 | T3-024 | CI_VERIFIED_DEVICE_PENDING | All 20 report graph selectors have exercised data-backed eligibility routes plus explicit empty-data cases, tested CI 39485600871; real handset rendering, modal clarity and export reviews pending |
