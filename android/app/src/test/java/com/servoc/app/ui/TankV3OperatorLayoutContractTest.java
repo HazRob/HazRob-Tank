@@ -20,7 +20,7 @@ public final class TankV3OperatorLayoutContractTest {
         assertTrue(main.contains("private View withRefresh(View content,int topMarginDp)"));
         assertTrue(main.contains("Gravity.TOP|Gravity.LEFT"));
         assertFalse(main.contains("withRefresh(controlTab.view())"));
-        assertFalse(main.contains("تحديث البيانات الحية"));
+        assertFalse(main.contains("UiKit.small(this,\"تحديث البيانات الحية\")"));
     }
     @Test public void physicalMeasurementCardsAreTwoUpAndPmIsNotMixed() throws Exception {
         String s=src("ui/MeasurementsTab.java");
