@@ -79,8 +79,10 @@ class ReferenceProfile:
             low=max(c.minimum_ppm for c in curves.values())
             high=min(c.maximum_ppm for c in curves.values())
             grid=np.exp(np.linspace(np.log(low),np.log(high),n_grid))
-            prediction=np.asarray([[curves[s].log_ratio(float(c)) for s in self.sensor_instance_ids]
-                                   for c in grid])
+            # The grid was bounded before exp/ln; direct evaluation avoids
+            # floating endpoint overshoot (e.g. 100.00000000000004).
+            prediction=np.asarray([[curves[s].intercept+curves[s].slope*math.log(float(c))
+                                    for s in self.sensor_instance_ids] for c in grid])
             distance=np.mean((log_obs[:,None,:]-prediction[None,:,:])**2,axis=2)
             per_gas.append(np.min(distance,axis=1))
         return np.column_stack([log_obs]+[np.asarray(per_gas).T])
