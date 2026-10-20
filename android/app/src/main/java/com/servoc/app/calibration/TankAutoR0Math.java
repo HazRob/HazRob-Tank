@@ -28,17 +28,15 @@ public final class TankAutoR0Math {
         counts[sensor][window]++;
     }
     public int count(int sensor,int window){return counts[sensor][window];}
-    /** Arithmetic average of every valid Rs reading over all three on-powered capture windows. */
+    /** Arithmetic mean of three equal-duration window means, irrespective of telemetry density. */
     public double proposedR0(int sensor){
         if(sensor<0||sensor>=SENSOR_COUNT)return Double.NaN;
-        double total=0.0;
-        long sampleCount=0;
+        double totalWindowMeans=0.0;
         for(int w=0;w<WINDOWS;w++){
             if(counts[sensor][w]==0)return Double.NaN;
-            total+=sum[sensor][w];
-            sampleCount+=counts[sensor][w];
+            totalWindowMeans+=sum[sensor][w]/counts[sensor][w];
         }
-        double r=total/sampleCount;
+        double r=totalWindowMeans/WINDOWS;
         return Double.isFinite(r)&&r>0?r:Double.NaN;
     }
     public Map<String,Double> validProposals(){
