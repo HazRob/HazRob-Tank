@@ -19,6 +19,8 @@ import com.servoc.app.hardware.HazRobHardwareProfile;
 import com.servoc.app.models.ModelRuntimeRegistry;
 import com.servoc.app.models.MqDataScience76Catalog;
 import com.servoc.app.chemcore.library.ChemCoreLibraryManager;
+import com.servoc.app.chemcore.ChemCoreMolecularSeedImporter;
+import com.servoc.app.chemcore.ChemCoreQsprRuntimeRegistry;
 import com.servoc.app.ReleaseAudit;
 import org.json.JSONObject;
 import java.util.Locale;
@@ -128,7 +130,14 @@ public final class SettingsTab {
                 if(!c.updateAvailable){host.showToast("منظومة التحليل محدثة");return;}
                 if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())){host.showToast("أوقف القياس أو التحليل قبل التحديث");return;}
                 com.servoc.app.chemcore.library.ChemCoreLibraryStore.InstallResult r=libraryManager.install(c,ReleaseAudit.VERSION,false);
-                host.showToast(r.installed?"تم تحديث منظومة التحليل إلى "+r.version:"لم يتم تثبيت التحديث: "+r.reason);
+                if(r.installed){
+                    ChemCoreMolecularSeedImporter.Result seed=ChemCoreMolecularSeedImporter.importBestAvailable(scroll.getContext().getApplicationContext(),host.database());
+                    ChemCoreQsprRuntimeRegistry.Status qspr=ChemCoreQsprRuntimeRegistry.rebuild(host.database());
+                    host.database().putMeta("tank_v3_chemcore_seed_origin",seed.origin);
+                    host.database().putMeta("tank_v3_chemcore_qspr_status",qspr.summary());
+                    host.database().putMeta("tank_v3_chemcore_bootstrap",seed.available?"READY":"PARTIAL_NO_MOLECULAR_SEED");
+                    host.showToast("تم تحديث ChemCore "+r.version+" • QSPR "+qspr.enabledSensorModels+" نماذج");
+                }else host.showToast("لم يتم تثبيت التحديث: "+r.reason);
                 host.refreshAllTabs();
             }catch(Exception e){host.showToast("تعذر تحديث منظومة التحليل: "+e.getClass().getSimpleName());}
         });
