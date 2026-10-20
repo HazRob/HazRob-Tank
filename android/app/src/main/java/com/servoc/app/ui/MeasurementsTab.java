@@ -36,6 +36,7 @@ import com.servoc.app.calibration.SqliteCalibrationProvider;
 import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.chemical.TankChemicalEvidence;
 import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
+import com.servoc.app.chemcore.TankPpmEstimate;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 import com.servoc.app.chemcore.ChemCoreLabQuality;
 import com.servoc.app.data.ExperimentQueries;
@@ -643,7 +644,7 @@ public final class MeasurementsTab {
             topCandidate.setText("المرشح الأول\n"+chemical);topCandidate.setTextColor(INFO);
             confidence.setText("الثقة\n"+pct(post)+" • Δ "+pct(margin));confidence.setTextColor(Double.isFinite(post)&&post>=0.7?GOOD:Double.isFinite(post)&&post>=0.4?WARN:BAD);
             evidence.setText("الدليل\n"+tier+" • "+outcome);evidence.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
-            boolean reportable=p.optBoolean("ppm_reportable",false);double ppm=p.optDouble("ppm",Double.NaN);String ppmText=Double.isFinite(ppm)?String.format(Locale.US,"%.2f ppm • %s",ppm,reportable?"قابل للتقرير":"تقدير حسابي غير مرجعي"):"لا توجد نتيجة رقمية من الطرق المتاحة";quantitative.setText("PPM — نتائج الطرق المتاحة\n"+ppmText);quantitative.setTextColor(reportable?GOOD:INFO);
+            TankPpmEstimate.Result result=TankPpmEstimate.from(p);boolean reportable=result.reportable;double ppm=result.ppm;String ppmText=result.available()?String.format(Locale.US,"%.2f ppm • %s",ppm,result.qualityAr()):"لا توجد نتيجة رقمية من الطرق المتاحة";quantitative.setText("PPM — نتائج الطرق المتاحة\n"+ppmText);quantitative.setTextColor(reportable?GOOD:INFO);
             JSONObject exposure=p.optJSONObject("gas_exposure_ppm");
             if(reportable&&Double.isFinite(ppm)&&exposureExceeded(exposure))exposureStyle(quantitative,true);
             else quantitative.setTypeface(Typeface.DEFAULT,Typeface.NORMAL);
@@ -690,8 +691,8 @@ public final class MeasurementsTab {
             lastRenderedAt=now;
             String id=host.lastMeasurementSessionId();JSONObject p=id==null||id.isEmpty()?null:decisions.latestPayloadForSession(id);candidateList.removeAllViews();screeningList.removeAllViews();tracking.setText(host.trackingTargetId()>=0?"التتبع • "+host.trackingTargetName()+" (#"+host.trackingTargetId()+") • فرضية مشغل":"التتبع • لا يوجد");
             if(p==null){startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");exposureStyle(safetyCard,false);technical.setText("—");return;}
-            String chemical=p.optString("chemical","—"),outcome=p.optString("outcome","—"),tier=p.optString("evidence_tier","—");double post=p.optDouble("top_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN);boolean ppmOk=p.optBoolean("ppm_reportable",false);double ppm=p.optDouble("ppm",Double.NaN);
-            decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+" • Δ "+pct(margin)+" • "+tier+(Double.isFinite(ppm)?" • "+String.format(Locale.US,"%.2f ppm %s",ppm,ppmOk?"مرجعي":"تقديري"):" • لا يوجد رقم PPM محسوب"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
+            String chemical=p.optString("chemical","—"),outcome=p.optString("outcome","—"),tier=p.optString("evidence_tier","—");double post=p.optDouble("top_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN);TankPpmEstimate.Result estimate=TankPpmEstimate.from(p);boolean ppmOk=estimate.reportable;double ppm=estimate.ppm;
+            decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+" • Δ "+pct(margin)+" • "+tier+(estimate.available()?" • "+String.format(Locale.US,"%.2f ppm • %s",ppm,estimate.qualityAr()):" • لا يوجد رقم PPM محسوب"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
             JSONObject s=p.optJSONObject("screening_144");screeningCard.setText("فحص 144 • "+(s==null?"غير متاح":s.optString("state","—")+" • "+s.optInt("evaluated_count",0)+"/"+s.optInt("target_count",144)));
             JSONObject g=p.optJSONObject("gas_exposure_ppm");safetyCard.setText(g==null?"السلامة والتعرض • محجوب/غير متاح":"السلامة والتعرض • "+g.optString("toxicity_state",g.optString("state","—"))+" • الاشتعال "+g.optString("flammability_state","—")+" • أولوية "+fmt(g.optDouble("hazard_priority_percent",Double.NaN))+"%");
             exposureStyle(safetyCard,exposureExceeded(g));
