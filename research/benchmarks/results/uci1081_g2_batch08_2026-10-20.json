@@ -1,0 +1,464 @@
+{
+  "reviewed_ids": [
+    "04.1",
+    "04.9",
+    "05.2",
+    "05.3",
+    "05.8",
+    "06.7",
+    "09.4",
+    "09.5",
+    "09.6",
+    "10.1"
+  ],
+  "blocked": {
+    "04.1": [
+      "matched MQ sensor curves with documented R0 protocol",
+      "independently controlled concentration and Rs/R0"
+    ],
+    "04.9": [
+      "matched MQ curves and R0",
+      "candidate-blind complete physics-plus-ML implementation"
+    ],
+    "05.2": [
+      "verified MQ Rs/R0 and at least three calibration levels with independent validation"
+    ],
+    "05.3": [
+      "at least four distinct positive single-gas levels",
+      "MQ Rs/R0 provenance"
+    ],
+    "06.7": [
+      "gas/concentration/condition-specific calibrated sensor detection power"
+    ],
+    "09.4": [
+      "measured waypoint coordinates with calibrated uncertainty/risk",
+      "actual sampling outcomes"
+    ],
+    "09.5": [
+      "time-synchronized robot pose and gas response",
+      "sensor transport lag and spatial ground truth"
+    ],
+    "09.6": [
+      "synchronized obstacle/cliff/localization/communication telemetry and fault outcomes"
+    ],
+    "10.1": [
+      "held-out sensor detection and non-detection likelihoods",
+      "validated multi-sensor dependence model"
+    ]
+  },
+  "external_numeric_ids": [
+    "05.8"
+  ],
+  "source_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "source": "UCI1081",
+  "05.8": [
+    {
+      "heldout_ppb": 50,
+      "sensor": "TGS2603",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.01496191669777593,
+      "threshold_source_units": 0.3896482500933279,
+      "blank_flagged": 1,
+      "exposure_flagged": 1,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 50,
+      "sensor": "TGS2630",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.0671440619337712,
+      "threshold_source_units": 0.14895531419868663,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 50,
+      "sensor": "TGS813",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.09134500036955567,
+      "threshold_source_units": 1.620439167775334,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 50,
+      "sensor": "TGS822",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.08398916006109576,
+      "threshold_source_units": 1.1517216468499538,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 50,
+      "sensor": "MQ135",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.11161587704161251,
+      "threshold_source_units": 1.3469017977915039,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 50,
+      "sensor": "MQ137",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.14059681977531427,
+      "threshold_source_units": 1.1093279593259426,
+      "blank_flagged": 4,
+      "exposure_flagged": 4,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 50,
+      "sensor": "MQ138",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.03715857281837268,
+      "threshold_source_units": 0.559399281544882,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 50,
+      "sensor": "2M012",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.10694750043631816,
+      "threshold_source_units": 1.3004550013089544,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 50,
+      "sensor": "VOCS-P",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.11487271964932651,
+      "threshold_source_units": 1.5930889922813125,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 50,
+      "sensor": "2SH12",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.033490500329020706,
+      "threshold_source_units": 3.820215999012938,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "TGS2603",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.014179052619695372,
+      "threshold_source_units": 0.38965799119241945,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "TGS2630",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.06734386039715938,
+      "threshold_source_units": 0.15207258547518876,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "TGS813",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.08659030863867644,
+      "threshold_source_units": 1.626200092582696,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "TGS822",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.07695929293049399,
+      "threshold_source_units": 1.1431445454581488,
+      "blank_flagged": 1,
+      "exposure_flagged": 1,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "MQ135",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.10777518942132396,
+      "threshold_source_units": 1.3478172349306385,
+      "blank_flagged": 0,
+      "exposure_flagged": 1,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "MQ137",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.16550821722265133,
+      "threshold_source_units": 1.2254371516679543,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "MQ138",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.032535720265891445,
+      "threshold_source_units": 0.5697678392023255,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "2M012",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.10522572757143497,
+      "threshold_source_units": 1.3012188493809715,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "VOCS-P",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.11352928266574605,
+      "threshold_source_units": 1.595104514663905,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 100,
+      "sensor": "2SH12",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.029100042651938367,
+      "threshold_source_units": 3.8252457053775175,
+      "blank_flagged": 0,
+      "exposure_flagged": 2,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "TGS2603",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.014162821844493773,
+      "threshold_source_units": 0.3084032011331854,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "TGS2630",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.07285813356872824,
+      "threshold_source_units": 0.14152559929381542,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "TGS813",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.08254551090190487,
+      "threshold_source_units": 1.1465051339609518,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "TGS822",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.07786193631301773,
+      "threshold_source_units": 1.15748997560572,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "MQ135",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.10189458963850274,
+      "threshold_source_units": 1.3445546022488415,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "MQ137",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "increasing",
+      "sigma": 0.1737943620967325,
+      "threshold_source_units": 1.2548580862901977,
+      "blank_flagged": 0,
+      "exposure_flagged": 4,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "MQ138",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.03617233546658751,
+      "threshold_source_units": 0.5743163269335709,
+      "blank_flagged": 1,
+      "exposure_flagged": 1,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "2M012",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.11313997341364171,
+      "threshold_source_units": 0.6432009130924086,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "VOCS-P",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.11963016005259308,
+      "threshold_source_units": 0.8942636865088878,
+      "blank_flagged": 0,
+      "exposure_flagged": 0,
+      "quantifiable": 0
+    },
+    {
+      "heldout_ppb": 200,
+      "sensor": "2SH12",
+      "status": "DESCRIPTIVE_BASELINE_PROXY_ONLY",
+      "train_exposures": 60,
+      "test_exposures": 30,
+      "direction": "decreasing",
+      "sigma": 0.033901788821694,
+      "threshold_source_units": 3.814186300201584,
+      "blank_flagged": 0,
+      "exposure_flagged": 8,
+      "quantifiable": 0
+    }
+  ],
+  "Tank_G3_accepted": 0,
+  "restrictions": [
+    "One baseline summary per exposure, not serial samples counted as independent blanks.",
+    "Baseline is a source-protocol proxy; no independently certified blank gas, no independent day/device IDs.",
+    "Thresholds remain source units. Not formal LOD/LOQ, gas identity, concentration, or certified false alarm rate.",
+    "UCI309 DOES provide Rs conversion and GCMS-estimated mean ppm, but TGS sensors are not Tank MQ sensors.",
+    "UCI309 has only 3 positive levels per gas: 05.3 requires >=4. Do not count duplicate replicates as levels.",
+    "UCI308 dR=(R-Rbaseline)/Rbaseline; 1+dR is a baseline ratio, not manufacturer MQ calibration R0.",
+    "Physical blockers concern present inputs and intended Tank endpoints; reopen when matching data exists."
+  ],
+  "_verification": {
+    "full_completed_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39496384153",
+    "source_branch_sha": "7fc5f32acd7400b8d90d8712f68bd11b343931df",
+    "protocol_tests_passed": 9,
+    "record_origin": "GitHub Actions stdout; numeric source baseline proxy only",
+    "external_sensor_array": true,
+    "Tank_g3_confirmed": 0
+  }
+}
