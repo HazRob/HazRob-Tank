@@ -82,6 +82,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     @Override public void onCreate(Bundle b){
         super.onCreate(b);HazRobStorageBootstrap.ensure(this);com.servoc.app.chemcore.library.ChemCoreEmbeddedStableInstaller.ensureInstalled(getApplicationContext());prefs=getSharedPreferences("servoc",MODE_PRIVATE);ManualR0Calibration.load(prefs);userLibrary=new HazRobUserLibrary(this);robotApi=new RobotApi(prefs.getString("robot","192.168.4.1"));cameraApi=new CameraApi(prefs.getString("camera","192.168.4.2"));flashMode="on".equals(prefs.getString("flash_mode","off"))?"on":"off";trackingTarget=prefs.getInt("tracking_id",-1);trackingName=prefs.getString("tracking_name","");db=new ExperimentsDb(this);telemetryRecorder=new TelemetryRecorder(db);try{phoneAlertTone=new PhoneAlertTone();}catch(Exception ignored){phoneAlertTone=null;}loadSensorBaselines();
         String mode=getIntent()==null?null:getIntent().getStringExtra("connection_mode");if(mode!=null&&!mode.trim().isEmpty())prefs.edit().putString("connection_mode",mode).apply();
+        RobotApi.setTankOffline(isOffline());
         workers.execute(()->{ChemicalSeedBootstrap.ensureNiosh(getApplicationContext(),db);ExposureSeedBootstrap.ensureOshaZ1(getApplicationContext(),db);ui.post(this::refreshAllTabs);});
         enter();
     }
