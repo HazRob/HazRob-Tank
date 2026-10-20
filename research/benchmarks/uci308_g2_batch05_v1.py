@@ -42,7 +42,6 @@ def parse_features(path):
                     raise ValueError("short or malformed feature row")
                 try:
                     exp=int(line["exp"])
-                    values=[float(line[k]) for k in SENSORS if False] # keep shape determined below
                     vector=[float(line["S%d_max"%i]) for i in range(1,17)]
                     ace=float(line["ace_conc"]);eth=float(line["eth_conc"])
                 except (TypeError,ValueError) as e:
