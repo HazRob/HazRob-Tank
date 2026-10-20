@@ -1,5 +1,5 @@
 # ChemCore status ledger
-Version 2.5 | 2026-10-20 | G1 80/80 PASS (1261 historical unit cases); G2 60 reviewed IDs across 6 batches: 39 external-source numeric/metadata operations (some physically noncompliant), 19 blocked, 2 theoretical; three unique UCI source collections = 14,058 external exposure records. Tank MQ8 G3=0/80. See G2_REAL_DATA_BATCH06_AR.md and PROGRESS_80.json.
+Version 2.6 | 2026-10-20 | G1 80/80 PASS (1261 historical unit cases); G2 60 distinct IDs reviewed across 6 batches. Fourth independent source UCI309 (180 new exposures) audited as additional evidence for SAME 10 G2-06 IDs; no duplicate technique count. Total unique external exposures 14238; Tank G3 0/80.
 
 | ID | Technique | Status | Evidence |
 |---|---|---|---|
@@ -137,3 +137,7 @@ IDs **08.1–08.7; 09.1–09.3** reviewed, all ten distinct IDs. [Detailed Arabi
 - Source as previous UCI308: 58 real exposures ×16 source sensors ×7500 original points = 6,960,000 authentic scalar measurements; these 58 are **already counted in prior G2-05**, and therefore do NOT increase the unique exposure count.
 
 **Status restriction:** all G1 original software status remains PROTOTYPE/PARTIAL_PROTOTYPE. None are scientifically certified Tank techniques (G3 remains 0/80). Preserve `research/PROGRESS_80.json` per-ID status and the exact CI SHA.
+
+## Additional UCI309 measured external data — 2026-10-20 (not additional 10 G2 IDs)
+
+Ten IDs 08.1–08.7 and 09.1–09.3 were independently rerun with verified UCI309 dataset (DOI 10.24432/C5JS5P; SHA256 5e9b707e7a44b3dcaf39b62bb46597403fcdd98ec89814b15e4876694db5f41e). [Full report](G2_UCI309_EXTENSION_AR.md), [success](https://github.com/HazRob/HazRob-Tank/actions/runs/39495144282), [JSON metrics](benchmarks/results/uci309_g2_batch06_2026-10-20.json). 08.5 CO-vs-methane (secondary source active) leave-one-entire-gas-flow-configuration-out, 144 source exposures: early 120 correct, late 127 correct, equal blend 122 correct (**temporal blend worse than late-only**). CNN/TCN/GRU/GNN forward operators remain UNTRAINED numeric baselines. Spatial mapping/localization 09.2/09.3 remain BLOCKED because no moving robot positions. UCI309 adds 180 *unique source exposures*, not 360 raw+downsampled experiments; external-source total 14238, four distinct datasets. **No new G3 qualifications**, no production changes.
