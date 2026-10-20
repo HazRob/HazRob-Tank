@@ -23,13 +23,13 @@ public final class ChemCoreAnalysisPresenter {
 
     public static String summary(JSONObject p){
         if(p==null)return "لا توجد نتيجة ChemCore مرتبطة بجلسة مكتملة.";
-        boolean ppm=p.optBoolean("ppm_reportable",false);double value=p.optDouble("ppm",Double.NaN);
+        TankPpmEstimate.Result estimate=TankPpmEstimate.from(p);boolean ppm=estimate.reportable;double value=estimate.ppm;
         StringBuilder s=new StringBuilder();
         s.append("Session: ").append(p.optString("session_id","—"));
         s.append("\nOutcome: ").append(p.optString("outcome","—")).append(" • Tier: ").append(p.optString("evidence_tier","—"));
         s.append("\nTop candidate: ").append(p.optString("chemical","—"));
         s.append("\nPPM: ");
-        if(Double.isFinite(value))s.append(fmt(value)).append(ppm?" ppm • REPORTABLE":" ppm • COMPUTED ESTIMATE (WITHHELD from regulatory conclusions)");
+        if(estimate.available())s.append(fmt(value)).append(ppm?" ppm • REPORTABLE":estimate.screening?" ppm • CANDIDATE SCREENING FIT (NOT REGULATORY)":" ppm • COMPUTED ESTIMATE (WITHHELD from regulatory conclusions)");
         else s.append("WITHHELD • ").append(p.optString("ppm_withheld_reason","no_ppm_estimate_available"));
         s.append("\nPosterior: ").append(pct01(p.optDouble("top_posterior",Double.NaN)));
         s.append(" • runner-up: ").append(pct01(p.optDouble("runner_up_posterior",Double.NaN)));
