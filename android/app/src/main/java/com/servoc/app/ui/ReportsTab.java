@@ -17,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
+import com.servoc.app.chemcore.TankPpmEstimate;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 import com.servoc.app.data.ExperimentQueries;
 import com.servoc.app.data.SessionSeries;
@@ -181,8 +182,8 @@ public final class ReportsTab {
 
         if(cc==null){decisionCard.setText("القرار\nلا توجد نتيجة ChemCore");decisionCard.setTextColor(WARN);qualityCard.setText("الجودة\n—");safetyCard.setText("السلامة\nمحجوبة");candidateCard.setText("المرشحون • لا توجد نتيجة مرتبطة");}
         else{
-            String outcome=cc.optString("outcome","—"),tier=cc.optString("evidence_tier","—"),chemical=cc.optString("chemical","—");double post=cc.optDouble("top_posterior",Double.NaN),margin=cc.optDouble("posterior_separation_margin",Double.NaN),ood=cc.optDouble("ood_score",Double.NaN),entropy=cc.optDouble("normalized_entropy",Double.NaN),ppm=cc.optDouble("ppm",Double.NaN);boolean ppmOk=cc.optBoolean("ppm_reportable",false);
-            decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+"\n"+tier+(Double.isFinite(ppm)?" • "+fmt(ppm)+" ppm "+(ppmOk?"معتمد للتقرير":"تقدير حسابي"):" • لا توجد نتيجة PPM رقمية"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
+            String outcome=cc.optString("outcome","—"),tier=cc.optString("evidence_tier","—"),chemical=cc.optString("chemical","—");double post=cc.optDouble("top_posterior",Double.NaN),margin=cc.optDouble("posterior_separation_margin",Double.NaN),ood=cc.optDouble("ood_score",Double.NaN),entropy=cc.optDouble("normalized_entropy",Double.NaN);TankPpmEstimate.Result ppmResult=TankPpmEstimate.from(cc);
+            decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+"\n"+tier+(ppmResult.available()?" • "+fmt(ppmResult.ppm)+" ppm • "+ppmResult.qualityAr():" • لا توجد نتيجة PPM رقمية"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
             JSONObject q=first(cc.optJSONObject("measurement_quality"),cc.optJSONObject("lab_quality"));int valid=q==null?-1:q.optInt("valid_mq_channels",q.optInt("valid_channels",-1));String qstate=q==null?"—":q.optString("state",q.optString("overall_state",q.optBoolean("capture_ready",false)?"READY":"—"));qualityCard.setText("الجودة • "+qstate+"\nMQ "+(valid>=0?valid+"/8":"—")+" • OOD "+fmt(ood)+"\nEntropy "+fmt(entropy)+" • Δ "+pct(margin));qualityCard.setTextColor(valid>=6?GOOD:WARN);
             JSONObject gx=cc.optJSONObject("gas_exposure_ppm");if(gx==null||!gx.optBoolean("input_gate_passed",false)){safetyCard.setText("السلامة\nالتفسير الكمي محجوب\n"+(gx==null?"لا توجد نتيجة M4":"بوابة القياس لم تجتز"));safetyCard.setTextColor(WARN);}else{double hp=gx.optDouble("hazard_priority_percent",Double.NaN),lfl=gx.optDouble("percent_lfl",Double.NaN);safetyCard.setText("السلامة • "+gx.optString("hazard_symbols","")+gx.optString("toxicity_state",gx.optString("state","—"))+"\nأولوية "+pct100(hp)+" • LFL "+pct100(lfl));safetyCard.setTextColor((Double.isFinite(hp)&&hp>=100)||(Double.isFinite(lfl)&&lfl>=100)?BAD:WARN);}
             candidateCard.setText(candidateSummary(cc));
