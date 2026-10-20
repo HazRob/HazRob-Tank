@@ -225,11 +225,12 @@ public final class DeveloperR0Tab {
             if(sample==null||!sample.optBoolean("ok",sample.optBoolean("valid",false)))continue;
             double rs=sample.optDouble("rs",Double.NaN);
             if(!Double.isFinite(rs)||rs<=0)continue;
-            if(sample.has("scan_cycle")){
-                long cycle=sample.optLong("scan_cycle",-1);
-                if(cycle<0||cycle==lastCycles[i])continue;
-                lastCycles[i]=cycle;
-            }
+            // ESP32-Tank emits a unique scan_cycle per 8-channel ADC scan.
+            // Count each real sensor sample once; never turn a stale UI snapshot
+            // into hundreds of artificial samples during a 3-minute capture.
+            long cycle=sample.optLong("scan_cycle",-1L);
+            if(cycle<=0||cycle<=lastCycles[i])continue;
+            lastCycles[i]=cycle;
             autoSampler.accept(i,window,rs);
         }
     }
