@@ -24,6 +24,7 @@ import com.servoc.app.field.FieldSessionRepository;
 import com.servoc.app.SiteSummaryExportActivity;
 import java.util.ArrayList;
 import com.servoc.app.report.AnalyticalCharts;
+import com.servoc.app.report.TankChartEligibility;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -187,16 +188,15 @@ public final class ReportsTab {
             candidateCard.setText(candidateSummary(cc));
         }
 
-        StringBuilder t=new StringBuilder("المرجع والتتبّع\n");t.append("Experiment #").append(r.id).append(" • UTC ").append(safe(r.ts)).append("\nProtocol: ").append(safe(r.protocol)).append("\nSession: ").append(sid.isEmpty()?"—":sid).append("\nField Session: ").append(fieldReport?fieldSessionId:"—").append("\nMQ Power: ").append(mqOn?"ON":"OFF");if(relay!=null&&mqOn)t.append(" • ").append(relay.optLong("power_ms",0)).append(" ms");if(e!=null&&e.optBoolean("ok",false))t.append("\nENV: ").append(fmt(e.optDouble("temperature",Double.NaN))).append(" °C • ").append(fmt(e.optDouble("humidity",Double.NaN))).append(" %RH • ").append(fmt(e.optDouble("pressure",Double.NaN))).append(" hPa");t.append("\nStored analytical rows: ").append(a.optJSONArray("results")==null?0:a.optJSONArray("results").length());if(cc!=null){t.append("\n\n").append(ChemCoreAnalysisPresenter.summary(cc));t.append("\n\n").append(ChemCoreAnalysisPresenter.equationsAndResiduals(cc,6));}technical.setText(t.toString());refreshAvailableCharts(seriesOk,cc!=null);
+        StringBuilder t=new StringBuilder("المرجع والتتبّع\n");t.append("Experiment #").append(r.id).append(" • UTC ").append(safe(r.ts)).append("\nProtocol: ").append(safe(r.protocol)).append("\nSession: ").append(sid.isEmpty()?"—":sid).append("\nField Session: ").append(fieldReport?fieldSessionId:"—").append("\nMQ Power: ").append(mqOn?"ON":"OFF");if(relay!=null&&mqOn)t.append(" • ").append(relay.optLong("power_ms",0)).append(" ms");if(e!=null&&e.optBoolean("ok",false))t.append("\nENV: ").append(fmt(e.optDouble("temperature",Double.NaN))).append(" °C • ").append(fmt(e.optDouble("humidity",Double.NaN))).append(" %RH • ").append(fmt(e.optDouble("pressure",Double.NaN))).append(" hPa");t.append("\nStored analytical rows: ").append(a.optJSONArray("results")==null?0:a.optJSONArray("results").length());if(cc!=null){t.append("\n\n").append(ChemCoreAnalysisPresenter.summary(cc));t.append("\n\n").append(ChemCoreAnalysisPresenter.equationsAndResiduals(cc,6));}technical.setText(t.toString());refreshAvailableCharts(ss,cc);
     }
 
     /** Only expose diagrams backed by the selected record's actual persisted evidence. */
-    private void refreshAvailableCharts(boolean seriesOk,boolean chemOk){
+    private void refreshAvailableCharts(SessionSeries.Series series,JSONObject chemcore){
         chartGeneration++; // invalidate any chart drawing for the previous record
         availableCharts.clear();List<String> labels=new ArrayList<>();
         for(int i=0;i<CHARTS.length;i++){
-            boolean needsChem=i>=3&&i<=10;
-            if((needsChem&&chemOk)||(!needsChem&&seriesOk)){
+            if(TankChartEligibility.hasData(i,series,chemcore)){
                 availableCharts.add(i);labels.add(CHARTS[i]);
             }
         }
@@ -226,7 +226,7 @@ public final class ReportsTab {
                 String sid=r.sessionId==null?"":r.sessionId.trim();
                 JSONObject cc=sid.isEmpty()?null:decisions.latestPayloadForSession(sid);
                 boolean needsChem=pos>=3&&pos<=10;
-                boolean ready=needsChem?cc!=null:ss!=null&&ss.usable();
+                boolean ready=TankChartEligibility.hasData(pos,ss,cc);
                 if(!ready){
                     scroll.post(()->{if(chartGeneration!=request)return;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("بيانات الرسم غير متوفرة لهذه الجلسة");});
                     return;
