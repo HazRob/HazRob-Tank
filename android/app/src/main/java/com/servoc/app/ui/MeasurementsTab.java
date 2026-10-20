@@ -133,7 +133,7 @@ public final class MeasurementsTab {
         content.setPadding(UiKit.dp(c,10),UiKit.dp(c,12),UiKit.dp(c,10),UiKit.dp(c,18));
         scroll.addView(content);
         content.addView(UiKit.title(c,"🔎 البحث والتتبع"),UiKit.full(c));
-        content.addView(card("اختر مادة من المكتبة أو انتقل إلى مرشحي ChemCore. اضغط على المادة للتحقق من دليل PPM والبصمة والمنحنى والتعريف الجزيئي. وجود معرف PubChem أو منحنى لا يثبت صحة PPM."),UiKit.full(c));
+        content.addView(card("اختر مادة من المكتبة أو مرشحي ChemCore. البصمات والمنحنيات والمعادلات والخوارزميات المتاحة تظل فعالة للحساب والتقدير؛ اضغط على المادة لمعرفة الأساليب المتوفرة. تختلف درجة الاعتماد وفق مصدر البيانات."),UiKit.full(c));
         chemicalSearch=UiKit.input(c,"");
         chemicalSearch.setHint("بحث بالاسم أو رقم CAS أو الصيغة");
         chemicalSearch.setSingleLine(true);
