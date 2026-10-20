@@ -25,4 +25,12 @@ public final class TankChemCoreBootstrapContractTest {
         assertTrue(status.contains("qspr.enabledSensorModels"));
         assertTrue(status.contains("qspr.liveCandidates"));
     }
+    @Test public void installingNewKnowledgeUpdatesLiveQsprInBothOperatorPaths()throws Exception{
+        String status=text("ui/StatusTab.java"),settings=text("ui/SettingsTab.java");
+        assertTrue(status.contains("ChemCoreMolecularSeedImporter.importVerifiedPayload"));
+        assertTrue(status.contains("ChemCoreQsprRuntimeRegistry.rebuild(host.database())"));
+        assertTrue(settings.contains("ChemCoreMolecularSeedImporter.importBestAvailable"));
+        assertTrue(settings.contains("ChemCoreQsprRuntimeRegistry.rebuild(host.database())"));
+    }
+
 }
