@@ -1,0 +1,39 @@
+# HazRob Tank V3 — EXECUTION LOG
+Started 2026-10-20. Branch `feature/tank-v3-implementation`. All work in Tank repository overlays; original repo unmodified.
+
+## 2026-10-20 — Batch V3-01: preparation, no premature publication
+- **Plan/checkpoint created:** `docs/implementation/V3-EXECUTION-PLAN.md` commit `ef731d85`. Source requirement record `docs/requirements/V3-ANDROID-BACKLOG-2026-10-20.md` includes 24 requirements.
+- **V3 independent CI:** `.github/workflows/build-tank-android-v3.yml` commit `6f149c3d`. Uses pinned original at `6281d3e` read-only, `applicationId=com.hazrob.tank`, `versionName=3.0`, `versionCode=3`, unit tests, APK compile, API4 contract and embedded ChemCore 652-identity checksum. Publishes clearly labeled **UNRELEASED diagnostic debug Actions artifact**. Candidate persistent signed artifact only if all four administrator secrets are configured; NONE are available at verification. Avoid declaring diagnostic ZIP a stand-alone release.
+- First CI run [39468894961](https://github.com/HazRob/HazRob-Tank/actions/runs/39468894961): SUCCESS test/compile/embedded data; signing SKIPPED (not ready).
+- CI after physical cards [39469189168](https://github.com/HazRob/HazRob-Tank/actions/runs/39469189168): SUCCESS.
+- CI after `TankAutoR0Math` tests [39469487633](https://github.com/HazRob/HazRob-Tank/actions/runs/39469487633): SUCCESS.
+- CI with `DeveloperR0Tab` automatic 20-minute UI [39469886531](https://github.com/HazRob/HazRob-Tank/actions/runs/39469886531): SUCCESS.
+- CI with startup load of accepted R0 [39469925610](https://github.com/HazRob/HazRob-Tank/actions/runs/39469925610): SUCCESS.
+- CI with ReportsTab enlarged chart dialog [39470109379](https://github.com/HazRob/HazRob-Tank/actions/runs/39470109379): SUCCESS.
+- **Latest commits after these successes**: `RobotApi` process-wide transport guard `763e17a6`, MainActivity activation `a04abb3a`, EntryActivity activation `9a7d4728`. Their most recent CI run [39470301315](https://github.com/HazRob/HazRob-Tank/actions/runs/39470301315) was still IN PROGRESS at initial checkpoint; inspect its final result, never infer success.
+
+## Code changes by requirement (implemented in source, all device validation pending)
+- **T3-002 offline review:** `auth/TankModePolicy.java` + tests; `ConnectionGate.Mode.OFFLINE` and dedicated callback; Tank-specific `EntryActivity.java` overlay; MainActivity bypasses camera/periodic telemetry/drive/RobotLinkService in offline mode and displays `دون اتصال`; `communication/RobotLinkService.java` overlay stops self and skips reconnect/heartbeat while offline. **Network hard gate** in `communication/RobotApi.java` prevents any raw HTTP or Remote command in offline mode, including tab-level calls. Offline must be tested on a real Android device before DONE.
+- **T3-022 compact refresh icon:** MainActivity drops dedicated full-width refresh row from all 7 top views; no icon in driving, 44dp single icon overlay at upper-left of other 6 tab content views, with extra top inset for nested measurement/developer subtabs. Auto refresh retains original operation. **Layout overlap/accessibility real-phone check pending**.
+- **T3-004/005 partial:** top header and connection footer now Tank V3; reports screen uses light high-contrast palette. Old icon and some inherited surfaces still require sweep.
+- **T3-020/021 partial:** MeasurementsTab.PhysicalPane now has a two-card-per-row Arabic RTL emoji design, gray normal cards, white text on red alert cards, safe reversion on missing or low readings. 3 PM readings are hidden here and remain in separate 4th **الجزيئات** subtab; original R0 etc retained. Calibrated `dba` + `calibrated_dba=true` enables strictly `>90 dBA` **instant UI warning**, not OSHA PEL claim. MAX4466 uncalibrated SPL never triggers invented calibrated noise warnings. Other parameter thresholds require proper data/reference; not fully implemented. Real-phone screen proof pending.
+- **T3-023 auto R0:** `calibration/TankAutoR0Math.java` + numeric unit tests implement exact fixed 20min schedule: initial 5min heat, 3min data, 3min ON/pause, 3min data, 3min ON/pause, 3min data. DeveloperR0Tab overlay adds Start/Cancel, relay power ON, samples unique valid `scan_cycle` values per MQ, computes equal-log-domain geometric mean of 3 window means per available sensor, then single approval dialog old→new kΩ. `ManualR0Calibration.saveAutomatic` makes a single durable preferences transaction with `automatic_clean_air_field_r0` + UTC/session metadata and preserves missing-channel prior R0. `AcceptedR0Normalizer` recognizes auto source as recorded device evidence; MainActivity loads persisted R0 before analyses on EVERY application launch. **Twenty-minute hardware test, firmware Rs/ RL verification and ChemCore end-to-end replay remain pending**.
+- **T3-024 chart viewer:** ReportsTab overlay preserves 20 chart selectors/real persisted-data Canvas render, adds a clickable/enlarge control and a real enlarged AlertDialog with the selected graph and close; button disabled when no chart. PM subsection remains correctly unavailable without PM hardware. CI unit/compile PASS; all 20 graph manual/recorded-data tests pending.
+- **T3-001 partly implemented:** V3 package/version and build pipeline passed, but no signed stable V3 deliverable; admin keystore secrets missing. The last successfully built stable-for-this-run output was an *UNRELEASED debug APK*, never a production or upgrade-safe release.
+- **T3-003/006/007/008/009/010/011/012/013/014/016/017/018** remain pending further implementation and/or hardware validation; **T3-015** remains honest placeholder, **T3-019** remains deferred research.
+
+## Known constraints and risk register
+1. V3 debug diagnostic APK is signed with ephemeral debug key and cannot be assumed upgrade-compatible. Do not tell user to disable Play Protect.
+2. Persistent signing repository secrets not provisioned: `TANK_KEYSTORE_BASE64`, `TANK_KEY_ALIAS`, `TANK_KEYSTORE_PASSWORD`, `TANK_KEY_PASSWORD`. Administrator required; never upload secret content via chat.
+3. Hardware E-STOP/release-to-stop/500ms watchdog and physical network modes must be tested on Tank hardware; CI static checks do not prove motion safety. The firmware historical reverse-retrace reconnect logic remains a safety review blocker.
+4. R0 captures a **field clean-air normalization baseline** in fixed user-specified time, not certified manufacturer reference-gas calibration. Fixed common MQ heater and provisional `RL=10kΩ` restrict claims.
+5. Java chart implementation uses real persisted data, but chart selector eligibility currently broad (series-level rather than per-chart completeness). Need test/iterate.
+6. **Tests still excluded** from pinned source for deprecated dark-theme expectations; replace with meaningful V3 UI tests, no emulator/screenshots.
+7. This branch is isolated from `develop`, not merged. Do not release until requirements reviewed and gates closed.
+
+## Immediate NEXT at handoff
+1. Query [latest V3 CI run](https://github.com/HazRob/HazRob-Tank/actions/runs/39470301315), inspect jobs/logs; fix any new compile/runtime issues.
+2. Inspect `docs/implementation/V3-EXECUTION-PLAN.md` and this log; fetch current branch HEAD and preserve all commits.
+3. Execute **P2: site/session lifecycle + approved-only reports** (T3-006/007/008), then real/device validation. Preserve existing field data migration.
+4. Finish other backlog items in dependency order, updating **this log after each verified batch**.
+5. Only after all blockers cleared, request administrator-provisioned signing secrets and publish a separately verifiable standalone V3 APK.
