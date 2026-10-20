@@ -129,12 +129,12 @@ public final class ReportsTab {
         refreshSessionScope();
     }
     private void refreshSessionScope(){
-        scopeSessions.clear();if(!chosenSiteId.isEmpty())scopeSessions.addAll(fieldSessions.sessionsForSite(chosenSiteId));
-        List<String> names=new ArrayList<>();names.add("كل جلسات الموقع • تقرير الموقع");
+        scopeSessions.clear();if(!chosenSiteId.isEmpty())scopeSessions.addAll(fieldSessions.approvedSessionsForSite(chosenSiteId));
+        List<String> names=new ArrayList<>();names.add("الجلسات المعتمدة للموقع • تقرير الموقع");
         int selected=0;
         for(int i=0;i<scopeSessions.size();i++){
             FieldSessionRepository.FieldSession f=scopeSessions.get(i);
-            names.add(f.name+(f.active()?" • نشطة":" • منتهية"));
+            names.add(f.name+" • معتمدة");
             if(f.id.equals(chosenSessionId))selected=i+1;
         }
         chosenSessionId=selected>0?scopeSessions.get(selected-1).id:"";
@@ -145,7 +145,7 @@ public final class ReportsTab {
     }
     private void updateExportButtonLabels(){
         if(pdf==null||xlsx==null)return;
-        boolean hasSite=!chosenSiteId.isEmpty();
+        boolean hasSite=!chosenSiteId.isEmpty()&&!scopeSessions.isEmpty();
         pdf.setEnabled(hasSite);xlsx.setEnabled(hasSite);
         pdf.setText(chosenSessionId.isEmpty()?"PDF الذكي للموقع":"PDF الذكي للجلسة");
         xlsx.setText(chosenSessionId.isEmpty()?"Excel الذكي للموقع":"Excel الذكي للجلسة");
