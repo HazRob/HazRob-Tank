@@ -1,5 +1,5 @@
 # HazRob Tank V3 — Implementation Plan and Durable Checkpoint
-**Most recent successfully tested Android code:** `dda17d08bf2d2e82ca3c371cd686c9b85233cfae` — [CI 39485877592](https://github.com/HazRob/HazRob-Tank/actions/runs/39485877592) SUCCESS (all Android tests, real SQLite, assembly and embedded ChemCore manifest; stable signature skipped). ESP32 V3 firmware — [CI 39479359692](https://github.com/HazRob/HazRob-Tank/actions/runs/39479359692) SUCCESS compiled candidate, real hardware tests still required.
+**Latest successful Android V3 verification:** `f43007c1557f26301612317bfab1d7263725dbad` — [CI run 39487569876](https://github.com/HazRob/HazRob-Tank/actions/runs/39487569876) PASS on new arithmetic R0 tests and APK assembly. Later UI and doc-only edits do not constitute hardware validation. ESP32 candidate compiled [39479359692](https://github.com/HazRob/HazRob-Tank/actions/runs/39479359692).
 
 ## Governing requirements / provenance
 - **Source of truth:** [V3 backlog](../requirements/V3-ANDROID-BACKLOG-2026-10-20.md) covering T3-001…T3-024, including owner-approved physical card UI, alert transitions, refresh icon, fixed 20-minute clean-air field R0 procedure, chart viewer, and independent PM tab.
@@ -57,7 +57,7 @@
 | T3-020 | IMPLEMENTED_UNVERIFIED | Physical cards 2/row |
 | T3-021 | PARTIAL_IMPLEMENTED | Gray normal/red+white on valid instantaneous threshold crossing |
 | T3-022 | IMPLEMENTED_UNVERIFIED | Single icon top-left non-drive tabs |
-| T3-023 | IMPLEMENTED_ARITHMETIC_MEAN_CI_PENDING | Owner-approved clean-air R0: fixed 20 min ON (5 + 3/3/3/3/3), arithmetic Rs mean separately per 3-min measurement window then equal arithmetic mean of 3 windows; old/new kΩ save confirmation, local persistence + ChemCore adoption. Source `6e98b4c9`, UI `c5a54333`, test correction `f43007c1`; verify Actions run 39487569876 (status pending at edit). Physical 20-minute eight-MQ calibration/known-gas validity remains untested. |
+| T3-023 | CI_VERIFIED_DEVICE_PENDING | Fixed 20-minute 5+3/3/3/3/3 ON calibration and **mean of three arithmetic 3-minute Rs window means per sensor**, accepted 2026-10-20 after scientific review. Single old/new kΩ confirmation and local ChemCore authority retained. Source and tests run [39487569876](https://github.com/HazRob/HazRob-Tank/actions/runs/39487569876) **SUCCESS** at `f43007c1557f26301612317bfab1d7263725dbad`; real eight-MQ 20-minute experiment and physical R0/PPM validity still pending. |
 | T3-024 | CI_VERIFIED_DEVICE_PENDING | All 20 report graph selectors have exercised data-backed eligibility routes plus explicit empty-data cases, tested CI 39485600871; real handset rendering, modal clarity and export reviews pending |
 
 ## Resume after interruption — precise instructions
