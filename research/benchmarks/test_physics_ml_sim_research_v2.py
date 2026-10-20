@@ -99,7 +99,7 @@ class PhysicsModelsResearchTests(unittest.TestCase):
         p=profile();t=[0.,5.,10.,15.,20.,25.]
         predicted=simulate_first_order(p,"gas-A",5.,t,5.,20.,
                                        [1.,1.],[2.,2.],[3.,3.])
-        result=compare_sim_to_real(t,predicted,predicted*np.array([12000.,11000.]),
+        result=compare_sim_to_real(t,t,predicted,predicted*np.array([12000.,11000.]),
                                    [12000.,11000.],IDS,IDS,"synthetic-ref")
         self.assertAlmostEqual(result["pooled_log_ratio_rmse"],0.,places=10)
         self.assertFalse(result["real_tank_validation"])
@@ -108,20 +108,25 @@ class PhysicsModelsResearchTests(unittest.TestCase):
         predicted=simulate_first_order(p,"gas-A",5.,t,5.,20.,
                                        [1.,1.],[2.,2.],[3.,3.])
         actual=predicted*np.array([12000.,11000.])*1.15
-        result=compare_sim_to_real(t,predicted,actual,[12000.,11000.],
+        result=compare_sim_to_real(t,t,predicted,actual,[12000.,11000.],
                                    IDS,IDS,"synthetic-ref")
         self.assertGreater(result["pooled_log_ratio_rmse"],.1)
+    def test_sim_to_real_rejects_unaligned_measured_times(self):
+        with self.assertRaisesRegex(ValueError,"timestamps"):
+            compare_sim_to_real([0.,1.],[0.,2.],
+                                [[1.,1.],[1.,1.]],[[1000.,1000.],[1000.,1000.]],
+                                [1000.,1000.],IDS,IDS,"r")
     def test_sim_to_real_rejects_sensor_order_mismatch(self):
         with self.assertRaises(ValueError):
-            compare_sim_to_real([0.,1.],[[1.,1.],[1.,1.]],[[1000.,1000.],[1000.,1000.]],
+            compare_sim_to_real([0.,1.],[0.,1.],[[1.,1.],[1.,1.]],[[1000.,1000.],[1000.,1000.]],
                                 [1000.,1000.],IDS,IDS[::-1],"r")
     def test_sim_to_real_rejects_missing_r0(self):
         with self.assertRaises(ValueError):
-            compare_sim_to_real([0.,1.],[[1.,1.],[1.,1.]],[[1000.,1000.],[1000.,1000.]],
+            compare_sim_to_real([0.,1.],[0.,1.],[[1.,1.],[1.,1.]],[[1000.,1000.],[1000.,1000.]],
                                 [1000.],IDS,IDS,"r")
     def test_sim_to_real_rejects_unknown_reference(self):
         with self.assertRaises(ValueError):
-            compare_sim_to_real([0.,1.],[[1.,1.],[1.,1.]],[[1000.,1000.],[1000.,1000.]],
+            compare_sim_to_real([0.,1.],[0.,1.],[[1.,1.],[1.,1.]],[[1000.,1000.],[1000.,1000.]],
                                 [1000.,1000.],IDS,IDS,"")
 
 if __name__=="__main__": unittest.main()
