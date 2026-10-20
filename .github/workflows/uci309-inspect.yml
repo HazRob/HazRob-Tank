@@ -1,0 +1,34 @@
+name: HazRob Tank UCI309 official wind-tunnel data inspection
+on:
+  push:
+    paths:
+      - '.github/workflows/uci309-inspect.yml'
+      - 'research/benchmarks/uci309_inspect_v1.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download UCI309 official 22MB archive
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 240 \
+            'https://archive.ics.uci.edu/static/public/309/gas%2Bsensor%2Barray%2Bexposed%2Bto%2Bturbulent%2Bgas%2Bmixtures.zip' -o uci309_original.zip
+      - name: Inspect original UCI309 archive source contents
+        run: |
+          set -euo pipefail
+          python research/benchmarks/uci309_inspect_v1.py uci309_original.zip | tee uci309_source_inspection.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: uci309-source-schema-and-provenance-inspection
+          path: uci309_source_inspection.json
+          if-no-files-found: warn
+          retention-days: 90
