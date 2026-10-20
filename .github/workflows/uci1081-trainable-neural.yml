@@ -1,4 +1,4 @@
-name: HazRob Tank true CNN TCN GRU GNN training — external UCI1081
+name: HazRob Tank true CNN TCN GRU LSTM GNN training — external UCI1081
 on:
   push:
     paths:
@@ -36,7 +36,7 @@ jobs:
             'https://archive.ics.uci.edu/static/public/1081/gas%2Bsensor%2Barray%2Blow-concentration.zip' \
             --output uci1081_original.zip
           echo '813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab  uci1081_original.zip' | sha256sum --check
-      - name: Train all four real neural families on 3 heldout concentration levels
+      - name: Train all five real neural families on 3 heldout concentration levels
         shell: bash
         run: |
           set -euo pipefail
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: uci1081-true-cnn-tcn-gru-gnn-frozen-benchmark
+          name: uci1081-true-cnn-tcn-gru-lstm-gnn-frozen-benchmark
           path: |
             uci1081_neural_trained_result.json
             neural_metrics.txt
