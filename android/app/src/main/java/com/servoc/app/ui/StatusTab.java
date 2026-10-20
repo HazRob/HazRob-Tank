@@ -48,7 +48,7 @@ public final class StatusTab {
         science.setText("Scientific   MQ "+HazRobHardwareProfile.MQ.length+"/8   •   Curves "+GasEngine.curveCount()+"+"+ResearchCurveRegistry.count()+"   •   Models "+ModelRuntimeRegistry.nativeCount()+"/"+MqDataScience76Catalog.COUNT+" Native");
     }
     public View view(){return scroll;}
-    private static TextView card(Context c,LinearLayout root){TextView t=UiKit.text(c,"—");t.setTextSize(14);t.setBackgroundColor(0xFFFFFFFF);root.addView(t,UiKit.full(c));return t;}
+    private static TextView card(Context c,LinearLayout root){TextView t=UiKit.text(c,"—");t.setTextSize(14);t.setBackgroundColor(0xFFFFFFFF);t.setTextColor(0xFF15202B);root.addView(t,UiKit.full(c));return t;}
     private boolean remoteMode(){return "remote".equalsIgnoreCase(host.preferences().getString("connection_mode","direct"));}
 
     private String initialUpdateLabel(){
@@ -151,8 +151,8 @@ public final class StatusTab {
             "\nQSPR runtime   targets "+qspr.descriptorCompleteLiveTargets+" • models "+qspr.enabledSensorModels+" • candidates "+qspr.liveCandidates+
             "\nTiming   Warm "+warm+" s   •   Analysis "+analysis+" s   •   Tracking CONTINUOUS");
         JSONObject d=host.latestDiagnostics();
-        if(d==null){master.setText("HazRob App   v"+BuildConfig.VERSION_NAME+" ("+BuildConfig.VERSION_CODE+")\nMaster ESP32   ● OFFLINE");master.setTextColor(0xFFFF7043);renderNetwork(null);hardware.setText("ADS / ENV / MQ / Echo /  LDR / Battery / Sound / SERVO GPIO16/17 / Alert   — • غير متصل");sensors.setText("MQ   —");renderCamera();scheduleCameraProbe();return;}
-        master.setText("HazRob App   v"+BuildConfig.VERSION_NAME+" ("+BuildConfig.VERSION_CODE+")\nMaster ESP32   ● ONLINE\nFirmware   "+d.optString("firmware","HazRob")+"\nAPI   "+d.optInt("api_version",0)+"\nProfile   "+d.optString("hardware_profile",HazRobHardwareProfile.ID)+"\nHeap   "+d.optLong("heap",0)+" B");master.setTextColor(0xFF81C784);
+        if(d==null){master.setText("HazRob App   v"+BuildConfig.VERSION_NAME+" ("+BuildConfig.VERSION_CODE+")\nMaster ESP32   ● OFFLINE");master.setTextColor(0xFFC62828);renderNetwork(null);hardware.setText("ADS / ENV / MQ / Echo /  LDR / Battery / Sound / SERVO GPIO16/17 / Alert   — • غير متصل");sensors.setText("MQ   —");renderCamera();scheduleCameraProbe();return;}
+        master.setText("HazRob App   v"+BuildConfig.VERSION_NAME+" ("+BuildConfig.VERSION_CODE+")\nMaster ESP32   ● ONLINE\nFirmware   "+d.optString("firmware","HazRob")+"\nAPI   "+d.optInt("api_version",0)+"\nProfile   "+d.optString("hardware_profile",HazRobHardwareProfile.ID)+"\nHeap   "+d.optLong("heap",0)+" B");master.setTextColor(0xFF167443);
         renderNetwork(d);
         JSONObject adc=d.optJSONObject("adc"),relay=d.optJSONObject("relay"),env=d.optJSONObject("env"),ldr=d.optJSONObject("ldr"),alert=d.optJSONObject("alert");boolean mqOn=relay!=null&&(relay.optBoolean("on",false)||relay.optInt("mask",0)!=0);boolean ldrOk=ldr!=null&&ldr.optBoolean("installed",false);int alertLevel=alert==null?0:alert.optInt("level",0),alertGpio=alert==null?26:alert.optInt("gpio",26);String alertName=alert==null?"—":alert.optString("name","none");
         hardware.setText("ADS1 0x48   "+ok(adc!=null&&adc.optBoolean("ads1",false))+"\nADS2 0x49   "+ok(adc!=null&&adc.optBoolean("ads2",false))+"\nADS VDD   "+String.format(Locale.US,"%.1f V (fixed design)",HazRobHardwareProfile.ADS_SUPPLY_V)+"\nMQ POWER GPIO25   "+on(mqOn)+"   •   8 sensors\nENV   "+ok(env!=null&&env.optBoolean("ok",false))+"\nLDR GPIO34   "+ok(ldrOk)+(ldrOk?"   •   LEVEL "+ldr.optInt("level",-1):"")+"\nALERT GPIO"+alertGpio+"   "+(alert==null?"○ —":alertLevel>0?"● "+alertName.toUpperCase(Locale.US):"● READY"));
