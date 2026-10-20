@@ -57,7 +57,7 @@
 | T3-020 | IMPLEMENTED_UNVERIFIED | Physical cards 2/row |
 | T3-021 | PARTIAL_IMPLEMENTED | Gray normal/red+white on valid instantaneous threshold crossing |
 | T3-022 | IMPLEMENTED_UNVERIFIED | Single icon top-left non-drive tabs |
-| T3-023 | CI_VERIFIED_DEVICE_PENDING | 20-minute R0 flow plus automatic source preservation in historical series; CI 39481674270 passed; real 20-minute sensor/ppm tests pending |
+| T3-023 | IMPLEMENTED_ARITHMETIC_MEAN_CI_PENDING | Owner-approved clean-air R0: fixed 20 min ON (5 + 3/3/3/3/3), arithmetic Rs mean separately per 3-min measurement window then equal arithmetic mean of 3 windows; old/new kΩ save confirmation, local persistence + ChemCore adoption. Source `6e98b4c9`, UI `c5a54333`, test correction `f43007c1`; verify Actions run 39487569876 (status pending at edit). Physical 20-minute eight-MQ calibration/known-gas validity remains untested. |
 | T3-024 | CI_VERIFIED_DEVICE_PENDING | All 20 report graph selectors have exercised data-backed eligibility routes plus explicit empty-data cases, tested CI 39485600871; real handset rendering, modal clarity and export reviews pending |
 
 ## Resume after interruption — precise instructions
