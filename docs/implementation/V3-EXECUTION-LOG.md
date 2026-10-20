@@ -177,6 +177,8 @@ Started 2026-10-20. Branch `feature/tank-v3-implementation`. All work in Tank re
 3. Continue release qualification from `docs/implementation/V3-RELEASE-QUALIFICATION.md` and `V3-DEVICE-ACCEPTANCE-AR.md`, never simulate real robot safety certification.
 
 
+- **V3-10 CI closure:** [Android GitHub Actions 39490117129](https://github.com/HazRob/HazRob-Tank/actions/runs/39490117129) **SUCCESS** for exact source SHA `12d7509cbcb878be6725f11437a2bd62300212d6` (includes previous PPM presentation, R0 fresh-scan and new Activity teardown / dialog cancellation tests). Debug APK assembled and embedded ChemCore validated; persistent signing SKIPPED; real phone/robot tests NOT TESTED.
+
 ## Known constraints and risk register
 1. V3 debug diagnostic APK is signed with ephemeral debug key and cannot be assumed upgrade-compatible. Do not tell user to disable Play Protect.
 2. Persistent signing repository secrets not provisioned: `TANK_KEYSTORE_BASE64`, `TANK_KEY_ALIAS`, `TANK_KEYSTORE_PASSWORD`, `TANK_KEY_PASSWORD`. Administrator required; never upload secret content via chat.
