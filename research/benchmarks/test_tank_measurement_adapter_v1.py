@@ -106,6 +106,14 @@ class TankRecordTests(unittest.TestCase):
         a=fixture();a["sensors"][0]["heater_phase"]="UNKNOWN"
         self.assertFalse(validate_exposure(a)["heater_phases_all_known"])
 
+    def test_missing_sha_rejected(self):
+        a=fixture();a.pop("source_sha256")
+        with self.assertRaises(ValueError):validate_exposure(a)
+
+    def test_non_hex_sha_rejected(self):
+        a=fixture();a["source_sha256"]="ZZ"*32
+        with self.assertRaises(ValueError):validate_exposure(a)
+
     def test_bme_negative_temp_allowed(self):
         a=fixture();a["BME280"]["temperature_c"]=-5.
         self.assertTrue(validate_exposure(a)["environment_present"])
