@@ -1,0 +1,138 @@
+name: Capture HazRob Tank real Android UI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [develop]
+    paths:
+      - ".github/workflows/tank-ui-simulator.yml"
+      - "tools/ui_simulator/**"
+
+permissions:
+  contents: read
+
+jobs:
+  capture-android-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout Tank development overlays
+        uses: actions/checkout@v4
+        with:
+          path: tank
+
+      - name: Verify upstream read-only checkout permission
+        env:
+          SOURCE_REPO_TOKEN: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+        run: test -n "$SOURCE_REPO_TOKEN"
+
+      - name: Checkout immutable HazRob baseline
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          persist-credentials: false
+          path: source
+
+      - name: Prepare Tank v2 screenshot-only debug build
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/test/java; then
+            mkdir -p source/app/src/test/java
+            cp -a tank/android/app/src/test/java/. source/app/src/test/java/
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("source/app/build.gradle")
+          s = p.read_text()
+          assert "applicationId 'com.servoc.app'" in s
+          assert "versionName '0.10.2'" in s
+          s = s.replace("applicationId 'com.servoc.app'", "applicationId 'com.hazrob.tank'")
+          s = s.replace("versionName '0.10.2'", "versionName '2.0'")
+          s = s.replace("versionCode 30", "versionCode 2")
+          s = s.replace("debug { signingConfig signingConfigs.prototype }", "debug { }")
+          p.write_text(s)
+          manifest = Path("source/app/src/main/AndroidManifest.xml")
+          t=manifest.read_text()
+          import re
+          t=re.sub(r'android:label="[^"]*"', 'android:label="HazRob Tank"', t, count=1)
+          manifest.write_text(t)
+          # Simulator-only: bypass first-run Storage Access Framework picker.
+          # Original production code, application logic and repo stay unchanged.
+          entry=Path("source/app/src/main/java/com/servoc/app/EntryActivity.java")
+          e=entry.read_text()
+          old="if(userLibrary.attached())showConnection();else showFirstRunLibrarySetup();"
+          assert old in e, "SAF startup changed; inspect capture adapter"
+          entry.write_text(e.replace(old,"showConnection();"))
+          PY
+
+      - name: Prepare embedded ChemCore Stable
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 tools/build_hr069_embedded_stable.py --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          base=Path("app/build/generated/hazrobAssets/generated/chemcore/embedded_stable")
+          m=json.loads((base/"manifest.json").read_text())
+          b=(base/m["payload_file"]).read_bytes()
+          assert m["library_version"]=="1.0.0-hr069r1"
+          assert m["chemical_count"]==652
+          assert hashlib.sha256(b).hexdigest()==m["payload_sha256"]
+          print("PASS: verified ChemCore manifest and bytes")
+          PY
+
+      - name: Configure Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Android 36 build platform
+        run: |
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null || true
+          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.5.0"
+
+      - name: Assemble simulator debug APK
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Enable KVM permission on Linux runner
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+          fi
+
+      - name: Launch Android emulator and capture actual UI
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          avd-name: HazRobTankScreenshot
+          force-avd-creation: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            adb wait-for-device
+            adb shell input keyevent 82
+            adb install -r source/app/build/outputs/apk/debug/app-debug.apk
+            python3 tank/tools/ui_simulator/capture.py
+
+      - name: Upload PNG screenshot set and viewer
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-v2-real-Android-UI-screenshots
+          path: screenshots/
+          if-no-files-found: warn
+          retention-days: 30
