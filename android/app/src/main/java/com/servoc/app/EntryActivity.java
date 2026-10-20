@@ -25,7 +25,7 @@ public final class EntryActivity extends Activity {
 
     @Override public void onCreate(Bundle b){
         super.onCreate(b);
-        prefs=getSharedPreferences("servoc",MODE_PRIVATE);userLibrary=new HazRobUserLibrary(this);
+        prefs=getSharedPreferences("servoc",MODE_PRIVATE);RobotApi.setTankOffline(false);userLibrary=new HazRobUserLibrary(this);
         // Direct transport is a fixed hardware contract. Never inherit a stale saved host
         // from a previous build, remote experiment, or developer setting.
         local=new RobotApi(LocalNetworkContract.ROBOT_HOST);
@@ -51,6 +51,7 @@ public final class EntryActivity extends Activity {
 
     private void showConnection(){
         ConnectionGate gate=new ConnectionGate(this,local,prefs,io,false,mode->{
+            RobotApi.setTankOffline(mode==ConnectionGate.Mode.OFFLINE);
             Intent i=new Intent(this,MainActivity.class);
             i.putExtra("connection_mode",mode==ConnectionGate.Mode.OFFLINE?"offline":(mode==ConnectionGate.Mode.REMOTE?"remote":"direct"));
             startActivity(i);
