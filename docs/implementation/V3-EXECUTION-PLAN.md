@@ -38,10 +38,10 @@
 | T3-001 | BLOCKED_EXTERNAL | Persistent signing keystore/secrets not established; CI build can check compilation without publishing a release |
 | T3-002 | CI_VERIFIED_DEVICE_PENDING | V3 offline selection, service and RobotApi network hard gate; Android tests pass at 25d12dab, physical phone/network test pending |
 | T3-003 | FIRMWARE_COMPILED_HARDWARE_PENDING | No autonomous replay; neutral stop on link loss or 500ms timeout; ESP32 Arduino-2.0.17 full compile SUCCESS run 39476938209; actual servos and E-STOP untested |
-| T3-004 | PARTIAL_IMPLEMENTED | V3 strings and branding |
-| T3-005 | PARTIAL_CI_VERIFIED | Measurements, Reports, Status, R0 developer and now Settings use light cards; Android build pending latest status; real phone layout test still required |
+| T3-004 | CI_VERIFIED_DEVICE_PENDING | Standalone Tank vector launcher and connection branding contract verified in CI 39484092225; remaining real Android visual identity review pending |
+| T3-005 | PARTIAL_CI_VERIFIED_DEVICE_PENDING | Measurements, Reports, Status, R0 and Settings light RTL. Explicit Status card contrast updated commit 5933a043 (its CI pending); device visual regression still required |
 | T3-006 | CI_VERIFIED_DEVICE_PENDING | Session approval now requires completed READY USER capture with real samples and coherent terminal metadata; JVM guards passed CI 39480818787; real SQLite/device check pending |
-| T3-007 | CI_VERIFIED_DEVICE_PENDING | SQLite approved-only report scope before LIMIT, history/graphs and site/session exports; CI 39480963016 passed, no real phone export validation |
+| T3-007 | CI_SQLITE_VERIFIED_DEVICE_PENDING | SQLite test extracts real Java approved-report query and proves 155 newer drafts + dev/instant data cannot hide approved user reports, CI 39484447715 PASS; Android reports UI/exports pending |
 | T3-008 | CI_VERIFIED_DEVICE_PENDING | Instant locally saved snapshot and independent log not linked to field sessions; Android CI 39477075161/39478645439 successful |
 | T3-009 | IMPLEMENTED_UNVERIFIED | Preserve fingerprint/curve/formula/algorithm computation; display all available computed ppm estimates and method sources; device test pending |
 | T3-010 | PARTIAL_IMPLEMENTED | Source/report evidence ranking and finite estimated ppm displayed; regulatory exceedance guards retained; physical/UI verification pending |
@@ -50,8 +50,8 @@
 | T3-013 | CI_VERIFIED_DEVICE_PENDING | Stable snapshot install followed by molecular import and QSPR runtime rebuild at boot; Status shows active library/model counts, CI 39481514424 passed; runtime on phone pending |
 | T3-014 | ESP32_COMPILED_HARDWARE_PENDING | Firmware API4 Arduino core compile run 39476938209 plus Android static route test; Tank peripheral/network hardware test pending |
 | T3-015 | MAINTAIN_EXISTING | PM fourth subtab exists; no physical PM hardware |
-| T3-016 | CI_REGRESSION_PASSED_DEVICE_PENDING | Android unit and UI source contracts passed CI 39478645439; real Android scrolling/layout/offline/performance untested |
-| T3-017 | PARTIAL_IMPLEMENTED | Approved-only USER field reports and source-level developer isolation in place; full local-vs-central sync/data migration tests pending |
+| T3-016 | CI_REGRESSION_PASSED_DEVICE_PENDING | Android source/UI contract tests and real SQLite approved-report integration passed CI 39484447715; no Android emulator; real operator-device smoothness/layout pending |
+| T3-017 | CI_SQLITE_PARTIAL_DEVICE_PENDING | SQL role/approved-only isolation tested with real SQLite (not emulator), CI 39484447715; local backup/restore and developer central sync runtime verification pending |
 | T3-018 | BLOCKED_DEVICE | Android release installation and Play Protect diagnosis require stable keystore and physical target phone |
 | T3-019 | DEFERRED_CONDITIONAL | Research integration is not a V3 ship blocker |
 | T3-020 | IMPLEMENTED_UNVERIFIED | Physical cards 2/row |
