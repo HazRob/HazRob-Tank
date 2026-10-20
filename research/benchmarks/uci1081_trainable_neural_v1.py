@@ -20,7 +20,7 @@ from sklearn.preprocessing import StandardScaler
 
 from uci1081_actual_modules_v1 import parse_archive,splits,GASES
 
-KINDS=("cnn1d","tcn_causal","gru","gnn_train_correlations","gnn_identity")
+KINDS=("cnn1d","tcn_causal","gru","lstm","gnn_train_correlations","gnn_identity")
 EPOCHS=25
 SEED=19
 
@@ -112,6 +112,22 @@ class GRUSensor(nn.Module):
         _,hidden=self.rnn(seq)
         return self.head(hidden[-1])
 
+class LSTMSensor(nn.Module):
+    """Trainable unidirectional recurrent comparator to GRU (08.3).
+
+    Feed time-only prefixes when making online predictions. The hidden state
+    of a prefix cannot depend on future samples by construction.
+    """
+    def __init__(self,n_classes):
+        super().__init__()
+        self.rnn=nn.LSTM(input_size=10,hidden_size=16,batch_first=True)
+        self.head=nn.Linear(16,n_classes)
+    def forward(self,x):
+        if x.ndim!=3 or x.shape[1]!=10 or x.shape[2]<1:
+            raise ValueError("expected [batch, 10 sensors, nonempty time]")
+        _,(hidden,_)=self.rnn(x.transpose(1,2).contiguous())
+        return self.head(hidden[-1])
+
 class SensorGNN(nn.Module):
     def __init__(self,n_classes,adjacency):
         super().__init__()
@@ -133,6 +149,7 @@ def architecture(kind,classes,adj=None):
     if kind=="cnn1d":return CNN1D(classes)
     if kind=="tcn_causal":return CausalTCN(classes)
     if kind=="gru":return GRUSensor(classes)
+    if kind=="lstm":return LSTMSensor(classes)
     if kind.startswith("gnn_"):return SensorGNN(classes,adj)
     raise ValueError("unsupported architecture")
 
@@ -225,6 +242,7 @@ def run(source):
            "cnn1d":"genuine trainable Conv1d 2 layer network",
            "tcn_causal":"genuine trainable causal dilated convolutions",
            "gru":"genuine torch.nn.GRU trained with cross entropy",
+           "lstm":"genuine unidirectional torch.nn.LSTM trained with cross entropy",
            "gnn_train_correlations":"genuine differentiable graph message passing with fixed train-only correlation edges",
            "gnn_identity":"graph ablation control without inter-sensor edges"
         },

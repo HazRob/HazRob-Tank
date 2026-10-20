@@ -1,0 +1,143 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-10-21",
+  "scope": "HazRob Tank research; no APK/FW/production ChemCore edits",
+  "base_main_sha": "632745078a48b12d9de68b0ce66ba214cc87c4d4",
+  "prs": {
+    "current_draft": "https://github.com/HazRob/HazRob-Tank/pull/3",
+    "legacy_batch": "https://github.com/HazRob/HazRob-Tank/pull/2",
+    "plan": "https://github.com/HazRob/HazRob-Tank/pull/1"
+  },
+  "provenance": {
+    "uci1081_source": "10.24432/C5CK6F",
+    "original_source_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+    "external_exposures_reused": 90,
+    "new_unique_external_exposures": 0,
+    "matched_tank_eight_MQ_exposures": 0
+  },
+  "existing": {
+    "G1_unit_pass_ids": 80,
+    "G1_historical_tests": 1261,
+    "G2_reviewed_ids": 80,
+    "G2_external_executions_numeric_metadata": 49,
+    "G2_scientifically_blocked": 29,
+    "G2_analytical_only": 2,
+    "G3_actual_Tank_validated_ids": 0
+  },
+  "v3_first_batch": {
+    "identified_techniques": [
+      "03.4",
+      "04.5",
+      "04.7",
+      "04.9",
+      "08.1",
+      "08.2",
+      "08.3",
+      "08.4",
+      "08.6",
+      "08.7"
+    ],
+    "previously_external_trained": [
+      "03.4",
+      "04.5",
+      "04.7",
+      "08.1",
+      "08.2",
+      "08.3",
+      "08.4"
+    ],
+    "new_development": [
+      {
+        "id": "08.3",
+        "name": "real unidirectional torch LSTM alongside existing GRU",
+        "evidence_level": "genuine trainable external UCI"
+      },
+      {
+        "id": "04.9",
+        "name": "candidate-only curve residuals + sklearn logistic regression",
+        "evidence_level": "synthetic software tests only; requires actual MQ8 calibration"
+      },
+      {
+        "id": "08.6",
+        "name": "unit constrained first-order response & recovery simulator",
+        "evidence_level": "synthetic software tests only; requires measured coefficients"
+      },
+      {
+        "id": "08.7",
+        "name": "time/sensor aligned log(Rs/R0) numerical sim-to-real comparator",
+        "evidence_level": "synthetic software tests only; requires paired device measurements"
+      }
+    ],
+    "untested_on_Tank": [
+      "03.4",
+      "04.5",
+      "04.7",
+      "04.9",
+      "08.1",
+      "08.2",
+      "08.3",
+      "08.4",
+      "08.6",
+      "08.7"
+    ]
+  },
+  "ci_runs": {
+    "first_physics_failed": {
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39506758830",
+      "test_count": 22,
+      "passed": 20,
+      "errors": 2,
+      "cause": "logarithmic grid upper endpoint numeric roundoff"
+    },
+    "physics_corrected": {
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39507222065",
+      "test_count": 22,
+      "pass": 22,
+      "kind": "synthetic unit and failure-mode tests"
+    },
+    "uci_neural_extended": {
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39507221819",
+      "test_count": 20,
+      "pass": 20,
+      "source_sha_verified": true,
+      "kind": "authentic-source research model training"
+    }
+  },
+  "new_external_lstm_result": {
+    "source": "UCI1081",
+    "method": "LSTM",
+    "correct": 59,
+    "total": 90,
+    "accuracy": 0.6555555555555556,
+    "macro_f1": 0.6313,
+    "fold_correct": [
+      16,
+      22,
+      21
+    ],
+    "fold_test_exposures": [
+      30,
+      30,
+      30
+    ],
+    "source_not_tank": true,
+    "comparison_gru_on_same_protocol": {
+      "correct": 69,
+      "total": 90,
+      "macro_f1": 0.7478
+    },
+    "artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/39507221819/artifacts/12304386076"
+  },
+  "scientific_limitations": [
+    "External ten-channel UCI array is not Tank's physical MQ8 system",
+    "No measured calibration, R0/RL provenance or verified gas standard from Tank",
+    "Physics prototype tests are synthetic and do not prove predictive performance",
+    "No production changes and no safety certification"
+  ],
+  "next_actions": [
+    "Maintain distinct V3 research interface adapters in numbered technique folders",
+    "Track source/feature parity and nested model selection without heldout leakage",
+    "Add actual Tank eight-sensor trace importer and instrument calibration provenance before G3",
+    "Preserve failure CI histories and compare all PR branches before integrating"
+  ]
+}
