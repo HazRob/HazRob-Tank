@@ -1,6 +1,7 @@
 package com.servoc.app.ui;
 
 import android.app.AlertDialog;
+import android.database.Cursor;
 import android.content.Context;
 import android.widget.EditText;
 import android.text.InputType;
@@ -462,6 +463,19 @@ public final class MeasurementsTab {
             cardAlert(index,result.exceeded);
             if(result.exceeded)states[index].setText(result.explanation);
         }
+        private void refreshInstantHistory(){
+            StringBuilder sb=new StringBuilder("اللقطات الفورية المحلية (لا تدخل في تقارير المواقع):");
+            try(Cursor saved=host.database().getReadableDatabase().rawQuery(
+                "SELECT id,ts FROM experiments WHERE session_id IS NULL AND protocol LIKE ? ORDER BY id DESC LIMIT 8",
+                new String[]{"TANK_V3_INSTANT_SNAPSHOT%"})){
+                int n=0;
+                while(saved.moveToNext()){
+                    sb.append("\n#").append(saved.getLong(0)).append(" • ").append(saved.getString(1));n++;
+                }
+                if(n==0)sb.append("\nلم تُحفظ لقطات فورية بعد");
+            }catch(Exception ex){sb.append("\nسجل اللقطات غير متاح");}
+            instantHistory.setText(sb.toString());
+        }
         void refresh(){
             JSONObject d=host.latestDiagnostics();
             if(d==null){reset("غير متصل");envDiagnostic.setText("ENV • غير متصل");return;}
@@ -515,7 +529,7 @@ public final class MeasurementsTab {
 
     private final class LivePane {
         final ScrollView view;final LinearLayout box,cards;
-        final TextView powerCard,arrayCard,gasCard,sessionCard;
+        final TextView powerCard,arrayCard,gasCard,sessionCard,instantHistory;
         final ProgressBar progress;
         final SensorCard[] sensorCards=new SensorCard[HazRobHardwareProfile.MQ.length];
         final Button powerToggle,start,cancel,save;
@@ -530,7 +544,9 @@ public final class MeasurementsTab {
             powerToggle=UiKit.button(c,"تشغيل MQ");powerToggle.setOnClickListener(v->togglePower());actions.addView(powerToggle,UiKit.weight(1));
             start=UiKit.button(c,"بدء القياس");start.setOnClickListener(v->measure(true));actions.addView(start,UiKit.weight(1));
             cancel=UiKit.button(c,"إلغاء");cancel.setOnClickListener(v->measure(false));actions.addView(cancel,UiKit.weight(.75f));
-            save=UiKit.button(c,"حفظ");save.setOnClickListener(v->save());actions.addView(save,UiKit.weight(.75f));box.addView(actions,UiKit.full(c));
+            save=UiKit.button(c,"حفظ لقطة فورية");save.setOnClickListener(v->save());actions.addView(save,UiKit.weight(1.10f));box.addView(actions,UiKit.full(c));
+            instantHistory=UiKit.small(c,"اللقطات الفورية المحلية • —");instantHistory.setTextIsSelectable(true);
+            instantHistory.setTextColor(MUTED);box.addView(instantHistory,UiKit.full(c));refreshInstantHistory();
             TextView ch=UiKit.small(c,"قنوات MQ • الاستجابة والاتجاه وجودة الإشارة");ch.setTextColor(MUTED);box.addView(ch,UiKit.full(c));
             cards=UiKit.vbox(c);box.addView(cards,UiKit.full(c));for(int i=0;i<sensorCards.length;i++){sensorCards[i]=new SensorCard(HazRobHardwareProfile.MQ[i]);cards.addView(sensorCards[i].root,UiKit.full(c));}
         }
@@ -549,7 +565,7 @@ public final class MeasurementsTab {
         }
         private void save(){
             JSONObject d=host.latestDiagnostics();if(d==null){host.showToast("لا توجد بيانات للحفظ");return;}
-            host.io().execute(()->{try{String ts=isoNow();ChemicalRepository repo=new ChemicalRepository(host.database());SqliteCalibrationProvider cal=new SqliteCalibrationProvider(host.database());String analytics=AnalyticsSnapshot.toJson(d,repo,cal,false);JSONObject relay=d.optJSONObject("relay");int power=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0)?1:0;long id=host.database().save(ts,d.toString(),"HazRob "+ReleaseAudit.VERSION+" acquisition session • MQ Power "+(power==1?"ON":"OFF")+" • GPIO25",analytics);host.showToast("تم حفظ الجلسة #"+id);host.refreshAllTabs();}catch(Exception e){host.showToast("تعذر حفظ الجلسة");}});
+            host.io().execute(()->{try{String ts=isoNow();ChemicalRepository repo=new ChemicalRepository(host.database());SqliteCalibrationProvider cal=new SqliteCalibrationProvider(host.database());String analytics=AnalyticsSnapshot.toJson(d,repo,cal,false);JSONObject relay=d.optJSONObject("relay");int power=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0)?1:0;long id=host.database().save(ts,d.toString(),"TANK_V3_INSTANT_SNAPSHOT • MQ Power "+(power==1?"ON":"OFF")+" • GPIO25",analytics);if(id<=0)throw new IllegalStateException("instant snapshot persistence failed");host.showToast("تم حفظ لقطة فورية مستقلة #"+id+"؛ لا تدخل ضمن جلسات المواقع");box.post(this::refreshInstantHistory);host.refreshAllTabs();}catch(Exception e){host.showToast("تعذر حفظ الجلسة");}});
         }
         void refresh(){
             JSONObject d=host.latestDiagnostics();if(d==null){powerCard.setText("MQ\nغير متصل");arrayCard.setText("المصفوفة\n—");gasCard.setText("الاستجابة\n—");sessionCard.setText("الجلسة\n—");progress.setProgress(0);powerToggle.setText("تشغيل MQ");for(SensorCard sc:sensorCards)sc.refresh(false,false,null,null,null);return;}
