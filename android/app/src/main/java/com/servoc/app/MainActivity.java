@@ -77,6 +77,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private final GasAlertCoordinator gasAlertCoordinator=new GasAlertCoordinator();
     private SharedPreferences prefs;private HazRobUserLibrary userLibrary;private RobotApi robotApi;private CameraApi cameraApi;private ExperimentsDb db;private TelemetryRecorder telemetryRecorder;private PhoneAlertTone phoneAlertTone;
     private volatile String pendingPhysicalSnapshot="{}",pendingPhysicalUtc="";
+    private boolean pendingPhysicalDocumentRequest=false;
     private volatile JSONObject latestDiag;private volatile int left=0,right=0;private volatile boolean foreground=false;private volatile String flashMode="off";
     private volatile int trackingTarget=-1;private volatile String trackingName="";
     private volatile int lastGasAlertLevel=GasAlertCoordinator.NONE;private volatile long gasAlertSentAt=0;
@@ -87,6 +88,13 @@ public final class MainActivity extends Activity implements HazRobHost {
         super.onCreate(b);HazRobStorageBootstrap.ensure(this);prefs=getSharedPreferences("servoc",MODE_PRIVATE);ManualR0Calibration.load(prefs);userLibrary=new HazRobUserLibrary(this);robotApi=new RobotApi(prefs.getString("robot","192.168.4.1"));cameraApi=new CameraApi(prefs.getString("camera","192.168.4.2"));flashMode="on".equals(prefs.getString("flash_mode","off"))?"on":"off";trackingTarget=prefs.getInt("tracking_id",-1);trackingName=prefs.getString("tracking_name","");db=new ExperimentsDb(this);telemetryRecorder=new TelemetryRecorder(db);try{phoneAlertTone=new PhoneAlertTone();}catch(Exception ignored){phoneAlertTone=null;}loadSensorBaselines();
         String mode=getIntent()==null?null:getIntent().getStringExtra("connection_mode");if(mode!=null&&!mode.trim().isEmpty())prefs.edit().putString("connection_mode",mode).apply();
         RobotApi.setTankOffline(isOffline());
+        // SAF may recreate the Activity while the system picker is open.
+        // Keep the original captured telemetry immutable until that specific picker returns.
+        if(b!=null){
+            pendingPhysicalDocumentRequest=b.getBoolean("tank_v3_physical_export_waiting",false);
+            pendingPhysicalSnapshot=b.getString("tank_v3_physical_export_snapshot","{}");
+            pendingPhysicalUtc=b.getString("tank_v3_physical_export_utc","");
+        }
         workers.execute(()->{
             try{
                 // Verify and activate the bundled knowledge off the Android main thread.
@@ -190,6 +198,14 @@ public final class MainActivity extends Activity implements HazRobHost {
         }
         super.onPause();
     }
+    @Override protected void onSaveInstanceState(Bundle out){
+        out.putBoolean("tank_v3_physical_export_waiting",pendingPhysicalDocumentRequest);
+        if(pendingPhysicalDocumentRequest){
+            out.putString("tank_v3_physical_export_snapshot",pendingPhysicalSnapshot);
+            out.putString("tank_v3_physical_export_utc",pendingPhysicalUtc);
+        }
+        super.onSaveInstanceState(out);
+    }
     @Override protected void onDestroy(){entered=false;if(controlTab!=null)controlTab.releaseCamera();try{if(!isOffline()&&lastGasAlertLevel!=GasAlertCoordinator.NONE)robotApi.setAlertLevel(GasAlertCoordinator.NONE,500);}catch(Exception ignored){}if(phoneAlertTone!=null)try{phoneAlertTone.close();}catch(Exception ignored){}workers.shutdownNow();WifiRoute.unbind(this);if(db!=null)db.close();super.onDestroy();}
     private void startLinkService(){if(isOffline())return;try{RobotLinkService.start(getApplicationContext());}catch(Exception ignored){}}
 
@@ -237,15 +253,23 @@ public final class MainActivity extends Activity implements HazRobHost {
         startActivityForResult(i,pdf?EXPORT_PDF:EXPORT_XLSX);
     }
     @Override public void requestPhysicalSnapshotPdf(){
+        if(pendingPhysicalDocumentRequest){showToast("أكمل حفظ التقرير السابق أو ألغِه أولاً");return;}
+        if(isOffline()){showToast("التقرير الفوري يتطلب قراءات حية من الروبوت");return;}
         JSONObject snap=latestDiag;
         if(snap==null){showToast("لا توجد قياسات فيزيائية حية لتقرير PDF");return;}
         pendingPhysicalSnapshot=snap.toString();
         pendingPhysicalUtc=isoNow();
+        pendingPhysicalDocumentRequest=true;
         Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/pdf");
         intent.putExtra(Intent.EXTRA_TITLE,"HazRob_Tank_Physical_"+fileStamp()+".pdf");
-        startActivityForResult(intent,EXPORT_PHYSICAL_PDF);
+        try{startActivityForResult(intent,EXPORT_PHYSICAL_PDF);}
+        catch(Exception ex){
+            pendingPhysicalDocumentRequest=false;
+            pendingPhysicalSnapshot="{}";pendingPhysicalUtc="";
+            showToast("تعذر فتح نافذة حفظ تقرير PDF");
+        }
     }
 
     @Override public void requestFieldSessionExport(String format,String fieldSessionId){
@@ -304,14 +328,22 @@ public final class MainActivity extends Activity implements HazRobHost {
 
     @Override protected void onActivityResult(int requestCode,int resultCode,Intent data){
         super.onActivityResult(requestCode,resultCode,data);
+        if(requestCode==EXPORT_PHYSICAL_PDF&&(resultCode!=RESULT_OK||data==null||data.getData()==null)){
+            pendingPhysicalDocumentRequest=false;
+            pendingPhysicalSnapshot="{}";pendingPhysicalUtc="";
+            return;
+        }
         if(resultCode!=RESULT_OK||data==null||data.getData()==null)return;
         if(requestCode==USER_LIBRARY_TREE){
             try{userLibrary.attach(data.getData());userLibrary.syncUserIndex(db);showToast("تم ربط ومزامنة مكتبة HazRob الدائمة");refreshAllTabs();}catch(Exception e){showToast("تعذر فتح مكتبة HazRob: "+e.getClass().getSimpleName());}
             return;
         }
         if(requestCode==EXPORT_PHYSICAL_PDF){
+            if(!pendingPhysicalDocumentRequest){showToast("انتهت صلاحية لقطة القياس قبل الحفظ");return;}
             final Uri uri=data.getData(); // unique frozen snapshot belongs to this SAF result
             final String frozen=pendingPhysicalSnapshot,stamp=pendingPhysicalUtc;
+            pendingPhysicalDocumentRequest=false;
+            pendingPhysicalSnapshot="{}";pendingPhysicalUtc="";
             workers.execute(()->{
                 try(OutputStream out=getContentResolver().openOutputStream(uri,"wt")){
                     if(out==null)throw new IllegalStateException("output stream");
