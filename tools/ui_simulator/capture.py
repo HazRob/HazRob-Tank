@@ -19,9 +19,9 @@ def adb(*args, timeout=35, raw=False):
     return result.stdout if raw else result.stdout.decode("utf-8", "replace")
 
 def view():
-    for _ in range(3):
+    for _ in range(2):
         try:
-            adb("shell", "uiautomator", "dump", "/sdcard/tank-window.xml", timeout=45)
+            adb("shell", "uiautomator", "dump", "/sdcard/tank-window.xml", timeout=12)
             raw = adb("exec-out", "cat", "/sdcard/tank-window.xml", raw=True)
             tree = ET.fromstring(raw)
             return tree, raw.decode("utf-8", "replace")
@@ -34,7 +34,7 @@ def bounds_center(s):
     m = re.search(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", s)
     return ((int(m[1])+int(m[3]))//2, (int(m[2])+int(m[4]))//2) if m else None
 
-def tap_button(label, tries=2, scroll=False):
+def tap_button(label, tries=1, scroll=False):
     for index in range(tries + 1):
         tree, _ = view()
         if tree is not None:
@@ -68,9 +68,7 @@ def capture(name):
         raise RuntimeError("Screenshot returned non-PNG bytes")
     filename = OUT / (name + ".png")
     filename.write_bytes(png)
-    tree, xml = view()
-    (OUT / (name + ".uix.xml")).write_text(xml, encoding="utf-8")
-    LOG.append({"operation":"capture","file":filename.name,"bytes":len(png),"accessible_nodes":len(list(tree.iter("node"))) if tree is not None else 0})
+    LOG.append({"operation":"capture","file":filename.name,"bytes":len(png)})
     print("Captured",filename,len(png),flush=True)
 
 def section(label, screenshot, scroll=False):
