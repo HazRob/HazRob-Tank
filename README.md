@@ -13,7 +13,7 @@ HazRob Tank is an **independent tracked hazardous-gas research robot**. Its Andr
 - **[فهرس المجموعات المرجعية التاريخية](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/LEGACY_COLLECTIONS.md)** — روابط مراجع HR069 وTank والمكتبات القديمة دون ازدواج
 - **[نقطة استئناف أبحاث وتجميع المراجع](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/external-research/RESUME.md)**
 
-تم توحيد **56 سجلاً مرجعياً جديداً** بتاريخ 2026-10-21: عشرون مصدراً لبيانات MQ/MOS، وأربع وعشرون دراسة/نظاماً/منتجاً تحليلياً، وعشرة مراجع QSPR/PubChem، ومكتبتان برمجيتان، إضافة إلى أربع مراجعات موثقة. السجلات غير متساوية المستوى: بعضها قياسات فعلية فُحصت، وبعضها دراسات أو صفحات وصف لأرشيفات لم تُنزَّل بعد، وبعضها منتجات أو محاكاة. **لا يجوز عدّ 56 سجلاً على أنها 56 تجربة مستقلة**.
+يتضمن الفهرس المركزي حالياً **72 سجلاً مرجعياً** بتاريخ 2026-10-21: 56 سجلاً في الجمع الأولي، ومرجعَي UCI224/UCI270 اللذين استُكملا عند تدقيق المحادثة، و14 مصدراً صينياً/يابانياً إضافياً (مواصفات ومقالات وبراءات واختبارات Figaro)، مع خمس مراجعات بحثية محفوظة. ليست هذه 72 تجربة مستقلة أو معايرات معتمدة. السجلات غير متساوية المستوى: بعضها قياسات فعلية فُحصت، وبعضها دراسات أو صفحات وصف لأرشيفات لم تُنزَّل بعد، وبعضها منتجات أو محاكاة. **لا يجوز عدّ 56 سجلاً على أنها 56 تجربة مستقلة**.
 
 ### نطاق المكتبة وعلاقة Tank بها
 
@@ -29,5 +29,7 @@ HazRob Tank is an **independent tracked hazardous-gas research robot**. Its Andr
 [مكتبة MQDataScience وقواعد بيانات MQ الموسعة](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/external-research/reviews/MQDATASCIENCE_AND_EXPANDED_DATA_2026-10-21_AR.md) ·
 [الاستدلال الجزيئي العكسي QSPR/PubChem](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/external-research/reviews/PUBCHEM_QSPR_INVERSE_MOLECULAR_2026-10-21_AR.md) ·
 [الفصل الكمي للمخاليط والترشيح والأنظمة التحليلية](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/external-research/reviews/ANALYTICAL_SYSTEMS_MIXTURE_UNMIXING_QUANT_FILTERS_2026-10-21_AR.md).
+
+[دراسات صينية ويابانية عن MQ/MOS](https://github.com/HazRob/build-harness/blob/main/library/reference-bank/external-research/reviews/CHINESE_JAPANESE_MQ_MOS_RESEARCH_2026-10-21_AR.md).
 
 **قانون الاستئناف:** قبل أي تجارب أو إضافة مراجع جديدة، راجع `reference-bank/INDEX.md` والفهرس الآلي في مستودع المنظمة، ثم `research/RESUME.md` و`research/PROGRESS_80.json` في Tank. لا تستخدم فروع الأبحاث المؤقتة بوصفها مكتبات مرجعية منافسة للمكتبة المركزية.
