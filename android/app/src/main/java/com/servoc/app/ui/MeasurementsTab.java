@@ -36,6 +36,7 @@ import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 import com.servoc.app.chemcore.ChemCoreLabQuality;
 import com.servoc.app.data.ExperimentQueries;
+import com.servoc.app.field.FieldSessionRepository;
 import com.servoc.app.hardware.HazRobHardwareProfile;
 import com.servoc.app.measurement.InstantMqWarningEngine;
 import com.servoc.app.measurement.LiveGasStateEngine;
@@ -530,7 +531,14 @@ public final class MeasurementsTab {
         private void togglePower(){JSONObject d=host.latestDiagnostics(),r=d==null?null:d.optJSONObject("relay");boolean on=r!=null&&r.optBoolean("on",r.optInt("mask",0)!=0);setPower(!on);}
         private void setPower(boolean on){powerToggle.setEnabled(false);host.io().execute(()->{try{host.robotApi().mqPower(on);box.post(()->{powerToggle.setEnabled(true);host.refreshAllTabs();});}catch(Exception e){box.post(()->{powerToggle.setEnabled(true);host.showToast("تعذر تغيير طاقة MQ");});}});}
         private void measure(boolean begin){
-            if(begin){JSONObject d=host.latestDiagnostics(),adc=d==null?null:d.optJSONObject("adc");boolean a1=adc!=null&&adc.optBoolean("ads1",false),a2=adc!=null&&adc.optBoolean("ads2",false);if(!a1&&!a2){host.showToast("لا يمكن بدء الجلسة: ADS1 وADS2 غير مكتشفين");return;}}
+            if(begin){
+                FieldSessionRepository field=new FieldSessionRepository(host.database());
+                FieldSessionRepository.FieldSession active=field.activeFieldSession();
+                if(active!=null&&!field.measurementSessionIds(active.id).isEmpty()){
+                    host.showToast("تسمح جلسة الموقع بقياس واحد فقط؛ أنهِ الجلسة واعتمدها أو أنشئ جلسة جديدة");
+                    return;
+                }
+                JSONObject d=host.latestDiagnostics(),adc=d==null?null:d.optJSONObject("adc");boolean a1=adc!=null&&adc.optBoolean("ads1",false),a2=adc!=null&&adc.optBoolean("ads2",false);if(!a1&&!a2){host.showToast("لا يمكن بدء الجلسة: ADS1 وADS2 غير مكتشفين");return;}}
             host.io().execute(()->{try{if(begin)host.robotApi().startMeasurement();else host.robotApi().cancelMeasurement();host.refreshAllTabs();}catch(Exception e){host.showToast("تعذر تنفيذ أمر الجلسة: "+String.valueOf(e.getMessage()));}});
         }
         private void save(){
