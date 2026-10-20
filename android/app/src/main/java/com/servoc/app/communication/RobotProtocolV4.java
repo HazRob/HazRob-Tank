@@ -119,6 +119,11 @@ public final class RobotProtocolV4 {
             if(s==null)s=new JSONObject();
             Object rms=finiteAny(s,"rms_v","rms"),p2p=finiteAny(s,"p2p_v","p2p"),db=finiteAny(s,"db_spl","db"),gain=finiteAny(s,"gain_reference","gain");
             x.put("rms_v",rms);x.put("p2p_v",p2p);x.put("db_spl",db);
+            // Preserve a genuine separately calibrated A-weighted measurement when present.
+            // The MAX4466 voltage stream does NOT infer dBA and can never set calibrated_dba.
+            Object dba=finite(s,"dba");
+            x.put("dba",dba);
+            x.put("calibrated_dba",dba!=JSONObject.NULL&&s.optBoolean("calibrated_dba",false));
             x.put("db_estimated",s.optBoolean("db_estimated",db!=JSONObject.NULL));
             x.put("gain_reference",gain);
             x.put("ok",rms!=JSONObject.NULL||p2p!=JSONObject.NULL||db!=JSONObject.NULL);
