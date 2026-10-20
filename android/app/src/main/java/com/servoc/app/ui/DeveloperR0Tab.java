@@ -77,7 +77,7 @@ public final class DeveloperR0Tab {
         automatic.addView(UiKit.title(c,"المعايرة التلقائية للمستخدم • 20 دقيقة"),UiKit.full(c));
         automatic.addView(UiKit.small(c,
             "5 دقائق تسخين ← 3 دقائق قياس ← 3 دقائق مهلة دون إطفاء ← 3 دقائق قياس ← 3 دقائق مهلة ← 3 دقائق قياس. "+
-            "تحسب قيمة R0 الميدانية لكل حساس تلقائيًا من قراءات Rs الصحيحة؛ لا تمديد زمني أو اختبار استقرار معقد. "+
+            "يحسب التطبيق المتوسط الحسابي لقراءات Rs في كل فترة، ثم متوسط الفترات الثلاث لتحديد R0 الميدانية لكل حساس؛ دون تمديد زمني أو اختبار استقرار معقد. "+
             "لا تُحفظ أي قيمة إلا بعد تأكيدك في النافذة النهائية."),UiKit.full(c));
         autoProgress=UiKit.small(c,"جاهز • ضع الروبوت في هواء نظيف ثم ابدأ");
         automatic.addView(autoProgress,UiKit.full(c));
@@ -205,6 +205,7 @@ public final class DeveloperR0Tab {
                     java.util.Arrays.fill(lastCycles,-1L);
                     automaticStartMs=SystemClock.elapsedRealtime();
                     automaticActive=true;
+                    scroll.setKeepScreenOn(true); // Keep operator-visible 20-minute acquisition active.
                     autoCancel.setEnabled(true);
                     autoProgress.setText("بدأ التسخين الأولي • حساسات MQ قيد التشغيل");
                     clock.post(autoTick);
@@ -234,12 +235,14 @@ public final class DeveloperR0Tab {
     }
     private void cancelAutomatic(){
         automaticActive=false;awaitingSave=false;
+        scroll.setKeepScreenOn(false);
         proposedAutomatic=null;clock.removeCallbacks(autoTick);
         autoStart.setEnabled(true);autoCancel.setEnabled(false);
         autoProgress.setText("أُلغيت المعايرة • لم تتغير أي قيمة R0");
     }
     private void completeAutomatic(){
         automaticActive=false;clock.removeCallbacks(autoTick);
+        scroll.setKeepScreenOn(false);
         autoCancel.setEnabled(false);autoStart.setEnabled(true);
         proposedAutomatic=autoSampler==null?null:autoSampler.validProposals();
         if(proposedAutomatic==null||proposedAutomatic.isEmpty()){
