@@ -37,6 +37,14 @@ Started 2026-10-20. Branch `feature/tank-v3-implementation`. All work in Tank re
 - Release cannot be declared: T3-001 admin signing plus P0 physical motion-safety gates, Android device interface/PDF inspection, data migration and several requirements remain unresolved.
 - **Precise resume cursor:** implementation branch `feature/tank-v3-implementation`; latest successfully built CODE commit `dafa0101`; next work must address remaining backlog P2/P3/P4 and verify device results. Keep all already committed V3 overlay source files.
 
+## 2026-10-20 — Owner correction: preserve all available ppm estimators (T3-009)
+- Owner explicitly rejected any rule that would disable chemical-fingerprint, curve, logarithmic/equation, learned-model or other available ppm computational method solely because it lacks accepted manufacturer/reference calibration. The objective is to run methods, not to withhold calculations; preserve truthful evidence labels separately.
+- `chemical/TankChemicalEvidence.java` was changed to **informational capability inventory only**, including fingerprints, curves, active models, reference artifacts and stored equations; its flags are not called by a calculation gate. Valid PPM reference certification is shown as provenance, not as an execution prerequisite.
+- `MeasurementsTab.java` now labels finite results as either **قابل للتقرير** or **تقدير حسابي غير مرجعي** rather than hiding a calculated value solely for lack of reference acceptance. Red safety/legal exceedance checks stay guarded; missing numerical estimates remain missing and are never invented.
+- Tests `TankChemicalEvidenceTest` changed to assert formula- and curve-path availability independent of reference proof. Source commits `24e5828f`, `2fbc4692`, `a1b82bb9`, `21e5dfbe`. GitHub V3 backlog T3-009 updated with owner decision at `5d676798`.
+- **Do not mistakenly tighten a calculation gate in future work.** An optional display of method quality is not permission to disable scientific estimators. Remaining question for a later scientific audit is whether the runtime actually computes a numerical estimate from each method; do not conflate a repository record with a generated numeric value.
+- CI source at `21e5dfbe` was still running at initial log update; confirm exact run `39474277256` before marking tested.
+
 ## Known constraints and risk register
 1. V3 debug diagnostic APK is signed with ephemeral debug key and cannot be assumed upgrade-compatible. Do not tell user to disable Play Protect.
 2. Persistent signing repository secrets not provisioned: `TANK_KEYSTORE_BASE64`, `TANK_KEY_ALIAS`, `TANK_KEYSTORE_PASSWORD`, `TANK_KEY_PASSWORD`. Administrator required; never upload secret content via chat.
