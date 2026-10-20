@@ -20,6 +20,11 @@ public final class RobotApi {
     private static final int DIRECT_DRIVE_TIMEOUT_MS=250;
     private static final int DIRECT_STOP_TIMEOUT_MS=350;
     private static volatile boolean operatorForeground=true;
+    private static volatile boolean tankOffline=false;
+    /** Process-wide hard network guard: a view cannot bypass offline mode via raw RobotApi. */
+    public static void setTankOffline(boolean offline){tankOffline=offline;}
+    public static boolean tankOffline(){return tankOffline;}
+    private static void requireTransport(){if(tankOffline)throw new IllegalStateException("Tank offline preview: robot network disabled");}
     private static volatile boolean requireNeutralAfterBackground=false;
 
     private volatile String robotHost;
@@ -42,10 +47,10 @@ public final class RobotApi {
     }
     public String getRobotHost(){return robotHost;}
     private String url(String path){return "http://"+robotHost+(path.startsWith("/")?path:"/"+path);}
-    private static RemoteConnection remote(){RemoteConnection r=RemoteConnection.current();if(r==null&&RemoteConnection.transportOwned())throw new IllegalStateException("remote transport reconnecting");return r;}
+    private static RemoteConnection remote(){requireTransport();RemoteConnection r=RemoteConnection.current();if(r==null&&RemoteConnection.transportOwned())throw new IllegalStateException("remote transport reconnecting");return r;}
 
-    public String getText(String path,int timeoutMs)throws Exception{HttpURLConnection c=(HttpURLConnection)new URL(url(path)).openConnection();c.setUseCaches(false);c.setConnectTimeout(timeoutMs);c.setReadTimeout(timeoutMs);c.setRequestMethod("GET");c.setRequestProperty("Cache-Control","no-store");return finish(c);}
-    public String postForm(String path,String body,int timeoutMs)throws Exception{HttpURLConnection c=(HttpURLConnection)new URL(url(path)).openConnection();c.setUseCaches(false);c.setConnectTimeout(timeoutMs);c.setReadTimeout(timeoutMs);c.setRequestMethod("POST");c.setDoOutput(true);c.setRequestProperty("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");c.setRequestProperty("Cache-Control","no-store");byte[] b=(body==null?"":body).getBytes(StandardCharsets.UTF_8);c.setFixedLengthStreamingMode(b.length);try(OutputStream out=c.getOutputStream()){out.write(b);out.flush();}return finish(c);}
+    public String getText(String path,int timeoutMs)throws Exception{requireTransport();HttpURLConnection c=(HttpURLConnection)new URL(url(path)).openConnection();c.setUseCaches(false);c.setConnectTimeout(timeoutMs);c.setReadTimeout(timeoutMs);c.setRequestMethod("GET");c.setRequestProperty("Cache-Control","no-store");return finish(c);}
+    public String postForm(String path,String body,int timeoutMs)throws Exception{requireTransport();HttpURLConnection c=(HttpURLConnection)new URL(url(path)).openConnection();c.setUseCaches(false);c.setConnectTimeout(timeoutMs);c.setReadTimeout(timeoutMs);c.setRequestMethod("POST");c.setDoOutput(true);c.setRequestProperty("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");c.setRequestProperty("Cache-Control","no-store");byte[] b=(body==null?"":body).getBytes(StandardCharsets.UTF_8);c.setFixedLengthStreamingMode(b.length);try(OutputStream out=c.getOutputStream()){out.write(b);out.flush();}return finish(c);}
     private static String finish(HttpURLConnection c)throws Exception{int code=c.getResponseCode();InputStream in=code>=200&&code<300?c.getInputStream():c.getErrorStream();StringBuilder s=new StringBuilder();if(in!=null){try(BufferedReader r=new BufferedReader(new InputStreamReader(in,StandardCharsets.UTF_8))){String line;while((line=r.readLine())!=null)s.append(line);}}c.disconnect();if(code<200||code>=300)throw new IllegalStateException("HTTP "+code+" "+s);return s.toString();}
     public JSONObject getJson(String path,int timeoutMs)throws Exception{return new JSONObject(getText(path,timeoutMs));}
 
