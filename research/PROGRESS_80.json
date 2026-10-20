@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-10-19",
+  "updated_at": "2026-10-20",
   "project": "HazRob Tank research only",
   "canonical_status_source": "research/STATUS_LEDGER.md",
   "plan": "research/EXECUTION_PLAN_80_AR.md",
@@ -500,12 +500,26 @@
       "source_dir": "research/techniques/02.6/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175957251",
-      "data_gate": "PARTIAL_PROXY_DATA",
+      "data_gate": "NONCOMPLIANT_SOURCE_dR_NOT_LOG_RS",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "faa4e3f4a41ea0ab149096b46925e9c7532d3f02",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "EXTERNAL_NUMERIC_ONLY_INPUT_SCHEMA_NONCOMPLIANT",
+      "external_reference_g2": {
+        "status": "EXTERNAL_NUMERIC_ONLY_INPUT_SCHEMA_NONCOMPLIANT",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "full_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "executed_date": "2026-10-20",
+        "warning": "Prepared liquid-dose vol.% is not headspace gas ppm; 02.6 input dR not physical log Rs/R0; no Tank G3."
+      }
     },
     {
       "id": "02.7",
@@ -540,12 +554,17 @@
       "source_dir": "research/techniques/02.8/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39175957251",
-      "data_gate": "NEEDS_DEVICE_SESSION_METADATA",
+      "data_gate": "NEEDS_PHYSICAL_REFERENCE_OR_VALIDATED_PROVENANCE",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 14,
       "tested_commit": "faa4e3f4a41ea0ab149096b46925e9c7532d3f02",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
     },
     {
       "id": "03.1",
@@ -1004,12 +1023,17 @@
       "source_dir": "research/techniques/05.4/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39176571203",
-      "data_gate": "NEEDS_CALIBRATED_REFERENCE_DATA",
+      "data_gate": "NEEDS_PHYSICAL_REFERENCE_OR_VALIDATED_PROVENANCE",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
     },
     {
       "id": "05.5",
@@ -1019,12 +1043,17 @@
       "source_dir": "research/techniques/05.5/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39176571203",
-      "data_gate": "NEEDS_CALIBRATED_REFERENCE_DATA",
+      "data_gate": "NEEDS_PHYSICAL_REFERENCE_OR_VALIDATED_PROVENANCE",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
     },
     {
       "id": "05.6",
@@ -1034,12 +1063,17 @@
       "source_dir": "research/techniques/05.6/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39176571203",
-      "data_gate": "NEEDS_CALIBRATED_REFERENCE_DATA",
+      "data_gate": "NEEDS_PHYSICAL_REFERENCE_OR_VALIDATED_PROVENANCE",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
     },
     {
       "id": "05.7",
@@ -1049,12 +1083,17 @@
       "source_dir": "research/techniques/05.7/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39176571203",
-      "data_gate": "NEEDS_CALIBRATED_REFERENCE_DATA",
+      "data_gate": "NEEDS_PHYSICAL_REFERENCE_OR_VALIDATED_PROVENANCE",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 16,
       "tested_commit": "b86a045775047a437de1547e1fbed6f81b7eed60",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
     },
     {
       "id": "05.8",
@@ -1591,12 +1630,26 @@
       "source_dir": "research/techniques/08.8/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39178553937",
-      "data_gate": "NEEDS_REAL_HAZROB_TANK_CALIBRATED_BENCHMARK",
+      "data_gate": "PARTIAL_EXTERNAL_MIXTURE_NUMERIC_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 17,
       "tested_commit": "3868943da762d42f623669b0997db1eff7b0917e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "external_reference_g2": {
+        "status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "full_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "executed_date": "2026-10-20",
+        "warning": "Prepared liquid-dose vol.% is not headspace gas ppm; 02.6 input dR not physical log Rs/R0; no Tank G3."
+      }
     },
     {
       "id": "08.9",
@@ -1606,12 +1659,26 @@
       "source_dir": "research/techniques/08.9/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39178553937",
-      "data_gate": "NEEDS_REAL_HAZROB_TANK_CALIBRATED_BENCHMARK",
+      "data_gate": "PARTIAL_EXTERNAL_MIXTURE_NUMERIC_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 17,
       "tested_commit": "3868943da762d42f623669b0997db1eff7b0917e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "external_reference_g2": {
+        "status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "full_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "executed_date": "2026-10-20",
+        "warning": "Prepared liquid-dose vol.% is not headspace gas ppm; 02.6 input dR not physical log Rs/R0; no Tank G3."
+      }
     },
     {
       "id": "08.10",
@@ -1621,12 +1688,26 @@
       "source_dir": "research/techniques/08.10/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39179061733",
-      "data_gate": "NEEDS_INDEPENDENT_DEVICE_AND_GAS_REFERENCE",
+      "data_gate": "PARTIAL_EXTERNAL_MIXTURE_NUMERIC_ONLY",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 17,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "external_reference_g2": {
+        "status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+        "source": "UCI308 DOI 10.24432/C5BG7G",
+        "not_tank_sensor_array": true,
+        "evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+        "full_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+        "executed_date": "2026-10-20",
+        "warning": "Prepared liquid-dose vol.% is not headspace gas ppm; 02.6 input dR not physical log Rs/R0; no Tank G3."
+      }
     },
     {
       "id": "08.11",
@@ -1636,12 +1717,17 @@
       "source_dir": "research/techniques/08.11/",
       "unit_gate": "PASS",
       "unit_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39179061733",
-      "data_gate": "NEEDS_INDEPENDENT_DEVICE_AND_GAS_REFERENCE",
+      "data_gate": "NEEDS_PHYSICAL_REFERENCE_OR_VALIDATED_PROVENANCE",
       "empirical_gate": "NOT_VALIDATED",
       "limitations": "See STATUS_LEDGER.md",
       "unit_test_count": 15,
       "tested_commit": "a2a52c7ca2d42f4a770d3a0a742728b08cadb53e",
-      "verified_date": "2026-10-19"
+      "verified_date": "2026-10-19",
+      "g2_review_batch": 5,
+      "g2_review_date": "2026-10-20",
+      "g2_review_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "g2_review_report": "research/G2_REAL_DATA_BATCH05_AR.md",
+      "g2_review_status": "BLOCKED_REQUIRED_PHYSICAL_FIELDS"
     },
     {
       "id": "08.12",
@@ -1767,13 +1853,14 @@
   "verified_unit_tests": 1261,
   "next_phase": "G2_data_provenance_and_G3_real_data_evaluation",
   "external_reference_progress": {
-    "completed_research_batches": 4,
-    "reviewed_G2_techniques": 40,
-    "techniques_with_first_real_external_array_evidence": 28,
+    "completed_research_batches": 5,
+    "reviewed_G2_techniques": 50,
+    "techniques_with_first_real_external_array_evidence": 32,
     "technique_ids": [
       "02.1",
       "02.2",
       "02.4",
+      "02.6",
       "02.7",
       "03.1",
       "03.2",
@@ -1798,7 +1885,10 @@
       "07.6",
       "07.7",
       "07.8",
-      "07.9"
+      "07.9",
+      "08.10",
+      "08.8",
+      "08.9"
     ],
     "blocked_techniques": [
       "01.1",
@@ -1810,8 +1900,14 @@
       "01.7",
       "02.3",
       "02.5",
+      "02.8",
       "05.1",
-      "07.2"
+      "05.4",
+      "05.5",
+      "05.6",
+      "05.7",
+      "07.2",
+      "08.11"
     ],
     "measured_exposure_records_per_dataset": 90,
     "source_doi": "10.24432/C5CK6F",
@@ -1822,40 +1918,54 @@
       "research/G2_REAL_DATA_BATCH01_AR.md",
       "research/G2_REAL_DATA_BATCH02_AR.md",
       "research/G2_REAL_DATA_BATCH03_AR.md",
-      "research/G2_REAL_DATA_BATCH04_AR.md"
+      "research/G2_REAL_DATA_BATCH04_AR.md",
+      "research/G2_REAL_DATA_BATCH05_AR.md"
     ],
     "runs": [
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39180196732",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39180489713",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39182059102",
       "https://github.com/HazRob/HazRob-Tank/actions/runs/39184775420",
-      "https://github.com/HazRob/HazRob-Tank/actions/runs/39201607716"
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39201607716",
+      "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553"
     ],
-    "warning": "G2 counts cover distinct research technique IDs, not independent laboratory studies. G2-01..03 used the SAME 90 UCI1081 exposures; G2-04 added 13,910 distinct UCI270 exposure records; UCI224 duplicates UCI270 and must not be double counted. 128 derived attributes in UCI270 are NOT 128 independent sensors. Tank G3 remains 0/80.",
+    "warning": "Counts represent distinct research IDs reviewed, NOT Tank qualified chemistry or independent datasets per technique. 3 unique external collections: UCI1081 (90), UCI270 (13910), UCI308 (58). Some numerically executed modules only have noncompliant physical feature semantics. 17 blocked plus 1 analytical-only. Tank G3=0/80.",
     "warnings_by_batch": {
       "G2-03": "Nine physically grounded MQ techniques BLOCKED for missing reliable ADC/RL/R0/heater/BME/ohm fields; 02.1 generic filtering executed on external-source signals only.",
-      "G2-04": "One external 16-sensor array across ten temporal batches, 8 authentic-value techniques, 07.10 theoretical-only, 07.2 blocked for lack of independent device. Source donor description research-only conflicts with current CC BY website."
+      "G2-04": "One external 16-sensor array across ten temporal batches, 8 authentic-value techniques, 07.10 theoretical-only, 07.2 blocked for lack of independent device. Source donor description research-only conflicts with current CC BY website.",
+      "G2-05": "UCI308 prepared dilution is liquid vol.% not gas ppm; 02.6 source dR not verified log Rs/R0. 08.8 measured-source mixture detection failed (sensitivity 6/20, specificity 14/30). Six techniques blocked; no Tank G3."
     },
-    "unique_exposures_across_all_G2_batches": 14000,
+    "unique_exposures_across_all_G2_batches": 14058,
     "analytical_only_techniques": [
       "07.10"
     ],
     "analytical_only_count": 1,
     "unique_measured_exposure_records_by_source": {
       "UCI1081": 90,
-      "UCI270": 13910
+      "UCI270": 13910,
+      "UCI308": 58
     },
-    "total_independent_source_collections": 2,
-    "last_batch_source": "UCI270",
-    "last_batch_sha256": "98fe3a30981a222dd4518fbcc3dddd45d5c0ce9b03ef6dc6fe5cf7a04cfbff5e",
+    "total_independent_source_collections": 3,
+    "last_batch_source": "UCI308",
+    "last_batch_sha256": "7b062960dbef1a9e8aefc62bc7dbac09bdadb8cbb40793cf2b8e122da1862f90",
     "last_batch_evidence": {
       "reviewed": 10,
-      "executed_on_measured_derived_features": 8,
-      "analytical_only": 1,
-      "blocked": 1,
-      "tested_sha": "8e065677c3c5653185b99847759f94baae223583",
-      "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39201607716",
-      "report": "research/G2_REAL_DATA_BATCH04_AR.md"
+      "numeric_signal_techniques": 4,
+      "numeric_noncompliant_physical_input": 1,
+      "blocked": 6,
+      "fully_chemical_validated": 0,
+      "source_measured_exposures": 58,
+      "tested_sha": "6db703dd856c07544f8f96efd8af4f01211bedfd",
+      "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+      "report": "research/G2_REAL_DATA_BATCH05_AR.md"
+    },
+    "numerically_executed_with_noncompliant_chemical_inputs": [
+      "02.6"
+    ],
+    "reviewed_total_breakdown": {
+      "external_numeric_or_metadata": 32,
+      "scientifically_blocked": 17,
+      "analytical_only": 1
     }
   }
 }
