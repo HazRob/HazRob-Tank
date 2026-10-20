@@ -85,6 +85,13 @@ Started 2026-10-20. Branch `feature/tank-v3-implementation`. All work in Tank re
 3. Continue T3-012/T3-013/T3-016/T3-017 checks, then produce release qualification dossier; do not merge or release without blocking gates.
 4. When new tests pass, append exact run SHA/ID/outcome to this log; do not replace verified older SHA with an unverified HEAD.
 
+### Batch V3-04 final CI closure and diagnostic firmware artifact
+- [Android run **39478645439**](https://github.com/HazRob/HazRob-Tank/actions/runs/39478645439) — **SUCCESS**, source `25d12dab1080f1dce8e0303b3adda78a1d977b69`; all **608 Gradle unit/source-contract tests**, APK assembly, debug signature verification and embedded ChemCore manifest passed. New V3 UI source-level contract tests cover 6 non-driving refresh icons, two-up physical cards, independent particles tab, no IR cliff warning and actual report chart modal. These tests are **not** real-phone screenshots or hardware validation.
+- [Firmware build run **39479247830**](https://github.com/HazRob/HazRob-Tank/actions/runs/39479247830) — **SUCCESS** for `ESP32-Tank 0.1.3-v3-dev` version identifier, still candidate only.
+- [Firmware run **39479359692**](https://github.com/HazRob/HazRob-Tank/actions/runs/39479359692) — **SUCCESS**, SHA `3d9c111dde7d4f7f82bb85361bba2902ca6eaed8`; Ardunio-ESP32 pinned 2.0.17 full compile, safety contract checks and **candidate diagnostic artifact uploaded** as `HazRob-ESP32-Tank-V3-UNRELEASED-firmware-candidate` (artifact ID `12291466837`; ZIP + compiled .bin files + SHA256 checksums). **UNRELEASED/TEST ONLY, not to be flashed without physical safety controls.**
+- [Release qualification checklist](V3-RELEASE-QUALIFICATION.md) written on branch commit `2b6da8f7`; includes all required independent Android and Tank hardware safety checks and explicit blockers.
+- Plan ledger updated at `7a3d2a6c`. Permanent signing and actual phone/robot tests remain open. Do not call V3 released; do not merge into `develop` merely because CI compiled.
+
 ## Known constraints and risk register
 1. V3 debug diagnostic APK is signed with ephemeral debug key and cannot be assumed upgrade-compatible. Do not tell user to disable Play Protect.
 2. Persistent signing repository secrets not provisioned: `TANK_KEYSTORE_BASE64`, `TANK_KEY_ALIAS`, `TANK_KEYSTORE_PASSWORD`, `TANK_KEY_PASSWORD`. Administrator required; never upload secret content via chat.
