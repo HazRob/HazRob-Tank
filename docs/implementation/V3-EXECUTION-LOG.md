@@ -58,6 +58,33 @@ Started 2026-10-20. Branch `feature/tank-v3-implementation`. All work in Tank re
 3. Address T3-008 instant snapshot vs field session record distinction, T3-013 embedded ChemCore runtime proof and T3-016 UI regression checks, preserving all methods for ppm calculation.
 4. Update plan ledger and this log with exact CI SHA and outcome after next batch. No V3 release until signature and hardware checks.
  
+## 2026-10-20 — Batch V3-04: real firmware build, instant isolation and regression gates
+**Checkpoint status:** Android and ESP32 **independent build paths** have passed at identified commits, but feature branch HEAD may be later and needs another Android CI success. No signed release and no real device/hardware safety test.
+
+### Verified CI evidence
+- **ESP32 Arduino full compile: SUCCESS** [run 39476938209](https://github.com/HazRob/HazRob-Tank/actions/runs/39476938209), source commit `54728175d2ebcbb854aa63fb3f7c0f2ff1b33a87`. Arduino-ESP32 **2.0.17**, `esp32:esp32:esp32`, operator watchdog/no-replay source checks. Required several repairs inherited from firmware: Arduino core 2.x incompatible `WiFi.AP.enableNAPT` (WAN via remote MQTT retained; NAPT not claimed available), 32-bit arithmetic type mismatches, malformed JSON string literals, invalid servo aggregate initialization and malformed PEM raw-string macro. Compiling firmware **does not mean it has been flashed or its servo, LDR, MQ, Echo and remote controls have been physically tested**. Retain the difference between source-level and physical safety.
+- **Android CI: SUCCESS** [run 39477075161](https://github.com/HazRob/HazRob-Tank/actions/runs/39477075161), source commit `edd9a72a3b8c280163171fc8b55c1b2fcf7d208b`; T3-008 independent instant-snapshot code now builds after moving its history method inside `MeasurementsTab.LivePane`. Debug artifact is explicitly **UNRELEASED**. Both production signing and physical operator acceptance are not yet proven.
+- **Android CI: SUCCESS** [run 39477743590](https://github.com/HazRob/HazRob-Tank/actions/runs/39477743590), commit `7dc9e0e968ab9c43089e323b94c98ba436b8b2fe`; removes legacy nonexistent IR/cliff warning from Tank Android status while retaining Echo proximity-warning only.
+- **Android CI: SUCCESS** [run 39478101674](https://github.com/HazRob/HazRob-Tank/actions/runs/39478101674), commit `d3be7c82de8dea64e9614e7a12fc10fc0da4575b`. `ChemCoreAnalysisPresenter` now shows **any computed finite ppm estimate**, even without M4 reference reportability, but does not treat that estimate as a regulatory gas safety violation. Previous test for genuinely absent numeric ppm was preserved with a truthful `WITHHELD` marker; a new test checks valid estimated ppm visibility. Do not restore display-only calculation blocks contrary to owner decision T3-009.
+
+### Further changes after last confirmed Android success (require CI on HEAD)
+- **Final reports must exclude unapproved user captures** not only in site/session dropdown but also the ReportsTab history and attached chart. Commit `aa4e934677d67b7c7c2421ebee5031a355d3a4e8` filters the latest user measurements against `FieldSessionRepository.isApproved`, leaving local draft records untouched and preserving separate instant snapshots.
+- **Source-level operator UI regression tests:** `TankV3OperatorLayoutContractTest` checks that six non-driving tabs have an in-content refresh icon with no row, physical measurement cards are two-per-row and PM is separate, IR is not falsely shown, and persisted chart viewer opens a real full-size dialog. First test runs failed because new test used `app/src/main/java` from module `app` (wrong working directory). Corrected path to `src/main/java` at commit `7d19a6889f7072a330b5607325a908b385ebc4b4`; also removed an overly broad assertion forbidding the legitimate 'تم تحديث البيانات الحية' toast at `25d12dab1080f1dce8e0303b3adda78a1d977b69`. Check **exact latest run** [39478645439](https://github.com/HazRob/HazRob-Tank/actions/runs/39478645439) and fix any remaining test assertion using actual results. Prior failed runs are explicitly NOT passing evidence.
+- Main report chart picker and enlarged dialog still need a real Android device visual/interaction validation for all 20 graphs, including data-backed availability, no-data and failure states.
+- R0 automatic 20-minute UI/three acquisition windows/save/normalization source and tests have passed Android CI; it still needs a real 20-minute sensor measurement and quantitative ChemCore propagation validation. Never claim a reference-gas PPM calibration.
+
+### RELEASE BLOCKERS — still open
+1. Admin-controlled **persistent signing keystore/secrets** are missing; debug test artifact is not a deliverable upgrade-safe V3 APK.
+2. Physical safety checks on actual two continuous-rotation servos, with tracks raised initially: stop/release-to-stop, 500ms watchdog, direct/remote loss, E-STOP latch/reset, correct polarity and proper ESC battery isolation. Do not flash a prototype unattended.
+3. Real Android device verification of RTL cards, buttons, offline mode, 20-minute R0, charts and exporting full site/physical reports.
+4. T3-012/013/016/017 require final in-device and database scoping review; T3-015 actual PM sensor not installed; T3-019 research techniques deliberately not a release blocker.
+
+### Resume cursor (after Batch V3-04)
+1. Fetch branch `feature/tank-v3-implementation` at HEAD and these docs, review live GitHub Actions [39478645439](https://github.com/HazRob/HazRob-Tank/actions/runs/39478645439). If failed, inspect failed job logs and correct the exact contract/test mismatch, not by disabling tests.
+2. Confirm `T3-007` approved-only final report selector **and** history/chart scope (source commit `aa4e9346`).
+3. Continue T3-012/T3-013/T3-016/T3-017 checks, then produce release qualification dossier; do not merge or release without blocking gates.
+4. When new tests pass, append exact run SHA/ID/outcome to this log; do not replace verified older SHA with an unverified HEAD.
+
 ## Known constraints and risk register
 1. V3 debug diagnostic APK is signed with ephemeral debug key and cannot be assumed upgrade-compatible. Do not tell user to disable Play Protect.
 2. Persistent signing repository secrets not provisioned: `TANK_KEYSTORE_BASE64`, `TANK_KEY_ALIAS`, `TANK_KEYSTORE_PASSWORD`, `TANK_KEY_PASSWORD`. Administrator required; never upload secret content via chat.
