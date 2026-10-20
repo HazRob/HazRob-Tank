@@ -8,7 +8,7 @@ public final class TankAutoR0Math {
     public static final long TOTAL_MS=20L*60_000L;
     public static final int SENSOR_COUNT=8,WINDOWS=3;
     private static final String[] KEYS={"mq2","mq3","mq4","mq5","mq7","mq8","mq9","mq135"};
-    private final double[][] logSum=new double[SENSOR_COUNT][WINDOWS];
+    private final double[][] sum=new double[SENSOR_COUNT][WINDOWS];
     private final int[][] counts=new int[SENSOR_COUNT][WINDOWS];
 
     /** 5-minute heat, then 3-minute capture / 3-minute powered-on rest / repeat. */
@@ -24,19 +24,21 @@ public final class TankAutoR0Math {
     public void accept(int sensor,int window,double rsKilohm){
         if(sensor<0||sensor>=SENSOR_COUNT||window<0||window>=WINDOWS
             ||!Double.isFinite(rsKilohm)||rsKilohm<=0)return;
-        logSum[sensor][window]+=Math.log(rsKilohm);
+        sum[sensor][window]+=rsKilohm;
         counts[sensor][window]++;
     }
     public int count(int sensor,int window){return counts[sensor][window];}
-    /** 3 window means receive equal log weight irrespective of telemetry rate. */
+    /** Arithmetic average of every valid Rs reading over all three on-powered capture windows. */
     public double proposedR0(int sensor){
         if(sensor<0||sensor>=SENSOR_COUNT)return Double.NaN;
         double total=0.0;
+        long sampleCount=0;
         for(int w=0;w<WINDOWS;w++){
             if(counts[sensor][w]==0)return Double.NaN;
-            total+=logSum[sensor][w]/counts[sensor][w];
+            total+=sum[sensor][w];
+            sampleCount+=counts[sensor][w];
         }
-        double r=Math.exp(total/WINDOWS);
+        double r=total/sampleCount;
         return Double.isFinite(r)&&r>0?r:Double.NaN;
     }
     public Map<String,Double> validProposals(){
