@@ -159,7 +159,11 @@ public final class ReportsTab {
 
     public void refresh(){
         refreshSiteScope();
-        list.removeAllViews();List<ExperimentQueries.Record> rows=ExperimentQueries.recentUser(host.database(),100);archiveCard.setText("السجل • "+host.database().count()+" قياس محفوظ • المعروض "+rows.size());
+        list.removeAllViews();List<ExperimentQueries.Record> rows=new ArrayList<>(ExperimentQueries.recentUser(host.database(),100));
+        // Site/session final report history is approved-only; local draft measurements remain in storage.
+        rows.removeIf(r->{String sid=r.sessionId==null?"":r.sessionId.trim();if(sid.isEmpty())return true;
+            String fs=fieldSessions.fieldSessionIdForMeasurement(sid);return fs==null||fs.isEmpty()||!fieldSessions.isApproved(fs);});
+        archiveCard.setText("التقارير المعتمدة • "+rows.size()+" قياس ظاهر من آخر 100 قياس مستخدم");
         if(rows.isEmpty()){selectedId=-1;setEnabled(false);sessionCard.setText("الجلسة\n—");decisionCard.setText("القرار\n—");qualityCard.setText("الجودة\n—");safetyCard.setText("السلامة\n—");candidateCard.setText("المرشحون • —");technical.setText("لا توجد بيانات تقرير.");availableCharts.clear();chartSelector.setAdapter(null);chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("المخطط • لا توجد جلسة محفوظة");return;}
         if(selectedId<0)selectedId=rows.get(0).id;boolean found=false;
         for(ExperimentQueries.Record r:rows){if(r.id==selectedId)found=true;Button b=UiKit.button(list.getContext(),(r.id==selectedId?"● ":"")+"#"+r.id+"   "+safe(r.ts)+"   "+safe(r.protocol));b.setOnClickListener(v->select(r.id));list.addView(b,UiKit.full(list.getContext()));}
