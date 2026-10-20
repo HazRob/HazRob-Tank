@@ -1,5 +1,5 @@
 # HazRob Tank V3 — Implementation Plan and Durable Checkpoint
-**Most recent successfully tested Android code:** `25d12dab1080f1dce8e0303b3adda78a1d977b69` — [CI 39478645439](https://github.com/HazRob/HazRob-Tank/actions/runs/39478645439) SUCCESS. Firmware build on `54728175` — [CI 39476938209](https://github.com/HazRob/HazRob-Tank/actions/runs/39476938209) SUCCESS. Subsequent ESP32 packaging workflow run may be pending.\n\n**Initiated:** 2026-10-20 | **Branch:** `feature/tank-v3-implementation` | **Base:** develop | **State:** IN PROGRESS — NOT RELEASED
+**Most recent successfully tested Android code:** `dda17d08bf2d2e82ca3c371cd686c9b85233cfae` — [CI 39485877592](https://github.com/HazRob/HazRob-Tank/actions/runs/39485877592) SUCCESS (all Android tests, real SQLite, assembly and embedded ChemCore manifest; stable signature skipped). ESP32 V3 firmware — [CI 39479359692](https://github.com/HazRob/HazRob-Tank/actions/runs/39479359692) SUCCESS compiled candidate, real hardware tests still required.
 
 ## Governing requirements / provenance
 - **Source of truth:** [V3 backlog](../requirements/V3-ANDROID-BACKLOG-2026-10-20.md) covering T3-001…T3-024, including owner-approved physical card UI, alert transitions, refresh icon, fixed 20-minute clean-air field R0 procedure, chart viewer, and independent PM tab.
@@ -39,7 +39,7 @@
 | T3-002 | CI_VERIFIED_DEVICE_PENDING | V3 offline selection, service and RobotApi network hard gate; Android tests pass at 25d12dab, physical phone/network test pending |
 | T3-003 | FIRMWARE_COMPILED_HARDWARE_PENDING | No autonomous replay; neutral stop on link loss or 500ms timeout; ESP32 Arduino-2.0.17 full compile SUCCESS run 39476938209; actual servos and E-STOP untested |
 | T3-004 | CI_VERIFIED_DEVICE_PENDING | Standalone Tank vector launcher and connection branding contract verified in CI 39484092225; remaining real Android visual identity review pending |
-| T3-005 | PARTIAL_CI_VERIFIED_DEVICE_PENDING | Measurements, Reports, Status, R0 and Settings light RTL. Explicit Status card contrast updated commit 5933a043 (its CI pending); device visual regression still required |
+| T3-005 | CI_VERIFIED_DEVICE_PENDING | Light RTL physical, reports, settings and status surfaces; accessible dark text on white status cards and correct local R0 provenance labels; verified Android CI 39485877592; real-phone visual review pending |
 | T3-006 | CI_VERIFIED_DEVICE_PENDING | Session approval now requires completed READY USER capture with real samples and coherent terminal metadata; JVM guards passed CI 39480818787; real SQLite/device check pending |
 | T3-007 | CI_SQLITE_VERIFIED_DEVICE_PENDING | SQLite test extracts real Java approved-report query and proves 155 newer drafts + dev/instant data cannot hide approved user reports, CI 39484447715 PASS; Android reports UI/exports pending |
 | T3-008 | CI_VERIFIED_DEVICE_PENDING | Instant locally saved snapshot and independent log not linked to field sessions; Android CI 39477075161/39478645439 successful |
@@ -50,7 +50,7 @@
 | T3-013 | CI_VERIFIED_DEVICE_PENDING | Stable snapshot install followed by molecular import and QSPR runtime rebuild at boot; Status shows active library/model counts, CI 39481514424 passed; runtime on phone pending |
 | T3-014 | ESP32_COMPILED_HARDWARE_PENDING | Firmware API4 Arduino core compile run 39476938209 plus Android static route test; Tank peripheral/network hardware test pending |
 | T3-015 | MAINTAIN_EXISTING | PM fourth subtab exists; no physical PM hardware |
-| T3-016 | CI_REGRESSION_PASSED_DEVICE_PENDING | Android source/UI contract tests and real SQLite approved-report integration passed CI 39484447715; no Android emulator; real operator-device smoothness/layout pending |
+| T3-016 | CI_REGRESSION_PASSED_DEVICE_PENDING | Android unit/source tests, all-20 plot selection cases and executable SQLite approved reports pass CI 39485877592; no Android emulator; real device smoothness/scroll checks pending |
 | T3-017 | CI_SQLITE_PARTIAL_DEVICE_PENDING | SQL role/approved-only isolation tested with real SQLite (not emulator), CI 39484447715; local backup/restore and developer central sync runtime verification pending |
 | T3-018 | BLOCKED_DEVICE | Android release installation and Play Protect diagnosis require stable keystore and physical target phone |
 | T3-019 | DEFERRED_CONDITIONAL | Research integration is not a V3 ship blocker |
@@ -58,7 +58,7 @@
 | T3-021 | PARTIAL_IMPLEMENTED | Gray normal/red+white on valid instantaneous threshold crossing |
 | T3-022 | IMPLEMENTED_UNVERIFIED | Single icon top-left non-drive tabs |
 | T3-023 | CI_VERIFIED_DEVICE_PENDING | 20-minute R0 flow plus automatic source preservation in historical series; CI 39481674270 passed; real 20-minute sensor/ppm tests pending |
-| T3-024 | IMPLEMENTED_CI_PENDING | 20 chart slots dynamically filtered for matching real MQ/environment/sound/chemcore evidence; old contract revised; latest CI pending, device plots pending |
+| T3-024 | CI_VERIFIED_DEVICE_PENDING | All 20 report graph selectors have exercised data-backed eligibility routes plus explicit empty-data cases, tested CI 39485600871; real handset rendering, modal clarity and export reviews pending |
 
 ## Resume after interruption — precise instructions
 1. Read **this file first** and [V3 backlog](../requirements/V3-ANDROID-BACKLOG-2026-10-20.md); inspect branch HEAD SHA and all commits since creation.
