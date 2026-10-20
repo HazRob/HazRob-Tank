@@ -12,6 +12,40 @@ permissions:
   contents: read
 
 jobs:
+  package-camera-arduino-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create independent sketch ZIP for Arduino IDE
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile,hashlib
+          src=Path('firmware/Cam-tank')
+          dst=Path('camera-arduino-source')
+          dst.mkdir(exist_ok=True)
+          path=dst/'HazRob-Tank-V3-ESP32-CAM-Arduino.zip'
+          with zipfile.ZipFile(path,'w',zipfile.ZIP_DEFLATED) as z:
+              for p in sorted(src.iterdir()):
+                  if p.is_file() and p.suffix.lower() in ('.ino','.cpp','.h','.md') and p.name!='RemoteVideoSecrets.h':
+                      z.write(p,arcname='Cam-tank/'+p.name)
+          with zipfile.ZipFile(path) as z:
+              names=z.namelist()
+              assert 'Cam-tank/Cam-tank.ino' in names
+              assert 'Cam-tank/RemoteVideo.cpp' in names
+              assert 'Cam-tank/RemoteVideoConfig.h' in names
+              assert 'Cam-tank/RemoteVideoSecrets.example.h' in names
+          (dst/'SHA256SUMS.txt').write_text(hashlib.sha256(path.read_bytes()).hexdigest()+'  '+path.name+'\n')
+          print('Arduino sketch source ZIP:',path)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V3-CAM-Arduino-source-standalone
+          path: camera-arduino-source/
+          if-no-files-found: error
+          retention-days: 14
+
   build-cam-tank:
     runs-on: ubuntu-latest
     timeout-minutes: 40
