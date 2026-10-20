@@ -5,6 +5,11 @@ on:
       - '.github/workflows/uci1081-trainable-neural.yml'
       - 'research/benchmarks/uci1081_trainable_neural_v1.py'
       - 'research/benchmarks/test_uci1081_trainable_neural_v1.py'
+  pull_request:
+    paths:
+      - '.github/workflows/uci1081-trainable-neural.yml'
+      - 'research/benchmarks/uci1081_trainable_neural_v1.py'
+      - 'research/benchmarks/test_uci1081_trainable_neural_v1.py'
   workflow_dispatch:
 permissions:
   contents: read
