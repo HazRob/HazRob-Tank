@@ -27,7 +27,7 @@ public final class TankV3OperatorLayoutContractTest {
         assertTrue(s.contains("visibleCards.size();i+=2"));
         assertTrue(s.contains("box.addView(row,UiKit.full(c))"));
         assertTrue(s.contains("if(i==9||i==10||i==11)"));
-        assertTrue(s.contains("private View buildParticlesLanding()"));
+        assertTrue(s.contains("private ScrollView buildParticlesLanding()"));
         assertTrue(s.contains("ALERT_BG=0xFFC62828"));
         assertTrue(s.contains("int color=alert?Color.WHITE:TEXT"));
         assertTrue(s.contains("calibrated&&Double.isFinite(dba)"));
