@@ -40,12 +40,12 @@
 | T3-003 | QUEUED | Physical robot E-STOP/500ms watchdog verification outstanding |
 | T3-004 | PARTIAL_IMPLEMENTED | V3 strings and branding |
 | T3-005 | PARTIAL_IMPLEMENTED | RTL and inherited dark styling |
-| T3-006 | IMPLEMENTED_UNVERIFIED | Field session approval and UI |
+| T3-006 | PARTIAL_IMPLEMENTED | Field session approval and UI |
 | T3-007 | IMPLEMENTED_UNVERIFIED | APPROVED-only report aggregation |
 | T3-008 | PARTIAL_IMPLEMENTED | Instant vs field isolation |
 | T3-009 | QUEUED | Search capability provenance |
 | T3-010 | QUEUED | ChemCore evidence highlighting |
-| T3-011 | IMPLEMENTED_UNVERIFIED | Physical PDF references |
+| T3-011 | PARTIAL_IMPLEMENTED | Physical PDF references |
 | T3-012 | QUEUED | PDF/XLSX charts and report quality |
 | T3-013 | PENDING_DEVICE | ChemCore embedded in prior successful build; active runtime not device-tested |
 | T3-014 | PENDING_HARDWARE | API4 static checked earlier; real robot testing pending |
