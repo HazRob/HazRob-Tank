@@ -5,35 +5,35 @@ import android.database.sqlite.SQLiteDatabase;
 import com.servoc.app.calibration.CalibrationValidationMarker;
 import com.servoc.app.data.ExperimentsDb;
 
-/**
- * Conservative provenance-only chemical search badges.
- * A molecular identifier is not a QSPR model; an active curve is not a validated ppm result.
- */
+/** Observational inventory of available paths. Never acts as a calculation gate. */
 public final class TankChemicalEvidence {
     private TankChemicalEvidence(){}
     public static final class Flags {
-        public final boolean localFingerprint,storedCurve,referenceAcceptedCurve,molecularIdentifier;
-        Flags(boolean fp,boolean c,boolean r,boolean m){
-            localFingerprint=fp;storedCurve=c;referenceAcceptedCurve=r;molecularIdentifier=m;
+        public final boolean localFingerprint,storedCurve,referenceAcceptedCurve,molecularIdentifier,algorithmEvidence;
+        Flags(boolean fp,boolean c,boolean r,boolean m){this(fp,c,r,m,false);}
+        Flags(boolean fp,boolean c,boolean r,boolean m,boolean algorithm){
+            localFingerprint=fp;storedCurve=c;referenceAcceptedCurve=r;molecularIdentifier=m;algorithmEvidence=algorithm;
         }
+        public boolean hasLocalMethod(){return localFingerprint||storedCurve||algorithmEvidence;}
         public String describe(){
-            return "البصمة المحلية: "+(localFingerprint?"محفوظة":"لا توجد بصمة محلية مثبتة")
-                +"\nمنحنى المعايرة: "+(storedCurve?"محفوظ (الصلاحية تعتمد على الجودة)":"غير موثق")
-                +"\nدليل PPM مرجعي: "+(referenceAcceptedCurve?"توجد معايرة مرجعية مقبولة؛ الصلاحية الفعلية مشروطة بالنطاق والجودة":"غير مثبت")
-                +"\nالتعريف الجزيئي: "+(molecularIdentifier?"معرف PubChem متاح؛ لا يثبت وجود نموذج QSPR":"لم يثبت توفر معرف PubChem")
-                +"\nالتتبع اللحظي لا يعني التعرف الكمي على المادة.";
+            return "البصمة: "+(localFingerprint?"متاحة":"لا توجد بصمة محلية")
+                +"\nمنحنى المعايرة: "+(storedCurve?"متاح للحساب":"لا يوجد منحنى محلي")
+                +"\nمعادلة أو نموذج حسابي: "+(algorithmEvidence?"متاح":"لا توجد طريقة محلية مفهرسة")
+                +"\nمرجعية المعايرة: "+(referenceAcceptedCurve?"يوجد مرجع مقبول":"غير موثقة مرجعيًا؛ لا يمنع الحساب")
+                +"\nالتعريف الجزيئي: "+(molecularIdentifier?"يوجد معرف PubChem":"غير متاح")
+                +"\nكل طرق الحساب الموجودة في ChemCore تبقى فعالة؛ مستوى الثقة والتقرير منفصل عن تشغيل الحساب.";
         }
         public String concise(){
             return (localFingerprint?"🧬 بصمة":"○ بصمة")+
                 (storedCurve?" | 📈 منحنى":" | ○ منحنى")+
-                (referenceAcceptedCurve?" | ✓ PPM مرجعي":" | ○ PPM غير مثبت")+
-                (molecularIdentifier?" | ◇ PubChem":" | ○ جزيئي");
+                (algorithmEvidence?" | ∑ معادلة/نموذج":" | ○ نموذج")+
+                (referenceAcceptedCurve?" | مرجع مقبول":" | استدلالي");
         }
     }
 
     public static Flags inspect(ExperimentsDb db,ChemicalRepository.Chemical chemical){
         if(db==null||chemical==null)return new Flags(false,false,false,false);
-        boolean fingerprint=false,curve=false,accepted=false,identifier=chemical.pubchemCid!=null&&chemical.pubchemCid>0;
+        boolean fingerprint=false,curve=false,accepted=false,algorithm=false,identifier=chemical.pubchemCid!=null&&chemical.pubchemCid>0;
         SQLiteDatabase reader=db.getReadableDatabase();
         if(chemical.legacyId!=null&&chemical.legacyId>=0){
             String id=Integer.toString(chemical.legacyId);
@@ -54,6 +54,28 @@ public final class TankChemicalEvidence {
                 }
             }
         }
-        return new Flags(fingerprint,curve,accepted,identifier);
+        // Algebraic/logarithmic curve or algorithm evidence is a distinct eligible analytical path.
+        // These inventory flags NEVER disable, withhold, or alter any ChemCore calculation.
+        if(chemical.legacyId!=null&&chemical.legacyId>=0){
+            String id=Integer.toString(chemical.legacyId);
+            try(Cursor c=reader.rawQuery("SELECT 1 FROM models WHERE chemical_id=? AND active=1 LIMIT 1",new String[]{id})){
+                algorithm=c.moveToFirst();
+            }
+        }
+        if(!algorithm){
+            try(Cursor c=reader.rawQuery("SELECT 1 FROM reference_artifacts WHERE chemical_uid=? AND active=1 LIMIT 1",
+                    new String[]{Long.toString(chemical.uid)})){
+                algorithm=c.moveToFirst();
+            }
+        }
+        if(!algorithm){
+            try(Cursor c=reader.rawQuery(
+                    "SELECT 1 FROM sensor_evidence WHERE chemical_uid=? AND ((equation IS NOT NULL AND TRIM(equation)<>'') "+
+                    "OR (coefficients IS NOT NULL AND TRIM(coefficients)<>'')) LIMIT 1",
+                    new String[]{Long.toString(chemical.uid)})){
+                algorithm=c.moveToFirst();
+            }
+        }
+        return new Flags(fingerprint,curve,accepted,identifier,algorithm);
     }
 }
