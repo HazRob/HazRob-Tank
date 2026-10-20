@@ -2,8 +2,8 @@
 #include <Arduino.h>
 
 namespace Cfg{
-constexpr char FW[]="ESP32-Tank 0.1.1-dev";
-constexpr char ENGINEERING_REVISION[]="TANK-SERVO-R1";
+constexpr char FW[]="ESP32-Tank 0.1.3-v3-dev";
+constexpr char ENGINEERING_REVISION[]="TANK-V3-STOPSAFE-CANDIDATE";
 constexpr uint8_t API=4;
 constexpr char HW_PROFILE[]="tank-doit-v1-2servo-8mq-echo-bme";
 constexpr char SSID[]="HazRob",NVS[]="servoc",CAM[]="192.168.4.2";
