@@ -35,7 +35,7 @@ import java.util.concurrent.ExecutorService;
 
 /** HazRob transport selector. Direct is the boot authority; Remote requires explicit operator action. */
 public final class ConnectionGate {
-    public enum Mode{DIRECT,REMOTE}
+    public enum Mode{DIRECT,REMOTE,OFFLINE}
     public interface Listener{void onReady(Mode mode);}
     private static final int WIFI_PERMISSION_REQUEST=7301;
 
@@ -55,12 +55,12 @@ public final class ConnectionGate {
         this.a=a;this.local=local;this.prefs=prefs;this.io=io;this.developer=developer;this.listener=listener;
         RemoteServiceProfile.ensureDefaults(prefs);
         root=UiKit.vbox(a);root.setGravity(Gravity.CENTER_HORIZONTAL);root.setPadding(UiKit.dp(a,24),UiKit.dp(a,18),UiKit.dp(a,24),UiKit.dp(a,14));root.setBackgroundColor(Color.WHITE);
-        ImageView robot=new ImageView(a);robot.setImageResource(R.drawable.ic_hazrob_hr069_r1);robot.setScaleType(ImageView.ScaleType.CENTER_INSIDE);robot.setAdjustViewBounds(true);robot.setContentDescription("HazRob");
+        ImageView robot=new ImageView(a);robot.setImageResource(R.drawable.ic_hazrob_hr069_r1);robot.setScaleType(ImageView.ScaleType.CENTER_INSIDE);robot.setAdjustViewBounds(true);robot.setContentDescription("HazRob Tank");
         LinearLayout.LayoutParams imageParams=new LinearLayout.LayoutParams(-1,0,1f);imageParams.setMargins(0,0,0,UiKit.dp(a,12));root.addView(robot,imageParams);
         content=UiKit.vbox(a);root.addView(content,new LinearLayout.LayoutParams(-1,-2));
         progress=new ProgressBar(a,null,android.R.attr.progressBarStyleHorizontal);progress.setMax(10);progress.setVisibility(View.GONE);root.addView(progress,new LinearLayout.LayoutParams(-1,UiKit.dp(a,10)));
         status=UiKit.small(a,"");status.setGravity(Gravity.CENTER);status.setTextColor(0xFF245A7A);status.setBackgroundColor(Color.TRANSPARENT);root.addView(status,UiKit.full(a));
-        TextView footer=UiKit.small(a,"HazRob "+ReleaseAudit.VERSION+" • إعداد المشروع/ "+ReleaseAudit.PROJECT_PREPARERS);footer.setGravity(Gravity.CENTER);footer.setTextColor(0xFF616161);footer.setBackgroundColor(Color.TRANSPARENT);LinearLayout.LayoutParams fp=UiKit.full(a);fp.topMargin=UiKit.dp(a,10);root.addView(footer,fp);
+        TextView footer=UiKit.small(a,"HazRob Tank V3 • مساحة تشغيل مستقلة");footer.setGravity(Gravity.CENTER);footer.setTextColor(0xFF616161);footer.setBackgroundColor(Color.TRANSPARENT);LinearLayout.LayoutParams fp=UiKit.full(a);fp.topMargin=UiKit.dp(a,10);root.addView(footer,fp);
         showChoice();
     }
 
@@ -75,7 +75,7 @@ public final class ConnectionGate {
         offline.setTextSize(16);
         offline.setOnClickListener(v->{
             prefs.edit().putString("connection_mode","offline").apply();
-            listener.onReady(Mode.DIRECT);
+            listener.onReady(Mode.OFFLINE);
         });
         LinearLayout.LayoutParams op=new LinearLayout.LayoutParams(-1,UiKit.dp(a,54));
         op.topMargin=UiKit.dp(a,10);
