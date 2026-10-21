@@ -50,6 +50,17 @@ def main():
     tick = chr(96)
     assert all(tick + x + tick in arabic and tick + x + tick in comparison for x in ids)
     assert len(plan["techniques"]) == len(matrix["techniques"])
+    status = read(SA / "IMPLEMENTATION_STATUS_80_2026-10-21.json")
+    assert status["technique_count"] == 80
+    assert len(status["techniques"]) == 80
+    assert [x["id"] for x in status["techniques"]] == ids_planned
+    assert status["progress_snapshot"]["research_software_contracts_g1_pass"] == 10
+    assert status["progress_snapshot"]["full_v3_named_techniques_finished_in_this_branch"] == 0
+    assert status["progress_snapshot"]["G3_Tank_validated"] == 0
+    assert set(x["id"] for x in status["techniques"] if x["G1_v2"].endswith("PASS")) == set(
+        plan["batch_schedule"][0]["technique_ids"])
+    assert (SA/"batches/BATCH_01_EXECUTION_2026-10-21_AR.md").is_file()
+    assert (SA/"RESUME_IMPLEMENTATION_80_2026-10-21.md").is_file()
     print(json.dumps({"status":"PASS_80_TECHNIQUE_PLAN_STRUCTURE_ONLY",
                       "techniques":len(ids),"batches":len(batches),
                       "reference_source_ids":80,
