@@ -7,9 +7,9 @@ exposure_id, molecule_id, ppm, descriptors, ratios (sensor -> Rs/R0).
 from math import log10,isfinite
 from source_forward_ridge_v2 import fit_ridge,number
 
-def fit_source_qspr(records, sensor_ids, descriptor_names, *, source_id, heater_phase):
+def fit_source_qspr(records, sensor_ids, descriptor_names, *, source_id, heater_phase, r0_definition_id):
     r=list(records);ids=tuple(sensor_ids);features=tuple(descriptor_names)
-    if not source_id or heater_phase not in ("HIGH","LOW","CONSTANT"):
+    if not source_id or not isinstance(r0_definition_id,str) or not r0_definition_id or heater_phase not in ("HIGH","LOW","CONSTANT"):
         raise ValueError("source/heater protocol required")
     if not ids or len(set(ids))!=len(ids) or not features or len(set(features))!=len(features):
         raise ValueError("unique sensor and molecular descriptors required")
@@ -19,7 +19,8 @@ def fit_source_qspr(records, sensor_ids, descriptor_names, *, source_id, heater_
         raise ValueError("malformed channel/descriptor names")
     seen=set();rows=[];targets={s:[] for s in ids};ppm_values=[];desc_values={d:[] for d in features};molecules=set()
     for record in r:
-        if record.get("source_id")!=source_id or record.get("heater_phase")!=heater_phase:
+        if (record.get("source_id")!=source_id or record.get("heater_phase")!=heater_phase
+                or record.get("r0_definition_id")!=r0_definition_id):
             raise ValueError("mixed source or heater protocols")
         exposure=record.get("exposure_id"); molecule=record.get("molecule_id")
         if not isinstance(exposure,str) or not exposure or not isinstance(molecule,str) or not molecule:
@@ -51,7 +52,7 @@ def fit_source_qspr(records, sensor_ids, descriptor_names, *, source_id, heater_
          for col,m in zip(cols,mean)]
     matrix=[[1.]+[(v-m)/s for v,m,s in zip(row[1:],mean,std)] for row in rows]
     weights={sensor:fit_ridge(matrix,targets[sensor]) for sensor in ids}
-    return {"source_id":source_id,"heater_phase":heater_phase,"sensor_ids":ids,
+    return {"source_id":source_id,"heater_phase":heater_phase,"r0_definition_id":r0_definition_id,"sensor_ids":ids,
             "descriptor_names":features,"normalization_mean":mean,"normalization_scale":std,
             "weights":weights,"concentration_range_ppm":(min(ppm_values),max(ppm_values)),
             "descriptor_ranges":{k:(min(v),max(v)) for k,v in desc_values.items()},
