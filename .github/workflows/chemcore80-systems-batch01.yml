@@ -1,0 +1,60 @@
+name: Tank ChemCore80 source-driven batch01 contracts and plan
+on:
+  push:
+    branches:
+      - research/chemcore80-systems-gap-analysis-20261021
+    paths:
+      - 'research/systems_analysis/**'
+      - '.github/workflows/chemcore80-systems-batch01.yml'
+  pull_request:
+    paths:
+      - 'research/systems_analysis/**'
+      - '.github/workflows/chemcore80-systems-batch01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check and frozen 80 technique plan
+        run: |
+          set -euo pipefail
+          python -m compileall -q research/systems_analysis
+          python research/systems_analysis/validate_implementation_plan_v1.py
+      - name: Synthetic, negative and boundary tests for ten research technique contracts
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/systems_analysis -p 'test_*.py' -v
+      - name: Audit eight real external published R0 sources and verify pinned bytes
+        run: |
+          set -euo pipefail
+          python research/systems_analysis/audit_r0_peer_source_v1.py
+      - name: Preserve independently reproducible numerical audit output
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tank-chemcore80-batch01-published-r0-arithmetic
+          path: research/systems_analysis/results/mq_r0_rs_2018_vs_peer_arithmetic_2026-10-21.json
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Confirm no changes to runtime binaries or research G3 assertions
+        run: |
+          set -euo pipefail
+          test ! -f research/systems_analysis/chemcore_production_manifest.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('research/systems_analysis/IMPLEMENTATION_PLAN_80_2026-10-21.json')
+          d=json.loads(p.read_text())
+          assert d['inventory']['G3_Tank_validated']==0
+          assert d['ownership'].startswith('Do NOT merge')
+          print('PASS_G3_ZERO_AND_RESEARCH_SCOPE_ONLY')
+          PY

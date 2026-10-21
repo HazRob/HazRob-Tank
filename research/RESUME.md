@@ -1,3 +1,11 @@
+# NEW RESEARCH EXECUTION WORKSPACE — 2026-10-21, CHEMCORE80 SOURCE-GROUNDED PLANNING
+
+**Newest safe restart path:** [research/systems_analysis/README.md](systems_analysis/README.md) → [80-technique execution plan](systems_analysis/IMPLEMENTATION_PLAN_80_2026-10-21_AR.md) → [per-tech progress](systems_analysis/IMPLEMENTATION_STATUS_80_2026-10-21.json) → [Batch 01 log](systems_analysis/batches/BATCH_01_EXECUTION_2026-10-21_AR.md). PR: https://github.com/HazRob/HazRob-Tank/pull/5. This checkpoint is documented on the research branch; check merge state and current `main` HEAD before making changes.
+
+**Scientific bookkeeping:** 80-ID plan, 8 batches of 10 with citations to global HazRob reference bank. Decision counts 26 REDESIGN, 33 ENHANCE, 14 RETAIN, 7 DEFER. Ten first-batch **foundational reference interfaces** (not full named technique integrations) tested with 35/35 synthetic/negative tests and plan structure on CI https://github.com/HazRob/HazRob-Tank/actions/runs/39527014531. Total physical Tank G3 scientifically validated remains 0/80. Original 1261 G1 tests and G2 49/29/2 external evidence ratings **must not** be overwritten or conflated with 35 new tests. Original HazRob and Tank APK/FW/production ChemCore unchanged.
+
+---
+
 # CURRENT CHECKPOINT — 2026-10-21: EIGHT G2 UCI BATCHES COMPLETE + TRAINED ALGORITHM EXTENSION + G3 DATA READINESS
 
 **CANONICAL COUNT:** 80/80 distinct technique IDs completed G2 source-eligibility review: **49 external sensor numeric/metadata operations** (some proxy or nonphysical), **29 blocked** for missing required measured physical fields, **2 theoretical/simulated-only**. Original 80/80 G1 unit-pass baseline contains **1261 historical tests**. Four distinct UCI external datasets add **14,238 unique exposure records**: UCI1081 90 + UCI270 13,910 + UCI308 58 + UCI309 180; do not double count UCI224 or UCI309 raw/downsampled. No actual Tank 8-MQ device reference exposures ingested, so **G3 physical scientific validation 0/80**. [Canonical JSON](PROGRESS_80.json). All production APK, firmware, ChemCore and original HazRob unaffected.

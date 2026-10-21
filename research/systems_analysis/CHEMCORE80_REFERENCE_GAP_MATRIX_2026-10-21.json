@@ -1,0 +1,1801 @@
+{
+  "schema_version": "hazrob-tank.80-techniques-reference-gap-analysis.v1",
+  "date": "2026-10-21",
+  "scope": "Research systems analysis and experimental design only; no production integration",
+  "canonical_techniques": {
+    "repo": "HazRob/HazRob-Tank",
+    "path": "research/PROGRESS_80.json",
+    "blob_sha": "0919307d46b352a887f2fdbc5e94c752a74b16d0",
+    "count": 80
+  },
+  "central_library": {
+    "repo": "HazRob/build-harness",
+    "path": "library/reference-bank/external-research/master_catalog.json",
+    "blob_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+    "bibliographic_records": 80,
+    "source_id_snapshot": [
+      "CN-MQ-01",
+      "CN-MQ-02",
+      "CN-MQ-03",
+      "CN-MQ-04",
+      "CN-PAT-01",
+      "CN-PAT-02",
+      "CN-PAT-03",
+      "CN-RSCH-01",
+      "CN-RSCH-02",
+      "CN-RSCH-03",
+      "CN-RSCH-04",
+      "JP-FIG-01",
+      "JP-FIG-02",
+      "JP-FIG-03",
+      "MOS-EXT-16",
+      "MOS-EXT-17",
+      "MOS-EXT-18",
+      "MOS-EXT-19",
+      "MQ-EXT-01",
+      "MQ-EXT-02",
+      "MQ-EXT-03",
+      "MQ-EXT-04",
+      "MQ-EXT-05",
+      "MQ-EXT-06",
+      "MQ-EXT-07",
+      "MQ-EXT-08",
+      "MQ-EXT-09",
+      "MQ-EXT-10",
+      "MQ-EXT-11",
+      "MQ-EXT-12",
+      "MQ-EXT-13",
+      "MQ-EXT-14",
+      "MQ-EXT-15",
+      "MQ-EXT-20",
+      "QSPR-REF-01",
+      "QSPR-REF-02",
+      "QSPR-REF-03",
+      "QSPR-REF-04",
+      "QSPR-REF-05",
+      "QSPR-REF-06",
+      "QSPR-REF-07",
+      "QSPR-REF-08",
+      "QSPR-REF-09",
+      "QSPR-REF-10",
+      "R0-PEER-01",
+      "R0-PEER-02",
+      "R0-PEER-03",
+      "R0-PEER-04",
+      "R0-PEER-05",
+      "R0-PEER-06",
+      "R0-PEER-07",
+      "R0-PEER-08",
+      "SYS-01",
+      "SYS-02",
+      "SYS-03",
+      "SYS-04",
+      "SYS-05",
+      "SYS-06",
+      "SYS-07",
+      "SYS-08",
+      "SYS-09",
+      "SYS-10",
+      "SYS-11",
+      "SYS-12",
+      "SYS-13",
+      "SYS-14",
+      "SYS-15",
+      "SYS-16",
+      "SYS-17",
+      "SYS-18",
+      "SYS-19",
+      "SYS-20",
+      "SYS-21",
+      "SYS-22",
+      "SYS-23",
+      "SYS-24",
+      "TOOL-MQ-01",
+      "TOOL-MQ-02",
+      "UCI-EXT-224",
+      "UCI-EXT-270"
+    ],
+    "snapshot_bibliography_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f"
+  },
+  "readiness": {
+    "G1_prototypes_pass": 80,
+    "G1_historical_unit_tests": 1261,
+    "G2_source_eligibility_reviewed": 80,
+    "external_numeric_metadata_methods": 49,
+    "external_blocked_methods": 29,
+    "theoretical_only_methods": 2,
+    "Tank_G3_scientifically_validated": 0,
+    "production_altered": false
+  },
+  "classification_count": {
+    "REDESIGN": 26,
+    "ENHANCE": 33,
+    "RETAIN": 14,
+    "DEFER": 7
+  },
+  "source_count_per_technique": [
+    2,
+    4,
+    3,
+    3,
+    3,
+    3,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    2,
+    2,
+    3,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    4,
+    3,
+    3,
+    2,
+    2,
+    3,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "recommendation_not_to_confuse": "80 techniques and 80 bibliography records coincidentally have same numeral but are unrelated inventories",
+  "techniques": [
+    {
+      "id": "01.1",
+      "name": "ADC to Rs",
+      "stage": 1,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "CN-MQ-01",
+        "R0-PEER-01"
+      ],
+      "proposed_change": "Implement calibrated circuit-specific ADC-to-volts and Rs with RL, voltage dividers, ADS1115 gain, sample/heater timing; propagate component uncertainty.",
+      "acceptance_gate": "Require device wiring and raw ADC/voltage/RL trace.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/01.1/"
+    },
+    {
+      "id": "01.2",
+      "name": "R0 calibration",
+      "stage": 1,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "R0-PEER-01",
+        "R0-PEER-02",
+        "R0-PEER-03",
+        "R0-PEER-04"
+      ],
+      "proposed_change": "R0 per sensor instance, gas reference, heater phase, ambient and age; forbid borrowing from paper/model; retain questionable table values.",
+      "acceptance_gate": "Replicated standards and traceable blank, heater-cycle metadata.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/01.2/"
+    },
+    {
+      "id": "01.3",
+      "name": "Sensitivity curves",
+      "stage": 1,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "TOOL-MQ-01",
+        "CN-MQ-04",
+        "R0-PEER-01"
+      ],
+      "proposed_change": "Source-tag manufacturer curves and alternative graph fits; normalize ppm and output-scale units; avoid extrapolation and correlated curve priors.",
+      "acceptance_gate": "Source chart digitization audit and independent pure-gas points.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/01.3/"
+    },
+    {
+      "id": "01.4",
+      "name": "Heater cycles",
+      "stage": 1,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-05",
+        "SYS-14",
+        "CN-RSCH-02"
+      ],
+      "proposed_change": "Separate manufacturer-defined MQ7/MQ9 heater duty profiles from exploratory thermal excitation on approved hardware; forbid arbitrary PWM.",
+      "acceptance_gate": "Electrical manufacturer compliance and per-phase Rs traces.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/01.4/"
+    },
+    {
+      "id": "01.5",
+      "name": "Environmental correction",
+      "stage": 1,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-04",
+        "SYS-24",
+        "MQ-EXT-02"
+      ],
+      "proposed_change": "Conditioned environmental compensation with BME humidity/temperature/pressure and out-of-support detector; do not remove chemical trend.",
+      "acceptance_gate": "Factorial humidity/temperature reference exposures.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/01.5/"
+    },
+    {
+      "id": "01.6",
+      "name": "Signal quality",
+      "stage": 1,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-23",
+        "SYS-11",
+        "JP-FIG-02"
+      ],
+      "proposed_change": "Model intake/dead volume/fan duty/flush and sensor response delay as physical sampling state; QC contamination and carry-over.",
+      "acceptance_gate": "Measured chamber airflow/washout/retained-sample tests.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/01.6/"
+    },
+    {
+      "id": "01.7",
+      "name": "Drift monitoring",
+      "stage": 1,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MOS-EXT-17",
+        "UCI-EXT-270"
+      ],
+      "proposed_change": "Online device health diagnostics only, independent of training drift compensation in 07.5.",
+      "acceptance_gate": "Longitudinal blank and reference checks on same devices.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/01.7/"
+    },
+    {
+      "id": "02.1",
+      "name": "Filtering",
+      "stage": 2,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-17",
+        "MQ-EXT-10"
+      ],
+      "proposed_change": "Compare robust noise suppression to transient-preserving filters; fit filter solely on train data.",
+      "acceptance_gate": "Show preserved onset times/area and group-holdout effect.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/02.1/"
+    },
+    {
+      "id": "02.2",
+      "name": "Scaling",
+      "stage": 2,
+      "decision": "RETAIN",
+      "source_ids": [
+        "MQ-EXT-03",
+        "UCI-EXT-270"
+      ],
+      "proposed_change": "Retain source-aware scaling and prohibit test-fold normalization leakage; unit-aware Rs vs ADC separation.",
+      "acceptance_gate": "Per-source baseline and grouped split tests.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/02.2/"
+    },
+    {
+      "id": "02.3",
+      "name": "Static features",
+      "stage": 2,
+      "decision": "RETAIN",
+      "source_ids": [
+        "MQ-EXT-11",
+        "SYS-13"
+      ],
+      "proposed_change": "Retain ratios, peaks, slope and recovery features with source-specific units.",
+      "acceptance_gate": "Whole recorded event held out.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/02.3/"
+    },
+    {
+      "id": "02.4",
+      "name": "Temporal features",
+      "stage": 2,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "CN-RSCH-01",
+        "SYS-17",
+        "MQ-EXT-10"
+      ],
+      "proposed_change": "Add segmental average differentiation, phase-dependent response, kinetic slope and causal deconvolution features.",
+      "acceptance_gate": "Time-shift ablation, independent full trials.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/02.4/"
+    },
+    {
+      "id": "02.5",
+      "name": "Fingerprints",
+      "stage": 2,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "MQ-EXT-15",
+        "MQ-EXT-03",
+        "MQ-EXT-11"
+      ],
+      "proposed_change": "Separate molecule/pure-reference fingerprints from mixture/food/odor class, source-transfer and device-specific features.",
+      "acceptance_gate": "Enforce class semantics and leave source/session out.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_INCOMPATIBLE_SENSOR_SCHEMA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/02.5/"
+    },
+    {
+      "id": "02.6",
+      "name": "3D/4D features",
+      "stage": 2,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "TOOL-MQ-01",
+        "SYS-05"
+      ],
+      "proposed_change": "Keep 3D/4D models as exploratory features and bounded simulation, not independent chemistry evidence.",
+      "acceptance_gate": "No fabricated measurements; compare on matched actual traces.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_NUMERIC_ONLY_INPUT_SCHEMA_NONCOMPLIANT",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/02.6/"
+    },
+    {
+      "id": "02.7",
+      "name": "Feature selection",
+      "stage": 2,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-01",
+        "SYS-04"
+      ],
+      "proposed_change": "Add train-only stability selection, nested sensor ranking and cost/energy-aware feature parsimony.",
+      "acceptance_gate": "Nested validation with whole sessions/devices.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/02.7/"
+    },
+    {
+      "id": "02.8",
+      "name": "Provenance schema",
+      "stage": 2,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "MQ-EXT-15",
+        "UCI-EXT-270",
+        "R0-PEER-01"
+      ],
+      "proposed_change": "Formal source and label ontology: gas versus complex sample, ppb/ppm, Ri/R0/RL, calibration provenance, exposure group and train/test ancestry.",
+      "acceptance_gate": "Automated schema and audit-of-raw-file checks.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/02.8/"
+    },
+    {
+      "id": "03.1",
+      "name": "PCA",
+      "stage": 3,
+      "decision": "RETAIN",
+      "source_ids": [
+        "SYS-13",
+        "CN-PAT-01"
+      ],
+      "proposed_change": "PCA for exploratory visualizable structure only; no standalone gas certainty.",
+      "acceptance_gate": "Train-only fit and heldout projection.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/03.1/"
+    },
+    {
+      "id": "03.2",
+      "name": "Similarity",
+      "stage": 3,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MQ-EXT-03",
+        "MQ-EXT-11"
+      ],
+      "proposed_change": "Density/shape-aware similarity with instrument response uncertainty and source group.",
+      "acceptance_gate": "Candidate-ranking calibration after grouped holdout.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/03.2/"
+    },
+    {
+      "id": "03.3",
+      "name": "Class overlap",
+      "stage": 3,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-02",
+        "UCI-EXT-270"
+      ],
+      "proposed_change": "Quantify pure-gas and binary mixture overlaps under concentration and ambient shifts.",
+      "acceptance_gate": "Report indistinguishable regions and abstention.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/03.3/"
+    },
+    {
+      "id": "03.4",
+      "name": "LDA/PLS-DA",
+      "stage": 3,
+      "decision": "RETAIN",
+      "source_ids": [
+        "SYS-01",
+        "CN-PAT-01"
+      ],
+      "proposed_change": "Retain genuinely trained LDA/PLS-DA external implementation; ensure cross-fold PLS components chosen train-only.",
+      "acceptance_gate": "Compare complete heldout protocol to documented baseline.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/03.4/"
+    },
+    {
+      "id": "03.5",
+      "name": "Sensor importance",
+      "stage": 3,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-01",
+        "SYS-04"
+      ],
+      "proposed_change": "Channel ablation and sensor-specific gain with hardware stability; no universal sensor rank across instruments.",
+      "acceptance_gate": "Repeated nested ablation, cost-accuracy trade-off.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/03.5/"
+    },
+    {
+      "id": "03.6",
+      "name": "Sensor subsets",
+      "stage": 3,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-01",
+        "SYS-04"
+      ],
+      "proposed_change": "Design minimum MQ subsets robustly across gases and concentration rather than all-eight assumption.",
+      "acceptance_gate": "Evaluate source subsets across heldout sessions and gas levels.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_REFERENCE_EVALUATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/03.6/"
+    },
+    {
+      "id": "03.7",
+      "name": "Concentration confounding",
+      "stage": 3,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "MQ-EXT-15",
+        "SYS-10"
+      ],
+      "proposed_change": "Joint concentration-invariant feature checks and leave-concentration-out stress; distinguish concentration change from identity change.",
+      "acceptance_gate": "Locked unseen concentration ranges and per-gas confusion.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/03.7/"
+    },
+    {
+      "id": "03.8",
+      "name": "Identifiability limits",
+      "stage": 3,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-06",
+        "SYS-07",
+        "SYS-09"
+      ],
+      "proposed_change": "Measure mixture observability: response Jacobian rank, condition number and non-identifiable component combinations.",
+      "acceptance_gate": "Show when composition cannot be uniquely inferred with given sensors.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/03.8/"
+    },
+    {
+      "id": "04.1",
+      "name": "Curve matching",
+      "stage": 4,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "TOOL-MQ-01",
+        "R0-PEER-01"
+      ],
+      "proposed_change": "Only curve-match within source-referenced calibration domain with heater, RL and R0 per device; treat unmatched as unknown.",
+      "acceptance_gate": "Independent standard reference and uncertainty.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.1/"
+    },
+    {
+      "id": "04.2",
+      "name": "Fingerprint matching",
+      "stage": 4,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MQ-EXT-03",
+        "MQ-EXT-11"
+      ],
+      "proposed_change": "Use validated source-labelled fingerprints and report source-specific transfer domain.",
+      "acceptance_gate": "Grouped cross-source OOD and top-k.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.2/"
+    },
+    {
+      "id": "04.3",
+      "name": "KNN",
+      "stage": 4,
+      "decision": "RETAIN",
+      "source_ids": [
+        "MQ-EXT-03",
+        "CN-RSCH-01"
+      ],
+      "proposed_change": "KNN simple baseline; train-only feature extraction/scaling.",
+      "acceptance_gate": "Paired heldout vs richer models.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.3/"
+    },
+    {
+      "id": "04.4",
+      "name": "Logistic regression",
+      "stage": 4,
+      "decision": "RETAIN",
+      "source_ids": [
+        "MQ-EXT-15",
+        "UCI-EXT-270"
+      ],
+      "proposed_change": "Logistic baseline with calibration and group splits.",
+      "acceptance_gate": "Reference comparisons and uncertainty.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.4/"
+    },
+    {
+      "id": "04.5",
+      "name": "SVM",
+      "stage": 4,
+      "decision": "RETAIN",
+      "source_ids": [
+        "SYS-01",
+        "CN-RSCH-02"
+      ],
+      "proposed_change": "True linear/RBF SVM research implementation; tune nested, do not claim Tank transfer.",
+      "acceptance_gate": "Grouped source validation.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.5/"
+    },
+    {
+      "id": "04.6",
+      "name": "Random Forest",
+      "stage": 4,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-04",
+        "SYS-13"
+      ],
+      "proposed_change": "Random forests/ExtraTrees with class imbalance and uncertainty; separate concentration from identity target.",
+      "acceptance_gate": "Nested source and concentration groups.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.6/"
+    },
+    {
+      "id": "04.7",
+      "name": "XGBoost",
+      "stage": 4,
+      "decision": "RETAIN",
+      "source_ids": [
+        "SYS-01",
+        "SYS-13"
+      ],
+      "proposed_change": "Real XGBoost reference path exists; compare learning curve and leakage hazards.",
+      "acceptance_gate": "Grouped holdout and freeze hyperparameters.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.7/"
+    },
+    {
+      "id": "04.8",
+      "name": "MLP",
+      "stage": 4,
+      "decision": "RETAIN",
+      "source_ids": [
+        "CN-RSCH-01",
+        "CN-RSCH-04"
+      ],
+      "proposed_change": "MLP/BP baseline must be actually trained and compared with penalized simpler methods.",
+      "acceptance_gate": "Independent gas class trials.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.8/"
+    },
+    {
+      "id": "04.9",
+      "name": "Physics+ML",
+      "stage": 4,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "QSPR-REF-03",
+        "QSPR-REF-04",
+        "QSPR-REF-10",
+        "SYS-07"
+      ],
+      "proposed_change": "Forward molecule+sensor+environment QSPR with source-specific response curves, then candidate-wise inverse ranking; no true-label descriptors; physics regularization.",
+      "acceptance_gate": "MQ135-only source test and heldout-molecule challenge; calibrated candidate error.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.9/"
+    },
+    {
+      "id": "04.10",
+      "name": "Benchmarking",
+      "stage": 4,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "UCI-EXT-270",
+        "SYS-10",
+        "MQ-EXT-15"
+      ],
+      "proposed_change": "Frozen benchmark registry: pure gas, mixtures, OOD, source and device; nested tuning, independent final test; record failed methods.",
+      "acceptance_gate": "No windows of same exposure in both train/test.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_REFERENCE_BENCHMARK",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/04.10/"
+    },
+    {
+      "id": "05.1",
+      "name": "Single-sensor calibration",
+      "stage": 5,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "R0-PEER-01",
+        "R0-PEER-04",
+        "CN-MQ-04"
+      ],
+      "proposed_change": "Device/gas-specific monotonic single-sensor concentration regression with traceable R0 definition; no paper R0 transfer.",
+      "acceptance_gate": "Certified target gas concentrations over range.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/05.1/"
+    },
+    {
+      "id": "05.2",
+      "name": "Multipoint calibration",
+      "stage": 5,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "MQ-EXT-15",
+        "SYS-04"
+      ],
+      "proposed_change": "Multi-point and factorial temperature/humidity calibration with hysteresis, dilution uncertainty and concentration-specific error.",
+      "acceptance_gate": "Replicate standards, uncertainty budget, environmental conditions.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/05.2/"
+    },
+    {
+      "id": "05.3",
+      "name": "Nonlinear regression",
+      "stage": 5,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-07",
+        "SYS-15"
+      ],
+      "proposed_change": "Physical nonlinear log-sensitivity models, saturation and cross sensitivity with meaningful bounds.",
+      "acceptance_gate": "Independent multi-concentration mixtures.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/05.3/"
+    },
+    {
+      "id": "05.4",
+      "name": "Multisensor regression",
+      "stage": 5,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-06",
+        "SYS-07",
+        "SYS-10"
+      ],
+      "proposed_change": "True constrained multicomponent inverse regression with nonnegative concentrations and physically valid sensor response equations.",
+      "acceptance_gate": "Known each-component ppm; report per-gas RMSE/MAE and ambiguity.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/05.4/"
+    },
+    {
+      "id": "05.5",
+      "name": "PLS regression",
+      "stage": 5,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-09",
+        "SYS-11"
+      ],
+      "proposed_change": "Real PLS/PLS2 and MCR-ALS latent profiles, rank and nonnegativity under explicit assumptions.",
+      "acceptance_gate": "Unseen mixture compositions and independent time batches.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/05.5/"
+    },
+    {
+      "id": "05.6",
+      "name": "Tree regression",
+      "stage": 5,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-04",
+        "SYS-15"
+      ],
+      "proposed_change": "RF/ExtraTrees/CatBoost/SVR regression candidates with uncertainty and concentration/domain limits.",
+      "acceptance_gate": "Paired per-component evaluation, no leakage.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/05.6/"
+    },
+    {
+      "id": "05.7",
+      "name": "Identity-conditional estimates",
+      "stage": 5,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-02",
+        "SYS-03"
+      ],
+      "proposed_change": "Identity-conditioned concentration only when identity confidence passes scientific gate; allow unknown and mixtures.",
+      "acceptance_gate": "Quantification error conditional on label quality.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/05.7/"
+    },
+    {
+      "id": "05.8",
+      "name": "LOD/LOQ",
+      "stage": 5,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "R0-PEER-01",
+        "SYS-04"
+      ],
+      "proposed_change": "Detection power/LOD/LOQ from blank and independently measured standards under humidity/noise, not manufacturer cartoon threshold.",
+      "acceptance_gate": "Calibration blank distribution and false-negative confidence.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_NUMERIC_PROXY_NOT_PHYSICAL_LOD_LOQ",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/05.8/"
+    },
+    {
+      "id": "05.9",
+      "name": "Unseen concentrations",
+      "stage": 5,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MQ-EXT-15",
+        "SYS-10"
+      ],
+      "proposed_change": "Concentration extrapolation stress and defined out-of-range rejection instead of unbounded ppm.",
+      "acceptance_gate": "Heldout concentration strata, out-of-domain alarm.",
+      "existing_implementation_status": "PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "METRIC_INTEGRATION_ONLY",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/05.9/"
+    },
+    {
+      "id": "06.1",
+      "name": "Evidence fusion",
+      "stage": 6,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "QSPR-REF-03",
+        "SYS-06"
+      ],
+      "proposed_change": "Evidence fusion with dependence graph across same MQ curve, QSPR priors and ML; prohibit double counting correlated evidence.",
+      "acceptance_gate": "Ablation + reliability diagram and source-separated error.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/06.1/"
+    },
+    {
+      "id": "06.2",
+      "name": "Bayesian inference",
+      "stage": 6,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "QSPR-REF-03",
+        "SYS-07"
+      ],
+      "proposed_change": "Bayesian ranking over candidate gas and concentration with priors and unidentifiability flag.",
+      "acceptance_gate": "Posterior calibration and coverage on unknown gas.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/06.2/"
+    },
+    {
+      "id": "06.3",
+      "name": "Probability calibration",
+      "stage": 6,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-04",
+        "UCI-EXT-270"
+      ],
+      "proposed_change": "Probability calibration on calibration fold only; no on-the-fly confidence as measured ppm.",
+      "acceptance_gate": "Expected calibration error on session holdout.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_REFERENCE_CALIBRATION_EXPERIMENT",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/06.3/"
+    },
+    {
+      "id": "06.4",
+      "name": "Conformal prediction",
+      "stage": 6,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MOS-EXT-17",
+        "UCI-EXT-270"
+      ],
+      "proposed_change": "Conformal sets with group/shift qualifications; report loss of exchangeability across devices.",
+      "acceptance_gate": "Coverage per device/domain, empty set counted as abstention.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/06.4/"
+    },
+    {
+      "id": "06.5",
+      "name": "Open-set recognition",
+      "stage": 6,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MQ-EXT-15",
+        "QSPR-REF-03"
+      ],
+      "proposed_change": "Open-set candidate rejection with class-sequestered training and unknown categories.",
+      "acceptance_gate": "Heldout chemical species, not random rows only.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_REFERENCE_OPEN_SET_EXPERIMENT",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/06.5/"
+    },
+    {
+      "id": "06.6",
+      "name": "OOD detection",
+      "stage": 6,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "UCI-EXT-270",
+        "MOS-EXT-17"
+      ],
+      "proposed_change": "OOD checks spanning new chemical, concentration, drift and ambient/device.",
+      "acceptance_gate": "Distinct OOD axes and false-safe rates.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/06.6/"
+    },
+    {
+      "id": "06.7",
+      "name": "Evidence conflicts",
+      "stage": 6,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-07",
+        "QSPR-REF-04"
+      ],
+      "proposed_change": "Evidence conflict accounting for cross-sensitivity and physically impossible concentration/mixture combinations.",
+      "acceptance_gate": "Disagreement with mixture standards and abstain.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/06.7/"
+    },
+    {
+      "id": "06.8",
+      "name": "SHAP",
+      "stage": 6,
+      "decision": "RETAIN",
+      "source_ids": [
+        "QSPR-REF-05",
+        "SYS-04"
+      ],
+      "proposed_change": "SHAP and descriptive model diagnostics only; do not label explanation as causal chemistry.",
+      "acceptance_gate": "Feature importance stability and false explanatory claims.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/06.8/"
+    },
+    {
+      "id": "06.9",
+      "name": "Abstention",
+      "stage": 6,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "MQ-EXT-15",
+        "SYS-10"
+      ],
+      "proposed_change": "Decision policy for unknown gas, unknown mixture, unsupported ppm and sensor fault; fail-safe separate from research identity.",
+      "acceptance_gate": "Thresholds from decision costs, grouped false-negative confidence.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/06.9/"
+    },
+    {
+      "id": "07.1",
+      "name": "Cross-session tests",
+      "stage": 7,
+      "decision": "RETAIN",
+      "source_ids": [
+        "MQ-EXT-11",
+        "MQ-EXT-02"
+      ],
+      "proposed_change": "Session-level validation distinct from time windows.",
+      "acceptance_gate": "Entire exposure and recording groups separated.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.1/"
+    },
+    {
+      "id": "07.2",
+      "name": "Cross-device tests",
+      "stage": 7,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MOS-EXT-18",
+        "R0-PEER-03"
+      ],
+      "proposed_change": "Cross-device alignment with device-specific R0 and domain adaptation, not cross-device shared R0.",
+      "acceptance_gate": "Hold out physical sensor modules.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_ONE_PHYSICAL_DEVICE",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.2/"
+    },
+    {
+      "id": "07.3",
+      "name": "Cross-concentration tests",
+      "stage": 7,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MQ-EXT-15",
+        "SYS-10"
+      ],
+      "proposed_change": "Train/holdout disjoint concentration ranges, not nearby windows.",
+      "acceptance_gate": "Report errors at unseen ppm and power dependence.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_REFERENCE_SPLIT_VERIFIED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.3/"
+    },
+    {
+      "id": "07.4",
+      "name": "Drift detection",
+      "stage": 7,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MOS-EXT-17",
+        "UCI-EXT-270"
+      ],
+      "proposed_change": "Change-point drift detection conditional on environment and history.",
+      "acceptance_gate": "Longitudinal independent days.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.4/"
+    },
+    {
+      "id": "07.5",
+      "name": "Drift compensation",
+      "stage": 7,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-24",
+        "UCI-EXT-270"
+      ],
+      "proposed_change": "OSC/PLS drift correction constrained against removing chemistry signals.",
+      "acceptance_gate": "Before/after heldout calibration and interferents.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.5/"
+    },
+    {
+      "id": "07.6",
+      "name": "Domain adaptation",
+      "stage": 7,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "UCI-EXT-270",
+        "MOS-EXT-18"
+      ],
+      "proposed_change": "Domain adaptation with unsupervised target normalization and no target-label leakage.",
+      "acceptance_gate": "Test later batches and unseen instruments.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.6/"
+    },
+    {
+      "id": "07.7",
+      "name": "Transfer learning",
+      "stage": 7,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MOS-EXT-18",
+        "MQ-EXT-15"
+      ],
+      "proposed_change": "Transfer learning from non-MQ allowed only method-wise, unless physically mapped MQ channel.",
+      "acceptance_gate": "Zero-shot vs few-shot device transfer claims separated.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.7/"
+    },
+    {
+      "id": "07.8",
+      "name": "Active learning/DoE",
+      "stage": 7,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-07",
+        "R0-PEER-02"
+      ],
+      "proposed_change": "Use active design-of-experiments over gases, ppm, binary mixtures, temperature, RH, phase, session and device.",
+      "acceptance_gate": "Pre-registered factorial/space filling and random effects.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.8/"
+    },
+    {
+      "id": "07.9",
+      "name": "Continual learning",
+      "stage": 7,
+      "decision": "DEFER",
+      "source_ids": [
+        "MOS-EXT-17",
+        "UCI-EXT-270"
+      ],
+      "proposed_change": "No uncontrolled model self-update in deployed field app; require governance and fresh independent revalidation.",
+      "acceptance_gate": "Locked model and separate training signoff.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.9/"
+    },
+    {
+      "id": "07.10",
+      "name": "Resource profiling",
+      "stage": 7,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-01",
+        "SYS-20"
+      ],
+      "proposed_change": "Profile actual Android CPU, battery and stream latency vs algorithms; do not infer from desktop tests.",
+      "acceptance_gate": "Device runtime profiling, memory and thermal test.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXECUTED_ANALYTICAL_ONLY_NOT_TANK_PROFILE",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/07.10/"
+    },
+    {
+      "id": "08.1",
+      "name": "1D-CNN",
+      "stage": 8,
+      "decision": "RETAIN",
+      "source_ids": [
+        "MQ-EXT-10",
+        "MQ-EXT-15"
+      ],
+      "proposed_change": "Conv1d real external baseline already trained; test actual MQ temporal before deployment.",
+      "acceptance_gate": "Session/device-heldout; compare simpler feature models.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.1/"
+    },
+    {
+      "id": "08.2",
+      "name": "TCN",
+      "stage": 8,
+      "decision": "RETAIN",
+      "source_ids": [
+        "SYS-17",
+        "MQ-EXT-10"
+      ],
+      "proposed_change": "Causal TCN real external baseline; maintain temporal causality.",
+      "acceptance_gate": "Streaming prefix invariance on heldout sessions.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.2/"
+    },
+    {
+      "id": "08.3",
+      "name": "LSTM/GRU",
+      "stage": 8,
+      "decision": "RETAIN",
+      "source_ids": [
+        "MQ-EXT-10",
+        "MQ-EXT-15"
+      ],
+      "proposed_change": "GRU exists on main and LSTM on separate draft PR; treat both as research-only.",
+      "acceptance_gate": "Read PR #3, LSTM external 59/90 and GRU 69/90; Tank unknown.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.3/"
+    },
+    {
+      "id": "08.4",
+      "name": "GNN",
+      "stage": 8,
+      "decision": "DEFER",
+      "source_ids": [
+        "SYS-01",
+        "SYS-13"
+      ],
+      "proposed_change": "GNN prototype underperforms simpler external baselines; do not prioritize without meaningful sensor graph and gains.",
+      "acceptance_gate": "Controlled graph ablations on sufficient Tank data.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.4/"
+    },
+    {
+      "id": "08.5",
+      "name": "Temporal ensemble",
+      "stage": 8,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-01",
+        "SYS-04"
+      ],
+      "proposed_change": "Temporal ensemble must be diversity-aware with correlated model error and honest uncertainty.",
+      "acceptance_gate": "Pairwise error dependence, no naive vote confidence.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.5/"
+    },
+    {
+      "id": "08.6",
+      "name": "Simulation",
+      "stage": 8,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-17",
+        "SYS-05"
+      ],
+      "proposed_change": "Source-calibrated kinetics and flow/heat time constants, no synthetic coefficient masquerading as measured.",
+      "acceptance_gate": "Fit actual bounded response/recovery curves; PR #3 prototype not merged.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "SYNTHETIC_ONLY_THEORETICAL",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.6/"
+    },
+    {
+      "id": "08.7",
+      "name": "Sim-to-real",
+      "stage": 8,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "SYS-17",
+        "MOS-EXT-17"
+      ],
+      "proposed_change": "Correct time alignment, units, sensor identity, baseline, impedance and domain shift before sim-real comparisons.",
+      "acceptance_gate": "Paired physical apparatus and source trace hashes.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "NUMERIC_ONLY_NONCOMPLIANT_PHYSICAL_MODEL",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.7/"
+    },
+    {
+      "id": "08.8",
+      "name": "Mixture detection",
+      "stage": 8,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-02",
+        "SYS-06",
+        "SYS-10"
+      ],
+      "proposed_change": "Separate binary/ternary mixture detection and mixture-presence OOD from exact constituent identification.",
+      "acceptance_gate": "Whole mixed runs, unseen ratios and absent compounds.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.8/"
+    },
+    {
+      "id": "08.9",
+      "name": "Unmixing",
+      "stage": 8,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-07",
+        "SYS-08",
+        "SYS-09"
+      ],
+      "proposed_change": "Introduce model families MCR-ALS, nonnegative/sparse constrained inversion and nonlinear cross-sensitivity; explicitly test identifiability.",
+      "acceptance_gate": "Pure-gas and measured binary mixture ground-truth with abundance per component.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.9/"
+    },
+    {
+      "id": "08.10",
+      "name": "Multi-analyte regression",
+      "stage": 8,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-06",
+        "SYS-10",
+        "CN-PAT-02"
+      ],
+      "proposed_change": "Multi-output gas-specific ppm regression with mass-flow setpoints and uncertainty; classification not surrogate for concentration.",
+      "acceptance_gate": "Each constituent ppm error on heldout mixtures and external sessions.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.10/"
+    },
+    {
+      "id": "08.11",
+      "name": "Interference",
+      "stage": 8,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-18",
+        "SYS-19",
+        "SYS-23"
+      ],
+      "proposed_change": "Separate chemical hardware filtering/preconcentration from computational interference model and purge; account breakthrough/humidity and target loss.",
+      "acceptance_gate": "Filter-before/after and bleed-through under standards; no ad hoc heated addon.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.11/"
+    },
+    {
+      "id": "08.12",
+      "name": "Complex products",
+      "stage": 8,
+      "decision": "ENHANCE",
+      "source_ids": [
+        "MQ-EXT-10",
+        "MQ-EXT-11"
+      ],
+      "proposed_change": "Food/liquid/wood/composite fingerprints trained as classes only; avoid gas molecule labels.",
+      "acceptance_gate": "Holdout physical specimen and sample origin.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_WHOLE_PRODUCT_LABELS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/08.12/"
+    },
+    {
+      "id": "09.1",
+      "name": "Robotic olfaction",
+      "stage": 9,
+      "decision": "DEFER",
+      "source_ids": [
+        "SYS-12",
+        "SYS-23"
+      ],
+      "proposed_change": "Define robotic olfaction assumptions and recording pose/time/wind before claiming localization.",
+      "acceptance_gate": "Time synchronized pose+wind+gas data.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/09.1/"
+    },
+    {
+      "id": "09.2",
+      "name": "Gas mapping",
+      "stage": 9,
+      "decision": "DEFER",
+      "source_ids": [
+        "SYS-12",
+        "SYS-10"
+      ],
+      "proposed_change": "Build gas occupancy field when spatial reference route exists, not from stationary chambers.",
+      "acceptance_gate": "Ground truth release positions and wind.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_ROBOT_SPATIAL_SOURCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/09.2/"
+    },
+    {
+      "id": "09.3",
+      "name": "Source localization",
+      "stage": 9,
+      "decision": "DEFER",
+      "source_ids": [
+        "SYS-12",
+        "SYS-17"
+      ],
+      "proposed_change": "Estimate source position only with transport dynamics, wind and reference source geometry.",
+      "acceptance_gate": "Cross-plume trials with measured flow.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_ROBOT_SPATIAL_SOURCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/09.3/"
+    },
+    {
+      "id": "09.4",
+      "name": "Active sampling",
+      "stage": 9,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-11",
+        "SYS-23"
+      ],
+      "proposed_change": "Active sampling as controlled experiment: adjustable intake, clean-air purge, pauses and motion; maintain time-lag aware data model.",
+      "acceptance_gate": "Measured sample delay, pump/fan phases and normalized chamber mixing.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/09.4/"
+    },
+    {
+      "id": "09.5",
+      "name": "Spatiotemporal fusion",
+      "stage": 9,
+      "decision": "DEFER",
+      "source_ids": [
+        "SYS-12",
+        "SYS-17"
+      ],
+      "proposed_change": "Combine aligned robot pose plus time series after wind and inlet impulse response are available.",
+      "acceptance_gate": "Independent field plume campaigns.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/09.5/"
+    },
+    {
+      "id": "09.6",
+      "name": "Motion decisions",
+      "stage": 9,
+      "decision": "DEFER",
+      "source_ids": [
+        "SYS-12",
+        "SYS-23"
+      ],
+      "proposed_change": "Motion-to-source safety and gas map decision policy requires validated source cues; movement safety remains independent.",
+      "acceptance_gate": "Safe navigation + independently verified plume orientation.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/09.6/"
+    },
+    {
+      "id": "10.1",
+      "name": "Negative Evidence & Sensor-Guided Exclusion",
+      "stage": 10,
+      "decision": "REDESIGN",
+      "source_ids": [
+        "SYS-04",
+        "QSPR-REF-09"
+      ],
+      "proposed_change": "Negative evidence only with calibrated detector sensitivity/false negative under concentration, mixture and humidity; forbid exclusion from non-response alone.",
+      "acceptance_gate": "Species-conditional detection power, unknown-class caution.",
+      "existing_implementation_status": "PARTIAL_PROTOTYPE",
+      "existing_g1_unit_gate": "PASS",
+      "existing_external_g2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "tank_g3_validated": false,
+      "latest_main_source_module": "research/techniques/10.1/"
+    }
+  ],
+  "prioritized_program": [
+    {
+      "priority": 1,
+      "kind": "REDESIGN",
+      "ids": [
+        "01.1",
+        "01.2",
+        "01.3",
+        "01.4",
+        "05.1",
+        "05.2",
+        "05.8"
+      ],
+      "reason": "Mixed manufacturer graph curves and inconsistent externally borrowed R0 make quantitative outputs unsafe",
+      "evidence": [
+        "R0-PEER-01",
+        "R0-PEER-02",
+        "R0-PEER-03",
+        "CN-MQ-04"
+      ]
+    },
+    {
+      "priority": 2,
+      "kind": "REDESIGN",
+      "ids": [
+        "03.8",
+        "05.4",
+        "05.5",
+        "08.8",
+        "08.9",
+        "08.10"
+      ],
+      "reason": "Mixture class ≠ gas-by-gas concentrations, rank-limited inverse systems and cross sensitivity",
+      "evidence": [
+        "SYS-06",
+        "SYS-07",
+        "SYS-09",
+        "SYS-10"
+      ]
+    },
+    {
+      "priority": 3,
+      "kind": "REDESIGN",
+      "ids": [
+        "02.5",
+        "02.8",
+        "04.10",
+        "06.1",
+        "06.5",
+        "06.9"
+      ],
+      "reason": "Source labels, double counting and calibrated uncertainty/abstention need shared contracts",
+      "evidence": [
+        "MQ-EXT-03",
+        "MQ-EXT-15",
+        "UCI-EXT-270"
+      ]
+    },
+    {
+      "priority": 4,
+      "kind": "REDESIGN",
+      "ids": [
+        "04.9",
+        "06.2",
+        "06.7"
+      ],
+      "reason": "PubChem descriptors need measured sensor forward training and inverse candidates rather than true-label leakage",
+      "evidence": [
+        "QSPR-REF-03",
+        "QSPR-REF-04",
+        "QSPR-REF-10"
+      ]
+    },
+    {
+      "priority": 5,
+      "kind": "REDESIGN",
+      "ids": [
+        "01.6",
+        "02.4",
+        "08.6",
+        "08.11",
+        "09.4"
+      ],
+      "reason": "Physical sampling/flow/heater and temporal transport are missing from practical input design",
+      "evidence": [
+        "SYS-11",
+        "SYS-17",
+        "SYS-23",
+        "SYS-18"
+      ]
+    },
+    {
+      "priority": 6,
+      "kind": "ENHANCE",
+      "ids": [
+        "02.7",
+        "03.5",
+        "03.6",
+        "07.4",
+        "07.5",
+        "07.8"
+      ],
+      "reason": "Feature selection, drift and experiment design need proper independent source comparisons",
+      "evidence": [
+        "SYS-01",
+        "SYS-04",
+        "MOS-EXT-17",
+        "UCI-EXT-270"
+      ]
+    }
+  ],
+  "prospective_techniques_not_approved": [
+    {
+      "id": "CAND-A",
+      "name": "Physical selective sample conditioning (molecular-sieve/filter/bypass)",
+      "already_partly_covered_by": [
+        "01.6",
+        "08.11",
+        "09.4"
+      ],
+      "new_number_now": false,
+      "why_not_immediate": "No filter/bypass physical module in Tank and published filtered SnO2 devices not equivalent to MQ cartridges",
+      "criterion_for_new_technique": "Controlled inlet filter-versus-bypass multi-gas benchmark with independently measured loss/breakthrough and a distinct control interface",
+      "source_ids": [
+        "SYS-18",
+        "SYS-19"
+      ]
+    },
+    {
+      "id": "CAND-B",
+      "name": "PubChem/QSPR-driven open-universe compound hypothesis retrieval",
+      "already_partly_covered_by": [
+        "04.9",
+        "06.2",
+        "06.5",
+        "06.9"
+      ],
+      "new_number_now": false,
+      "why_not_immediate": "Only studies on JPL polymer-carbon and custom MOS, without demonstrated improvements on physical Tank MQ8",
+      "criterion_for_new_technique": "Forward calibrated MQ data plus molecular holdout and quantitatively significant incremental top-k/OOD benefit without test-label leakage",
+      "source_ids": [
+        "QSPR-REF-03",
+        "QSPR-REF-04",
+        "QSPR-REF-10"
+      ]
+    },
+    {
+      "id": "CAND-C",
+      "name": "Metrological provenance and uncertainty budget executor",
+      "already_partly_covered_by": [
+        "01.1",
+        "01.2",
+        "02.8",
+        "05.8",
+        "06.3"
+      ],
+      "new_number_now": false,
+      "why_not_immediate": "Cross-cutting QA framework rather than new gas-classification algorithm",
+      "criterion_for_new_technique": "Traceable real calibration trace chain and independent acceptance of quantified uncertainty and detection limits",
+      "source_ids": [
+        "R0-PEER-01",
+        "R0-PEER-04"
+      ]
+    },
+    {
+      "id": "CAND-D",
+      "name": "Temporal deconvolution and online mixture-change tracking",
+      "already_partly_covered_by": [
+        "02.4",
+        "08.3",
+        "08.6",
+        "08.9",
+        "09.5"
+      ],
+      "new_number_now": false,
+      "why_not_immediate": "Existing dynamic-feature/kinetic modeling stages can host the prototype",
+      "criterion_for_new_technique": "Demonstrated source-specific inverse dynamics across heldout changes with uncertainty and stable causal operation",
+      "source_ids": [
+        "SYS-17",
+        "SYS-10"
+      ]
+    }
+  ],
+  "dependency_map": [
+    "01.1/01.2/01.4/01.6/02.8 physical measurement contract",
+    "02.1-02.7 source-aware temporal fingerprints",
+    "03.3/03.7/03.8 identifiability and source domains",
+    "04 and 05 parallel qualitative and quantitative candidate models",
+    "06 fusion, uncertainty and abstention",
+    "07 independent validation across sessions/devices/concentration/drift",
+    "08 time series/molecular/mixtures after baselines",
+    "09 mapping after spatial flow reference; stage 10 calibrated non-detection separate from alarms"
+  ],
+  "holdout_constraints": [
+    "No random slicing of time series from same exposure",
+    "No test-label molecule descriptor injection into candidate inference",
+    "No UCI/TGS-to-MQ8 R0/ppm transfer",
+    "No treating one binary mixture trajectory as millions of independent exposures",
+    "No single nominal R0 from paper applied to Tank physical modules",
+    "Mixture identity accuracy not substitute for independently measured per-gas ppm errors",
+    "No unsupported thermal PWM on physical MQ7/MQ9"
+  ],
+  "current_development_branches_to_reconcile": [
+    "research/chemcore80-v3-implementation-20261021 PR#3 draft, LSTM and physics/simulation",
+    "research/complete-g2-07-08-20261020 PR#1 older plans",
+    "research/uci-algorithm-completion-20261021 PR#2 older base"
+  ],
+  "next_actions": [
+    "Freeze accepted source/label/units matrix for all 80, with source groups and validity flags",
+    "Create 4 reproducible baseline campaigns: UCI1081 MQ135-only; UCI322 two trajectories; MQ-Multimodal four classes; MQ-R0 8-source audit arithmetic",
+    "Implement constrained MCR-ALS and candidate-wise nonlinear inverse as numbered research methods only",
+    "Perform QSPR inverse experiment with source-locked candidate descriptors without leakage",
+    "Design Tank real device blank/pure gas/mixed gas and flow/purge experimental standard operating protocol",
+    "Publish one 10-ID research outcome at a time, retaining negative results and fixed G3=0"
+  ],
+  "source_link_count": 179,
+  "validation_notes": [
+    "Research recommendations only, not edits to PROGRESS_80.json",
+    "Each technique reference ID belongs to exact captured 80-source bibliography snapshot",
+    "Method fit must be re-evaluated on eligible source observations, not merely on scholarly metadata"
+  ]
+}
