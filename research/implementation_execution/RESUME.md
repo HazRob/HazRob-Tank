@@ -1,3 +1,28 @@
+# ACTIVE RECOVERY CHECKPOINT — V4 BATCH02 10/10 RESEARCH SOFTWARE PASS (2026-10-21)
+
+**Authoritative next task:** V4 Batch03 ID `03.6` (sensor subset stability) through `04.7`. Its ten IDs according to canonical plan: `03.6,03.7,03.8,04.1,04.2,04.3,04.4,04.5,04.6,04.7`. Next file after development: `BATCH03_EVIDENCE_AR.md`; do not renumber techniques.
+
+**Current PR/branch:** [research PR #6](https://github.com/HazRob/HazRob-Tank/pull/6), `research/chemcore80-central-evidence-gap-analysis-20261021`. Research branch only, not production and not yet merged into main.
+
+**Verified new V4 software G1:**
+- Batch01: 10/10 source-aware modules; [336/336 GitHub Actions #39545362103](https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103).
+- Batch02: 10/10 source-aware modules; **175/175** (153 directory tests + 22 shared new-method scientific tests), [GitHub Actions #39547105861](https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861) on commit `cdcd6035adeaa06483e7a06c826c11621b5f98cf`.
+- Combined **20/80 techniques newly advanced to V4 G1 engineering test gate** (does not indicate 20 real gas calibration validations). Remaining V4-batch upgrades 60.
+- Historical G1 80/80 and historical G2 eligibility 80/80 remain unchanged; **new V4 G2 empirical validation has not been established by these unit tests. Tank G3 physical evidence stays 0/80**. Do not copy counts from initial G1/G2 across to new versions.
+
+**Single-source execution status:** `EXECUTION_LEDGER_2026-10-21.json` (80 item states plus eight batches). Batch reports: `BATCH01_EVIDENCE_AR.md` and `BATCH02_EVIDENCE_AR.md`. New source blockers per ID: `BATCH02_SOURCE_READINESS_2026-10-21.json`.
+
+**Reproducible restart sequence:**
+1. Fetch actual current branch HEAD and PR #6 checks; record SHA, do not assume HEAD matches this documentation after concurrent edits.
+2. Read `PLAN_80_V4.json` and this `EXECUTION_LEDGER_2026-10-21.json`, then inspect each ID currently not upgraded. Validate plan and status with `python research/implementation_execution/validate_plan_v4.py`.
+3. Confirm two CI runs, preserve negative findings/failure histories; source catalogue must remain pinned to Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` until a deliberate version change.
+4. Start Batch03 03.6 implementation, add versioned research code and tests, group-holdout source evidence when available, update ledger after CI, report only on 10-ID batch boundary.
+5. Before any ChemCore runtime integration: unify duplicate method prototypes and API contracts; compare outcomes on independently labelled MQ exposures and Tank physical data. No changes to original HazRob, APK, ESP32 or Tank firmware without separate permission.
+
+**IMPORTANT SCIENTIFIC GATES:** `MQ-EXT-03` 6400 ADC rows are not 6400 independent exposures, UCI sources are not Tank MQ8 calibrations, manufacturer graph curves and cross-device R0 are research priors. Blind gas identity, mixture component ppm, LOD/LOQ and toxicity decisions still require physically referenced calibration and G3 group-heldout trials.
+
+---
+
 # LATEST V4 SCIENTIFIC DEVELOPMENT CHECKPOINT — BATCH 01 G1 PASS (2026-10-21)
 
 - **Current research PR:** https://github.com/HazRob/HazRob-Tank/pull/6, branch `research/chemcore80-central-evidence-gap-analysis-20261021`. This PR remains a **research review**, not automatically merged to `main`.
