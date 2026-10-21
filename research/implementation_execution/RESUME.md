@@ -1,3 +1,17 @@
+# ACTIVE RECOVERY CHECKPOINT — V4 BATCH03 10/10 G1 SOURCE-CONTRACT PASS (2026-10-21)
+
+**Next:** Batch04 (10 IDs) in this precise order `04.8,04.9,04.10,05.1,05.2,05.3,05.4,05.5,05.6,05.7`. Start with `04.8` (true ANN/MLP grouped evaluation, no source leakage), `04.9` (candidate-wise unknown gas/concentration QSPR/Physics+ML without test-label leak), `04.10` (independent source benchmark matrix); then 05.x conditional calibrated ppm logic where reference data exist.
+
+- **Overall new V4 engineering G1:** **30/80**; Batch01 10/10 [336 tests](https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103), Batch02 10/10 [175 tests](https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861), Batch03 10/10 [174 tests](https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060).
+- **Batch03 code-tested commit:** `3fc4df06271e94d2a3d448f2ddae308a3684348c`. Successful plan G1 structural checker. **Note** per-directory 160 tests are historical; shared 14 are the V4 integrated new-method group-gate tests, not 174 new experimental gas exposures.
+- **Primary evidence:** [BATCH03_EVIDENCE_AR.md](BATCH03_EVIDENCE_AR.md), [BATCH03_SOURCE_READINESS_2026-10-21.json](BATCH03_SOURCE_READINESS_2026-10-21.json). **Machine status:** [EXECUTION_LEDGER_2026-10-21.json](EXECUTION_LEDGER_2026-10-21.json). **80 detailed work plans:** [PLAN_80_V4.json](PLAN_80_V4.json).
+- **Algorithm honesty:** `04.5` implements linear OVR SVM, RBF benchmark parity pending; `04.7` group-evaluates boosted decision stumps, **NOT XGBoost**. Research XGBoost models elsewhere in benchmarks are not thereby integrated. Mark scientific algorithm parity pending and do not deploy.
+- **Actual raw external V4 grouped G2 assessment:** **not completed** from new code; source label/group eligibility unverified for several sources. Historical G2 old 80/80 source check is separate. **Actual MQ8 Tank physical G3 remains 0/80**. Original Android/ESP32/CAM and HR069 untouched.
+- **Reference catalogue version pinned:** Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` in research V4 plan. Do not silently replace the evidence list with later mutable index; provenance must be versioned.
+- **Restart:** read this checkpoint, inspect actual PR #6 branch head, then ledger + batch03 report + central source G2 blocked reasons. Before batch04 code, rerun `python research/implementation_execution/validate_plan_v4.py` and save CI. Before any scientific approval require independently measured gas concentration reference ppm, per-physical-instance R0, RL, heater phase, timestamps, separate sessions/devices with heldout testing.
+
+---
+
 # ACTIVE RECOVERY CHECKPOINT — V4 BATCH02 10/10 RESEARCH SOFTWARE PASS (2026-10-21)
 
 **Authoritative next task:** V4 Batch03 ID `03.6` (sensor subset stability) through `04.7`. Its ten IDs according to canonical plan: `03.6,03.7,03.8,04.1,04.2,04.3,04.4,04.5,04.6,04.7`. Next file after development: `BATCH03_EVIDENCE_AR.md`; do not renumber techniques.
