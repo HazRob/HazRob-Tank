@@ -5,9 +5,12 @@ Methods intentionally named after their ACTUAL implementations:
 """
 import importlib.util
 from pathlib import Path
-from grouped_model_validation_v2 import score_classifier
-
 ROOT=Path(__file__).resolve().parents[1]
+_validation_spec=importlib.util.spec_from_file_location(
+    "tank_v4_group_validator",Path(__file__).with_name("grouped_model_validation_v2.py"))
+_validation=importlib.util.module_from_spec(_validation_spec)
+_validation_spec.loader.exec_module(_validation)
+score_classifier=_validation.score_classifier
 SPECS={
  "04.3":("knn_v1.py","KNN","fit_knn","predict_knn"),
  "04.4":("logistic_regression_v1.py","SOFTMAX","fit_softmax","predict_softmax"),
