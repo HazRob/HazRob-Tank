@@ -39,8 +39,11 @@ def fit_args(**changes):
     concentrations=(10.,20.,40.,80.)
     points=[dict(concentration_ppm=c,rs_ohm=1000*2*c**(-0.5),
                  sensor_instance_id="MQ135-1",gas_label="ETHANOL",
-                 reference_kind="certified_gas",reference_id="STD-GAS-01")
-            for c in concentrations]
+                 reference_kind="certified_gas",reference_id="STD-GAS-01",
+                 device_id="TANK-SYNTHETIC",session_id="CAL-SESSION-A",
+                 exposure_id="EXPOSURE-"+str(i),sensor_model="MQ135",
+                 calibration_id="CAL-1",heater_phase="CONSTANT")
+            for i,c in enumerate(concentrations)]
     x=dict(points=points,sensor_instance_id="MQ135-1",
            gas_label="ETHANOL",calibration_id="CAL-1",
            reference_id="STD-GAS-01",r0_ohm=1000.,
@@ -51,7 +54,8 @@ def fit_args(**changes):
 
 
 def blank_rows(n=12):
-    return [dict(exposure_id=f"blank-{i}",label="BLANK",signal=i/100)
+    return [dict(exposure_id=f"blank-{i}",device_id="DEVICE-MOCK",
+                 session_id="BLANK-SESSION",label="BLANK",signal=i/100)
             for i in range(n)]
 
 
@@ -154,7 +158,7 @@ class ReferenceContractsBatch01Test(unittest.TestCase):
         x=sampling_window_check(timestamps_s=[0,1,2,3,4],
            sensor_signal=[2,3,4,3,2],flushing_observed=False,
            airflow_reference_id=None)
-        self.assertFalse(x["ready_for_uncontaminated_fingerprint"])
+        self.assertFalse(x["sampling_metadata_complete_for_study"])
         self.assertIn("PURGE_NOT_VERIFIED",x["flags"])
         self.assertIn("AIRFLOW_NOT_DOCUMENTED",x["flags"])
 
@@ -168,7 +172,8 @@ class ReferenceContractsBatch01Test(unittest.TestCase):
         x=sampling_window_check(timestamps_s=[0,1,2,3,4],
            sensor_signal=[2,3,4,3,2],flushing_observed=True,
            airflow_reference_id="fan-cal1")
-        self.assertTrue(x["ready_for_uncontaminated_fingerprint"])
+        self.assertTrue(x["sampling_metadata_complete_for_study"])
+        self.assertFalse(x["purge_physical_efficiency_verified"])
         self.assertFalse(x["gas_identity_assigned"])
 
     # ID 02.5 fingerprints
@@ -176,7 +181,8 @@ class ReferenceContractsBatch01Test(unittest.TestCase):
         x=label_safe_fingerprint(source_id="UCI1081",label_kind="PURE_GAS",
           sensor_models=["MQ135"],baseline_rs_ohm=[10000],
           sample_rs_ohm=[5000],label="ETHANOL",
-          independent_gas_identity=True)
+          independent_gas_identity=True,
+          gas_reference_kind="reference_instrument",gas_reference_id="UCI-REF-001")
         self.assertAlmostEqual(x["features_log_rs_fold"][0],math.log(0.5))
         self.assertTrue(x["can_train_pure_gas_identity"])
         self.assertFalse(x["real_tank_8mq_validated"])
@@ -275,6 +281,31 @@ class ReferenceContractsBatch01Test(unittest.TestCase):
         for row in data:row["signal"]=1.
         with self.assertRaises(ValueError):
             screening_lod_from_unique_blanks(data)
+
+
+    def test_32_pure_gas_identity_without_referenced_standard_rejected(self):
+        with self.assertRaisesRegex(ValueError,"reference kind"):
+            label_safe_fingerprint(source_id="S",label_kind="PURE_GAS",
+              sensor_models=["MQ135"],baseline_rs_ohm=[1000],
+              sample_rs_ohm=[500],label="GAS",independent_gas_identity=True)
+
+    def test_33_quantitative_fit_repeated_exposure_rejected(self):
+        x=fit_args()
+        x["points"][-1]["exposure_id"]=x["points"][0]["exposure_id"]
+        with self.assertRaisesRegex(ValueError,"cannot reuse exposure"):
+            fit_known_gas_source_curve(**x)
+
+    def test_34_quantitative_fit_mixed_heater_phase_rejected(self):
+        x=fit_args()
+        x["points"][-1]["heater_phase"]="LOW"
+        with self.assertRaisesRegex(ValueError,"heater"):
+            fit_known_gas_source_curve(**x)
+
+    def test_35_quantitative_fit_mixed_calibration_rejected(self):
+        x=fit_args()
+        x["points"][-1]["calibration_id"]="OTHER"
+        with self.assertRaisesRegex(ValueError,"calibration"):
+            fit_known_gas_source_curve(**x)
 
 
 if __name__=="__main__":
