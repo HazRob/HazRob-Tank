@@ -29,7 +29,7 @@ def audit():
     assert len(seen)==80
     assert [x["id"] for x in plan["batches"]]==list(range(1,9))
     assert ledger["baseline"]["G3_Tank_physical"]==0
-    legal={"PLANNED_NOT_EXECUTED","CODE_COMMITTED_CI_PENDING","IMPLEMENTED_PENDING_CI","SOFTWARE_TESTS_CI_PASS_G2_PENDING",
+    legal={"PLANNED_NOT_EXECUTED","G1_RESEARCH_TESTS_PASS_G2_G3_PENDING","CODE_COMMITTED_CI_PENDING","IMPLEMENTED_PENDING_CI","SOFTWARE_TESTS_CI_PASS_G2_PENDING",
            "SOFTWARE_TESTS_CI_PASS_G2_BLOCKED","BLOCKED_NEEDS_REFERENCE"}
     for entry in ledger["work_items"]:
         assert entry["new_implementation_status"] in legal
