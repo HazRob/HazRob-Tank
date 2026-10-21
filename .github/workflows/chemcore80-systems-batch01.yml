@@ -32,7 +32,19 @@ jobs:
       - name: Synthetic, negative and boundary tests for ten research technique contracts
         run: |
           set -euo pipefail
-          python -m unittest discover -s research/systems_analysis -p 'test_measurement_reference_contract_v2.py' -v
+          python -m unittest discover -s research/systems_analysis -p 'test_*.py' -v
+      - name: Audit eight real external published R0 sources and verify pinned bytes
+        run: |
+          set -euo pipefail
+          python research/systems_analysis/audit_r0_peer_source_v1.py
+      - name: Preserve independently reproducible numerical audit output
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tank-chemcore80-batch01-published-r0-arithmetic
+          path: research/systems_analysis/results/mq_r0_rs_2018_vs_peer_arithmetic_2026-10-21.json
+          if-no-files-found: warn
+          retention-days: 90
       - name: Confirm no changes to runtime binaries or research G3 assertions
         run: |
           set -euo pipefail
