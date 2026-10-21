@@ -96,6 +96,53 @@ class Batch04FirstThreeTests(unittest.TestCase):
                                   source_id="toy",sensor_ids=("MQ2","MQ135"))
         self.assertEqual(value["heldout"]["coverage"],1.)
         self.assertFalse(value["G2_real_source_approved"])
+    def _calibration_source(self):
+        # All data are synthetic; ppm trace and R0 are only caller claims.
+        meta={"source_id":"toy-synthetic","device_id":"device1","gas_label":"EthOH",
+              "heater_phase":"CONSTANT","reference_trace_id":"claimed-gas-standard",
+              "r0_definition_id":"gas-curve","sensor_ids":("MQ2","MQ135"),
+              "r0_ohm":{"MQ2":1000.,"MQ135":2000.},
+              "rl_ohm":{"MQ2":10000.,"MQ135":10000.}}
+        def record(i,ppm):
+            return {"source_id":meta["source_id"],"gas_label":meta["gas_label"],
+                    "exposure_id":"exposure"+str(i),"reference_ppm":ppm,
+                    "reference_trace_id":meta["reference_trace_id"],
+                    "rs_ohm":{"MQ2":5000.*ppm**(-.25),
+                              "MQ135":8000.*ppm**(-.28)}}
+        return meta,[record(i,x) for i,x in enumerate([10,20,30,40,50,60,70,80])],[
+            record(8,25),record(9,45)]
+    def test_six_source_conditional_regressors(self):
+        meta,train,test=self._calibration_source()
+        for id in ("05.1","05.2","05.3","05.4","05.5","05.6"):
+            with self.subTest(id=id):
+                m=load(id,"source_calibration_audit_v2")
+                out=m.audit_source_calibration(train,test,metadata=meta)
+                self.assertEqual(out["method"],id)
+                self.assertEqual(out["test_independent_exposure_ids"],2)
+                self.assertFalse(out["production_ppm_qualified"])
+                self.assertFalse(out["Tank_G3"])
+    def test_six_regressors_reject_shared_exposure(self):
+        meta,train,test=self._calibration_source()
+        test[0]["exposure_id"]=train[0]["exposure_id"]
+        for id in ("05.1","05.2","05.3","05.4","05.5","05.6"):
+            with self.subTest(id=id),self.assertRaises(ValueError):
+                load(id,"source_calibration_audit_v2").audit_source_calibration(train,test,metadata=meta)
+    def test_six_regressors_require_individually_measured_r0(self):
+        meta,train,test=self._calibration_source()
+        del meta["r0_ohm"]["MQ135"]
+        with self.assertRaises(ValueError):
+            load("05.4","source_calibration_audit_v2").audit_source_calibration(train,test,metadata=meta)
+    def test_identity_conditional_guard_rejects_uncalibrated_class(self):
+        m=load("05.7","identity_calibration_gate_v2")
+        x=m.guarded_identity_conditional({"CO":.9,"NH3":.1},{"CO":lambda _:{"ppm":10,"status":"WITHIN_CALIBRATED_RANGE"}},
+             123,source_id="toy",probability_calibration_source="",
+             conditional_calibration_source="")
+        self.assertEqual(x["status"],"ABSTAIN")
+        y=m.guarded_identity_conditional({"CO":.9,"NH3":.1},{"CO":lambda _:{"ppm":10,"status":"WITHIN_CALIBRATED_RANGE"}},
+             123,source_id="toy",probability_calibration_source="claimed-cal",
+             conditional_calibration_source="claimed-ppm")
+        self.assertEqual(y["status"],"RESEARCH_CONDITIONAL_RESULT")
+        self.assertFalse(y["production_ppm_approved"])
     def test_audit_bytes_or_leakage_detected(self):
         m=load("04.10","source_benchmark_audit_v2")
         records=[]
