@@ -146,5 +146,52 @@ class V4Batch02Tests(unittest.TestCase):
         x,y,g=labelled()
         with self.assertRaises(ValueError):
             m.sensor_drop_column([[r[0]] for r in x],y,g,("MQ2",),source_id="s")
+    def test_028_requires_raw_parent_for_derived(self):
+        m=module("02.8","source_provenance_v2")
+        b=b"derived-log-ratio"
+        fields=dict(source_bytes=b,claimed_sha256=hashlib.sha256(b).hexdigest(),
+            source_id="MQ-FEATURE",licence="CC BY",source_url="https://example.org",
+            sensor_models=["MQ135"],channel_unit="RS_R0_RATIO",event_id="E1",
+            session_id="S1",utc_timestamp="2026-10-21T00:00:00Z",
+            identity_kind="PURE_GAS",measured_r0_ohm=22000)
+        with self.assertRaises(ValueError):
+            m.audited_record(**fields,vector_kind="DERIVED")
+        x=m.audited_record(**fields,vector_kind="DERIVED",parent_sha256="a"*64)
+        self.assertEqual(x["measured_r0_ohm"],22000)
+        self.assertEqual(x["parent_sha256"],"a"*64)
+        self.assertFalse(x["Tank_G3"])
+    def test_028_not_silent_rl_unit_mixup(self):
+        m=module("02.8","source_provenance_v2")
+        b=b"raw"
+        args=dict(source_bytes=b,claimed_sha256=hashlib.sha256(b).hexdigest(),
+            source_id="MQ",licence="public",source_url="https://example.org",
+            sensor_models=["MQ7"],channel_unit="RS_OHM",event_id="E1",
+            session_id="S1",utc_timestamp="2026-10-21T00:00:00Z",
+            identity_kind="UNKNOWN")
+        for val in (0,True,float("nan")):
+            with self.subTest(val=val),self.assertRaises(ValueError):
+                m.audited_record(**args,measured_rl_ohm=val)
+        x=m.audited_record(**args,doi="10.x/example",cas="64-17-5",
+                            heater_phase="LOW",measured_rl_ohm=10000)
+        self.assertEqual(x["measured_rl_ohm"],10000)
+        self.assertFalse(x["actual_reference_gas_calibration_verified"])
+    def test_027_feature_count_is_exploratory_only(self):
+        m=module("02.7","grouped_feature_selection_v2")
+        x,y,g=labelled()
+        report=m.grouped_feature_study(x,y,g,("MQ2","MQ135"),max_features=1)
+        self.assertFalse(report["nested_outer_holdout_performed"])
+        self.assertEqual(len(report["candidate_results"]),1)
+    def test_033_near_collinearity_refusal(self):
+        m=module("03.3","identifiability_gate_v2")
+        x=m.two_component_identifiability([1,1],[1,1.00000001],sensor_ids=("MQ2","MQ9"))
+        self.assertEqual(x["status"],"NON_IDENTIFIABLE_OR_ILL_CONDITIONED")
+        self.assertFalse(x["ppm_approved"])
+    def test_032_mismatched_heater_is_not_comparable(self):
+        m=module("03.2","source_similarity_v2")
+        x=dict(sensor_ids=("MQ7","MQ135"),source_id="S",feature_units="log",
+               reference_definition="RL+R0",heater_phase="LOW",features=(1,2))
+        with self.assertRaises(ValueError):
+            m.context_similarity(x,{**x,"heater_phase":"HIGH"},fitted_scales=(1,1))
+
 if __name__=="__main__":
     unittest.main()
