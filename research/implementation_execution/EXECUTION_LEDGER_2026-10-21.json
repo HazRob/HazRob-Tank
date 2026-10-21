@@ -113,7 +113,7 @@
       "batch": 1,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "CN-MQ-01",
         "SYS-05",
@@ -121,16 +121,22 @@
         "SYS-20"
       ],
       "source_package": "research/techniques/01.4/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/01.4/heater_evidence_v2.py",
+        "research/techniques/01.4/test_heater_evidence_v2.py"
+      ],
+      "test_job": "V4 batch01 10-ID run",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544825913",
+      "results": [
+        "Sensor-specific recorded phase and voltage vs declared heater profile; no PWM actuation or manufacturer hardware proof",
+        "All 28 (historical + v2) software tests for 01.4 PASS in #39544825913"
+      ],
+      "new_G2": "NO_NEW_CALIBRATED_REFERENCE_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "a98e00f3e9be468c6f173f39d4d8ed2a4980fb74",
       "limits": "Historical G1/G2 evidence unchanged",
-      "latest_batch01_test_count": 12,
-      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "latest_batch01_test_count": 28,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544825913",
       "current_legacy_tests_verified_in_v4": true
     },
     {
@@ -138,7 +144,7 @@
       "batch": 1,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-02",
         "MQ-EXT-05",
@@ -146,16 +152,22 @@
         "SYS-24"
       ],
       "source_package": "research/techniques/01.5/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/01.5/environment_guard_v2.py",
+        "research/techniques/01.5/test_environment_guard_v2.py"
+      ],
+      "test_job": "V4 batch01 10-ID run",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544825913",
+      "results": [
+        "Source/physical-instance/gas/heater-conditioned environmental compensation and heldout group leak gate, not Tank-calibrated",
+        "All 30 (historical + v2) software tests for 01.5 PASS in #39544825913"
+      ],
+      "new_G2": "NO_NEW_CALIBRATED_REFERENCE_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "a98e00f3e9be468c6f173f39d4d8ed2a4980fb74",
       "limits": "Historical G1/G2 evidence unchanged",
-      "latest_batch01_test_count": 12,
-      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "latest_batch01_test_count": 30,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544825913",
       "current_legacy_tests_verified_in_v4": true
     },
     {
@@ -1744,7 +1756,7 @@
   "batch_state": [
     {
       "id": 1,
-      "status": "PARTIAL_3_OF_10_NEW_V4_G1_ENGINEERING_PASS",
+      "status": "PARTIAL_5_OF_10_NEW_V4_G1_ENGINEERING_PASS",
       "techniques": [
         "01.1",
         "01.2",
@@ -1757,26 +1769,24 @@
         "02.2",
         "02.3"
       ],
-      "number_newly_implemented": 3,
-      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "number_newly_implemented": 5,
+      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544825913",
       "documentation": "research/implementation_execution/BATCH01_EVIDENCE_AR.md",
       "number_legacy_prototype_modules_tested": 10,
       "ci_test_counts_per_id": {
         "01.1": 28,
         "01.2": 46,
         "01.3": 42,
-        "01.4": 12,
-        "01.5": 12,
+        "01.4": 28,
+        "01.5": 30,
         "01.6": 13,
         "01.7": 12,
         "02.1": 15,
         "02.2": 13,
         "02.3": 14
       },
-      "ci_tests_total": 207,
+      "ci_tests_total": 241,
       "next_ids": [
-        "01.4",
-        "01.5",
         "01.6",
         "01.7",
         "02.1",
@@ -1961,6 +1971,35 @@
         "CI initially exposed source curve boundary floating point bug; fixed",
         "Legacy 01.5 NumPy dependency added to CI",
         "Source-aware V2 variants are not runtime-certified and must be consolidated before eventual production integration"
+      ]
+    },
+    {
+      "date": "2026-10-21",
+      "event": "BATCH01_PARTIAL_G1_5_OF_10_241_SOFTWARE_TESTS_PASS",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544825913",
+      "tests_by_id": {
+        "01.1": 28,
+        "01.2": 46,
+        "01.3": 42,
+        "01.4": 28,
+        "01.5": 30,
+        "01.6": 13,
+        "01.7": 12,
+        "02.1": 15,
+        "02.2": 13,
+        "02.3": 14
+      },
+      "next_ids": [
+        "01.6",
+        "01.7",
+        "02.1",
+        "02.2",
+        "02.3"
+      ],
+      "remaining_G3_Tank": 0,
+      "notes": [
+        "Dynamic heater metadata verification does NOT actuate or certify MQ7/MQ9 heater hardware",
+        "Environmental regression coefficients remain source-conditioned research examples; no actual Tank ppm calibration"
       ]
     }
   ],
