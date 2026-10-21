@@ -74,7 +74,7 @@
       "batch": 1,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "TOOL-MQ-01",
         "CN-MQ-01",
@@ -83,13 +83,20 @@
         "CN-MQ-04"
       ],
       "source_package": "research/techniques/01.3/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/01.3/source_curve_guard_v2.py",
+        "research/techniques/01.3/test_source_curve_guard_v2.py"
+      ],
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544386328",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544386328",
+      "results": [
+        "Log power MQ prior requires source, R0 definition and heater phase; preserves ppm_per_internal_unit (MQ3 scale=50) and forbids extrapolation",
+        "42 tests including old and new PASS after 2 numerical boundary failures were detected then corrected: run #39544386328",
+        "New V4 10-module engineering-only action run #39544492918 PASS after installing missing numpy for historic 01.5 tests"
+      ],
+      "new_G2": "EXTERNAL_REFERENCE_CURVE_PRIOR_ONLY_NOT_CALIBRATION",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "74f46b4aceacb198a14ce366060af34b85578d67",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -1876,10 +1883,15 @@
     "guard_source_reference_vs_physical_measurement": true
   },
   "latest_work_summary": {
-    "new_G1_research_techniques_verified": 2,
-    "others_pending": 78,
+    "new_G1_research_techniques_verified": 3,
+    "others_pending": 77,
     "completed_new_batch01": false,
-    "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544036471",
-    "g3_validated": 0
+    "engineering_only_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+    "historical_full_10_technique_units_success": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544386328",
+    "g3_validated": 0,
+    "failures_recorded": [
+      "01.3 floating-point boundary and overly strict equality assertions, fixed at 74f46b4",
+      "V4 CI 01.5 missing numpy dependency, fixed at 18dbc262"
+    ]
   }
 }
