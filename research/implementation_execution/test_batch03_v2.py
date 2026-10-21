@@ -126,7 +126,7 @@ class SourceTechniqueBatch03Tests(unittest.TestCase):
             with self.subTest(id=id):
                 m=mod(id,"grouped_source_benchmark_v2")
                 with self.assertRaises(ValueError):
-                    m.benchmark_source(x[:-4],y[:-4],g[:-4],x[-4:],y[-4:],g[:-3],
+                    m.benchmark_source(x[:-4],y[:-4],g[:-4],x[-4:],y[-4:],[g[0]]+g[-3:],
                                        ("MQ2","MQ135"),source_id="toy")
     def test_04_closed_set_unseen_class_rejected(self):
         m=mod("04.3","grouped_source_benchmark_v2")
