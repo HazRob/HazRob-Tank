@@ -30,6 +30,8 @@ jobs:
           python-version: '3.11'
       - name: Install existing prototype's numeric dependency
         run: python -m pip install 'numpy>=1.26,<3'
+      - name: Install research-only numerical test dependencies
+        run: python -m pip install numpy
       - name: Check 80-technique plan, metadata and safe status
         run: |
           python research/implementation_execution/validate_plan_v4.py
