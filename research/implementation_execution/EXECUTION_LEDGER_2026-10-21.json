@@ -14,7 +14,7 @@
       "batch": 1,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "CN-MQ-01",
         "CN-MQ-04",
@@ -22,13 +22,18 @@
         "TOOL-MQ-02"
       ],
       "source_package": "research/techniques/01.1/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/01.1/adc_rs_traceable_v2.py",
+        "research/techniques/01.1/test_adc_rs_traceable_v2.py"
+      ],
       "test_job": null,
       "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "results": [
+        "Traceable ADC conversion; explicit saturation and ideal ADC quantization-only intervals; source circuit ID"
+      ],
+      "new_G2": "NOT_EVALUATED_NEW_PHYSICAL_REFERENCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "f34dd6bbbcd198a9adce158a4fed832f4d72d55a",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -36,7 +41,7 @@
       "batch": 1,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "R0-PEER-01",
         "R0-PEER-02",
@@ -48,13 +53,18 @@
         "R0-PEER-08"
       ],
       "source_package": "research/techniques/01.2/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/01.2/r0_provenance_v2.py",
+        "research/techniques/01.2/test_r0_provenance_v2.py"
+      ],
       "test_job": null,
       "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "results": [
+        "Physical sensor-bound R0; source hash verification, measured heater/reference segregation; no universal peer R0"
+      ],
+      "new_G2": "NOT_EVALUATED_NEW_PHYSICAL_REFERENCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "1479438f59e08f7a11f4481d51689fc33ce9eec9",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -1862,5 +1872,13 @@
     "failed_tests_remain_in_ledger": true,
     "do_not_manufacture_training_data": true,
     "guard_source_reference_vs_physical_measurement": true
+  },
+  "latest_work_summary": {
+    "implemented_research_modules_with_tests_pending_CI": 2,
+    "other_work_items_pending": 78,
+    "g3_validated": 0,
+    "branch": "research/chemcore80-central-evidence-gap-analysis-20261021",
+    "status": "NOT_ALL_BATCH01_COMPLETE",
+    "do_not_extrapolate_passes": true
   }
 }
