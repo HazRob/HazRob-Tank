@@ -107,7 +107,7 @@ class ReferenceContractsBatch01Test(unittest.TestCase):
         with self.assertRaises(ValueError):
             r0_from_source_window(**r0_args(sensor_model="MQ7"))
         with self.assertRaises(ValueError):
-            r0_from_source_window(**r0_args(rs_samples_ohm=[1000,1000,1000,10000,20000]))
+            r0_from_source_window(**r0_args(rs_samples_ohm=[1000,1500,2000,2500,3000]))
 
     # ID 01.3 curves
     def test_09_curve_factor_50_and_log_equivalence(self):
