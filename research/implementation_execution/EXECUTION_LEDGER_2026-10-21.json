@@ -27,15 +27,18 @@
         "research/techniques/01.1/test_adc_rs_traceable_v2.py"
       ],
       "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544036471/job/119038041521",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544036471",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
       "results": [
         "Traceable ADC conversion; explicit saturation and ideal ADC quantization-only intervals; source circuit ID",
-        "All 28 G1 unit tests pass (existing plus added) on git SHA 7e822739a0c29e949e5871c49537ee6ceb29a9de"
+        "All 28 G1 unit tests pass (existing plus added) on git SHA 7e822739a0c29e949e5871c49537ee6ceb29a9de",
+        "V4 ten-ID complete engineering sweep CI #39544492918: 207/207 Python tests PASS, zero physical G3 observations"
       ],
       "new_G2": "PENDING_SUFFICIENT_EXTERNAL_SOURCE_VALIDATION",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "f34dd6bbbcd198a9adce158a4fed832f4d72d55a",
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 28,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918"
     },
     {
       "id": "01.2",
@@ -59,15 +62,18 @@
         "research/techniques/01.2/test_r0_provenance_v2.py"
       ],
       "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544036471/job/119038041577",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544036471",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
       "results": [
         "Physical sensor-bound R0; source hash verification, measured heater/reference segregation; no universal peer R0",
-        "All 46 G1 unit tests pass (existing plus added) on git SHA 7e822739a0c29e949e5871c49537ee6ceb29a9de"
+        "All 46 G1 unit tests pass (existing plus added) on git SHA 7e822739a0c29e949e5871c49537ee6ceb29a9de",
+        "V4 ten-ID complete engineering sweep CI #39544492918: 207/207 Python tests PASS, zero physical G3 observations"
       ],
       "new_G2": "PENDING_SUFFICIENT_EXTERNAL_SOURCE_VALIDATION",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "1479438f59e08f7a11f4481d51689fc33ce9eec9",
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 46,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918"
     },
     {
       "id": "01.3",
@@ -88,16 +94,19 @@
         "research/techniques/01.3/test_source_curve_guard_v2.py"
       ],
       "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544386328",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544386328",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
       "results": [
         "Log power MQ prior requires source, R0 definition and heater phase; preserves ppm_per_internal_unit (MQ3 scale=50) and forbids extrapolation",
         "42 tests including old and new PASS after 2 numerical boundary failures were detected then corrected: run #39544386328",
-        "New V4 10-module engineering-only action run #39544492918 PASS after installing missing numpy for historic 01.5 tests"
+        "New V4 10-module engineering-only action run #39544492918 PASS after installing missing numpy for historic 01.5 tests",
+        "V4 ten-ID complete engineering sweep CI #39544492918: 207/207 Python tests PASS, zero physical G3 observations"
       ],
       "new_G2": "EXTERNAL_REFERENCE_CURVE_PRIOR_ONLY_NOT_CALIBRATION",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "74f46b4aceacb198a14ce366060af34b85578d67",
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 42,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918"
     },
     {
       "id": "01.4",
@@ -119,7 +128,10 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 12,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "current_legacy_tests_verified_in_v4": true
     },
     {
       "id": "01.5",
@@ -141,7 +153,10 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 12,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "current_legacy_tests_verified_in_v4": true
     },
     {
       "id": "01.6",
@@ -164,7 +179,10 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 13,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "current_legacy_tests_verified_in_v4": true
     },
     {
       "id": "01.7",
@@ -185,7 +203,10 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 12,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "current_legacy_tests_verified_in_v4": true
     },
     {
       "id": "02.1",
@@ -206,7 +227,10 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 15,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "current_legacy_tests_verified_in_v4": true
     },
     {
       "id": "02.2",
@@ -227,7 +251,10 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 13,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "current_legacy_tests_verified_in_v4": true
     },
     {
       "id": "02.3",
@@ -248,7 +275,10 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch01_test_count": 14,
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "current_legacy_tests_verified_in_v4": true
     },
     {
       "id": "02.4",
@@ -1714,7 +1744,7 @@
   "batch_state": [
     {
       "id": 1,
-      "status": "NOT_STARTED",
+      "status": "PARTIAL_3_OF_10_NEW_V4_G1_ENGINEERING_PASS",
       "techniques": [
         "01.1",
         "01.2",
@@ -1727,9 +1757,33 @@
         "02.2",
         "02.3"
       ],
-      "number_newly_implemented": 0,
-      "verified_CI": null,
-      "documentation": "research/implementation_execution/BATCH01_EVIDENCE_AR.md"
+      "number_newly_implemented": 3,
+      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "documentation": "research/implementation_execution/BATCH01_EVIDENCE_AR.md",
+      "number_legacy_prototype_modules_tested": 10,
+      "ci_test_counts_per_id": {
+        "01.1": 28,
+        "01.2": 46,
+        "01.3": 42,
+        "01.4": 12,
+        "01.5": 12,
+        "01.6": 13,
+        "01.7": 12,
+        "02.1": 15,
+        "02.2": 13,
+        "02.3": 14
+      },
+      "ci_tests_total": 207,
+      "next_ids": [
+        "01.4",
+        "01.5",
+        "01.6",
+        "01.7",
+        "02.1",
+        "02.2",
+        "02.3"
+      ],
+      "G3_Tank_physical": "BLOCKED_NO_TANK_REFERENCE_DATA"
     },
     {
       "id": 2,
@@ -1874,6 +1928,40 @@
         "research/implementation_execution/PLAN_80_V4_AR.md"
       ],
       "state": "PLAN_DOCS_CREATED_AND_REFERENCES_PINNED"
+    },
+    {
+      "date": "2026-10-21",
+      "event": "BATCH01_PARTIAL_G1_3_NEW_EVIDENCE_207_TESTS_PASS",
+      "commit_at_test": "18dbc262afa28aa2005dd03b190c12ca354126c1",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
+      "tests_by_id": {
+        "01.1": 28,
+        "01.2": 46,
+        "01.3": 42,
+        "01.4": 12,
+        "01.5": 12,
+        "01.6": 13,
+        "01.7": 12,
+        "02.1": 15,
+        "02.2": 13,
+        "02.3": 14
+      },
+      "source_scope": "Software engineering only; manufacturer charts and external UCI/MQ not Tank device measurements",
+      "pending_ids": [
+        "01.4",
+        "01.5",
+        "01.6",
+        "01.7",
+        "02.1",
+        "02.2",
+        "02.3"
+      ],
+      "remaining_G3_Tank": 0,
+      "notes": [
+        "CI initially exposed source curve boundary floating point bug; fixed",
+        "Legacy 01.5 NumPy dependency added to CI",
+        "Source-aware V2 variants are not runtime-certified and must be consolidated before eventual production integration"
+      ]
     }
   ],
   "policy": {
