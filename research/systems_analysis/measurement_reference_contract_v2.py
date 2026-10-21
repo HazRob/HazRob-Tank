@@ -175,13 +175,15 @@ def sampling_window_check(*, timestamps_s, sensor_signal, flushing_observed,
     if not airflow_reference_id:
         flags.append("AIRFLOW_NOT_DOCUMENTED")
     return {"n": len(t), "duration_s": t[-1]-t[0], "flags": flags,
-            "ready_for_uncontaminated_fingerprint": not flags,
+            "sampling_metadata_complete_for_study": not flags,
+            "purge_physical_efficiency_verified": False,
             "gas_identity_assigned": False}
 
 
 def label_safe_fingerprint(*, source_id, label_kind, sensor_models,
                            baseline_rs_ohm, sample_rs_ohm, label,
-                           independent_gas_identity=False):
+                           independent_gas_identity=False,
+                           gas_reference_kind=None, gas_reference_id=None):
     """02.5: one or eight sensor fingerprints allowed; label semantics persist."""
     _name(source_id, "source ID")
     _name(label, "class label")
@@ -198,8 +200,12 @@ def label_safe_fingerprint(*, source_id, label_kind, sensor_models,
         raise ValueError("malformed sensor identity")
     baseline = [_positive(x, "baseline Rs") for x in baseline]
     sample = [_positive(x, "exposure Rs") for x in sample]
-    if independent_gas_identity and label_kind != "PURE_GAS":
-        raise ValueError("only actual pure gases may have independent identity labels")
+    if independent_gas_identity:
+        if label_kind != "PURE_GAS":
+            raise ValueError("only actual pure gases may have independent identity labels")
+        if gas_reference_kind not in INDEPENDENT_REFERENCE:
+            raise ValueError("pure-gas identity requires independent reference kind")
+        _name(gas_reference_id, "independent gas reference ID")
     from math import log
     features = [log(s/b) for s,b in zip(sample, baseline)]
     return {"source_id": source_id, "label": label,
@@ -207,6 +213,9 @@ def label_safe_fingerprint(*, source_id, label_kind, sensor_models,
             "features_log_rs_fold": features,
             "can_train_pure_gas_identity": bool(
                 independent_gas_identity and label_kind == "PURE_GAS"),
+            "identity_reference_id": gas_reference_id if independent_gas_identity else None,
+            "declared_reference_kind": gas_reference_kind if independent_gas_identity else None,
+            "source_reference_verified_from_raw_bytes": False,
             "real_tank_8mq_validated": False}
 
 
@@ -270,13 +279,22 @@ def fit_known_gas_source_curve(points, *, sensor_instance_id, gas_label,
     if len(rows)<3 or len({x.get("concentration_ppm") for x in rows
                           if isinstance(x,Mapping)})<3:
         raise ValueError("three distinct concentration levels required")
+    exposure_keys = []
     for row in rows:
         if (not isinstance(row,Mapping) or
                 row.get("reference_kind") not in INDEPENDENT_REFERENCE or
                 row.get("reference_id") != reference_id or
                 row.get("sensor_instance_id") != sensor_instance_id or
-                row.get("gas_label") != gas_label):
-            raise ValueError("each observation must have matching independent gas reference")
+                row.get("gas_label") != gas_label or
+                row.get("calibration_id") != calibration_id or
+                row.get("sensor_model") != sensor_model or
+                row.get("heater_phase") != heater_phase):
+            raise ValueError("each observation must have matching independently referenced calibration, gas and heater")
+        exposure_keys.append((_name(row.get("device_id"),"device ID"),
+                              _name(row.get("session_id"),"session ID"),
+                              _name(row.get("exposure_id"),"exposure ID")))
+    if len(set(exposure_keys)) != len(exposure_keys):
+        raise ValueError("independent calibration points cannot reuse exposure events")
     c=[_positive(x["concentration_ppm"],"ppm") for x in rows]
     rs=[_positive(x["rs_ohm"],"Rs") for x in rows]
     x=[math.log10(v) for v in c]
@@ -311,7 +329,9 @@ def screening_lod_from_unique_blanks(blank_records, *, signal_field="signal",
     for row in rows:
         if not isinstance(row, Mapping) or row.get("label")!="BLANK":
             raise ValueError("blank-labelled exposure required")
-        ids.append(_name(row.get("exposure_id"),"blank exposure ID"))
+        ids.append((_name(row.get("device_id"),"device ID"),
+                    _name(row.get("session_id"),"session ID"),
+                    _name(row.get("exposure_id"),"blank exposure ID")))
         x=row.get(signal_field)
         if (not isinstance(x,(int,float)) or isinstance(x,bool)
                 or not math.isfinite(x)):
