@@ -6,7 +6,7 @@ scientific priors; passing this module's tests does not certify calibration.
 No mixed-gas quantitative inference and no automatic source averaging.
 """
 from dataclasses import dataclass
-from math import isfinite, log, exp
+from math import isfinite, isclose, log, exp
 
 def _positive(value, key):
     if isinstance(value,bool) or not isinstance(value,(int,float)) or not isfinite(value) or value<=0:
@@ -86,8 +86,14 @@ def inverse_candidate(curve, observed_rs_over_r0, *, r0_calibration_id=None,
     internal=exp((log(ratio)-log(curve.curve_a))/curve.curve_b)
     if not isfinite(internal) or internal<=0:
         raise ValueError("unbounded model inverse")
-    if not curve.min_internal<=internal<=curve.max_internal:
+    # Log/exp inversion can round an endpoint by a few ULPs; this
+    # tight tolerance is for numerical identity, never physical extrapolation.
+    if ((internal<curve.min_internal and not isclose(
+            internal,curve.min_internal,rel_tol=1e-12,abs_tol=0.0)) or
+        (internal>curve.max_internal and not isclose(
+            internal,curve.max_internal,rel_tol=1e-12,abs_tol=0.0))):
         raise ValueError("source curve cannot extrapolate concentration")
+    internal=max(curve.min_internal,min(curve.max_internal,internal))
     ppm=internal*curve.ppm_per_internal_unit
     if not isfinite(ppm):
         raise ValueError("unbounded source concentration")
