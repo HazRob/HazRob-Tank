@@ -67,7 +67,7 @@ def source_grouped_regression(method, train_records, test_records, *, metadata):
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
     if method in ("05.1","05.2","05.3"):
         sensor=ids[0]
-        model=getattr(m,fit_name)([(v[0],x) for v,x in zip(ppm,train)],
+        model=getattr(m,fit_name)([(p,rs[0]) for p,rs in zip(ppm,train)],
                          gas_label=metadata["gas_label"],sensor_id=sensor,r0_ohms=metadata["r0_ohm"][sensor])
         predicted=[getattr(m,pred_name)(v[0],model) for v in test]
     else:
