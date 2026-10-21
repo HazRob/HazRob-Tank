@@ -367,7 +367,7 @@
       "batch": 2,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "CN-RSCH-01",
         "SYS-17",
@@ -375,21 +375,30 @@
         "MQ-EXT-10"
       ],
       "source_package": "research/techniques/02.4/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/02.4/segmental_differentiation_v2.py",
+        "research/techniques/02.4/test_segmental_differentiation_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 21 tests plus 2 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "SDA-inspired transparent variant, not reproduction of Chinese reference original numerical implementation; raw recordings pending"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 21,
+      "latest_batch02_shared_v2_cases": 2
     },
     {
       "id": "02.5",
       "batch": 2,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-03",
         "MQ-EXT-10",
@@ -397,63 +406,87 @@
         "MQ-EXT-15"
       ],
       "source_package": "research/techniques/02.5/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/02.5/source_fingerprint_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 14 tests plus 2 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "Operational perfume/smoke/wood/food class cannot be treated as pure gas or component ppm; group rows by physical exposure"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 14,
+      "latest_batch02_shared_v2_cases": 2
     },
     {
       "id": "02.6",
       "batch": 2,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "TOOL-MQ-01",
         "MQ-EXT-10",
         "MOS-EXT-16"
       ],
       "source_package": "research/techniques/02.6/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/02.6/physical_trajectory_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 16 tests plus 2 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "No concentration coordinate without independently referenced ppm time series; 3D environmental axis remains descriptive"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 16,
+      "latest_batch02_shared_v2_cases": 2
     },
     {
       "id": "02.7",
       "batch": 2,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-01",
         "SYS-04",
         "CN-RSCH-02"
       ],
       "source_package": "research/techniques/02.7/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/02.7/grouped_feature_selection_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 14 tests plus 3 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "Group-aware feature count selection is exploratory and NOT nested outer holdout; source independence not demonstrated"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 14,
+      "latest_batch02_shared_v2_cases": 3
     },
     {
       "id": "02.8",
       "batch": 2,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-03",
         "MQ-EXT-15",
@@ -461,119 +494,167 @@
         "R0-PEER-01"
       ],
       "source_package": "research/techniques/02.8/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/02.8/source_provenance_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 14 tests plus 4 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "SHA256 verified over supplied raw bytes but record itself does not prove standard gas certificate; byte sources and licensing required"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 14,
+      "latest_batch02_shared_v2_cases": 4
     },
     {
       "id": "03.1",
       "batch": 2,
       "priority": "P1",
       "research_decision": "RETAIN_AND_VALIDATE",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "CN-PAT-01",
         "SYS-06",
         "MQ-EXT-11"
       ],
       "source_package": "research/techniques/03.1/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/03.1/grouped_pca_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 14 tests plus 1 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "Train group PCA loadings are exploratory; cross-source/channel invariance and actual independent holdout remain to validate"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 14,
+      "latest_batch02_shared_v2_cases": 1
     },
     {
       "id": "03.2",
       "batch": 2,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-03",
         "MQ-EXT-11",
         "QSPR-REF-09"
       ],
       "source_package": "research/techniques/03.2/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/03.2/source_similarity_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 16 tests plus 2 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "Cross-source sensor distances cannot compare unless same gas/reference/R0/heater/units/channel map; model scales must be trained"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 16,
+      "latest_batch02_shared_v2_cases": 2
     },
     {
       "id": "03.3",
       "batch": 2,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "QSPR-REF-09",
         "SYS-07",
         "MQ-EXT-15"
       ],
       "source_package": "research/techniques/03.3/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/03.3/identifiability_gate_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 16 tests plus 2 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "Gram matrix condition is necessary linear identifiability diagnostic, not mixture separation proof or ppm certificate"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 16,
+      "latest_batch02_shared_v2_cases": 2
     },
     {
       "id": "03.4",
       "batch": 2,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "CN-PAT-01",
         "SYS-06",
         "MQ-EXT-15"
       ],
       "source_package": "research/techniques/03.4/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/03.4/grouped_discriminant_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 14 tests plus 2 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "Two-class heldout LDA and PLS1DA are actually fitted; NOT the multiclass UCI model; not independent final benchmark"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 14,
+      "latest_batch02_shared_v2_cases": 2
     },
     {
       "id": "03.5",
       "batch": 2,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-01",
         "SYS-04",
         "CN-RSCH-02"
       ],
       "source_package": "research/techniques/03.5/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/03.5/sensor_drop_column_v2.py",
+        "research/implementation_execution/test_batch02_v2.py"
+      ],
+      "test_job": "batch02-software-source-gates; 10 legacy+new module suite / shared 22 cross-tech scientific tests",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "results": [
+        "V4 own directory 14 tests plus 2 cross-tech safeguards PASS on head cdcd6035; lab GAS ppm not verified",
+        "Leave-one-sensor-out grouped centroid analysis estimates predictive reliance, not chemical selectivity or causal importance"
+      ],
+      "new_G2": "SOURCE_ELIGIBILITY_DOCUMENTED_NOT_NEWLY_EVALUATED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch02_test_count": 14,
+      "latest_batch02_shared_v2_cases": 2
     },
     {
       "id": "03.6",
@@ -1863,7 +1944,7 @@
     },
     {
       "id": 2,
-      "status": "NOT_STARTED",
+      "status": "G1_V4_ENGINEERING_COMPLETE_10_OF_10_G2_G3_PENDING",
       "techniques": [
         "02.4",
         "02.5",
@@ -1876,9 +1957,28 @@
         "03.4",
         "03.5"
       ],
-      "number_newly_implemented": 0,
-      "verified_CI": null,
-      "documentation": "research/implementation_execution/BATCH02_EVIDENCE_AR.md"
+      "number_newly_implemented": 10,
+      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "documentation": "research/implementation_execution/BATCH02_EVIDENCE_AR.md",
+      "module_test_counts": {
+        "02.4": 21,
+        "02.5": 14,
+        "02.6": 16,
+        "02.7": 14,
+        "02.8": 14,
+        "03.1": 14,
+        "03.2": 16,
+        "03.3": 16,
+        "03.4": 14,
+        "03.5": 14
+      },
+      "shared_cross_tech_tests": 22,
+      "module_tests_total": 153,
+      "ci_tests_total": 175,
+      "G2_scientific_additional": "NO_NEW_REAL_SOURCE_EMPIRICAL_10_OF_10_REQUIRES_RAW_AND_GROUPED_BENCH",
+      "G3_Tank_physical": "BLOCKED_NO_TANK_REFERENCE_DATA",
+      "source_readiness": "research/implementation_execution/BATCH02_SOURCE_READINESS_2026-10-21.json",
+      "next_batch": 3
     },
     {
       "id": 3,
@@ -2094,6 +2194,22 @@
         "A global suite initially failed because NumPy was absent from old 01.5 tests",
         "MQ3 scaled curve inversion endpoint initially failed floating-point bound check; corrected",
         "Source R0/ADC/mfg curve models remain non-calibrated research evidence"
+      ]
+    },
+    {
+      "date": "2026-10-21",
+      "event": "BATCH02_V4_G1_10_OF_10_175_TESTS_PASS",
+      "commit_at_test": "cdcd6035adeaa06483e7a06c826c11621b5f98cf",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861",
+      "software_tests": 175,
+      "source_reference_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G2_v4_new_source_benchmark_count": 0,
+      "G3_Tank_physical": 0,
+      "next_work": "V4 batch03 03.6,03.7,03.8,04.1..04.7; or scientific external source validation of batch02 before G2 claims",
+      "caveats": [
+        "Cross-technique test file has 22 cases; directory suite 153 tests include old V1 baselines",
+        "Source schema validator verifies supplied bytes but cannot independently guarantee source certificate",
+        "03.4 LDA and PLS1-DA two-class model is source-research distinct from separately trained UCI multiclass models"
       ]
     }
   ],
