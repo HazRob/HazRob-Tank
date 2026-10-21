@@ -26,20 +26,23 @@
         "research/techniques/01.1/adc_rs_traceable_v2.py",
         "research/techniques/01.1/test_adc_rs_traceable_v2.py"
       ],
-      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544036471/job/119038041521",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185401",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "Traceable ADC conversion; explicit saturation and ideal ADC quantization-only intervals; source circuit ID",
         "All 28 G1 unit tests pass (existing plus added) on git SHA 7e822739a0c29e949e5871c49537ee6ceb29a9de",
         "V4 ten-ID complete engineering sweep CI #39544492918: 207/207 Python tests PASS, zero physical G3 observations",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 28 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "PENDING_SUFFICIENT_EXTERNAL_SOURCE_VALIDATION",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "f34dd6bbbcd198a9adce158a4fed832f4d72d55a",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 28,
-      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103"
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 28
     },
     {
       "id": "01.2",
@@ -62,20 +65,23 @@
         "research/techniques/01.2/r0_provenance_v2.py",
         "research/techniques/01.2/test_r0_provenance_v2.py"
       ],
-      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544036471/job/119038041577",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185252",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "Physical sensor-bound R0; source hash verification, measured heater/reference segregation; no universal peer R0",
         "All 46 G1 unit tests pass (existing plus added) on git SHA 7e822739a0c29e949e5871c49537ee6ceb29a9de",
         "V4 ten-ID complete engineering sweep CI #39544492918: 207/207 Python tests PASS, zero physical G3 observations",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 46 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "PENDING_SUFFICIENT_EXTERNAL_SOURCE_VALIDATION",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "1479438f59e08f7a11f4481d51689fc33ce9eec9",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 46,
-      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103"
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 46
     },
     {
       "id": "01.3",
@@ -95,21 +101,24 @@
         "research/techniques/01.3/source_curve_guard_v2.py",
         "research/techniques/01.3/test_source_curve_guard_v2.py"
       ],
-      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544386328",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185122",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "Log power MQ prior requires source, R0 definition and heater phase; preserves ppm_per_internal_unit (MQ3 scale=50) and forbids extrapolation",
         "42 tests including old and new PASS after 2 numerical boundary failures were detected then corrected: run #39544386328",
         "New V4 10-module engineering-only action run #39544492918 PASS after installing missing numpy for historic 01.5 tests",
         "V4 ten-ID complete engineering sweep CI #39544492918: 207/207 Python tests PASS, zero physical G3 observations",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 42 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "EXTERNAL_REFERENCE_CURVE_PRIOR_ONLY_NOT_CALIBRATION",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "74f46b4aceacb198a14ce366060af34b85578d67",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 42,
-      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103"
+      "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 42
     },
     {
       "id": "01.4",
@@ -128,20 +137,23 @@
         "research/techniques/01.4/heater_evidence_v2.py",
         "research/techniques/01.4/test_heater_evidence_v2.py"
       ],
-      "test_job": "V4 batch01 10-ID run",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185248",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "Sensor-specific recorded phase and voltage vs declared heater profile; no PWM actuation or manufacturer hardware proof",
         "All 28 (historical + v2) software tests for 01.4 PASS in #39544825913",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 28 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "NO_NEW_CALIBRATED_REFERENCE_SOURCE",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "a98e00f3e9be468c6f173f39d4d8ed2a4980fb74",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 28,
       "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
-      "current_legacy_tests_verified_in_v4": true
+      "current_legacy_tests_verified_in_v4": true,
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 28
     },
     {
       "id": "01.5",
@@ -160,20 +172,23 @@
         "research/techniques/01.5/environment_guard_v2.py",
         "research/techniques/01.5/test_environment_guard_v2.py"
       ],
-      "test_job": "V4 batch01 10-ID run",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185341",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "Source/physical-instance/gas/heater-conditioned environmental compensation and heldout group leak gate, not Tank-calibrated",
         "All 30 (historical + v2) software tests for 01.5 PASS in #39544825913",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 30 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "NO_NEW_CALIBRATED_REFERENCE_SOURCE",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "a98e00f3e9be468c6f173f39d4d8ed2a4980fb74",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 30,
       "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
-      "current_legacy_tests_verified_in_v4": true
+      "current_legacy_tests_verified_in_v4": true,
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 30
     },
     {
       "id": "01.6",
@@ -193,20 +208,23 @@
         "research/techniques/01.6/quality_context_v2.py",
         "research/techniques/01.6/test_quality_context_v2.py"
       ],
-      "test_job": "V4 10-ID engineering-only batch01",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185266",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "ADC window quality with timestamp gaps, sensor identity, fan/heater state changes, missing and saturated samples; clean signal != clean air",
         "30 G1 tests (legacy + v2) passed on GitHub Actions run #39545362103",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 30 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "NO_NEW_PHYSICAL_SOURCE_TEST",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 30,
       "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
-      "current_legacy_tests_verified_in_v4": true
+      "current_legacy_tests_verified_in_v4": true,
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 30
     },
     {
       "id": "01.7",
@@ -224,20 +242,23 @@
         "research/techniques/01.7/drift_context_v2.py",
         "research/techniques/01.7/test_drift_context_v2.py"
       ],
-      "test_job": "V4 10-ID engineering-only batch01",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185371",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "Chronological drift only under matched physical sensor, heater and environmental reference conditions; no universal R0",
         "28 G1 tests (legacy + v2) passed on GitHub Actions run #39545362103",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 28 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "NO_NEW_PHYSICAL_SOURCE_TEST",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 28,
       "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
-      "current_legacy_tests_verified_in_v4": true
+      "current_legacy_tests_verified_in_v4": true,
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 28
     },
     {
       "id": "02.1",
@@ -255,20 +276,23 @@
         "research/techniques/02.1/causal_segments_v2.py",
         "research/techniques/02.1/test_causal_segments_v2.py"
       ],
-      "test_job": "V4 10-ID engineering-only batch01",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185329",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "Causal baseline/exposure segment filtering without future leakage; preserve step and heater states",
         "31 G1 tests (legacy + v2) passed on GitHub Actions run #39545362103",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 31 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "NO_NEW_PHYSICAL_SOURCE_TEST",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 31,
       "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
-      "current_legacy_tests_verified_in_v4": true
+      "current_legacy_tests_verified_in_v4": true,
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 31
     },
     {
       "id": "02.2",
@@ -284,24 +308,25 @@
       "source_package": "research/techniques/02.2/",
       "new_files": [
         "research/techniques/02.2/group_scaler_v2.py",
-        "research/techniques/02.2/test_group_scaler_v2.py",
-        "research/techniques/02.2/source_scaling_v2.py",
-        "research/techniques/02.2/test_source_scaling_v2.py"
+        "research/techniques/02.2/test_group_scaler_v2.py"
       ],
-      "test_job": "V4 10-ID engineering-only batch01",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185277",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "Train-only scaling with full exposure/session group disjointness and sensor channel order; independent source scaling implementation used for crosscheck",
         "42 G1 tests (legacy + v2) passed on GitHub Actions run #39545362103",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 42 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "NO_NEW_PHYSICAL_SOURCE_TEST",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 42,
       "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
-      "current_legacy_tests_verified_in_v4": true
+      "current_legacy_tests_verified_in_v4": true,
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 42
     },
     {
       "id": "02.3",
@@ -319,20 +344,23 @@
         "research/techniques/02.3/kinetic_features_v2.py",
         "research/techniques/02.3/test_kinetic_features_v2.py"
       ],
-      "test_job": "V4 10-ID engineering-only batch01",
-      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
+      "test_job": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321/job/119042185282",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
       "results": [
         "Source-tagged baseline/exposure/recovery kinetics and temporal response features with physical units; no identity or ppm",
         "31 G1 tests (legacy + v2) passed on GitHub Actions run #39545362103",
-        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80"
+        "V4 batch01 final 336/336 G1 software tests PASS; G3 Tank physical 0/80",
+        "2026-10-21 full first-batch unit suite 31 tests PASS on git SHA 420908b38fee01e3c7c4ffc1a167b6254f86fff2; these are software/synthetic tests NOT calibration"
       ],
-      "new_G2": "NO_NEW_PHYSICAL_SOURCE_TEST",
+      "new_G2": "NO_NEW_SOURCE_REFERENCE_BENCHMARK_ACCEPTED",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
       "limits": "Historical G1/G2 evidence unchanged",
       "latest_batch01_test_count": 31,
       "latest_batch01_test_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103",
-      "current_legacy_tests_verified_in_v4": true
+      "current_legacy_tests_verified_in_v4": true,
+      "last_verified_commit": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+      "test_counts_total_existing_plus_new": 31
     },
     {
       "id": "02.4",
@@ -2076,15 +2104,36 @@
     "guard_source_reference_vs_physical_measurement": true
   },
   "latest_work_summary": {
-    "new_G1_research_techniques_verified": 3,
-    "others_pending": 77,
-    "completed_new_batch01": false,
-    "engineering_only_ci": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544492918",
-    "historical_full_10_technique_units_success": "https://github.com/HazRob/HazRob-Tank/actions/runs/39544386328",
-    "g3_validated": 0,
-    "failures_recorded": [
-      "01.3 floating-point boundary and overly strict equality assertions, fixed at 74f46b4",
-      "V4 CI 01.5 missing numpy dependency, fixed at 18dbc262"
-    ]
+    "g1_new_code_tested": 10,
+    "g2_new_empirical_validated": 0,
+    "g3_new_Tank_physical": 0,
+    "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
+    "head_sha": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
+    "individual_test_count_total": 336,
+    "batch01_all_new_v2_implementations": true,
+    "batch01_new_G1_complete": true,
+    "batch01_new_G2_complete": false,
+    "batch01_G3_complete": false,
+    "historical_g1_g2_counts_unchanged": true
+  },
+  "batch01_new_work": {
+    "status": "G1_SOFTWARE_UPGRADES_10_OF_10_VERIFIED_EXPERIMENTAL_GATES_PENDING",
+    "verified_ids": [
+      "01.1",
+      "01.2",
+      "01.3",
+      "01.4",
+      "01.5",
+      "01.6",
+      "01.7",
+      "02.1",
+      "02.2",
+      "02.3"
+    ],
+    "software_and_original_unit_tests": 336,
+    "source_exposure_status": "NOT_COMPREHENSIVELY_EVALUATED_FOR_NEW_V2_IMPLEMENTATIONS",
+    "tank_physical_status": "0/80",
+    "workflow_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
+    "engineering_plan_and_all_ten_gate": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103"
   }
 }
