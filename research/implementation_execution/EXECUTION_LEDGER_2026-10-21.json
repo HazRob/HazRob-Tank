@@ -661,49 +661,65 @@
       "batch": 3,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-01",
         "SYS-04",
         "MQ-EXT-11"
       ],
       "source_package": "research/techniques/03.6/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/03.6/grouped_sensor_subsets_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Source, sensor schema and group-aware computational guards at engineering G1 only"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "SOURCE_CONDITIONED_V2_STUDY"
     },
     {
       "id": "03.7",
       "batch": 3,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-10",
         "MQ-EXT-15",
         "UCI-EXT-270"
       ],
       "source_package": "research/techniques/03.7/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/03.7/concentration_holdout_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Source, sensor schema and group-aware computational guards at engineering G1 only"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "SOURCE_CONDITIONED_V2_STUDY"
     },
     {
       "id": "03.8",
       "batch": 3,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-07",
         "SYS-08",
@@ -711,157 +727,221 @@
         "QSPR-REF-09"
       ],
       "source_package": "research/techniques/03.8/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/03.8/local_identifiability_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Source, sensor schema and group-aware computational guards at engineering G1 only"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "SOURCE_CONDITIONED_V2_STUDY"
     },
     {
       "id": "04.1",
       "batch": 3,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "TOOL-MQ-01",
         "CN-MQ-01",
         "R0-PEER-01"
       ],
       "source_package": "research/techniques/04.1/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.1/source_curve_candidates_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Source, sensor schema and group-aware computational guards at engineering G1 only"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "SOURCE_CONDITIONED_V2_STUDY"
     },
     {
       "id": "04.2",
       "batch": 3,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-03",
         "MQ-EXT-11",
         "MQ-EXT-15"
       ],
       "source_package": "research/techniques/04.2/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.2/source_fingerprint_matching_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Source, sensor schema and group-aware computational guards at engineering G1 only"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "SOURCE_CONDITIONED_V2_STUDY"
     },
     {
       "id": "04.3",
       "batch": 3,
       "priority": "P2",
       "research_decision": "RETAIN_AND_VALIDATE",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-06",
         "MQ-EXT-03"
       ],
       "source_package": "research/techniques/04.3/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.3/grouped_source_benchmark_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Source, sensor schema and group-aware computational guards at engineering G1 only"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "SOURCE_CONDITIONED_V2_STUDY"
     },
     {
       "id": "04.4",
       "batch": 3,
       "priority": "P2",
       "research_decision": "RETAIN_AND_VALIDATE",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-15",
         "UCI-EXT-270"
       ],
       "source_package": "research/techniques/04.4/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.4/grouped_source_benchmark_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Source, sensor schema and group-aware computational guards at engineering G1 only"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "SOURCE_CONDITIONED_V2_STUDY"
     },
     {
       "id": "04.5",
       "batch": 3,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-01",
         "CN-RSCH-02",
         "MQ-EXT-15"
       ],
       "source_package": "research/techniques/04.5/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.5/grouped_source_benchmark_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Linear OVR SVM only; RBF SVM parity not yet implemented"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "PARTIAL_LINEAR_SVM_NOT_RBF"
     },
     {
       "id": "04.6",
       "batch": 3,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-13",
         "SYS-04"
       ],
       "source_package": "research/techniques/04.6/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.6/grouped_source_benchmark_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Source, sensor schema and group-aware computational guards at engineering G1 only"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "SOURCE_CONDITIONED_V2_STUDY"
     },
     {
       "id": "04.7",
       "batch": 3,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-01",
         "MQ-EXT-15"
       ],
       "source_package": "research/techniques/04.7/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.7/grouped_source_benchmark_v2.py",
+        "research/implementation_execution/test_batch03_v2.py"
+      ],
+      "test_job": "V4 batch03 grouped source-contract CI",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "results": [
+        "16 historical tests per directory passed + 14 batch shared tests across 10 IDs; passing tests do not correspond to 174 new unique laboratory trials",
+        "Actual external exposure-group generalization G2-V4 NOT measured in this new model",
+        "Boosted stumps are NOT actual XGBoost; scientific algorithm parity remains pending"
+      ],
+      "new_G2": "NOT_EVALUATED_ON_INDEPENDENT_REAL_SOURCE_EVENTS",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "algorithm_coverage": "PARTIAL_BOOSTED_STUMPS_NOT_XGBOOST"
     },
     {
       "id": "04.8",
@@ -1982,7 +2062,7 @@
     },
     {
       "id": 3,
-      "status": "NOT_STARTED",
+      "status": "G1_V4_SOFTWARE_SOURCE_CONTRACT_10_OF_10_G2_G3_PENDING",
       "techniques": [
         "03.6",
         "03.7",
@@ -1995,9 +2075,20 @@
         "04.6",
         "04.7"
       ],
-      "number_newly_implemented": 0,
-      "verified_CI": null,
-      "documentation": "research/implementation_execution/BATCH03_EVIDENCE_AR.md"
+      "number_newly_implemented": 10,
+      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "documentation": "research/implementation_execution/BATCH03_EVIDENCE_AR.md",
+      "number_legacy_prototype_modules_tested": 10,
+      "ci_tests_total": 174,
+      "source_readiness": "research/implementation_execution/BATCH03_SOURCE_READINESS_2026-10-21.json",
+      "algorithm_pending": [
+        "04.5 RBF kernel parity with UCI model",
+        "04.7 actual XGBoost parity",
+        "03.7 source experimental concentration holdouts"
+      ],
+      "next_batch": 4,
+      "G2_v4_new_source": 0,
+      "G3_Tank_physical": 0
     },
     {
       "id": 4,
@@ -2211,6 +2302,24 @@
         "Source schema validator verifies supplied bytes but cannot independently guarantee source certificate",
         "03.4 LDA and PLS1-DA two-class model is source-research distinct from separately trained UCI multiclass models"
       ]
+    },
+    {
+      "date": "2026-10-21",
+      "event": "BATCH03_V4_10_ID_SOURCE_CONTRACT_174_TESTS_PASS",
+      "commit_at_test": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+      "software_tests": 174,
+      "source_reference_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "total_V4_G1_ids": 30,
+      "third_batch_new_real_G2": 0,
+      "G3_Tank_physical": 0,
+      "next_work": "Batch04 IDs 04.8,04.9,04.10,05.1,05.2,05.3,05.4,05.5,05.6,05.7",
+      "caveats": [
+        "Group source tests on synthetic data only",
+        "04.5 linear OVR not full RBF",
+        "04.7 boosted stumps not full XGBoost",
+        "04.1 optimizing candidate ppm is not calibrated ppm"
+      ]
     }
   ],
   "policy": {
@@ -2220,17 +2329,19 @@
     "guard_source_reference_vs_physical_measurement": true
   },
   "latest_work_summary": {
-    "g1_new_code_tested": 10,
+    "g1_new_code_tested": 30,
     "g2_new_empirical_validated": 0,
     "g3_new_Tank_physical": 0,
-    "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
-    "head_sha": "420908b38fee01e3c7c4ffc1a167b6254f86fff2",
-    "individual_test_count_total": 336,
-    "batch01_all_new_v2_implementations": true,
-    "batch01_new_G1_complete": true,
-    "batch01_new_G2_complete": false,
-    "batch01_G3_complete": false,
-    "historical_g1_g2_counts_unchanged": true
+    "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060",
+    "head_sha": "3fc4df06271e94d2a3d448f2ddae308a3684348c",
+    "batch01_tests": 336,
+    "batch02_tests": 175,
+    "batch03_tests": 174,
+    "original_G1_G2_80_80_unchanged": true,
+    "algorithm_parity_pending": [
+      "04.5 RBF",
+      "04.7 XGBoost"
+    ]
   },
   "batch01_new_work": {
     "status": "G1_SOFTWARE_UPGRADES_10_OF_10_VERIFIED_EXPERIMENTAL_GATES_PENDING",
