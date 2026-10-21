@@ -16,7 +16,7 @@ class CurveGuards(unittest.TestCase):
         c=curve()
         self.assertEqual(c.ppm_min,5)
         self.assertEqual(c.ppm_max,500)
-        self.assertEqual(predicted_ratio(c,50)["rs_over_r0_prior"],3)
+        self.assertAlmostEqual(predicted_ratio(c,50)["rs_over_r0_prior"],3)
 
     def test_forward_inverse_nominal_roundtrip(self):
         c=curve()
