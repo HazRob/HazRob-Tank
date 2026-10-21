@@ -1,10 +1,17 @@
-name: Tank ChemCore V4 batch04 partial research ML/QSPR/benchmarks (G1 only)
+name: Tank ChemCore V4 batch04 ML/QSPR/grouped conditional ppm research (G1 only)
 on:
   push:
     paths:
       - 'research/techniques/04.8/**'
       - 'research/techniques/04.9/**'
       - 'research/techniques/04.10/**'
+      - 'research/techniques/05.1/**'
+      - 'research/techniques/05.2/**'
+      - 'research/techniques/05.3/**'
+      - 'research/techniques/05.4/**'
+      - 'research/techniques/05.5/**'
+      - 'research/techniques/05.6/**'
+      - 'research/techniques/05.7/**'
       - 'research/implementation_execution/**'
       - '.github/workflows/chemcore80-v4-batch04.yml'
   pull_request:
@@ -12,6 +19,13 @@ on:
       - 'research/techniques/04.8/**'
       - 'research/techniques/04.9/**'
       - 'research/techniques/04.10/**'
+      - 'research/techniques/05.1/**'
+      - 'research/techniques/05.2/**'
+      - 'research/techniques/05.3/**'
+      - 'research/techniques/05.4/**'
+      - 'research/techniques/05.5/**'
+      - 'research/techniques/05.6/**'
+      - 'research/techniques/05.7/**'
       - 'research/implementation_execution/**'
       - '.github/workflows/chemcore80-v4-batch04.yml'
   workflow_dispatch:
@@ -32,7 +46,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for id in 04.8 04.9 04.10; do
+          for id in 04.8 04.9 04.10 05.1 05.2 05.3 05.4 05.5 05.6 05.7; do
             (cd "research/techniques/$id" && python -m unittest discover -p 'test_*.py' -v)
           done
       - name: Actual grouped train, blinded candidate QSPR and source hash tests
