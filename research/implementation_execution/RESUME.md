@@ -1,3 +1,23 @@
+# ACTIVE CHECKPOINT — 2026-10-23 / V4 FIVE BATCHES COMPLETE (50/80 G1)
+
+**Current authoritative research branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`. Before continuing, resolve HEAD, read `EXECUTION_LEDGER_2026-10-21.json`, this checkpoint, and `PLAN_80_V4.json`. No implementation is considered merged into Tank production.
+
+- **Batch01** 10 G1 IDs: [336 software tests](https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103).
+- **Batch02** 10 G1 IDs: [175 software tests](https://github.com/HazRob/HazRob-Tank/actions/runs/39547105861).
+- **Batch03** 10 G1 IDs: [174 software tests](https://github.com/HazRob/HazRob-Tank/actions/runs/39550168060).
+- **Batch04** 10 G1 IDs: [175 software tests](https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822), source physical-session train/test leakage corrected in 04.10 and 05.1–05.6. Read `BATCH04_EVIDENCE_AR.md` and `BATCH04_SOURCE_READINESS_2026-10-21.json`.
+- **Batch05** 10 G1 IDs: [182 software tests](https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537), 158 historical + 24 new grouped scientific-contract tests. New modules `source_blank_limits_v2.py`, `source_concentration_holdout_v2.py`, `dependency_guard_v2.py`, `independence_bayes_v2.py`, `grouped_probability_calibration_v2.py`, `grouped_conformal_v2.py`, `open_set_group_guard_v2.py`, `source_ood_guard_v2.py`, `negative_evidence_guard_v2.py`, `shap_provenance_v2.py`. Read `BATCH05_EVIDENCE_AR.md` and `BATCH05_SOURCE_READINESS_2026-10-23.json`.
+
+**Exact current totals:** **50/80 V4 source-aware software/G1 techniques**, **0 newly qualified Tank gas-reference G3/80**; new G2 experimentally grouped external sensor benchmarking not evidenced by the above CI. These checks do not make ppm, mixture separation, gas identity or occupational safety claims. Historical G2 source-eligibility 80/80 is distinct. Central reference catalogue pinned Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`.
+
+**NEXT BATCH06 ten fixed IDs:** `06.9,07.1,07.2,07.3,07.4,07.5,07.6,07.7,07.8,07.9`. Implement actual session/device/grouped chronological evaluation, reliability / drift, OOD and selective learning gates, with negative tests, CI, `BATCH06_EVIDENCE_AR.md`, ledger and resume update. Each technique must retain research-only warning if real source gas traceability missing.
+
+**Known algorithm parity debt:** 04.5 linear SVM not RBF parity, 04.7 boosted-stump != XGBoost, 04.9 QSPR is source-derived ridge candidate rank without blind MQ chemical validation, 05.4 regression single target not multi-compound, 05.5 PLS1 not PLS2, 06.5 unknown threshold in-sample optimistic, 06.4 exchangeability unverified, source reference hashes/certification not independently physically checked. Do NOT mark these clinically or industrially validated.
+
+**Separation:** Original HazRob HR069 app/firmware, Tank Android APK/ESP32 firmware, production ChemCore Stable all untouched. PR #6 research branch unmerged. To proceed, inspect current HEAD and CI, preserve negative outcomes. All development is synchronous in this turn only; no future background execution.
+
+---
+
 # ACTIVE RECOVERY — 2026-10-23 / BATCH04 VERIFIED, BATCH05 NEXT
 
 **Branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`. Last independently checked CI for the ten Batch04 IDs (04.8–05.7): [#39904801822](https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822) on commit `76e5832ede1ac5a4d67700670d24cb7545d214ec`; **175/175 Python software tests PASS**, including 15 shared tests (3 new session-leakage negative cases) and 160 legacy. Structural plan checker also passed.
