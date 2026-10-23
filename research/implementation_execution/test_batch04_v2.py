@@ -88,7 +88,8 @@ class Batch04FirstThreeTests(unittest.TestCase):
         records=[]
         for i in range(5):
             records.append({"sample_id":i,"exposure_id":str(i),"source_id":"toy",
-                    "sensor_ids":["MQ2","MQ135"],"partition":"TRAIN" if i<3 else "TEST",
+                    "sensor_ids":["MQ2","MQ135"],"session_id":"train-session" if i<3 else "test-session",
+                    "partition":"TRAIN" if i<3 else "TEST",
                     "gas_label":"A" if i%2==0 else "B",
                     "prediction":"A" if i%2==0 else "B"})
         content=("\n".join(json.dumps(r) for r in records)+"\n").encode()
@@ -105,7 +106,9 @@ class Batch04FirstThreeTests(unittest.TestCase):
               "rl_ohm":{"MQ2":10000.,"MQ135":10000.}}
         def record(i,ppm):
             return {"source_id":meta["source_id"],"gas_label":meta["gas_label"],
-                    "exposure_id":"exposure"+str(i),"reference_ppm":ppm,
+                    "exposure_id":"exposure"+str(i),
+                    "session_id":"session-T" if i<8 else "session-H",
+                    "reference_ppm":ppm,
                     "reference_trace_id":meta["reference_trace_id"],
                     "rs_ohm":{"MQ2":5000.*ppm**(-.25),
                               "MQ135":8000.*ppm**(-.28)}}
@@ -127,6 +130,21 @@ class Batch04FirstThreeTests(unittest.TestCase):
         for id in ("05.1","05.2","05.3","05.4","05.5","05.6"):
             with self.subTest(id=id),self.assertRaises(ValueError):
                 load(id,"source_calibration_audit_v2").audit_source_calibration(train,test,metadata=meta)
+    def test_six_regressors_reject_same_physical_session(self):
+        meta,train,test=self._calibration_source()
+        # No duplicate exposure ID, but heldout rows came from a TRAIN session:
+        test[0]["session_id"]=train[0]["session_id"]
+        for id in ("05.1","05.2","05.3","05.4","05.5","05.6"):
+            with self.subTest(id=id),self.assertRaises(ValueError):
+                load(id,"source_calibration_audit_v2").audit_source_calibration(
+                    train,test,metadata=meta)
+    def test_six_regressors_require_session_provenance(self):
+        meta,train,test=self._calibration_source()
+        del test[0]["session_id"]
+        for id in ("05.1","05.2","05.3","05.4","05.5","05.6"):
+            with self.subTest(id=id),self.assertRaises(ValueError):
+                load(id,"source_calibration_audit_v2").audit_source_calibration(
+                    train,test,metadata=meta)
     def test_six_regressors_require_individually_measured_r0(self):
         meta,train,test=self._calibration_source()
         del meta["r0_ohm"]["MQ135"]
@@ -149,6 +167,7 @@ class Batch04FirstThreeTests(unittest.TestCase):
         for i in range(5):
             records.append({"sample_id":i,"exposure_id":"same" if i in (0,4) else str(i),
                     "source_id":"toy","sensor_ids":["MQ2","MQ135"],
+                    "session_id":"train-session" if i<3 else "test-session",
                     "partition":"TRAIN" if i<3 else "TEST",
                     "gas_label":"A","prediction":"A"})
         content=("\n".join(json.dumps(r) for r in records)+"\n").encode()
