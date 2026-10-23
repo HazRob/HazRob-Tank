@@ -1,3 +1,18 @@
+# ACTIVE CHECKPOINT — 2026-10-23 / SIX V4 BATCHES COMPLETE (60/80 RESEARCH G1)
+
+**Authoritative branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`; **review request:** https://github.com/HazRob/HazRob-Tank/pull/6 (research only, not main merge). Always inspect current HEAD and CI before further edits.
+
+- **Batch06 G1:** 10/10 IDs `06.9,07.1,07.2,07.3,07.4,07.5,07.6,07.7,07.8,07.9`, [200/200 Python tests PASS on GitHub Actions #39911351493](https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493), tested commit `f565051f582d0f9703acf8dd3c2f65b1048b5dc9` (171 historical + 29 new grouped negative/positive tests). Failure history [#39911256560](https://github.com/HazRob/HazRob-Tank/actions/runs/39911256560) records and resolves a malformed set-bracket syntax error in 06.9.
+- **Cumulative newly upgraded V4 software G1:** **60/80 (six ten-ID batches)**. Source/reference historical G2 reviewed 80/80 remains a different quantity. **New V4 external MQ/MOS measurement benchmark for Batch06 = 0; actual Tank physical gas-reference G3 = 0/80.**
+- **Evidence docs:** `BATCH06_EVIDENCE_AR.md` and `BATCH06_SOURCE_READINESS_2026-10-23.json`. **Machine source-of-truth:** `EXECUTION_LEDGER_2026-10-21.json`; **per-technique scientific actions:** `PLAN_80_V4.json`; pinned reference catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`.
+- **Scientific limitations:** the new source-guard algorithms are tested on synthetic examples and not full physics-identification validation. UCI270 batch != device serial; matched-blank subtraction can erase target analytes; transfer can produce negative transfer; application auto-retraining, gas discharge and occupational ppm alarms remain disabled.
+- **Latest known actual external negative finding:** 06.5 on UCI1081 single MQ135 source had unknown-gas rejection **4.44%** at known-gas acceptance 94.44% in leave-one-gas-out, with optimistic in-sample threshold; see `BATCH05_UCI1081_MQ135_NEGATIVE_FINDING_2026-10-23_AR.md`. Preserve this failure and do not generalize to Tank eight-MQ array.
+- **NEXT BATCH07 10 IDs:** `07.10,08.1,08.2,08.3,08.4,08.5,08.6,08.7,08.8,08.9`. Prioritize actual CPU/power TinyML on production-like device with measured resources if available, source-aware CNN/TCN/GRU/GNN comparison and mixture identifiability/NNLS, not another uncalibrated accuracy claim. Do not duplicate existing trained UCI benchmark files; assess algorithm parity with technique modules and group-source eligibility.
+- **Required continuation:** branch HEAD → updated ledger → Batch06 evidence & blockers → V4 plan source link → inspect Batch07 V1 and current UCI benchmarks → code/tests/CI → only then modify Batch07 ledger and prepend next checkpoint. Report per-ten batch completion.
+- **Separation:** original HazRob HR069, production ChemCore Stable, Tank APK, ESP32, ESP32-CAM and robot hardware firmware remain unchanged. No implied production approval or background execution.
+
+---
+
 # ACTIVE CHECKPOINT — 2026-10-23 / V4 FIVE BATCHES COMPLETE (50/80 G1)
 
 **Current authoritative research branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`. Before continuing, resolve HEAD, read `EXECUTION_LEDGER_2026-10-21.json`, this checkpoint, and `PLAN_80_V4.json`. No implementation is considered merged into Tank production.
