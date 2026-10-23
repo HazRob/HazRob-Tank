@@ -1,3 +1,17 @@
+# ACTIVE RECOVERY — 2026-10-23 / BATCH04 VERIFIED, BATCH05 NEXT
+
+**Branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`. Last independently checked CI for the ten Batch04 IDs (04.8–05.7): [#39904801822](https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822) on commit `76e5832ede1ac5a4d67700670d24cb7545d214ec`; **175/175 Python software tests PASS**, including 15 shared tests (3 new session-leakage negative cases) and 160 legacy. Structural plan checker also passed.
+
+**Machine ledger** `EXECUTION_LEDGER_2026-10-21.json`: V4 research G1 **40/80 (4 ten-ID batches)**; `BATCH04_EVIDENCE_AR.md` records algorithm coverage and defects; `BATCH04_SOURCE_READINESS_2026-10-21.json` records missing experimental evidence. No new external physical G2 claim and Tank hardware G3 **0/80**.
+
+**Scientific correction:** 04.10 and all six 05.1–05.6 estimators now require a `session_id`, reject training/testing on different exposure IDs from the same session, and retain source/R0/heater gates. Input `reference_trace_id` is still an *asserted* label, not independent certificate or true ppm verification. **04.9 QSPR is descriptor ridge candidate ranking only, 05.4 only a single analyte, 05.5 PLS1, 05.6 bagged trees single output**.
+
+**Next exact official batch:** Batch05 `05.8,05.9,06.1,06.2,06.3,06.4,06.5,06.6,06.7,06.8`. Start with blank-based LOD/LOQ screening (05.8) and out-of-calibration guard (05.9), then dependence-aware evidence fusion, probability calibration and open-set controls (06.x); record CI and `BATCH05_EVIDENCE_AR.md`. Do not promote any LOD/LOQ or ppm into occupational safety without independently certified physical reference tests.
+
+**Recovery order:** this checkpoint → `EXECUTION_LEDGER_2026-10-21.json` → `BATCH04_EVIDENCE_AR.md` → `PLAN_80_V4.json` → current GitHub CI. Old checkpoints below are historical, even if they say Batch04 has not begun.
+
+---
+
 # ACTIVE RECOVERY CHECKPOINT — V4 BATCH03 10/10 G1 SOURCE-CONTRACT PASS (2026-10-21)
 
 **Next:** Batch04 (10 IDs) in this precise order `04.8,04.9,04.10,05.1,05.2,05.3,05.4,05.5,05.6,05.7`. Start with `04.8` (true ANN/MLP grouped evaluation, no source leakage), `04.9` (candidate-wise unknown gas/concentration QSPR/Physics+ML without test-label leak), `04.10` (independent source benchmark matrix); then 05.x conditional calibrated ppm logic where reference data exist.
