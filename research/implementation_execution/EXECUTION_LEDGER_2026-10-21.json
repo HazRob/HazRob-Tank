@@ -1213,205 +1213,265 @@
       "batch": 5,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-15",
         "R0-PEER-01",
         "CN-MQ-01"
       ],
       "source_package": "research/techniques/05.8/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/05.8/source_blank_limits_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "Signal-unit 3σ/10σ screening from >=10 independent blank sessions on >=2 days, no certified gas LOD/LOQ",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 16
     },
     {
       "id": "05.9",
       "batch": 5,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "UCI-EXT-270",
         "MQ-EXT-15"
       ],
       "source_package": "research/techniques/05.9/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/05.9/source_concentration_holdout_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "Whole-session and exposure concentration-level holdout; interpolation and extrapolation separated",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 16
     },
     {
       "id": "06.1",
       "batch": 5,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-06",
         "QSPR-REF-03",
         "TOOL-MQ-01"
       ],
       "source_package": "research/techniques/06.1/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/06.1/dependency_guard_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "Heuristic group-limited fusion rejects physical duplicate evidence assigned different independent groups",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 16
     },
     {
       "id": "06.2",
       "batch": 5,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "QSPR-REF-03",
         "SYS-07"
       ],
       "source_package": "research/techniques/06.2/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/06.2/independence_bayes_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "Bayesian likelihood update abstains on dependent source/session/array; independent likelihood assumption not independently verified",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 16
     },
     {
       "id": "06.3",
       "batch": 5,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-15",
         "UCI-EXT-270"
       ],
       "source_package": "research/techniques/06.3/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/06.3/grouped_probability_calibration_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "Temperature scaling fitted to disjoint calibration exposures; ECE descriptive, final test not done",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 16
     },
     {
       "id": "06.4",
       "batch": 5,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "UCI-EXT-270",
         "MOS-EXT-17"
       ],
       "source_package": "research/techniques/06.4/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/06.4/grouped_conformal_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "Conformal sets enforce calibration vs training and test group isolation; exchangeability only assumed",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 16
     },
     {
       "id": "06.5",
       "batch": 5,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "QSPR-REF-03",
         "QSPR-REF-09",
         "MQ-EXT-11"
       ],
       "source_package": "research/techniques/06.5/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/06.5/open_set_group_guard_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "Known classes vs source-heldout unknown gas classes; in-sample distance threshold remains optimistic",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 16
     },
     {
       "id": "06.6",
       "batch": 5,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "UCI-EXT-270",
         "MOS-EXT-17",
         "MQ-EXT-15"
       ],
       "source_package": "research/techniques/06.6/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/06.6/source_ood_guard_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "Rejects environment outside source support, screens fixed-feature envelope; not calibrated OOD probability",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 15
     },
     {
       "id": "06.7",
       "batch": 5,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "R0-PEER-01",
         "SYS-04",
         "JP-FIG-02"
       ],
       "source_package": "research/techniques/06.7/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/06.7/negative_evidence_guard_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "No hard exclusion without referenced detection power; caller's physical claim not independently audited",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 16
     },
     {
       "id": "06.8",
       "batch": 5,
       "priority": "P2",
       "research_decision": "RETAIN_AND_VALIDATE",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "QSPR-REF-05",
         "QSPR-REF-07"
       ],
       "source_package": "research/techniques/06.8/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/06.8/shap_provenance_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "results": [
+        "Source-labelled Shapley with correlated MQ source warning; feature contribution is not causal evidence",
+        "Batch05 old+new shared suite: 182/182 Python G1 tests PASS on #39905840537"
+      ],
+      "new_G2": "NOT_VERIFIED_WITH_EXTERNAL_INDEPENDENT_GAS_SOURCE",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "limits": "Historical G1/G2 evidence unchanged",
+      "latest_batch05_legacy_tests": 15
     },
     {
       "id": "06.9",
@@ -2176,7 +2236,7 @@
     },
     {
       "id": 5,
-      "status": "NOT_STARTED",
+      "status": "G1_V4_SOFTWARE_SOURCE_CONTRACT_10_OF_10_G2_G3_PENDING",
       "techniques": [
         "05.8",
         "05.9",
@@ -2189,9 +2249,23 @@
         "06.7",
         "06.8"
       ],
-      "number_newly_implemented": 0,
-      "verified_CI": null,
-      "documentation": "research/implementation_execution/BATCH05_EVIDENCE_AR.md"
+      "number_newly_implemented": 10,
+      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "documentation": "research/implementation_execution/BATCH05_EVIDENCE_AR.md",
+      "ci_tests_total": 182,
+      "legacy_tests": 158,
+      "new_shared_tests": 24,
+      "source_qualified_real_G2": 0,
+      "G3_Tank_physical": 0,
+      "next_batch": 6,
+      "scientific_limitations": [
+        "05.8 reports arbitrary signal-domain 3/10-sigma research screening, not experimentally verified LOD/LOQ in ppm",
+        "06.1/06.2 independence labels are asserted and need physics-dependent joint validation",
+        "06.3/06.4 probability calibration and marginal conformal coverage require independent final source testing, shift/drift breaks exchangeability",
+        "06.5 threshold uses in-sample distances, biased for future unseen gases",
+        "06.6 OOD envelope and 06.8 SHAP are descriptive, not chemical identity proofs",
+        "06.7 source reference_validation=True is a caller claim; hard exclusion always false"
+      ]
     },
     {
       "id": 6,
@@ -2400,6 +2474,20 @@
       "actual_Tank_G3": 0,
       "next_work": "Batch05: 05.8,05.9,06.1,06.2,06.3,06.4,06.5,06.6,06.7,06.8; do not make quantitative LOD claims without blank/reference",
       "fixed_defect": "Entire physical session now held out in both 04.10 source classification benchmark and six 05.x regression estimators; earlier exposure-only split allowed same-session train/test records"
+    },
+    {
+      "date": "2026-10-23",
+      "event": "BATCH05_V4_G1_10_OF_10_182_TESTS_PASS",
+      "commit_at_test": "8e850858c35dcafccb41ccd60c71249df8c88dbe",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+      "software_tests": 182,
+      "historical_unit_tests": 158,
+      "new_shared_test_cases": 24,
+      "total_V4_G1_ids": 50,
+      "G2_v4_new_real": 0,
+      "G3_Tank_physical": 0,
+      "scientific_claims": "NONE; blank signal thresholds and evidence scores not device-calibrated gas ppm",
+      "next_work": "Batch06 IDs 06.9,07.1,07.2,07.3,07.4,07.5,07.6,07.7,07.8,07.9; source drift, session grouping and abstention"
     }
   ],
   "policy": {
