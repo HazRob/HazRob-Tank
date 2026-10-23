@@ -97,6 +97,19 @@ class Batch04FirstThreeTests(unittest.TestCase):
                                   source_id="toy",sensor_ids=("MQ2","MQ135"))
         self.assertEqual(value["heldout"]["coverage"],1.)
         self.assertFalse(value["G2_real_source_approved"])
+    def test_benchmark_rejects_same_session_different_exposures(self):
+        m=load("04.10","source_benchmark_audit_v2")
+        data=[]
+        for i in range(5):
+            data.append({"sample_id":i, "exposure_id":"ex"+str(i),
+                "source_id":"toy","sensor_ids":["MQ2","MQ135"],
+                "session_id":"shared-session" if i in (0,4) else "session"+str(i),
+                "partition":"TRAIN" if i<3 else "TEST",
+                "gas_label":"A","prediction":"A"})
+        content=("\\n".join(json.dumps(r) for r in data)+"\\n").encode()
+        with self.assertRaises(ValueError):
+            m.source_split_report(content,hashlib.sha256(content).hexdigest(),
+                                  source_id="toy",sensor_ids=("MQ2","MQ135"))
     def _calibration_source(self):
         # All data are synthetic; ppm trace and R0 are only caller claims.
         meta={"source_id":"toy-synthetic","device_id":"device1","gas_label":"EthOH",
