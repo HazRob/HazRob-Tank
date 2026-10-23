@@ -4,11 +4,13 @@ on:
     paths:
       - 'research/benchmarks/uci1081_batch05_mq135_open_set_v4.py'
       - 'research/techniques/06.5/open_set_group_guard_v2.py'
+      - 'research/techniques/06.5/calibrated_open_set_source_v2.py'
       - '.github/workflows/uci1081-batch05-mq135-open-set-v4.yml'
   pull_request:
     paths:
       - 'research/benchmarks/uci1081_batch05_mq135_open_set_v4.py'
       - 'research/techniques/06.5/open_set_group_guard_v2.py'
+      - 'research/techniques/06.5/calibrated_open_set_source_v2.py'
       - '.github/workflows/uci1081-batch05-mq135-open-set-v4.yml'
   workflow_dispatch:
 permissions:
@@ -46,6 +48,12 @@ jobs:
           assert all((v['n_known_train'],v['n_known_test'],v['n_unknown_test'])==(45,30,15)
                  for v in r['per_unseen_gas'])
           assert not r['G2_new_source_physical_validated'] and not r['G3_Tank']
+          assert all(v['n_known_calibration']==15 and v['n_known_final_test']==15
+                     for v in r['per_unseen_gas'])
+          assert all(0<=r[k]<=1 for k in ('macro_known_accept_rate',
+                  'macro_unknown_reject_rate',
+                  'independent_known_calibration_macro_known_accept',
+                  'independent_known_calibration_macro_unknown_reject'))
           PY
       - uses: actions/upload-artifact@v4
         if: always()
