@@ -1,0 +1,58 @@
+name: Tank V4 06.5 — actual UCI1081 MQ135 open-set source stress test
+on:
+  push:
+    paths:
+      - 'research/benchmarks/uci1081_batch05_mq135_open_set_v4.py'
+      - 'research/techniques/06.5/open_set_group_guard_v2.py'
+      - '.github/workflows/uci1081-batch05-mq135-open-set-v4.yml'
+  pull_request:
+    paths:
+      - 'research/benchmarks/uci1081_batch05_mq135_open_set_v4.py'
+      - 'research/techniques/06.5/open_set_group_guard_v2.py'
+      - '.github/workflows/uci1081-batch05-mq135-open-set-v4.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-source-no-tank-g3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify versioned source method's negative tests
+        run: |
+          python -m compileall -q research/benchmarks/uci1081_batch05_mq135_open_set_v4.py
+          python -m unittest -v research/implementation_execution/test_batch05_additional_v2.py
+      - name: Download official physical UCI1081 90 exposure archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 \
+            'https://archive.ics.uci.edu/static/public/1081/gas%2Bsensor%2Barray%2Blow-concentration.zip' \
+            --output uci1081_original.zip
+          echo '813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab  uci1081_original.zip' | sha256sum --check
+      - name: Execute six leave-one-physical-source-gas-out tests, MQ135 only
+        run: |
+          python research/benchmarks/uci1081_batch05_mq135_open_set_v4.py uci1081_original.zip \
+            --output uci1081_mq135_open_set_v4_results.json | tee uci1081_mq135_open_set_v4_summary.txt
+          python - <<'PY'
+          import json
+          r=json.load(open('uci1081_mq135_open_set_v4_results.json'))
+          assert r['source_sample_count']==90
+          assert len(r['per_unseen_gas'])==6
+          assert all((v['n_known_train'],v['n_known_test'],v['n_unknown_test'])==(45,30,15)
+                 for v in r['per_unseen_gas'])
+          assert not r['G2_new_source_physical_validated'] and not r['G3_Tank']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: uci1081-mq135-v4-open-set-external-stress-results
+          path: |
+            uci1081_mq135_open_set_v4_results.json
+            uci1081_mq135_open_set_v4_summary.txt
+          if-no-files-found: warn
+          retention-days: 90
