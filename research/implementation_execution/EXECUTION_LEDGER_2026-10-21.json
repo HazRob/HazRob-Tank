@@ -948,20 +948,25 @@
       "batch": 4,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "CN-RSCH-01",
         "CN-RSCH-03",
         "CN-RSCH-04"
       ],
       "source_package": "research/techniques/04.8/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.8/grouped_mlp_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "Real trained MLP classifier on grouped synthetic features; molecular chemistry and external source not validated",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -969,7 +974,7 @@
       "batch": 4,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "QSPR-REF-01",
         "QSPR-REF-03",
@@ -979,13 +984,18 @@
         "SYS-07"
       ],
       "source_package": "research/techniques/04.9/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.9/molecular_forward_qspr_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "Descriptor+concentration forward ridge and candidate-wise inverse ranking, numerical research surrogate only; no blind MQ chemical identification proof",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -993,7 +1003,7 @@
       "batch": 4,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-15",
         "UCI-EXT-270",
@@ -1001,13 +1011,18 @@
         "SYS-11"
       ],
       "source_package": "research/techniques/04.10/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/04.10/source_benchmark_audit_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "SHA256 actual source JSONL bytes, fixed channels, disjoint exposure and entire session groups",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -1015,7 +1030,7 @@
       "batch": 4,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "CN-MQ-01",
         "CN-MQ-04",
@@ -1023,13 +1038,18 @@
         "TOOL-MQ-02"
       ],
       "source_package": "research/techniques/05.1/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/05.1/source_calibration_audit_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "Single-target source-conditioned ppm estimator; no device qualification",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -1037,20 +1057,25 @@
       "batch": 4,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-15",
         "UCI-EXT-270",
         "MOS-EXT-16"
       ],
       "source_package": "research/techniques/05.2/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/05.2/source_calibration_audit_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "Multiple known concentration level source regression, source physical truth not independently verified",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -1058,20 +1083,25 @@
       "batch": 4,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-07",
         "SYS-08",
         "TOOL-MQ-01"
       ],
       "source_package": "research/techniques/05.3/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/05.3/source_calibration_audit_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "Nonlinear calibration baseline and source domain checks with session grouping",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -1079,7 +1109,7 @@
       "batch": 4,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-06",
         "SYS-07",
@@ -1087,13 +1117,18 @@
         "CN-RSCH-04"
       ],
       "source_package": "research/techniques/05.4/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/05.4/source_calibration_audit_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "Multisensor single-target fit only, not multi-analyte unmixing",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -1101,20 +1136,25 @@
       "batch": 4,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-06",
         "SYS-11",
         "CN-PAT-01"
       ],
       "source_package": "research/techniques/05.5/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/05.5/source_calibration_audit_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "PLS1 single response benchmark, not PLS2 mixture",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -1122,19 +1162,24 @@
       "batch": 4,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-04",
         "SYS-15"
       ],
       "source_package": "research/techniques/05.6/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/05.6/source_calibration_audit_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "Bagged CART single-output baseline, not full quantile forest or XGBoost",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -1142,20 +1187,25 @@
       "batch": 4,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "QSPR-REF-03",
         "SYS-03",
         "SYS-07"
       ],
       "source_package": "research/techniques/05.7/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/05.7/identity_calibration_gate_v2.py"
+      ],
+      "test_job": "batch04 grouped ML/QSPR/calibration synthetic contract regression",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "results": [
+        "Identity conditioned calibration gate and abstention, caller's evidence identifiers not externally audited",
+        "V4 batch04 160 legacy unit cases plus 15 shared G1 source-linked contract tests PASS, no new real Tank measurements"
+      ],
+      "new_G2": "NOT_VALIDATED_ON_INDEPENDENT_REAL_SOURCE_EXPOSURES",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -2092,7 +2142,7 @@
     },
     {
       "id": 4,
-      "status": "NOT_STARTED",
+      "status": "G1_V4_SOFTWARE_SOURCE_CONTRACT_10_OF_10_G2_G3_PENDING",
       "techniques": [
         "04.8",
         "04.9",
@@ -2105,9 +2155,24 @@
         "05.6",
         "05.7"
       ],
-      "number_newly_implemented": 0,
-      "verified_CI": null,
-      "documentation": "research/implementation_execution/BATCH04_EVIDENCE_AR.md"
+      "number_newly_implemented": 10,
+      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "documentation": "research/implementation_execution/BATCH04_EVIDENCE_AR.md",
+      "ci_tests_total": 175,
+      "historical_module_tests": 160,
+      "additional_cross_technique_tests": 15,
+      "source_readiness": "research/implementation_execution/BATCH04_SOURCE_READINESS_2026-10-21.json",
+      "G2_v4_new_source": 0,
+      "G3_Tank_physical": 0,
+      "next_batch": 5,
+      "algorithm_pending": [
+        "04.8 grouped external source metrics and probability calibration",
+        "04.9 independent PubChem/MQ gas response and leave-molecule-out scientific experiment",
+        "05.4 true per-component mixture regression not implemented",
+        "05.5 PLS2 not implemented",
+        "05.6 single-target CART no uncertainty intervals",
+        "05.1..05.6 exposure and session splits validated on synthetic data only"
+      ]
     },
     {
       "id": 5,
@@ -2320,6 +2385,21 @@
         "04.7 boosted stumps not full XGBoost",
         "04.1 optimizing candidate ppm is not calibrated ppm"
       ]
+    },
+    {
+      "date": "2026-10-23",
+      "event": "BATCH04_V4_G1_10_OF_10_175_PASS_SESSION_LEAKAGE_FIX",
+      "commit_at_test": "76e5832ede1ac5a4d67700670d24cb7545d214ec",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39904801822",
+      "software_tests": 175,
+      "historical_unit_tests": 160,
+      "new_batch_shared_tests": 15,
+      "source_reference_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "total_V4_G1_ids": 40,
+      "additional_G2_real": 0,
+      "actual_Tank_G3": 0,
+      "next_work": "Batch05: 05.8,05.9,06.1,06.2,06.3,06.4,06.5,06.6,06.7,06.8; do not make quantitative LOD claims without blank/reference",
+      "fixed_defect": "Entire physical session now held out in both 04.10 source classification benchmark and six 05.x regression estimators; earlier exposure-only split allowed same-session train/test records"
     }
   ],
   "policy": {
