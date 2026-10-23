@@ -1,0 +1,39 @@
+name: Tank ChemCore V4 batch06 session/device drift and guarded learning (not G3)
+on:
+  push:
+    paths:
+      - 'research/techniques/06.9/**'
+      - 'research/techniques/07.*/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch06.yml'
+  pull_request:
+    paths:
+      - 'research/techniques/06.9/**'
+      - 'research/techniques/07.*/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch06.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research-grouped-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ensure planned 80 techniques and locked bibliography survive
+        run: python research/implementation_execution/validate_plan_v4.py
+      - name: Historical per-technique prototypes for the ten Batch06 IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          for id in 06.9 07.1 07.2 07.3 07.4 07.5 07.6 07.7 07.8 07.9; do
+            (cd "research/techniques/$id" && python -m unittest discover -p 'test_*.py' -v)
+          done
+      - name: New Batch06 grouped empirical contracts and negative controls
+        run: python -m unittest -v research/implementation_execution/test_batch06_v2.py
+      - name: No robot chemical calibration claims
+        run: echo 'G1 RESEARCH SOFTWARE ONLY; G2 V4 external source benchmarks not verified; Tank G3=0/80'
