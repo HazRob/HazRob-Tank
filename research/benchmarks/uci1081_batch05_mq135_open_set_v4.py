@@ -44,6 +44,12 @@ def run(source_zip):
     source=parse_archive(source_zip)
     rows=make_rows(source)
     test=load_open_set()
+    path=ROOT/"techniques/06.5/calibrated_open_set_source_v2.py"
+    spec=importlib.util.spec_from_file_location("v4_calibrated_source_open_set",path)
+    calibrated_module=importlib.util.module_from_spec(spec)
+    import sys
+    sys.path.insert(0,str(path.parent))
+    spec.loader.exec_module(calibrated_module)
     results=[]
     for unseen in GASES:
         train=[r for r in rows if r["gas_label"]!=unseen and r["replicate_ordinal"]<=2]
@@ -52,7 +58,21 @@ def run(source_zip):
         if (len(train),len(known),len(unknown))!=(45,30,15):
             raise ValueError("wrong 5 gas × 3 ppm × replicate ordinal source split")
         x=test(train,known,unknown,source_id="UCI1081",sensor_ids=("MQ135",))
-        results.append({"heldout_gas":unseen,"n_known_train":len(train),
+        calibration=[r for r in rows if r["gas_label"]!=unseen and r["replicate_ordinal"]==3]
+        final_known=[r for r in rows if r["gas_label"]!=unseen and r["replicate_ordinal"]==4]
+        if (len(calibration),len(final_known))!=(15,15):
+            raise ValueError("calibration/final known test must be 15 source exposures each")
+        same_split_baseline=test(train,final_known,unknown,source_id="UCI1081",sensor_ids=("MQ135",))
+        source_calibrated=calibrated_module.calibrated_open_set_source(
+            train,calibration,final_known,unknown,source_id="UCI1081",sensor_ids=("MQ135",),alpha=.1)
+        results.append({"heldout_gas":unseen,
+            "same_split_training_threshold_known_accept":same_split_baseline["known_accept_rate"],
+            "same_split_training_threshold_unknown_reject":same_split_baseline["unknown_reject_rate"],
+            "calibrated_threshold_known_accept":source_calibrated["known_accept_rate"],
+            "calibrated_threshold_unknown_reject":source_calibrated["unknown_reject_rate"],
+            "n_known_calibration":len(calibration),"n_known_final_test":len(final_known),
+            "calibration_quantile_alpha":.1,"calibrated_threshold":source_calibrated["threshold"],
+            "n_known_train":len(train),
                         "n_known_test":len(known),"n_unknown_test":len(unknown),
                         "known_accept_rate":x["known_accept_rate"],
                         "unknown_reject_rate":x["unknown_reject_rate"],
@@ -72,6 +92,10 @@ def run(source_zip):
             "per_unseen_gas":results,
             "macro_known_accept_rate":sum(x["known_accept_rate"] for x in results)/6,
             "macro_unknown_reject_rate":sum(x["unknown_reject_rate"] for x in results)/6,
+            "same_split_training_threshold_macro_known_accept":sum(x["same_split_training_threshold_known_accept"] for x in results)/6,
+            "same_split_training_threshold_macro_unknown_reject":sum(x["same_split_training_threshold_unknown_reject"] for x in results)/6,
+            "independent_known_calibration_macro_known_accept":sum(x["calibrated_threshold_known_accept"] for x in results)/6,
+            "independent_known_calibration_macro_unknown_reject":sum(x["calibrated_threshold_unknown_reject"] for x in results)/6,
             "warning":"Training-threshold open-set model is optimistic; source 50-200ppb below typical MQ nominal range; no certified ppm or safety."}
 
 if __name__=="__main__":
