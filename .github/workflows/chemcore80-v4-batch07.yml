@@ -16,24 +16,48 @@ on:
 permissions:
   contents: read
 jobs:
-  numerical-research-only:
+  v4-plan:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Keep all 80 IDs, eight batches, frozen references
-        run: python research/implementation_execution/validate_plan_v4.py
-      - name: Ten existing research technique baselines
+      - run: python research/implementation_execution/validate_plan_v4.py
+  source-id:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {tid: '07.10', module: cpython_research_profile_v2, selector: test_0710}
+          - {tid: '08.1', module: conv1d_research_reference_v2, selector: test_081}
+          - {tid: '08.2', module: causal_dilated_tcn_v2, selector: test_082}
+          - {tid: '08.3', module: recurrent_state_isolation_v2, selector: test_083}
+          - {tid: '08.4', module: graph_topology_source_v2, selector: test_084}
+          - {tid: '08.5', module: dependent_ensemble_v2, selector: test_085}
+          - {tid: '08.6', module: first_order_gas_simulator_v2, selector: test_086}
+          - {tid: '08.7', module: paired_sim_real_gap_v2, selector: test_087}
+          - {tid: '08.8', module: mixture_hypothesis_competition_v2, selector: test_088}
+          - {tid: '08.9', module: nonnegative_rank_guard_v2, selector: test_089}
+    name: V4 scientific source ${{ matrix.tid }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile scientific code and group fixture
+        run: |
+          python -m py_compile research/techniques/${{ matrix.tid }}/${{ matrix.module }}.py
+          python -m py_compile research/implementation_execution/test_batch07_v2.py
+      - name: Legacy per-ID behavior
         shell: bash
         run: |
           set -euo pipefail
-          for id in 07.10 08.1 08.2 08.3 08.4 08.5 08.6 08.7 08.8 08.9; do
-            (cd "research/techniques/$id" && python -m unittest discover -p 'test_*.py' -v)
-          done
-      - name: New V4 causal simulation and NNLS source gates
-        run: python -m unittest -v research/implementation_execution/test_batch07_v2.py
-      - name: No claims of trained neural network or physical reference validation
-        run: echo 'Only mathematical kernels and integrity gates; new real gas G2 absent and Tank G3=0/80'
+          (cd research/techniques/${{ matrix.tid }} && python -m unittest discover -p 'test_*.py' -v)
+      - name: New source-heldout and physical-invalidity tests per ID
+        run: python -m unittest -v research/implementation_execution/test_batch07_v2.py -k ${{ matrix.selector }}
+      - name: Assert no gas or production qualification
+        run: echo "RESEARCH ONLY; G2 physical source validation missing; Tank G3=0/80"
