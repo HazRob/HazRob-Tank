@@ -24,7 +24,7 @@ def evaluate_selective_risk(calibration,heldout,*,max_calibration_error=.10):
     c=_rows(calibration);h=_rows(heldout)
     if isinstance(max_calibration_error,bool) or not isinstance(max_calibration_error,(float,int)) or not isfinite(max_calibration_error) or not 0<=max_calibration_error<=1:
         raise ValueError("invalid error tolerance")
-    if {r["source_id"] for r in c}!={r["source_id"] for r in h]:
+    if {r["source_id"] for r in c}!={r["source_id"] for r in h}:
         raise ValueError("source changes require a separate transfer protocol")
     if {r["group_id"] for r in c}&{r["group_id"] for r in h} or {r["session_id"] for r in c}&{r["session_id"] for r in h}:
         raise ValueError("session/exposure leakage")
