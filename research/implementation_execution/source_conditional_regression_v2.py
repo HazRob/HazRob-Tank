@@ -34,7 +34,7 @@ def _check(meta, rows):
     for item in list(r0.values())+list(rl.values()):
         if isinstance(item,bool) or not isinstance(item,(int,float)) or not isfinite(item) or item<=0:
             raise ValueError("positive physical R0/RL values required")
-    seen=set();vectors=[];targets=[]
+    seen=set();sessions=set();vectors=[];targets=[]
     for row in rows:
         if row.get("source_id")!=meta["source_id"] or row.get("gas_label")!=meta["gas_label"]:
             raise ValueError("source or known gas identity changed")
@@ -42,6 +42,10 @@ def _check(meta, rows):
         if not isinstance(id,str) or not id or id in seen:
             raise ValueError("unique independent exposure IDs required")
         seen.add(id)
+        session=row.get("session_id")
+        if not isinstance(session,str) or not session.strip():
+            raise ValueError("physical session_id required to prevent same-session leakage")
+        sessions.add(session)
         if row.get("reference_trace_id")!=meta["reference_trace_id"]:
             raise ValueError("independent gas concentration traceability changed")
         ppm=row.get("reference_ppm")
@@ -53,13 +57,13 @@ def _check(meta, rows):
         if any(isinstance(rs[s],bool) or not isinstance(rs[s],(int,float)) or not isfinite(rs[s]) or rs[s]<=0 for s in ids):
             raise ValueError("invalid observed sensor Rs")
         vectors.append(tuple(rs[s] for s in ids));targets.append(ppm)
-    return ids,vectors,targets,seen
+    return ids,vectors,targets,seen,sessions
 
 def source_grouped_regression(method, train_records, test_records, *, metadata):
     if method not in METHODS:raise ValueError("unknown conditional estimator method")
-    ids,train,ppm,g=_check(metadata,train_records)
-    ids2,test,true,h=_check(metadata,test_records)
-    if ids!=ids2 or g&h or len(g)<6 or len(h)<2 or len(set(ppm))<4:
+    ids,train,ppm,g,train_sessions=_check(metadata,train_records)
+    ids2,test,true,h,test_sessions=_check(metadata,test_records)
+    if ids!=ids2 or g&h or train_sessions&test_sessions or len(g)<6 or len(h)<2 or len(set(ppm))<4:
         raise ValueError("train/test exposure independence and four gas-phase levels required")
     filename,fit_name,pred_name=METHODS[method]
     p=ROOT/"techniques"/method/filename
@@ -79,6 +83,8 @@ def source_grouped_regression(method, train_records, test_records, *, metadata):
     return {"method":method,"source_id":metadata["source_id"],
             "gas_identity_assumed":metadata["gas_label"],"sensor_ids":ids,
             "train_independent_exposure_ids":len(g),"test_independent_exposure_ids":len(h),
+            "train_session_ids":tuple(sorted(train_sessions)),
+            "test_session_ids":tuple(sorted(test_sessions)),
             "test_coverage":len(covered)/len(true),
             "source_heldout_mae_ppm":sum(abs(pred-actual) for pred,actual in covered)/len(covered) if covered else None,
             "physical_reference_claim_not_audited":True,
