@@ -1,0 +1,39 @@
+name: Tank ChemCore V4 batch07 numerical kernels and mixture identifiability (G1 only)
+on:
+  push:
+    paths:
+      - 'research/techniques/07.10/**'
+      - 'research/techniques/08.*/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch07.yml'
+  pull_request:
+    paths:
+      - 'research/techniques/07.10/**'
+      - 'research/techniques/08.*/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch07.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  numerical-research-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Keep all 80 IDs, eight batches, frozen references
+        run: python research/implementation_execution/validate_plan_v4.py
+      - name: Ten existing research technique baselines
+        shell: bash
+        run: |
+          set -euo pipefail
+          for id in 07.10 08.1 08.2 08.3 08.4 08.5 08.6 08.7 08.8 08.9; do
+            (cd "research/techniques/$id" && python -m unittest discover -p 'test_*.py' -v)
+          done
+      - name: New V4 causal simulation and NNLS source gates
+        run: python -m unittest -v research/implementation_execution/test_batch07_v2.py
+      - name: No claims of trained neural network or physical reference validation
+        run: echo 'Only mathematical kernels and integrity gates; new real gas G2 absent and Tank G3=0/80'
