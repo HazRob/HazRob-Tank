@@ -1478,204 +1478,304 @@
       "batch": 6,
       "priority": "P0",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-07",
         "QSPR-REF-09"
       ],
       "source_package": "research/techniques/06.9/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/06.9/selective_risk_holdout_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 18 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.1",
       "batch": 6,
       "priority": "P1",
       "research_decision": "RETAIN_AND_VALIDATE",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-02",
         "MQ-EXT-10",
         "MQ-EXT-11"
       ],
       "source_package": "research/techniques/07.1/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/07.1/session_holdout_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 18 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.2",
       "batch": 6,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-12",
         "MOS-EXT-18",
         "UCI-EXT-270"
       ],
       "source_package": "research/techniques/07.2/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/07.2/physical_device_holdout_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 17 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.3",
       "batch": 6,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-15",
         "UCI-EXT-270"
       ],
       "source_package": "research/techniques/07.3/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/07.3/concentration_group_holdout_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 15 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.4",
       "batch": 6,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MOS-EXT-17",
         "UCI-EXT-270"
       ],
       "source_package": "research/techniques/07.4/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/07.4/reference_drift_alarm_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 18 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.5",
       "batch": 6,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-24",
         "UCI-EXT-270",
         "MOS-EXT-17"
       ],
       "source_package": "research/techniques/07.5/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/07.5/matched_blank_correction_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 17 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.6",
       "batch": 6,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MOS-EXT-18",
         "UCI-EXT-270"
       ],
       "source_package": "research/techniques/07.6/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/07.6/guarded_domain_alignment_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 17 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.7",
       "batch": 6,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MOS-EXT-18",
         "JP-FIG-01"
       ],
       "source_package": "research/techniques/07.7/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/07.7/negative_transfer_gate_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 17 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.8",
       "batch": 6,
       "priority": "P1",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "CN-RSCH-02",
         "SYS-04",
         "MQ-EXT-15"
       ],
       "source_package": "research/techniques/07.8/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/07.8/safe_doe_priority_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 17 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.9",
       "batch": 6,
       "priority": "P2",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_RESEARCH_TESTS_PASS_G2_G3_PENDING",
       "source_refs": [
         "MOS-EXT-17",
         "UCI-EXT-270"
       ],
       "source_package": "research/techniques/07.9/",
-      "new_files": [],
-      "test_job": null,
-      "ci_run": null,
-      "results": [],
-      "new_G2": "NO_NEW_SOURCE_TEST",
+      "new_files": [
+        "research/techniques/07.9/replay_approval_gate_v2.py",
+        "research/implementation_execution/test_batch06_v2.py"
+      ],
+      "test_job": "V4 Batch06 research-only validation 171 legacy + 29 new",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "results": [
+        "Batch06 source-condition & safety contracts tested, historical 17 tests + 29 shared group controls at https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+        "All new V2 tests are synthetic; no fresh independently calibrated reference gas exposures",
+        "Production and field G3 forbidden, negative findings preserved"
+      ],
+      "new_G2": "NO_BATCH06_ACTUAL_SOURCE_MEASUREMENT_BENCHMARK",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "last_commit": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "limits": [
+        "No new independent physical Tank sessions or certified calibration; cannot claim gas identity/ppm/chemical drift generalization",
+        "V2 reference-gate code is scientific source/test scaffold, not all cited ML algorithms reimplemented"
+      ]
     },
     {
       "id": "07.10",
@@ -2269,7 +2369,7 @@
     },
     {
       "id": 6,
-      "status": "NOT_STARTED",
+      "status": "G1_V4_SOFTWARE_SOURCE_CONTRACT_10_OF_10_G2_G3_PENDING",
       "techniques": [
         "06.9",
         "07.1",
@@ -2282,9 +2382,28 @@
         "07.8",
         "07.9"
       ],
-      "number_newly_implemented": 0,
-      "verified_CI": null,
-      "documentation": "research/implementation_execution/BATCH06_EVIDENCE_AR.md"
+      "number_newly_implemented": 10,
+      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "documentation": "research/implementation_execution/BATCH06_EVIDENCE_AR.md",
+      "number_historical_unit_tests": 171,
+      "number_new_shared_unit_tests": 29,
+      "ci_tests_total": 200,
+      "ci_test_counts_per_id": {
+        "06.9": 18,
+        "07.1": 18,
+        "07.2": 17,
+        "07.3": 15,
+        "07.4": 18,
+        "07.5": 17,
+        "07.6": 17,
+        "07.7": 17,
+        "07.8": 17,
+        "07.9": 17
+      },
+      "source_readiness": "research/implementation_execution/BATCH06_SOURCE_READINESS_2026-10-23.json",
+      "next_batch": 7,
+      "new_v4_external_G2": 0,
+      "G3_Tank_physical": "BLOCKED_NO_INDEPENDENT_TANK_REFERENCE"
     },
     {
       "id": 7,
@@ -2488,6 +2607,26 @@
       "G3_Tank_physical": 0,
       "scientific_claims": "NONE; blank signal thresholds and evidence scores not device-calibrated gas ppm",
       "next_work": "Batch06 IDs 06.9,07.1,07.2,07.3,07.4,07.5,07.6,07.7,07.8,07.9; source drift, session grouping and abstention"
+    },
+    {
+      "date": "2026-10-23",
+      "event": "BATCH06_V4_G1_10_OF_10_200_TESTS_PASS",
+      "commit_at_test": "f565051f582d0f9703acf8dd3c2f65b1048b5dc9",
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+      "software_tests": 200,
+      "historical_unit_tests": 171,
+      "new_shared_synthetic_test_cases": 29,
+      "total_V4_G1_ids": 60,
+      "G2_v4_new_real": 0,
+      "G3_Tank_physical": 0,
+      "source_reference_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "negative_findings": [
+        "CI first attempt failed on syntax in 06.9 source set comparison; fixed and fully retested",
+        "No documented physical device IDs in UCI270 source table; batch index must not substitute for device serial",
+        "07.6 source-to-target mean alignment can remove real analyte chemistry; safe_to_transfer_ppm=False",
+        "07.9 never changes weights or performs deployment"
+      ],
+      "next_work": "Batch07 07.10 and 08.1–08.9; code, scientific negative tests, source-locked CI, G2/G3 independent evidence separately"
     }
   ],
   "policy": {
