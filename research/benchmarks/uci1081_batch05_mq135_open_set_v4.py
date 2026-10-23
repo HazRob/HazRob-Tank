@@ -46,8 +46,8 @@ def run(source_zip):
     test=load_open_set()
     results=[]
     for unseen in GASES:
-        train=[r for r in rows if r["gas_label"]!=unseen and r["replicate_ordinal"]<=3]
-        known=[r for r in rows if r["gas_label"]!=unseen and r["replicate_ordinal"]>=4]
+        train=[r for r in rows if r["gas_label"]!=unseen and r["replicate_ordinal"]<=2]
+        known=[r for r in rows if r["gas_label"]!=unseen and r["replicate_ordinal"]>=3]
         unknown=[r for r in rows if r["gas_label"]==unseen]
         if (len(train),len(known),len(unknown))!=(45,30,15):
             raise ValueError("wrong 5 gas × 3 ppm × replicate ordinal source split")
@@ -63,7 +63,7 @@ def run(source_zip):
             "source_sample_count":90,"source_mq_channel":"MQ135",
             "sensor_schema":"SINGLE EXTERNAL MQ135 (not Tank 8 MQ)",
             "signal":"late 120-s injection median minus pre-injection baseline, source ADC-like units",
-            "protocol":"leave one gas out, known gas replicate ordinals 1-3 train / 4-5 known test, all 15 of heldout gas as unknown",
+            "protocol":"leave one gas out, known gas replicate ordinals 0-2 train / 3-4 known test, all 15 of heldout gas as unknown",
             "source_true_session_device_ids_available":False,
             "G2_external_exploratory_measured":True,
             "G2_new_source_physical_validated":False,
