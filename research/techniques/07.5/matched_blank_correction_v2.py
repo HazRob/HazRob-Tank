@@ -23,8 +23,8 @@ def matched_blank_correction(before,after,query,*,source_id,sensor_ids,reference
     if len({r["session_id"] for r in (before,after,query)})!=3:
         raise ValueError("independent session identity required")
     if any(before.get(k)!=after.get(k) or before.get(k)!=query.get(k)
-           for k in ("sensor_array_id","environment_bin","gas_baseline_label")):
-        raise ValueError("blank gas and environmental state not matched")
+           for k in ("sensor_array_id","environment_bin")):
+        raise ValueError("sensor array and environmental state not matched")
     if before.get("gas_baseline_label")!="CLEAN_BLANK" or after.get("gas_baseline_label")!="CLEAN_BLANK":
         raise ValueError("only clean blank shifts can be subtracted")
     ts=[_finite(r.get("timestamp_s")) for r in (before,after,query)]
