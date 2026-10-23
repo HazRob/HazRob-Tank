@@ -13,16 +13,24 @@ def load(id,name):
     x=importlib.util.module_from_spec(s);sys.modules[s.name]=x;s.loader.exec_module(x)
     return x
 
-m710=load("07.10","cpython_research_profile_v2")
-m81=load("08.1","conv1d_research_reference_v2")
-m82=load("08.2","causal_dilated_tcn_v2")
-m83=load("08.3","recurrent_state_isolation_v2")
-m84=load("08.4","graph_topology_source_v2")
-m85=load("08.5","dependent_ensemble_v2")
-m86=load("08.6","first_order_gas_simulator_v2")
-m87=load("08.7","paired_sim_real_gap_v2")
-m88=load("08.8","mixture_hypothesis_competition_v2")
-m89=load("08.9","nonnegative_rank_guard_v2")
+class DeferredModule:
+    """Lazy isolation lets each technique be tested even if another source fails."""
+    def __init__(self,tid,source):
+        self.tid=tid;self.source=source;self._module=None
+    def __getattr__(self,attr):
+        if self._module is None:self._module=load(self.tid,self.source)
+        return getattr(self._module,attr)
+
+m710=DeferredModule("07.10","cpython_research_profile_v2")
+m81=DeferredModule("08.1","conv1d_research_reference_v2")
+m82=DeferredModule("08.2","causal_dilated_tcn_v2")
+m83=DeferredModule("08.3","recurrent_state_isolation_v2")
+m84=DeferredModule("08.4","graph_topology_source_v2")
+m85=DeferredModule("08.5","dependent_ensemble_v2")
+m86=DeferredModule("08.6","first_order_gas_simulator_v2")
+m87=DeferredModule("08.7","paired_sim_real_gap_v2")
+m88=DeferredModule("08.8","mixture_hypothesis_competition_v2")
+m89=DeferredModule("08.9","nonnegative_rank_guard_v2")
 
 class Batch07EngineeringEvidence(unittest.TestCase):
     def test_0710_only_claim_cpython(self):
