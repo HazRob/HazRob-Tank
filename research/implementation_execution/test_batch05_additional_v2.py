@@ -124,5 +124,32 @@ class Batch05OtherSevenTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             m.explain_source_features(lambda z:z[0],(0,),(1,),
                  source_id="toy",sensor_ids=("MQ2","MQ2"))
+    def _open_set_calibration_rows(self):
+        def make(i,gas,value):
+            return {"source_id":"toy","scope":"PURE_GAS","exposure_id":"e"+str(i),
+                    "gas_label":gas,"features":(value,)}
+        train=[make(i,y,v) for i,(y,v) in enumerate([
+            ("A",0.),("A",.1),("A",-.1),("B",10.),("B",10.1),("B",9.9)])]
+        val=[make(i+6, "A" if i%2==0 else "B",
+                  .05 if i%2==0 else 10.05) for i in range(12)]
+        known=[make(18,"A",.04),make(19,"B",10.04)]
+        unknown=[make(20,"C",100.),make(21,"C",120.)]
+        return train,val,known,unknown
+    def test_065_independent_known_calibration(self):
+        m=module("06.5","calibrated_open_set_source_v2")
+        r=m.calibrated_open_set_source(*self._open_set_calibration_rows(),
+                                      source_id="toy",sensor_ids=("MQ135",),alpha=.1)
+        self.assertEqual(r["known_test_n"],2)
+        self.assertEqual(r["withheld_unknown_n"],2)
+        self.assertEqual(r["unknown_reject_rate"],1.)
+        self.assertFalse(r["Tank_G3"])
+    def test_065_unknown_label_cannot_enter_train_or_calibration(self):
+        m=module("06.5","calibrated_open_set_source_v2")
+        train,val,known,unknown=self._open_set_calibration_rows()
+        unknown[0]["gas_label"]="A"
+        with self.assertRaises(ValueError):
+            m.calibrated_open_set_source(train,val,known,unknown,
+                                         source_id="toy",sensor_ids=("MQ135",),alpha=.1)
+
 if __name__=="__main__":
     unittest.main()
