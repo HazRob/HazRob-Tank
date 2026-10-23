@@ -1,0 +1,138 @@
+{
+  "schema": "hazrob.tank.chemcore80.batch07.pending.v1",
+  "created": "2026-10-23",
+  "source_reference_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+  "status": "CODE_COMMITTED_CI_UNVERIFIED",
+  "validated_V4_G1_before_batch": 60,
+  "proposed_V4_G1_after_success_if_all_pass": 70,
+  "tank_actual_G3": 0,
+  "commit_history": [
+    "02cd5a8b968d10b38e46340894cf65fe5a337946",
+    "aac7ed0d1da14ecdb681b083eaa034fc79fba090",
+    "9aad25d372a94c8fa814add0d0aa465815e3cf53",
+    "ec9c376a564ce844d09e19d8b7291800810be1c7",
+    "95a05f15975bbceb9c2ac95adb8d20938c1ef086"
+  ],
+  "ci_attempts": [
+    {
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39912487182",
+      "status": "FAILED_BEFORE_DIAGNOSIS",
+      "issue": "Single combined test job failed; GitHub job-log artifact fetch returned 404."
+    },
+    {
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39913215464",
+      "status": "ALL_MATRIX_JOBS_FAILED_WITH_NO_STEPS_RETRIEVED",
+      "issue": "10 separated model jobs and independent plan job failed; rerun attempt 2 also failed. Unrelated established CI workflows also failed on that SHA; common infrastructure issue suspected but not proven."
+    }
+  ],
+  "work_items": [
+    {
+      "id": "07.10",
+      "module": "research/techniques/07.10/cpython_research_profile_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "CPython time/tracemalloc surrogate; no actual embedded Android/ESP32 power/latency benchmark"
+    },
+    {
+      "id": "08.1",
+      "module": "research/techniques/08.1/conv1d_research_reference_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "Valid Conv1d forward kernel only, not trained CNN; real external Torch trained CNN remains in benchmarks"
+    },
+    {
+      "id": "08.2",
+      "module": "research/techniques/08.2/causal_dilated_tcn_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "Causal dilated convolution and prefix isolation; not trained Temporal Convolutional Network"
+    },
+    {
+      "id": "08.3",
+      "module": "research/techniques/08.3/recurrent_state_isolation_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "Per-exposure recurrent state reset with tanh; not a trained LSTM or GRU; external real GRU benchmark exists separately"
+    },
+    {
+      "id": "08.4",
+      "module": "research/techniques/08.4/graph_topology_source_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "Symmetric graph aggregation with fixed supplied topology; not learned GNN, graph chemistry empirical evidence absent"
+    },
+    {
+      "id": "08.5",
+      "module": "research/techniques/08.5/dependent_ensemble_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "Descriptive ensemble averages correlated model scores; no independent calibrated Bayesian posterior"
+    },
+    {
+      "id": "08.6",
+      "module": "research/techniques/08.6/first_order_gas_simulator_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "First-order model of a known concentration step; synthetic concentration is NOT measured Rs/R0 or physical exposure"
+    },
+    {
+      "id": "08.7",
+      "module": "research/techniques/08.7/paired_sim_real_gap_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "Compare paired simulated and measured Rs/R0 grouped by session; trace ID supplied, independent physical source certificate still unverified"
+    },
+    {
+      "id": "08.8",
+      "module": "research/techniques/08.8/mixture_hypothesis_competition_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "Convex binary fingerprint mixture hypothesis only, cannot eliminate novel gas/interference/defect"
+    },
+    {
+      "id": "08.9",
+      "module": "research/techniques/08.9/nonnegative_rank_guard_v2.py",
+      "research_implemented": true,
+      "software_tests_written": true,
+      "software_tests_green": false,
+      "new_scientific_source_G2": false,
+      "actual_Tank_G3": false,
+      "algorithm_and_external_source_gap": "Nonnegative two-component NNLS with rank/condition refusal; coefficients dimensionless, cannot claim per-analyte ppm"
+    }
+  ],
+  "required_actions": [
+    "Inspect repository GitHub Actions availability/billing/runner/service health and run jobs again; do not attribute failure to code without trace",
+    "Fetch working job logs (Github Azure blob 404 in this tool session) or run exactly the same tests locally from an authorized checkout",
+    "Compile each *_v2.py and test_batch07_v2.py, run per-ID legacy and V4 tests, record count and exact tested commit SHA",
+    "Compare true trained Torch CNN/TCN/GRU/GNN from separate benchmark to versioned 08.x research modules; do not mislabel primitives as trained models",
+    "Run actual external grouped benchmark for mixtures if verified per-component ppm and physical sensor channels available; do not count synthetic or simulated values as G2",
+    "After all green, update ledger 07.10–08.9, record Batch07 10/10 G1 and move to Batch08"
+  ]
+}
