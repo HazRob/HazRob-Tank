@@ -77,6 +77,9 @@ constexpr bool TRACKING_CONTINUOUS=true;
 constexpr uint16_t SOUND_PERIOD=100,SOUND_SAMPLES=128,ENV_PERIOD=1000,LDR_PERIOD=100;
 constexpr uint16_t BATTERY_PERIOD=1000,ULTRA_PERIOD=150;
 constexpr uint32_t ULTRA_TIMEOUT_US=25000;
+// HC-SR04 acoustic operating interval: approximately 2–400 cm. Reject electrical glitch pulses.
+// 110 us ~= 1.9 cm; 23500 us ~= 403 cm, without treating an invalid echo as an obstacle.
+constexpr uint32_t ULTRA_MIN_ECHO_US=110,ULTRA_MAX_ECHO_US=23500;
 constexpr float ULTRA_WARN_CM=10.0f;
 // 47k/10k divider reference. Final assembled divider and ADC correction are calibrated in device settings later.
 constexpr float BAT_R_TOP=47000.0f,BAT_R_BOTTOM=10000.0f,BAT_DIV=(BAT_R_TOP+BAT_R_BOTTOM)/BAT_R_BOTTOM;
