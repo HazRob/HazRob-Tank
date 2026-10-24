@@ -1,4 +1,4 @@
-name: Build HazRob Tank v3 Android Candidate
+name: Build HazRob Tank V4 Android Candidate
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
     branches: [feature/tank-v4-implementation, develop]
     paths:
       - 'android/**'
-      - '.github/workflows/build-tank-android-v3.yml'
+      - '.github/workflows/build-tank-android-v4.yml'
 
 
 permissions:
