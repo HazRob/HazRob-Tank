@@ -119,7 +119,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private boolean isOffline(){return TankModePolicy.isOffline(prefs==null?null:prefs.getString("connection_mode","direct"));}
     private void loadSensorBaselines(){for(String key:SensorHealthEngine.INSTALLED){String v=db.getMeta("health_baseline_"+key,"");try{double q=Double.parseDouble(v);if(Double.isFinite(q)&&q>0)sensorHealth.setBaseline(key,q);}catch(Exception ignored){}}}
     private void enter(){entered=true;buildTabs();setContentView(buildShell());showTab(0);if(!isOffline()){scheduleComms();startLinkService();if(foreground)controlTab.startCamera();}else{try{stopService(new Intent(this,RobotLinkService.class));}catch(Exception ignored){}}}
-    private void buildTabs(){controlTab=new ControlTab(this,this);fieldSessionsTab=new FieldSessionsTab(this,this);measurementsTab=new MeasurementsTab(this,this);reportsTab=new ReportsTab(this,this);statusTab=new StatusTab(this,this);settingsTab=new SettingsTab(this,this);developerTab=new DeveloperTab(this,this,()->{developerMode=true;refreshAllTabs();});tabViews=new View[]{controlTab.view(),withRefresh(fieldSessionsTab.view(),8),withRefresh(measurementsTab.view(),54),withRefresh(reportsTab.view(),8),withRefresh(statusTab.view(),8),withRefresh(settingsTab.view(),8),withRefresh(developerTab.view(),54)};}
+    private void buildTabs(){controlTab=new ControlTab(this,this);fieldSessionsTab=new FieldSessionsTab(this,this);measurementsTab=new MeasurementsTab(this,this);reportsTab=new ReportsTab(this,this);statusTab=new StatusTab(this,this);settingsTab=new SettingsTab(this,this);developerTab=new DeveloperTab(this,this,()->{developerMode=true;refreshAllTabs();});tabViews=new View[]{controlTab.view(),withRefresh(measurementsTab.view(),54),withRefresh(fieldSessionsTab.view(),8),withRefresh(reportsTab.view(),8),withRefresh(statusTab.view(),8),withRefresh(settingsTab.view(),8),withRefresh(developerTab.view(),54)};}
     /** Compact refresh overlay in the upper-left of each non-driving tab's CONTENT; no extra row. */
     private View withRefresh(View content,int topMarginDp){
         FrameLayout frame=new FrameLayout(this);
@@ -136,14 +136,34 @@ public final class MainActivity extends Activity implements HazRobHost {
     }
 
     private View buildShell(){
-        LinearLayout root=UiKit.vbox(this);root.setBackgroundColor(0xFFF7F8FA);root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);LinearLayout header=UiKit.hbox(this);header.setPadding(UiKit.dp(this,8),UiKit.dp(this,4),UiKit.dp(this,8),UiKit.dp(this,2));String mode=isOffline()?"دون اتصال":("remote".equalsIgnoreCase(prefs.getString("connection_mode","direct"))?"عن بُعد":"مباشر");TextView title=UiKit.title(this,"HazRob Tank V3 • "+mode);title.setTextColor(Color.BLACK);header.addView(title,new LinearLayout.LayoutParams(0,-2,1f));Button preview=UiKit.button(this,"↪ دخول");preview.setTextSize(12);preview.setOnClickListener(v->showTab(2));header.addView(preview,new LinearLayout.LayoutParams(-2,UiKit.dp(this,44)));globalStatus=UiKit.small(this,"غير متصل");globalStatus.setTextColor(0xFF955000);globalStatus.setGravity(Gravity.END);header.addView(globalStatus,new LinearLayout.LayoutParams(-2,-2));root.addView(header,UiKit.full(this));
-        HorizontalScrollView tabsScroll=new HorizontalScrollView(this);tabsScroll.setHorizontalScrollBarEnabled(false);LinearLayout tabs=UiKit.hbox(this);String[] names={"القيادة","الجلسات","القياسات","التقارير","الحالة","الإعدادات","المطور"};tabButtons=new Button[names.length];for(int i=0;i<names.length;i++){final int x=i;Button bt=UiKit.button(this,names[i]);bt.setTextSize(12);bt.setOnClickListener(v->showTab(x));tabButtons[i]=bt;tabs.addView(bt,new LinearLayout.LayoutParams(UiKit.dp(this,110),UiKit.dp(this,44)));}tabsScroll.addView(tabs);root.addView(tabsScroll,new LinearLayout.LayoutParams(-1,-2));page=new FrameLayout(this);root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));TextView footer=UiKit.small(this,"HazRob Tank V3 • تطبيق مستقل للروبوت المجنزر");footer.setTextSize(10);footer.setGravity(Gravity.CENTER);footer.setTextColor(0xFF607D8B);root.addView(footer,new LinearLayout.LayoutParams(-1,-2));return root;
+        LinearLayout root=UiKit.vbox(this);
+        root.setBackgroundColor(0xFFF7F8FA);
+        root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        // No redundant header/footer. Detailed transport and application versions
+        // are available exclusively in Status, never above the main navigation.
+        globalStatus=UiKit.small(this,"غير متصل");
+        HorizontalScrollView tabsScroll=new HorizontalScrollView(this);
+        tabsScroll.setHorizontalScrollBarEnabled(false);
+        LinearLayout tabs=UiKit.hbox(this);
+        String[] names={"القيادة","القياسات","الجلسات","التقارير","الحالة","الإعدادات","المطور"};
+        tabButtons=new Button[names.length];
+        for(int i=0;i<names.length;i++){
+            final int x=i;Button bt=UiKit.button(this,names[i]);
+            bt.setTextSize(12);bt.setOnClickListener(v->showTab(x));
+            tabButtons[i]=bt;
+            tabs.addView(bt,new LinearLayout.LayoutParams(UiKit.dp(this,110),UiKit.dp(this,44)));
+        }
+        tabsScroll.addView(tabs);
+        root.addView(tabsScroll,new LinearLayout.LayoutParams(-1,-2));
+        page=new FrameLayout(this);
+        root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));
+        return root;
     }
 
     private void showTab(int index){
         if(!entered||index<0||index>=tabViews.length)return;
         if(selectedTab==0&&index!=0)controlTab.stopCamera();
-        selectedTab=index;page.removeAllViews();page.addView(tabViews[index],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabButtons.length;i++){tabButtons[i].setTextColor(i==index?0xFF90CAF9:Color.DKGRAY);tabButtons[i].setBackgroundColor(i==index?0xFF263238:0xFFE0E0E0);}if(index==6&&!developerTab.isUnlocked())developerTab.requestUnlock();if(index==0&&foreground&&!isOffline())controlTab.startCamera();if(index==1)fieldSessionsTab.refresh();else if(index==3)reportsTab.refresh();else refreshVisibleTab();
+        selectedTab=index;page.removeAllViews();page.addView(tabViews[index],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabButtons.length;i++){tabButtons[i].setTextColor(i==index?0xFF90CAF9:Color.DKGRAY);tabButtons[i].setBackgroundColor(i==index?0xFF263238:0xFFE0E0E0);}if(index==6&&!developerTab.isUnlocked())developerTab.requestUnlock();if(index==0&&foreground&&!isOffline())controlTab.startCamera();if(index==2)fieldSessionsTab.refresh();else if(index==3)reportsTab.refresh();else refreshVisibleTab();
     }
 
     private void queueDriveSend(){
@@ -183,7 +203,7 @@ public final class MainActivity extends Activity implements HazRobHost {
         boolean changed=level!=lastGasAlertLevel,refresh=level>0&&now-gasAlertSentAt>=1000;if(!changed&&!refresh)return;lastGasAlertLevel=level;gasAlertSentAt=now;try{robotApi.setAlertLevel(level,3000);}catch(Exception ignored){}
     }
     private void onTelemetryUpdated(){if(isOffline()){latestDiag=null;if(globalStatus!=null){globalStatus.setText("دون اتصال");globalStatus.setTextColor(0xFF955000);}refreshVisibleTab();return;}JSONObject d=latestDiag;if(globalStatus==null)return;if(d==null){globalStatus.setText("غير متصل");globalStatus.setTextColor(0xFFFFB74D);}else{JSONObject drv=d.optJSONObject("drive"),device=d.optJSONObject("device"),proximity=device==null?null:device.optJSONObject("proximity");boolean near=proximity!=null&&proximity.optBoolean("warning",false),stale=drv!=null&&drv.optBoolean("stale_stop",false),gas=lastGasAlertLevel>0;globalStatus.setText("متصل"+(stale?" • توقف لانقطاع أوامر القيادة":gas?" • ⚠ غازات":near?" • ⚠ جسم قريب":""));globalStatus.setTextColor(stale?0xFF985400:gas?0xFFD62828:near?0xFFD62828:0xFF167443);}refreshVisibleTab();}
-    private void refreshVisibleTab(){if(!entered)return;if(selectedTab==0)controlTab.refresh();else if(selectedTab==2)measurementsTab.refresh();else if(selectedTab==4)statusTab.refresh();else if(selectedTab==5)settingsTab.refresh();else if(selectedTab==6)developerTab.refresh();}
+    private void refreshVisibleTab(){if(!entered)return;if(selectedTab==0)controlTab.refresh();else if(selectedTab==1)measurementsTab.refresh();else if(selectedTab==4)statusTab.refresh();else if(selectedTab==5)settingsTab.refresh();else if(selectedTab==6)developerTab.refresh();}
 
     @Override protected void onResume(){super.onResume();if(!isOffline()&&!"remote".equalsIgnoreCase(prefs.getString("connection_mode","direct")))WifiRoute.bindConnectedWifi(this);foreground=true;if(entered){if(!isOffline()){startLinkService();if(selectedTab==0)controlTab.startCamera();}refreshVisibleTab();}}
     @Override protected void onPause(){
