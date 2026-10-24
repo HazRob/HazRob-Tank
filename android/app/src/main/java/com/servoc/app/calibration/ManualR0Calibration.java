@@ -20,7 +20,6 @@ public final class ManualR0Calibration {
     public static synchronized void load(SharedPreferences p){
         values.clear();sources.clear();sessions.clear();utcs.clear();
         for(String k:KEYS){
-            boolean accepted=false;
             if(p!=null){
                 String s=p.getString("manual_r0_"+k,"");
                 try{
@@ -29,7 +28,6 @@ public final class ManualR0Calibration {
                         values.put(k,v);sources.put(k,p.getString("manual_r0_source_"+k,"manual_device_r0"));
                         String session=p.getString("manual_r0_session_"+k,"");if(!session.isEmpty())sessions.put(k,session);
                         String utc=p.getString("manual_r0_utc_"+k,"");if(!utc.isEmpty())utcs.put(k,utc);
-                        accepted=true;
                     }
                 }catch(Exception ignored){}
             }
