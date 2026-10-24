@@ -42,6 +42,7 @@ import com.servoc.app.navigation.MotionHistory;
 import com.servoc.app.report.ReferenceBankExporter;
 import com.servoc.app.report.ReportExporter;
 import com.servoc.app.report.TankPhysicalSnapshotPdf;
+import com.servoc.app.report.TankInstantReportPdf;
 import com.servoc.app.report.FieldSessionReportExporter;
 import com.servoc.app.ui.ControlTab;
 import com.servoc.app.ui.DeveloperTab;
@@ -68,7 +69,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** HazRob 0.10.2 coordinator. Direct and Remote are transports for the same operator workspace. */
 public final class MainActivity extends Activity implements HazRobHost {
-    private static final int EXPORT_XLSX=8101,EXPORT_PDF=8102,EXPORT_REFERENCE=8103,EXPORT_RAW=8104,USER_LIBRARY_TREE=8105,EXPORT_FIELD_PDF=8106,EXPORT_FIELD_XLSX=8107,EXPORT_PHYSICAL_PDF=8108;
+    private static final int EXPORT_XLSX=8101,EXPORT_PDF=8102,EXPORT_REFERENCE=8103,EXPORT_RAW=8104,USER_LIBRARY_TREE=8105,EXPORT_FIELD_PDF=8106,EXPORT_FIELD_XLSX=8107,EXPORT_PHYSICAL_PDF=8108,EXPORT_INSTANT_PDF=8109;
     private final Handler ui=new Handler(Looper.getMainLooper());
     private final ScheduledExecutorService workers=Executors.newScheduledThreadPool(7);
     private final AtomicBoolean driveDispatching=new AtomicBoolean(false),driveDirty=new AtomicBoolean(false),telemetryPolling=new AtomicBoolean(false);
@@ -77,6 +78,8 @@ public final class MainActivity extends Activity implements HazRobHost {
     private final GasAlertCoordinator gasAlertCoordinator=new GasAlertCoordinator();
     private SharedPreferences prefs;private HazRobUserLibrary userLibrary;private RobotApi robotApi;private CameraApi cameraApi;private ExperimentsDb db;private TelemetryRecorder telemetryRecorder;private PhoneAlertTone phoneAlertTone;
     private volatile String pendingPhysicalSnapshot="{}",pendingPhysicalUtc="";
+    private volatile String pendingInstantTelemetry="{}",pendingInstantAnalysis="{}",pendingInstantId="";
+    private volatile long pendingInstantTime=0;
     private boolean pendingPhysicalDocumentRequest=false;
     private volatile JSONObject latestDiag;private volatile int left=0,right=0;private volatile boolean foreground=false;private volatile String flashMode="off";
     private volatile int trackingTarget=-1;private volatile String trackingName="";
@@ -94,6 +97,10 @@ public final class MainActivity extends Activity implements HazRobHost {
             pendingPhysicalDocumentRequest=b.getBoolean("tank_v3_physical_export_waiting",false);
             pendingPhysicalSnapshot=b.getString("tank_v3_physical_export_snapshot","{}");
             pendingPhysicalUtc=b.getString("tank_v3_physical_export_utc","");
+            pendingInstantTelemetry=b.getString("tank_v4_instant_telemetry","{}");
+            pendingInstantAnalysis=b.getString("tank_v4_instant_analysis","{}");
+            pendingInstantId=b.getString("tank_v4_instant_id","");
+            pendingInstantTime=b.getLong("tank_v4_instant_time",0);
         }
         workers.execute(()->{
             try{
@@ -222,6 +229,10 @@ public final class MainActivity extends Activity implements HazRobHost {
         out.putBoolean("tank_v3_physical_export_waiting",pendingPhysicalDocumentRequest);
         if(pendingPhysicalDocumentRequest){
             out.putString("tank_v3_physical_export_snapshot",pendingPhysicalSnapshot);
+            out.putString("tank_v4_instant_telemetry",pendingInstantTelemetry);
+            out.putString("tank_v4_instant_analysis",pendingInstantAnalysis);
+            out.putString("tank_v4_instant_id",pendingInstantId);
+            out.putLong("tank_v4_instant_time",pendingInstantTime);
             out.putString("tank_v3_physical_export_utc",pendingPhysicalUtc);
         }
         super.onSaveInstanceState(out);
@@ -272,6 +283,21 @@ public final class MainActivity extends Activity implements HazRobHost {
         i.putExtra(Intent.EXTRA_TITLE,String.format(Locale.US,"HazRob_Developer_Experiment_%06d_%s%s",r.id,fileStamp(),pdf?".pdf":".xlsx"));
         startActivityForResult(i,pdf?EXPORT_PDF:EXPORT_XLSX);
     }
+    @Override public void requestInstantReportPdf(JSONObject frozen,JSONObject chemcore,String id,long atMs){
+        if(frozen==null||chemcore==null||id==null||id.isEmpty()){
+            showToast("أكمل عملية القياس والتحليل أولاً");return;
+        }
+        pendingInstantTelemetry=frozen.toString();
+        pendingInstantAnalysis=chemcore.toString();
+        pendingInstantId=id;
+        pendingInstantTime=atMs;
+        Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/pdf");
+        intent.putExtra(Intent.EXTRA_TITLE,"HazRob_Tank_Instant_"+fileStamp()+".pdf");
+        startActivityForResult(intent,EXPORT_INSTANT_PDF);
+    }
+
     @Override public void requestPhysicalSnapshotPdf(){
         if(pendingPhysicalDocumentRequest){showToast("أكمل حفظ التقرير السابق أو ألغِه أولاً");return;}
         if(isOffline()){showToast("التقرير الفوري يتطلب قراءات حية من الروبوت");return;}
@@ -356,6 +382,23 @@ public final class MainActivity extends Activity implements HazRobHost {
         if(resultCode!=RESULT_OK||data==null||data.getData()==null)return;
         if(requestCode==USER_LIBRARY_TREE){
             try{userLibrary.attach(data.getData());userLibrary.syncUserIndex(db);showToast("تم ربط ومزامنة مكتبة HazRob الدائمة");refreshAllTabs();}catch(Exception e){showToast("تعذر فتح مكتبة HazRob: "+e.getClass().getSimpleName());}
+            return;
+        }
+        if(requestCode==EXPORT_INSTANT_PDF){
+            final Uri uri=data.getData();
+            final String frozen=pendingInstantTelemetry,analysis=pendingInstantAnalysis,
+                opId=pendingInstantId;
+            final long capturedAt=pendingInstantTime;
+            pendingInstantTelemetry="{}";pendingInstantAnalysis="{}";pendingInstantId="";
+            pendingInstantTime=0;
+            workers.execute(()->{
+                try(OutputStream out=getContentResolver().openOutputStream(uri,"wt")){
+                    if(out==null)throw new IllegalStateException("No PDF destination");
+                    TankInstantReportPdf.write(out,new JSONObject(frozen),
+                        new JSONObject(analysis),opId,capturedAt);
+                    showToast("تم تصدير تقرير العملية الآنية");
+                }catch(Exception ex){showToast("تعذر تصدير تقرير القياس الآني: "+ex.getClass().getSimpleName());}
+            });
             return;
         }
         if(requestCode==EXPORT_PHYSICAL_PDF){
