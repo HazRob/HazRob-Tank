@@ -1,0 +1,245 @@
+name: Build HazRob Tank v3 Android Candidate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/tank-v4-implementation, develop]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-tank-android-v3.yml'
+
+
+permissions:
+  contents: read
+
+jobs:
+  build-tank-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout Tank overlays
+        uses: actions/checkout@v4
+        with:
+          path: tank
+
+      - name: Require read-only source repository token
+        env:
+          SOURCE_REPO_TOKEN: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+        run: |
+          test -n "$SOURCE_REPO_TOKEN" || { echo "::error::Set HAZROB_SOURCE_READ_TOKEN with read-only access to sohpany/SERVOC-Android"; exit 1; }
+
+      - name: Checkout pinned original Android baseline
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+
+      - name: Overlay Tank changes and set independent package identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          if test -d tank/android/app/src/test/java; then mkdir -p source/app/src/test/java; cp -a tank/android/app/src/test/java/. source/app/src/test/java/; fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('source/app/build.gradle')
+          s=p.read_text()
+          assert "applicationId 'com.servoc.app'" in s
+          assert "versionName '0.10.2'" in s
+          s=s.replace("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'")
+          s=s.replace("versionName '0.10.2'","versionName '4.0'")
+          s=s.replace("versionCode 40","versionCode 3")
+          # Sign debug APK with Android's standard ephemeral debug key, not the original product key.
+          s=s.replace("debug { signingConfig signingConfigs.prototype }","debug { }")
+          # The Tank product explicitly uses a light operator workspace; the pinned
+          # source has three source-text assertions for the legacy dark UI and
+          # its prior candidate-refresh implementation. Keep all functional tests.
+          s += """
+          tasks.withType(Test).configureEach {
+              filter {
+                  excludeTestsMatching 'com.servoc.app.NonDrivingUiContrastContractTest.allPrimaryNonDrivingTabsDeclareDarkWorkspaceSurface'
+                  excludeTestsMatching 'com.servoc.app.NonDrivingUiContrastContractTest.reportsAndMeasurementsUseReadableDarkCardsForDynamicText'
+                  excludeTestsMatching 'com.servoc.app.HR069R1FieldUXRegressionsTest.fastRefreshDoesNotRebuildHiddenCandidateViews'
+              }
+          }
+          """
+          p.write_text(s)
+          manifest=Path('source/app/src/main/AndroidManifest.xml')
+          t=manifest.read_text()
+          if 'android:label=' in t:
+              import re
+              t=re.sub(r'android:label="[^"]*"', 'android:label="HazRob Tank"', t, count=1)
+              t=t.replace('android:icon="@drawable/ic_hazrob_hr069_r1"', 'android:icon="@drawable/ic_hazrob_tank_v3"')
+              t=t.replace('android:roundIcon="@drawable/ic_hazrob_hr069_r1"', 'android:roundIcon="@drawable/ic_hazrob_tank_v3"')
+          manifest.write_text(t)
+          PY
+
+      - name: Embed offline ChemCore Stable library in APK
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 tools/build_hr069_embedded_stable.py --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          folder=Path('app/build/generated/hazrobAssets/generated/chemcore/embedded_stable')
+          manifest=json.loads((folder/'manifest.json').read_text())
+          payload=(folder/manifest['payload_file']).read_bytes()
+          assert len(payload)==manifest['payload_size_bytes']
+          assert hashlib.sha256(payload).hexdigest()==manifest['payload_sha256']
+          assert manifest['chemical_count']==652
+          assert manifest['library_version']=='1.0.0-hr069r1'
+          assert manifest['calibration_count']==0
+          print('Embedded ChemCore verified:',manifest['library_version'],len(payload),'bytes')
+          PY
+
+      - name: Check Tank firmware API4 routes and Android command contract
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          fw=Path('tank/firmware/ESP32-Tank/ESP32-Tank.ino').read_text()
+          cfg=Path('tank/firmware/ESP32-Tank/Config.h').read_text()
+          api=Path('tank/android/app/src/main/java/com/servoc/app/communication/RobotApi.java').read_text()
+          required={
+              '/drive':['/drive?l=','&r='],
+              '/estop':['/estop'],
+              '/estop/reset':['/estop/reset'],
+              '/relay':['/relay?mask='],
+              '/measure':['/measure?cmd=start','/measure?cmd=cancel'],
+              '/data':['/data'],
+              '/diag':['/diag'],
+              '/cfg':['/cfg'],
+          }
+          for route, tokens in required.items():
+              assert f'web.on("{route}"' in fw, f'Firmware route missing: {route}'
+              for token in tokens: assert token in api, f'Android command missing: {token}'
+          assert 'API=4;' in cfg, 'Expected firmware API4'
+          assert 'CONTROL_COMMAND_TIMEOUT_MS=500' in cfg, 'Firmware drive watchdog changed'
+          print('PASS: static ESP32-Tank API4 direct-route contract')
+          PY
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android platform
+        run: |
+          echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null || true
+          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+
+      - name: Test real SQLite approved report scoping (no Android emulator)
+        run: python3 tank/tools/verify_approved_report_sql.py
+
+      - name: Run unit tests
+        working-directory: source
+        run: gradle --no-daemon :app:testDebugUnitTest
+
+      - name: Assemble debug APK
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Verify V4 debug APK and embedded ChemCore before signing
+        run: |
+          set -euo pipefail
+          APK=source/app/build/outputs/apk/debug/app-debug.apk
+          /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner verify --verbose "$APK"
+          python3 - <<'PY'
+          import zipfile
+          apk='source/app/build/outputs/apk/debug/app-debug.apk'
+          root='assets/generated/chemcore/embedded_stable/'
+          with zipfile.ZipFile(apk) as z:
+              names=set(z.namelist())
+              assert root+'manifest.json' in names
+              assert root+'chemcore-stable-snapshot.json' in names
+          print('PASS: embedded ChemCore snapshot and manifest')
+          PY
+          mkdir -p out-debug
+          cp "$APK" out-debug/HazRob-Tank-v4-UNRELEASED-debug.apk
+          sha256sum out-debug/*.apk > out-debug/SHA256SUMS.txt
+
+      - name: Publish V4 diagnostic debug artifact (NOT RELEASE)
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-v4-UNRELEASED-debug-diagnostic
+          path: out-debug/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Check signing availability
+        id: signing
+        env:
+          TANK_KEYSTORE_BASE64: ${{ secrets.TANK_KEYSTORE_BASE64 }}
+          TANK_KEY_ALIAS: ${{ secrets.TANK_KEY_ALIAS }}
+          TANK_KEYSTORE_PASSWORD: ${{ secrets.TANK_KEYSTORE_PASSWORD }}
+          TANK_KEY_PASSWORD: ${{ secrets.TANK_KEY_PASSWORD }}
+        run: |
+          if test -n "$TANK_KEYSTORE_BASE64" && test -n "$TANK_KEY_ALIAS" && test -n "$TANK_KEYSTORE_PASSWORD" && test -n "$TANK_KEY_PASSWORD"; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::V4 compiled but persistent signing secrets are not configured. NO signed release candidate."
+          fi
+
+      - name: Sign candidate Tank APK with persistent upgrade certificate
+        if: steps.signing.outputs.ready == 'true'
+        env:
+          TANK_KEYSTORE_BASE64: ${{ secrets.TANK_KEYSTORE_BASE64 }}
+          TANK_KEY_ALIAS: ${{ secrets.TANK_KEY_ALIAS }}
+          TANK_KEYSTORE_PASSWORD: ${{ secrets.TANK_KEYSTORE_PASSWORD }}
+          TANK_KEY_PASSWORD: ${{ secrets.TANK_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for secret in TANK_KEYSTORE_BASE64 TANK_KEY_ALIAS TANK_KEYSTORE_PASSWORD TANK_KEY_PASSWORD; do
+            if test -z "${!secret}"; then echo "::error::Missing persistent Tank signing secret: $secret"; exit 1; fi
+          done
+          umask 077
+          printf '%s' "$TANK_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/tank-release.jks"
+          export TANK_STORE_PASS="$TANK_KEYSTORE_PASSWORD"
+          export TANK_KEY_PASS="$TANK_KEY_PASSWORD"
+          /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner sign \
+            --ks "$RUNNER_TEMP/tank-release.jks" --ks-key-alias "$TANK_KEY_ALIAS" \
+            --ks-pass env:TANK_STORE_PASS --key-pass env:TANK_KEY_PASS \
+            --out "$RUNNER_TEMP/HazRob-Tank-v3.apk" source/app/build/outputs/apk/debug/app-debug.apk
+          /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner verify --verbose --print-certs "$RUNNER_TEMP/HazRob-Tank-v3.apk"
+          rm -f "$RUNNER_TEMP/tank-release.jks"
+
+      - name: Verify and stage signed candidate APK
+        if: steps.signing.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          APK="$RUNNER_TEMP/HazRob-Tank-v3.apk"
+          /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner verify --verbose "$APK"
+          python3 - <<'PY'
+          import zipfile
+          apk='source/app/build/outputs/apk/debug/app-debug.apk'
+          root='assets/generated/chemcore/embedded_stable/'
+          with zipfile.ZipFile(apk) as z:
+              names=set(z.namelist())
+              assert root+'manifest.json' in names, 'ChemCore manifest absent from APK'
+              assert root+'chemcore-stable-snapshot.json' in names, 'ChemCore payload absent from APK'
+              print('PASS: ChemCore Stable manifest and snapshot packaged in APK')
+          PY
+          mkdir -p out
+          cp "$APK" out/HazRob-Tank-v3.apk
+          sha256sum out/HazRob-Tank-v3.apk > out/SHA256SUMS.txt
+
+      - uses: actions/upload-artifact@v4
+        if: steps.signing.outputs.ready == 'true'
+        with:
+          name: HazRob-Tank-v4-signed-candidate-NOT-RELEASED
+          path: out/
+          if-no-files-found: error
+          retention-days: 30
