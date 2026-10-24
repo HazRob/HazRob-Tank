@@ -108,7 +108,7 @@ public final class DeveloperR0Tab {
             Button reset=UiKit.button(c,"استعادة الأساس");
             reset.setOnClickListener(v->new AlertDialog.Builder(c)
                 .setTitle("استعادة R0 السابقة")
-                .setMessage("هل تريد حذف القيمة اليدوية لـ"+keys[index].toUpperCase(Locale.US)+" واستعادة خط أساس الهواء النظيف HR069؟")
+                .setMessage("هل تريد حذف القيمة اليدوية لـ"+keys[index].toUpperCase(Locale.US)+" واستعادة خط أساس الهواء النظيف المعتمد؟")
                 .setNegativeButton("إلغاء",null)
                 .setPositiveButton("استعادة",(d,w)->resetOne(index)).show());
             actions.addView(reset,UiKit.weight(1));
