@@ -78,6 +78,19 @@ public final class TankExposureReferenceCatalog {
         }catch(Exception ignored){}
         return out;
     }
+    /** Browse limits for an explicitly selected library chemical before any R0 or gas detection. */
+    public static JSONObject forSelectedChemical(ExperimentsDb db,long chemicalUid,String label){
+        JSONObject input=new JSONObject(),row=new JSONObject(),list=new JSONObject();
+        try{
+            row.put("chemical_uid",chemicalUid);
+            row.put("label",label==null?"—":label);
+            row.put("rank",1);
+            input.put("candidates",new JSONArray().put(row));
+            if(chemicalUid<0)return list.put("status","NO_VALID_LIBRARY_ID");
+        }catch(Exception ignored){return list;}
+        return forAnalysis(db,input);
+    }
+
     /** Human-readable catalogue: do not compare numbers against estimated sensor PPM. */
     public static String summary(JSONObject analysis,int maxCandidates,int maxLimitsPerCandidate){
         if(analysis==null)return "حدود التعرض: لا يوجد تحليل حالي.";
