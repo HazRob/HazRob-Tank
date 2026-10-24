@@ -79,3 +79,24 @@ NEXT SAFE STEP:
 ```
 
 **الخطوة التالية المحددة:** `BATCH 00 → BATCH 01`، مراجعة أحدث branch/CI فعلي واستخراج سبب الفشل، ثم إصلاح `V4-015` واختبارات ترحيل الجلسات حتى النجاح. **لا يوجد تنفيذ برمجي جديد في مهمة إعداد الخطة هذه.**
+
+## Checkpoint 01 — 2026-10-24 — Implementation authorized, P0 session/SAF source fixes
+
+**Authorization:** User expressly requested starting V4 implementation. **Current branch:** `feature/tank-v4-implementation`. **No merge into develop, no V4 release.**
+
+| Batch | Requirement | Work actually committed | Verification state |
+| --- | --- | --- | --- |
+| 00 | all | Read canonical plan/backlog and compared feature against `develop`; re-inspected failed Actions run [40047526874](https://github.com/HazRob/HazRob-Tank/actions/runs/40047526874); reran its failed jobs. Rerun again resulted in a failed `build-tank-android` job with **no job steps available** and old logs unavailable (GitHub storage BlobNotFound). Exact root cause unknown. | **CI_FAIL / DIAGNOSIS_BLOCKED**; not evidence of Gradle compile error |
+| 01 | V4-015 | Commit [1d019266](https://github.com/HazRob/HazRob-Tank/commit/1d0192667cb14d88b267c74039e6704c1c1a9442) binds Spinner selection to cached adapter identities instead of querying SQLite during callbacks; clears cache on DB error; reuses approved-session query; catches DB error during approval. | **SOURCE_PRESENT / DEVICE_NOT_TESTED**, root cause of original phone crash still unproven |
+| 01 | V4-015 | Commit [4d8aadb0](https://github.com/HazRob/HazRob-Tank/commit/4d8aadb080703e60d50dec0e5248b0446ff8e233) updates source-based Spinner crash regression assertions. Commit [1a01b981](https://github.com/HazRob/HazRob-Tank/commit/1a01b98105fa5f338b21d5305aaa25064811ef73) adds real-SQLite grouped count test for empty, 650 + 25 field sessions. Commit [b57308e4](https://github.com/HazRob/HazRob-Tank/commit/b57308e4b44fc9d411132d60cff298e4600926a1) wires it into V4 CI before inherited-source checkout. | SQLite equivalent query manually exercised in Python: **PASS** (650 / 25 sessions, 973 northern links). New source-extracted CI test **NOT RUN in hosted workflow**; migration/device unverified |
+| 07 preliminary | V4-006/V4-010 | Commit [c3126042](https://github.com/HazRob/HazRob-Tank/commit/c312604228d1520cdf043149dd75cabd25ddd506) fixes instant-report SAF lifecycle: previously stored instant-operation state only when an unrelated physical PDF picker was active; now independent. Commit [ceb597b5](https://github.com/HazRob/HazRob-Tank/commit/ceb597b5d5872273b8b842990434dbd5dbb65ce9) adds JUnit regression contract. | **SOURCE_PRESENT / JVM_CI_PENDING / DEVICE_PENDING**; does not prove complete single-operation lifecycle |
+| 00 | plan authorization | Commit [e47068a1](https://github.com/HazRob/HazRob-Tank/commit/e47068a1be2ab95337ab55c5ef0a8ccfe439f77c) updates plan authorization to execute instead of planning-only. | DOC_UPDATED |
+
+### Safety, data and release boundaries
+- No database schema migrations or destructive deletions executed. Neither old V3 captures, approved site sessions, developer experiments nor research datasets were deleted.
+- Original four-wheel `sohpany/SERVOC-Android` untouched; no ESP32 motor-control or camera flash applied.
+- Source checks on six modified paths passed: Spinner ID maps, independent PDF saved state, source assertions, real-SQLite script path and CI hook found. Such checks do **not** constitute Android UI/JVM verification.
+- Not yet run: Gradle tests, Android APK compile, original v9->current data migration tests, Logcat reproduction of sessions crash, offline live one-shot source-isolation, signing/upgrade, real phone and firmware tests.
+- **Stop point:** the Actions rerun produces a `failure` without step details; obtain a functioning runner and an actual build/test log before claiming `CI_PASS`. Until then keep **V4 UNRELEASED**.
+- **Next safe step:** execute `python3 tools/verify_v4_session_queries.py` and `python3 tools/verify_approved_report_sql.py` on a full repository checkout, then Gradle `:app:testDebugUnitTest :app:assembleDebug` using the pinned private baseline. Capture a device Logcat stack trace on opening `الجلسات` repeatedly, check migration with a backed-up older DB; continue batch 02 after P0 evidence.
+
