@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,7 +132,22 @@ public final class UiKit {
     }
 
     private static int effectiveBackground(View v){
-        View cur=v;while(cur!=null){Drawable d=cur.getBackground();if(d instanceof ColorDrawable){int c=((ColorDrawable)d).getColor();if(Color.alpha(c)>=230)return c;}ViewParent p=cur.getParent();cur=p instanceof View?(View)p:null;}return NON_DRIVING_BG;
+        View cur=v;while(cur!=null){
+            int color=solidDrawableColor(cur.getBackground(),Color.TRANSPARENT);
+            if(Color.alpha(color)>=230)return color;
+            ViewParent p=cur.getParent();cur=p instanceof View?(View)p:null;
+        }
+        return NON_DRIVING_BG;
+    }
+    
+    /** Resolve a drawable's actual fill; outlined white/danger cards must not inherit the wrong color. */
+    private static int solidDrawableColor(Drawable drawable,int fallback){
+        if(drawable instanceof ColorDrawable)return ((ColorDrawable)drawable).getColor();
+        if(drawable instanceof GradientDrawable && Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+            android.content.res.ColorStateList colors=((GradientDrawable)drawable).getColor();
+            if(colors!=null)return colors.getDefaultColor();
+        }
+        return fallback;
     }
 
     private static void auditContrast(View v,int inheritedBackground){
@@ -140,7 +156,7 @@ public final class UiKit {
         if(v instanceof ViewGroup){ViewGroup g=(ViewGroup)v;for(int i=0;i<g.getChildCount();i++)auditContrast(g.getChildAt(i),background);}
     }
 
-    private static int backgroundColor(View v,int fallback){Drawable d=v.getBackground();if(d instanceof ColorDrawable){int c=((ColorDrawable)d).getColor();if(Color.alpha(c)>=230)return c;}return fallback;}
+    private static int backgroundColor(View v,int fallback){int color=solidDrawableColor(v.getBackground(),Color.TRANSPARENT);return Color.alpha(color)>=230?color:fallback;}
 
     public static void riskColor(TextView t,int risk){
         switch(risk){
