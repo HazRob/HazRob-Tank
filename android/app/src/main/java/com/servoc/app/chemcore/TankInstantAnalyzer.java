@@ -25,6 +25,10 @@ public final class TankInstantAnalyzer {
         }
     }
     public static Result analyze(ExperimentsDb db,JSONObject live,long timestamp)throws Exception{
+        return analyze(null,db,live,timestamp);
+    }
+    public static Result analyze(android.content.Context androidContext,ExperimentsDb db,
+                                 JSONObject live,long timestamp)throws Exception{
         if(db==null||live==null)throw new IllegalArgumentException("Live reading required");
         // Copy first: subsequent telemetry and new saved R0 must never alter this operation.
         JSONObject frozen=new JSONObject(live.toString());
@@ -40,6 +44,7 @@ public final class TankInstantAnalyzer {
         if(ratios.isEmpty())throw new IllegalStateException("No valid measured MQ/R0 ratios");
         final String id="INSTANT-"+Math.max(1,timestamp);
         JSONObject output;
+        TankStableScreeningModelRegistry.LoadResult activeStable=null;
         try{
             JSONObject env=frozen.optJSONObject("env");
             double temp=env==null?Double.NaN:env.optDouble("temperature",Double.NaN);
@@ -47,14 +52,26 @@ public final class TankInstantAnalyzer {
             SamplingProfile profile=SamplingProfile.hazRobStandardChamberV2();
             ChemCoreInferenceEngine.Context context=new ChemCoreInferenceEngine.Context(
                 id,profile.profileId,"tank-v4-instant-screening/1",temp,rh,null,false);
-            List<InverseMolecularSolver.Candidate> refs=ChemCoreLegacyCandidateRegistry.acceptedReferenceCandidates();
-            ChemCoreResultEnvelope inferred=ChemCoreInferenceEngine.analyze(ratios,refs,profile,context);
+            List<InverseMolecularSolver.Candidate> sourceBacked=ChemCoreLegacyCandidateRegistry.acceptedReferenceCandidates();
+            activeStable=TankStableScreeningModelRegistry.load(androidContext,db,sourceBacked);
+            ChemCoreResultEnvelope inferred=ChemCoreInferenceEngine.analyze(ratios,activeStable.candidates,profile,context);
             output=inferred==null?new JSONObject():inferred.toJson();
         }catch(Exception ex){
             // A solver failure should be visible, while still allowing other scientific methods
             // to return evidence. A failed solver is never presented as a successful inference.
             output=new JSONObject().put("solver_error",ex.getClass().getSimpleName());
         }
+        // The active Stable snapshot is SHA256 verified against its installed manifest
+        // before its source-backed response models enter the inverse solver.
+        JSONObject stableEvidence=new JSONObject();
+        stableEvidence.put("status",activeStable==null?"SOLVER_NOT_REACHED":activeStable.status);
+        stableEvidence.put("version",activeStable==null?"":activeStable.version);
+        stableEvidence.put("sha256",activeStable==null?"":activeStable.sha256);
+        stableEvidence.put("models_imported",activeStable==null?0:activeStable.importedModels);
+        stableEvidence.put("models_rejected",activeStable==null?0:activeStable.rejectedModels);
+        stableEvidence.put("reference_curve_is_device_calibration",false);
+        stableEvidence.put("tank_specific_initial_burn_in_48h_provenance","DEVICE_VERIFICATION_PENDING");
+        output.put("active_stable_reference_models",stableEvidence);
         // This existing independent fingerprint/curve evidence path is retained.
         JSONObject legacy=new JSONObject(AnalyticsSnapshot.toJson(frozen,
             new ChemicalRepository(db),new SqliteCalibrationProvider(db),false));
