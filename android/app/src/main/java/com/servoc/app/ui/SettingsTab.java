@@ -84,8 +84,8 @@ public final class SettingsTab {
 
     public void refresh(){
         refreshMicrophoneCalibration();
-        ChemCoreLibraryManager.Status ls=libraryManager.status();analysisUpdateInfo.setText("الإصدار المثبت: "+ls.version+" • "+(ls.remoteSnapshotActive?"مكتبة Stable مثبتة":"المكتبة المدمجة")+"\nمصدر المعرفة: "+ls.sourceLabel);
-        JSONObject d=host.latestDiagnostics();if(d==null){compatibility.setText("Firmware —   •   API —   •   Profile —");compatibility.setTextColor(0xFF995500);return;}
+        ChemCoreLibraryManager.Status ls=libraryManager.status();analysisUpdateInfo.setText("مكتبة ChemCore • "+(ls.remoteSnapshotActive?"مكتبة Stable مثبتة":"المكتبة المدمجة")+"\nتتوفر بيانات الإصدار والمصدر التفصيلية في تبويب الحالة");
+        JSONObject d=host.latestDiagnostics();if(d==null){compatibility.setText("وحدة التحكم • غير متصلة");compatibility.setTextColor(0xFF995500);return;}
         JSONObject adc=d.optJSONObject("adc"),env=d.optJSONObject("env"),ldr=d.optJSONObject("ldr"),alert=d.optJSONObject("alert"),drive=d.optJSONObject("drive");
         String driver=drive==null?HazRobHardwareProfile.DRIVE_DRIVER:drive.optString("driver",HazRobHardwareProfile.DRIVE_DRIVER);boolean envOk=env!=null&&env.optBoolean("ok",false);
         String envStatus=env==null?"—":env.optString("status_code",env.optString("status","NOT READY"));
@@ -93,7 +93,7 @@ public final class SettingsTab {
         String envAddr=env==null?"—":env.optString("address","—");
         String envChip=env==null?"—":env.optString("chip_id","—");
         String envAck=env==null?"76:— 77:—":"76:"+(env.optBoolean("ack_0x76",false)?"ACK":"—")+" 77:"+(env.optBoolean("ack_0x77",false)?"ACK":"—");
-        compatibility.setText("Firmware "+d.optString("firmware",d.optString("fw","—"))+"   •   API "+d.optInt("api_version",d.optInt("api",0))+"\nProfile "+d.optString("hardware_profile",HazRobHardwareProfile.ID)+"\nDrive "+driver+" • L "+HazRobHardwareProfile.SERVO_L_GPIO+" • R "+HazRobHardwareProfile.SERVO_R_GPIO+"\nADS bus SDA21/SCL22 • ADS1 "+(adc!=null&&adc.optBoolean("ads1",false)?"OK":"—")+" • ADS2 "+(adc!=null&&adc.optBoolean("ads2",false)?"OK":"—")+"\nENV bus SDA13/SCL14 • "+(envOk?"OK":envStatus)+" • "+envType+" "+envAddr+" chip "+envChip+" • "+envAck+"\nLDR GPIO34 "+(ldr!=null&&ldr.optBoolean("installed",false)?"OK":"—")+"   •   ALERT GPIO"+(alert==null?26:alert.optInt("gpio",26))+" "+(alert!=null?"OK":"—"));compatibility.setTextColor(envOk?0xFF167443:0xFF995500);
+        compatibility.setText("وحدة التحكم • متصلة\nDrive "+driver+" • L "+HazRobHardwareProfile.SERVO_L_GPIO+" • R "+HazRobHardwareProfile.SERVO_R_GPIO+"\nADS bus SDA21/SCL22 • ADS1 "+(adc!=null&&adc.optBoolean("ads1",false)?"OK":"—")+" • ADS2 "+(adc!=null&&adc.optBoolean("ads2",false)?"OK":"—")+"\nENV bus SDA13/SCL14 • "+(envOk?"OK":envStatus)+" • "+envType+" "+envAddr+" chip "+envChip+" • "+envAck+"\nLDR GPIO34 "+(ldr!=null&&ldr.optBoolean("installed",false)?"OK":"—")+"   •   ALERT GPIO"+(alert==null?26:alert.optInt("gpio",26))+" "+(alert!=null?"OK":"—"));compatibility.setTextColor(envOk?0xFF167443:0xFF995500);
     }
 
     private void saveDriveTuning(){
