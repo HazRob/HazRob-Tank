@@ -30,7 +30,8 @@ public final class TankExposureReferenceCatalog {
             out.put("schema",SCHEMA);
             out.put("source","local_authority_preserving_exposure_limits");
             out.put("calibration_required_to_display",false);
-            out.put("comparison_with_estimated_ppm_permitted",false);
+            out.put("comparison_with_estimated_ppm_permitted",true);
+            out.put("comparison_semantics","CONDITIONAL_SCREENING_WARNING_ONLY_NOT_REGULATORY_EXCEEDANCE");
             out.put("occupational_compliance_determination","NOT_MADE");
             out.put("reference_is_not_detection",true);
             JSONArray candidates=new JSONArray();out.put("candidates",candidates);
