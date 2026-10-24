@@ -25,7 +25,7 @@ def require(condition, explanation):
         raise AssertionError(explanation)
 
 def val(name):
-    match = re.search(r"\\b" + re.escape(name) + r"\\s*=\\s*(\\d+)", cfg)
+    match = re.search(r"\b" + re.escape(name) + r"\s*=\s*(\d+)", cfg)
     require(match is not None, name + " missing")
     return int(match.group(1))
 
