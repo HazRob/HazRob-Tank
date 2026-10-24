@@ -9,7 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-/** Persistent device-specific R0 values, with the accepted field clean-air baseline as fallback. */
+/** Tank-only persistent R0: last user-approved device calibration, never inherited HR069 values. */
 public final class ManualR0Calibration {
     private ManualR0Calibration(){}
     private static final String[] KEYS={"mq2","mq3","mq4","mq5","mq7","mq8","mq9","mq135"};
@@ -33,16 +33,16 @@ public final class ManualR0Calibration {
                     }
                 }catch(Exception ignored){}
             }
-            if(!accepted&&FieldR0Baseline.has(k))setFieldFallback(k);
+            // Never silently fall back to historic HR069 constants for independent Tank hardware.
         }
         loaded=true;
     }
 
     public static synchronized boolean isLoaded(){return loaded;}
-    public static synchronized double get(String key){key=norm(key);Double v=values.get(key);if(v!=null)return v;return FieldR0Baseline.value(key);}
-    public static synchronized String getSource(String key){key=norm(key);String s=sources.get(key);if(s!=null&&!s.isEmpty())return s;return FieldR0Baseline.has(key)?FieldR0Baseline.SOURCE:"unavailable";}
-    public static synchronized String getSession(String key){key=norm(key);String s=sessions.get(key);if(s!=null)return s;return FieldR0Baseline.has(key)&&FieldR0Baseline.SOURCE.equals(getSource(key))?FieldR0Baseline.SESSION:"";}
-    public static synchronized String getUtc(String key){key=norm(key);String s=utcs.get(key);if(s!=null)return s;return FieldR0Baseline.has(key)&&FieldR0Baseline.SOURCE.equals(getSource(key))?FieldR0Baseline.UTC:"";}
+    public static synchronized double get(String key){key=norm(key);Double v=values.get(key);return v==null?Double.NaN:v;}
+    public static synchronized String getSource(String key){key=norm(key);String s=sources.get(key);return s!=null&&!s.isEmpty()?s:"unavailable";}
+    public static synchronized String getSession(String key){key=norm(key);return sessions.getOrDefault(key,"");}
+    public static synchronized String getUtc(String key){key=norm(key);return utcs.getOrDefault(key,"");}
     public static synchronized boolean has(String key){double v=get(key);return Double.isFinite(v)&&v>0;}
 
     /** Device-specific clean-air baseline, NOT a reference-gas/ppm curve calibration. */
@@ -113,14 +113,14 @@ public final class ManualR0Calibration {
         loaded=true;return true;
     }
 
-    /** Reset one manually overridden channel to the preserved HR069 clean-air fallback. */
+    /** Reset one Tank channel to uncalibrated; never reactivate inherited HR069 R0 constants. */
     public static synchronized boolean reset(SharedPreferences p,String key){
         key=norm(key);
         if(p==null||!supported(key))return false;
         if(!p.edit().remove("manual_r0_"+key).remove("manual_r0_source_"+key)
                 .remove("manual_r0_session_"+key).remove("manual_r0_utc_"+key).commit())return false;
         values.remove(key);sources.remove(key);sessions.remove(key);utcs.remove(key);
-        if(FieldR0Baseline.has(key))setFieldFallback(key);
+        // Clearing Tank calibration must not revive legacy field or firmware R0.
         loaded=true;
         return true;
     }
@@ -158,7 +158,7 @@ public final class ManualR0Calibration {
     }
 
     public static String[] keys(){return KEYS.clone();}
-    private static void setFieldFallback(String k){values.put(k,FieldR0Baseline.value(k));sources.put(k,FieldR0Baseline.SOURCE);sessions.put(k,FieldR0Baseline.SESSION);utcs.put(k,FieldR0Baseline.UTC);}
+    // Historical FieldR0Baseline remains available to archived measurements only.
     private static boolean supported(String key){for(String k:KEYS)if(k.equals(key))return true;return false;}
     private static String norm(String key){return key==null?"":key.trim().toLowerCase(Locale.US);}
     private static String iso(long ms){SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",Locale.US);f.setTimeZone(TimeZone.getTimeZone("UTC"));return f.format(new Date(ms));}
