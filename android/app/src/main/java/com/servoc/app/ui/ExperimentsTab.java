@@ -75,7 +75,7 @@ public final class ExperimentsTab {
         scroll.setFillViewport(true);
         LinearLayout root = UiKit.vbox(c);
         root.setPadding(UiKit.dp(c, 8), UiKit.dp(c, 6), UiKit.dp(c, 8), UiKit.dp(c, 12));
-        root.setBackgroundColor(0xFF0E1116);
+        root.setBackgroundColor(0xFFF7F8FA);
         scroll.addView(root);
 
         root.addView(UiKit.title(c, "التجارب العملية • تدريب HazRob"), UiKit.full(c));
@@ -101,9 +101,10 @@ public final class ExperimentsTab {
         capture.addView(UiKit.title(c, "تجربة مرجعية للمادة"), UiKit.full(c));
         capture.addView(UiKit.small(c, "نوع التدريب"), UiKit.full(c));
         referenceKindSpinner = new Spinner(c);
-        ArrayAdapter<String> kindAdapter = new ArrayAdapter<>(c, android.R.layout.simple_spinner_item, new String[]{"بصمة تعريفية", "معايرة كمية"});
+        ArrayAdapter<String> kindAdapter = UiKit.lightOptions(c,new String[]{"بصمة تعريفية", "معايرة كمية"});
         kindAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         referenceKindSpinner.setAdapter(kindAdapter);
+        UiKit.outlinedSpinner(referenceKindSpinner);
         capture.addView(referenceKindSpinner, UiKit.full(c));
         kindHelp = UiKit.small(c, "");
         kindHelp.setBackgroundColor(0xFF151A20);
@@ -122,17 +123,18 @@ public final class ExperimentsTab {
         chemicalAdapter = new ArrayAdapter<String>(c, android.R.layout.simple_spinner_item, new ArrayList<>()) {
             @Override public View getView(int position, View convertView, android.view.ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                if (v instanceof TextView) ((TextView) v).setTextColor(isFingerprintPosition(position) ? 0xFF42A5F5 : Color.BLACK);
+                UiKit.ensureLightRow(v);
                 return v;
             }
             @Override public View getDropDownView(int position, View convertView, android.view.ViewGroup parent) {
                 View v = super.getDropDownView(position, convertView, parent);
-                if (v instanceof TextView) ((TextView) v).setTextColor(isFingerprintPosition(position) ? 0xFF1565C0 : Color.BLACK);
+                UiKit.ensureLightRow(v);
                 return v;
             }
         };
         chemicalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         chemicalSpinner.setAdapter(chemicalAdapter);
+        UiKit.outlinedSpinner(chemicalSpinner);
         capture.addView(chemicalSpinner, UiKit.full(c));
         chemicalSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int count, int after) {}
@@ -220,9 +222,10 @@ public final class ExperimentsTab {
         modelSensorSpinner = new Spinner(c);
         String[] sensorLabels = new String[modelSensorKeys.length];
         for (int i = 0; i < modelSensorKeys.length; i++) sensorLabels[i] = modelSensorKeys[i].toUpperCase(Locale.US);
-        ArrayAdapter<String> sensorAdapter = new ArrayAdapter<>(c, android.R.layout.simple_spinner_item, sensorLabels);
+        ArrayAdapter<String> sensorAdapter = UiKit.lightOptions(c,sensorLabels);
         sensorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         modelSensorSpinner.setAdapter(sensorAdapter);
+        UiKit.outlinedSpinner(modelSensorSpinner);
         models.addView(modelSensorSpinner, UiKit.full(c));
         Button compare = UiKit.button(c, "مقارنة النماذج مع نقاط المعايرة");
         compare.setOnClickListener(v -> compareCalibrationModels());
@@ -255,7 +258,7 @@ public final class ExperimentsTab {
 
         LinearLayout github = UiKit.card(c);
         github.addView(UiKit.title(c, "المكتبة المركزية • GitHub"), UiKit.full(c));
-        github.addView(UiKit.small(c, "إرسال تجارب المطور المرجعية المعتمدة إلى منطقة مراجعة غير تشغيلية في مستودع إصدار HR069-R1. لا يفعّل الإرسال تحديث ChemCore أو مرتبة M4. الصلاحية مشفرة محليًا ولا تُدمج في APK."), UiKit.full(c));
+        github.addView(UiKit.small(c, "إرسال تجارب المطور المرجعية المعتمدة إلى منطقة مراجعة غير تشغيلية في مستودع Tank. لا يفعّل الإرسال تحديث ChemCore أو مرتبة M4. الصلاحية مشفرة محليًا ولا تُدمج في APK."), UiKit.full(c));
         publishCredentialStatus = UiKit.small(c, "صلاحية الرفع: —");
         publishCredentialStatus.setBackgroundColor(0xFF151A20);
         github.addView(publishCredentialStatus, UiKit.full(c));
@@ -298,7 +301,7 @@ public final class ExperimentsTab {
         if (kindHelp == null) return;
         boolean cal = "calibration".equals(selectedKind());
         kindHelp.setText(cal
-                ? "معايرة كمية: يجب إدخال ppm معلوم. كل تجربة معتمدة تضيف نقطة؛ تفعيل M4 يظل خاضعًا لبروتوكول HR069 ومعايير الجودة."
+                ? "معايرة كمية: يجب إدخال ppm معلوم. كل تجربة معتمدة تضيف نقطة؛ تفعيل M4 يظل خاضعًا لمعايير الجودة العلمية."
                 : "بصمة تعريفية: التركيز اختياري. HazRob يبني متجه استجابة من الجلسة الزمنية ثم يحدّث المرجع من التجارب المعتمدة فقط.");
     }
 
