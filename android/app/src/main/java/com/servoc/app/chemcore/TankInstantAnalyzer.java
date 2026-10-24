@@ -91,6 +91,16 @@ public final class TankInstantAnalyzer {
         // screening ppm: separate from the strictly gated regulatory exposure engine.
         output.put(TankScreeningExposureWarning.KEY,
             TankScreeningExposureWarning.evaluate(output));
+        // Separate estimated concentration from regulatory-reportable concentration.
+        // M1/M2/M3 source-backed curves/fingerprints may yield finite screening PPM
+        // with their provenance, but only the qualified M4 path may declare reportability.
+        TankPpmEstimate.Result ppmEstimate=TankPpmEstimate.from(output);
+        output.put("screening_m4_required",false);
+        output.put("screening_techniques","accepted_source_curves_logarithmic_fit_fingerprint_qspr_when_eligible");
+        output.put("screening_ppm_method",ppmEstimate.method);
+        output.put("screening_ppm_available",ppmEstimate.available());
+        if(ppmEstimate.available())output.put("screening_ppm_estimate",ppmEstimate.ppm);
+        output.put("screening_ppm_not_a_certified_measurement",true);
         output.put("session_id",id);
         output.put("source_kind","ONE_SHOT_IN_MEMORY_NO_HISTORY");
         output.put("captured_utc_ms",timestamp);
