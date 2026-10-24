@@ -39,6 +39,7 @@ import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.chemical.TankChemicalEvidence;
 import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
 import com.servoc.app.chemcore.TankPpmEstimate;
+import com.servoc.app.chemcore.TankExposureReferenceCatalog;
 import com.servoc.app.chemcore.TankInstantAnalyzer;
 import com.servoc.app.report.TankInstantCharts;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
@@ -656,7 +657,7 @@ public final class MeasurementsTab {
 
     private final class AnalysisPane {
         final ScrollView view;final LinearLayout box;
-        final TextView readiness,topCandidate,confidence,evidence,quantitative,quality,candidatePreview;
+        final TextView readiness,topCandidate,confidence,evidence,quantitative,quality,candidatePreview,referenceInventory;
         TextView technical;
         final Button technicalToggle,largeChart;
         final Spinner chartChooser;
@@ -675,6 +676,7 @@ public final class MeasurementsTab {
             LinearLayout r1=UiKit.hbox(c);readiness=kpi("الجاهزية\n—");topCandidate=kpi("المرشح الأول\n—");r1.addView(readiness,UiKit.weight(1));r1.addView(topCandidate,UiKit.weight(1));box.addView(r1,UiKit.full(c));
             LinearLayout r2=UiKit.hbox(c);confidence=kpi("الثقة\n—");evidence=kpi("الدليل\n—");r2.addView(confidence,UiKit.weight(1));r2.addView(evidence,UiKit.weight(1));box.addView(r2,UiKit.full(c));
             quantitative=kpi("PPM الكمي\n—");box.addView(quantitative,UiKit.full(c));
+            referenceInventory=card("حدود التعرض المرجعية\n—");referenceInventory.setTextIsSelectable(true);box.addView(referenceInventory,UiKit.full(c));
             quality=card("جودة التحليل: —");box.addView(quality,UiKit.full(c));
             LinearLayout nav=UiKit.hbox(c);Button openResults=UiKit.button(c,"فتح النتائج التفصيلية");openResults.setOnClickListener(v->showAnalysisSection(2));nav.addView(openResults,UiKit.weight(1.4f));technicalToggle=UiKit.button(c,"التفاصيل التقنية");technicalToggle.setOnClickListener(v->{technicalVisible=!technicalVisible;technical.setVisibility(technicalVisible?View.VISIBLE:View.GONE);technicalToggle.setText(technicalVisible?"إخفاء التفاصيل":"التفاصيل التقنية");});nav.addView(technicalToggle,UiKit.weight(1));box.addView(nav,UiKit.full(c));
             technical=card("");technical.setTextIsSelectable(true);technical.setVisibility(View.GONE);box.addView(technical,UiKit.full(c));
@@ -706,7 +708,7 @@ public final class MeasurementsTab {
             quality.setText("MQ صالح "+q.validMqChannels+"/8 • R0 "+q.r0NormalizedChannels+"/8 • M4-ref "+q.referenceValidatedChannels+"/8 • ENV "+(q.environmentReady?"جاهز":"محجوب"));quality.setTextColor(q.validMqChannels>=6?GOOD:WARN);
             TankInstantAnalyzer.Result completed=currentOperation;JSONObject p=completed==null?null:completed.analysis;
             refreshChartChoices(completed);
-            if(p==null){topCandidate.setText("المرشح الأول\n—");confidence.setText("الثقة\n—");evidence.setText("الدليل\n—");quantitative.setText("PPM الكمي\nلا توجد جلسة محللة");exposureStyle(quantitative,false);candidatePreview.setText("لا توجد نتيجة ChemCore مرتبطة بجلسة مكتملة.");technical.setText("لا توجد تفاصيل تقنية.");return;}
+            if(p==null){topCandidate.setText("المرشح الأول\n—");confidence.setText("الثقة\n—");evidence.setText("الدليل\n—");quantitative.setText("PPM الكمي\nلا توجد جلسة محللة");exposureStyle(quantitative,false);candidatePreview.setText("لا توجد نتيجة ChemCore مرتبطة بجلسة مكتملة.");technical.setText("لا توجد تفاصيل تقنية.");referenceInventory.setText("حدود التعرض: لا يوجد تحليل حالي.");return;}
             String chemical=p.optString("chemical","—"),tier=p.optString("evidence_tier","—"),outcome=p.optString("outcome","—");double post=p.optDouble("top_posterior",Double.NaN),runner=p.optDouble("runner_up_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN),ood=p.optDouble("ood_score",Double.NaN),entropy=p.optDouble("normalized_entropy",Double.NaN);
             topCandidate.setText("المرشح الأول\n"+chemical);topCandidate.setTextColor(INFO);
             confidence.setText("الثقة\n"+pct(post)+" • Δ "+pct(margin));confidence.setTextColor(Double.isFinite(post)&&post>=0.7?GOOD:Double.isFinite(post)&&post>=0.4?WARN:BAD);
@@ -716,6 +718,7 @@ public final class MeasurementsTab {
             if(reportable&&Double.isFinite(ppm)&&exposureExceeded(exposure))exposureStyle(quantitative,true);
             else quantitative.setTypeface(Typeface.DEFAULT,Typeface.NORMAL);
             quality.setText("جودة التحليل • MQ "+q.validMqChannels+"/8 • ENV "+(q.environmentReady?"READY":"WITHHELD")+" • OOD "+fmt(ood)+" • Entropy "+fmt(entropy)+" • Runner "+pct(runner));
+            referenceInventory.setText(TankExposureReferenceCatalog.summary(p,3,8));
             candidatePreview.setText(compactCandidates(p,4));
             technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,4));
         }
@@ -773,7 +776,7 @@ public final class MeasurementsTab {
 
     private final class AnalysisResultsPane {
         final ScrollView view;final LinearLayout box,candidateList,screeningList;
-        final TextView decisionCard,screeningCard,safetyCard,tracking,selected;
+        final TextView decisionCard,screeningCard,safetyCard,tracking,selected,referenceInventory;
         TextView technical;
         final Button startTracking,screeningToggle,technicalToggle;
         final ChemCoreDecisionRepository decisions;
@@ -785,6 +788,7 @@ public final class MeasurementsTab {
             decisionCard=kpi("القرار: —");box.addView(decisionCard,UiKit.full(c));
             screeningCard=card("فحص 144: —");box.addView(screeningCard,UiKit.full(c));
             safetyCard=card("السلامة والتعرض: —");box.addView(safetyCard,UiKit.full(c));
+            referenceInventory=card("حدود التعرض المرجعية\n—");referenceInventory.setTextIsSelectable(true);box.addView(referenceInventory,UiKit.full(c));
             tracking=card("التتبع: لا يوجد");box.addView(tracking,UiKit.full(c));selected=card("المرشح المحدد: لا يوجد");box.addView(selected,UiKit.full(c));
             TextView ch=UiKit.small(c,"المرشحون الديناميكيون • اللون ترتيب تحليلي وليس مستوى خطورة");ch.setTextColor(MUTED);box.addView(ch,UiKit.full(c));
             candidateList=UiKit.vbox(c);box.addView(candidateList,UiKit.full(c));
@@ -798,12 +802,13 @@ public final class MeasurementsTab {
             if(lastRenderedAt>0&&now-lastRenderedAt<750L)return;
             lastRenderedAt=now;
             TankInstantAnalyzer.Result completed=currentOperation;JSONObject p=completed==null?null:completed.analysis;candidateList.removeAllViews();screeningList.removeAllViews();tracking.setText(host.trackingTargetId()>=0?"التتبع • "+host.trackingTargetName()+" (#"+host.trackingTargetId()+") • فرضية مشغل":"التتبع • لا يوجد");
-            if(p==null){startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");exposureStyle(safetyCard,false);technical.setText("—");return;}
+            if(p==null){startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");exposureStyle(safetyCard,false);referenceInventory.setText("حدود التعرض: لا يوجد تحليل حالي.");technical.setText("—");return;}
             String chemical=p.optString("chemical","—"),outcome=p.optString("outcome","—"),tier=p.optString("evidence_tier","—");double post=p.optDouble("top_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN);TankPpmEstimate.Result estimate=TankPpmEstimate.from(p);boolean ppmOk=estimate.reportable;double ppm=estimate.ppm;
             decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+" • Δ "+pct(margin)+" • "+tier+(estimate.available()?" • "+String.format(Locale.US,"%.2f ppm • %s",ppm,estimate.qualityAr()):" • لا يوجد رقم PPM محسوب"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
             JSONObject s=p.optJSONObject("screening_144");screeningCard.setText("فحص 144 • "+(s==null?"غير متاح":s.optString("state","—")+" • "+s.optInt("evaluated_count",0)+"/"+s.optInt("target_count",144)));
             JSONObject g=p.optJSONObject("gas_exposure_ppm");safetyCard.setText(g==null?"السلامة والتعرض • محجوب/غير متاح":"السلامة والتعرض • "+g.optString("toxicity_state",g.optString("state","—"))+" • الاشتعال "+g.optString("flammability_state","—")+" • أولوية "+fmt(g.optDouble("hazard_priority_percent",Double.NaN))+"%");
             exposureStyle(safetyCard,exposureExceeded(g));
+            referenceInventory.setText(TankExposureReferenceCatalog.summary(p,5,10));
             if(ppmOk&&Double.isFinite(ppm)&&exposureExceeded(g))exposureStyle(decisionCard,true);
             renderCandidates(p);if(showAll144)renderScreening(s,p);technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,8));
         }
