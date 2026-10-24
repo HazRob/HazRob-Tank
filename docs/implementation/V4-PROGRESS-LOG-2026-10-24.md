@@ -100,3 +100,14 @@ NEXT SAFE STEP:
 - **Stop point:** the Actions rerun produces a `failure` without step details; obtain a functioning runner and an actual build/test log before claiming `CI_PASS`. Until then keep **V4 UNRELEASED**.
 - **Next safe step:** execute `python3 tools/verify_v4_session_queries.py` and `python3 tools/verify_approved_report_sql.py` on a full repository checkout, then Gradle `:app:testDebugUnitTest :app:assembleDebug` using the pinned private baseline. Capture a device Logcat stack trace on opening `الجلسات` repeatedly, check migration with a backed-up older DB; continue batch 02 after P0 evidence.
 
+
+## Checkpoint 02 — 2026-10-24 — Global contrast and completed instant result after disconnection
+
+| Batch | Requirement | Changes | Status |
+| --- | --- | --- | --- |
+| 02 | V4-009 / V4-014 | [cd0f9155](https://github.com/HazRob/HazRob-Tank/commit/cd0f91559e6cf42aa770d5e69a48f12edf1b7fcb) makes the shared contrast guard resolve solid `GradientDrawable` backgrounds (with Android API guard) rather than assuming inherited white/gray. Text on outlined input surfaces, color-filled cards and warnings is checked against the actual fill. [7651e949](https://github.com/HazRob/HazRob-Tank/commit/7651e949560b4de52de551556ecc10eb8c8bc29f) adds regression source assertions. | **SOURCE_PRESENT / CI_PENDING / VISUAL_DEVICE_PENDING** |
+| 04 (partial) | V4-010 / V4-006 | [3b1d09bb](https://github.com/HazRob/HazRob-Tank/commit/3b1d09bb7b21c857d909d585be4893ae62ddded6) fixes an offline UI bug: `LivePane.refresh()` previously overwrote the completed operation card/progress when telemetry disappeared. Now the frozen operation remains clearly completed and PDF action enabled after link loss, while running operations remain incomplete. [e7eb29ae](https://github.com/HazRob/HazRob-Tank/commit/e7eb29ae79e10afbc73cf208f0a07fa62e000c11) corrects Java text escapes in labels; [9083f084](https://github.com/HazRob/HazRob-Tank/commit/9083f084c0f4d5fb732305827a5094b5496eceba) adds source-regression checks. | **SOURCE_PRESENT / CI_PENDING / DEVICE_PENDING** |
+
+**Still incomplete:** V4 single-operation temporal telemetry buffer, immutable capture-time R0 provenance, full state machine and field-session isolation audit; cross-screen candidate/plot/PDF evidence consistency; full light-theme dropdown/RTL audit; original `الجلسات` crash Logcat; real Gradle build. The offline fix preserves a result already in memory, **not** a previously nonexistent sample or durable restoration of the whole live workflow.
+
+**STOP POINT:** Retain V4 work on the feature branch. Investigate GitHub Actions job failure (no steps/logs available from retried run); do not infer success from source tests. Next execute independent SQLite and JVM suites in a functioning Gradle environment before widening changes.
