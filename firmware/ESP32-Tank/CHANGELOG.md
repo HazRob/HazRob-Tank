@@ -1,3 +1,11 @@
+## 0.1.4-v4-dev — 2026-10-24
+
+- Echo HC-SR04: reject pulse widths outside 110–23500 µs; nonblocking GPIO39 interrupt capture and duplicate-rise guard; three-valid-reading median for the published distance to suppress isolated jumps (e.g., 20 cm to 90 cm).
+- Expose both immediate `raw_cm` and filtered `cm` alongside status, timeout, invalid-pulse and no-edge counters in proximity telemetry. Invalid/stuck-high/timeout does not masquerade as a measured distance; close *valid raw* echo still raises a warning without waiting for three median samples.
+- **Warning-only** on HazRob Tank: this Echo logic does not brake or steer, replace the operator, or override the independent 500 ms motor-command watchdog/E-STOP; true distance and hazard response still require a physical bench test.
+- Android V4 computes active Rs/R0 from the latest durably saved per-sensor phone calibration; firmware's older embedded `Cfg::mq[].r0` stays an independent diagnostic/legacy field and must not be treated as the phone's current accepted R0.
+- **Validation state:** source edit and static contracts only. Arduino-ESP32 compile, safe 5 V→3.3 V Echo level, servo-interference test, actual 20/40/90 cm ruler measurement and close-object warning remain PENDING.
+
 ## 0.1.3-v3-dev — 2026-10-20
 - SAFETY CHANGE: automatic reverse-path/history replay after lost operator connection is **disabled**; its 5-second waiting and reverse movement are removed from Tank V3 firmware.
 - Connection loss or **500 ms without a fresh motor command** brings both continuous-rotation servos to their neutral pulse immediately, marks `stale_stop=true`, and requires a fresh operator command to resume.
