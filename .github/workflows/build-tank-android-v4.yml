@@ -52,7 +52,7 @@ jobs:
           assert "versionName '0.10.2'" in s
           s=s.replace("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'")
           s=s.replace("versionName '0.10.2'","versionName '4.0'")
-          s=s.replace("versionCode 40","versionCode 3")
+          s=s.replace("versionCode 30","versionCode 4")
           # Sign debug APK with Android's standard ephemeral debug key, not the original product key.
           s=s.replace("debug { signingConfig signingConfigs.prototype }","debug { }")
           # The Tank product explicitly uses a light operator workspace; the pinned
@@ -212,15 +212,15 @@ jobs:
           /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner sign \
             --ks "$RUNNER_TEMP/tank-release.jks" --ks-key-alias "$TANK_KEY_ALIAS" \
             --ks-pass env:TANK_STORE_PASS --key-pass env:TANK_KEY_PASS \
-            --out "$RUNNER_TEMP/HazRob-Tank-v3.apk" source/app/build/outputs/apk/debug/app-debug.apk
-          /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner verify --verbose --print-certs "$RUNNER_TEMP/HazRob-Tank-v3.apk"
+            --out "$RUNNER_TEMP/HazRob-Tank-v4.apk" source/app/build/outputs/apk/debug/app-debug.apk
+          /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner verify --verbose --print-certs "$RUNNER_TEMP/HazRob-Tank-v4.apk"
           rm -f "$RUNNER_TEMP/tank-release.jks"
 
       - name: Verify and stage signed candidate APK
         if: steps.signing.outputs.ready == 'true'
         run: |
           set -euo pipefail
-          APK="$RUNNER_TEMP/HazRob-Tank-v3.apk"
+          APK="$RUNNER_TEMP/HazRob-Tank-v4.apk"
           /usr/local/lib/android/sdk/build-tools/36.0.0/apksigner verify --verbose "$APK"
           python3 - <<'PY'
           import zipfile
@@ -233,8 +233,8 @@ jobs:
               print('PASS: ChemCore Stable manifest and snapshot packaged in APK')
           PY
           mkdir -p out
-          cp "$APK" out/HazRob-Tank-v3.apk
-          sha256sum out/HazRob-Tank-v3.apk > out/SHA256SUMS.txt
+          cp "$APK" out/HazRob-Tank-v4.apk
+          sha256sum out/HazRob-Tank-v4.apk > out/SHA256SUMS.txt
 
       - uses: actions/upload-artifact@v4
         if: steps.signing.outputs.ready == 'true'
