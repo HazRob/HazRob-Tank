@@ -87,6 +87,26 @@ public final class TankInstantReportPdf {
                 }
             }
             y+=15;
+            // Raw limits are published reference facts and are available without M4 calibration.
+            // Do not calculate regulatory exceedance or use estimated PPM as a certified measurement.
+            JSONObject inventory=chemcore.optJSONObject("exposure_reference_inventory");
+            JSONArray refCandidates=inventory==null?null:inventory.optJSONArray("candidates");
+            if(refCandidates!=null&&refCandidates.length()>0&&y<700){
+                rtl(c,"حدود التعرض المرجعية للمواد المرشحة (لا تعني تحقق الرصد)",y,12,true);y+=21;
+                for(int i=0;i<Math.min(2,refCandidates.length())&&y<750;i++){
+                    JSONObject candidate=refCandidates.optJSONObject(i);if(candidate==null)continue;
+                    rtl(c,"مرشح #"+candidate.optInt("candidate_rank",i+1)+" • "+candidate.optString("label","—"),y,10,true);y+=17;
+                    JSONArray limits=candidate.optJSONArray("limits");
+                    if(limits==null||limits.length()==0){rtl(c,"لا توجد حدود موثقة محليًا لهذه المادة",y,9,false);y+=15;continue;}
+                    for(int j=0;j<Math.min(3,limits.length())&&y<750;j++){
+                        JSONObject limit=limits.optJSONObject(j);if(limit==null)continue;
+                        String v=data(limit,"value",3),unit=limit.optString("unit","");
+                        rtl(c,limit.optString("authority","")+" "+limit.optString("limit_type","")+
+                            " • "+v+" "+unit+" • "+limit.optString("source_id",""),y,9,false);y+=15;
+                    }
+                }
+                y+=9;
+            }
             rtl(c,"قيم PPM إن وُجدت تقديرية؛ لا تصلح وحدها لإثبات الامتثال المهني.",y,10,false);y+=17;
             rtl(c,"المصدر: قراءات محفوظة داخل العملية الحالية، دون اختراع منحنيات زمنية.",y,10,false);
             doc.finishPage(page);
