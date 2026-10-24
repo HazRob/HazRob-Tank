@@ -141,6 +141,11 @@ public final class ManualR0Calibration {
                     q.put("r0_samples",FieldR0Baseline.SAMPLE_COUNT);q.put("r0_window_s",FieldR0Baseline.WINDOW_SECONDS);q.put("r0_environment_compensated",FieldR0Baseline.ENVIRONMENT_COMPENSATED);
                 }
             }else{
+                // A sensor without valid Rs has no current Rs/R0. Discard any ratio
+                // and firmware R0 copied into the normalised object, so stale
+                // development-era calibration cannot masquerade as a fresh capture.
+                if(Double.isFinite(r0)&&r0>0)q.put("r0",r0);else q.remove("r0");
+                q.remove("ratio");
                 q.put("r0_calibrated",false);q.put("r0_source","unavailable");q.put("r0_reference_validated",false);q.put("r0_age_known",false);q.put("r0_provenance_complete",false);
             }
         }catch(Exception ignored){}
