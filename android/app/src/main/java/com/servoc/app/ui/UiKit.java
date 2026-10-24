@@ -4,12 +4,16 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -53,8 +57,44 @@ public final class UiKit {
     public static void selected(Button b,boolean on){if(on)primary(b);else secondary(b);}
     public static void danger(Button b){if(b==null)return;b.setBackgroundColor(STATE_CRITICAL);b.setTextColor(Color.WHITE);}
 
-    public static EditText input(Context c,String s){EditText e=new EditText(c);e.setText(s);e.setTextColor(Color.BLACK);e.setHintTextColor(0xFF56616F);e.setSingleLine(true);e.setMinHeight(dp(c,48));e.setBackgroundColor(HAZ_SURFACE_ALT);e.setPadding(dp(c,10),dp(c,8),dp(c,10),dp(c,8));e.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);guardOnAttach(e);return e;}
-    public static LinearLayout card(Context c){LinearLayout l=vbox(c);l.setPadding(dp(c,8),dp(c,8),dp(c,8),dp(c,8));l.setBackgroundColor(HAZ_SURFACE);return l;}
+    public static EditText input(Context c,String s){EditText e=new EditText(c);e.setText(s);e.setTextColor(Color.BLACK);e.setHintTextColor(0xFF56616F);e.setSingleLine(true);e.setMinHeight(dp(c,48));e.setBackground(outline(c,HAZ_SURFACE,0xFF8994A3));e.setPadding(dp(c,10),dp(c,8),dp(c,10),dp(c,8));e.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);guardOnAttach(e);return e;}
+    public static LinearLayout card(Context c){LinearLayout l=vbox(c);l.setPadding(dp(c,8),dp(c,8),dp(c,8),dp(c,8));l.setBackground(outline(c,HAZ_SURFACE,0xFFD1D7DE));return l;}
+    /** Gray visible 1.5dp outlines for editable fields, dropdowns and cards. */
+    public static Drawable outline(Context c,int fill,int border){
+        GradientDrawable d=new GradientDrawable();d.setColor(fill);d.setCornerRadius(dp(c,7));
+        d.setStroke(Math.max(1,dp(c,2)),border);
+        return d;
+    }
+    public static void outlinedSpinner(Spinner spinner){
+        if(spinner==null)return;
+        spinner.setBackground(outline(spinner.getContext(),HAZ_SURFACE,0xFF8994A3));
+        spinner.setPadding(dp(spinner.getContext(),8),dp(spinner.getContext(),5),
+                dp(spinner.getContext(),8),dp(spinner.getContext(),5));
+    }
+    /** Force black popup rows on white across device theme variants. */
+    public static ArrayAdapter<String> lightOptions(Context c,String[] labels){
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(c,android.R.layout.simple_spinner_item,labels){
+            @Override public View getView(int position,View old,ViewGroup parent){
+                View v=super.getView(position,old,parent);ensureLightRow(v);return v;
+            }
+            @Override public View getDropDownView(int position,View old,ViewGroup parent){
+                View v=super.getDropDownView(position,old,parent);ensureLightRow(v);return v;
+            }
+        };
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return adapter;
+    }
+    public static void ensureLightRow(View row){
+        if(row instanceof TextView){
+            TextView t=(TextView)row;t.setTextColor(Color.BLACK);
+            t.setBackgroundColor(Color.WHITE);
+        }
+        if(row instanceof ViewGroup){
+            ViewGroup group=(ViewGroup)row;
+            for(int i=0;i<group.getChildCount();i++)ensureLightRow(group.getChildAt(i));
+        }
+    }
+
     public static LinearLayout.LayoutParams full(Context c){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.setMargins(0,dp(c,3),0,dp(c,3));return p;}
     public static LinearLayout.LayoutParams weight(float w){return new LinearLayout.LayoutParams(0,-2,w);}
     public static int dp(Context c,int v){return Math.round(v*c.getResources().getDisplayMetrics().density);}
