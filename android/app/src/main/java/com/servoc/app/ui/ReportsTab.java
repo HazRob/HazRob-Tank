@@ -207,8 +207,7 @@ public final class ReportsTab {
             chartStatus.setText("لا توجد رسوم لهذا القياس • أنشئ جلسة تتضمن سلسلة زمنية أو تحليل ChemCore محفوظًا");
             chartStatus.setTextColor(WARN);
         }else chartStatus.setText("اختر رسمًا من "+labels.size()+" رسوم متاحة مرتبطة بالقياس المحدد");
-        ArrayAdapter<String> adapter=new ArrayAdapter<>(scroll.getContext(),android.R.layout.simple_spinner_item,labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter=UiKit.lightOptions(scroll.getContext(),labels.toArray(new String[0]));
         chartSelector.setAdapter(adapter);chartSelector.setEnabled(!availableCharts.isEmpty());
         if(!availableCharts.isEmpty())renderSelectedChart(0);
     }
