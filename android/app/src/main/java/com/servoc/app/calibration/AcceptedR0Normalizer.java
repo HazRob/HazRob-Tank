@@ -162,8 +162,9 @@ public final class AcceptedR0Normalizer {
             // Without genuine Rs the active-calibration ratio cannot be reconstructed.
             return Double.isFinite(rs)&&rs>0?rs/r0:Double.NaN;
         }
-        double telemetry=sensor.optDouble("ratio",Double.NaN);
-        return Double.isFinite(telemetry)&&telemetry>0?telemetry:Double.NaN;
+        // Current capture must NOT use firmware-supplied ratio from development-era R0.
+        // Historical replay uses recordedPhysicalRatio() with frozen provenance instead.
+        return Double.NaN;
     }
     private static double clamp(double x,double lo,double hi){return Math.max(lo,Math.min(hi,x));}
 }
