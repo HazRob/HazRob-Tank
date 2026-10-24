@@ -374,6 +374,21 @@ public final class MeasurementsTab {
         view.setTextColor(exceeded?Color.RED:TEXT);
         view.setTypeface(Typeface.DEFAULT,exceeded?Typeface.BOLD:Typeface.NORMAL);
     }
+    /** Uncalibrated source-backed ppm may trigger a clearly CONDITIONAL operator warning. */
+    private void styleScreeningWarning(TextView view,JSONObject analysis){
+        JSONObject result=analysis==null?null:analysis.optJSONObject(TankScreeningExposureWarning.KEY);
+        JSONArray warnings=result==null?null:result.optJSONArray("warnings");
+        boolean hit=warnings!=null&&warnings.length()>0,high=false;
+        if(hit)for(int i=0;i<warnings.length();i++){
+            JSONObject w=warnings.optJSONObject(i);if(w==null)continue;
+            String role=w.optString("reference_role","");
+            if(("LFL".equals(role)&&w.optDouble("ratio_to_reference",0)>=1.0)
+                    ||"IDLH".equals(role)||"CEILING".equals(role)){high=true;break;}
+        }
+        view.setBackgroundColor(high?0xFFFFE1E1:hit?0xFFFFF1CE:CARD);
+        view.setTextColor(high?0xFF8E1818:hit?0xFF805100:TEXT);
+        view.setTypeface(Typeface.DEFAULT,hit?Typeface.BOLD:Typeface.NORMAL);
+    }
 
 
     /** Tank V3 physical measurements: two clean cards per row; PM belongs only to its own subtab. */
@@ -721,7 +736,7 @@ public final class MeasurementsTab {
             else quantitative.setTypeface(Typeface.DEFAULT,Typeface.NORMAL);
             quality.setText("جودة التحليل • MQ "+q.validMqChannels+"/8 • ENV "+(q.environmentReady?"READY":"WITHHELD")+" • OOD "+fmt(ood)+" • Entropy "+fmt(entropy)+" • Runner "+pct(runner));
             referenceInventory.setText(TankExposureReferenceCatalog.summary(p,3,8));
-            screeningWarnings.setText(TankScreeningExposureWarning.summary(p,4));
+            screeningWarnings.setText(TankScreeningExposureWarning.summary(p,4));styleScreeningWarning(screeningWarnings,p);
             candidatePreview.setText(compactCandidates(p,4));
             technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,4));
         }
@@ -816,7 +831,7 @@ public final class MeasurementsTab {
             JSONObject g=p.optJSONObject("gas_exposure_ppm");safetyCard.setText(g==null?"السلامة والتعرض • محجوب/غير متاح":"السلامة والتعرض • "+g.optString("toxicity_state",g.optString("state","—"))+" • الاشتعال "+g.optString("flammability_state","—")+" • أولوية "+fmt(g.optDouble("hazard_priority_percent",Double.NaN))+"%");
             exposureStyle(safetyCard,exposureExceeded(g));
             referenceInventory.setText(TankExposureReferenceCatalog.summary(p,5,10));
-            screeningWarnings.setText(TankScreeningExposureWarning.summary(p,8));
+            screeningWarnings.setText(TankScreeningExposureWarning.summary(p,8));styleScreeningWarning(screeningWarnings,p);
             if(ppmOk&&Double.isFinite(ppm)&&exposureExceeded(g))exposureStyle(decisionCard,true);
             renderCandidates(p);if(showAll144)renderScreening(s,p);technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,8));
         }
