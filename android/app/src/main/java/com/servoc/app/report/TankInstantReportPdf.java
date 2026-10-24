@@ -74,6 +74,11 @@ public final class TankInstantReportPdf {
             rtl(c,"تحليل ChemCore — تقديرات استدلالية وليست إثبات هوية",y,13,true);y+=20;
             rtl(c,"قنوات MQ المستخدمة: "+chemcore.optInt("observed_channels",0)+
                 "  |  المنهج: "+chemcore.optString("model_version","فحص بصمات ومنحنيات"),y,10,false);y+=19;
+            JSONObject stable=chemcore.optJSONObject("active_stable_reference_models");
+            if(stable!=null){
+                rtl(c,"Stable: "+stable.optString("version","—")+" • "+stable.optString("status","—")+
+                    " • منحنيات مستخدمة "+stable.optInt("models_imported",0),y,9,false);y+=17;
+            }
             JSONArray candidates=chemcore.optJSONArray("candidates");
             if(candidates==null||candidates.length()==0){rtl(c,"لم تتوفر مرشحات قابلة للحساب من المدخلات المتاحة",y,11,false);y+=22;}
             else{
