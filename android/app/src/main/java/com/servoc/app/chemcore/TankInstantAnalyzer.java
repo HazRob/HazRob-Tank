@@ -83,6 +83,10 @@ public final class TankInstantAnalyzer {
             output.put("candidate_count",alternatives.length());
             output.put("evidence_tier","SCREENING_ONLY");
         }
+        // Snapshot local authoritative OSHA/NIOSH/etc. reference facts for ranked hypotheses.
+        // Display does not depend on M4 and never constitutes an exposure-limit exceedance.
+        output.put(TankExposureReferenceCatalog.KEY,
+            TankExposureReferenceCatalog.forAnalysis(db,output));
         output.put("session_id",id);
         output.put("source_kind","ONE_SHOT_IN_MEMORY_NO_HISTORY");
         output.put("captured_utc_ms",timestamp);
