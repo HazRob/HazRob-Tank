@@ -56,7 +56,7 @@ public final class FieldSessionsTab {
         LinearLayout actions=UiKit.hbox(c);
         Button addSite=UiKit.button(c,"إضافة موقع");addSite.setOnClickListener(v->ask(c,"اسم الموقع","",name->{try{selectedSiteId=repo.createSite(name,"");selectedSessionId="";host.showToast("تم إنشاء الموقع");refresh();}catch(Exception e){host.showToast("تعذر إنشاء الموقع");}}));actions.addView(addSite,UiKit.weight(1));
         Button addSession=UiKit.button(c,"بدء جلسة");addSession.setOnClickListener(v->{if(selectedSiteId.isEmpty()){host.showToast("اختر موقعًا أولًا");return;}ask(c,"اسم الجلسة","",name->{try{selectedSessionId=repo.startFieldSession(selectedSiteId,name);host.showToast("بدأت الجلسة الميدانية");refresh();}catch(Exception e){host.showToast("تعذر بدء الجلسة: "+e.getMessage());}});});actions.addView(addSession,UiKit.weight(1));
-        Button close=UiKit.button(c,"إنهاء الجلسة");close.setOnClickListener(v->{FieldSessionRepository.FieldSession a=repo.activeFieldSession();if(a==null){host.showToast("لا توجد جلسة نشطة");return;}repo.closeFieldSession(a.id);host.showToast("تم إنهاء الجلسة");refresh();});actions.addView(close,UiKit.weight(1));
+        Button close=UiKit.button(c,"إنهاء الجلسة");close.setOnClickListener(v->{try{FieldSessionRepository.FieldSession a=repo.activeFieldSession();if(a==null){host.showToast("لا توجد جلسة نشطة");return;}boolean ok=repo.closeFieldSession(a.id);host.showToast(ok?"تم إنهاء الجلسة":"تعذر الإنهاء قبل اكتمال القياس");refresh();}catch(RuntimeException ex){android.util.Log.e("TankSessions","Close session failed",ex);showSessionLoadError();}});actions.addView(close,UiKit.weight(1));
         managePane.addView(actions,UiKit.full(c));
 
         TextView localNote=UiKit.small(c,"المواقع والجلسات محفوظة محليًا داخل التطبيق. لا تُرفع بيانات جلسات المستخدم إلى المكتبة العلمية المركزية. إدارة المزامنة والنشر محصورة في واجهات المطور.");localNote.setTextColor(0xFF505966);managePane.addView(localNote,UiKit.full(c));
@@ -66,7 +66,7 @@ public final class FieldSessionsTab {
         siteDropdown=new Spinner(c);UiKit.outlinedSpinner(siteDropdown);managePane.addView(siteDropdown,UiKit.full(c));
         siteDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> p,View v,int pos,long id){
-                if(selectingScope)return;List<FieldSessionRepository.Site> all=repo.sites();
+                if(selectingScope||refreshing)return;List<FieldSessionRepository.Site> all;try{all=repo.sites();}catch(RuntimeException ex){android.util.Log.e("TankSessions","Site selection query failed",ex);showSessionLoadError();return;}
                 if(pos>=0&&pos<all.size()&&!all.get(pos).id.equals(selectedSiteId)){
                     selectedSiteId=all.get(pos).id;selectedSessionId="";refresh();
                 }
@@ -88,7 +88,7 @@ public final class FieldSessionsTab {
         sessionDropdown=new Spinner(c);UiKit.outlinedSpinner(sessionDropdown);managePane.addView(sessionDropdown,UiKit.full(c));
         sessionDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> p,View v,int pos,long id){
-                if(selectingScope)return;List<FieldSessionRepository.FieldSession> all=repo.sessionsForSite(selectedSiteId);
+                if(selectingScope||refreshing||selectedSiteId.isEmpty())return;List<FieldSessionRepository.FieldSession> all;try{all=repo.sessionsForSite(selectedSiteId);}catch(RuntimeException ex){android.util.Log.e("TankSessions","Session selection query failed",ex);showSessionLoadError();return;}
                 if(pos>=0&&pos<all.size()&&!all.get(pos).id.equals(selectedSessionId)){
                     selectedSessionId=all.get(pos).id;refresh();
                 }
