@@ -87,6 +87,10 @@ public final class TankInstantAnalyzer {
         // Display does not depend on M4 and never constitutes an exposure-limit exceedance.
         output.put(TankExposureReferenceCatalog.KEY,
             TankExposureReferenceCatalog.forAnalysis(db,output));
+        // Proactive, conditional TWA/STEL and immediate LFL comparison of calculated
+        // screening ppm: separate from the strictly gated regulatory exposure engine.
+        output.put(TankScreeningExposureWarning.KEY,
+            TankScreeningExposureWarning.evaluate(output));
         output.put("session_id",id);
         output.put("source_kind","ONE_SHOT_IN_MEMORY_NO_HISTORY");
         output.put("captured_utc_ms",timestamp);
