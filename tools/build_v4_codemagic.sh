@@ -4,7 +4,7 @@ set -Eeuo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 echo "[Tank V4] branch / commit:"; git rev-parse --abbrev-ref HEAD; git rev-parse HEAD
-if [ -z "$HAZROB_SOURCE_READ_TOKEN" ]; then
+if [ -z "${HAZROB_SOURCE_READ_TOKEN:-}" ]; then
   echo "Missing HAZROB_SOURCE_READ_TOKEN. Add it as a secret in Codemagic group hazrob_source." >&2
   exit 1
 fi
