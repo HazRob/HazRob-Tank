@@ -126,7 +126,7 @@ public final class ReportsTab {
         for(int i=0;i<sites.size();i++){names.add(sites.get(i).name);if(sites.get(i).id.equals(chosenSiteId))selected=i;}
         if(sites.isEmpty()){chosenSiteId="";scopeSessions.clear();chosenSessionId="";names.add("لا توجد مواقع");}
         else chosenSiteId=sites.get(selected).id;
-        siteSelector.setAdapter(UiKit.lightOptions(scroll.getContext(),names));
+        siteSelector.setAdapter(UiKit.lightOptions(scroll.getContext(),names.toArray(new String[0])));
         siteSelector.setEnabled(!sites.isEmpty());siteSelector.setSelection(selected);
         refreshSessionScope();
     }
