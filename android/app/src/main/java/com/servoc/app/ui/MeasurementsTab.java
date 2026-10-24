@@ -585,7 +585,7 @@ public final class MeasurementsTab {
             final long now=System.currentTimeMillis();
             host.io().execute(()->{
                 try{
-                    TankInstantAnalyzer.Result completed=TankInstantAnalyzer.analyze(host.database(),frozen,now);
+                    TankInstantAnalyzer.Result completed=TankInstantAnalyzer.analyze(c,host.database(),frozen,now);
                     box.post(()->{
                         currentOperation=completed;start.setEnabled(true);report.setEnabled(true);
                         progress.setProgress(1000);
