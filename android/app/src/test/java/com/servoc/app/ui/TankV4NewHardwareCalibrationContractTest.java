@@ -38,6 +38,20 @@ public final class TankV4NewHardwareCalibrationContractTest {
         assertTrue(normalizer.contains("recordedPhysicalRatio(recorded)"));
     }
 
+    @Test public void independentTankNeverFallsBackToOriginalHr069OrFirmwareR0()throws Exception{
+        String manual=src("calibration/ManualR0Calibration.java");
+        String normalizer=src("calibration/AcceptedR0Normalizer.java");
+        String protocol=src("communication/RobotProtocolV4.java");
+        assertTrue(manual.contains("return v==null?Double.NaN:v;"));
+        assertTrue(manual.contains("return s!=null&&!s.isEmpty()?s:\"unavailable\";"));
+        assertFalse(manual.contains("if(!accepted&&FieldR0Baseline.has(k))setFieldFallback(k);"));
+        assertFalse(manual.contains("if(FieldR0Baseline.has(key))setFieldFallback(key);"));
+        assertFalse(normalizer.contains("return Double.isFinite(telemetry)&&telemetry>0?telemetry:Double.NaN;"));
+        assertTrue(normalizer.contains("return Double.isFinite(rs)&&rs>0?rs/r0:Double.NaN;"));
+        assertTrue(protocol.contains("not_accepted_firmware_reference"));
+        assertTrue(protocol.contains("TANK_R0_REQUIRED"));
+    }
+
     @Test public void gasAlertCannotReUseObsoleteHealthBaselineAfterR0Revision()throws Exception{
         String main=src("MainActivity.java");
         assertTrue(main.contains("private void syncOperationalR0()"));
