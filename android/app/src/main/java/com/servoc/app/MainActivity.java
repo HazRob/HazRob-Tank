@@ -229,11 +229,15 @@ public final class MainActivity extends Activity implements HazRobHost {
         out.putBoolean("tank_v3_physical_export_waiting",pendingPhysicalDocumentRequest);
         if(pendingPhysicalDocumentRequest){
             out.putString("tank_v3_physical_export_snapshot",pendingPhysicalSnapshot);
+            out.putString("tank_v3_physical_export_utc",pendingPhysicalUtc);
+        }
+        // Live-measurement PDF SAF state is independent from physical export state.
+        // Preserve its one frozen operation through Activity recreation without creating history.
+        if(!pendingInstantId.isEmpty()){
             out.putString("tank_v4_instant_telemetry",pendingInstantTelemetry);
             out.putString("tank_v4_instant_analysis",pendingInstantAnalysis);
             out.putString("tank_v4_instant_id",pendingInstantId);
             out.putLong("tank_v4_instant_time",pendingInstantTime);
-            out.putString("tank_v3_physical_export_utc",pendingPhysicalUtc);
         }
         super.onSaveInstanceState(out);
     }
