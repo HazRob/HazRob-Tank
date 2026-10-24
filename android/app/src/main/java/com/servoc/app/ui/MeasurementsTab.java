@@ -601,7 +601,21 @@ public final class MeasurementsTab {
             });
         }
         void refresh(){
-            JSONObject d=host.latestDiagnostics();if(d==null){powerCard.setText("MQ\nغير متصل");arrayCard.setText("المصفوفة\n—");gasCard.setText("الاستجابة\n—");sessionCard.setText("الجلسة\n—");progress.setProgress(0);powerToggle.setText("تشغيل MQ");for(SensorCard sc:sensorCards)sc.refresh(false,false,null,null,null);return;}
+            JSONObject d=host.latestDiagnostics();if(d==null){
+                powerCard.setText("MQ\\nغير متصل");
+                arrayCard.setText("المصفوفة\\n—");
+                gasCard.setText("الاستجابة\\n—");
+                powerToggle.setText("تشغيل MQ");
+                TankInstantAnalyzer.Result completed=currentOperation;
+                if(active){sessionCard.setText("العملية • انقطع الاتصال أثناء القياس؛ لا توجد نتيجة مكتملة");progress.setProgress(500);}
+                else if(completed!=null){sessionCard.setText("العملية مكتملة • التقرير متاح دون اتصال\\n"+completed.channels+" قنوات MQ");progress.setProgress(1000);}
+                else{sessionCard.setText("العملية • لا توجد قراءات حية");progress.setProgress(0);}
+                cancel.setEnabled(active);
+                report.setEnabled(completed!=null);
+                colorState(sessionCard,completed!=null,active);
+                for(SensorCard sc:sensorCards)sc.refresh(false,false,null,null,null);
+                return;
+            }
             JSONObject relay=d.optJSONObject("relay"),adc=d.optJSONObject("adc"),mq=d.optJSONObject("mq"),m=d.optJSONObject("measurement");
             boolean powered=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0),a1=adc!=null&&adc.optBoolean("ads1",false),a2=adc!=null&&adc.optBoolean("ads2",false);
             powerCard.setText("MQ "+(powered?"● ON":"○ OFF")+"\nADS "+((a1?1:0)+(a2?1:0))+"/2");colorState(powerCard,powered&&a1&&a2,powered);powerToggle.setText(powered?"إطفاء MQ":"تشغيل MQ");
