@@ -37,7 +37,7 @@ public final class AcceptedR0Normalizer {
      * irrespective of the binary valid flag. The caller MUST apply evidenceWeight(sensor).
      */
     public static double availableRatio(String sensorKey,JSONObject sensor){
-        if(sensor==null)return Double.NaN;
+        if(sensor==null||noChemicalInput(sensor))return Double.NaN;
         return physicalRatio(sensorKey,sensor);
     }
 
@@ -75,7 +75,7 @@ public final class AcceptedR0Normalizer {
     }
 
     private static double recordedPhysicalRatio(JSONObject recorded){
-        if(recorded==null)return Double.NaN;
+        if(recorded==null||noChemicalInput(recorded))return Double.NaN;
         double r0=recorded.optDouble("r0",Double.NaN),rs=recorded.optDouble("rs",Double.NaN);
         if(Double.isFinite(r0)&&r0>0&&Double.isFinite(rs)&&rs>0)return rs/r0;
         double frozen=recorded.optDouble("ratio",Double.NaN);
