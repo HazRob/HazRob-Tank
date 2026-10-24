@@ -38,6 +38,18 @@
 
 | V4-015 | P0 sessions tab crash | Opening the reordered **الجلسات** tab must never terminate Android, including first install, empty database, migrated v9 database, large site collections, and after repeated Spinner changes. Guard reentrant adapters; catch/log database failures with a non-destructive in-tab error; do not destroy data. Replace per-session database counts with one grouped query and test correct tab index 2. Obtain on-device stack trace before claiming root cause eliminated. | Navigation/SQLite migration and spinner regression contract tests; tap sessions repeatedly on target handset and collect Logcat evidence; no crash or data loss. | UNVERIFIED / REQUIRE CI + DEVICE ACCEPTANCE |
 
+## Owner additions — 2026-10-24 (explicit implementation authorized)
+
+These changes extend the existing 15 canonical V4 requirements; they do not supersede safety, report source isolation, user session persistence or ChemCore science. **Branch:** `feature/tank-v4-implementation`.
+
+| ID | Area | Owner-approved requirement and acceptance conditions | Current evidence |
+| --- | --- | --- | --- |
+| **V4-016** | ESP32-Tank Echo / Android proximity | Repair HC-SR04 measurement: validate rising/falling echo edge and 2–400 cm physical pulse envelope; never display a timeout, stuck-high or invalid pulse as an actual distance. Suppress isolated far-distance spikes with short-window median but preserve timely warnings on genuine nearby raw echoes. Expose raw cm, filtered cm, timeouts and error reason for diagnostics. **Echo remains warning-only on Tank**: no invented cliff IR, forced auto-drive stop or alteration to 500 ms drive watchdog. Confirm 20/40/90 cm against a physical ruler with the tracks raised and correct 5V-to-3.3V level conversion; record pulse widths and timing under servo load. | SOURCE_PRESENT — code/contract audits, not compiled or physically calibrated |
+| **V4-017** | Operator `القيادة` layout | Move the existing MQ power ON/OFF button from upper-right video overlay into the **lower action-button row beneath the broadcast**, retaining existing robot API, visible current state and error/disabled behavior, with E-STOP unaffected. Check portrait and landscape for overflow/touch accessibility. | SOURCE_PRESENT — Android visual/device checks pending |
+| **V4-018** | Latest saved R0 / clean-air false alarms across all measurements | The **most recently successfully committed device-specific R0 per installed MQ** is authoritative for subsequent live `Rs/R0`, broad gas alarms, instant measurement, ChemCore identification/estimates, tracking, field measurements and their reports on both Direct and Remote. Reject old firmware/development ratios where actual Rs is unavailable, and never let a separately persisted `health_baseline_*` silently override the recently saved R0. Record per-sample R0 value, source, session and UTC and use **frozen capture-time** calibration for historical/report analyses; saving new R0 must not recalculate older sessions. On calibration save, reconnect, remote-to-direct switch and app restart confirm same Rs/R0 with the same active R0; check all 8 channels in actual clean air with sensor warmup/voltage stability, and distinguish a noisy/cross-sensitive response from a gas identification. Do not suppress genuine safety alarms or claim clean air proves zero gas. | SOURCE_PRESENT — normalization and baseline patches; app/firmware/field acceptance pending |
+
+**Related existing requirement:** V4-015 remains the authoritative sessions-tab crash fix. In addition to guarded refresh and stable Spinner mappings, require reproducible device Logcat and first-install/v9-migration/large-session navigation tests before closing it.
+
 ## Reconciled numbering across branches (2026-10-24)
 **Canonical IDs are the `develop` register, retained in this file and mirrored to `feature/tank-v4-implementation`.** A second V4 register was created on the feature branch while the user was gathering requirements, and IDs 011–014 were reused for different tasks. To prevent implementation of the wrong feature, the stable crosswalk is:
 
@@ -53,10 +65,10 @@
 Source commits/tests on `feature/tank-v4-implementation` with old IDs must be mapped using this table during the initial audit. No code was deleted or rewritten to achieve this reconciliation. More detailed dependencies, priority and test gates: [V4 execution plan](../implementation/V4-EXECUTION-PLAN-2026-10-24.md).
 
 ## Future additions
-- Continue numbering subsequent user-requested changes **V4-016, V4-017, ...**, updating this document after each decision.
+- Continue numbering subsequent user-requested changes **V4-019, V4-020, ...**, updating this document after each decision.
 - Do not infer approval of requirements not supplied. Log request, affected module, exact expected behavior, test/acceptance criteria, and implementation status.
 - Do not treat V3's prior diagnostic firmware ZIP/APK packaging as proof that V4 is finished.
-- **This request authorizes documentation and planning only.** A pre-existing `feature/tank-v4-implementation` branch already contains V4 Android source changes; those are not assumed tested or approved. Do not start a new code modification or publish an APK until the owner authorizes implementation in the next chat. V3 and original HazRob remain independent.
+- **Owner explicitly authorized V4 implementation on 2026-10-24.** Code edits are being committed only to the V4 feature branch. Neither V4 production release nor Android/firmware on-device acceptance is authorized by source changes alone. V3 and original HazRob remain independent.
 
 ## Reference and source locations
 - ESP32 controller sketch: `firmware/ESP32-Tank/ESP32-Tank.ino`
