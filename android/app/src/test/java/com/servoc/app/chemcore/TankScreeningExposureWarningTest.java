@@ -10,8 +10,9 @@ public final class TankScreeningExposureWarningTest {
     private static JSONObject analysis(double ppm,long uid,String kind,double limit,String unit,double durationMin)throws Exception {
         JSONObject candidate=new JSONObject()
             .put("chemical_uid",uid).put("label","test gas")
-            .put("rank",1).put("screening_fit_ppm",ppm)
+            .put("rank",1)
             .put("evidence_tier","M2_LITERATURE_OR_MANUFACTURER_SUPPORTED");
+        if(Double.isFinite(ppm))candidate.put("screening_fit_ppm",ppm);
         JSONObject reference=new JSONObject()
             .put("authority","TEST REFERENCE").put("limit_type",kind)
             .put("unit",unit).put("value",limit).put("duration_min",durationMin)
