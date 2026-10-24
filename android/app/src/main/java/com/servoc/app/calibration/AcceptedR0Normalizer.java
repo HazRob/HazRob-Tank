@@ -157,7 +157,11 @@ public final class AcceptedR0Normalizer {
     private static double physicalRatio(String sensorKey,JSONObject sensor){
         if(sensor==null)return Double.NaN;
         double r0=acceptedR0(sensorKey),rs=sensor.optDouble("rs",Double.NaN);
-        if(Double.isFinite(r0)&&r0>0&&Double.isFinite(rs)&&rs>0)return rs/r0;
+        if(Double.isFinite(r0)&&r0>0){
+            // Never substitute a firmware/legacy ratio when this device has an active R0.
+            // Without genuine Rs the active-calibration ratio cannot be reconstructed.
+            return Double.isFinite(rs)&&rs>0?rs/r0:Double.NaN;
+        }
         double telemetry=sensor.optDouble("ratio",Double.NaN);
         return Double.isFinite(telemetry)&&telemetry>0?telemetry:Double.NaN;
     }
