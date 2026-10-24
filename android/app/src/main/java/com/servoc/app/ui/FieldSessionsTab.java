@@ -30,7 +30,7 @@ public final class FieldSessionsTab {
     // IDs are bound to each Spinner adapter; a delayed selection never queries a changed DB cursor.
     private final List<String> siteOptionIds=new ArrayList<>(),sessionOptionIds=new ArrayList<>();
     // Reusing unchanged adapters prevents posted Spinner events from triggering a reload loop.
-    private final List<String> boundSiteIds=new ArrayList<>(),boundSessionIds=new ArrayList<>();
+    private final List<String> boundSiteIds=new ArrayList<>(),boundSessionIds=new ArrayList<>(),boundSiteLabels=new ArrayList<>(),boundSessionLabels=new ArrayList<>();
     private final TextView state,selectedSiteSummary;
     private final Button siteReportPdf,siteReportXlsx,deleteSite;
     private String selectedSiteId="";
@@ -120,7 +120,7 @@ public final class FieldSessionsTab {
 
     /** Preserve local data and keep navigation alive if a migrated DB is not readable. */
     private void showSessionLoadError(){
-        siteOptionIds.clear();sessionOptionIds.clear();boundSiteIds.clear();boundSessionIds.clear();selectingScope=false;
+        siteOptionIds.clear();sessionOptionIds.clear();boundSiteIds.clear();boundSessionIds.clear();boundSiteLabels.clear();boundSessionLabels.clear();selectingScope=false;
         sites.removeAllViews();sessions.removeAllViews();reportSessionList.removeAllViews();
         state.setText("تعذر تحميل المواقع والجلسات. البيانات المحلية لم تُحذف. أعد فتح التطبيق، ثم راجع النسخة الاحتياطية أو سجل التشخيص.");
         state.setTextColor(0xFFC62828);
@@ -135,16 +135,16 @@ public final class FieldSessionsTab {
         state.setTextColor(active==null?0xFF985000:0xFF167443);
         sites.removeAllViews();List<FieldSessionRepository.Site> ss=repo.sites();
         if(ss.isEmpty()){siteOptionIds.clear();sessionOptionIds.clear();reportScope.setText("لا توجد مواقع أو جلسات معتمدة");reportSessionList.removeAllViews();selectedSiteId="";selectedSessionId="";selectingScope=true;
-            if(siteDropdown.getAdapter()==null||!boundSiteIds.isEmpty()){siteDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد مواقع"}));boundSiteIds.clear();}
-            if(sessionDropdown.getAdapter()==null||!boundSessionIds.isEmpty()){sessionDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد جلسات"}));boundSessionIds.clear();}
+            if(siteDropdown.getAdapter()==null||!boundSiteIds.isEmpty()){siteDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد مواقع"}));boundSiteIds.clear();boundSiteLabels.clear();}
+            if(sessionDropdown.getAdapter()==null||!boundSessionIds.isEmpty()){sessionDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد جلسات"}));boundSessionIds.clear();boundSessionLabels.clear();}
             selectingScope=false;siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);deleteSite.setEnabled(false);selectedSiteSummary.setText("لا توجد مواقع محفوظة.");sites.addView(UiKit.small(sites.getContext(),"لا توجد مواقع محفوظة."),UiKit.full(sites.getContext()));sessions.removeAllViews();return;}
         boolean exists=false;for(FieldSessionRepository.Site s:ss)if(s.id.equals(selectedSiteId))exists=true;if(!exists)selectedSiteId=ss.get(0).id;
         FieldSessionRepository.Site selected=null;int siteIndex=0;
         ArrayList<String> siteNames=new ArrayList<>();siteOptionIds.clear();for(int i=0;i<ss.size();i++){FieldSessionRepository.Site s=ss.get(i);siteNames.add(s.name);siteOptionIds.add(s.id);if(s.id.equals(selectedSiteId)){selected=s;siteIndex=i;}}
         selectingScope=true;
-        if(!boundSiteIds.equals(siteOptionIds)){
+        if(!boundSiteIds.equals(siteOptionIds)||!boundSiteLabels.equals(siteNames)){
             siteDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),siteNames.toArray(new String[0])));
-            boundSiteIds.clear();boundSiteIds.addAll(siteOptionIds);
+            boundSiteIds.clear();boundSiteIds.addAll(siteOptionIds);boundSiteLabels.clear();boundSiteLabels.addAll(siteNames);
         }
         if(siteDropdown.getSelectedItemPosition()!=siteIndex)siteDropdown.setSelection(siteIndex);
         siteDropdown.setEnabled(true);selectingScope=false;
@@ -153,9 +153,9 @@ public final class FieldSessionsTab {
         for(int i=0;i<children.size();i++){FieldSessionRepository.FieldSession q=children.get(i);names.add(q.name+" • "+q.displayStatus()+(q.active()?" (نشطة)":""));sessionOptionIds.add(q.id);if(q.id.equals(selectedSessionId)){found=true;chosen=i;}}
         if(!found)selectedSessionId=children.isEmpty()?"":children.get(0).id;
         selectingScope=true;
-        if(!boundSessionIds.equals(sessionOptionIds)){
+        if(!boundSessionIds.equals(sessionOptionIds)||!boundSessionLabels.equals(names)){
             sessionDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),children.isEmpty()?new String[]{"لا توجد جلسات"}:names.toArray(new String[0])));
-            boundSessionIds.clear();boundSessionIds.addAll(sessionOptionIds);
+            boundSessionIds.clear();boundSessionIds.addAll(sessionOptionIds);boundSessionLabels.clear();boundSessionLabels.addAll(names);
         }
         if(sessionDropdown.getSelectedItemPosition()!=chosen)sessionDropdown.setSelection(chosen);
         sessionDropdown.setEnabled(!children.isEmpty());selectingScope=false;
