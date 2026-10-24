@@ -75,6 +75,8 @@ public final class MainActivity extends Activity implements HazRobHost {
     private final AtomicBoolean driveDispatching=new AtomicBoolean(false),driveDirty=new AtomicBoolean(false),telemetryPolling=new AtomicBoolean(false);
     private final MotionHistory motionHistory=new MotionHistory();
     private final SensorHealthEngine sensorHealth=new SensorHealthEngine();
+    // Compare calibration provenance each poll; old health_baseline_* keys must not re-base fresh R0 alarms.
+    private final java.util.Map<String,String> activeR0Revisions=new java.util.HashMap<>();
     private final GasAlertCoordinator gasAlertCoordinator=new GasAlertCoordinator();
     private SharedPreferences prefs;private HazRobUserLibrary userLibrary;private RobotApi robotApi;private CameraApi cameraApi;private ExperimentsDb db;private TelemetryRecorder telemetryRecorder;private PhoneAlertTone phoneAlertTone;
     private volatile String pendingPhysicalSnapshot="{}",pendingPhysicalUtc="";
@@ -124,7 +126,35 @@ public final class MainActivity extends Activity implements HazRobHost {
     }
 
     private boolean isOffline(){return TankModePolicy.isOffline(prefs==null?null:prefs.getString("connection_mode","direct"));}
-    private void loadSensorBaselines(){for(String key:SensorHealthEngine.INSTALLED){String v=db.getMeta("health_baseline_"+key,"");try{double q=Double.parseDouble(v);if(Double.isFinite(q)&&q>0)sensorHealth.setBaseline(key,q);}catch(Exception ignored){}}}
+    private void loadSensorBaselines(){
+        for(String key:SensorHealthEngine.INSTALLED){
+            double active=ManualR0Calibration.get(key);
+            String revision=r0Revision(key);
+            activeR0Revisions.put(key,revision);
+            // The active clean-air R0 always defines the operational gas-alarm ratio 1.0.
+            // A legacy independent health baseline is only a drift-diagnostic reference,
+            // and cannot silently replace a newer R0 calibration after an app upgrade.
+            sensorHealth.setBaseline(key,Double.isFinite(active)&&active>0?1.0:Double.NaN);
+        }
+    }
+    private static String r0Revision(String key){
+        return ManualR0Calibration.getSource(key)+"|"+
+            ManualR0Calibration.getSession(key)+"|"+Double.toString(ManualR0Calibration.get(key));
+    }
+    private void syncOperationalR0(){
+        boolean changed=false;
+        for(String key:SensorHealthEngine.INSTALLED){
+            String revision=r0Revision(key);
+            if(!revision.equals(activeR0Revisions.get(key))){
+                activeR0Revisions.put(key,revision);
+                double r0=ManualR0Calibration.get(key);
+                sensorHealth.setBaseline(key,Double.isFinite(r0)&&r0>0?1.0:Double.NaN);
+                changed=true;
+            }
+        }
+        // Clear only the previous alert classification; never mask a real subsequent response.
+        if(changed)gasAlertCoordinator.reset();
+    }
     private void enter(){entered=true;buildTabs();setContentView(buildShell());showTab(0);if(!isOffline()){scheduleComms();startLinkService();if(foreground)controlTab.startCamera();}else{try{stopService(new Intent(this,RobotLinkService.class));}catch(Exception ignored){}}}
     private void buildTabs(){controlTab=new ControlTab(this,this);fieldSessionsTab=new FieldSessionsTab(this,this);measurementsTab=new MeasurementsTab(this,this);reportsTab=new ReportsTab(this,this);statusTab=new StatusTab(this,this);settingsTab=new SettingsTab(this,this);developerTab=new DeveloperTab(this,this,()->{developerMode=true;refreshAllTabs();});tabViews=new View[]{controlTab.view(),withRefresh(measurementsTab.view(),54),withRefresh(fieldSessionsTab.view(),8),withRefresh(reportsTab.view(),8),withRefresh(statusTab.view(),8),withRefresh(settingsTab.view(),8),withRefresh(developerTab.view(),54)};}
     /** Compact refresh overlay in the upper-left of each non-driving tab's CONTENT; no extra row. */
@@ -199,7 +229,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private void requestManualRefresh(){if(isOffline()){refreshAllTabs();showToast("وضع الاستعراض دون اتصال • لا توجد قراءات حية");return;}workers.execute(()->pollTelemetry(true));}
     private void pollTelemetry(boolean manual){
         if(!entered||isOffline())return;if(!telemetryPolling.compareAndSet(false,true)){if(manual)showToast("التحديث جارٍ");return;}
-        try{long now=SystemClock.elapsedRealtime();JSONObject snap=robotApi.snapshot(left,right);latestDiag=snap;sensorHealth.accept(snap,now);updateGasAlert(snap,now);telemetryRecorder.accept(snap,left,right,developerMode&&selectedTab==6);ui.post(this::onTelemetryUpdated);if(manual)showToast("تم تحديث البيانات الحية");}
+        try{long now=SystemClock.elapsedRealtime();JSONObject snap=robotApi.snapshot(left,right);latestDiag=snap;syncOperationalR0();sensorHealth.accept(snap,now);updateGasAlert(snap,now);telemetryRecorder.accept(snap,left,right,developerMode&&selectedTab==6);ui.post(this::onTelemetryUpdated);if(manual)showToast("تم تحديث البيانات الحية");}
         catch(Exception e){latestDiag=null;gasAlertCoordinator.reset();lastGasAlertLevel=GasAlertCoordinator.NONE;gasAlertSentAt=0;if(phoneAlertTone!=null)phoneAlertTone.clear();ui.post(this::onTelemetryUpdated);if(manual)showToast("تعذر التحديث: "+e.getClass().getSimpleName());}
         finally{telemetryPolling.set(false);}
     }
@@ -255,7 +285,7 @@ public final class MainActivity extends Activity implements HazRobHost {
 
     @Override public SensorHealthEngine.Snapshot sensorHealth(String key){return sensorHealth.snapshot(key);}
     @Override public LiveGasStateEngine.Snapshot liveGasState(){return gasAlertCoordinator.liveSnapshot();}
-    @Override public int captureCleanAirBaseline(){if(!developerMode)return 0;JSONObject d=latestDiag;int n=sensorHealth.captureCleanAirBaseline(d);if(n>0){for(String key:SensorHealthEngine.INSTALLED){double q=sensorHealth.baseline(key);if(Double.isFinite(q)&&q>0)db.putMeta("health_baseline_"+key,Double.toString(q));}db.putMeta("health_baseline_ts",isoNow());}return n;}
+    @Override public int captureCleanAirBaseline(){if(!developerMode)return 0;JSONObject d=latestDiag;int n=sensorHealth.captureCleanAirBaseline(d);if(n>0){for(String key:SensorHealthEngine.INSTALLED){double q=sensorHealth.baseline(key);if(Double.isFinite(q)&&q>0){db.putMeta("health_baseline_"+key,Double.toString(q));db.putMeta("health_baseline_r0_session_"+key,ManualR0Calibration.getSession(key));db.putMeta("health_baseline_r0_value_"+key,Double.toString(ManualR0Calibration.get(key)));}}db.putMeta("health_baseline_ts",isoNow());}return n;}
     @Override public int evaluateCleanAirDrift(){if(!developerMode)return 0;return sensorHealth.evaluateCleanAirDrift(latestDiag);}
     @Override public String cleanAirBaselineTimestamp(){return db==null?"":db.getMeta("health_baseline_ts","");}
     @Override public String lastMeasurementSessionId(){return telemetryRecorder==null?"":telemetryRecorder.lastCompletedSessionId();}
