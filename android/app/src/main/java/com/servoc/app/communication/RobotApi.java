@@ -1,6 +1,7 @@
 package com.servoc.app.communication;
 
 import com.servoc.app.measurement.CanonicalMeasurementNormalizer;
+import com.servoc.app.calibration.ManualR0Calibration;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -86,12 +87,31 @@ public final class RobotApi {
     public JSONObject diagnosticsRaw()throws Exception{return getJson("/diag",1000);}
     public JSONObject dataRaw()throws Exception{return getJson("/data",1200);}
     private JSONObject directNormalizedSnapshot(int commandedLeft,int commandedRight)throws Exception{return RobotProtocolV4.normalize(diagnosticsRaw(),dataRaw(),commandedLeft,commandedRight);}
+    private static JSONObject applyActiveR0(JSONObject snapshot){
+        // Handle both published canonical snapshots and direct diag/data MQTT envelopes.
+        // All eight channels use the latest DURABLY saved per-sensor R0 on Android.
+        if(snapshot==null)return null;
+        JSONObject mq=snapshot.optJSONObject("mq");
+        reconcileMq(mq);
+        JSONObject measurement=snapshot.optJSONObject("measurement");
+        if(measurement!=null)reconcileMq(measurement.optJSONObject("mq"));
+        return snapshot;
+    }
+    private static void reconcileMq(JSONObject mq){
+        if(mq==null)return;
+        for(String key:ManualR0Calibration.keys()){
+            JSONObject sensor=mq.optJSONObject(key);
+            if(sensor!=null)ManualR0Calibration.apply(key,sensor);
+        }
+    }
     public JSONObject snapshot(int commandedLeft,int commandedRight)throws Exception{
         RemoteConnection r=remote();
         if(r!=null){
             if(!r.isConnected())throw new IllegalStateException("remote MQTT disconnected");
             JSONObject s=r.snapshot(commandedLeft,commandedRight);if(s==null)throw new IllegalStateException("remote telemetry unavailable");
-            return CanonicalMeasurementNormalizer.enrich(s,"REMOTE");
+            // MQTT may deliver a cached canonical snapshot whose firmware R0 predates the last
+            // phone calibration. Re-normalize a copy before any UI, alarm or ChemCore consumer.
+            return CanonicalMeasurementNormalizer.enrich(applyActiveR0(new JSONObject(s.toString())),"REMOTE");
         }
         return CanonicalMeasurementNormalizer.enrich(directNormalizedSnapshot(commandedLeft,commandedRight),"DIRECT");
     }
