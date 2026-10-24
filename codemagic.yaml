@@ -1,0 +1,18 @@
+workflows:
+  tank-v4-diagnostic-apk:
+    name: HazRob Tank V4 - independent Android debug APK
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      java: 17
+      groups:
+        - hazrob_source
+    scripts:
+      - name: Build pinned Tank V4 Android application with Gradle 9.5
+        script: |
+          bash tools/build_v4_codemagic.sh
+    artifacts:
+      - dist-v4/*.apk
+      - dist-v4/SHA256SUMS.txt
+      - source/app/build/reports/tests/**
+      - source/app/build/test-results/**
