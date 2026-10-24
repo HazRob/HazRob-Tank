@@ -78,4 +78,42 @@ public final class TankExposureReferenceCatalog {
         }catch(Exception ignored){}
         return out;
     }
+    /** Human-readable catalogue: do not compare numbers against estimated sensor PPM. */
+    public static String summary(JSONObject analysis,int maxCandidates,int maxLimitsPerCandidate){
+        if(analysis==null)return "حدود التعرض: لا يوجد تحليل حالي.";
+        JSONObject inventory=analysis.optJSONObject(KEY);
+        if(inventory==null)return "حدود التعرض: لم تُرفق المراجع مع هذا التحليل.";
+        JSONArray entries=inventory.optJSONArray("candidates");
+        if(entries==null||entries.length()==0)return "حدود التعرض: لا توجد مادة مرشحة لها معرّف في المكتبة.";
+        StringBuilder out=new StringBuilder("حدود التعرض المرجعية — مستقلة عن معايرة R0");
+        out.append("\nهذه حدود منشورة لمواد محتملة، وليست إثبات رصد أو تجاوز أو حكم امتثال.");
+        int limitCount=0;
+        for(int i=0;i<entries.length()&&i<Math.max(1,maxCandidates);i++){
+            JSONObject candidate=entries.optJSONObject(i);if(candidate==null)continue;
+            out.append("\n\n#").append(candidate.optInt("candidate_rank",i+1)).append(" ")
+                .append(candidate.optString("label","—"));
+            JSONArray limits=candidate.optJSONArray("limits");
+            if(limits==null||limits.length()==0){out.append("\nلا يوجد حد موثّق في قاعدة البيانات لهذه المادة.");continue;}
+            for(int j=0;j<limits.length()&&j<Math.max(1,maxLimitsPerCandidate);j++){
+                JSONObject row=limits.optJSONObject(j);if(row==null)continue;
+                out.append("\n").append(row.optString("authority","—"))
+                    .append(" ").append(row.optString("limit_type","—")).append(": ");
+                double n=row.optDouble("value",Double.NaN);
+                out.append(Double.isFinite(n)?String.format(java.util.Locale.US,"%.4g",n):"غير رقمي");
+                out.append(" ").append(row.optString("unit",""));
+                double duration=row.optDouble("duration_min",Double.NaN);
+                if(Double.isFinite(duration)&&duration>0)
+                    out.append(" / ").append(String.format(java.util.Locale.US,"%.0f",duration)).append(" min");
+                String note=row.optString("notation","");
+                if(!note.isEmpty())out.append(" • ").append(note);
+                String source=row.optString("source_id","");
+                if(!source.isEmpty())out.append(" • ").append(source);
+                limitCount++;
+            }
+            if(candidate.optBoolean("truncated",false))out.append("\n(بقية المراجع محفوظة في المكتبة)");
+        }
+        if(limitCount==0)out.append("\nلم تتوفر حدود رقمية من القاعدة المحلية.");
+        return out.toString();
+    }
+
 }
