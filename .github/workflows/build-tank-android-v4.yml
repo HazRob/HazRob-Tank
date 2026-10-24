@@ -25,6 +25,9 @@ jobs:
       - name: Verify V4 grouped session queries against real SQLite
         run: python3 tank/tools/verify_v4_session_queries.py
 
+      - name: Verify Echo and current calibration source contracts
+        run: python3 tank/tools/verify_v4_echo_r0_contract.py
+
       - name: Require read-only source repository token
         env:
           SOURCE_REPO_TOKEN: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
