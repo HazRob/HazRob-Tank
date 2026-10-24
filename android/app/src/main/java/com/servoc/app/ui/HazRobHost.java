@@ -42,6 +42,8 @@ public interface HazRobHost {
     void requestExport(String format,long experimentId);
     /** Export the immutable physical snapshot captured at click time. */
     void requestPhysicalSnapshotPdf();
+    /** Export one just-completed in-memory live operation; no saved snapshot history. */
+    void requestInstantReportPdf(JSONObject frozen,JSONObject chemcore,String id,long atMs);
     /** Export one complete immutable field session. PDF is one compact 4–5 page landscape report. */
     void requestFieldSessionExport(String format,String fieldSessionId);
     void openReportsForSite(String siteId,String fieldSessionId);
