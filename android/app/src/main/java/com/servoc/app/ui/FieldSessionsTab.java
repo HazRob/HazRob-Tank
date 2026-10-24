@@ -63,7 +63,7 @@ public final class FieldSessionsTab {
         managePane.addView(UiKit.title(c,"مكتبة المواقع والجلسات"),UiKit.full(c));
         sites=UiKit.vbox(c);sites.setVisibility(View.GONE);
         managePane.addView(UiKit.small(c,"اختر موقعًا من القائمة"),UiKit.full(c));
-        siteDropdown=new Spinner(c);siteDropdown.setBackgroundColor(0xFFECEFF1);managePane.addView(siteDropdown,UiKit.full(c));
+        siteDropdown=new Spinner(c);UiKit.outlinedSpinner(siteDropdown);managePane.addView(siteDropdown,UiKit.full(c));
         siteDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> p,View v,int pos,long id){
                 if(selectingScope)return;List<FieldSessionRepository.Site> all=repo.sites();
@@ -85,7 +85,7 @@ public final class FieldSessionsTab {
                 .setNegativeButton("إلغاء",null).setPositiveButton("حذف", (d,w)->host.deleteEmptyUserSite(id)).show();
         });managePane.addView(deleteSite,UiKit.full(c));
         managePane.addView(UiKit.small(c,"جلسات الموقع المحدد"),UiKit.full(c));
-        sessionDropdown=new Spinner(c);sessionDropdown.setBackgroundColor(0xFFECEFF1);managePane.addView(sessionDropdown,UiKit.full(c));
+        sessionDropdown=new Spinner(c);UiKit.outlinedSpinner(sessionDropdown);managePane.addView(sessionDropdown,UiKit.full(c));
         sessionDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> p,View v,int pos,long id){
                 if(selectingScope)return;List<FieldSessionRepository.FieldSession> all=repo.sessionsForSite(selectedSiteId);
@@ -107,7 +107,7 @@ public final class FieldSessionsTab {
         state.setText("تخزين محلي • لا مزامنة مركزية"+"\n"+(active==null?"لا توجد جلسة ميدانية نشطة":"جلسة نشطة: "+active.name+" • القياسات الجديدة ستُربط بهذه الجلسة"));
         state.setTextColor(active==null?0xFF985000:0xFF167443);
         sites.removeAllViews();List<FieldSessionRepository.Site> ss=repo.sites();
-        if(ss.isEmpty()){reportScope.setText("لا توجد مواقع أو جلسات معتمدة");reportSessionList.removeAllViews();selectedSiteId="";selectedSessionId="";selectingScope=true;siteDropdown.setAdapter(new ArrayAdapter<String>(scroll.getContext(),android.R.layout.simple_spinner_dropdown_item,new String[]{"لا توجد مواقع"}));sessionDropdown.setAdapter(new ArrayAdapter<String>(scroll.getContext(),android.R.layout.simple_spinner_dropdown_item,new String[]{"لا توجد جلسات"}));selectingScope=false;siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);deleteSite.setEnabled(false);selectedSiteSummary.setText("لا توجد مواقع محفوظة.");sites.addView(UiKit.small(sites.getContext(),"لا توجد مواقع محفوظة."),UiKit.full(sites.getContext()));sessions.removeAllViews();return;}
+        if(ss.isEmpty()){reportScope.setText("لا توجد مواقع أو جلسات معتمدة");reportSessionList.removeAllViews();selectedSiteId="";selectedSessionId="";selectingScope=true;siteDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد مواقع"}));sessionDropdown.setAdapter(new ArrayAdapter<String>(scroll.getContext(),android.R.layout.simple_spinner_dropdown_item,new String[]{"لا توجد جلسات"}));selectingScope=false;siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);deleteSite.setEnabled(false);selectedSiteSummary.setText("لا توجد مواقع محفوظة.");sites.addView(UiKit.small(sites.getContext(),"لا توجد مواقع محفوظة."),UiKit.full(sites.getContext()));sessions.removeAllViews();return;}
         boolean exists=false;for(FieldSessionRepository.Site s:ss)if(s.id.equals(selectedSiteId))exists=true;if(!exists)selectedSiteId=ss.get(0).id;
         FieldSessionRepository.Site selected=null;int siteIndex=0;
         ArrayList<String> siteNames=new ArrayList<>();for(int i=0;i<ss.size();i++){FieldSessionRepository.Site s=ss.get(i);siteNames.add(s.name);if(s.id.equals(selectedSiteId)){selected=s;siteIndex=i;}}
