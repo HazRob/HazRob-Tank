@@ -1,0 +1,127 @@
+{
+  "schema_version": "1.0",
+  "study": "UCI270 chronological drift, true classical library models; source-batch to batch10",
+  "doi": "10.24432/C5MK6M",
+  "source_archive_sha256": "98fe3a30981a222dd4518fbcc3dddd45d5c0ce9b03ef6dc6fe5cf7a04cfbff5e",
+  "source_records_verified": 13910,
+  "source_instrument": "16 TGS array, 128 precomputed descriptor fields, 16 selected normalized-response descriptors",
+  "distinct_target_exposures": 3600,
+  "heldout_batch": 10,
+  "source_batches_not_independent_devices": true,
+  "source_distributor_license_conflict": "Donor research/noncommercial wording vs current UCI CC-BY; keep research only",
+  "Tank_G3_validated": false,
+  "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499936259",
+  "artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499936259/artifacts/12299182979",
+  "tested_sha": "1317f13283261bace9f42c186dcf2e0698a43d2e",
+  "results": [
+    {
+      "train_batches": [
+        1,
+        2
+      ],
+      "train_n": 1689,
+      "test_n": 3600,
+      "models": [
+        {
+          "name": "majority",
+          "correct": 600,
+          "accuracy": 0.16666666666666666,
+          "macro_f1_rounded": 0.0476
+        },
+        {
+          "name": "softmax_ref",
+          "correct": 1722,
+          "accuracy": 0.47833333333333333,
+          "macro_f1_rounded": 0.428
+        },
+        {
+          "name": "lda_multiclass",
+          "correct": 993,
+          "accuracy": 0.2758333333333333,
+          "macro_f1_rounded": 0.2441
+        },
+        {
+          "name": "plsda_multicomponent",
+          "correct": 644,
+          "accuracy": 0.17888888888888888,
+          "macro_f1_rounded": 0.1408
+        },
+        {
+          "name": "svm_linear",
+          "correct": 1955,
+          "accuracy": 0.5430555555555555,
+          "macro_f1_rounded": 0.5131
+        },
+        {
+          "name": "svm_rbf",
+          "correct": 1471,
+          "accuracy": 0.4086111111111111,
+          "macro_f1_rounded": 0.3906
+        },
+        {
+          "name": "xgboost_multiclass",
+          "correct": 895,
+          "accuracy": 0.24861111111111112,
+          "macro_f1_rounded": 0.2185
+        }
+      ]
+    },
+    {
+      "train_batches": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "train_n": 3633,
+      "test_n": 3600,
+      "models": [
+        {
+          "name": "majority",
+          "correct": 600,
+          "accuracy": 0.16666666666666666,
+          "macro_f1_rounded": 0.0476
+        },
+        {
+          "name": "softmax_ref",
+          "correct": 1529,
+          "accuracy": 0.4247222222222222,
+          "macro_f1_rounded": 0.3304
+        },
+        {
+          "name": "lda_multiclass",
+          "correct": 1086,
+          "accuracy": 0.3016666666666667,
+          "macro_f1_rounded": 0.2581
+        },
+        {
+          "name": "plsda_multicomponent",
+          "correct": 734,
+          "accuracy": 0.2038888888888889,
+          "macro_f1_rounded": 0.1549
+        },
+        {
+          "name": "svm_linear",
+          "correct": 1353,
+          "accuracy": 0.37583333333333335,
+          "macro_f1_rounded": 0.2772
+        },
+        {
+          "name": "svm_rbf",
+          "correct": 1456,
+          "accuracy": 0.40444444444444444,
+          "macro_f1_rounded": 0.3358
+        },
+        {
+          "name": "xgboost_multiclass",
+          "correct": 941,
+          "accuracy": 0.2613888888888889,
+          "macro_f1_rounded": 0.2323
+        }
+      ]
+    }
+  ],
+  "negative_finding": "Training on more earlier source batches degraded linear SVM target accuracy 1955/3600 → 1353/3600; do not assume added history always improves drifted sensor-array generalization.",
+  "warning": "Same 3600 target exposures appear in BOTH train-history comparisons: not 7200 independent tests. Not gas ppm or Tank validation; no tuning on batch10."
+}

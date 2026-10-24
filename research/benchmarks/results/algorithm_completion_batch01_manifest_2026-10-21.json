@@ -1,0 +1,151 @@
+{
+  "schema_version": "1.0",
+  "project": "HazRob Tank ChemCore research",
+  "date": "2026-10-21",
+  "scope": "research_only",
+  "definition": "V3 first ten-item algorithm completion batch; software implementations benchmarked against real external UCI lab data; zero Tank device gas calibrations",
+  "targets": [
+    "03.4",
+    "04.5",
+    "04.7",
+    "04.9",
+    "08.1",
+    "08.2",
+    "08.3",
+    "08.4",
+    "08.6",
+    "08.7"
+  ],
+  "outcomes": [
+    {
+      "id": "03.4",
+      "research_baseline": "IMPLEMENTED_AND_EVALUATED",
+      "methods": [
+        "sklearn LinearDiscriminantAnalysis shrinkage lsqr",
+        "sklearn PLSRegression 3 components one-hot"
+      ],
+      "uci1081_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498888832",
+      "uci270_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499936259",
+      "standalone_original_replaced": false
+    },
+    {
+      "id": "04.5",
+      "research_baseline": "IMPLEMENTED_AND_EVALUATED",
+      "methods": [
+        "SVC linear",
+        "SVC RBF"
+      ],
+      "uci1081_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498888832",
+      "uci270_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499936259",
+      "standalone_original_replaced": false
+    },
+    {
+      "id": "04.7",
+      "research_baseline": "IMPLEMENTED_AND_EVALUATED",
+      "methods": [
+        "xgboost.XGBClassifier multiclass"
+      ],
+      "uci1081_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498888832",
+      "uci270_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499936259",
+      "standalone_original_replaced": false
+    },
+    {
+      "id": "04.9",
+      "research_baseline": "BLOCKED_PHYSICAL_INPUTS",
+      "required": [
+        "sensor-specific Rs/R0",
+        "known calibration reference curves",
+        "candidate-conditioned physical residuals without true-label leakage"
+      ],
+      "test_status": "Not run on chemically compatible UCI source"
+    },
+    {
+      "id": "08.1",
+      "research_baseline": "IMPLEMENTED_AND_EVALUATED",
+      "methods": [
+        "trainable torch.Conv1d 2-layer"
+      ],
+      "uci1081_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499521950",
+      "standalone_original_replaced": false
+    },
+    {
+      "id": "08.2",
+      "research_baseline": "IMPLEMENTED_AND_EVALUATED",
+      "methods": [
+        "trainable causal dilated conv TCN",
+        "verified no future leakage in hidden states"
+      ],
+      "uci1081_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499521950",
+      "standalone_original_replaced": false
+    },
+    {
+      "id": "08.3",
+      "research_baseline": "IMPLEMENTED_AND_EVALUATED",
+      "methods": [
+        "trainable torch.nn.GRU"
+      ],
+      "uci1081_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499521950",
+      "standalone_original_replaced": false
+    },
+    {
+      "id": "08.4",
+      "research_baseline": "IMPLEMENTED_AND_EVALUATED",
+      "methods": [
+        "trainable graph message passing with training-only correlation adjacency",
+        "no-edge ablation"
+      ],
+      "uci1081_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499521950",
+      "standalone_original_replaced": false
+    },
+    {
+      "id": "08.6",
+      "research_baseline": "ANALYTICAL_PROTOTYPE_NEEDS_PHYSICAL_IDENTIFICATION",
+      "required": [
+        "source-specific exposure transients and transfer function",
+        "independently estimated time constant",
+        "calibration uncertainty"
+      ],
+      "test_status": "No physically calibrated simulator validation performed"
+    },
+    {
+      "id": "08.7",
+      "research_baseline": "BLOCKED_MATCHED_SIM_REAL_DATA",
+      "required": [
+        "same analyte and concentration",
+        "matched response units and heater phase",
+        "validated simulator target array"
+      ],
+      "test_status": "No valid Tank sim-to-real physical comparison"
+    }
+  ],
+  "verified_uci_datasets": {
+    "UCI1081": {
+      "exposures": 90,
+      "source_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab"
+    },
+    "UCI270": {
+      "exposures": 13910,
+      "source_sha256": "98fe3a30981a222dd4518fbcc3dddd45d5c0ce9b03ef6dc6fe5cf7a04cfbff5e"
+    }
+  },
+  "distinct_external_exposures_already_inventory": 14238,
+  "do_not_add_new_exposures_to_existing_corpus_count": true,
+  "classical_comparison_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39498888832",
+  "neural_train_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499521950",
+  "longterm_drift_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39499936259",
+  "benchmark_result_files": [
+    "research/benchmarks/results/uci1081_completed_classical_2026-10-21.json",
+    "research/benchmarks/results/uci1081_trainable_neural_2026-10-21.json",
+    "research/benchmarks/results/uci270_completed_classical_2026-10-21.json"
+  ],
+  "results_tier": "EXTERNAL_RESEARCH_MODEL_BENCHMARK_NOT_TANK_VALIDATION",
+  "g3_tank_scientifically_validated": 0,
+  "original_80_g1_status_preserved": true,
+  "notes": [
+    "7 technique IDs have actual trainable or fitted model algorithms evaluated on external gas data but remain research comparator modules.",
+    "3 technique IDs are physically blocked/analytical only and not claimed completed.",
+    "Original research/techniques v1 code is not replaced by these benchmark files; integration/migration is future work.",
+    "UCI270 source batch10 predictions (n=3600) are reused across alternative history lengths and counted once.",
+    "No changes to Android, ESP32 or production ChemCore."
+  ]
+}
