@@ -183,6 +183,31 @@ public final class FieldSessionRepository {
         }finally{w.endTransaction();}
     }
 
+    /** Single bounded query for all site child counts, not N expensive calls from a UI redraw. */
+    public java.util.Map<String,Integer> measurementCountsForSite(String siteId){
+        java.util.Map<String,Integer> results=new java.util.HashMap<>();
+        String sql="SELECT f.field_session_id,COUNT(m.measurement_session_id) "+
+            "FROM field_sessions f LEFT JOIN field_session_measurements m "+
+            "ON m.field_session_id=f.field_session_id "+
+            "WHERE f.site_id=? GROUP BY f.field_session_id";
+        try(Cursor c=db.getReadableDatabase().rawQuery(sql,new String[]{requiredId(siteId)})){
+            while(c.moveToNext())results.put(c.getString(0),c.getInt(1));
+        }
+        return results;
+    }
+
+    /** Gives a readable error if a historical or damaged DB lacks the required v9 tables. */
+    public void verifySessionSchema(){
+        String[] required={"sites","field_sessions","field_session_measurements"};
+        java.util.HashSet<String> found=new java.util.HashSet<>();
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('sites','field_sessions','field_session_measurements')",null)){
+            while(c.moveToNext())found.add(c.getString(0));
+        }
+        for(String table:required)if(!found.contains(table))
+            throw new IllegalStateException("Field-session database migration incomplete: "+table);
+    }
+
     public List<String> measurementSessionIds(String fieldSessionId){
         List<String> out=new ArrayList<>();
         try(Cursor c=db.getReadableDatabase().rawQuery("SELECT measurement_session_id FROM field_session_measurements WHERE field_session_id=? ORDER BY linked_ts,measurement_session_id",new String[]{requiredId(fieldSessionId)})){
