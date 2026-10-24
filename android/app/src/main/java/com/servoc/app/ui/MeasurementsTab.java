@@ -287,7 +287,7 @@ public final class MeasurementsTab {
         content.addView(table,UiKit.full(c));
         content.addView(UiKit.title(c,"📈 المخططات"),UiKit.full(c));
         Spinner charts=new Spinner(c);
-        charts.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_spinner_dropdown_item,new String[]{"التغير الزمني للتركيز","مقارنة أحجام الجزيئات","توزيع الجزيئات"}));
+        charts.setAdapter(UiKit.lightOptions(c,new String[]{"التغير الزمني للتركيز","مقارنة أحجام الجزيئات","توزيع الجزيئات"}));UiKit.outlinedSpinner(charts);
         content.addView(charts,UiKit.full(c));
         TextView chart=card("لا توجد عينات لعرض المخطط.");
         chart.setOnClickListener(v->new AlertDialog.Builder(c)
