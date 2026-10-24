@@ -174,7 +174,7 @@ public final class RobotProtocolV4 {
                 if(manual){x.put("manual_calibration_confirmed",true);x.put("calibration_status","CALIBRATED_MANUAL");}
                 else if(automatic){x.put("manual_calibration_confirmed",false);x.put("calibration_status","USER_AUTO_FIELD_BASELINE");x.put("r0_reference_validated",false);}
                 else if(field){x.put("manual_calibration_confirmed",false);x.put("calibration_status","CALIBRATED_FIELD_BASELINE");x.put("r0_reference_validated",false);}
-                else if(firmwareCalibrated&&!ManualR0Calibration.has(hw.key)){x.put("r0_calibrated",true);x.put("r0_source",firmwareSource);x.put("manual_calibration_confirmed",false);x.put("calibration_status","CALIBRATED_FIRMWARE");}
+                else if(firmwareCalibrated&&!ManualR0Calibration.has(hw.key)){x.put("r0_calibrated",false);x.put("r0_source","not_accepted_firmware_reference");x.put("manual_calibration_confirmed",false);x.put("calibration_status","TANK_R0_REQUIRED");}
                 else{x.put("r0_calibrated",false);x.put("manual_calibration_confirmed",false);x.put("calibration_status","UNCALIBRATED");}
                 x.put("r0_loaded",x.optBoolean("r0_calibrated",false));out.put(hw.key,x);
             }catch(Exception ignored){}
