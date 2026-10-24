@@ -677,7 +677,6 @@ public final class MeasurementsTab {
             LinearLayout r1=UiKit.hbox(c);readiness=kpi("الجاهزية\n—");topCandidate=kpi("المرشح الأول\n—");r1.addView(readiness,UiKit.weight(1));r1.addView(topCandidate,UiKit.weight(1));box.addView(r1,UiKit.full(c));
             LinearLayout r2=UiKit.hbox(c);confidence=kpi("الثقة\n—");evidence=kpi("الدليل\n—");r2.addView(confidence,UiKit.weight(1));r2.addView(evidence,UiKit.weight(1));box.addView(r2,UiKit.full(c));
             quantitative=kpi("PPM الكمي\n—");box.addView(quantitative,UiKit.full(c));
-            screeningWarnings=card("تحذيرات التعرض التقديرية\n—");screeningWarnings.setTextIsSelectable(true);box.addView(screeningWarnings,UiKit.full(c));
             screeningWarnings=card("تحذيرات PPM التقديرية\n—");screeningWarnings.setTextIsSelectable(true);box.addView(screeningWarnings,UiKit.full(c));
             referenceInventory=card("حدود التعرض المرجعية\n—");referenceInventory.setTextIsSelectable(true);box.addView(referenceInventory,UiKit.full(c));
             quality=card("جودة التحليل: —");box.addView(quality,UiKit.full(c));
@@ -792,6 +791,7 @@ public final class MeasurementsTab {
             decisionCard=kpi("القرار: —");box.addView(decisionCard,UiKit.full(c));
             screeningCard=card("فحص 144: —");box.addView(screeningCard,UiKit.full(c));
             safetyCard=card("السلامة والتعرض: —");box.addView(safetyCard,UiKit.full(c));
+            screeningWarnings=card("تحذيرات PPM التقديرية\n—");screeningWarnings.setTextIsSelectable(true);box.addView(screeningWarnings,UiKit.full(c));
             referenceInventory=card("حدود التعرض المرجعية\n—");referenceInventory.setTextIsSelectable(true);box.addView(referenceInventory,UiKit.full(c));
             tracking=card("التتبع: لا يوجد");box.addView(tracking,UiKit.full(c));selected=card("المرشح المحدد: لا يوجد");box.addView(selected,UiKit.full(c));
             TextView ch=UiKit.small(c,"المرشحون الديناميكيون • اللون ترتيب تحليلي وليس مستوى خطورة");ch.setTextColor(MUTED);box.addView(ch,UiKit.full(c));
