@@ -12,6 +12,7 @@ for check in tools/verify_v4_session_queries.py tools/verify_v4_echo_r0_contract
   echo "[Tank V4] Source contract $check"
   python3 "$check"
 done
+echo "[Tank V4] All preflight source contracts passed; now checking private original repository access"
 if [ -e source ]; then echo "Refusing to overwrite existing source directory" >&2; exit 1; fi
 # Avoid embedding GitHub credentials in Git remote URLs or command-line arguments.
 ASKPASS="$(mktemp /tmp/tank-v4-askpass-XXXXXX)"
@@ -25,7 +26,10 @@ case "$1" in
 esac
 GIT_AUTH
 trap 'rm -f "$ASKPASS"' EXIT
-GIT_ASKPASS="$ASKPASS" GIT_TERMINAL_PROMPT=0 git -c credential.helper= clone --quiet "https://github.com/sohpany/SERVOC-Android.git" source
+if ! GIT_ASKPASS="$ASKPASS" GIT_TERMINAL_PROMPT=0 git -c credential.helper= clone --quiet "https://github.com/sohpany/SERVOC-Android.git" source; then
+  echo "[Tank V4] PRIVATE-SOURCE-CLONE-FAILED: Verify HAZROB_SOURCE_READ_TOKEN is a real GitHub PAT with Contents:Read on sohpany/SERVOC-Android and accessible to Codemagic hazrob_source group. No Gradle build has started." >&2
+  exit 1
+fi
 rm -f "$ASKPASS"
 trap - EXIT
 PIN="6281d3eb7c1c961ce63b0b5e4ae0792874626720"
@@ -72,6 +76,7 @@ t=t.replace('android:roundIcon="@drawable/ic_hazrob_hr069_r1"', 'android:roundIc
 mf.write_text(t)
 print("V4 applicationId=com.hazrob.tank; versionName=4.0; debug identity is separate")
 PY
+echo "[Tank V4] Tank overlay complete; preparing Android SDK and Gradle"
 SDK="$(printenv ANDROID_SDK_ROOT || printenv ANDROID_HOME || true)"
 test -n "$SDK" && test -d "$SDK" || { echo "Android SDK not available" >&2; exit 1; }
 export ANDROID_HOME="$SDK"
