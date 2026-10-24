@@ -602,13 +602,13 @@ public final class MeasurementsTab {
         }
         void refresh(){
             JSONObject d=host.latestDiagnostics();if(d==null){
-                powerCard.setText("MQ\\nغير متصل");
-                arrayCard.setText("المصفوفة\\n—");
-                gasCard.setText("الاستجابة\\n—");
+                powerCard.setText("MQ\nغير متصل");
+                arrayCard.setText("المصفوفة\n—");
+                gasCard.setText("الاستجابة\n—");
                 powerToggle.setText("تشغيل MQ");
                 TankInstantAnalyzer.Result completed=currentOperation;
                 if(active){sessionCard.setText("العملية • انقطع الاتصال أثناء القياس؛ لا توجد نتيجة مكتملة");progress.setProgress(500);}
-                else if(completed!=null){sessionCard.setText("العملية مكتملة • التقرير متاح دون اتصال\\n"+completed.channels+" قنوات MQ");progress.setProgress(1000);}
+                else if(completed!=null){sessionCard.setText("العملية مكتملة • التقرير متاح دون اتصال\n"+completed.channels+" قنوات MQ");progress.setProgress(1000);}
                 else{sessionCard.setText("العملية • لا توجد قراءات حية");progress.setProgress(0);}
                 cancel.setEnabled(active);
                 report.setEnabled(completed!=null);
