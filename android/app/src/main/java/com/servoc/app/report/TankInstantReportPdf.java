@@ -110,6 +110,32 @@ public final class TankInstantReportPdf {
             rtl(c,"قيم PPM إن وُجدت تقديرية؛ لا تصلح وحدها لإثبات الامتثال المهني.",y,10,false);y+=17;
             rtl(c,"المصدر: قراءات محفوظة داخل العملية الحالية، دون اختراع منحنيات زمنية.",y,10,false);
             doc.finishPage(page);
+            JSONObject warningReport=chemcore.optJSONObject("screening_exposure_warnings");
+            JSONArray warnings=warningReport==null?null:warningReport.optJSONArray("warnings");
+            if(warnings!=null&&warnings.length()>0){
+                PdfDocument.Page second=doc.startPage(new PdfDocument.PageInfo.Builder(595,842,2).create());
+                Canvas w=second.getCanvas();w.drawColor(Color.WHITE);int yy=47;
+                rtl(w,"HazRob Tank — تحذيرات مبكرة تقديرية",yy,17,true);yy+=29;
+                rtl(w,"مقارَنات مشروطة بمرشحي ChemCore، وليست قياسًا معتمدًا أو إثبات تجاوز قانوني",yy,10,false);yy+=26;
+                for(int i=0;i<warnings.length()&&yy<720;i++){
+                    JSONObject item=warnings.optJSONObject(i);if(item==null)continue;
+                    String role=item.optString("reference_role","OTHER"),name=item.optString("label","—");
+                    rtl(w,"⚠ "+name+" • "+role+" • "+item.optString("authority",""),yy,12,true);yy+=19;
+                    rtl(w,"PPM تقديري "+data(item,"estimated_ppm",2)+"  /  حد "+data(item,"reference_value",2)+" "+item.optString("reference_unit",""),yy,10,false);yy+=19;
+                    if("LFL".equals(role)){
+                        rtl(w,"🔥 "+data(item,"percent_lfl",1)+"% من حد الاشتعال LFL • مقارنة فورية",yy,10,false);yy+=19;
+                    }else if("TWA".equals(role)||"STEL".equals(role)){
+                        rtl(w,"لو استمر هذا التركيز "+data(item,"reference_duration_min",0)+" دقيقة فقد يتجاوز متوسط التعرض المرجعي",yy,10,false);yy+=19;
+                        rtl(w,"هذه ليست نتيجة متوسط TWA/STEL مقاس خلال كامل المدة",yy,9,false);yy+=17;
+                    }else{
+                        rtl(w,"مقارنة مرجعية لحظية تستلزم تأكيد هوية الغاز والتركيز",yy,10,false);yy+=19;
+                    }
+                    yy+=15;
+                }
+                if(warnings.length()>8)rtl(w,"توجد تحذيرات إضافية؛ راجع شاشة ChemCore.",742,10,false);
+                rtl(w,"الاستنتاج مشروط بعدم اليقين وتداخل الغازات؛ غياب التحذير لا يعني أمان الجو.",789,10,false);
+                doc.finishPage(second);
+            }
             doc.writeTo(out);
         }finally{doc.close();}
     }
