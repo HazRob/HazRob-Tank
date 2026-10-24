@@ -179,7 +179,7 @@ public final class FieldSessionsTab {
                         boolean ok=repo.approveFieldSession(q.id);
                         host.showToast(ok?"تم اعتماد الجلسة":"تعذر الاعتماد: يلزم قياس مكتمل وصالح واحد");
                         refresh();
-                    }catch(RuntimeException ex){android.util.Log.e("TankSessions","Approve session failed",ex);showSessionLoadError();}
+                    }catch(RuntimeException approvalError){android.util.Log.e("TankSessions","Approve session failed",approvalError);showSessionLoadError();}
                 }).show());
             card.addView(approve,UiKit.full(sessions.getContext()));
             Button remove=UiKit.button(sessions.getContext(),"حذف الجلسة وبياناتها");remove.setEnabled(!q.active()&&!q.approved());
