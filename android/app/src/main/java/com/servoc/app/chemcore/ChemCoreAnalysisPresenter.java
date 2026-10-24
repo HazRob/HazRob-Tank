@@ -100,7 +100,7 @@ public final class ChemCoreAnalysisPresenter {
     public static String gasExposurePpm(JSONObject p,int limit){
         JSONObject g=p==null?null:p.optJSONObject(GasPpmExposureAssessment.KEY);if(g==null)return "تقييم سلامة الغاز PPM/LFL: غير مسجل لهذه الجلسة.";
         StringBuilder s=new StringBuilder("تقييم سلامة الغاز — PPM + LFL\n");s.append("State: ").append(g.optString("toxicity_state",g.optString("state","—"))).append(" • ").append(g.optString("flammability_state","—"));
-        if(!g.optBoolean("input_gate_passed",false)){s.append("\nWITHHELD: ").append(g.optString("reason","scientific_gate_not_passed"));s.append("\nلا تتم مقارنة حدود التعرض أو LFL قبل اجتياز هوية M4 وPPM القابل للتقرير.");return s.toString();}
+        if(!g.optBoolean("input_gate_passed",false)){s.append("\nREGULATORY ASSESSMENT WITHHELD: ").append(g.optString("reason","scientific_gate_not_passed"));s.append("\nلكن يمكن عرض حدود التعرض والتحذيرات المشروطة عن PPM التقديري دون M4؛ ولا يعني ذلك إثبات تجاوز أو الامتثال.");s.append("\n").append(TankScreeningExposureWarning.summary(p,6));s.append("\n").append(TankExposureReferenceCatalog.summary(p,3,6));return s.toString();}
         s.append("\n").append(g.optString("hazard_symbols","")).append(" Measured: ").append(fmt(g.optDouble("ppm",Double.NaN))).append(" ppm");
         s.append(" • duration ").append(String.format(Locale.US,"%.1f s",g.optLong("measurement_duration_ms",0)/1000.0));
         double hazard=g.optDouble("hazard_priority_percent",Double.NaN);if(Double.isFinite(hazard))s.append("\nHazard priority: ").append(String.format(Locale.US,"%.1f%%",hazard)).append(" • ").append(g.optString("hazard_priority_basis","—"));else s.append("\nHazard priority: — (no usable reference)");
