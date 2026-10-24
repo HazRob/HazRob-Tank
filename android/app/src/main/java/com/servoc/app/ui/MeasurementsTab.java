@@ -797,6 +797,9 @@ public final class MeasurementsTab {
             TextView ch=UiKit.small(c,"المرشحون الديناميكيون • اللون ترتيب تحليلي وليس مستوى خطورة");ch.setTextColor(MUTED);box.addView(ch,UiKit.full(c));
             candidateList=UiKit.vbox(c);box.addView(candidateList,UiKit.full(c));
             LinearLayout actions=UiKit.hbox(c);startTracking=UiKit.button(c,"بدء التتبع");startTracking.setEnabled(false);startTracking.setOnClickListener(v->{if(selectedCandidateId<0){host.showToast("اختر مرشحًا أولًا");return;}host.setTrackingTarget(selectedCandidateId,selectedCandidateName);host.showToast("بدأ تتبع: "+selectedCandidateName);refresh();});actions.addView(startTracking,UiKit.weight(1));Button pick=UiKit.button(c,"اختيار غاز من المكتبة");pick.setOnClickListener(v->chooseTrackingChemical());actions.addView(pick,UiKit.weight(1.15f));Button stop=UiKit.button(c,"إيقاف التتبع");stop.setOnClickListener(v->{host.setTrackingTarget(-1,"");host.showToast("تم إيقاف التتبع");refresh();});actions.addView(stop,UiKit.weight(1));box.addView(actions,UiKit.full(c));
+            Button showLimits=UiKit.button(c,"📘 حدود التعرض للمادة المحددة");
+            showLimits.setOnClickListener(v->showSelectedExposureReferences());
+            box.addView(showLimits,UiKit.full(c));
             screeningToggle=UiKit.button(c,"إظهار فحص 144");screeningToggle.setOnClickListener(v->{showAll144=!showAll144;screeningToggle.setText(showAll144?"إخفاء فحص 144":"إظهار فحص 144");lastRenderedAt=0;refresh();});box.addView(screeningToggle,UiKit.full(c));screeningList=UiKit.vbox(c);box.addView(screeningList,UiKit.full(c));
             technicalToggle=UiKit.button(c,"إظهار البواقي والتفاصيل");technicalToggle.setOnClickListener(v->{showTechnical=!showTechnical;technical.setVisibility(showTechnical?View.VISIBLE:View.GONE);technicalToggle.setText(showTechnical?"إخفاء البواقي والتفاصيل":"إظهار البواقي والتفاصيل");});box.addView(technicalToggle,UiKit.full(c));technical=card("");technical.setVisibility(View.GONE);technical.setTextIsSelectable(true);box.addView(technical,UiKit.full(c));
             decisions=new ChemCoreDecisionRepository(host.database());
@@ -816,6 +819,27 @@ public final class MeasurementsTab {
             screeningWarnings.setText(TankScreeningExposureWarning.summary(p,8));
             if(ppmOk&&Double.isFinite(ppm)&&exposureExceeded(g))exposureStyle(decisionCard,true);
             renderCandidates(p);if(showAll144)renderScreening(s,p);technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,8));
+        }
+        private void showSelectedExposureReferences(){
+            if(selectedCandidateId<0){
+                host.showToast("اختر مادة أو مرشحًا أولًا لعرض حدود التعرض دون اشتراط المعايرة");
+                return;
+            }
+            String details;
+            try{
+                JSONObject inventory=TankExposureReferenceCatalog.forSelectedChemical(
+                    host.database(),selectedCandidateId,selectedCandidateName);
+                JSONObject current=new JSONObject();
+                current.put(TankExposureReferenceCatalog.KEY,inventory);
+                details=TankExposureReferenceCatalog.summary(current,1,32);
+            }catch(Exception ex){
+                details="تعذر تحميل حدود التعرض لهذه المادة من قاعدة البيانات المحلية.";
+            }
+            new AlertDialog.Builder(c)
+                .setTitle("حدود التعرض المرجعية • لا تتطلب M4")
+                .setMessage(details)
+                .setPositiveButton("إغلاق",null)
+                .show();
         }
         /** Operator can select a target from the local ChemCore catalogue before R0
          *  and even before the first stored analysis. Selection is NOT detection.
