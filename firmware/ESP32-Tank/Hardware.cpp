@@ -121,11 +121,31 @@ uint16_t batteryRaw=0;float batteryV=NAN;uint32_t batteryAt=0;
 void batteryUpdate(){uint32_t n=millis();if(n-batteryAt<Cfg::BATTERY_PERIOD)return;batteryAt=n;uint32_t s=0;for(uint8_t i=0;i<8;i++)s+=analogRead(Cfg::BATTERY_PIN);batteryRaw=(uint16_t)(s/8);batteryV=batteryRaw*(3.3f/4095.0f)*Cfg::BAT_DIV;}
 
 /* ultrasonic: interrupt edge capture prevents short HC-SR04 ECHO pulses from being missed by the main loop */
-float ultraCm=NAN;uint32_t ultraAt=0,ultraPulseAt=0,ultraLastPulseUs=0,ultraLastOkAt=0,ultraTimeoutCount=0;
+float ultraCm=NAN,ultraRawCm=NAN,ultraHistory[3]={NAN,NAN,NAN};uint8_t ultraHistoryCount=0,ultraHistoryNext=0;uint32_t ultraAt=0,ultraPulseAt=0,ultraLastPulseUs=0,ultraLastOkAt=0,ultraTimeoutCount=0;
 uint32_t ultraNoRiseCount=0,ultraNoFallCount=0,ultraStuckHighCount=0,ultraInvalidPulseCount=0;
 const char* ultraStatus="awaiting_first_echo";
 volatile uint32_t ultraRiseUsIsr=0,ultraFallUsIsr=0;volatile bool ultraAwaiting=false,ultraEchoReady=false;
-void IRAM_ATTR ultraEchoIsr(){if(!ultraAwaiting)return;uint32_t t=micros();if(digitalRead(Cfg::ULTRA_ECHO_PIN)){ultraRiseUsIsr=t;}else if(ultraRiseUsIsr){ultraFallUsIsr=t;ultraEchoReady=true;ultraAwaiting=false;}}
+void IRAM_ATTR ultraEchoIsr(){
+  if(!ultraAwaiting)return;
+  uint32_t t=micros();
+  if(digitalRead(Cfg::ULTRA_ECHO_PIN)){if(!ultraRiseUsIsr)ultraRiseUsIsr=t;}
+  else if(ultraRiseUsIsr&&!ultraEchoReady){ultraFallUsIsr=t;ultraEchoReady=true;ultraAwaiting=false;}
+}
+float ultraMedian3(float x,float y,float z){
+  if(x>y){float a=x;x=y;y=a;}
+  if(y>z){float a=y;y=z;z=a;}
+  if(x>y)y=x;
+  return y;
+}
+float ultraFilteredCm(float cm){
+  ultraHistory[ultraHistoryNext]=cm;ultraHistoryNext=(ultraHistoryNext+1)%3;
+  if(ultraHistoryCount<3)++ultraHistoryCount;
+  return ultraHistoryCount==3?ultraMedian3(ultraHistory[0],ultraHistory[1],ultraHistory[2]):cm;
+}
+void ultraInvalidate(){
+  ultraCm=NAN;ultraRawCm=NAN;ultraLastPulseUs=0;ultraWarning=false;
+  ultraHistoryCount=0;ultraHistoryNext=0;
+}
 void ultraUpdate(){
   const uint32_t now=millis();
   if(ultraEchoReady){
@@ -133,15 +153,16 @@ void ultraUpdate(){
     uint32_t rise=ultraRiseUsIsr,fall=ultraFallUsIsr;
     ultraEchoReady=false;ultraRiseUsIsr=ultraFallUsIsr=0;
     interrupts();
-    uint32_t d=fall-rise;ultraLastPulseUs=d;
-    if(d>0&&d<=Cfg::ULTRA_TIMEOUT_US){
-      ultraCm=d*0.01715f;
-      ultraLastOkAt=now;ultraStatus="ok";
-      ultraWarning=ff(ultraCm)&&ultraCm>1&&ultraCm<=Cfg::ULTRA_WARN_CM;
-      
+    uint32_t d=fall-rise;
+    if(rise!=0&&fall!=0&&d>=Cfg::ULTRA_MIN_ECHO_US&&d<=Cfg::ULTRA_MAX_ECHO_US){
+      ultraLastPulseUs=d;ultraRawCm=d*0.01715f;
+      ultraCm=ultraFilteredCm(ultraRawCm);
+      ultraLastOkAt=now;ultraStatus=ultraHistoryCount==3?"ok_filtered":"ok";
+      // Warning-only: react immediately to a close raw echo, without median delay.
+      ultraWarning=(ultraRawCm>=2.0f&&ultraRawCm<=Cfg::ULTRA_WARN_CM)||
+                   (ff(ultraCm)&&ultraCm>=2.0f&&ultraCm<=Cfg::ULTRA_WARN_CM);
     }else{
-      ultraCm=NAN;ultraWarning=false;ultraStatus="invalid_pulse";
-      ultraInvalidPulseCount++;
+      ultraInvalidate();ultraStatus="invalid_pulse";ultraInvalidPulseCount++;
     }
     hazardAlert();
   }
@@ -151,7 +172,7 @@ void ultraUpdate(){
       bool sawRise=ultraRiseUsIsr!=0;
       ultraAwaiting=false;ultraEchoReady=false;ultraRiseUsIsr=ultraFallUsIsr=0;
       interrupts();
-      ultraCm=NAN;ultraLastPulseUs=0;ultraWarning=false;
+      ultraInvalidate();
       ultraTimeoutCount++;
       if(sawRise){ultraNoFallCount++;ultraStatus="no_falling_edge";}
       else{ultraNoRiseCount++;ultraStatus="no_rising_edge";}
@@ -163,7 +184,7 @@ void ultraUpdate(){
   ultraAt=now;
   // Report held-high ECHO as an electrical diagnostic, never as a valid distance.
   if(digitalRead(Cfg::ULTRA_ECHO_PIN)==HIGH){
-    ultraCm=NAN;ultraLastPulseUs=0;ultraWarning=false;
+    ultraInvalidate();
     ultraStuckHighCount++;ultraTimeoutCount++;ultraStatus="echo_high_before_trigger";
     hazardAlert();return;
   }
@@ -195,7 +216,7 @@ String envJson(){uint32_t age=envLastOkAt?millis()-envLastOkAt:0;String j="{\"ok
 String acquisitionJson(){return "{\"model\":\"ADS1115\",\"rate_sps\":"+String(Cfg::ADS_RATE_SPS)+",\"gain\":\"GAIN_TWOTHIRDS\",\"full_scale_v\":"+num(Cfg::ADS_FULL_SCALE_V,3)+",\"supply_v\":"+num(Cfg::ADS_SUPPLY_V,3)+",\"conversions_per_channel\":"+String(Cfg::ADC_SAMPLES)+",\"scan_period_ms\":"+String(Cfg::MQ_PERIOD)+",\"channels\":"+String(Cfg::MQ_N)+",\"sequential\":true,\"bus_sda\":"+String(Cfg::SDA)+",\"bus_scl\":"+String(Cfg::SCL)+"}";}
 String mqJson(bool avg){bool powered=avg?measurePower:mqPowerOn;String j="{";uint32_t nowUs=micros();for(uint8_t i=0;i<Cfg::MQ_N;i++){if(i)j+=",";const auto&c=Cfg::mq[i];j+="\""+String(c.name)+"\":{";if(avg){if(!cnt[i])j+="\"ok\":false";else{float n=cnt[i],rs=rsSum[i]/n;j+="\"ok\":true,\"raw\":"+num(rawSum[i]/n,1)+",\"adc\":"+num(adcSum[i]/n,3)+",\"ao\":"+num(aoSum[i]/n,3)+",\"rs\":"+num(rs,3)+",\"ratio\":"+num(rs/c.r0,3);}}else{j+="\"ok\":"+String(bj(mq[i].ok))+",\"raw\":"+String(mq[i].raw)+",\"adc\":"+num(mq[i].adc,3)+",\"ao\":"+num(mq[i].ao,3)+",\"rs\":"+num(mq[i].rs,3)+",\"ratio\":"+num(mq[i].ratio,3);if(mq[i].sampleUs)j+=",\"sample_us\":"+String(mq[i].sampleUs)+",\"scan_cycle\":"+String(mq[i].scanCycle)+",\"channel_offset_us\":"+String(mq[i].channelOffsetUs)+",\"age_us\":"+String(nowUs-mq[i].sampleUs);}j+=",\"powered\":"+String(bj(powered))+",\"relay\":1,\"row\":1,\"ads\":"+String(c.ads)+",\"ch\":"+String(c.ch)+",\"r0\":"+num(c.r0,3)+",\"r0_calibrated\":true,\"r0_source\":\""+String(Cfg::R0_SOURCE)+"\",\"r0_reference_validated\":"+String(bj(Cfg::R0_REFERENCE_GAS_VALIDATED))+",\"r0_session\":\""+String(Cfg::R0_SESSION)+"\",\"r0_samples\":"+String(Cfg::R0_SAMPLES)+",\"r0_environment_compensated\":"+String(bj(Cfg::R0_ENVIRONMENT_COMPENSATED))+"}";}return j+"}";}
 String driveJson(){return "{\"driver\":\"dual_continuous_servo\",\"left\":"+String(ri(curL))+",\"right\":"+String(ri(curR))+",\"target_left\":"+String(ri(targetL))+",\"target_right\":"+String(ri(targetR))+",\"stale_stop\":"+String(bj(staleStop))+",\"pins\":{\"left\":"+String(Cfg::SERVO_L_PIN)+",\"right\":"+String(Cfg::SERVO_R_PIN)+"}}";}
-String healthJson(){return "{\"battery\":{\"v\":"+num(batteryV,2)+",\"raw\":"+String(batteryRaw)+",\"estimated\":true},\"internal_temp\":{\"installed\":false,\"c\":null,\"gpio\":null},\"proximity\":{\"cm\":"+num(ultraCm,1)+",\"valid\":"+String(bj(ff(ultraCm)&&ultraCm>0))+",\"pulse_us\":"+String(ultraLastPulseUs)+",\"timeouts\":"+String(ultraTimeoutCount)+",\"status\":\""+String(ultraStatus)+"\""+",\"echo_level\":"+String(digitalRead(Cfg::ULTRA_ECHO_PIN))+",\"no_rise\":"+String(ultraNoRiseCount)+",\"no_fall\":"+String(ultraNoFallCount)+",\"stuck_high\":"+String(ultraStuckHighCount)+",\"invalid_pulse\":"+String(ultraInvalidPulseCount)+",\"last_ok_age_ms\":"+(ultraLastOkAt?String(millis()-ultraLastOkAt):String("null"))+",\"warning\":"+String(bj(ultraWarning))+",\"warning_cm\":"+num(Cfg::ULTRA_WARN_CM,1)+",\"trig\":"+String(Cfg::ULTRA_TRIG_PIN)+",\"echo\":"+String(Cfg::ULTRA_ECHO_PIN)+"},\"energy_basis\":{\"uptime_ms\":"+String(millis())+",\"drive_eq_ms\":"+String(driveEqMs)+",\"mq_on_ms\":"+String(mqOnTotalMs)+"}}";}
+String healthJson(){return "{\"battery\":{\"v\":"+num(batteryV,2)+",\"raw\":"+String(batteryRaw)+",\"estimated\":true},\"internal_temp\":{\"installed\":false,\"c\":null,\"gpio\":null},\"proximity\":{\"cm\":"+num(ultraCm,1)+",\"raw_cm\":"+num(ultraRawCm,1)+",\"valid\":"+String(bj(ff(ultraCm)&&ultraCm>0))+",\"pulse_us\":"+String(ultraLastPulseUs)+",\"timeouts\":"+String(ultraTimeoutCount)+",\"status\":\""+String(ultraStatus)+"\""+",\"echo_level\":"+String(digitalRead(Cfg::ULTRA_ECHO_PIN))+",\"no_rise\":"+String(ultraNoRiseCount)+",\"no_fall\":"+String(ultraNoFallCount)+",\"stuck_high\":"+String(ultraStuckHighCount)+",\"invalid_pulse\":"+String(ultraInvalidPulseCount)+",\"last_ok_age_ms\":"+(ultraLastOkAt?String(millis()-ultraLastOkAt):String("null"))+",\"warning\":"+String(bj(ultraWarning))+",\"warning_cm\":"+num(Cfg::ULTRA_WARN_CM,1)+",\"trig\":"+String(Cfg::ULTRA_TRIG_PIN)+",\"echo\":"+String(Cfg::ULTRA_ECHO_PIN)+"},\"energy_basis\":{\"uptime_ms\":"+String(millis())+",\"drive_eq_ms\":"+String(driveEqMs)+",\"mq_on_ms\":"+String(mqOnTotalMs)+"}}";}
 String lightJson(){return "{\"installed\":true,\"gpio\":"+String(Cfg::LDR_PIN)+",\"mode\":\"lm393_threshold\",\"level\":"+String(ldrLevel)+",\"quantitative_lux\":false,\"lux\":null}";}
 const char* measurementStateName(){switch(stage){case WARM:return"warmup";case MEASURE:return"measuring";case READY:return"ready";case ERROR:return"error";default:return"idle";}}
 String measurementJson(){uint16_t remaining=stage==MEASURE&&settings.measure>measureElapsedSec?settings.measure-measureElapsedSec:0;return "{\"state\":\""+String(measurementStateName())+"\",\"mask\":"+String(measurePower?1:0)+",\"power\":"+String(bj(measurePower))+",\"manual_power\":true,\"manual_warmup\":true,\"duration_s\":"+String(settings.measure)+",\"elapsed_s\":"+String(measureElapsedSec)+",\"remaining_s\":"+String(remaining)+",\"error\":\""+String(measureErrorName())+"\",\"valid_channels\":"+String(validChannels())+",\"mq\":"+mqJson(true)+"}";}
