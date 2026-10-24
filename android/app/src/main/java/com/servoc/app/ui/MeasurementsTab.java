@@ -141,13 +141,13 @@ public final class MeasurementsTab {
         chemicalSearch.setSingleLine(true);
         content.addView(chemicalSearch,UiKit.full(c));
         familySpinner=new Spinner(c);
-        familySpinner.setBackgroundColor(0xFFE9EDF1);
-        familySpinner.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_spinner_dropdown_item,
+        UiKit.outlinedSpinner(familySpinner);
+        familySpinner.setAdapter(UiKit.lightOptions(c,
             new String[]{"جميع العائلات","الكحولات","الهيدروكربونات","المركبات الكبريتية","المركبات النيتروجينية","أخرى"}));
         content.addView(familySpinner,UiKit.full(c));
         sortSpinner=new Spinner(c);
-        sortSpinner.setBackgroundColor(0xFFE9EDF1);
-        sortSpinner.setAdapter(new ArrayAdapter<String>(c,android.R.layout.simple_spinner_dropdown_item,
+        UiKit.outlinedSpinner(sortSpinner);
+        sortSpinner.setAdapter(UiKit.lightOptions(c,
             new String[]{"الترتيب: الاسم أ–ي","الترتيب: الاسم ي–أ","الترتيب: رقم CAS"}));
         content.addView(sortSpinner,UiKit.full(c));
         chemicalCount=card("المواد المطابقة: —");
@@ -165,10 +165,15 @@ public final class MeasurementsTab {
         chemicalRows.setScrollbarFadingEnabled(false);
         chemicalRows.setFastScrollEnabled(true);
         chemicalRows.setDividerHeight(UiKit.dp(c,1));
+        chemicalRows.setBackground(UiKit.outline(c,Color.WHITE,0xFF8994A3));
         tableBox.addView(chemicalRows,new LinearLayout.LayoutParams(-1,UiKit.dp(c,410)));
         horizontal.addView(tableBox,new android.widget.FrameLayout.LayoutParams(-2,-2));
         content.addView(horizontal,UiKit.full(c));
-        chemicalAdapter=new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,new java.util.ArrayList<String>());
+        chemicalAdapter=new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,new java.util.ArrayList<String>()){
+            @Override public View getView(int position,View reused,android.view.ViewGroup parent){
+                View row=super.getView(position,reused,parent);UiKit.ensureLightRow(row);return row;
+            }
+        };
         chemicalRows.setAdapter(chemicalAdapter);
         chemicalRows.setOnItemClickListener((parent,view,position,id)->{
             if(position<0||position>=visibleChemicals.size())return;
@@ -706,6 +711,8 @@ public final class MeasurementsTab {
             EditText query=new EditText(c);query.setSingleLine(true);
             query.setHint("اسم المادة أو رقم CAS");
             query.setInputType(InputType.TYPE_CLASS_TEXT);
+            query.setTextColor(Color.BLACK);query.setHintTextColor(0xFF56616F);
+            query.setBackground(UiKit.outline(c,Color.WHITE,0xFF8994A3));
             new AlertDialog.Builder(c)
                 .setTitle("اختيار مادة للتتبع الاستدلالي")
                 .setMessage("اختيار الغاز لا يعني رصده. قبل R0 يكون تتبع التدرج من تغير Rs النسبي فقط، دون هوية أو ppm معتمدين.")
@@ -716,9 +723,15 @@ public final class MeasurementsTab {
                     if(matches.isEmpty()){host.showToast("لا توجد مادة مطابقة في المكتبة");return;}
                     String[] labels=new String[matches.size()];
                     for(int i=0;i<matches.size();i++)labels[i]=matches.get(i).label();
+                    android.widget.ListAdapter candidateAdapter=new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,labels){
+                        @Override public View getView(int position,View reused,android.view.ViewGroup parent){
+                            View row=super.getView(position,reused,parent);
+                            UiKit.ensureLightRow(row);return row;
+                        }
+                    };
                     new AlertDialog.Builder(c)
                         .setTitle("حدد المادة")
-                        .setItems(labels,(dialog,index)->{
+                        .setAdapter(candidateAdapter,(dialog,index)->{
                             ChemicalRepository.Chemical item=matches.get(index);
                             if(item.uid>Integer.MAX_VALUE){host.showToast("معرّف غير مدعوم");return;}
                             selectedCandidateId=(int)item.uid;
