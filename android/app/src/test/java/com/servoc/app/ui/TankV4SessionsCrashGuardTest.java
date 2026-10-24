@@ -25,7 +25,11 @@ public final class TankV4SessionsCrashGuardTest {
         assertTrue(s.contains("repo.verifySessionSchema();"));
         assertTrue(s.contains("catch(RuntimeException ex)"));
         assertTrue(s.contains("showSessionLoadError();"));
-        assertTrue(s.contains("if(selectingScope||refreshing)return;"));
+        assertTrue(s.contains("if(selectingScope||refreshing||pos!=siteDropdown.getSelectedItemPosition())return;"));
+        assertTrue(s.contains("if(selectingScope||refreshing||selectedSiteId.isEmpty()||pos!=sessionDropdown.getSelectedItemPosition())return;"));
+        assertTrue(s.contains("siteOptionIds.get(pos)"));
+        assertTrue(s.contains("sessionOptionIds.get(pos)"));
+        assertTrue(s.contains("siteOptionIds.clear();sessionOptionIds.clear();"));
         assertTrue(s.contains("siteReportPdf.setEnabled(false)"));
         assertTrue(s.contains("deleteSite.setEnabled(false)"));
     }
