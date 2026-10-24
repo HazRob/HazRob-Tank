@@ -28,6 +28,9 @@ jobs:
       - name: Verify Echo and current calibration source contracts
         run: python3 tank/tools/verify_v4_echo_r0_contract.py
 
+      - name: Verify active Stable screening and conditional TWA/LFL source contracts
+        run: python3 tank/tools/verify_v4_screening_stable_contract.py
+
       - name: Require read-only source repository token
         env:
           SOURCE_REPO_TOKEN: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
