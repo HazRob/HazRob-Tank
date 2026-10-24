@@ -1,3 +1,12 @@
+## V4 engineering checkpoint — 2026-10-24 (UNRELEASED)
+
+- **Working branch:** [feature/tank-v4-implementation](https://github.com/HazRob/HazRob-Tank/tree/feature/tank-v4-implementation). Owner has authorized implementation. Canonical [V4 requirements](docs/requirements/V4-UPDATE-BACKLOG-2026-10-24.md), [execution plan](docs/implementation/V4-EXECUTION-PLAN-2026-10-24.md), and [durable progress log](docs/implementation/V4-PROGRESS-LOG-2026-10-24.md) govern continuation.
+- **Committed source changes:** identity-stable site/session Spinner callbacks and guarded approval, independent SAF state for one-shot PDF, real SQLite session-count regression added to V4 CI, GradientDrawable fill-aware contrast, preserved completed instant report after link loss. Source assertions are **not** full UI or device qualification.
+- **Build status:** V4 GitHub Actions [run 40047526874](https://github.com/HazRob/HazRob-Tank/actions/runs/40047526874) failed; rerun also failed with no job steps returned and expired/unavailable job logs. **No confirmed V4 Gradle build, installable standalone APK, signed upgrade, firmware release, or acceptance-tested device result.**
+- **Next mandatory gates:** working Actions/Gradle runner; JVM + real SQLite tests; user database migration/backup; handset Logcat for sessions crash and RTL/contrast; same-operation ChemCore/candidates/charts/PDF verification; stable signing and actual robot safety tests. Do not delete old V3 data or merge research-grade data into Stable. The original four-wheel HazRob remains untouched.
+
+---
+
 ## V3 independent test artifacts (2026-10-20)
 
 - Android debug APK (not a signed stable/upgrade release): `HazRob-Tank-V3-debug.apk`, built and tested by [CI 39490117129](https://github.com/HazRob/HazRob-Tank/actions/runs/39490117129). Its GitHub Actions artifact is ZIP-wrapped for archive download, but the extracted distributable is **the standalone .apk**. SHA256 `09d06f276ccc0758113491a5042dfec4587152a3c7479604b71433f82d3aa1c6`.
