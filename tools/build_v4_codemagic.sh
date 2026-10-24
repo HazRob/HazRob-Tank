@@ -101,7 +101,23 @@ fi
 GRADLE="$TOOLS/gradle-9.5.0/bin/gradle"
 "$GRADLE" --version | head -18
 echo "[Tank V4] Executing Android JUnit and assembleDebug"
-(cd source && "$GRADLE" --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleDebug)
+if ! (cd source && "$GRADLE" --no-daemon :app:testDebugUnitTest :app:assembleDebug); then
+  echo "[Tank V4] GRADLE-FAILED: printing exact JUnit assertion details, without bypassing tests"
+  python3 - <<'PY'
+from pathlib import Path
+import xml.etree.ElementTree as ET
+root=Path("source/app/build/test-results/testDebugUnitTest")
+for p in sorted(root.glob("TEST-*.xml")):
+    try: doc=ET.parse(p).getroot()
+    except (ET.ParseError, OSError): continue
+    for case in doc.iter("testcase"):
+        for fail in list(case.findall("failure"))+list(case.findall("error")):
+            print("FAILED:",case.get("classname"),case.get("name"))
+            print("DETAIL:",(fail.get("message") or "").strip()[:800])
+            print("TRACE:",(fail.text or "").strip()[:1300])
+PY
+  exit 1
+fi
 APK="source/app/build/outputs/apk/debug/app-debug.apk"
 test -s "$APK"
 "$SDK/build-tools/36.0.0/apksigner" verify --verbose "$APK"
