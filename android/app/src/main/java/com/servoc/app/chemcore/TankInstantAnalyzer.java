@@ -68,10 +68,14 @@ public final class TankInstantAnalyzer {
                 a.put("rank",alternatives.length()+1);
                 a.put("chemical_uid",r.optLong("chemical_uid",-1));
                 a.put("label",r.optString("name_ar",r.optString("name","—")));
-                a.put("candidate_score_pct",r.optDouble("candidate_score_pct",Double.NaN));
-                a.put("coverage_pct",r.optDouble("coverage_pct",Double.NaN));
-                a.put("agreement_pct",r.optDouble("agreement",Double.NaN));
-                a.put("screening_fit_ppm",r.optDouble("ppm",Double.NaN));
+                double vcandidatescorepct=r.optDouble("candidate_score_pct",Double.NaN);
+                if(Double.isFinite(vcandidatescorepct))a.put("candidate_score_pct",vcandidatescorepct);
+                double vcoveragepct=r.optDouble("coverage_pct",Double.NaN);
+                if(Double.isFinite(vcoveragepct))a.put("coverage_pct",vcoveragepct);
+                double vagreementpct=r.optDouble("agreement",Double.NaN);
+                if(Double.isFinite(vagreementpct))a.put("agreement_pct",vagreementpct);
+                double vscreeningfitppm=r.optDouble("ppm",Double.NaN);
+                if(Double.isFinite(vscreeningfitppm))a.put("screening_fit_ppm",vscreeningfitppm);
                 a.put("evidence_tier","FINGERPRINT_CURVE_SCREENING");
                 alternatives.put(a);
             }
