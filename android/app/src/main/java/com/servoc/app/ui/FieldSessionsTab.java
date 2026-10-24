@@ -26,7 +26,7 @@ public final class FieldSessionsTab {
     private final LinearLayout sites,sessions,reportSessionList;
     private final TextView reportScope;
     private final Spinner siteDropdown,sessionDropdown;
-    private boolean selectingScope=false;private String selectedSessionId="";
+    private boolean selectingScope=false,refreshing=false;private String selectedSessionId="";
     private final TextView state,selectedSiteSummary;
     private final Button siteReportPdf,siteReportXlsx,deleteSite;
     private String selectedSiteId="";
@@ -103,21 +103,43 @@ public final class FieldSessionsTab {
     public View view(){return scroll;}
 
     public void refresh(){
+        if(refreshing)return; // Spinner callbacks may be posted during redraw.
+        refreshing=true;
+        try{
+            repo.verifySessionSchema();
+            renderSessionUi();
+        }catch(RuntimeException ex){
+            android.util.Log.e("TankSessions","Unable to render user sessions",ex);
+            showSessionLoadError();
+        }finally{refreshing=false;}
+    }
+
+    /** Preserve local data and keep navigation alive if a migrated DB is not readable. */
+    private void showSessionLoadError(){
+        sites.removeAllViews();sessions.removeAllViews();reportSessionList.removeAllViews();
+        state.setText("تعذر تحميل المواقع والجلسات. البيانات المحلية لم تُحذف. أعد فتح التطبيق، ثم راجع النسخة الاحتياطية أو سجل التشخيص.");
+        state.setTextColor(0xFFC62828);
+        selectedSiteSummary.setText("تعذر قراءة بيانات الجلسات");
+        reportScope.setText("تقارير الجلسات غير متاحة حتى إصلاح قاعدة البيانات");
+        siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);
+        deleteSite.setEnabled(false);siteDropdown.setEnabled(false);sessionDropdown.setEnabled(false);
+    }
+    private void renderSessionUi(){
         FieldSessionRepository.FieldSession active=repo.activeFieldSession();
         state.setText("تخزين محلي • لا مزامنة مركزية"+"\n"+(active==null?"لا توجد جلسة ميدانية نشطة":"جلسة نشطة: "+active.name+" • القياسات الجديدة ستُربط بهذه الجلسة"));
         state.setTextColor(active==null?0xFF985000:0xFF167443);
         sites.removeAllViews();List<FieldSessionRepository.Site> ss=repo.sites();
-        if(ss.isEmpty()){reportScope.setText("لا توجد مواقع أو جلسات معتمدة");reportSessionList.removeAllViews();selectedSiteId="";selectedSessionId="";selectingScope=true;siteDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد مواقع"}));sessionDropdown.setAdapter(new ArrayAdapter<String>(scroll.getContext(),android.R.layout.simple_spinner_dropdown_item,new String[]{"لا توجد جلسات"}));selectingScope=false;siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);deleteSite.setEnabled(false);selectedSiteSummary.setText("لا توجد مواقع محفوظة.");sites.addView(UiKit.small(sites.getContext(),"لا توجد مواقع محفوظة."),UiKit.full(sites.getContext()));sessions.removeAllViews();return;}
+        if(ss.isEmpty()){reportScope.setText("لا توجد مواقع أو جلسات معتمدة");reportSessionList.removeAllViews();selectedSiteId="";selectedSessionId="";selectingScope=true;siteDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد مواقع"}));sessionDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد جلسات"}));selectingScope=false;siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);deleteSite.setEnabled(false);selectedSiteSummary.setText("لا توجد مواقع محفوظة.");sites.addView(UiKit.small(sites.getContext(),"لا توجد مواقع محفوظة."),UiKit.full(sites.getContext()));sessions.removeAllViews();return;}
         boolean exists=false;for(FieldSessionRepository.Site s:ss)if(s.id.equals(selectedSiteId))exists=true;if(!exists)selectedSiteId=ss.get(0).id;
         FieldSessionRepository.Site selected=null;int siteIndex=0;
         ArrayList<String> siteNames=new ArrayList<>();for(int i=0;i<ss.size();i++){FieldSessionRepository.Site s=ss.get(i);siteNames.add(s.name);if(s.id.equals(selectedSiteId)){selected=s;siteIndex=i;}}
-        selectingScope=true;siteDropdown.setAdapter(new ArrayAdapter<String>(scroll.getContext(),android.R.layout.simple_spinner_dropdown_item,siteNames));siteDropdown.setSelection(siteIndex);siteDropdown.setEnabled(true);selectingScope=false;
-        List<FieldSessionRepository.FieldSession> children=repo.sessionsForSite(selectedSiteId);int measurementCount=0;for(FieldSessionRepository.FieldSession q:children)measurementCount+=repo.measurementSessionIds(q.id).size();selectedSiteSummary.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+"\nالجلسات: "+children.size()+" • القياسات الفنية: "+measurementCount+"\nتقارير الموقع تلخص الجلسات التابعة له دون دمج PPM بين الجلسات.");boolean hasApproved=!repo.approvedSessionsForSite(selectedSiteId).isEmpty();siteReportPdf.setEnabled(hasApproved);siteReportXlsx.setEnabled(hasApproved);deleteSite.setEnabled(children.isEmpty());reportScope.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+" • جلسات معتمدة: "+repo.approvedSessionsForSite(selectedSiteId).size());
+        selectingScope=true;siteDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),siteNames.toArray(new String[0])));siteDropdown.setSelection(siteIndex);siteDropdown.setEnabled(true);selectingScope=false;
+        List<FieldSessionRepository.FieldSession> children=repo.sessionsForSite(selectedSiteId);java.util.Map<String,Integer> measureCounts=repo.measurementCountsForSite(selectedSiteId);int measurementCount=0;for(Integer count:measureCounts.values())measurementCount+=count;selectedSiteSummary.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+"\nالجلسات: "+children.size()+" • القياسات الفنية: "+measurementCount+"\nتقارير الموقع تلخص الجلسات التابعة له دون دمج PPM بين الجلسات.");boolean hasApproved=!repo.approvedSessionsForSite(selectedSiteId).isEmpty();siteReportPdf.setEnabled(hasApproved);siteReportXlsx.setEnabled(hasApproved);deleteSite.setEnabled(children.isEmpty());reportScope.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+" • جلسات معتمدة: "+repo.approvedSessionsForSite(selectedSiteId).size());
         ArrayList<String> names=new ArrayList<>();int chosen=0;boolean found=false;
         for(int i=0;i<children.size();i++){FieldSessionRepository.FieldSession q=children.get(i);names.add(q.name+" • "+q.displayStatus()+(q.active()?" (نشطة)":""));if(q.id.equals(selectedSessionId)){found=true;chosen=i;}}
         if(!found)selectedSessionId=children.isEmpty()?"":children.get(0).id;
         selectingScope=true;
-        sessionDropdown.setAdapter(new ArrayAdapter<String>(scroll.getContext(),android.R.layout.simple_spinner_dropdown_item,children.isEmpty()?new String[]{"لا توجد جلسات"}:names.toArray(new String[0])));
+        sessionDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),children.isEmpty()?new String[]{"لا توجد جلسات"}:names.toArray(new String[0])));
         sessionDropdown.setSelection(chosen);sessionDropdown.setEnabled(!children.isEmpty());selectingScope=false;
         sessions.removeAllViews();if(children.isEmpty()){reportSessionList.removeAllViews();reportSessionList.addView(UiKit.small(scroll.getContext(),"لا توجد جلسات معتمدة لإصدار تقارير."),UiKit.full(scroll.getContext()));sessions.addView(UiKit.small(sessions.getContext(),"لا توجد جلسات تحت هذا الموقع."),UiKit.full(sessions.getContext()));return;}
         reportSessionList.removeAllViews();
@@ -128,9 +150,9 @@ public final class FieldSessionsTab {
             viewReport.setOnClickListener(v->host.openReportsForSite(q.siteId,q.id));
             reportSessionList.addView(viewReport,UiKit.full(scroll.getContext()));
         }
-        for(FieldSessionRepository.FieldSession q:children){if(!q.id.equals(selectedSessionId))continue;String status=q.displayStatus()+(q.active()?" (نشطة)":"");LinearLayout card=UiKit.card(sessions.getContext());TextView t=UiKit.text(sessions.getContext(),q.name+" • "+status+"\n"+q.startedTs+" • القياسات: "+repo.measurementSessionIds(q.id).size());t.setBackgroundColor(0xFFEDEFF2);card.addView(t,UiKit.full(sessions.getContext()));LinearLayout ex=UiKit.hbox(sessions.getContext());Button p=UiKit.button(sessions.getContext(),"تقرير الجلسة PDF • 4–5 صفحات أفقية");p.setEnabled(q.approved());p.setOnClickListener(v->host.openReportsForSite(selectedSiteId,q.id));ex.addView(p,UiKit.weight(1.35f));Button x=UiKit.button(sessions.getContext(),"Excel ذكي للجلسة");x.setEnabled(q.approved());x.setOnClickListener(v->host.openReportsForSite(selectedSiteId,q.id));ex.addView(x,UiKit.weight(.65f));card.addView(ex,UiKit.full(sessions.getContext()));
+        for(FieldSessionRepository.FieldSession q:children){if(!q.id.equals(selectedSessionId))continue;String status=q.displayStatus()+(q.active()?" (نشطة)":"");LinearLayout card=UiKit.card(sessions.getContext());TextView t=UiKit.text(sessions.getContext(),q.name+" • "+status+"\n"+q.startedTs+" • القياسات: "+(measureCounts.containsKey(q.id)?measureCounts.get(q.id):0));t.setBackgroundColor(0xFFEDEFF2);card.addView(t,UiKit.full(sessions.getContext()));LinearLayout ex=UiKit.hbox(sessions.getContext());Button p=UiKit.button(sessions.getContext(),"تقرير الجلسة PDF • 4–5 صفحات أفقية");p.setEnabled(q.approved());p.setOnClickListener(v->host.openReportsForSite(selectedSiteId,q.id));ex.addView(p,UiKit.weight(1.35f));Button x=UiKit.button(sessions.getContext(),"Excel ذكي للجلسة");x.setEnabled(q.approved());x.setOnClickListener(v->host.openReportsForSite(selectedSiteId,q.id));ex.addView(x,UiKit.weight(.65f));card.addView(ex,UiKit.full(sessions.getContext()));
             Button approve=UiKit.button(sessions.getContext(),"✓ اعتماد الجلسة");
-            approve.setEnabled(!q.active()&&!q.approved()&&repo.measurementSessionIds(q.id).size()==1);
+            approve.setEnabled(!q.active()&&!q.approved()&&(measureCounts.containsKey(q.id)?measureCounts.get(q.id):0)==1);
             approve.setOnClickListener(v->new AlertDialog.Builder(sessions.getContext())
                 .setTitle("اعتماد جلسة المستخدم")
                 .setMessage("اعتماد جلسة «"+q.name+"» بعد التحقق من وجود قياس مكتمل واحد. بعدها ستظهر في التقارير.")
