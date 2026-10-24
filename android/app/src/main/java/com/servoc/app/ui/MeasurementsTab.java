@@ -19,6 +19,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.graphics.Bitmap;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -38,6 +40,7 @@ import com.servoc.app.chemical.TankChemicalEvidence;
 import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
 import com.servoc.app.chemcore.TankPpmEstimate;
 import com.servoc.app.chemcore.TankInstantAnalyzer;
+import com.servoc.app.report.TankInstantCharts;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 import com.servoc.app.chemcore.ChemCoreLabQuality;
 import com.servoc.app.data.ExperimentQueries;
@@ -641,8 +644,13 @@ public final class MeasurementsTab {
         final ScrollView view;final LinearLayout box;
         final TextView readiness,topCandidate,confidence,evidence,quantitative,quality,candidatePreview;
         TextView technical;
-        final Button technicalToggle;
+        final Button technicalToggle,largeChart;
+        final Spinner chartChooser;
+        final ImageView chartImage;
+        final TextView chartState;
         final ChemCoreDecisionRepository decisions;
+        private final java.util.ArrayList<Integer> availableCharts=new java.util.ArrayList<>();
+        private String chartOperationId="";
         boolean technicalVisible=false;
 
         AnalysisPane(){
@@ -656,6 +664,22 @@ public final class MeasurementsTab {
             quality=card("جودة التحليل: —");box.addView(quality,UiKit.full(c));
             LinearLayout nav=UiKit.hbox(c);Button openResults=UiKit.button(c,"فتح النتائج التفصيلية");openResults.setOnClickListener(v->showAnalysisSection(2));nav.addView(openResults,UiKit.weight(1.4f));technicalToggle=UiKit.button(c,"التفاصيل التقنية");technicalToggle.setOnClickListener(v->{technicalVisible=!technicalVisible;technical.setVisibility(technicalVisible?View.VISIBLE:View.GONE);technicalToggle.setText(technicalVisible?"إخفاء التفاصيل":"التفاصيل التقنية");});nav.addView(technicalToggle,UiKit.weight(1));box.addView(nav,UiKit.full(c));
             technical=card("");technical.setTextIsSelectable(true);technical.setVisibility(View.GONE);box.addView(technical,UiKit.full(c));
+            box.addView(UiKit.title(c,"📊 قائمة اختيار مخططات ChemCore"),UiKit.full(c));
+            box.addView(UiKit.small(c,"الرسوم التي تسمح بها بيانات العملية المكتملة فقط؛ لا توجد مخططات زمنية من لقطة واحدة."),UiKit.full(c));
+            chartChooser=new Spinner(c);UiKit.outlinedSpinner(chartChooser);
+            box.addView(chartChooser,UiKit.full(c));
+            chartState=card("أكمل القياس الآني لعرض المخططات المتاحة");box.addView(chartState,UiKit.full(c));
+            chartImage=new ImageView(c);chartImage.setAdjustViewBounds(true);
+            chartImage.setVisibility(View.GONE);box.addView(chartImage,UiKit.full(c));
+            largeChart=UiKit.button(c,"🔍 تكبير المخطط");
+            largeChart.setEnabled(false);
+            largeChart.setOnClickListener(v->openLargeChart());
+            chartImage.setOnClickListener(v->openLargeChart());
+            box.addView(largeChart,UiKit.full(c));
+            chartChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+                public void onItemSelected(AdapterView<?> parent,View view,int pos,long id){showSelectedChart(pos);}
+                public void onNothingSelected(AdapterView<?> parent){}
+            });
             LinearLayout exp=UiKit.hbox(c);Button pdf=UiKit.button(c,"PDF");pdf.setOnClickListener(v->export("pdf"));exp.addView(pdf,UiKit.weight(1));Button xls=UiKit.button(c,"Excel");xls.setOnClickListener(v->export("xlsx"));exp.addView(xls,UiKit.weight(1));Button raw=UiKit.button(c,"Raw");raw.setOnClickListener(v->export("raw"));exp.addView(raw,UiKit.weight(1));box.addView(exp,UiKit.full(c));
             decisions=new ChemCoreDecisionRepository(host.database());
         }
@@ -667,6 +691,7 @@ public final class MeasurementsTab {
             colorState(readiness,ready,exploratory);
             quality.setText("MQ صالح "+q.validMqChannels+"/8 • R0 "+q.r0NormalizedChannels+"/8 • M4-ref "+q.referenceValidatedChannels+"/8 • ENV "+(q.environmentReady?"جاهز":"محجوب"));quality.setTextColor(q.validMqChannels>=6?GOOD:WARN);
             TankInstantAnalyzer.Result completed=currentOperation;JSONObject p=completed==null?null:completed.analysis;
+            refreshChartChoices(completed);
             if(p==null){topCandidate.setText("المرشح الأول\n—");confidence.setText("الثقة\n—");evidence.setText("الدليل\n—");quantitative.setText("PPM الكمي\nلا توجد جلسة محللة");exposureStyle(quantitative,false);candidatePreview.setText("لا توجد نتيجة ChemCore مرتبطة بجلسة مكتملة.");technical.setText("لا توجد تفاصيل تقنية.");return;}
             String chemical=p.optString("chemical","—"),tier=p.optString("evidence_tier","—"),outcome=p.optString("outcome","—");double post=p.optDouble("top_posterior",Double.NaN),runner=p.optDouble("runner_up_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN),ood=p.optDouble("ood_score",Double.NaN),entropy=p.optDouble("normalized_entropy",Double.NaN);
             topCandidate.setText("المرشح الأول\n"+chemical);topCandidate.setTextColor(INFO);
@@ -679,6 +704,48 @@ public final class MeasurementsTab {
             quality.setText("جودة التحليل • MQ "+q.validMqChannels+"/8 • ENV "+(q.environmentReady?"READY":"WITHHELD")+" • OOD "+fmt(ood)+" • Entropy "+fmt(entropy)+" • Runner "+pct(runner));
             candidatePreview.setText(compactCandidates(p,4));
             technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,4));
+        }
+        private void refreshChartChoices(TankInstantAnalyzer.Result item){
+            String id=item==null?"":item.id;
+            if(id.equals(chartOperationId))return;
+            chartOperationId=id;availableCharts.clear();
+            java.util.ArrayList<String> names=new java.util.ArrayList<>();
+            if(item!=null)for(int i=0;i<TankInstantCharts.LABELS.length;i++){
+                if(TankInstantCharts.available(i,item.original,item.analysis)){
+                    availableCharts.add(i);names.add(TankInstantCharts.LABELS[i]);
+                }
+            }
+            if(names.isEmpty())names.add("لا تتوفر رسوم مبنية على قياسات صالحة");
+            chartChooser.setAdapter(UiKit.lightOptions(c,names.toArray(new String[0])));
+            chartChooser.setEnabled(!availableCharts.isEmpty());
+            chartImage.setVisibility(View.GONE);
+            chartImage.setImageDrawable(null);
+            largeChart.setEnabled(false);
+            chartState.setText(item==null?"أكمل القياس الآني لعرض المخططات":
+                    availableCharts.isEmpty()?"لا تتوفر بيانات كافية للرسم":
+                    "اختر أحد "+availableCharts.size()+" مخططات متاحة");
+            if(!availableCharts.isEmpty())showSelectedChart(0);
+        }
+        private void showSelectedChart(int selectedIndex){
+            TankInstantAnalyzer.Result item=currentOperation;
+            if(item==null||selectedIndex<0||selectedIndex>=availableCharts.size())return;
+            try{
+                Bitmap b=TankInstantCharts.render(availableCharts.get(selectedIndex),item.original,item.analysis);
+                chartImage.setImageBitmap(b);chartImage.setVisibility(View.VISIBLE);
+                largeChart.setEnabled(true);
+                chartState.setText(TankInstantCharts.LABELS[availableCharts.get(selectedIndex)]);
+            }catch(Exception e){
+                chartImage.setImageDrawable(null);chartImage.setVisibility(View.GONE);
+                largeChart.setEnabled(false);chartState.setText("المخطط غير متاح لهذه العملية");
+            }
+        }
+        private void openLargeChart(){
+            android.graphics.drawable.Drawable drawable=chartImage.getDrawable();
+            if(drawable==null)return;
+            ImageView enlarged=new ImageView(c);
+            enlarged.setImageDrawable(drawable);enlarged.setAdjustViewBounds(true);
+            new AlertDialog.Builder(c).setTitle(String.valueOf(chartChooser.getSelectedItem()))
+                .setView(enlarged).setPositiveButton("إغلاق",null).show();
         }
         void export(String format){
             TankInstantAnalyzer.Result result=currentOperation;
