@@ -111,3 +111,30 @@ NEXT SAFE STEP:
 **Still incomplete:** V4 single-operation temporal telemetry buffer, immutable capture-time R0 provenance, full state machine and field-session isolation audit; cross-screen candidate/plot/PDF evidence consistency; full light-theme dropdown/RTL audit; original `الجلسات` crash Logcat; real Gradle build. The offline fix preserves a result already in memory, **not** a previously nonexistent sample or durable restoration of the whole live workflow.
 
 **STOP POINT:** Retain V4 work on the feature branch. Investigate GitHub Actions job failure (no steps/logs available from retried run); do not infer success from source tests. Next execute independent SQLite and JVM suites in a functioning Gradle environment before widening changes.
+
+## Checkpoint 03 — 2026-10-24 — Owner's Echo, MQ controls, session stability and newest R0
+
+**Owner authorization:** “ابدا بتنفيذ التعديلات”, covering the follow-up Echo, lower MQ toggle, sessions crash, and saved R0 / clean-air false alarm issues. Work remained on `feature/tank-v4-implementation` only; NOT merged/released. Traceable requirements: [V4-016..018](../requirements/V4-UPDATE-BACKLOG-2026-10-24.md), with sessions fix under V4-015.
+
+### Concrete source commits
+
+| Target | Commit(s) | Result / acceptance gap |
+| --- | --- | --- |
+| MQ power button V4-017 | `a0cdc46b` | Removed the `relayButton` upper-right `cameraBox` overlay and placed the same listener/button in bottom `actions` row. Portrait + landscape layout visual acceptance **PENDING**; preserved E-STOP. |
+| Active R0 & false positive V4-018 | `a73db022`, `38627b60`, `f4638c88`, `e3cd4f5d` | `MainActivity` no longer initializes live gas alarms from old independent `health_baseline_*` database values. Operational baseline is Rs/R0=1 from active `ManualR0Calibration`, and changes are detected before `sensorHealth.accept`/alerts. Missing actual Rs cannot fall back to a legacy ratio. Historical recorded-R0 path retained. The original root cause is a **source-evidenced risk**, not device-proven diagnosis. |
+| Remote + Direct R0 consistency V4-018 | `0e5ff49a` | MQTT canonical snapshot path now copies/re-normalizes all 8 active `mq` channels and `measurement.mq` via the latest phone R0 **before** CanonicalMeasurementNormalizer and all downstream consumers. Direct path already passed through `RobotProtocolV4.normalize` and `ManualR0Calibration.apply`. App restart loads last committed R0 from `SharedPreferences`; `saveAutomatic` uses synchronous `commit()`. Firmware R0 values still exist as provenance; no firmware calibration overwritten. |
+| Echo firmware + UI V4-016 | `c8df2361`, `608ed75f`, `cd2434b9`, `750df7da` | Echo ISR ignores duplicate rise events; validates pulse window 110..23500 us; filters distance via 3-sample median; short raw valid pulses trigger immediate warning; timeout invalidation drops bogus distance; raw + filtered cm/status retained through HTTP Android path. `ESP32-Tank` source now labeled `0.1.4-v4-dev`. The 500 ms drive watchdog and warning-only role remain. **Hardware pulse/level-shifter tests pending.** |
+| Sessions crash V4-015 | `adcf36ee`, `841bab79` (plus checkpoint 01) | Site/session dropdowns no longer rebind adapters on each refresh when bound IDs AND labels are unchanged. Existing SQLite grouped query, guarded refresh and in-tab non-destructive error handling retained. **No original on-device Logcat; the exact crash root cause is not verified.** |
+| Regression coverage | `7b8e0443`, `26a2caa3`, `46413f3f`, `57035a83`, `13adb7e7` | Added JUnit source-contract checks and `tools/verify_v4_echo_r0_contract.py`; wired standalone Python verifier into V4 GitHub Actions before original-source checkout, alongside `verify_v4_session_queries.py`. |
+
+### Actual verification and blockers
+
+- GitHub source read-back after commits: **12 / 12 focused source-contract assertions true** (Echo bounds/median/near warning/warning-only, R0 durable and direct normalization, no ratio fallback, baseline refresh, lower MQ UI, adapter stability, verifier regex). This is **SOURCE_CONTRACT_PASS ONLY**.
+- Inspected pinned original-source `SensorHealthEngine`, `LiveGasStateEngine`, `GasAlertCoordinator`, `CanonicalMeasurementNormalizer`, `AnalyticsSnapshot`, `TelemetryRecorder`, `RemoteConnection`: confirmed two distinct operational baseline paths and a remote-snapshot normalization bypass risk; historical telemetry stores captured channel JSON.
+- No actual Python CLI verifier execution, JUnit, Gradle APK build, Arduino compile, UI screenshots, device Logcat, sensor-ruler comparison, or hardware-level acceptance was obtained in this checkpoint. Historical V4 Actions failure cannot be diagnosed from available logs; combined status and PR-filtered run lookup returned no new pass. Do not represent these source checks as `CI_PASS`.
+- No database migrations, old session deletions, release signing, firmware flashing or changes to `sohpany/SERVOC-Android`.
+- **Required before release:** Run Python/SQLite checks; Gradle `:app:testDebugUnitTest :app:assembleDebug`, run Arduino ESP32-Tank + Cam-tank compile; verify newest R0 across all 8 in Direct AND Remote, restart/reconnect and actual clean air including adequate sensor warmup; test calibration provenance in frozen instant/site report; inspect `الجلسات` crashes with actual Logcat and migrated v9 DB; check portrait/landscape MQ/E-STOP; physically measure Echo distances 20/40/90 cm with 5 V echo correctly level shifted. Firmware pins: TRIG GPIO23, ECHO GPIO39.
+- **Delivery state:** `SOURCE_PRESENT / CI_UNKNOWN / DEVICE_NOT_TESTED / V4_UNRELEASED`. No APK or Arduino source ZIP generated or claimed.
+
+### Next resume point
+Continue from the V4 branch head after these commits and requirements. Verify CI executions with legible logs or run pinned-source Gradle in an authorized builder. Inspect timestamp/frozen provenance for single-operation ChemCore/candidate/PDF and field sessions. Do not merge V4 into `develop` or publish an APK as a tested release without compile and phone/robot gates.
