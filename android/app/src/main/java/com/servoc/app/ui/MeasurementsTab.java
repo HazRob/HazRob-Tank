@@ -37,6 +37,7 @@ import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.chemical.TankChemicalEvidence;
 import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
 import com.servoc.app.chemcore.TankPpmEstimate;
+import com.servoc.app.chemcore.TankInstantAnalyzer;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 import com.servoc.app.chemcore.ChemCoreLabQuality;
 import com.servoc.app.data.ExperimentQueries;
@@ -72,6 +73,7 @@ public final class MeasurementsTab {
     private int analysisSection=0;
     private final PhysicalPane physical;
     private final LivePane live;
+    private volatile TankInstantAnalyzer.Result currentOperation;
     private final AnalysisPane analysis;
     private final AnalysisResultsPane analysisResults;
     private final LinearLayout analysisShell;
@@ -522,10 +524,11 @@ public final class MeasurementsTab {
 
     private final class LivePane {
         final ScrollView view;final LinearLayout box,cards;
-        final TextView powerCard,arrayCard,gasCard,sessionCard,instantHistory;
+        final TextView powerCard,arrayCard,gasCard,sessionCard;
         final ProgressBar progress;
         final SensorCard[] sensorCards=new SensorCard[HazRobHardwareProfile.MQ.length];
-        final Button powerToggle,start,cancel,save;
+        final Button powerToggle,start,cancel,report;
+        private boolean active=false;
 
         LivePane(){
             view=new ScrollView(c);view.setVerticalScrollBarEnabled(true);view.setScrollbarFadingEnabled(false);box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,10));view.addView(box);
@@ -535,43 +538,64 @@ public final class MeasurementsTab {
             progress=new ProgressBar(c,null,android.R.attr.progressBarStyleHorizontal);progress.setMax(1000);progress.setProgress(0);box.addView(progress,UiKit.full(c));
             LinearLayout actions=UiKit.hbox(c);
             powerToggle=UiKit.button(c,"تشغيل MQ");powerToggle.setOnClickListener(v->togglePower());actions.addView(powerToggle,UiKit.weight(1));
-            start=UiKit.button(c,"بدء القياس");start.setOnClickListener(v->measure(true));actions.addView(start,UiKit.weight(1));
-            cancel=UiKit.button(c,"إلغاء");cancel.setOnClickListener(v->measure(false));actions.addView(cancel,UiKit.weight(.75f));
-            save=UiKit.button(c,"حفظ لقطة فورية");save.setOnClickListener(v->save());actions.addView(save,UiKit.weight(1.10f));box.addView(actions,UiKit.full(c));
-            instantHistory=UiKit.small(c,"اللقطات الفورية المحلية • —");instantHistory.setTextIsSelectable(true);
-            instantHistory.setTextColor(MUTED);box.addView(instantHistory,UiKit.full(c));refreshInstantHistory();
+            start=UiKit.button(c,"بدء القياس الآني");start.setOnClickListener(v->beginOperation());actions.addView(start,UiKit.weight(1));
+            cancel=UiKit.button(c,"إنهاء وتحليل القياس");cancel.setOnClickListener(v->finishOperation());cancel.setEnabled(false);actions.addView(cancel,UiKit.weight(1.2f));
+            box.addView(actions,UiKit.full(c));
+            report=UiKit.button(c,"📄 إصدار تقرير القياسات الآنية");report.setEnabled(false);
+            report.setOnClickListener(v->{
+                TankInstantAnalyzer.Result result=currentOperation;
+                if(result==null){host.showToast("أكمل عملية القياس أولاً");return;}
+                host.requestInstantReportPdf(result.original,result.analysis,result.id,result.capturedAtMs);
+            });
+            box.addView(report,UiKit.full(c));
+            box.addView(UiKit.small(c,"عملية واحدة دون سجل لقطات. بعد إنهائها تظهر النتيجة نفسها في ChemCore والمرشحون والتقرير."),UiKit.full(c));
             TextView ch=UiKit.small(c,"قنوات MQ • الاستجابة والاتجاه وجودة الإشارة");ch.setTextColor(MUTED);box.addView(ch,UiKit.full(c));
             cards=UiKit.vbox(c);box.addView(cards,UiKit.full(c));for(int i=0;i<sensorCards.length;i++){sensorCards[i]=new SensorCard(HazRobHardwareProfile.MQ[i]);cards.addView(sensorCards[i].root,UiKit.full(c));}
         }
         private void togglePower(){JSONObject d=host.latestDiagnostics(),r=d==null?null:d.optJSONObject("relay");boolean on=r!=null&&r.optBoolean("on",r.optInt("mask",0)!=0);setPower(!on);}
         private void setPower(boolean on){powerToggle.setEnabled(false);host.io().execute(()->{try{host.robotApi().mqPower(on);box.post(()->{powerToggle.setEnabled(true);host.refreshAllTabs();});}catch(Exception e){box.post(()->{powerToggle.setEnabled(true);host.showToast("تعذر تغيير طاقة MQ");});}});}
-        private void measure(boolean begin){
-            if(begin){
-                FieldSessionRepository field=new FieldSessionRepository(host.database());
-                FieldSessionRepository.FieldSession active=field.activeFieldSession();
-                if(active!=null&&!field.measurementSessionIds(active.id).isEmpty()){
-                    host.showToast("تسمح جلسة الموقع بقياس واحد فقط؛ أنهِ الجلسة واعتمدها أو أنشئ جلسة جديدة");
-                    return;
-                }
-                JSONObject d=host.latestDiagnostics(),adc=d==null?null:d.optJSONObject("adc");boolean a1=adc!=null&&adc.optBoolean("ads1",false),a2=adc!=null&&adc.optBoolean("ads2",false);if(!a1&&!a2){host.showToast("لا يمكن بدء الجلسة: ADS1 وADS2 غير مكتشفين");return;}}
-            host.io().execute(()->{try{if(begin)host.robotApi().startMeasurement();else host.robotApi().cancelMeasurement();host.refreshAllTabs();}catch(Exception e){host.showToast("تعذر تنفيذ أمر الجلسة: "+String.valueOf(e.getMessage()));}});
+        private void beginOperation(){
+            if(active){host.showToast("عملية القياس الآني ما زالت جارية");return;}
+            JSONObject data=host.latestDiagnostics();
+            if(data==null||data.optJSONObject("mq")==null){
+                host.showToast("اتصل بحساسات MQ لبدء قياس آني");return;
+            }
+            currentOperation=null;active=true;progress.setProgress(0);
+            start.setEnabled(false);cancel.setEnabled(true);report.setEnabled(false);
+            sessionCard.setText("العملية • قياس جارٍ\nاختر إنهاء لالتقاط وتحليل القراءة الختامية");
+            host.refreshAllTabs();
         }
-        private void save(){
-            JSONObject d=host.latestDiagnostics();if(d==null){host.showToast("لا توجد بيانات للحفظ");return;}
-            host.io().execute(()->{try{String ts=isoNow();ChemicalRepository repo=new ChemicalRepository(host.database());SqliteCalibrationProvider cal=new SqliteCalibrationProvider(host.database());String analytics=AnalyticsSnapshot.toJson(d,repo,cal,false);JSONObject relay=d.optJSONObject("relay");int power=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0)?1:0;long id=host.database().save(ts,d.toString(),"TANK_V3_INSTANT_SNAPSHOT • MQ Power "+(power==1?"ON":"OFF")+" • GPIO25",analytics);if(id<=0)throw new IllegalStateException("instant snapshot persistence failed");host.showToast("تم حفظ لقطة فورية مستقلة #"+id+"؛ لا تدخل ضمن جلسات المواقع");box.post(this::refreshInstantHistory);host.refreshAllTabs();}catch(Exception e){host.showToast("تعذر حفظ الجلسة");}});
-        }
-        private void refreshInstantHistory(){
-            StringBuilder sb=new StringBuilder("اللقطات الفورية المحلية (لا تدخل في تقارير المواقع):");
-            try(Cursor saved=host.database().getReadableDatabase().rawQuery(
-                "SELECT id,ts FROM experiments WHERE session_id IS NULL AND protocol LIKE ? ORDER BY id DESC LIMIT 8",
-                new String[]{"TANK_V3_INSTANT_SNAPSHOT%"})){
-                int n=0;
-                while(saved.moveToNext()){
-                    sb.append("\n#").append(saved.getLong(0)).append(" • ").append(saved.getString(1));n++;
+        private void finishOperation(){
+            if(!active){host.showToast("ابدأ قياساً آنياً أولاً");return;}
+            JSONObject data=host.latestDiagnostics();
+            if(data==null||data.optJSONObject("mq")==null){
+                host.showToast("لا تتوفر قراءة MQ حية لإنهاء العملية");return;
+            }
+            final JSONObject frozen;
+            try{frozen=new JSONObject(data.toString());}catch(Exception e){
+                host.showToast("تعذر تجميد القراءات");return;
+            }
+            active=false;cancel.setEnabled(false);
+            sessionCard.setText("العملية • يجري تحليل القراءة الختامية");
+            final long now=System.currentTimeMillis();
+            host.io().execute(()->{
+                try{
+                    TankInstantAnalyzer.Result completed=TankInstantAnalyzer.analyze(host.database(),frozen,now);
+                    box.post(()->{
+                        currentOperation=completed;start.setEnabled(true);report.setEnabled(true);
+                        progress.setProgress(1000);
+                        sessionCard.setText("العملية مكتملة\n"+completed.channels+" قنوات MQ");
+                        host.refreshAllTabs();showAnalysisSection(1);
+                    });
+                }catch(Exception ex){
+                    box.post(()->{
+                        currentOperation=null;start.setEnabled(true);report.setEnabled(false);
+                        progress.setProgress(0);
+                        sessionCard.setText("العملية لم تكتمل • بيانات التحليل غير كافية");
+                        host.showToast("تعذر تحليل MQ: "+ex.getClass().getSimpleName());
+                    });
                 }
-                if(n==0)sb.append("\nلم تُحفظ لقطات فورية بعد");
-            }catch(Exception ex){sb.append("\nسجل اللقطات غير متاح");}
-            instantHistory.setText(sb.toString());
+            });
         }
         void refresh(){
             JSONObject d=host.latestDiagnostics();if(d==null){powerCard.setText("MQ\nغير متصل");arrayCard.setText("المصفوفة\n—");gasCard.setText("الاستجابة\n—");sessionCard.setText("الجلسة\n—");progress.setProgress(0);powerToggle.setText("تشغيل MQ");for(SensorCard sc:sensorCards)sc.refresh(false,false,null,null,null);return;}
@@ -582,13 +606,12 @@ public final class MeasurementsTab {
             for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){SensorHealthEngine.Snapshot h=host.sensorHealth(hw.key);if(h!=null&&(h.state==SensorHealthEngine.State.UNSTABLE||h.state==SensorHealthEngine.State.DRIFT_WARNING))unstable++;}
             arrayCard.setText("المصفوفة "+valid+"/"+available+"\nغير مستقرة "+unstable);colorState(arrayCard,valid>=6&&unstable==0,valid>=4);
             LiveGasStateEngine.Snapshot gas=host.liveGasState();String gs=gas==null?"غير متاح":liveGasStateAr(gas.state);gasCard.setText("الاستجابة\n"+gs+(gas==null?"":" • "+gas.respondingChannels+" قنوات"));boolean gasNormal=gas!=null&&gas.state==LiveGasStateEngine.State.NORMAL;boolean gasWatch=gas!=null&&(gas.state==LiveGasStateEngine.State.WARMING_UP||gas.state==LiveGasStateEngine.State.BASELINE_REQUIRED);colorState(gasCard,gasNormal,gasWatch);
-            String st=m==null?"idle":m.optString("state","idle");int total=m==null?0:m.optInt("duration_s",0),elapsed=m==null?0:m.optInt("elapsed_s",0),remain=m==null?0:m.optInt("remaining_s",Math.max(0,total-elapsed)),validSession=m==null?0:m.optInt("valid_channels",0);String err=m==null?"":m.optString("error","");
-            if("measuring".equals(st)){sessionCard.setText("الجلسة • قياس\nمتبقي "+remain+" s");progress.setProgress(total>0?Math.min(1000,Math.max(0,Math.round(1000f*elapsed/total))):0);}
-            else if("ready".equals(st)){sessionCard.setText("الجلسة • مكتملة\nقنوات "+validSession);progress.setProgress(1000);}
-            else if("error".equals(st)){sessionCard.setText("الجلسة • خطأ\n"+errorAr(err));progress.setProgress(0);}
-            else if("warmup".equals(st)){sessionCard.setText("الجلسة • تسخين\nانتظار الاستقرار");progress.setProgress(0);}
-            else{sessionCard.setText("الجلسة • خاملة\nالقراءة الحية مستمرة");progress.setProgress(0);}
-            colorState(sessionCard,"ready".equals(st),"measuring".equals(st)||"warmup".equals(st)||"idle".equals(st));
+            TankInstantAnalyzer.Result completed=currentOperation;
+            if(active){sessionCard.setText("العملية • جارٍ القياس");progress.setProgress(500);}
+            else if(completed!=null){sessionCard.setText("العملية مكتملة\n"+completed.channels+" قنوات MQ");progress.setProgress(1000);}
+            else{sessionCard.setText("العملية • جاهزة");progress.setProgress(0);}
+            colorState(sessionCard,completed!=null,active);
+            cancel.setEnabled(active);report.setEnabled(completed!=null);
             for(SensorCard sc:sensorCards)sc.refresh(true,powered,relay,adc,mq==null?null:mq.optJSONObject(sc.hw.key));
         }
     }
@@ -643,7 +666,7 @@ public final class MeasurementsTab {
             readiness.setText("الجاهزية\n"+(ready?"● مُهيّأ للمعايرة/التحليل":exploratory?"● فحص بحثي متاح قبل R0":"● انتظار حساسات MQ"));
             colorState(readiness,ready,exploratory);
             quality.setText("MQ صالح "+q.validMqChannels+"/8 • R0 "+q.r0NormalizedChannels+"/8 • M4-ref "+q.referenceValidatedChannels+"/8 • ENV "+(q.environmentReady?"جاهز":"محجوب"));quality.setTextColor(q.validMqChannels>=6?GOOD:WARN);
-            String id=host.lastMeasurementSessionId();JSONObject p=id==null||id.isEmpty()?null:decisions.latestPayloadForSession(id);if(p!=null&&p.optJSONObject("lab_quality")==null){decisions.attachLabQuality(id,q.toJson(),System.currentTimeMillis());p=decisions.latestPayloadForSession(id);}
+            TankInstantAnalyzer.Result completed=currentOperation;JSONObject p=completed==null?null:completed.analysis;
             if(p==null){topCandidate.setText("المرشح الأول\n—");confidence.setText("الثقة\n—");evidence.setText("الدليل\n—");quantitative.setText("PPM الكمي\nلا توجد جلسة محللة");exposureStyle(quantitative,false);candidatePreview.setText("لا توجد نتيجة ChemCore مرتبطة بجلسة مكتملة.");technical.setText("لا توجد تفاصيل تقنية.");return;}
             String chemical=p.optString("chemical","—"),tier=p.optString("evidence_tier","—"),outcome=p.optString("outcome","—");double post=p.optDouble("top_posterior",Double.NaN),runner=p.optDouble("runner_up_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN),ood=p.optDouble("ood_score",Double.NaN),entropy=p.optDouble("normalized_entropy",Double.NaN);
             topCandidate.setText("المرشح الأول\n"+chemical);topCandidate.setTextColor(INFO);
@@ -658,13 +681,12 @@ public final class MeasurementsTab {
             technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,4));
         }
         void export(String format){
-            String sid=host.lastMeasurementSessionId();
-            if(sid==null||sid.isEmpty()){host.showToast("لا توجد جلسة قياس محفوظة مطابقة للمعروض");return;}
-            List<ExperimentQueries.Record> records=ExperimentQueries.bySessionId(host.database(),sid);
-            if(records.isEmpty()){host.showToast("لم يُحفظ تقرير لهذه الجلسة بعد");return;}
-            ExperimentQueries.Record latest=records.get(records.size()-1);
-            if("raw".equals(format))host.requestRawExport(latest.id);
-            else host.requestExport(format,latest.id);
+            TankInstantAnalyzer.Result result=currentOperation;
+            if(result==null){host.showToast("أكمل عملية القياس الآني أولاً");return;}
+            if(!"pdf".equalsIgnoreCase(format)){
+                host.showToast("تقرير هذه العملية الآنية متوفر PDF فقط");return;
+            }
+            host.requestInstantReportPdf(result.original,result.analysis,result.id,result.capturedAtMs);
         }
     }
 
@@ -694,7 +716,7 @@ public final class MeasurementsTab {
             long now=android.os.SystemClock.elapsedRealtime();
             if(lastRenderedAt>0&&now-lastRenderedAt<750L)return;
             lastRenderedAt=now;
-            String id=host.lastMeasurementSessionId();JSONObject p=id==null||id.isEmpty()?null:decisions.latestPayloadForSession(id);candidateList.removeAllViews();screeningList.removeAllViews();tracking.setText(host.trackingTargetId()>=0?"التتبع • "+host.trackingTargetName()+" (#"+host.trackingTargetId()+") • فرضية مشغل":"التتبع • لا يوجد");
+            TankInstantAnalyzer.Result completed=currentOperation;JSONObject p=completed==null?null:completed.analysis;candidateList.removeAllViews();screeningList.removeAllViews();tracking.setText(host.trackingTargetId()>=0?"التتبع • "+host.trackingTargetName()+" (#"+host.trackingTargetId()+") • فرضية مشغل":"التتبع • لا يوجد");
             if(p==null){startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");exposureStyle(safetyCard,false);technical.setText("—");return;}
             String chemical=p.optString("chemical","—"),outcome=p.optString("outcome","—"),tier=p.optString("evidence_tier","—");double post=p.optDouble("top_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN);TankPpmEstimate.Result estimate=TankPpmEstimate.from(p);boolean ppmOk=estimate.reportable;double ppm=estimate.ppm;
             decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+" • Δ "+pct(margin)+" • "+tier+(estimate.available()?" • "+String.format(Locale.US,"%.2f ppm • %s",ppm,estimate.qualityAr()):" • لا يوجد رقم PPM محسوب"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
