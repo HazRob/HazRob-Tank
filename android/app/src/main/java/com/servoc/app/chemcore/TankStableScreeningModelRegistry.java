@@ -50,7 +50,8 @@ public final class TankStableScreeningModelRegistry {
         }
     }
 
-    private static final class StableModel implements ChemCoreResponseModel {
+    /** Package-visible for deterministic numerical validation; only the loader authorizes persisted models. */
+    static final class StableModel implements ChemCoreResponseModel {
         final String sensor,version,source,note;
         final double intercept,slope,sigma,min,max;
         final ChemCoreDecision.EvidenceTier tier;
