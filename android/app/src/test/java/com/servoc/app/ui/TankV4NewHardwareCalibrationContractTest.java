@@ -28,6 +28,8 @@ public final class TankV4NewHardwareCalibrationContractTest {
         String normalizer=src("calibration/AcceptedR0Normalizer.java");
         assertTrue(main.contains("ManualR0Calibration.load(prefs)"));
         assertTrue(api.contains("CanonicalMeasurementNormalizer.enrich"));
+        assertTrue(api.contains("applyActiveR0(new JSONObject(s.toString()))"));
+        assertTrue(api.contains("reconcileMq(measurement.optJSONObject(\"mq\"))"));
         assertTrue(proto.contains("ManualR0Calibration.apply(hw.key,x)"));
         assertTrue(calibration.contains("p.getString(\"manual_r0_\"+k"));
         assertTrue(calibration.contains("if(!e.commit())return false"));
