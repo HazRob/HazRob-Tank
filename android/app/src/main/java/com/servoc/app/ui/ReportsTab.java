@@ -64,13 +64,13 @@ public final class ReportsTab {
     public ReportsTab(Context c,HazRobHost host){
         this.host=host;decisions=new ChemCoreDecisionRepository(host.database());fieldSessions=new FieldSessionRepository(host.database());
         scroll=new ScrollView(c);scroll.setFillViewport(true);root=UiKit.vbox(c);root.setPadding(UiKit.dp(c,8),UiKit.dp(c,6),UiKit.dp(c,8),UiKit.dp(c,12));root.setBackgroundColor(BG);scroll.addView(root);
-        root.addView(UiKit.title(c,"التقارير الذكية • HazRob Tank V3"),UiKit.full(c));
+        root.addView(UiKit.title(c,"التقارير الذكية • HazRob Tank"),UiKit.full(c));
         TextView scopeHint=UiKit.small(c,"نطاق التقرير: اختر الموقع، ثم جميع جلساته أو جلسة واحدة. لا يجمع التطبيق جلسات مختارة في تقرير جزئي.");
         scopeHint.setTextColor(MUTED);root.addView(scopeHint,UiKit.full(c));
         root.addView(UiKit.small(c,"الموقع"),UiKit.full(c));
-        siteSelector=new Spinner(c);root.addView(siteSelector,UiKit.full(c));
+        siteSelector=new Spinner(c);UiKit.outlinedSpinner(siteSelector);root.addView(siteSelector,UiKit.full(c));
         root.addView(UiKit.small(c,"الجلسة / نطاق التقرير"),UiKit.full(c));
-        fieldSelector=new Spinner(c);root.addView(fieldSelector,UiKit.full(c));
+        fieldSelector=new Spinner(c);UiKit.outlinedSpinner(fieldSelector);root.addView(fieldSelector,UiKit.full(c));
         siteSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
                 if(position<0||position>=scopeSites.size())return;
@@ -96,7 +96,7 @@ public final class ReportsTab {
         LinearLayout actions=UiKit.hbox(c);pdf=UiKit.button(c,"تصدير PDF");pdf.setOnClickListener(v->exportScope("pdf"));actions.addView(pdf,UiKit.weight(1));xlsx=UiKit.button(c,"تصدير Excel");xlsx.setOnClickListener(v->exportScope("xlsx"));actions.addView(xlsx,UiKit.weight(1));root.addView(actions,UiKit.full(c));
 
         TextView chartTitle=UiKit.small(c,"الرسوم التحليلية • البيانات المسجلة فقط • لا توجد نقاط مصطنعة");chartTitle.setTextColor(MUTED);root.addView(chartTitle,UiKit.full(c));
-        chartSelector=new Spinner(c);chartSelector.setBackgroundColor(0xFFE8EBEF);root.addView(chartSelector,UiKit.full(c));
+        chartSelector=new Spinner(c);UiKit.outlinedSpinner(chartSelector);root.addView(chartSelector,UiKit.full(c));
         chartStatus=card(c,"المخطط • اختر جلسة محفوظة");root.addView(chartStatus,UiKit.full(c));
         chartView=new ImageView(c);chartView.setAdjustViewBounds(true);chartView.setMinimumHeight(UiKit.dp(c,220));chartView.setBackgroundColor(CARD2);chartView.setVisibility(View.GONE);root.addView(chartView,UiKit.full(c));
         chartView.setContentDescription("مخطط البيانات المحفوظة، اضغط لفتحه بحجم كبير");
@@ -126,7 +126,7 @@ public final class ReportsTab {
         for(int i=0;i<sites.size();i++){names.add(sites.get(i).name);if(sites.get(i).id.equals(chosenSiteId))selected=i;}
         if(sites.isEmpty()){chosenSiteId="";scopeSessions.clear();chosenSessionId="";names.add("لا توجد مواقع");}
         else chosenSiteId=sites.get(selected).id;
-        siteSelector.setAdapter(new ArrayAdapter<String>(scroll.getContext(),android.R.layout.simple_spinner_dropdown_item,names));
+        siteSelector.setAdapter(UiKit.lightOptions(scroll.getContext(),names));
         siteSelector.setEnabled(!sites.isEmpty());siteSelector.setSelection(selected);
         refreshSessionScope();
     }
