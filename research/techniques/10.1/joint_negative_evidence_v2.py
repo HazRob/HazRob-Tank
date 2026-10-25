@@ -53,6 +53,8 @@ def compare_joint_nondetection(priors, *, source_id, physical_session_id,
     if not usable:
         result["status"] = "NO_VALID_MEASUREMENT"
         return result
+    if not isinstance(joint_reference_independently_verified, bool):
+        raise ValueError("joint reference verification flag must be boolean")
     if not joint_reference_independently_verified:
         result["status"] = "UNVERIFIED_JOINT_LIKELIHOOD_NO_UPDATE"
         return result
