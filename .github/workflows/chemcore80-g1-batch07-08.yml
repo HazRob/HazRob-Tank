@@ -31,6 +31,10 @@ jobs:
           python-version: '3.11'
       - name: Verify six Batch08 gates
         run: python -m unittest discover -v -s research/implementation_execution -p 'test_batch08_six_gates_v2.py'
+      - name: Verify 08.10 multioutput regression
+        run: python -m unittest discover -v -s research/techniques/08.10 -p 'test_source_multioutput_fit_v2.py'
+      - name: Verify 10.1 joint negative evidence
+        run: python -m unittest discover -v -s research/techniques/10.1 -p 'test_joint_negative_evidence_v2.py'
       - name: Verify pose fusion
         run: python -m unittest discover -v -s research/techniques/09.5 -p 'test_causal_pose_fusion_v2.py'
       - name: Verify motion decision guard
