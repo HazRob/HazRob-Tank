@@ -1782,16 +1782,21 @@
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-20",
         "TOOL-MQ-01"
       ],
       "source_package": "research/techniques/07.10/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/07.10/cpython_research_profile_v2.py",
+        "research/implementation_execution/test_batch07_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
@@ -1802,16 +1807,21 @@
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-01",
         "MQ-EXT-10"
       ],
       "source_package": "research/techniques/08.1/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.1/conv1d_research_reference_v2.py",
+        "research/implementation_execution/test_batch07_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
@@ -1822,16 +1832,21 @@
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-17",
         "MQ-EXT-10"
       ],
       "source_package": "research/techniques/08.2/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.2/causal_dilated_tcn_v2.py",
+        "research/implementation_execution/test_batch07_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
@@ -1842,17 +1857,22 @@
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-01",
         "CN-PAT-03",
         "MQ-EXT-12"
       ],
       "source_package": "research/techniques/08.3/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.3/recurrent_state_isolation_v2.py",
+        "research/implementation_execution/test_batch07_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
@@ -1863,16 +1883,21 @@
       "batch": 7,
       "priority": "P2",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-01",
         "MOS-EXT-18"
       ],
       "source_package": "research/techniques/08.4/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.4/graph_topology_source_v2.py",
+        "research/implementation_execution/test_batch07_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
@@ -1883,16 +1908,21 @@
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-17",
         "CN-RSCH-01"
       ],
       "source_package": "research/techniques/08.5/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.5/dependent_ensemble_v2.py",
+        "research/implementation_execution/test_batch07_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
@@ -1903,17 +1933,22 @@
       "batch": 7,
       "priority": "P1",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-17",
         "SYS-23",
         "TOOL-MQ-01"
       ],
       "source_package": "research/techniques/08.6/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.6/first_order_gas_simulator_v2.py",
+        "research/implementation_execution/test_batch07_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
@@ -1924,17 +1959,22 @@
       "batch": 7,
       "priority": "P1",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-17",
         "SYS-05",
         "MOS-EXT-16"
       ],
       "source_package": "research/techniques/08.7/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.7/paired_sim_real_gap_v2.py",
+        "research/implementation_execution/test_batch07_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
@@ -1945,7 +1985,7 @@
       "batch": 7,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-02",
         "SYS-11",
@@ -1953,10 +1993,15 @@
         "SYS-13"
       ],
       "source_package": "research/techniques/08.8/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.8/mixture_hypothesis_competition_v2.py",
+        "research/implementation_execution/test_batch07_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
@@ -1967,7 +2012,7 @@
       "batch": 7,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-06",
         "SYS-07",
@@ -1976,13 +2021,20 @@
         "SYS-10"
       ],
       "source_package": "research/techniques/08.9/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.9/nonnegative_rank_guard_v2.py",
+        "research/implementation_execution/test_batch07_v2.py",
+        "research/techniques/08.9/test_numeric_stability_v2.py"
+      ],
       "test_job": null,
-      "ci_run": null,
-      "results": [],
+      "ci_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "results": [
+        "Module source and shared test file committed; current GitHub Actions job starts no steps; G1 batch not accepted",
+        "8/8 local CPython adversarial NNLS tests PASS; exact Git blobs verified, independent of broken Actions"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "d04f0d9f04771ddd63acd8188f4e06d7b96a0737",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -2177,20 +2229,26 @@
       "batch": 8,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "QSPR-REF-09",
         "R0-PEER-01",
         "SYS-07"
       ],
       "source_package": "research/techniques/10.1/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/10.1/joint_negative_evidence_v2.py",
+        "research/techniques/10.1/test_joint_negative_evidence_v2.py"
+      ],
       "test_job": null,
       "ci_run": null,
-      "results": [],
+      "results": [
+        "10/10 local CPython unit tests PASS on exact Git blob contents; GitHub batch08 CI still unverified",
+        "Joint likelihood across correlated MQ channels; no hard exclusions, verification flag never implies real certification"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "27d25fe7335cd232098c2eb1f3149524fe08680f",
       "limits": "Historical G1/G2 evidence unchanged"
     }
   ],
@@ -2407,7 +2465,7 @@
     },
     {
       "id": 7,
-      "status": "NOT_STARTED",
+      "status": "TEN_SOURCE_MODULES_COMMITTED_BUT_CI_PRESTEP_FAILURE_LOCAL_08_9_8_PASS",
       "techniques": [
         "07.10",
         "08.1",
@@ -2422,11 +2480,18 @@
       ],
       "number_newly_implemented": 0,
       "verified_CI": null,
-      "documentation": "research/implementation_execution/BATCH07_EVIDENCE_AR.md"
+      "documentation": "research/implementation_execution/BATCH07_EVIDENCE_AR.md",
+      "code_committed_count": 10,
+      "shared_tests_written": 22,
+      "local_verified_subset": {
+        "08.9": 8
+      },
+      "ci_obstruction": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153 (jobs fail with steps=[]); prior successful workflows fail too",
+      "source_readiness": "research/implementation_execution/BATCH07_SOURCE_READINESS_2026-10-23.json"
     },
     {
       "id": 8,
-      "status": "NOT_STARTED",
+      "status": "EARLY_10_1_MODULE_LOCAL_TEST_PASS_BATCH08_REMAINS_OPEN",
       "techniques": [
         "08.10",
         "08.11",
@@ -2441,7 +2506,12 @@
       ],
       "number_newly_implemented": 0,
       "verified_CI": null,
-      "documentation": "research/implementation_execution/BATCH08_EVIDENCE_AR.md"
+      "documentation": "research/implementation_execution/BATCH08_EVIDENCE_AR.md",
+      "code_committed_count": 1,
+      "local_verified_subset": {
+        "10.1": 10
+      },
+      "local_audit": "research/implementation_execution/LOCAL_AUDIT_2026-10-26_AR.md"
     }
   ],
   "checkpoints": [
@@ -2627,6 +2697,26 @@
         "07.9 never changes weights or performs deployment"
       ],
       "next_work": "Batch07 07.10 and 08.1–08.9; code, scientific negative tests, source-locked CI, G2/G3 independent evidence separately"
+    },
+    {
+      "date": "2026-10-26",
+      "event": "RESUME_LOCAL_18_TESTS_B07_B08_NUMERIC_AND_CORRELATION_SAFETY_GUARDS",
+      "doc": "research/implementation_execution/LOCAL_AUDIT_2026-10-26_AR.md",
+      "branch": "research/chemcore80-central-evidence-gap-analysis-20261021",
+      "locally_passed_tests": {
+        "08.9": 8,
+        "10.1": 10
+      },
+      "git_blobs": {
+        "08.9": "ebbdcebc5d607c3552fb0a91a46b0d6aa90e2ede",
+        "08.9_tests": "ccafc539029372f641f51770adc82c8f043caa8e",
+        "10.1": "13ec77c3f9655889bbeaa87f775324677a418a26",
+        "10.1_tests": "87175d004d9750f66a47f77ed94cb18b76f55842"
+      },
+      "CI_latest_failure_no_steps": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153",
+      "V4_G1_verified": 60,
+      "G3_Tank_physical": 0,
+      "next_required": "Full batch07 10-ID CI or independently reproducible complete run; then batch08 full 10 IDs"
     }
   ],
   "policy": {
