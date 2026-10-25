@@ -2042,7 +2042,7 @@
       "batch": 8,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
       "source_refs": [
         "SYS-06",
         "SYS-10",
@@ -2050,13 +2050,20 @@
         "CN-RSCH-04"
       ],
       "source_package": "research/techniques/08.10/",
-      "new_files": [],
+      "new_files": [
+        "research/techniques/08.10/source_multioutput_fit_v2.py",
+        "research/techniques/08.10/test_source_multioutput_fit_v2.py"
+      ],
       "test_job": null,
       "ci_run": null,
-      "results": [],
+      "results": [
+        "10/10 exact Git blob local CPython tests PASS with NumPy; actual source mixture gas ppm traceability not present",
+        "Real multioutput ridge baseline, per-gas independent training labels, full session and exposure holdout, ill-conditioning and out-of-range abstention",
+        "No actual Tank MQ8 G3, no safe ppm approval; requires held-out externally measured multi-component experimental source"
+      ],
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
-      "last_commit": null,
+      "last_commit": "c20302de847e055e08507335ce03ae37965fdfde",
       "limits": "Historical G1/G2 evidence unchanged"
     },
     {
@@ -2491,7 +2498,7 @@
     },
     {
       "id": 8,
-      "status": "EARLY_10_1_MODULE_LOCAL_TEST_PASS_BATCH08_REMAINS_OPEN",
+      "status": "LOCAL_TWO_IDS_08_10_AND_10_1_TESTED_FULL_BATCH_CI_PENDING",
       "techniques": [
         "08.10",
         "08.11",
@@ -2507,8 +2514,9 @@
       "number_newly_implemented": 0,
       "verified_CI": null,
       "documentation": "research/implementation_execution/BATCH08_EVIDENCE_AR.md",
-      "code_committed_count": 1,
+      "code_committed_count": 2,
       "local_verified_subset": {
+        "08.10": 10,
         "10.1": 10
       },
       "local_audit": "research/implementation_execution/LOCAL_AUDIT_2026-10-26_AR.md"
@@ -2717,6 +2725,23 @@
       "V4_G1_verified": 60,
       "G3_Tank_physical": 0,
       "next_required": "Full batch07 10-ID CI or independently reproducible complete run; then batch08 full 10 IDs"
+    },
+    {
+      "date": "2026-10-26",
+      "event": "B08_08_10_REAL_MULTIOUTPUT_SOFTWARE_SOURCE_CONTRACT_LOCAL_TEST_PASS",
+      "source_blob": "130ea3f968cc71ef1415cc973891c3bd8713272f",
+      "test_blob": "181088591ecf26f67ee24c70d939fde6ea54a4a3",
+      "local_tests_added": 10,
+      "local_total_since_resumption": 28,
+      "tag": "RESEARCH_SOFTWARE_ONLY_UNCALIBRATED_SYNTHETIC_REFERENCE",
+      "g1_full_batch_ci": false,
+      "verified_g1_count": 60,
+      "tank_g3": 0,
+      "missing": [
+        "measured component-specific traceable gas ppm in mixtures",
+        "independent heldout experimental sessions and hardware",
+        "Github Actions full batch CI runner"
+      ]
     }
   ],
   "policy": {
