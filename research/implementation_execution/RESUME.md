@@ -1,3 +1,18 @@
+# ACTIVE RESUME POINT — 2026-10-26 / G1=60/80, PARTIAL VERIFIED LOCAL TESTS
+
+**Most recent actual engineering work is NOT Batch01:** six V4 batches were verified in earlier CI; Batch07 has ten V2 source modules committed but all eleven CI jobs fail before any recorded steps, and Batch08 is partially begun for 10.1. Research branch: `research/chemcore80-central-evidence-gap-analysis-20261021`, [PR #6](https://github.com/HazRob/HazRob-Tank/pull/6).
+
+1. **Primary evidence:** `research/implementation_execution/LOCAL_AUDIT_2026-10-26_AR.md` — exact Git blob SHA identities for new module/test files and **18/18 independently run local CPython checks**. This is **8 cases for 08.9 NNLS and 10 for 10.1 joint non-detection**, not the whole ten-ID Batch07 suite. The original Batch07 **22 shared tests** have NOT passed GitHub CI in this update.
+2. **Scientific fixes:** `research/techniques/08.9/nonnegative_rank_guard_v2.py` now robustly handles fingerprint amplitudes `10^±200` and rejects collinear/ill-conditioned numeric mixtures. `research/techniques/10.1/joint_negative_evidence_v2.py` prevents unjustified multiplication of dependent MQ-sensor absence evidence and never hard-excludes gas; no independent calibration proof.
+3. **Certified latest V4 G1 ledger** `EXECUTION_LEDGER_2026-10-21.json`: **60/80**, Batch07 10 code-committed but CI pending, Batch08 10.1 code-committed/local test pass; **G3 physical Tank 0/80**, no active safety ppm or mixture concentration approval. The 80/80 old G2 *source eligibility* should not be mistaken for V4 G1/G3.
+4. **CI blocker after new commits:** [Actions #40235160153](https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153) and later workflows show failure with `steps=[]` for even prior passing batch01–06; runner/organization pre-job failure suspected, exact cause not proven. Avoid reporting full batch pass until recorded steps/testing reappear.
+5. **Next actual work:** Diagnose Actions runner/organization job-start failure or obtain full independently reproducible clean-checkout run; execute ALL Batch07 10-ID legacy tests plus 22 new source tests, repair findings, publish CI or complete local audit. Then develop 08.10–09.6 source-aware Batch08 engineering code and benchmark with real sensor data when available; run per-ID tests and preserve blocked outcomes.
+6. **Research output to inspect:** `BATCH07_EVIDENCE_AR.md`, `BATCH07_SOURCE_READINESS_2026-10-23.json`, `BATCH08_EVIDENCE_AR.md`, `PLAN_80_V4.json`, `research/benchmarks/` (UCI external trained models). No merge into production Android/ESP32 or original HR069. No simulated G3.
+
+**Do not delete earlier checkpoints**: they provide historical reproducibility and negative empirical UCI1081 06.5 results. Only the top dated checkpoint describes the current position.
+
+---
+
 # ACTIVE CHECKPOINT — 2026-10-23 / SIX V4 BATCHES COMPLETE (60/80 RESEARCH G1)
 
 **Authoritative branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`; **review request:** https://github.com/HazRob/HazRob-Tank/pull/6 (research only, not main merge). Always inspect current HEAD and CI before further edits.
