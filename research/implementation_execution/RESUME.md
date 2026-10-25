@@ -1,3 +1,11 @@
+## 2026-10-26 — G1 بالترتيب: العودة إلى الدفعة السابعة
+- بناءً على توجيه المستخدم، لا تُضاف تقنيات جديدة قبل إتمام اعتماد G1 للدفعة السابعة ثم الثامنة.
+- أضيفت سبع حالات اختبار انحدار للتقنية 08.9: حل معلوم، ثبات أمام فرق القياس، الرتبة المنهارة، الحدود غير السالبة، NaN، تكرار القنوات، وعدم ادعاء ppm.
+- الشيفرة والاختبارات محفوظة في `research/techniques/08.9/test_nonnegative_rank_guard_v2_regression.py`، commit `6b82d37a519b2388c385def9850406bd382a488e`.
+- **حالة الاختبارات الجديدة: مكتوبة وغير منفذة محلياً أو عبر CI في هذه الجولة.** لا يجوز اعتبارها PASS.
+- GitHub Actions run 40235160153 أُعيد تشغيله وفشل 11/11 بوظائف steps=[] و404 للسجلات؛ يجب حل runner/permissions أو توفير clean-checkout مستقل.
+- يبقى G1 المعتمد 60/80 وG3=0/80؛ نقطة العمل التالية: تنفيذ الاختبارات الـ22 للدفعة 7 مع اختبارات 08.9 الجديدة على بيئة مستقلة ثم معالجة الإخفاقات قبل الدفعة 8.
+
 # LATEST CHECKPOINT — 26 OCT 2026: BATCH08 08.10 + 10.1 LOCAL, G1 VERIFIED STILL 60/80
 
 **Scientific snapshot**: 28/28 exact-source-code local Python unit tests passed across 08.9 (8), 08.10 (10), 10.1 (10); results and Git blob hashes archived in `LOCAL_AUDIT_2026-10-26_AR.md`. 08.10 source multioutput ridge tests are SYNTHETIC and its concentration predictions are explicitly RESEARCH_ONLY / `ppm_approved=False`. See `BATCH08_EVIDENCE_AR.md` and execution ledger. A passing local test of one module is not batch07/08 G1 success.
