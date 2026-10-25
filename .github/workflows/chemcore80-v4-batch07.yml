@@ -61,3 +61,16 @@ jobs:
         run: python -m unittest -v research/implementation_execution/test_batch07_v2.py -k ${{ matrix.selector }}
       - name: Assert no gas or production qualification
         run: echo "RESEARCH ONLY; G2 physical source validation missing; Tank G3=0/80"
+
+  batch08-cross-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify Batch08 six scientific gates and negative cases
+        run: python -m unittest discover -s research/implementation_execution -p 'test_batch08_six_gates_v2.py' -v
+      - name: Guard research-only interpretation
+        run: echo 'No G2 or physical G3 inference from software tests'
