@@ -1,3 +1,11 @@
+# LATEST CHECKPOINT — 26 OCT 2026: BATCH08 08.10 + 10.1 LOCAL, G1 VERIFIED STILL 60/80
+
+**Scientific snapshot**: 28/28 exact-source-code local Python unit tests passed across 08.9 (8), 08.10 (10), 10.1 (10); results and Git blob hashes archived in `LOCAL_AUDIT_2026-10-26_AR.md`. 08.10 source multioutput ridge tests are SYNTHETIC and its concentration predictions are explicitly RESEARCH_ONLY / `ppm_approved=False`. See `BATCH08_EVIDENCE_AR.md` and execution ledger. A passing local test of one module is not batch07/08 G1 success.
+
+**Next**: independently reproduce ALL 10-ID Batch07 unit tests and 22 shared tests after restoring GitHub Actions job-start; GitHub jobs currently have `steps=[]` even for formerly passing workflows. Then complete Batch08 other eight IDs with meaningful source and holdout tests, not just superficial registration. Pinned central source references remain unchanged. **CI-certified G1 60/80 and physical Tank G3 0/80.** No production APK, ESP32, ChemCore Stable or original HR069 edits.
+
+---
+
 # ACTIVE RESUME POINT — 2026-10-26 / G1=60/80, PARTIAL VERIFIED LOCAL TESTS
 
 **Most recent actual engineering work is NOT Batch01:** six V4 batches were verified in earlier CI; Batch07 has ten V2 source modules committed but all eleven CI jobs fail before any recorded steps, and Batch08 is partially begun for 10.1. Research branch: `research/chemcore80-central-evidence-gap-analysis-20261021`, [PR #6](https://github.com/HazRob/HazRob-Tank/pull/6).
