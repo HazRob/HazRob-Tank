@@ -79,3 +79,32 @@
 | الاختبارات المرجعية | مجموعات بيانات خام مثبتة المصدر | split حسب الجلسة/الجهاز، metrics وablation، بدون ادعاء G3 |
 
 **حالة المرحلة 2:** اكتمل جرد وظيفي **انتقائي موثق** لـ11 مكوّناً/عقداً في HR069؛ جرد أشجار الملفات والـSQLite وملفات النماذج الثنائية لم يكتمل. 
+
+## المرحلة 3 — تدقيق سلطة الإصدارات والأدلة الكمية (فحص ملفات فعلية)
+
+### تناقض ظاهري حُلّ: G1 التاريخي مقابل V4
+- `research/PROGRESS_80.json` على Tank `main`، blob `0919307d46b352a887f2fdbc5e94c752a74b16d0`: **80/80 G1 تاريخي** و8 دفعات ناجحة تاريخياً؛ `research/RESUME.md` blob `75cb5ec0ba4dbdf78a0028933a3a040fcbc945a8` يثبت **1261 اختباراً تاريخياً**.
+- خط تنفيذ V4 البحثي الجاري `research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json` يُميّز تنفيذات/تعديلات **جديدة**؛ اعتمادها المتحفظ 60/80 بعد تعثر إثبات الدفعتين 07–08 على الشيفرة المطابقة.
+- **النتيجة:** لا يُمحى 80/80 التاريخي ولا يُستخدم دليلاً على اكتمال 80/80 لتعديلات V4؛ يجب عرض مؤشريهما منفصلين.
+
+### بيانات G2 الموجودة بالفعل — لا تكرر التجارب
+- مصدر `research/RESUME.md` على main: **14,238 حدث تعرّض خارجي مميز**: UCI1081=90، UCI270=13,910، UCI308=58، UCI309=180. UCI224 يتداخل مع UCI270، ولا يُحسب إصدار UCI309 المخفّض كحدث جديد.
+- G2 التاريخي: 80/80 مراجعة أهلية، 49 عملية عددية/metadata على مصادر خارجية (منها proxies)، 29 حالة blocked، وحالتان simulated/theoretical. **لا تساوي 80/80 تأهيلاً تجريبياً**.
+- وثّق المصدر نفسه نماذج مدربة بالفعل: LDA وPLS-DA وSVM وXGBoost وCNN وTCN وGRU وGNN، مع نتائج اختبار على UCI1081 وUCI270؛ ينبغي إعادة استخدام سجلاتها وتدقيق منع تسرب البيانات بدلاً من اختراع benchmark جديد.
+- مثال من نتائج UCI1081 الموثقة: 90 تنبؤاً عبر leave-one-concentration-out؛ linear SVM 74، LDA 73، PLS-DA 44، XGBoost 38، CNN 55، TCN 55، GRU 69، GNN graph 24 مقابل control 30. هذه **نتائج مصدر محدد** لا تقدير دقة Tank.
+- UCI270 drift مثال سلبي: linear SVM 1955/3600 عند تدريب batches1–2 مقابل 1353/3600 عند تدريب batches1–5؛ لا تفترض أن زيادة بيانات التدريب تحسن الأداء.
+- ملف adapter `research/benchmarks/tank_measurement_adapter_v1.py` موثق بـ26 اختباراً بنيوياً ناجحاً تاريخياً؛ جميع fixtures اصطناعية، G3 Tank=0/80.
+
+### سلطة الإصدار — وثائق المنظمة
+- `HazRob/build-harness/CURRENT_RELEASE_AUTHORITY.md` blob `40db2996a665bb81c21e9794a50c455b0fd28215`: خط الإنتاج **المعتمد هندسياً** RC2/HR069 versionCode26، SHA `43a01d86c260353a77f1a45f808f22cf46997e06`، schema SQLite=9.
+- `sohpany/SERVOC-Android` وثيقة اختبارات HR069-R1 blob `003ea0a7ae966be4667ada4c4d8360d82f4cacb6`: نسخة تشخيصية versionCode30، SHA `6281d3eb7c1c961ce63b0b5e4ae0792874626720`، اختبارات firmware host 35 assertions وAndroid CI، **WORKING/UNAPPROVED**؛ لا تحل محل إصدار الإنتاج المعتمد.
+- `HazRob/build-harness/library/reference-bank/LEGACY_COLLECTIONS.md` blob `c082825878d6e9982ed701a88ce068dc51ac15f7`: سبع مجموعات مرجعية تاريخية منفصلة السلطة؛ السجلات الـ80 في الفهرس المركزي لا تشمل جرد كل سجل قديم فردياً.
+
+### تفاصيل الاكتساب الفيزيائي ذات أثر على ChemCore
+- `sohpany/SERVOC-Android/docs/0.10.2/HR069-R1_INTERNAL_HARDWARE_AND_DEVELOPER_TESTS_20261009.md`: BME280 على ESP32 secondary I2C SDA GPIO13/SCL GPIO14، منفصل عن ADS1115 على GPIO21/22؛ دورية BME=1000ms، وفشل `env.ok` يمنع استعمال قيم بيئية قديمة في التصحيح.
+- MQ7/MQ9 يحتاجان توثيق دورات السخان؛ لا يجوز تسوية جميع القنوات إلى heater ثابت دون إثبات.
+- الاستنتاج: `MeasurementRecord` يجب أن يحفظ حالة freshness وheater phase وsensor-instance وليس قيم BME/MQ فقط.
+
+### ما لم يتم فحصه
+- لا يتوافر من أدوات GitHub المستخدمة في هذه الجولة استعراض شجرة repository كاملة؛ `fetch_file` يقرأ ملفاً معلوم المسار، ومحاولة مسار directory تُرفض. البحث النصي على هذه المستودعات أعاد نتائج فارغة. لذلك لم يتحقق بعد جرد byte-level لكل الملفات الثنائية أو كل الجداول والـSQLite.
+- لا يجوز تحويل وثائق التصميم وحدها إلى حكم بأن التنفيذ يطابقها؛ كل بند أعلاه **DOCUMENT_VERIFIED** ما لم يُذكر دليل اختبار بعينه.
