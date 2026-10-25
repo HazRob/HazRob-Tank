@@ -1,0 +1,44 @@
+# ChemCore Next — تدقيق معماري عابر للمستودعات (مرحلة 1)
+
+**التاريخ:** 2026-10-26. **الحالة:** SOURCE_READ_AUDIT_IN_PROGRESS، وليست جرداً كاملاً لجميع الملفات والفروع. **النطاق:** قراءة فقط للمستودعات الخارجية؛ هذا الملف في Tank research فقط.
+
+## المستودعات التي فُحصت فعلياً
+| المستودع | المرجع المقروء | إثبات blob | الدور |
+|---|---|---|---|
+| `sohpany/SERVOC-Android` | `README.md` على `release/hazrob-0.10.2-rc2` | `243bec1e0aab6e3cbd7db7bb28ba4001385f7d04` | خط التطبيق/ESP32 الأصلي ومكتبة HR069 التشغيلية |
+| `sohpany/SERVOC-Android` | `README.md` على `main` | `82d1a2c2a7db0be31ed18bb094fb76a7fe5797cf` | خط أقدم 0.8.0؛ لا يُعامل بوصفه RC2 |
+| `sohpany/HazRob` | `README.md` على `main` | `c9161b3638d55c7a424182847c5106d6e8cc13c6` | وصف المشروع الشخصي، محتوى المحركات لم يُجرد |
+| `sohpany/HazRob-Lab` | `README.md` على `main` | `f861c51ef267ee0e2637e5056db1d47bb399e4f7` | أرشيف مجمد منذ 2026-10-01؛ ممنوع التطوير أو النشر منه |
+| `HazRob/HazRob-Tank` | `README.md` على `main` | `57d262c9c3c76b704a85d979d57a3977132db049` | روبوت مستقل؛ تقنيات ChemCore80 تحت research |
+| `HazRob/HazRob-Tank` | `research/MASTER_PLAN.md` | `128830333f91e820f273549f67f47f66c1e28193` | تبعيات مراحل 01–10 والتقنيات الـ80 |
+| `HazRob/build-harness` | `library/reference-bank/README.md` | `57962a961ed8d053abbe73317cf238eb6b38355a` | سلطة الفهرسة العلمية المشتركة |
+| `HazRob/build-harness` | `library/reference-bank/INDEX.md` | `1e05fdd9aa4a4ccb01f18a1ddf046c12a15da9e4` | فهرس المراجع وأهلية مصادر MQ/MOS |
+| `HazRob/build-harness` | `library/reference-bank/external-research/master_catalog.json` | `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` | 80 سجلًا مرجعيًا، **لا** 80 تجربة مستقلة |
+
+## نتائج بنيوية مؤكدة
+1. لا يجوز اعتماد `main` في SERVOC-Android بوصفه أحدث خط ChemCore؛ وثيقة فرع RC2 هي مرجع HR069 المعتمد هندسياً، وتصف إصداراً تشخيصياً غير معتمد ميدانياً.
+2. مرجعية الببليوغرافيا المشتركة **وحيدة** في `HazRob/build-harness/library/reference-bank`؛ لا تُنسخ قاعدة رئيسية موازية إلى Tank.
+3. بيانات وتجارب HR069 التشغيلية تبقى في `sohpany/SERVOC-Android:release/hazrob-0.10.2-rc2/research_data/hr069_analytical_library/`، مع منع تعديلها أو نقل معايراتها تلقائياً إلى Tank.
+4. `HazRob-Lab` أرشيف تاريخي مجمد، لا بيئة إنتاج أو مرجع قبول.
+5. `HazRob Tank` مستقل تماماً؛ تنقل الخوارزميات بعد مراجعة الرخص والعقود والاختبارات، وليس المعايرات والـppm.
+6. 80 سجلًا في master_catalog تشمل 14 `EXTERNAL_MEASUREMENT_DATASET`، و4 `CROSS_PLATFORM_DATASET`، و24 `ANALYTICAL_METHOD_STUDY`، و8 `CALIBRATION_R0_RS_STUDY`، وغيرها. تعدد الأنواع يمنع استخدامها كلها بوصفها قياسات تدريب.
+7. تسلسل ChemCore80 الرسمي: قياس 01 → معالجة 02 → تمييز 03 → تصنيف 04 وتقدير 05 مشروطان بالتوازي → دمج/لايقين 06؛ والتحقق 07 مستمر؛ الشبكات/المخاليط 08 بعد الأساسيات؛ الاستشعار الروبوتي 09 يحتاج مرجع حركة وتوقيت وتدفق.
+
+## عقود التكامل المقترحة (قرار تصميم أولي لا تنفيذ)
+- `MeasurementRecord`: device/sensor identity, ADC, supply, RL, heater phase, R0 provenance, timestamp, BME and session/source identifiers.
+- `SignalQuality`: saturation, missingness, warmup, drift, sensor/ambient status, abstention reason.
+- `FeatureSet`: static + temporal features with fitted-transform version and per-session lineage.
+- `ModelEligibility`: device and gas domains, independent training/validation splits, calibration and source license.
+- `CandidateEvidence`: gas hypothesis, score semantics, model and source hashes, correlated-evidence group, uncertainties.
+- `Decision`: known/unknown/mixture/insufficient; ppm only with valid per-gas calibration; independent safety alarm.
+- لا يمكن افتراض نقل نسب دقة UCI/MOS إلى MQ8 أو أن توافق عدة نماذج مستقلة إحصائياً.
+
+## أعمال الجرد غير المنجزة
+- استعراض أشجار الملفات والفروع المهمة لجميع المستودعات وتحديد محركات ChemCore Stable والـmodels والـschemas وأدوات المعايرة واحداً واحداً.
+- جرد SQLite/JSON/CSV وأحجامها وإصداراتها وبصمات SHA وحقوق المصدر؛ فصل metadata عن raw measurements.
+- بناء مصفوفة مقارنة واجهات Stable/HR069/Tank V4 وتقنيات 80 وتحديد الوظائف المكررة والناقصة.
+- اختبار تجريبي مستقل على بيانات مكتبة المراجع الخام بعد إثبات صلاحية المصدر، مع grouped holdout.
+- لا تغيير في G1/G2/G3 بسبب هذا التدقيق المعماري.
+
+## قاعدة الاستئناف
+تابع الجرد من هذا الملف؛ لا تكرر نتائج المرحلة 1 ولا تدّع اكتمال مسح لم يحدث. وثق لكل ملف: repository, branch, path, blob SHA, purpose, interface, data provenance, reuse decision.
