@@ -37,6 +37,8 @@ class JointEvidenceTests(unittest.TestCase):
     def test_sensor_unknown(self):
         x=run(detections={'MQ2':None,'MQ135':None})
         self.assertEqual(x['status'],'NO_VALID_MEASUREMENT')
+    def test_nonboolean_verification_rejected(self):
+        with self.assertRaises(ValueError):run(joint_reference_independently_verified="YES")
     def test_bad_prior(self):
         with self.assertRaises(ValueError):run(priors={'CO':0,'ethanol':0})
     def test_no_hard_exclusion(self):
