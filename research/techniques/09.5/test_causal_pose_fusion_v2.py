@@ -19,6 +19,6 @@ class FusionTests(unittest.TestCase):
   with self.assertRaises(ValueError):fuse_causal([S[0]|{'time':True}])
  def test_delay_without_pose(self):
   with self.assertRaises(ValueError):fuse_causal(S,sensor_delay_seconds=0.5)
- def test_empty(self):
+ def test_lag_misassignment_rejected(self):\n  with self.assertRaises(ValueError):fuse_causal([S[0]|{'pose_time':-1}],sensor_delay_seconds=.5)\n def test_empty(self):
   with self.assertRaises(ValueError):fuse_causal([])
 if __name__=='__main__':unittest.main()
