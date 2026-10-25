@@ -6,7 +6,7 @@ def fuse_causal(samples, *, window_seconds=2.0, max_pose_age_seconds=1.0,
     params=(window_seconds,max_pose_age_seconds,sensor_delay_seconds,max_gap_seconds)
     if any(type(v) not in (int,float) or not isfinite(v) for v in params):raise ValueError('finite parameters required')
     if window_seconds<=0 or max_pose_age_seconds<0 or sensor_delay_seconds<0 or max_gap_seconds<=0:raise ValueError('invalid parameters')
-    rows=list(samples)
+    if sensor_delay_seconds != 0:\n        raise ValueError('nonzero sensor delay requires historical pose interpolation not implemented')\n    rows=list(samples)
     if not rows:raise ValueError('samples required')
     previous=None;out=[];segment=0
     for r in rows:
