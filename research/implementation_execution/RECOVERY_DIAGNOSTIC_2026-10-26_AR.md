@@ -27,3 +27,10 @@ HazRob Tank research only. لا تعديل للتطبيق أو firmware أو Che
 - research/implementation_execution/LOCAL_AUDIT_2026-10-26_AR.md
 - research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json
 - research/implementation_execution/PLAN_80_V4.json
+
+## متابعة إعادة التشغيل — 2026-10-26
+- استُخدم GitHub API لإعادة تشغيل الوظائف الفاشلة في run 40235160153، وأعاد success=true.
+- ظهرت 11 وظيفة جديدة في حالة queued ثم اكتملت كلها conclusion=failure.
+- وظيفة v4-plan الجديدة job 121305776451 أعادت steps=[] أيضاً؛ العائق السابق لا يزال قائماً.
+- لا يوجد أي اختبار جديد موثق PASS من هذا التشغيل، لذا يبقى V4 G1=60/80 وG3=0/80.
+- مطلوب فحص قيود Actions/runner/billing/policy في إعدادات المنظمة أو تنفيذ clean-checkout مستقل، دون تغيير الاستنتاج العلمي.
