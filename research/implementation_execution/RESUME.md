@@ -1,3 +1,9 @@
+## 2026-10-26 — G1 independent CI remediation
+- أعيد تشغيل 43 اختبار Python محلياً في `/mnt/data/hazrob_g1_validation`: `Ran 43 tests ... OK`؛ هذه تغطي 08.9 regression و09.5 و09.6 وست بوابات بحثية، **ولا تغطي الدفعة السابعة كاملة**.
+- أضيف workflow مستقل `.github/workflows/chemcore80-g1-batch07-08.yml` (commit `68d7294b244beec389452032174418e9faf2cc6d`) يختبر الدفعة السابعة (22+7) والثامنة (14+11+11)، ويعمل عبر push أو workflow_dispatch إذا كان GitHub Actions متاحاً.
+- استعلام runs المرتبطة بالالتزام الجديد لم يُرجع تشغيل PR حتى وقت التحقق؛ **لا يوجد إثبات CI PASS**. فشل workflow السابق pre-step ولا يجوز نسبة السبب جزماً إلى صلاحيات أو billing دون سجلات إدارية.
+- معايير الإغلاق: PASS موثق من clean checkout لجميع الملفات، مراجعة source provenance، وتحديث ledger لكل تقنية. حتى ذلك الحين G1=60/80 وG3=0/80.
+
 ## 2026-10-26 — محاولة تنفيذ G1 مستقلة عن Actions
 - فشل `git ls-remote https://github.com/HazRob/HazRob-Tank.git` في حاوية الاختبار بسبب `Could not resolve host: github.com`؛ تعذر clean checkout.
 - تم تنفيذ 3 اختبارات Python محلية **PASS 3/3** على نسخة مستقلة أعيد بناء قلبها العددي من `08.9/nonnegative_rank_guard_v2.py`: الحل المعلوم، التباين في المقاييس، والرتبة المنهارة.
