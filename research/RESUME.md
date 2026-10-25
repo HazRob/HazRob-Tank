@@ -1,3 +1,11 @@
+# ChemCore80 V4 — ACTIVE RESEARCH IMPLEMENTATION CHECKPOINT (2026-10-26)
+
+**For the live 80-technique implementation, open [implementation_execution/RESUME.md](implementation_execution/RESUME.md), then [execution ledger](implementation_execution/EXECUTION_LEDGER_2026-10-21.json), [latest verified local engineering audit](implementation_execution/LOCAL_AUDIT_2026-10-26_AR.md), and [plan for all 80](implementation_execution/PLAN_80_V4.json).** Historical notes below are retained.
+
+Current state: **60/80 G1 V4 verified via prior CI**; Batch07 ten modules committed but CI blocked before steps (not 70), Batch08 two partial research modules 08.10/10.1 with synthetic local tests. **28 local cases PASS** across 08.9/08.10/10.1, exact file Git blobs verified; no current full-batch CI green. External source-eligibility G2 historical 80/80 is a different stage; **actual HazRob Tank MQ8 G3 0/80**, no recognized device ppm or chemical safety conclusions. PR [#6](https://github.com/HazRob/HazRob-Tank/pull/6) remains DRAFT. Production APK, MCU firmware, original HR069 and production ChemCore Stable untouched.
+
+---
+
 # RESEARCH BRANCH V4 CURRENT CHECKPOINT — 2026-10-21, BATCH 01 COMPLETE AT SOFTWARE G1 ONLY
 
 **Research PR:** https://github.com/HazRob/HazRob-Tank/pull/6 (draft); **branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`.
