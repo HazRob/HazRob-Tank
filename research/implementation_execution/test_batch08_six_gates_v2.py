@@ -20,4 +20,16 @@ class Batch08SixGates(unittest.TestCase):
   with self.assertRaises(ValueError):pose_response_association([{'time':2,'pose_time':0,'x':0,'y':0,'response':1}],1)
  def test_094_clusters(self):self.assertEqual(len(hotspot_hypotheses([{'x':0,'y':0,'response':5},{'x':.1,'y':0,'response':4},{'x':3,'y':0,'response':2}],1)['candidates']),2)
  def test_094_never_actuate(self):self.assertIsNone(hotspot_hypotheses([{'x':0,'y':0,'response':1}],1)['motor_command'])
+ def test_091_empty_events_no_false_source(self):
+  x=temporal_plume_events([{'time':0,'response':0},{'time':1,'response':0}],1)
+  self.assertEqual(x['crossings'],[])
+  self.assertIsNone(x['source_location'])
+ def test_093_future_pose_rejected(self):
+  with self.assertRaises(ValueError):pose_response_association([{'time':1,'pose_time':2,'x':0,'y':0,'response':1}],2)
+ def test_094_no_motor_command_for_multiple_hotspots(self):
+  x=hotspot_hypotheses([{'x':0,'y':0,'response':3},{'x':5,'y':0,'response':2}],1)
+  self.assertEqual(len(x['candidates']),2)
+  self.assertIsNone(x['motor_command'])
+ def test_0811_reject_target_loss_at_boundary(self):
+  self.assertEqual(interference_gate(10,7.9,10,1,minimum_retention=.8)['status'],'REJECT_TARGET_LOSS')
 if __name__=='__main__':unittest.main()
