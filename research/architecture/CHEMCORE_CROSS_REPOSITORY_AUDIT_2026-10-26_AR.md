@@ -42,3 +42,40 @@
 
 ## قاعدة الاستئناف
 تابع الجرد من هذا الملف؛ لا تكرر نتائج المرحلة 1 ولا تدّع اكتمال مسح لم يحدث. وثق لكل ملف: repository, branch, path, blob SHA, purpose, interface, data provenance, reuse decision.
+
+## المرحلة 2 — جرد وظيفي مدعوم بنصوص الشيفرة/التوثيق
+
+### مكونات HR069 المكتشفة من وثيقة RC2 ومراجعة التوافق
+المصدر: `sohpany/SERVOC-Android:release/hazrob-0.10.2-rc2/README.md` blob `243bec1e0aab6e3cbd7db7bb28ba4001385f7d04`، و`docs/0.10.2/CR-20261008-006_DEV_REFERENCE_CHEMCORE_SYNC_AUDIT.md` blob `78d1063a7acc3fadbfd13e799abde6d663d3ce89`.
+
+| الوحدة أو العقد | الوظيفة المؤكدة توثيقياً | قرار الاستفادة |
+|---|---|---|
+| `chemcore-features/1` | 17 خاصية لكل MQ × 8 = 136 خاصية؛ زمن الاستجابة، المساحة، الميل، الضجيج، SNR | **REUSE_DESIGN / VERIFY_SOURCE**: اعتماد تعريف الميزة والعينة ونسخها بعد تدقيق التنفيذ |
+| ChemCore Stable `chemcore-stable-snapshot-v1` | قارئ `knowledge.response_priors` و`knowledge.model_artifacts`؛ فصل تحديث المكتبة عن APK | **ADAPTER_REQUIRED**: لا يُقرأ ملف تجارب الخام بوصفه Stable snapshot |
+| ChemCore identity seed | 652 هوية؛ 615 سجل جزيئي و37 مادة/خليط/فئة غير محسومة جزيئياً | **REFERENCE_ONLY**: ليست 652 بصمة MQ مقاسة |
+| AMCI | طلب تعريض إضافي أو تعافٍ أو تكرار أو تحقق مكاني عند عدم كفاية الأدلة | **REUSE_DESIGN**: قرار إعادة القياس منفصل عن ادعاء تحديد الغاز |
+| `ManualR0Calibration` | قيم R0 المحلية القابلة للتعديل مع حفظ مصدر المعايرة؛ لا يستبدلها تحديث Stable | **ISOLATE_PER_DEVICE**: لا تنقل قيم R0 من الأصل إلى Tank |
+| `ChemCoreSessionFeatureAdapter`, `SessionSeries`, `ChemCoreQuantitativeTimeSeries` | استعمال R0 المخزن وقت أخذ العينة لا قيمة R0 المعدلة لاحقاً | **REUSE_CONTRACT**: حفظ ثبات تفسير الجلسات التاريخية |
+| `TelemetryRecorder`, `MeasurementSessionRegistry`, `ExperimentQueries.recentDeveloper`, `ReferenceLineageGuard.valid` | فصل USER/DEVELOPER والتحقق من سلسلة مصدر اللقطات المرجعية | **REVIEW_LINEAGE**: يمنع اعتماد قياسات المستخدم العادية كمراجع |
+| `ReferenceBankExporter` | مخطط `hazrob-approved-experiment/3`؛ وثائق تاريخية تذكر `/1` | **SCHEMA_MIGRATION_REQUIRED** |
+| `GitHubReferencePublisher` | هدف نشر قديم غير مطابق للسلطة التشغيلية؛ مسار staging جديد غير تشغيلي | **DO_NOT_REUSE_AS_PUBLISHER** |
+| `ChemCoreLibraryManager` | HTTPS، حجم وSHA256، staging وrollback؛ manifest URL افتراضياً فارغ | **INTEGRATION_BLOCKED** حتى اكتمال بوابة القبول والنشر الموثق |
+| `servoc.db` | قاعدة Android المحلية لا تُستبدل بتحديث Stable | **NO_DIRECT_COPY**: تحتاج جرد جداول/مخطط مستقل |
+
+### الفجوات التحليلية المثبتة
+- **فجوة النشر:** `hazrob-approved-experiment/3` لا يتحول آلياً إلى `chemcore-stable-snapshot-v1`. يلزم خط قبول علمي وتوحيد schema وبناء حزمة معتمدة.
+- **فجوة الأدلة:** الهوية الكيميائية والخواص الجزيئية ليست بصمة استجابة MQ؛ يجب فصل identity catalogue عن measured fingerprint bank.
+- **فجوة الذاكرة الزمنية:** أي إعادة حساب لجلسة قديمة يجب أن تستخدم R0 والظروف المخزنة في تلك الجلسة.
+- **فجوة السلامة:** التقدير الكيميائي والتحذير الآني والسلامة التشغيلية ليست وظيفة واحدة؛ لا ينقل نجاح النموذج صلاحية ppm أو إنذار أمان.
+- **فجوة فحص الملفات:** أسماء الوحدات السابقة موثقة في مراجعة المصدر، لكن لم تُفتح ملفات تنفيذها الأصلية واحداً واحداً في هذه المرحلة؛ لا تُسمى مراجعة شفرة كاملة.
+
+### المصفوفة الأولية للدمج
+| المكوّن | سلطة المصدر | اتجاه ChemCore Next |
+|---|---|---|
+| الببليوغرافيا والمراجع | `HazRob/build-harness/library/reference-bank` | وصل read-only بالمعرّفات والبصمات |
+| نماذج Stable والأدلة التشغيلية | RC2 HR069 | تقييم وتوافق schema؛ **لا نقل تلقائي** |
+| تقنيات Tank الـ80 | `HazRob-Tank/research` | orchestration research-only مع G1/G2 لكل تقنية |
+| R0 والمعايرة | لكل جهاز وجلسة | per-device provenance، منع استيراد غير مؤهل |
+| الاختبارات المرجعية | مجموعات بيانات خام مثبتة المصدر | split حسب الجلسة/الجهاز، metrics وablation، بدون ادعاء G3 |
+
+**حالة المرحلة 2:** اكتمل جرد وظيفي **انتقائي موثق** لـ11 مكوّناً/عقداً في HR069؛ جرد أشجار الملفات والـSQLite وملفات النماذج الثنائية لم يكتمل. 
