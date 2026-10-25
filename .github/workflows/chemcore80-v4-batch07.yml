@@ -74,3 +74,24 @@ jobs:
         run: python -m unittest discover -s research/implementation_execution -p 'test_batch08_six_gates_v2.py' -v
       - name: Guard research-only interpretation
         run: echo 'No G2 or physical G3 inference from software tests'
+
+  batch08-per-technique:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        tid: ['08.10','08.11','08.12','09.1','09.2','09.3','09.4','09.5','09.6','10.1']
+    name: Batch08 source ${{ matrix.tid }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install scientific test dependency
+        run: python -m pip install 'numpy>=1.26,<3'
+      - name: Run all source-local G1 tests
+        working-directory: research/techniques/${{ matrix.tid }}
+        run: python -m unittest discover -p 'test_*.py' -v
+      - name: Record research-only scope
+        run: echo 'G1 software validation only; no gas G3 approval'
