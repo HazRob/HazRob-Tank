@@ -124,6 +124,21 @@ def audit_all(ids, records):
         results.append(result)
     return results
 
+def validate_ledger_scope(ids, records, expected_count=80):
+    """Fail closed if a duplicate ledger ID hides an unevaluated technique."""
+    if (len(ids) != expected_count or
+            any(not _nonempty_str(tid) for tid in ids) or
+            len(set(ids)) != expected_count):
+        raise ValueError("G2_LEDGER_SCOPE_NOT_80_UNIQUE_TECHNIQUES")
+    if not isinstance(records, list) or any(not isinstance(r, dict) for r in records):
+        raise ValueError("INVALID_G2_EVIDENCE_RECORDS")
+    known = set(ids)
+    unknown = [r.get("id") for r in records if r.get("id") not in known]
+    if unknown:
+        raise ValueError("UNKNOWN_G2_EVIDENCE_TECHNIQUE_IDS: " + repr(unknown))
+    return True
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ledger", default="research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json")
@@ -132,7 +147,10 @@ def main():
     args = ap.parse_args()
     ledger = json.loads(Path(args.ledger).read_text())
     evidence = json.loads(Path(args.evidence).read_text())
-    results = audit_all([x["id"] for x in ledger["work_items"]], evidence.get("records", []))
+    ids = [x["id"] for x in ledger["work_items"]]
+    records = evidence.get("records", [])
+    validate_ledger_scope(ids, records)
+    results = audit_all(ids, records)
     output = {"schema": "hazrob.g2.audit.v1", "scope": "new V4 independent source qualification",
               "g2_pass_candidates": sum(x["status"].startswith("G2_PASS") for x in results),
               "g2_blocked": sum(x["status"] == "G2_BLOCKED" for x in results),
