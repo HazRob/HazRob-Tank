@@ -68,6 +68,25 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
 
+    def test_non_accuracy_metric_with_matching_hashes_cannot_reach_review(self):
+        # These metrics require their own exposure-level recomputation and
+        # grouped uncertainty algorithms; repeated summaries prove neither.
+        for metric in ("rmse", "macro_f1", "balanced_accuracy", "custom_score"):
+            with self.subTest(metric=metric), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                record["metric_name"] = metric
+                self.replace_bytes(
+                    record, base, "metrics_summary.json",
+                    json.dumps({
+                        "metric_name": metric,
+                        "metric_value": record["metric_value"],
+                        "baseline_metric_value": record["baseline_metric_value"],
+                    }))
+                self.assertEqual(audit_evidence_bundle(record, temp), [])
+                result = audit_record(record, temp)
+                self.assertIn("METRIC_FAMILY_NOT_RECOMPUTABLE", result["issues"])
+                self.assertEqual(result["status"], "G2_BLOCKED")
+
     @staticmethod
     def replace_bytes(record, base, name, data):
         data = data.encode("utf-8")
