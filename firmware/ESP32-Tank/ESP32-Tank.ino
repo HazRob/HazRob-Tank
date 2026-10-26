@@ -212,6 +212,7 @@ void setup(){
   web.on("/relay",[]{if(!web.hasArg("mask"))return reply(400,"BAD");int mask=web.arg("mask").toInt();if(mask!=0&&mask!=1)return reply(409,"MQ POWER MUST BE 0 OR 1");linkHeartbeat();if(!relaySetMask((uint8_t)mask))return reply(409,"RELAY REJECTED");reply(200,"OK");});
   web.on("/measure",[]{String cmd=web.arg("cmd");if(cmd=="start"){linkHeartbeat();bool ok=measureStart();return reply(ok?200:409,ok?"OK":"MEASURE PRECHECK FAILED");}if(cmd=="cancel"){measureCancel();return reply(200,"OK");}reply(400,"BAD");});
   web.on("/alert",[]{if(web.arg("cmd")=="test"){alertTest();return reply(200,"OK");}if(!web.hasArg("severity"))return reply(400,"BAD");long severity=web.arg("severity").toInt();if(severity<0||severity>2)return reply(409,"BAD");uint32_t ttl=web.hasArg("ttl")?(uint32_t)constrain(web.arg("ttl").toInt(),500L,10000L):3000U;alertSet((uint8_t)severity,ttl);reply(200,"OK");});
+  web.on("/r0",[]{String cmd=web.arg("cmd");if(cmd=="start"){uint16_t w=web.hasArg("warm")?(uint16_t)constrain(web.arg("warm").toInt(),0,3600):300;uint16_t d=web.hasArg("duration")?(uint16_t)constrain(web.arg("duration").toInt(),1,3600):60;bool ok=calibrationStart(w,d);return reply(ok?200:409,"application/json",calibrationJson());}if(cmd=="cancel"){calibrationCancel();return reply(200,"application/json",calibrationJson());}reply(200,"application/json",calibrationJson());});
   web.on("/data",[]{reply(200,"application/json",dataJson());});
   web.on("/diag",[]{
     String j=diagJson();
