@@ -14,12 +14,18 @@ Scope: firmware/ESP32-Tank only. Tank remains independent from the original whee
 - Keep existing dual-servo drive GPIO16/17, link-loss stop, ultrasonic, relay, alerts, camera/network and direct/remote functionality unchanged. Deferred: dual drive-mode redesign.
 - Keep code and diagnostics concise; do not remove essential safety checks to reduce binary size.
 
+## Implementation checkpoint 2026-10-27
+- 84f51b8: first nonblocking duration-based calibration collector in Hardware.cpp; one Rs mean / clean-air factor per sensor.
+- 6a1b16f, 497b361: declarations and /r0 HTTP start/cancel/status route.
+- 75c738f: avoid partial MQ scans and simultaneous measurement.
+- IMPORTANT: these commits are UNBUILT and UNTESTED. MQUnifiedsensor dependency/API is NOT integrated yet. The provisional clean-air constants must be verified; NVS transactional semantics, provenance, sample timing, API safety and JSON require review. Do not release.
+
 ## Current verified code checkpoint
 - 4829bc0: removed historical fixed R0 defaults in Config.h; default NaN.
 - 543ac2b: blocked invalid Rs/R0 ratio and corrected displayed calibration flag.
 - 31ba3f5: added activeR0[8], loading per-sensor mq_r0_<index> from NVS, and switched read/JSON ratio to runtime values.
 - ebff389: corrected invented NVS sample count; unknown historical provenance now remains 0. Existing R0 values without provenance still require explicit migration/acceptance policy before release.
-- No actual MQUnifiedsensor integration, calibration state machine, calibration API, or tested firmware binary yet.
+- First calibration state machine and API are now present but uncompiled/untested; MQUnifiedsensor integration and verified firmware binary still absent.
 - No build, automated test, or hardware test success has been demonstrated.
 
 ## Execution checklist (update this file after each completed task)
@@ -27,8 +33,8 @@ Scope: firmware/ESP32-Tank only. Tank remains independent from the original whee
 - [x] D02 Use runtime R0 and avoid divide-by-NaN.
 - [ ] D03 Audit all R0/ratio/ppm references; remove stale static provenance, fix NVS sample-count provenance and JSON status. Ensure all paths compile. Partial: ebff389 fixes sample-count invention; remaining audit and compilation outstanding.
 - [ ] D04 Pin and verify MQUnifiedsensor version; verify clean-air factors from examples and manufacturer documentation, RL units, ADC voltage, and ADS full-scale vs supply.
-- [ ] D05 Implement nonblocking warm-up and configurable measurement window (example: 60 seconds AFTER warm-up), collect all valid readings throughout the window, require at least ten valid samples per sensor, and calculate one averaged R0 per sensor. Warm-up and collection duration are separate parameters. Define power-cycle/restart/cancel semantics and invalid-channel behavior. No blocking delays in control loop.
-- [ ] D06 Add explicit calibration start/status/cancel API; structured per-sample readings (sensor, timestamp, raw, voltage, Rs, candidate R0, error); never claim calibration when only R0 is loaded.
+- [ ] D05 PARTIAL (84f51b8, 75c738f): Implement nonblocking warm-up and configurable measurement window (example: 60 seconds AFTER warm-up), collect all valid readings throughout the window, require at least ten valid samples per sensor, and calculate one averaged R0 per sensor. Warm-up and collection duration are separate parameters. Define power-cycle/restart/cancel semantics and invalid-channel behavior. No blocking delays in control loop.
+- [ ] D06 PARTIAL (497b361): Add explicit calibration start/status/cancel API; structured per-sample readings (sensor, timestamp, raw, voltage, Rs, candidate R0, error); never claim calibration when only R0 is loaded.
 - [ ] D07 Atomic/rollback-safe NVS update policy. Persist R0, count, method/version, timestamp/session as available; restore after reboot. Reject nonfinite/zero candidates without old-R0 proximity restrictions.
 - [ ] D08 Ensure no gas ppm/rank is presented as validated from software-only R0. Test missing sensor, bad ADS, relay off, unstable power, NaN, restart, partial channels, concurrent measurement.
 - [ ] D09 Regression-check BME280 direct I2C, servos, emergency stop, ultrasonic, AP/direct, remote mode, telemetry and relay.
