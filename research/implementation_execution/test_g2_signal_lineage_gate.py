@@ -59,6 +59,31 @@ class LineageGateTests(unittest.TestCase):
     def test_invalid_r0_nan(self):
         x=normalized();x["signal_processing"]["r0_reference"]["r0_ohm"]=float("nan")
         self.assertIn("INVALID_R0_OHMS",audit_signal_lineage(x))
+    def test_kohm_ratio_requires_explicit_conversion(self):
+        x = normalized()
+        x["signal_processing"]["source_signal_units"] = "KOHM"
+        self.assertIn("R0_RATIO_UNIT_CONVERSION_UNDOCUMENTED", audit_signal_lineage(x))
+
+    def test_kohm_ratio_conversion_1000_is_accepted(self):
+        x = normalized()
+        x["signal_processing"].update(source_signal_units="KOHM", rs_to_ohm_multiplier=1000.0)
+        self.assertEqual(audit_signal_lineage(x), [])
+
+    def test_kohm_ratio_conversion_1_is_rejected(self):
+        x = normalized()
+        x["signal_processing"].update(source_signal_units="KOHM", rs_to_ohm_multiplier=1.0)
+        self.assertIn("R0_RATIO_UNIT_CONVERSION_INVALID", audit_signal_lineage(x))
+
+    def test_ohm_ratio_conversion_1000_is_rejected(self):
+        x = normalized()
+        x["signal_processing"]["rs_to_ohm_multiplier"] = 1000.0
+        self.assertIn("R0_RATIO_UNIT_CONVERSION_INVALID", audit_signal_lineage(x))
+
+    def test_kohm_ratio_bool_multiplier_is_rejected(self):
+        x = normalized()
+        x["signal_processing"].update(source_signal_units="KOHM", rs_to_ohm_multiplier=True)
+        self.assertIn("R0_RATIO_UNIT_CONVERSION_INVALID", audit_signal_lineage(x))
+
     def test_r0_wrong_units(self):
         x=normalized();x["signal_processing"]["source_signal_units"]="ADC_COUNTS"
         self.assertIn("RS_OVER_R0_REQUIRES_RESISTANCE_INPUT_AND_DIMENSIONLESS_OUTPUT",audit_signal_lineage(x))
