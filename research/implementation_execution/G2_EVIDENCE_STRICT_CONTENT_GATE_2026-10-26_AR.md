@@ -24,7 +24,7 @@ python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_a
 - الالتزام البرمجي: `6bdea5990cd42d53fb6efc4ccc6a8a85394a51c4`.
 - الالتزام الذي أضاف الاختبارات: `8afde64a54b8571d26da57848835e9c1033012a6`.
 - تصحيح تنسيق عينات CSV الاختبارية: `c1992f7dd4af33ef9ac66cf12eb57848ba9bb5f2`.
-- يتعين مراجعة نتيجة GitHub Actions الخاصة بآخر التزام قبل وصف الإصلاح بأنه **CI-verified**.
+- **CI VERIFIED:** نجح تشغيل GitHub Actions رقم `40299697823` على الالتزام `c1992f7dd4af33ef9ac66cf12eb57848ba9bb5f2` بتاريخ 2026-10-26، ونفذ **72 اختباراً ناجحاً** (بما فيها الضوابط السلبية الأربعة الجديدة)، ثم سجل تدقيق البوابة `g2_pass_candidates=0` و`g2_blocked=80`. الرابط: https://github.com/HazRob/HazRob-Tank/actions/runs/40299697823 .
 - لم تُجمع بيانات قياس جديدة، ولم يُثبت استقلال جلسات أو معايرة R0 أو ppm؛ التأهيل العلمي لا يزال **0/80** مرشحاً و**80/80** محجوباً.
 
 ## المتابعة
