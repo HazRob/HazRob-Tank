@@ -1,0 +1,48 @@
+name: HazRob Tank V4 Android APK
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/tank-v4-implementation
+    paths:
+      - 'android/**'
+      - 'tools/build_v4_codemagic.sh'
+      - 'tools/verify_*.py'
+      - '.github/workflows/tank-v4-android.yml'
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      HAZROB_SOURCE_READ_TOKEN: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Build and test independent Tank V4
+        run: bash tools/build_v4_codemagic.sh
+      - name: Upload JUnit reports even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tank-v4-junit-reports
+          path: |
+            source/app/build/reports/tests/
+            source/app/build/test-results/
+          if-no-files-found: ignore
+      - name: Upload verified APK and checksums
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hazrob-tank-v4-debug-apk
+          path: |
+            dist-v4/*.apk
+            dist-v4/SHA256SUMS.txt
+          if-no-files-found: error
