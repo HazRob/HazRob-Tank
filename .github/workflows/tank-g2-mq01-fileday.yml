@@ -37,7 +37,11 @@ jobs:
           assert not result["g2_qualified"] and not result["g3_tank"] and not result["safety_grade"]
           assert not result["grouping_verified_as_independent_physical_session"]
           assert not result["source_signal_units_verified"]
+          assert len(result["experiments"]) == 12
           assert all(x["n_test_files"]==50 for x in result["experiments"])
+          assert len(result["prespecified_sensor_ablations"]) == 8
+          assert not result["model_selected_using_heldout_scores"]
+          assert result["ablation_scope"] == "DESCRIPTIVE_SOURCE_FILE_ONLY_NOT_GAS_OR_SAFETY"
           print("Exploratory measured-source benchmark only; 0 G2 promotion")
           PY
       - name: Upload per-file features and complete predictions
