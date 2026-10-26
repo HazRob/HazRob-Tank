@@ -130,7 +130,8 @@ public final class ManualR0Calibration {
     public static synchronized void apply(String key,JSONObject q){
         if(q==null)return;key=norm(key);double r0=get(key),rs=q.optDouble("rs",Double.NaN);String source=getSource(key),session=getSession(key),utc=getUtc(key);
         try{
-            if(Double.isFinite(r0)&&r0>0&&Double.isFinite(rs)&&rs>0){
+            if(Double.isFinite(r0)&&r0>0&&Double.isFinite(rs)&&rs>0
+                    && !isUnavailable(q)){
                 q.put("r0",r0);q.put("ratio",rs/r0);q.put("r0_calibrated",true);q.put("r0_source",source);q.put("r0_reference_validated",false);
                 if(!session.isEmpty())q.put("r0_session",session);if(!utc.isEmpty())q.put("r0_utc",utc);
                 long age=ageMs(utc);q.put("r0_age_known",age>=0);if(age>=0)q.put("r0_age_ms",age);
@@ -149,6 +150,18 @@ public final class ManualR0Calibration {
                 q.put("r0_calibrated",false);q.put("r0_source","unavailable");q.put("r0_reference_validated",false);q.put("r0_age_known",false);q.put("r0_provenance_complete",false);
             }
         }catch(Exception ignored){}
+    }
+
+    /** An explicit hardware-loss status invalidates chemical ratios, even with stale Rs. */
+    private static boolean isUnavailable(JSONObject q){
+        String status=q.optString("status","").trim();
+        if(status.isEmpty()){
+            JSONObject quality=q.optJSONObject("quality");
+            status=quality==null?"":quality.optString("status","").trim();
+        }
+        status=status.toUpperCase(Locale.US);
+        return "POWER_OFF".equals(status)||"ADC_UNAVAILABLE".equals(status)
+                ||"MISSING_SOURCE".equals(status);
     }
 
     public static String summary(){
