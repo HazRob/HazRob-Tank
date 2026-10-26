@@ -30,9 +30,9 @@ jobs:
           python-version: '3.11'
       - name: "Compile and execute G2 negative source/R0 controls"
         run: |
-          python -m compileall -q research/implementation_execution/g2_signal_lineage_gate.py research/implementation_execution/g2_evidence_audit.py
+          python -m compileall -q research/implementation_execution/g2_signal_lineage_gate.py research/implementation_execution/g2_evidence_audit.py research/implementation_execution/g2_evidence_bundle_gate.py
           cd research/implementation_execution
-          python -m unittest -v test_g2_signal_lineage_gate test_g2_evidence_audit test_g2_uci1081_signal_manifest
+          python -m unittest -v test_g2_signal_lineage_gate test_g2_evidence_audit test_g2_evidence_bundle_gate test_g2_uci1081_signal_manifest
       - name: "Run full 80-technique G2 fail-closed evidence audit"
         run: |
           python research/implementation_execution/g2_evidence_audit.py --output "$RUNNER_TEMP/g2_audit_results.json"
