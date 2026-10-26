@@ -76,16 +76,43 @@ def audit_evidence_bundle(record, repo_root=Path(".")):
         # evidence containers before they become review candidates.
         try:
             if filename.endswith(".json"):
-                payload = json.loads(resolved.read_text(encoding="utf-8"))
+                # Strict JSON: duplicate keys and nonfinite values can make
+                # provenance/metrics ambiguous despite a matching SHA256.
+                def unique_object(pairs):
+                    result = {}
+                    for key, value in pairs:
+                        if key in result:
+                            raise ValueError("duplicate JSON key: " + key)
+                        result[key] = value
+                    return result
+
+                def reject_constant(value):
+                    raise ValueError("nonfinite JSON constant: " + value)
+
+                payload = json.loads(
+                    resolved.read_text(encoding="utf-8"),
+                    object_pairs_hook=unique_object,
+                    parse_constant=reject_constant,
+                )
                 if not isinstance(payload, dict) or not payload:
                     raise ValueError("empty or non-object JSON")
             elif filename.endswith(".csv"):
+                # Validate every record, not only the first data row: a
+                # malformed blind prediction or group metric later in the
+                # file must not pass the integrity gate.
                 with resolved.open(newline="", encoding="utf-8") as stream:
-                    rows = csv.reader(stream)
+                    rows = csv.reader(stream, strict=True)
                     header = next(rows)
-                    data = next(rows)
-                    if not header or any(not c.strip() for c in header) or len(data) != len(header):
-                        raise ValueError("invalid CSV header or first data row")
+                    if (not header or any(not c.strip() for c in header)
+                            or len(set(header)) != len(header)):
+                        raise ValueError("invalid or duplicate CSV headers")
+                    count = 0
+                    for data in rows:
+                        if len(data) != len(header):
+                            raise ValueError("inconsistent CSV row width")
+                        count += 1
+                    if count == 0:
+                        raise ValueError("CSV contains no data rows")
             elif filename == "reproduce.sh":
                 if not resolved.read_text(encoding="utf-8").startswith("#!/"):
                     raise ValueError("missing executable script header")
