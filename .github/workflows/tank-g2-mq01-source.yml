@@ -35,6 +35,7 @@ jobs:
           q = json.loads((folder / "source_qualification.json").read_text())
           assert len(m["archive"]["sha256"]) == 64
           assert m["archive"]["md5"] == "008b8ccb62d7a7d51ff9ffcfd698a1e5"
+          assert m["archive"]["sha256"] == "fde5a3836fe9ddb04fee90102b9c1a5816f48a78d37bf7125074e66a3f3b5f5a"
           assert m["file_count"] > 0
           assert not m["g2_pass"] and not m["g3_tank"] and not q["g2_qualified"]
           print("original archive verified; G2 and G3 explicitly not qualified")
