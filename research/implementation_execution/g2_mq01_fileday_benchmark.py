@@ -70,6 +70,9 @@ def predict_one(train, test, channels):
     return min(train, key=lambda r: (dist(r, test), r["file"]))["label"]
 
 def evaluate(records, channels):
+    if (not channels or len(set(channels)) != len(channels) or
+            any(c not in ALL_MQ for c in channels)):
+        raise ValueError('INVALID_CHANNEL_SELECTION')
     predictions = []
     for day in range(1, 6):
         train = [r for r in records if r["day"] != day]
@@ -154,6 +157,35 @@ def paired_channel_comparison(first, second):
             "comparison": "PAIRED_DESCRIPTIVE_NOT_INDEPENDENT_SAMPLES"}
 
 
+def prespecified_channel_sets():
+    """Fixed source-domain ablations; no held-out-driven channel selection."""
+    sets = [
+        {"id": "TANK8", "channels": list(TANK_MQ)},
+        {"id": "TANK6_EXCLUDE_MQ7_MQ9",
+         "channels": [c for c in TANK_MQ if c not in ("MQ7", "MQ9")]},
+        {"id": "MQ7_MQ9_ONLY", "channels": ["MQ7", "MQ9"]},
+        {"id": "SOURCE9", "channels": list(ALL_MQ)},
+    ]
+    sets.extend({"id": "DROP_" + c,
+                 "channels": [x for x in TANK_MQ if x != c]} for c in TANK_MQ)
+    assert len(sets) == 12 and len({x["id"] for x in sets}) == 12
+    return sets
+
+
+def ablation_comparison(experiments):
+    """Paired file-level contrasts; not independent-session inference."""
+    by_id = {x["config_id"]: x for x in experiments}
+    baseline = by_id["TANK8"]
+    return [
+        {"removed_sensor": c,
+         "tank8_correct": baseline["correct"],
+         "without_correct": by_id["DROP_" + c]["correct"],
+         "delta_correct": by_id["DROP_" + c]["correct"] - baseline["correct"],
+         "paired": paired_channel_comparison(baseline, by_id["DROP_" + c])}
+        for c in TANK_MQ
+    ]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--output-dir", required=True)
@@ -164,10 +196,14 @@ def main():
         archive = Path(tmp) / FILENAME
         source = download_verified(archive)
         records = load_source(archive)
-    experiments = [evaluate(records, TANK_MQ), evaluate(records, ALL_MQ)]
-    controls = [permutation_negative_control(records, channels) for channels in (TANK_MQ, ALL_MQ)]
-    paired = paired_channel_comparison(*experiments)
-    assert all(c["observed_correct"] == e["correct"] for c, e in zip(controls, experiments))
+    experiments = [dict(config_id=spec["id"], **evaluate(records, spec["channels"]))
+                   for spec in prespecified_channel_sets()]
+    controls = [permutation_negative_control(records, channels)
+                for channels in (TANK_MQ, ALL_MQ)]
+    paired = paired_channel_comparison(experiments[0], experiments[3])
+    ablations = ablation_comparison(experiments)
+    assert controls[0]["observed_correct"] == experiments[0]["correct"]
+    assert controls[1]["observed_correct"] == experiments[3]["correct"]
     result = {"schema": "hazrob.g2.mq01.exploratory-fileday-v1",
               "source_archive_sha256": source["sha256"],
               "source_md5_verified": True,
@@ -182,6 +218,9 @@ def main():
               "experiments": experiments,
               "permutation_controls": controls,
               "paired_channel_comparison": paired,
+              "prespecified_sensor_ablations": ablations,
+              "ablation_scope": "DESCRIPTIVE_SOURCE_FILE_ONLY_NOT_GAS_OR_SAFETY",
+              "model_selected_using_heldout_scores": False,
               "g2_qualified": False, "g3_tank": False, "safety_grade": False}
     (output / "source_file_features.json").write_text(json.dumps(records, indent=2) + "\n")
     (output / "fileday_results.json").write_text(json.dumps(result, indent=2) + "\n")
