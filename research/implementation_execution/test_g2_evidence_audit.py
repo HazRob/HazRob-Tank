@@ -69,6 +69,28 @@ class AuditTests(unittest.TestCase):
         x=eligible_fixture()
         x["confidence_interval"]["independent_test_groups"]=1
         self.assertIn("UNCERTAINTY_GROUPING_NOT_VERIFIED",audit_record(x)["issues"])
+    def test_classification_metric_cannot_exceed_probability_domain(self):
+        for field, value in (("metric_value", 1.01),
+                             ("baseline_metric_value", -0.01)):
+            x = eligible_fixture()
+            x[field] = value
+            self.assertIn("CLASSIFICATION_ACCURACY_OUT_OF_RANGE:" + field,
+                          audit_record(x)["issues"])
+
+    def test_classification_interval_must_be_within_zero_one(self):
+        for field, value in (("low", -0.001), ("high", 1.001)):
+            x = eligible_fixture()
+            x["confidence_interval"][field] = value
+            self.assertIn("CLASSIFICATION_INTERVAL_OUT_OF_RANGE:" + field,
+                          audit_record(x)["issues"])
+
+    def test_other_metric_families_do_not_inherit_accuracy_range(self):
+        x = eligible_fixture()
+        x.update(metric_name="rmse", metric_value=2.0, baseline_metric_value=3.0)
+        x["confidence_interval"].update(low=1.5, high=2.5)
+        issues = audit_record(x)["issues"]
+        self.assertFalse(any(i.startswith("CLASSIFICATION_") for i in issues))
+
     def test_raw_hash_must_be_verified(self):
         x=eligible_fixture();x["raw_sha256_verified_from_bytes"]=False
         self.assertIn("RAW_SOURCE_BYTES_NOT_SHA_VERIFIED",audit_record(x)["issues"])
