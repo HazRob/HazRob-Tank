@@ -41,3 +41,16 @@ Firmware reference: GitHub Actions 40414404284 (compile success only).
 
 ## Immediate next action
 Inventory manifest launcher icon and EntryActivity branding, session SQLite schema and migration, tests and CI Gradle baseline. Then reproduce/fix V4-A02 and record objective evidence.
+
+## Developer and laboratory scope expansion — 2026-10-27
+New authoritative checklist: [V4-DEVELOPER-LAB-COVERAGE-MATRIX-2026-10-27.md](V4-DEVELOPER-LAB-COVERAGE-MATRIX-2026-10-27.md).
+- V4-D01 IN_PROGRESS: verify source definitions/wiring of all five developer tabs; investigate four referenced destinations not found in inspected ui directory; run Gradle compile.
+- V4-D02 TODO: navigation, role gate, lifecycle and black-text/outlined-control verification on all developer screens.
+- V4-D03 TODO: experiment capture, reference approval, reports, model comparisons and scientific-review publishing.
+- V4-D04 TODO: firmware-managed R0, app persistence and provenance.
+- V4-D05 TODO: analytical laboratory, full supported ChemCore methods, model evidence, benchmark and replay tests.
+- V4-D06 TODO: connection diagnostics in direct/remote/offline modes, camera and safety checks.
+- V4-D07 TODO: central scientific library and Stable integrity, updates and rollback.
+- V4-D08 TODO: Sessions/report/logo cross-tab regression.
+- V4-D09 TODO: Gradle build, UI test and physical device acceptance before APK.
+Evidence: Source files DeveloperTab, DeveloperR0Tab, ExperimentsTab, MainActivity, RobotApi, TankInstantAnalyzer, ChemCoreAnalysisPresenter, ConnectionGate inspected; existing unit test names inventoried, but none executed in this step. Latest completed change is documentation-only. Next exact step: resolve developer screen source inventory and compile baseline.
