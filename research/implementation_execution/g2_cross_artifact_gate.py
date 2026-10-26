@@ -115,7 +115,11 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     # A matching digest proves integrity, not the arithmetic of the claim.
     if record.get("metric_name") == "classification_accuracy":
         required_truth = {"exposure_id", "group_id", "gas_reference_id"}
-        required_pred = {"exposure_id", "group_id", "true_reference", "predicted_reference"}
+        # Baseline accuracy must be reproducible from the *same* blind rows.
+        # A self-declared baseline_metric_value in two matching JSON files is
+        # not independent arithmetic evidence and could inflate an improvement.
+        required_pred = {"exposure_id", "group_id", "true_reference",
+                         "predicted_reference", "baseline_predicted_reference"}
         required_group_metric = {"group_id", "sample_count", "correct_count"}
         if (any(not required_truth <= set(row) for row in groups) or
                 any(not required_pred <= set(row) for row in predictions) or
@@ -124,19 +128,27 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         else:
             truths = {row["exposure_id"]: row["gas_reference_id"] for row in groups}
             correct = Counter()
+            baseline_correct = 0
             total = 0
             for row in predictions:
                 eid, gid = row["exposure_id"], row["group_id"]
                 truth = row["true_reference"]
                 prediction = row["predicted_reference"]
-                if not truth.strip() or not prediction.strip() or truth != truths.get(eid):
+                baseline_prediction = row["baseline_predicted_reference"]
+                if (not truth.strip() or not prediction.strip() or
+                        not baseline_prediction.strip() or truth != truths.get(eid)):
                     issues.append("BLIND_PREDICTION_TRUTH_MISMATCH")
                 if truth == prediction:
                     correct[gid] += 1
+                if truth == baseline_prediction:
+                    baseline_correct += 1
                 total += 1
             if total == 0 or not _same_number(record.get("metric_value"),
                                                 sum(correct.values()) / total):
                 issues.append("BLIND_ACCURACY_RECOMPUTATION_MISMATCH")
+            if total == 0 or not _same_number(record.get("baseline_metric_value"),
+                                                baseline_correct / total):
+                issues.append("BLIND_BASELINE_ACCURACY_RECOMPUTATION_MISMATCH")
             for row in per_group:
                 try:
                     value = int(row["correct_count"])
