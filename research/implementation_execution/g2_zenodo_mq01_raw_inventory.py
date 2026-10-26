@@ -124,7 +124,7 @@ def main():
         "status": "SOURCE_BYTES_VERIFIED_G2_GROUPING_AND_CALIBRATION_PENDING",
         "g2_qualified": False
     }
-    (output / "source_csv_preview.json").write_text(json.dumps(previews, indent=2, ensure_ascii=False) + "\\n")
+    (output / "source_csv_preview.json").write_text(json.dumps(previews, indent=2, ensure_ascii=False) + "\n")
     (output / "raw_manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     (output / "source_qualification.json").write_text(json.dumps(qualification, indent=2, ensure_ascii=False) + "\n")
     with (output / "archive_inventory.csv").open("w", newline="") as fp:
