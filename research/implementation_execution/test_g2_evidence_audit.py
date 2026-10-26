@@ -1,6 +1,6 @@
 """G2 audit regression tests; synthetic fixtures never become G2 evidence."""
 import unittest
-from g2_evidence_audit import audit_record, audit_all
+from g2_evidence_audit import audit_record, audit_all, validate_ledger_scope
 from test_g2_signal_lineage_gate import normalized
 
 SHA = "a"*64
@@ -79,6 +79,23 @@ class AuditTests(unittest.TestCase):
     def test_unverified_physical_source(self):
         x=eligible_fixture();x["source_kind"]="SYNTHETIC"
         self.assertIn("NOT_INDEPENDENT_MEASURED_SOURCE",audit_record(x)["issues"])
+    def test_scope_exactly_80_unique_ids(self):
+        ids = [f"T{i:02d}" for i in range(80)]
+        self.assertTrue(validate_ledger_scope(ids, []))
+        for broken in (ids[:-1], ids[:-1] + [ids[0]], ids[:-1] + [""]):
+            with self.assertRaisesRegex(ValueError, "G2_LEDGER_SCOPE"):
+                validate_ledger_scope(broken, [])
+
+    def test_scope_unknown_evidence_record_fails(self):
+        ids = [f"T{i:02d}" for i in range(80)]
+        with self.assertRaisesRegex(ValueError, "UNKNOWN_G2_EVIDENCE"):
+            validate_ledger_scope(ids, [{"id": "not-in-ledger"}])
+
+    def test_scope_malformed_evidence_fails(self):
+        ids = [f"T{i:02d}" for i in range(80)]
+        with self.assertRaisesRegex(ValueError, "INVALID_G2_EVIDENCE"):
+            validate_ledger_scope(ids, ["bad"])
+
     def test_empty_80_evidence(self):
         a=audit_all([f"{i:02d}.1" for i in range(1,81)],[])
         self.assertEqual(sum(x["status"]=="G2_BLOCKED" for x in a),80)
