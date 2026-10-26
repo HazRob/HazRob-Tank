@@ -210,6 +210,14 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                 {gid: correct[gid] for gid in record.get("test_group_ids", []) if gid in counts},
                 interval))
 
+    # Only classification_accuracy has a verified arithmetic path from the
+    # blind exposure-level predictions and its grouped uncertainty. Other
+    # metric families (RMSE, F1, etc.) must not reach review-candidate status
+    # merely because the summary JSON files and hashes agree. Add a separate
+    # metric-specific recomputation and uncertainty audit before enabling them.
+    if record.get("metric_name") != "classification_accuracy":
+        issues.append("METRIC_FAMILY_NOT_RECOMPUTABLE")
+
     if (metrics.get("metric_name") != record.get("metric_name") or
             not _same_number(metrics.get("metric_value"), record.get("metric_value")) or
             not _same_number(metrics.get("baseline_metric_value"), record.get("baseline_metric_value"))):
