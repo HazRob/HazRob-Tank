@@ -65,3 +65,6 @@ Every task must be recorded in `docs/implementation/V4-APP-CHEMCORE-EXECUTION-LO
 - V4-A10 full app regression (offline/AP/remote, UI, DB, reports, emergency stop, watchdog), Gradle debug build, installation and on-device acceptance; then V4 APK packaging and README update. Firmware remains separately versioned.
 
 **Resume procedure:** open this audit, then the execution log; inspect the latest commit and CI run; resume the first IN_PROGRESS/BLOCKED/TODO task. Never assume an interrupted action succeeded without checking the repository. Keep APK status UNRELEASED until required gates pass.
+
+## Full developer and analytical laboratory coverage
+Scope expanded per owner request to include all five developer sections: Experiments, Analytical Lab, R0, Connection Diagnostics, and Central Library. Source-level requirements, individual test cases and acceptance gates are documented in [V4 Developer/Lab Coverage Matrix](V4-DEVELOPER-LAB-COVERAGE-MATRIX-2026-10-27.md). The source inventory exposed four unresolved developer destination implementations; compile and wiring verification are necessary before marking this area complete.
