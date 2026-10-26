@@ -20,7 +20,7 @@ def _window(value):
             all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) for v in value) and
             0 <= value[0] < value[1])
 
-MODEL_ONLY_ID = re.compile(r"^MQ-?\\d+[A-Z]?$", re.IGNORECASE)
+MODEL_ONLY_ID = re.compile(r"^MQ-?[0-9]+[A-Z]?$", re.IGNORECASE)
 
 def _audit_r0_reference(ref, sensor_id, problems):
     """Validate one R0 per physical sensor instance (metadata only)."""
