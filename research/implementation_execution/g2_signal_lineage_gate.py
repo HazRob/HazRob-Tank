@@ -96,6 +96,17 @@ def audit_signal_lineage(record):
             problems.append("RS_OVER_R0_REQUIRES_R0")
         if source_units not in {"OHM", "KOHM"} or output_units != "DIMENSIONLESS":
             problems.append("RS_OVER_R0_REQUIRES_RESISTANCE_INPUT_AND_DIMENSIONLESS_OUTPUT")
+        # R0 is stored in OHM, whereas source Rs may be in KOHM.
+        # An undocumented division of kOhm by Ohm distorts Rs/R0 by 1000x.
+        expected_multiplier = {"OHM": 1.0, "KOHM": 1000.0}.get(source_units)
+        multiplier = p.get("rs_to_ohm_multiplier")
+        if expected_multiplier is not None:
+            if multiplier is None:
+                if source_units == "KOHM":
+                    problems.append("R0_RATIO_UNIT_CONVERSION_UNDOCUMENTED")
+            elif (not _finite_positive(multiplier) or
+                  not math.isclose(multiplier, expected_multiplier, rel_tol=0.0, abs_tol=1e-9)):
+                problems.append("R0_RATIO_UNIT_CONVERSION_INVALID")
         if mode == "MANUFACTURER_CURVE_PRIOR":
             problems.append("MANUFACTURER_R0_PRIOR_NOT_PHYSICAL_G2_CALIBRATION")
         # A sensor model (e.g. MQ135) is not a physical serial/instance.
