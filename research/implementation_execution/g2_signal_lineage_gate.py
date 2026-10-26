@@ -20,6 +20,33 @@ def _window(value):
             all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) for v in value) and
             0 <= value[0] < value[1])
 
+MODEL_ONLY_ID = re.compile(r"^MQ-?\\d+[A-Z]?$", re.IGNORECASE)
+
+def _audit_r0_reference(ref, sensor_id, problems):
+    """Validate one R0 per physical sensor instance (metadata only)."""
+    if not isinstance(ref, dict):
+        problems.append("MISSING_SENSOR_BOUND_R0_REFERENCE")
+        return
+    if not _finite_positive(ref.get("r0_ohm")):
+        problems.append("INVALID_R0_OHMS")
+    if ref.get("sensor_instance_id") != sensor_id:
+        problems.append("R0_SENSOR_INSTANCE_MISMATCH")
+    if ref.get("heater_phase") not in {"HIGH", "LOW", "CONSTANT"}:
+        problems.append("R0_HEATER_PHASE_UNDOCUMENTED")
+    if not isinstance(ref.get("reference_id"), str) or not ref["reference_id"].strip():
+        problems.append("R0_REFERENCE_ID_MISSING")
+    if not isinstance(ref.get("raw_sha256"), str) or not HEX64.fullmatch(ref["raw_sha256"]):
+        problems.append("R0_SOURCE_SHA256_MISSING_OR_INVALID")
+    if ref.get("source_bytes_verified") is not True:
+        problems.append("R0_SOURCE_BYTES_NOT_VERIFIED")
+    if ref.get("reference_kind") != "MEASURED_GAS_STANDARD":
+        problems.append("R0_REFERENCE_NOT_MEASURED_GAS_STANDARD")
+    if not _finite_positive(ref.get("reference_concentration_ppm")):
+        problems.append("R0_REFERENCE_PPM_NOT_VERIFIED")
+    if not isinstance(ref.get("reference_gas"), str) or not ref["reference_gas"].strip():
+        problems.append("R0_REFERENCE_GAS_MISSING")
+
+
 def audit_signal_lineage(record):
     """Return scientific evidence issues for signal transformations.
 
@@ -71,28 +98,26 @@ def audit_signal_lineage(record):
             problems.append("RS_OVER_R0_REQUIRES_RESISTANCE_INPUT_AND_DIMENSIONLESS_OUTPUT")
         if mode == "MANUFACTURER_CURVE_PRIOR":
             problems.append("MANUFACTURER_R0_PRIOR_NOT_PHYSICAL_G2_CALIBRATION")
-        ref = p.get("r0_reference")
-        if not isinstance(ref, dict):
-            problems.append("MISSING_SENSOR_BOUND_R0_REFERENCE")
+        # A sensor model (e.g. MQ135) is not a physical serial/instance.
+        valid_ids = ids if isinstance(ids, list) and all(isinstance(x, str) for x in ids) else []
+        if any(MODEL_ONLY_ID.fullmatch(sensor_id.strip()) for sensor_id in valid_ids):
+            problems.append("R0_SENSOR_MODEL_ONLY_NOT_PHYSICAL_INSTANCE")
+        references = p.get("r0_references")
+        if references is not None:
+            if p.get("r0_reference") is not None:
+                problems.append("AMBIGUOUS_R0_REFERENCE_LAYOUT")
+            if not isinstance(references, dict):
+                problems.append("INVALID_PER_SENSOR_R0_REFERENCES")
+            else:
+                if set(references) != set(valid_ids):
+                    problems.append("PER_SENSOR_R0_COVERAGE_MISMATCH")
+                for sensor_id in valid_ids:
+                    _audit_r0_reference(references.get(sensor_id), sensor_id, problems)
+        elif len(valid_ids) > 1:
+            # One R0 must never silently normalize a multi-MQ feature vector.
+            problems.append("MISSING_PER_SENSOR_R0_REFERENCES")
         else:
-            if not _finite_positive(ref.get("r0_ohm")):
-                problems.append("INVALID_R0_OHMS")
-            if ref.get("sensor_instance_id") not in (ids if isinstance(ids, list) else []):
-                problems.append("R0_SENSOR_INSTANCE_MISMATCH")
-            if ref.get("heater_phase") not in {"HIGH", "LOW", "CONSTANT"}:
-                problems.append("R0_HEATER_PHASE_UNDOCUMENTED")
-            if not isinstance(ref.get("reference_id"), str) or not ref["reference_id"].strip():
-                problems.append("R0_REFERENCE_ID_MISSING")
-            if not isinstance(ref.get("raw_sha256"), str) or not HEX64.fullmatch(ref["raw_sha256"]):
-                problems.append("R0_SOURCE_SHA256_MISSING_OR_INVALID")
-            if ref.get("source_bytes_verified") is not True:
-                problems.append("R0_SOURCE_BYTES_NOT_VERIFIED")
-            if ref.get("reference_kind") != "MEASURED_GAS_STANDARD":
-                problems.append("R0_REFERENCE_NOT_MEASURED_GAS_STANDARD")
-            if not _finite_positive(ref.get("reference_concentration_ppm")):
-                problems.append("R0_REFERENCE_PPM_NOT_VERIFIED")
-            if not isinstance(ref.get("reference_gas"), str) or not ref["reference_gas"].strip():
-                problems.append("R0_REFERENCE_GAS_MISSING")
+            _audit_r0_reference(p.get("r0_reference"), valid_ids[0] if valid_ids else None, problems)
     elif mode in {"MEASURED_REFERENCE", "MANUFACTURER_CURVE_PRIOR"}:
         problems.append("R0_DECLARED_BUT_NOT_USED_IN_FORMULA")
     return problems

@@ -5,7 +5,7 @@ from g2_signal_lineage_gate import audit_signal_lineage
 SHA = "a" * 64
 
 def base():
-    return {"signal_processing": {"sensor_ids": ["MQ135"],
+    return {"signal_processing": {"sensor_ids": ["MQ135#unit-001"],
             "source_signal_units": "ADC_COUNTS", "derived_signal_units": "ADC_COUNTS",
             "feature_formula": "MEDIAN_RESPONSE_MINUS_MEDIAN_BASELINE",
             "baseline_window_s": [180, 300], "response_window_s": [780, 900],
@@ -15,7 +15,7 @@ def normalized():
     x = base()
     x["signal_processing"].update({"source_signal_units": "OHM", "derived_signal_units": "DIMENSIONLESS",
         "feature_formula": "RS_OVER_R0", "r0_mode": "MEASURED_REFERENCE",
-        "r0_reference": {"r0_ohm": 4500.0, "sensor_instance_id": "MQ135",
+        "r0_reference": {"r0_ohm": 4500.0, "sensor_instance_id": "MQ135#unit-001",
             "heater_phase": "CONSTANT", "reference_id": "std-01", "raw_sha256": SHA,
             "source_bytes_verified": True, "reference_kind": "MEASURED_GAS_STANDARD",
             "reference_concentration_ppm": 100.0, "reference_gas": "NH3"}})
@@ -65,6 +65,42 @@ class LineageGateTests(unittest.TestCase):
     def test_raw_signal(self):
         x=base();x["signal_processing"]["feature_formula"]="RAW_SIGNAL"
         self.assertEqual(audit_signal_lineage(x), [])
+    def test_model_name_is_not_physical_instance(self):
+        x=normalized()
+        x["signal_processing"]["sensor_ids"]=["MQ135"]
+        x["signal_processing"]["r0_reference"]["sensor_instance_id"]="MQ135"
+        self.assertIn("R0_SENSOR_MODEL_ONLY_NOT_PHYSICAL_INSTANCE",audit_signal_lineage(x))
+    def test_multisensor_cannot_share_one_r0(self):
+        x=normalized()
+        x["signal_processing"]["sensor_ids"].append("MQ7#unit-002")
+        self.assertIn("MISSING_PER_SENSOR_R0_REFERENCES",audit_signal_lineage(x))
+    def test_multisensor_requires_full_r0_coverage(self):
+        x=normalized()
+        p=x["signal_processing"]
+        p["sensor_ids"].append("MQ7#unit-002")
+        p["r0_references"]={p["sensor_ids"][0]:p.pop("r0_reference")}
+        self.assertIn("PER_SENSOR_R0_COVERAGE_MISMATCH",audit_signal_lineage(x))
+    def test_multisensor_rejects_cross_sensor_r0(self):
+        x=normalized()
+        p=x["signal_processing"]
+        p["sensor_ids"].append("MQ7#unit-002")
+        first=p.pop("r0_reference")
+        p["r0_references"]={p["sensor_ids"][0]:first,p["sensor_ids"][1]:dict(first)}
+        self.assertIn("R0_SENSOR_INSTANCE_MISMATCH",audit_signal_lineage(x))
+    def test_multisensor_complete_metadata_only(self):
+        x=normalized()
+        p=x["signal_processing"]
+        p["sensor_ids"].append("MQ7#unit-002")
+        first=p.pop("r0_reference")
+        second=dict(first,sensor_instance_id="MQ7#unit-002",heater_phase="LOW",
+                    reference_id="std-02",r0_ohm=8100.0)
+        p["r0_references"]={p["sensor_ids"][0]:first,p["sensor_ids"][1]:second}
+        self.assertEqual(audit_signal_lineage(x),[])
+    def test_ambiguous_r0_layout_is_blocked(self):
+        x=normalized()
+        p=x["signal_processing"]
+        p["r0_references"]={p["sensor_ids"][0]:dict(p["r0_reference"])}
+        self.assertIn("AMBIGUOUS_R0_REFERENCE_LAYOUT",audit_signal_lineage(x))
     def test_no_lineage(self):
         self.assertEqual(audit_signal_lineage({}),["MISSING_SIGNAL_PROCESSING_PROVENANCE"])
 
