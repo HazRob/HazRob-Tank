@@ -113,7 +113,7 @@ class EvidenceBundleTests(unittest.TestCase):
                 column = lines[0].split(",")[0]
                 altered = [lines[0] + "," + column]
                 altered += [line + "," + line.split(",")[0] for line in lines[1:]]
-                self.replace_bytes(record, base, filename, "\\n".join(altered) + "\\n")
+                self.replace_bytes(record, base, filename, "\n".join(altered) + "\n")
                 self.assertEqual(audit_evidence_bundle(record, temp), [])
                 result = audit_record(record, temp)
                 self.assertIn("CROSS_ARTIFACT_READ_FAILED", result["issues"])
@@ -127,7 +127,7 @@ class EvidenceBundleTests(unittest.TestCase):
                 record, base = synthetic_bundle(temp)
                 lines = (base / filename).read_text().splitlines()
                 lines[1] += ",EXTRA"
-                self.replace_bytes(record, base, filename, "\\n".join(lines) + "\\n")
+                self.replace_bytes(record, base, filename, "\n".join(lines) + "\n")
                 self.assertEqual(audit_evidence_bundle(record, temp), [])
                 self.assertIn("CROSS_ARTIFACT_READ_FAILED",
                               audit_record(record, temp)["issues"])
@@ -140,7 +140,7 @@ class EvidenceBundleTests(unittest.TestCase):
             altered = [lines[0] + ",extra_provenance"]
             altered += [line + ",tag" for line in lines[1:]]
             altered[2] = lines[2]  # Short row, all mandatory columns still present.
-            self.replace_bytes(record, base, filename, "\\n".join(altered) + "\\n")
+            self.replace_bytes(record, base, filename, "\n".join(altered) + "\n")
             self.assertEqual(audit_evidence_bundle(record, temp), [])
             self.assertIn("CROSS_ARTIFACT_READ_FAILED",
                           audit_record(record, temp)["issues"])
