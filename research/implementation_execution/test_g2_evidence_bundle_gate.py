@@ -20,7 +20,12 @@ def synthetic_bundle(root):
     base.mkdir(parents=True)
     manifest = {}
     for name in FILES:
-        payload = ("synthetic fixture: " + name + "\n").encode()
+        if name.endswith(".json"):
+            payload = ('{"fixture":"synthetic","file":"' + name + '"}\n').encode()
+        elif name.endswith(".csv"):
+            payload = b"column\nsynthetic\n"
+        else:
+            payload = b"#!/bin/sh\nexit 0\n"
         (base / name).write_bytes(payload)
         manifest[name] = hashlib.sha256(payload).hexdigest()
     record["evidence_files"] = manifest
@@ -83,6 +88,15 @@ class EvidenceBundleTests(unittest.TestCase):
             (base / "reproduce.sh").unlink()
             (base / "reproduce.sh").symlink_to(base / "raw_manifest.json")
             self.assertIn("EVIDENCE_FILE_UNAVAILABLE_OR_UNSAFE:reproduce.sh",
+                          audit_evidence_bundle(record, temp))
+
+    def test_valid_hash_but_invalid_json_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            bad = b"not-json"
+            (base / "raw_manifest.json").write_bytes(bad)
+            record["evidence_files"]["raw_manifest.json"] = hashlib.sha256(bad).hexdigest()
+            self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:raw_manifest.json",
                           audit_evidence_bundle(record, temp))
 
     def test_invalid_digest_blocks_promotion(self):
