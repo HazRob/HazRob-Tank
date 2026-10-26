@@ -17,6 +17,7 @@ public final class RobotProtocolV4 {
             if(diag==null)diag=new JSONObject();if(data==null)data=new JSONObject();
             out.put("firmware",diag.optString("fw",diag.optString("firmware","HazRob")));
             out.put("build_revision",diag.optString("build_revision","unknown"));
+            out.put("device_id",diag.optString("device_id",""));
             out.put("api_version",diag.has("api")?diag.optInt("api",4):diag.optInt("api_version",4));
             out.put("heap",diag.optLong("heap",0));out.put("clients",diag.optInt("clients",0));
             out.put("hardware_profile",diag.optString("hardware_profile",HazRobHardwareProfile.ID));
