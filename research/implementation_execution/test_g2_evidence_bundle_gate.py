@@ -78,9 +78,9 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "group_manifest.csv",
-                "exposure_id,group_id,gas_reference_id\\n"
-                "tr,d1-s1,GAS_A\\nca,d1-s2,GAS_B\\n"
-                "te1,d2-s1,GAS_A\\nte2,d2-s2,GAS_B\\n")
+                "exposure_id,group_id,gas_reference_id\n"
+                "tr,d1-s1,GAS_A\nca,d1-s2,GAS_B\n"
+                "te1,d2-s1,GAS_A\nte2,d2-s2,GAS_B\n")
             self.assertIn("GROUPING_SOURCE_COLUMNS_MISSING",
                           audit_record(record, temp)["issues"])
 
@@ -88,9 +88,9 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "group_manifest.csv",
-                "exposure_id,group_id,gas_reference_id,device_id,session_id\\n"
-                "tr,d1-s1,GAS_A,d1,s1\\nca,d1-s2,GAS_B,d1,s2\\n"
-                "te1,d2-s1,GAS_A,d1,s1\\nte2,d2-s2,GAS_B,d2,s2\\n")
+                "exposure_id,group_id,gas_reference_id,device_id,session_id\n"
+                "tr,d1-s1,GAS_A,d1,s1\nca,d1-s2,GAS_B,d1,s2\n"
+                "te1,d2-s1,GAS_A,d1,s1\nte2,d2-s2,GAS_B,d2,s2\n")
             self.assertIn("PHYSICAL_GROUP_ALIAS_ACROSS_SPLITS",
                           audit_record(record, temp)["issues"])
 
@@ -98,10 +98,10 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "group_manifest.csv",
-                "exposure_id,group_id,gas_reference_id,device_id,session_id\\n"
-                "tr,d1-s1,GAS_A,d1,s1\\nca,d1-s2,GAS_B,d1,s2\\n"
-                "te1,d2-s1,GAS_A,d2,s1\\nte1b,d2-s1,GAS_A,d2,s9\\n"
-                "te2,d2-s2,GAS_B,d2,s2\\n")
+                "exposure_id,group_id,gas_reference_id,device_id,session_id\n"
+                "tr,d1-s1,GAS_A,d1,s1\nca,d1-s2,GAS_B,d1,s2\n"
+                "te1,d2-s1,GAS_A,d2,s1\nte1b,d2-s1,GAS_A,d2,s9\n"
+                "te2,d2-s2,GAS_B,d2,s2\n")
             self.assertIn("GROUP_ID_MAPS_TO_MULTIPLE_PHYSICAL_UNITS",
                           audit_record(record, temp)["issues"])
 
@@ -109,9 +109,9 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "group_manifest.csv",
-                "exposure_id,group_id,gas_reference_id,device_id,session_id\\n"
-                "tr,d1-s1,GAS_A,d1,s1\\nca,d1-s2,GAS_B,d1,s2\\n"
-                "te1,d2-s1,GAS_A,d2,\\nte2,d2-s2,GAS_B,d2,s2\\n")
+                "exposure_id,group_id,gas_reference_id,device_id,session_id\n"
+                "tr,d1-s1,GAS_A,d1,s1\nca,d1-s2,GAS_B,d1,s2\n"
+                "te1,d2-s1,GAS_A,d2,\nte2,d2-s2,GAS_B,d2,s2\n")
             self.assertIn("GROUPING_SOURCE_VALUE_MISSING",
                           audit_record(record, temp)["issues"])
 
