@@ -282,6 +282,19 @@ class EvidenceBundleTests(unittest.TestCase):
         self.assertEqual(audit_group_bootstrap_accuracy(
             {"d2-s2": 1, "d2-s1": 1}, {"d2-s2": 0, "d2-s1": 1}, interval), [])
 
+    def test_weighted_cluster_bootstrap_pinned_nontrivial_quantiles(self):
+        from g2_cluster_bootstrap_gate import audit_group_bootstrap_accuracy
+        interval = dict(eligible_fixture()["confidence_interval"])
+        # Four heterogeneous groups: point accuracy is 4/10, not the
+        # unweighted mean of per-group accuracies (0.5625).
+        counts = {"g1": 2, "g2": 3, "g3": 1, "g4": 4}
+        correct = {"g1": 2, "g2": 0, "g3": 1, "g4": 1}
+        interval.update(low=0.14178571428571435, high=1.0)
+        self.assertEqual(audit_group_bootstrap_accuracy(counts, correct, interval), [])
+        interval["low"] = 0.14
+        self.assertIn("GROUP_BOOTSTRAP_INTERVAL_RECOMPUTATION_MISMATCH",
+                      audit_group_bootstrap_accuracy(counts, correct, interval))
+
     def test_group_bootstrap_rejects_invalid_protocol_and_group_counts(self):
         from g2_cluster_bootstrap_gate import audit_group_bootstrap_accuracy
         base = eligible_fixture()["confidence_interval"]
