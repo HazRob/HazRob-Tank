@@ -11,8 +11,8 @@
       "title": "Food Freshness E-Nose",
       "category": "EXTERNAL_MEASUREMENT_DATASET",
       "uri": "https://zenodo.org/records/17285312",
-      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
-      "source_status": "archive_listed_not_downloaded",
+      "raw_file_status": "ORIGINAL_ARCHIVE_SHA256_AND_PUBLISHER_MD5_VERIFIED",
+      "source_status": "original_zenodo_archive_acquired_sha_verified_exploratory_fileday_evaluated",
       "measurement_qualification": false,
       "sensor_models": [
         "MQ2",
@@ -24,7 +24,13 @@
         "MQ9",
         "MQ135"
       ],
-      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+      "gate": "SOURCE_MEASURED_EXPLORATORY_ONLY_G2_BLOCKED",
+      "source_sha256": "fde5a3836fe9ddb04fee90102b9c1a5816f48a78d37bf7125074e66a3f3b5f5a",
+      "source_publisher_md5": "008b8ccb62d7a7d51ff9ffcfd698a1e5",
+      "verified_raw_source_ci_run_id": 40287072270,
+      "measured_exploratory_files": 50,
+      "independent_physical_session_grouping_verified": false,
+      "source_signal_units_verified": false
     },
     {
       "id": "MQ-EXT-02",
@@ -223,11 +229,12 @@
       "title": "Responses of 8 sensors to ethanol, acetic acid, hexanal, pentanone",
       "category": "EXTERNAL_MEASUREMENT_DATASET",
       "uri": "https://data.mendeley.com/datasets/78y8kv6hz7/1",
-      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
-      "source_status": "landing_metadata_verified_raw_not_downloaded",
-      "measurement_qualification": "not_proven",
+      "raw_file_status": "OFFICIAL_SOURCE_API_HTTP_401_NO_RAW",
+      "source_status": "original_mendeley_metadata_probe_api_401_no_raw_acquired",
+      "measurement_qualification": false,
       "sensor_models": [],
-      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+      "gate": "SOURCE_ACCESS_BLOCKED_NOT_G2_APPROVAL",
+      "source_access_ci_run_id": 40279463016
     },
     {
       "id": "MQ-EXT-15",
@@ -302,5 +309,6 @@
       "sensor_models": "16 commercial metal oxide gas sensors (16-channel array; MQ models NOT established)",
       "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
     }
-  ]
+  ],
+  "local_reverification_note": "Research-branch updates from measured-source CI; central catalog original Git blob is unchanged. No G2 promotion."
 }
