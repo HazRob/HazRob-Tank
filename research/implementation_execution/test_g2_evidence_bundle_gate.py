@@ -84,6 +84,42 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertIn("GROUPING_SOURCE_COLUMNS_MISSING",
                           audit_record(record, temp)["issues"])
 
+    def test_sample_id_cannot_masquerade_as_device_session(self):
+        # One sample per group previously let an arbitrary sample_id appear
+        # to be an independent physical session, even with matching SHA256.
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["grouping_source_field"] = "sample_id"
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id,gas_reference_id,sample_id\\n"
+                "tr,d1-s1,GAS_A,unique1\\nca,d1-s2,GAS_B,unique2\\n"
+                "te1,d2-s1,GAS_A,unique3\\nte2,d2-s2,GAS_B,unique4\\n")
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("GROUPING_SOURCE_COLUMNS_NOT_PHYSICAL_FOR_KEY", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_device_session_requires_both_physical_columns(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["grouping_source_field"] = "session_id"
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id,gas_reference_id,session_id\\n"
+                "tr,d1-s1,GAS_A,s1\\nca,d1-s2,GAS_B,s2\\n"
+                "te1,d2-s1,GAS_A,s3\\nte2,d2-s2,GAS_B,s4\\n")
+            self.assertIn("GROUPING_SOURCE_COLUMNS_NOT_PHYSICAL_FOR_KEY",
+                          audit_record(record, temp)["issues"])
+
+    def test_session_grouping_accepts_real_session_column(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["grouping_key"] = "session_id"
+            record["grouping_source_field"] = "session_id"
+            record["confidence_interval"]["grouping_key"] = "session_id"
+            self.replace_bytes(record, base, "uncertainty_grouped.json",
+                               json.dumps(record["confidence_interval"]))
+            self.assertEqual(audit_record(record, temp)["status"],
+                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
     def test_physical_session_alias_across_split_ids_is_blocked(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
