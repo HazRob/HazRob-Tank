@@ -49,7 +49,7 @@ jobs:
       - name: All research unit tests for current source-linked ID
         working-directory: research/techniques/${{ matrix.technique }}
         run: python -m unittest discover -p 'test_*.py' -v
-      - name: Research only: no field gas calibration assumed
+      - name: 'Research only — no field gas calibration assumed'
         run: echo 'G1 software tests only, Tank actual G3 remains 0/80'
 
   v4-batch08-cross-technique:
