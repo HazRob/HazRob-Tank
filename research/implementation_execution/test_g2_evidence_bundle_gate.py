@@ -62,6 +62,7 @@ def synthetic_bundle(root):
         (base / name).write_bytes(payload)
         manifest[name] = hashlib.sha256(payload).hexdigest()
     record["evidence_files"] = manifest
+    record["protocol_sha256"] = manifest["protocol_locked.json"]
     return record, base
 
 
@@ -74,6 +75,42 @@ class EvidenceBundleTests(unittest.TestCase):
     def test_all_fourteen_byte_verified_files_can_reach_review_only(self):
         with tempfile.TemporaryDirectory() as temp:
             record, _ = synthetic_bundle(temp)
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            self.assertEqual(audit_record(record, temp)["status"],
+                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
+    def test_protocol_digest_must_match_byte_verified_locked_protocol(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            record["protocol_sha256"] = "f" * 64
+            issues = audit_evidence_bundle(record, temp)
+            self.assertIn("PROTOCOL_DIGEST_NOT_BOUND_TO_LOCKED_FILE", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_rehashed_protocol_cannot_bypass_stale_protocol_claim(self):
+        # An attacker could edit the locked protocol and update the file
+        # digest in the bundle manifest while retaining the old claim digest.
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(
+                record, base, "protocol_locked.json",
+                json.dumps({"fixture": "synthetic", "changed_after_lock": True}))
+            self.assertEqual(
+                hashlib.sha256((base / "protocol_locked.json").read_bytes()).hexdigest(),
+                record["evidence_files"]["protocol_locked.json"])
+            self.assertIn("PROTOCOL_DIGEST_NOT_BOUND_TO_LOCKED_FILE",
+                          audit_evidence_bundle(record, temp))
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_consistent_protocol_hashes_are_integrity_only(self):
+        # Hash agreement alone never constitutes an independent review.
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(
+                record, base, "protocol_locked.json",
+                json.dumps({"fixture": "synthetic", "new_protocol": True}))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
             self.assertEqual(audit_evidence_bundle(record, temp), [])
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
