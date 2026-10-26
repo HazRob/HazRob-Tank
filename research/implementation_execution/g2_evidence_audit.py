@@ -70,6 +70,26 @@ def audit_record(item):
               not math.isfinite(interval[k]) for k in ("low", "high")) or
           interval["low"] > interval["high"]):
         issues.append("INVALID_UNCERTAINTY_INTERVAL")
+    # A row-level interval cannot establish uncertainty over independent
+    # physical sessions/devices. Require explicit cluster provenance.
+    if isinstance(interval, dict):
+        if (interval.get("method") not in ("GROUP_BOOTSTRAP", "CLUSTER_ROBUST", "EXACT_GROUP") or
+                interval.get("grouping_key") != item.get("grouping_key") or
+                interval.get("independent_test_groups") is None or
+                isinstance(interval.get("independent_test_groups"), bool) or
+                not isinstance(interval.get("independent_test_groups"), int) or
+                interval["independent_test_groups"] < 2):
+            issues.append("UNCERTAINTY_GROUPING_NOT_VERIFIED")
+        if (isinstance(item.get("metric_value"), (int, float)) and
+                not isinstance(item.get("metric_value"), bool) and
+                math.isfinite(item["metric_value"]) and
+                isinstance(interval.get("low"), (int, float)) and
+                isinstance(interval.get("high"), (int, float)) and
+                not isinstance(interval.get("low"), bool) and
+                not isinstance(interval.get("high"), bool) and
+                math.isfinite(interval["low"]) and math.isfinite(interval["high"]) and
+                not (interval["low"] <= item["metric_value"] <= interval["high"])):
+            issues.append("METRIC_OUTSIDE_REPORTED_CONFIDENCE_INTERVAL")
     if item.get("source_raw_data_accessible", False) is not True:
         issues.append("RAW_DATA_UNAVAILABLE")
     for metric in ("metric_value", "baseline_metric_value"):
