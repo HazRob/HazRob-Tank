@@ -3,6 +3,7 @@
 Temporary synthetic files validate software only, not gas identity or ppm.
 """
 import hashlib
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -18,12 +19,34 @@ def synthetic_bundle(root):
     base = (Path(root) / "research/g2/evidence" / record["id"]
             / record["dataset_id"] / record["run_id"])
     base.mkdir(parents=True)
+    documents = {
+        "raw_manifest.json": {
+            "raw_sha256": record["raw_sha256"], "dataset_uri": record["dataset_uri"]
+        },
+        "split_manifest.json": {
+            key: record[key] for key in
+            ("train_group_ids", "calibration_group_ids", "test_group_ids")
+        },
+        "calibration_manifest.json": {
+            "calibration_group_ids": record["calibration_group_ids"]
+        },
+        "metrics_summary.json": {
+            key: record[key] for key in
+            ("metric_name", "metric_value", "baseline_metric_value")
+        },
+        "uncertainty_grouped.json": record["confidence_interval"],
+    }
+    csv_payloads = {
+        "group_manifest.csv": "exposure_id,group_id\ntr,d1-s1\nca,d1-s2\nte1,d2-s1\nte2,d2-s2\n",
+        "predictions_blind.csv": "exposure_id,group_id\nte1,d2-s1\nte2,d2-s2\n",
+        "metrics_per_group.csv": "group_id,sample_count\nd2-s1,1\nd2-s2,1\n",
+    }
     manifest = {}
     for name in FILES:
         if name.endswith(".json"):
-            payload = ('{"fixture":"synthetic","file":"' + name + '"}\n').encode()
+            payload = (json.dumps(documents.get(name, {"fixture": "synthetic", "file": name})) + "\n").encode()
         elif name.endswith(".csv"):
-            payload = b"column\nsynthetic\n"
+            payload = csv_payloads[name].encode()
         else:
             payload = b"#!/bin/sh\nexit 0\n"
         (base / name).write_bytes(payload)
@@ -44,6 +67,66 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertEqual(audit_evidence_bundle(record, temp), [])
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
+    @staticmethod
+    def replace_bytes(record, base, name, data):
+        data = data.encode("utf-8")
+        (base / name).write_bytes(data)
+        record["evidence_files"][name] = hashlib.sha256(data).hexdigest()
+
+    def test_split_manifest_mismatch_with_valid_hash_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "split_manifest.json",
+                '{"train_group_ids":["d2-s1"],"calibration_group_ids":["d1-s2"],'
+                '"test_group_ids":["d1-s1","d2-s2"]}')
+            self.assertIn("SPLIT_MANIFEST_RECORD_MISMATCH", audit_record(record, temp)["issues"])
+
+    def test_train_exposure_leaked_to_blind_predictions_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "predictions_blind.csv",
+                "exposure_id,group_id\ntr,d1-s1\nte2,d2-s2\n")
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("BLIND_PREDICTION_EXPOSURE_OR_GROUP_LEAKAGE", issues)
+            self.assertIn("BLIND_PREDICTION_COVERAGE_MISMATCH", issues)
+
+    def test_duplicate_exposure_with_valid_hash_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id\ntr,d1-s1\nca,d1-s2\nte1,d2-s1\nte1,d2-s2\n")
+            self.assertIn("DUPLICATE_OR_EMPTY_EXPOSURE_ID", audit_record(record, temp)["issues"])
+
+    def test_wrong_per_group_sample_count_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "metrics_per_group.csv",
+                "group_id,sample_count\nd2-s1,2\nd2-s2,1\n")
+            self.assertIn("METRICS_PER_GROUP_COUNT_MISMATCH", audit_record(record, temp)["issues"])
+
+    def test_metric_summary_conflicts_with_evidence_record(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "metrics_summary.json",
+                '{"metric_name":"classification_accuracy","metric_value":0.99,'
+                '"baseline_metric_value":0.5}')
+            self.assertIn("METRICS_SUMMARY_RECORD_MISMATCH", audit_record(record, temp)["issues"])
+
+    def test_uncertainty_conflicts_with_evidence_record(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "uncertainty_grouped.json",
+                '{"low":0.7,"high":0.9,"method":"ROW_BOOTSTRAP",'
+                '"grouping_key":"device_session_id","independent_test_groups":2}')
+            self.assertIn("UNCERTAINTY_RECORD_MISMATCH", audit_record(record, temp)["issues"])
+
+    def test_raw_manifest_conflicts_with_evidence_record(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "raw_manifest.json",
+                '{"raw_sha256":"' + "b"*64 + '","dataset_uri":"https://example.org/dataset"}')
+            self.assertIn("RAW_MANIFEST_RECORD_MISMATCH", audit_record(record, temp)["issues"])
 
     def test_tampered_file_blocks_promotion(self):
         with tempfile.TemporaryDirectory() as temp:
