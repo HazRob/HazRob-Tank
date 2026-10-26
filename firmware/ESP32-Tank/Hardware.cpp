@@ -220,10 +220,10 @@ void calibrationUpdate(){
  if(!mqPowerOn){calState=CAL_ERROR;calError="power_off";return;}
  uint32_t now=millis();
  if(calState==CAL_WARM){if(mqPowerMs()>=calWarmMs){calState=CAL_SAMPLE;calAt=now;calLastCycle=0;}return;}
- if(mqScanCycle!=calLastCycle){
+ if(mqScanCycle!=calLastCycle&&mqIndex==0){
   calLastCycle=mqScanCycle;
   for(uint8_t i=0;i<Cfg::MQ_N;i++){
-   if(!mq[i].ok||mq[i].scanCycle!=mqScanCycle-1||!ff(mq[i].rs)||mq[i].rs<=0)continue;
+   if(!mq[i].ok||mq[i].scanCycle!=mqScanCycle||!ff(mq[i].rs)||mq[i].rs<=0)continue;
    if(calCount[i]<UINT32_MAX){calSum[i]+=mq[i].rs;calCount[i]++;}
   }
  }
@@ -272,7 +272,7 @@ String dataJson(){String j="{\"env\":"+envJson()+",\"device\":"+healthJson()+",\
 String diagJson(){String j="{\"fw\":\""+String(Cfg::FW)+"\",\"build_revision\":\""+String(Cfg::ENGINEERING_REVISION)+"\",\"api\":"+String(Cfg::API)+",\"hardware_profile\":\""+String(Cfg::HW_PROFILE)+"\",\"heap\":"+String(ESP.getFreeHeap())+",\"clients\":"+String(WiFi.softAPgetStationNum())+",\"device\":"+healthJson()+",\"drive\":"+driveJson()+",\"relay\":{\"mask\":"+String(mqPowerOn?1:0)+",\"on\":"+String(bj(mqPowerOn))+",\"gpio\":"+String(Cfg::RELAY_MQ)+",\"power_ms\":"+String(mqPowerMs())+",\"channels\":1},\"adc\":{\"ads1\":"+String(bj(ads1ok))+",\"ads2\":"+String(bj(ads2ok))+",\"acquisition\":"+acquisitionJson()+"},\"link\":{\"armed\":"+String(bj(linkArmed))+",\"heartbeat_age_ms\":"+String(linkArmed?millis()-linkAt:0)+"},\"env\":"+envJson()+",\"envType\":"+String(envType)+",\"envAddr\":"+String(envAddr)+",\"envId\":"+String(envId)+",\"envStatus\":\""+String(envStatus)+"\",\"envAck76\":"+String(bj(envAck76))+",\"envAck77\":"+String(bj(envAck77))+",\"envReadFailures\":"+String(envReadFails)+",\"ldr\":"+lightJson()+",\"alert\":"+Alerts::json()+",\"mqPowerManual\":true,\"warmupManual\":true}";return j;}
 
 bool calibrationStart(uint16_t warmSeconds,uint16_t sampleSeconds){
- if(calState==CAL_WARM||calState==CAL_SAMPLE||!mqPowerOn||sampleSeconds<1||sampleSeconds>3600||warmSeconds>3600)return false;
+ if(calState==CAL_WARM||calState==CAL_SAMPLE||stage==MEASURE||!mqPowerOn||sampleSeconds<1||sampleSeconds>3600||warmSeconds>3600)return false;
  if(!ads1ok&&!ads2ok)return false;
  calWarmMs=(uint32_t)warmSeconds*1000UL;calWindowMs=(uint32_t)sampleSeconds*1000UL;
  memset(calSum,0,sizeof(calSum));memset(calCount,0,sizeof(calCount));
