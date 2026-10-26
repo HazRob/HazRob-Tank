@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.graphics.Color;
 import android.text.InputType;
 import android.view.View;
@@ -15,7 +14,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.servoc.app.calibration.ManualR0Calibration;
-import com.servoc.app.calibration.TankAutoR0Math;
+import com.servoc.app.calibration.FirmwareR0Contract;
 import com.servoc.app.chemcore.library.ChemCoreLibraryManager;
 import org.json.JSONObject;
 
@@ -34,27 +33,25 @@ public final class DeveloperR0Tab {
     private final TextView summary,autoProgress;
     private final Button autoStart,autoCancel;
     private final Handler clock=new Handler(Looper.getMainLooper());
-    private TankAutoR0Math autoSampler;
-    private boolean automaticActive=false,awaitingSave=false;
+    private boolean automaticActive=false;
     private volatile boolean disposed=false;
-    private AlertDialog automaticSaveDialog;
-    private long automaticStartMs;
-    private final long[] lastCycles=new long[TankAutoR0Math.SENSOR_COUNT];
-    private Map<String,Double> proposedAutomatic;
     private final Runnable autoTick=new Runnable(){
         @Override public void run(){
-            if(!automaticActive)return;
-            long elapsed=Math.max(0,SystemClock.elapsedRealtime()-automaticStartMs);
-            captureAutomaticSamples(elapsed);
-            if(elapsed>=TankAutoR0Math.TOTAL_MS){completeAutomatic();return;}
-            int window=TankAutoR0Math.captureWindow(elapsed);
-            String stage;
-            if(elapsed<300000L)stage="تسخين أولي";
-            else if(window>=0)stage="القياس "+(window+1)+" من 3";
-            else stage="مهلة تشغيل مستمر";
-            autoProgress.setText("المعايرة التلقائية • "+stage+" • الدقيقة "+
-                String.format(Locale.US,"%.1f / 20",elapsed/60000.0));
-            clock.postDelayed(this,250);
+            if(!automaticActive||disposed)return;
+            host.io().execute(()->{
+                try{
+                    JSONObject response=host.robotApi().calibrationStatus();
+                    FirmwareR0Contract.Progress progress=FirmwareR0Contract.progress(response);
+                    scroll.post(()->displayCalibration(progress,response));
+                }catch(Exception ex){
+                    scroll.post(()->{
+                        if(disposed||!automaticActive)return;
+                        autoProgress.setText("تعذر تحديث معايرة الروبوت؛ إعادة المحاولة بعد ثانيتين. "+
+                            ex.getClass().getSimpleName());
+                        clock.postDelayed(autoTick,2000);
+                    });
+                }
+            });
         }
     };
 
@@ -76,20 +73,25 @@ public final class DeveloperR0Tab {
         instructions.setTextColor(0xFF855300);root.addView(instructions,UiKit.full(c));
 
         LinearLayout automatic=UiKit.card(c);
-        automatic.addView(UiKit.title(c,"المعايرة التلقائية للمستخدم • 20 دقيقة"),UiKit.full(c));
+        automatic.addView(UiKit.title(c,"معايرة R0 في ESP32 • تسخين 300 ثانية ثم قياس 60 ثانية"),UiKit.full(c));
         automatic.addView(UiKit.small(c,
-            "5 دقائق تسخين ← 3 دقائق قياس ← 3 دقائق مهلة دون إطفاء ← 3 دقائق قياس ← 3 دقائق مهلة ← 3 دقائق قياس. "+
-            "يحسب التطبيق المتوسط الحسابي لقراءات Rs في كل فترة، ثم متوسط الفترات الثلاث لتحديد R0 الميدانية لكل حساس؛ دون تمديد زمني أو اختبار استقرار معقد. "+
-            "لا تُحفظ أي قيمة إلا بعد تأكيدك في النافذة النهائية."),UiKit.full(c));
+            "ينفذ فيرموير V4 المعايرة على ESP32 نفسه: تشغيل حساسات MQ الثمانية، "+
+            "تسخين 300 ثانية ثم جمع جميع الدورات الصالحة خلال 60 ثانية، "+
+            "بحد أدنى 10 قراءات لكل حساس. لا تُنقل قيم R0 إلى التطبيق إلا بعد حفظها "+
+            "والتحقق منها في ذاكرة الروبوت. استرجاع القيم متاح بعد إعادة فتح التطبيق. "+
+            "يجب استخدام هواء نظيف فعلاً؛ لا توفر هذه المعايرة شهادة دقة PPM."),UiKit.full(c));
         autoProgress=UiKit.small(c,"جاهز • ضع الروبوت في هواء نظيف ثم ابدأ");
         automatic.addView(autoProgress,UiKit.full(c));
         LinearLayout autoActions=UiKit.hbox(c);
         autoStart=UiKit.button(c,"▶ بدء المعايرة التلقائية");
         autoStart.setOnClickListener(v->startAutomatic());
         autoActions.addView(autoStart,UiKit.weight(2));
+        Button sync=UiKit.button(c,"استيراد آخر R0 محفوظة");
+        sync.setOnClickListener(v->syncFirmwareCalibration());
+        autoActions.addView(sync,UiKit.weight(1.4f));
         autoCancel=UiKit.button(c,"إلغاء");
         autoCancel.setEnabled(false);autoCancel.setOnClickListener(v->cancelAutomatic());
-        autoActions.addView(autoCancel,UiKit.weight(1));
+        autoActions.addView(autoCancel,UiKit.weight(.8f));
         automatic.addView(autoActions,UiKit.full(c));root.addView(automatic,UiKit.full(c));
         for(int i=0;i<keys.length;i++){
             final int index=i;
@@ -131,7 +133,7 @@ public final class DeveloperR0Tab {
         }catch(Exception e){return Double.NaN;}
     }
     private boolean calibrationChangeBlocked(){
-        if(automaticActive||awaitingSave){host.showToast("أكمل أو ألغِ المعايرة التلقائية أولاً");return true;}
+        if(automaticActive){host.showToast("أكمل أو ألغِ المعايرة التلقائية أولاً");return true;}
         if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())){
             host.showToast("لا يمكن تغيير R0 أثناء القياس أو التحليل؛ أنهِ الجلسة أولًا");
             return true;
@@ -192,115 +194,107 @@ public final class DeveloperR0Tab {
     }
 
     private void startAutomatic(){
-        if(disposed||automaticActive||awaitingSave||calibrationChangeBlocked())return;
-        JSONObject current=host.latestDiagnostics();
-        if(current==null||current.optJSONObject("mq")==null){
-            host.showToast("اتصل بروبوت Tank قبل بدء معايرة R0");return;
-        }
+        if(disposed||automaticActive||calibrationChangeBlocked())return;
         autoStart.setEnabled(false);
-        autoProgress.setText("جارٍ تشغيل تغذية الحساسات الثمانية...");
+        autoProgress.setText("جارٍ بدء معايرة ESP32...");
         host.io().execute(()->{
             try{
                 host.robotApi().mqPower(true);
+                JSONObject started=host.robotApi().calibrationStart(300,60);
+                FirmwareR0Contract.Progress p=FirmwareR0Contract.progress(started);
+                if(!p.active())throw new IllegalStateException("Firmware calibration did not start");
                 scroll.post(()->{
-                    if(disposed)return; // Do not restart acquisition after Activity destruction.
-                    autoSampler=new TankAutoR0Math();
-                    java.util.Arrays.fill(lastCycles,-1L);
-                    automaticStartMs=SystemClock.elapsedRealtime();
-                    automaticActive=true;
-                    scroll.setKeepScreenOn(true); // Keep operator-visible 20-minute acquisition active.
-                    autoCancel.setEnabled(true);
-                    autoProgress.setText("بدأ التسخين الأولي • حساسات MQ قيد التشغيل");
-                    clock.post(autoTick);
+                    if(disposed)return;
+                    automaticActive=true;autoCancel.setEnabled(true);
+                    scroll.setKeepScreenOn(true);displayCalibration(p,started);
                 });
             }catch(Exception ex){
-                scroll.post(()->{if(disposed)return;autoStart.setEnabled(true);autoProgress.setText("تعذر تشغيل حساسات MQ");});
+                scroll.post(()->{
+                    if(disposed)return;
+                    autoStart.setEnabled(true);autoCancel.setEnabled(false);
+                    autoProgress.setText("تعذر بدء المعايرة: "+ex.getMessage());
+                });
             }
         });
     }
-    private void captureAutomaticSamples(long elapsed){
-        int window=TankAutoR0Math.captureWindow(elapsed);
-        if(window<0||autoSampler==null)return;
-        JSONObject d=host.latestDiagnostics(),mq=d==null?null:d.optJSONObject("mq");
-        if(mq==null)return;
-        for(int i=0;i<TankAutoR0Math.SENSOR_COUNT;i++){
-            JSONObject sample=mq.optJSONObject(TankAutoR0Math.sensorKey(i));
-            if(sample==null||!sample.optBoolean("ok",sample.optBoolean("valid",false)))continue;
-            double rs=sample.optDouble("rs",Double.NaN);
-            if(!Double.isFinite(rs)||rs<=0)continue;
-            // ESP32-Tank emits a unique scan_cycle per 8-channel ADC scan.
-            // Count each real sensor sample once; never turn a stale UI snapshot
-            // into hundreds of artificial samples during a 3-minute capture.
-            long cycle=sample.optLong("scan_cycle",-1L);
-            if(cycle<=0||cycle<=lastCycles[i])continue;
-            lastCycles[i]=cycle;
-            autoSampler.accept(i,window,rs);
-        }
-    }
-    private void cancelAutomatic(){
-        automaticActive=false;awaitingSave=false;
-        scroll.setKeepScreenOn(false);
-        proposedAutomatic=null;clock.removeCallbacks(autoTick);
-        autoStart.setEnabled(true);autoCancel.setEnabled(false);
-        autoProgress.setText("أُلغيت المعايرة • لم تتغير أي قيمة R0");
-    }
-    private void completeAutomatic(){
-        automaticActive=false;clock.removeCallbacks(autoTick);
-        scroll.setKeepScreenOn(false);
-        autoCancel.setEnabled(false);autoStart.setEnabled(true);
-        proposedAutomatic=autoSampler==null?null:autoSampler.validProposals();
-        if(proposedAutomatic==null||proposedAutomatic.isEmpty()){
-            autoProgress.setText("انتهى الوقت • لم تتوفر قراءات صالحة لحساب R0");
-            host.showToast("لم يتم حفظ أي قيمة R0");
-            return;
-        }
-        awaitingSave=true;
-        StringBuilder content=new StringBuilder("انتهت المعايرة التلقائية (20 دقيقة). جميع القيم بالكيلو أوم kΩ.\n\n");
-        for(String key:keys){
-            double oldValue=ManualR0Calibration.get(key);
-            Double proposed=proposedAutomatic.get(key);
-            content.append(key.toUpperCase(Locale.US)).append("  ");
-            content.append(Double.isFinite(oldValue)?String.format(Locale.US,"%.3f",oldValue):"—");
-            content.append(" ← ");
-            content.append(proposed==null?"غير متاحة (تبقى السابقة)":String.format(Locale.US,"%.3f",proposed));
-            content.append("\n");
-        }
-        content.append("\nسيعتمد التطبيق وChemCore القيم الجديدة في التحليلات القادمة فقط.");
-        autoProgress.setText("اكتملت معايرة "+proposedAutomatic.size()+" حساسات • بانتظار موافقة الحفظ");
-        automaticSaveDialog=new AlertDialog.Builder(context)
-            .setTitle("حفظ واعتماد قيم R0")
-            .setMessage(content.toString())
-            .setNegativeButton("إلغاء",(dialog,which)->{
-                awaitingSave=false;proposedAutomatic=null;
-                autoProgress.setText("لم تُحفظ نتائج الدورة • قيم R0 السابقة باقية");
-            })
-            .setPositiveButton("حفظ واعتماد",(dialog,which)->saveAutomatic())
-            .setCancelable(false)
-            .show();
-    }
-    /** Cancel orphaned timers and dialogs before the host Activity is destroyed. */
-    public void release(){
-        disposed=true;
-        automaticActive=false;
-        awaitingSave=false;
-        proposedAutomatic=null;
-        clock.removeCallbacks(autoTick);
-        scroll.setKeepScreenOn(false);
-        if(automaticSaveDialog!=null){
-            automaticSaveDialog.dismiss();
-            automaticSaveDialog=null;
-        }
+
+    /** Explicit recovery action after Activity destruction, reconnect or phone-side save failure. */
+    private void syncFirmwareCalibration(){
+        if(disposed||automaticActive||calibrationChangeBlocked())return;
+        automaticActive=true;autoStart.setEnabled(false);autoCancel.setEnabled(true);
+        autoProgress.setText("جارٍ قراءة حالة R0 من ESP32...");
+        clock.post(autoTick);
     }
 
-    private void saveAutomatic(){
-        if(!awaitingSave||proposedAutomatic==null)return;
-        Map<String,Double> valuesToSave=proposedAutomatic;
-        boolean ok=ManualR0Calibration.saveAutomatic(host.preferences(),valuesToSave);
-        awaitingSave=false;proposedAutomatic=null;
-        if(!ok){autoProgress.setText("تعذر حفظ R0 • القيم السابقة باقية");host.showToast("فشل حفظ نتائج المعايرة");return;}
-        autoProgress.setText("تم اعتماد "+valuesToSave.size()+" قيم R0 ميدانية • تسري على القياسات الجديدة");
-        reloadFields();host.refreshAllTabs();
-        host.showToast("تم تحديث R0 في التطبيق وChemCore للقياسات القادمة");
+    private void displayCalibration(FirmwareR0Contract.Progress p,JSONObject response){
+        if(disposed||!automaticActive)return;
+        if("ready".equals(p.state)){
+            try{
+                Map<String,Double> values=FirmwareR0Contract.committedValues(response);
+                String deviceId=response.optString("device_id","");
+                if(deviceId.isEmpty())throw new IllegalStateException("Missing ESP32 device identity");
+                if(!ManualR0Calibration.saveFirmware(host.preferences(),values,deviceId))
+                    throw new IllegalStateException("Phone could not durably save firmware R0");
+                finishAutomatic("تمت مزامنة 8 قيم R0 المعتمدة من ESP32 • الجهاز: "+deviceId);
+                reloadFields();host.refreshAllTabs();
+            }catch(Exception ex){
+                finishAutomatic("حُفظت R0 على الروبوت، لكن لم تُعتمد على الهاتف: "+
+                    ex.getMessage()+" • استخدم زر استيراد آخر R0 محفوظة لإعادة المحاولة");
+            }
+            return;
+        }
+        if("error".equals(p.state)||"cancelled".equals(p.state)||"idle".equals(p.state)){
+            finishAutomatic("حالة المعايرة: "+p.state+
+                (p.error.isEmpty()?"":" • "+p.error)+" • لم تتغير R0 المحفوظة في الهاتف");
+            return;
+        }
+        StringBuilder counts=new StringBuilder();
+        for(String key:keys){
+            if(counts.length()>0)counts.append("  ");
+            counts.append(key.toUpperCase(Locale.US)).append(": ").append(p.counts.get(key));
+        }
+        String stage="warmup".equals(p.state)?"تسخين":"جمع قراءات";
+        long total="warmup".equals(p.state)?p.warmupMs:p.durationMs;
+        autoProgress.setText(stage+" • "+(p.elapsedMs/1000)+" / "+(total/1000)+" ثانية\n"+
+            "القراءات الصالحة: "+counts);
+        clock.postDelayed(autoTick,1000);
+    }
+
+    private void finishAutomatic(String message){
+        automaticActive=false;
+        clock.removeCallbacks(autoTick);
+        scroll.setKeepScreenOn(false);
+        autoStart.setEnabled(true);autoCancel.setEnabled(false);
+        autoProgress.setText(message);
+    }
+
+    private void cancelAutomatic(){
+        if(!automaticActive||disposed)return;
+        autoCancel.setEnabled(false);
+        autoProgress.setText("جارٍ إرسال إلغاء المعايرة إلى ESP32...");
+        host.io().execute(()->{
+            try{
+                JSONObject result=host.robotApi().calibrationCancel();
+                FirmwareR0Contract.Progress p=FirmwareR0Contract.progress(result);
+                scroll.post(()->{
+                    if(disposed)return;
+                    finishAutomatic("أُرسِل أمر الإلغاء؛ حالة الروبوت: "+p.state);
+                });
+            }catch(Exception ex){
+                scroll.post(()->{
+                    if(disposed)return;
+                    autoProgress.setText("لم يتأكد إلغاء المعايرة: "+ex.getMessage());
+                    autoCancel.setEnabled(true);clock.postDelayed(autoTick,1500);
+                });
+            }
+        });
+    }
+
+    /** Stop screen polling without issuing a false cancellation to ESP32. */
+    public void release(){
+        disposed=true;automaticActive=false;
+        clock.removeCallbacks(autoTick);
+        scroll.setKeepScreenOn(false);
     }
 
 }
