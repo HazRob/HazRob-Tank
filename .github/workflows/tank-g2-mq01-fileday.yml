@@ -5,6 +5,7 @@ on:
     branches:
       - research/chemcore80-central-evidence-gap-analysis-20261021
     paths:
+      - research/implementation_execution/g2_zenodo_mq01_raw_inventory.py
       - research/implementation_execution/g2_mq01_fileday_benchmark.py
       - research/implementation_execution/test_g2_mq01_fileday_benchmark.py
       - .github/workflows/tank-g2-mq01-fileday.yml
@@ -32,7 +33,7 @@ jobs:
           import json,sys
           result=json.load(open(sys.argv[1]))
           assert result["source_md5_verified"]
-          assert len(result["source_archive_sha256"])==64
+          assert result["source_archive_sha256"]=="fde5a3836fe9ddb04fee90102b9c1a5816f48a78d37bf7125074e66a3f3b5f5a"
           assert not result["g2_qualified"] and not result["g3_tank"] and not result["safety_grade"]
           assert not result["grouping_verified_as_independent_physical_session"]
           assert not result["source_signal_units_verified"]
