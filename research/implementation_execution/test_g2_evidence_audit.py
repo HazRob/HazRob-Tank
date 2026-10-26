@@ -22,8 +22,10 @@ def eligible_fixture():
     return x
 
 class AuditTests(unittest.TestCase):
-    def test_synthetic_metadata_fixture_only_candidate(self):
-        self.assertEqual(audit_record(eligible_fixture())["status"],"G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+    def test_synthetic_metadata_without_artifacts_must_be_blocked(self):
+        result = audit_record(eligible_fixture())
+        self.assertEqual(result["status"], "G2_BLOCKED")
+        self.assertIn("INVALID_EVIDENCE_BUNDLE_ID_OR_PATH", result["issues"])
     def test_actual_uci_ordinal_is_not_verified_group(self):
         x=eligible_fixture();x.update(grouping_key="replicate_ordinal",grouping_source_verified=False)
         self.assertIn("GROUPING_NOT_VERIFIED_PHYSICAL_UNIT",audit_record(x)["issues"])
