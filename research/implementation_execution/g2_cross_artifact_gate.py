@@ -8,6 +8,7 @@ import json
 import math
 from collections import Counter
 from pathlib import Path
+from g2_cluster_bootstrap_gate import audit_group_bootstrap_accuracy
 
 
 def _read_csv(base, name):
@@ -145,6 +146,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     # Classification accuracy must be computed from the actual blind rows,
     # not accepted solely because two JSON summaries agree with one another.
     # A matching digest proves integrity, not the arithmetic of the claim.
+    interval = record.get("confidence_interval")
     if record.get("metric_name") == "classification_accuracy":
         required_truth = {"exposure_id", "group_id", "gas_reference_id"}
         # Baseline accuracy must be reproducible from the *same* blind rows.
@@ -190,16 +192,21 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                         issues.append("PER_GROUP_CORRECT_COUNT_MISMATCH")
                 except (ValueError, TypeError):
                     issues.append("PER_GROUP_CORRECT_COUNT_MISMATCH")
+            issues.extend(audit_group_bootstrap_accuracy(
+                {gid: counts[gid] for gid in record.get("test_group_ids", []) if gid in counts},
+                {gid: correct[gid] for gid in record.get("test_group_ids", []) if gid in counts},
+                interval))
 
     if (metrics.get("metric_name") != record.get("metric_name") or
             not _same_number(metrics.get("metric_value"), record.get("metric_value")) or
             not _same_number(metrics.get("baseline_metric_value"), record.get("baseline_metric_value"))):
         issues.append("METRICS_SUMMARY_RECORD_MISMATCH")
-    interval = record.get("confidence_interval")
     if not isinstance(interval, dict) or any(
         not (_same_number(uncertainty.get(k), interval.get(k)) if k in ("low", "high")
              else uncertainty.get(k) == interval.get(k))
-        for k in ("low", "high", "method", "grouping_key", "independent_test_groups")
+        for k in ("low", "high", "method", "grouping_key", "independent_test_groups",
+                  "seed", "resamples", "confidence_level", "resampling_unit",
+                  "statistic", "quantile_method")
     ):
         issues.append("UNCERTAINTY_RECORD_MISMATCH")
     return sorted(set(issues))
