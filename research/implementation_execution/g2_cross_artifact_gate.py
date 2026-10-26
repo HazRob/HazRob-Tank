@@ -93,14 +93,23 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     required_physical = required_by_grouping_key.get(record.get("grouping_key"))
     if required_physical is None or not required_physical.issubset(set(physical_columns)):
         issues.append("GROUPING_SOURCE_COLUMNS_NOT_PHYSICAL_FOR_KEY")
-    if physical_columns:
+    # Only the canonical physical identity for the declared grouping key
+    # determines independence. Extra source fields (e.g. sample_id, timestamp)
+    # may be retained as provenance, but must never make one physical session
+    # look like two independent groups across train/calibration/test.
+    identity_columns = (sorted(required_physical)
+                        if required_physical is not None and
+                        required_physical.issubset(set(physical_columns)) else [])
+    if physical_columns and identity_columns:
         group_to_physical = {}
         physical_to_group = {}
         for row in groups:
             gid = row.get("group_id")
             physical = tuple((row.get(name) or "").strip()
-                             for name in physical_columns)
-            if any(not value for value in physical):
+                             for name in identity_columns)
+            if (any(not value for value in physical) or
+                    any(not (row.get(name) or "").strip()
+                        for name in physical_columns)):
                 issues.append("GROUPING_SOURCE_VALUE_MISSING")
                 continue
             if gid in group_to_physical and group_to_physical[gid] != physical:
