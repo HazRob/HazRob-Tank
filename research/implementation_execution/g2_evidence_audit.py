@@ -78,7 +78,10 @@ def audit_record(item):
                 interval.get("independent_test_groups") is None or
                 isinstance(interval.get("independent_test_groups"), bool) or
                 not isinstance(interval.get("independent_test_groups"), int) or
-                interval["independent_test_groups"] < 2):
+                interval["independent_test_groups"] < 2 or
+                (isinstance(test, list) and
+                 interval["independent_test_groups"] != len(set(
+                     g for g in test if _nonempty_str(g))))):
             issues.append("UNCERTAINTY_GROUPING_NOT_VERIFIED")
         if (isinstance(item.get("metric_value"), (int, float)) and
                 not isinstance(item.get("metric_value"), bool) and
