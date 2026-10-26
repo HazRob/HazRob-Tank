@@ -188,3 +188,17 @@ Continue from the V4 branch head after these commits and requirements. Verify CI
 - **CI evidence:** [Tank V4 APK run 40259706778](https://github.com/HazRob/HazRob-Tank/actions/runs/40259706778): Java and test-source compilation PASSED; `testDebugUnitTest`: **661 total / 15 failures**, therefore APK build blocked by tests, NOT missing developer classes. Log retrieved from job 121370816738, showing actual assertions.
 - Failure clusters: historical R0 fallback/provenance assumptions (`ManualR0CalibrationTest`, `HR069R1EditableR0PersistenceTest`, `SensorHealthEngineTest`, etc.); weak evidence and absent-input ratio tests (`AcceptedR0NormalizerEvidenceTest`); one outdated source-string assertion (`HR069R1FieldUXRegressionsTest.siteAndSessionScopesAreHierarchical`); one report session assertion. **Do not restore unsafe synthetic R0 solely to satisfy outdated tests.** Classify and update tests only with supported current contract; preserve required behavior.
 - Five developer destinations exist at pinned baseline; **functional tests remain unverified**, therefore V4-D01 source-discovery PASS / Gradle unit baseline FAIL. Next exact action: add firmware /r0 direct transport contract, then review developer R0 UI and strict telemetry provenance; run CI tests.
+
+
+## Checkpoint — 2026-10-27 — V4-D04 firmware-owned R0 integration (source implemented, CI pending)
+
+- Firmware branch `feature/tank-v4-mq-unified-r0`: `ea1f9ff` introduced persistent NVS R0 readback before "ready" and `committed` + `schema=tank-r0-fw-v4/1` in `/r0`; `dc6e38d` added controller MAC identity in both `/r0` and `/diag`. **Firmware CI runs 40422118259 and 40422378610 PASSED compilation**.
+- Android branch `feature/tank-v4-implementation`:
+  - `3b03ad6` added `RobotApi.calibrationStart/status/cancel`, with direct-mode support and explicit refusal of unsupported remote use.
+  - `3d8ae08` added `FirmwareR0Contract` validating state/schema/`committed`, eight channels and ≥10 samples each. Draft values not eligible.
+  - `e990c5a`, `bd70124` added phone-side mirrored firmware R0 provenance with device identity.
+  - `4dc6190` replaced outdated 20-minute UI automatic acquisition with nonblocking firmware 300-second warmup + 60-second collection, explicit R0 re-sync, cancel and lifecycle release.
+  - `f97b983`, `f6e0901` propagate device identity and reject cross-controller reuse of firmware calibration in new snapshots.
+  - `d4b6817` added real `FirmwareR0ContractTest` cases: committed vs provisional, missing channel, count <10, invalid R0, unknown schema.
+- **Verification status:** firmware compilation PASS; Android Gradle build **NOT PASS**. CI earlier 40422666783 compiled source but failed legacy R0/source-contract tests, including a three-window/20-minute test that conflicts with the approved firmware-controlled V4 design. Further tests and APK packaging are not certified.
+- **Next exact action:** inspect latest Actions run for `d4b6817`, triage test failures without suppressing meaningful calibration/safety tests, update obsolete assertions against revised requirements, and rerun Gradle. Android APK remains UNRELEASED; device bench acceptance pending.
