@@ -15,6 +15,9 @@ Scope: firmware/ESP32-Tank only. Tank remains independent from the original whee
 - Keep code and diagnostics concise; do not remove essential safety checks to reduce binary size.
 
 ## Implementation checkpoint 2026-10-27
+- 0537174: replaced per-channel writes with a single versioned, checksummed eight-channel R0 NVS record. All eight channels must have >=10 valid readings and ADS health before commit; failure preserves prior record. Legacy per-channel NVS values remain readable as fallback. Build run 40413775523 pending at documentation time.
+- This is a single-record commit, NOT proven power-loss atomicity on actual flash. Requires interruption/reboot test and post-write readback verification.
+
 - 05b1c14: calibration window bounded; both ADS required at start; reject invalid channels.
 - 1adbae6: new V4 GitHub Actions compile/safety workflow, run 40412870990 initiated (result pending at documentation time).
 - Pending review: source currently computes Rs mean / clean-air factor directly; user-approved MQUnifiedsensor API still must be integrated and verified.
