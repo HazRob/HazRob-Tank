@@ -80,6 +80,19 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     elif not set(physical_columns) <= set(groups[0]):
         issues.append("GROUPING_SOURCE_COLUMNS_MISSING")
         physical_columns = []
+    # A declared physical grouping key must be backed by the actual source
+    # identity columns, not arbitrary per-row identifiers (e.g. sample_id).
+    # Additional source columns are allowed, but may not replace the minimum.
+    required_by_grouping_key = {
+        "session_id": {"session_id"},
+        "device_session_id": {"device_id", "session_id"},
+        "batch_id": {"batch_id"},
+        "campaign_id": {"campaign_id"},
+        "site_day_device": {"site_id", "day_id", "device_id"},
+    }
+    required_physical = required_by_grouping_key.get(record.get("grouping_key"))
+    if required_physical is None or not required_physical.issubset(set(physical_columns)):
+        issues.append("GROUPING_SOURCE_COLUMNS_NOT_PHYSICAL_FOR_KEY")
     if physical_columns:
         group_to_physical = {}
         physical_to_group = {}
