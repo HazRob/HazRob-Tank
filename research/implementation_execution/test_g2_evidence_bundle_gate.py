@@ -10,6 +10,7 @@ from pathlib import Path
 
 from g2_evidence_bundle_gate import FILES, audit_evidence_bundle
 from g2_evidence_audit import audit_record
+from g2_cross_artifact_gate import audit_cross_artifact
 from test_g2_evidence_audit import eligible_fixture
 
 
@@ -114,9 +115,11 @@ class EvidenceBundleTests(unittest.TestCase):
                 altered = [lines[0] + "," + column]
                 altered += [line + "," + line.split(",")[0] for line in lines[1:]]
                 self.replace_bytes(record, base, filename, "\n".join(altered) + "\n")
-                self.assertEqual(audit_evidence_bundle(record, temp), [])
+                self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:" + filename,
+                              audit_evidence_bundle(record, temp))
                 result = audit_record(record, temp)
-                self.assertIn("CROSS_ARTIFACT_READ_FAILED", result["issues"])
+                self.assertIn("CROSS_ARTIFACT_READ_FAILED",
+                              audit_cross_artifact(record, temp))
                 self.assertEqual(result["status"], "G2_BLOCKED")
 
     def test_surplus_csv_cells_cannot_be_silently_discarded(self):
@@ -128,9 +131,10 @@ class EvidenceBundleTests(unittest.TestCase):
                 lines = (base / filename).read_text().splitlines()
                 lines[1] += ",EXTRA"
                 self.replace_bytes(record, base, filename, "\n".join(lines) + "\n")
-                self.assertEqual(audit_evidence_bundle(record, temp), [])
+                self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:" + filename,
+                              audit_evidence_bundle(record, temp))
                 self.assertIn("CROSS_ARTIFACT_READ_FAILED",
-                              audit_record(record, temp)["issues"])
+                              audit_cross_artifact(record, temp))
 
     def test_missing_csv_cells_in_unused_provenance_column_are_blocked(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -141,9 +145,10 @@ class EvidenceBundleTests(unittest.TestCase):
             altered += [line + ",tag" for line in lines[1:]]
             altered[2] = lines[2]  # Short row, all mandatory columns still present.
             self.replace_bytes(record, base, filename, "\n".join(altered) + "\n")
-            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:" + filename,
+                              audit_evidence_bundle(record, temp))
             self.assertIn("CROSS_ARTIFACT_READ_FAILED",
-                          audit_record(record, temp)["issues"])
+                          audit_cross_artifact(record, temp))
 
     def test_physical_group_columns_required_not_just_metadata(self):
         with tempfile.TemporaryDirectory() as temp:
