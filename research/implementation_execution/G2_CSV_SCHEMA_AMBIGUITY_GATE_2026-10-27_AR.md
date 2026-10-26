@@ -30,7 +30,7 @@ python -m unittest -v test_g2_signal_lineage_gate test_g2_evidence_audit test_g2
 cd ../..
 python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_audit_results.json
 ```
-مسار CI المستهدف: `.github/workflows/g2-signal-lineage-v4.yml`. تشغيل `40403427151` للالتزام `f06ee9de7` فشل في 7 حالات من 118 بسبب توقعات الاختبار الخاطئة، ولم ينفذ التدقيق النهائي. أُعيد التشغيل تلقائياً بعد الإصلاح على الالتزام `32b592b4` (تشغيل `40403606573`)؛ يلزم تثبيت نتيجته الفعلية بعد اكتماله.
+مسار CI المستهدف: `.github/workflows/g2-signal-lineage-v4.yml`. تشغيل `40403427151` للالتزام `f06ee9de7` فشل في 7 حالات من 118 بسبب توقعات الاختبار الخاطئة، ولم ينفذ التدقيق النهائي. أُعيد التشغيل بعد الإصلاح على الالتزام `32b592b4`: [GitHub Actions #40403606573](https://github.com/HazRob/HazRob-Tank/actions/runs/40403606573) **SUCCESS**؛ نفذ 118/118 اختباراً بنجاح، وأجرى تدقيق الثمانين: `g2_pass_candidates=0`, `g2_blocked=80`، ورفع ملف أثر التدقيق. هذه نتيجة CI على التزام الشيفرة، وليست ترقية علمية.
 
 ## القيود العلمية
 لا تزال حزم القياس المرجعي الفيزيائي المستقل لجهاز Tank ناقصة؛ لا يجوز ترقية أي تقنية G2 أو G3، ولا تعديل ChemCore Stable أو APK أو firmware. نجاح هذه البوابة يثبت فقط رفض ملفات CSV الملتبسة، ولا يثبت مصدر البيانات أو استقلال جلسات التعرض أو دقة ppm.
