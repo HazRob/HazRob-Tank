@@ -12,11 +12,11 @@ def eligible_fixture():
               "grouping_key":"device_session_id", "grouping_source_verified":True,
               "grouping_source_field":"device_id,session_id", "train_group_ids":["d1-s1"],
               "calibration_group_ids":["d1-s2"], "test_group_ids":["d2-s1","d2-s2"], "target_definition":"lab gas reference",
-              "metric_name":"classification_accuracy", "metric_value":0.85,
+              "metric_name":"classification_accuracy", "metric_value":0.5,
               "baseline_metric_value":0.5, "protocol_sha256":SHA,
               "evaluation_artifact_sha256":SHA, "raw_sha256_verified_from_bytes":True,
               "hyperparameters_selected_on_test":False, "blind_holdout":True,
-              "measurement_units":"OHM", "confidence_interval":{"low":0.7,"high":0.9, "method":"GROUP_BOOTSTRAP",
+              "measurement_units":"OHM", "confidence_interval":{"low":0.4,"high":0.9, "method":"GROUP_BOOTSTRAP",
                                      "grouping_key":"device_session_id", "independent_test_groups":2},
               "source_raw_data_accessible":True})
     return x
