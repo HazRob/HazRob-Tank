@@ -1,0 +1,306 @@
+{
+  "schema": "hazrob.g2.source-candidates.v1",
+  "catalog_repository": "HazRob/build-harness",
+  "catalog_path": "library/reference-bank/external-research/master_catalog.json",
+  "catalog_blob_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+  "generated_on": "2026-10-26",
+  "total": 20,
+  "candidates": [
+    {
+      "id": "MQ-EXT-01",
+      "title": "Food Freshness E-Nose",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://zenodo.org/records/17285312",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "archive_listed_not_downloaded",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ7",
+        "MQ8",
+        "MQ9",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-02",
+      "title": "Beef quality Rs time series (v3)",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/mwmhh766fc/3",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "dataset_landing_verified_raw_not_downloaded",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ8",
+        "MQ9",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-03",
+      "title": "MultimodalGasData original / GitHub mirror",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/zkwgkjkjn9/2",
+      "raw_file_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED",
+      "source_status": "github_mirror_raw_fetched_original_not_byte_compared",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ2",
+        "MQ3",
+        "MQ5",
+        "MQ7",
+        "MQ8",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-04",
+      "title": "Chinese Brewed Vinegar OdorNet (v2)",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/w5fcvyj398/2",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "metadata_verified_raw_not_downloaded",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ2",
+        "MQ5",
+        "MQ8"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-05",
+      "title": "Beef Quality Four Classes ESP32",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/n8mc3nspfn/1",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "metadata_verified_raw_not_downloaded",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-06",
+      "title": "Air Quality ADL activity dataset",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/kn3x9rz3kd/1",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "metadata_verified_raw_not_downloaded",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ2",
+        "MQ9",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-07",
+      "title": "Chemotronix/Zindi three-device CO2 challenge",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://zindi.world/competitions/air-quality-prediction-from-low-cost-iot-devices/data",
+      "raw_file_status": "ACCESS_RESTRICTED_OR_REQUEST_REQUIRED",
+      "source_status": "registration_terms_required_not_downloaded",
+      "measurement_qualification": "claim_not_verified",
+      "sensor_models": [
+        "MQ7",
+        "MQ9",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-08",
+      "title": "Advanced gas detection Proteus simulation",
+      "category": "SIMULATED_DATASET",
+      "uri": "https://data.mendeley.com/datasets/jmhr42p7sf/1",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "metadata_verified_raw_not_downloaded",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ5",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-09",
+      "title": "CO six levels MQ e-nose 2026 publication",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://doi.org/10.3390/electronics15081671",
+      "raw_file_status": "ACCESS_RESTRICTED_OR_REQUEST_REQUIRED",
+      "source_status": "author_request_only_not_public_raw",
+      "measurement_qualification": "study_claim_not_audited",
+      "sensor_models": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ7",
+        "MQ8",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-10",
+      "title": "Wine spoilage thresholds and ethanol solution series v3",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/vpc887d53s/3",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "landing_metadata_verified_original_archive_not_inspected",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ3",
+        "MQ4"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-11",
+      "title": "Odor of Tropical Timber 2 v2",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/gvwr8hmv2t/2",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "landing_metadata_verified_raw_archive_not_inspected",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ7",
+        "MQ8",
+        "MQ9",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-12",
+      "title": "In-Vehicle Alcohol Detection",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/brwptm8wjb/1",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "landing_metadata_verified_raw_not_downloaded",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ3"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-13",
+      "title": "Tomato plants Thrips palmi time series",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/yfnw7xw7df/1",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "metadata_verified_raw_archive_not_inspected",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ3",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-14",
+      "title": "Responses of 8 sensors to ethanol, acetic acid, hexanal, pentanone",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://data.mendeley.com/datasets/78y8kv6hz7/1",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "landing_metadata_verified_raw_not_downloaded",
+      "measurement_qualification": "not_proven",
+      "sensor_models": [],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-15",
+      "title": "UCI1081 gas sensor low concentration",
+      "category": "EXTERNAL_MEASUREMENT_DATASET",
+      "uri": "https://archive.ics.uci.edu/dataset/1081/gas+sensor+array+low-concentration",
+      "raw_file_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED",
+      "source_status": "ALREADY_ACQUIRED_AND_SHA256_CHECKED_IN_UCI_BENCHMARK",
+      "measurement_qualification": "reported_ppb_not_tank_calibration",
+      "sensor_models": [
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MOS-EXT-16",
+      "title": "Raw 45-sensor VOC and synchronised SIFT-MS campaign 2026",
+      "category": "CROSS_PLATFORM_DATASET",
+      "uri": "https://data.mendeley.com/datasets/9v3nywn7hy/1",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "metadata_verified_raw_not_downloaded",
+      "measurement_qualification": "reported_chemical_reference_need_audit",
+      "sensor_models": [],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MOS-EXT-17",
+      "title": "Long-Term Drift Behavior of Electronic Nose (2025)",
+      "category": "CROSS_PLATFORM_DATASET",
+      "uri": "https://zenodo.org/records/15681119",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "zenodo_archive_141MB_listed_not_downloaded",
+      "measurement_qualification": "reported_concentration_not_tank",
+      "sensor_models": [],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MOS-EXT-18",
+      "title": "Transfer Learning Dataset for MOS (SGP40)",
+      "category": "CROSS_PLATFORM_DATASET",
+      "uri": "https://zenodo.org/records/6821340",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "zenodo_mat_archive_listed_not_downloaded",
+      "measurement_qualification": "reported_laboratory_target",
+      "sensor_models": [],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "MQ-EXT-20",
+      "title": "Historic environmental MQ3/MQ135/MQ7/MQ4 log",
+      "category": "UNLABELLED_DATASET",
+      "uri": "https://gist.github.com/arselzer/10d45d61a7ad10f80d2b",
+      "raw_file_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "source_status": "CSV_TEXT_PREVIEW_ONLY",
+      "measurement_qualification": false,
+      "sensor_models": [
+        "MQ3",
+        "MQ4",
+        "MQ7",
+        "MQ135"
+      ],
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    },
+    {
+      "id": "UCI-EXT-270",
+      "title": "UCI270 Gas Sensor Array Drift at Different Concentrations — reference ppm labels",
+      "category": "CROSS_PLATFORM_DATASET",
+      "uri": "https://archive.ics.uci.edu/dataset/270/gas+sensor+array+drift+dataset+at+different+concentrations",
+      "raw_file_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2",
+      "source_status": "UCI_CANONICAL_DATASET_VERIFIED_PREVIOUSLY_USED_IN_TANK",
+      "measurement_qualification": null,
+      "sensor_models": "16 commercial metal oxide gas sensors (16-channel array; MQ models NOT established)",
+      "gate": "SOURCE_CANDIDATE_ONLY_NOT_G2_APPROVAL"
+    }
+  ]
+}
