@@ -37,7 +37,8 @@ python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_a
 
 ## إثبات CI
 - آخر التزام اختبار: `6afcbbd3d033f891e364c43ca24199ab96659f96`.
-- يُستكمل رقم التشغيل والنتيجة بعد التحقق من GitHub Actions؛ لا تعتبر الاختبارات ناجحة قبل اكتمال CI.
+- GitHub Actions: https://github.com/HazRob/HazRob-Tank/actions/runs/40348987226 (الالتزام البرمجي `6afcbbd3`)؛ **نجاح 100/100 اختبار**، ونجاح تدقيق سجل G2: `g2_pass_candidates=0`، `g2_blocked=80`، مع رفع أثر التدقيق.
+- ظهر إخفاق انتقالي في الالتزام `07d2d666` قبل تحديث الحزمة الاصطناعية، ثم أصلح في `6fa075bb`، واجتازت اختبارات الحالات السلبية الجديدة في `6afcbbd3`.
 
 ## إجراءات المتابعة
 1. التحقق من نتيجة CI وإصلاح أي إخفاق في فرع البحث فقط.
