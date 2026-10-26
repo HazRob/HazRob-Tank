@@ -1,0 +1,48 @@
+name: Tank G2 MQ-EXT-01 original measured file-day benchmark (exploratory)
+
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - research/implementation_execution/g2_mq01_fileday_benchmark.py
+      - research/implementation_execution/test_g2_mq01_fileday_benchmark.py
+      - .github/workflows/tank-g2-mq01-fileday.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-fileday-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate grouping and training-only numerical baseline with synthetic fixtures
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_mq01_fileday_benchmark.py' -v
+      - name: Evaluate original SHA-verified source CSV files
+        run: python research/implementation_execution/g2_mq01_fileday_benchmark.py --output-dir "$RUNNER_TEMP/mq01_fileday"
+      - name: Prevent source benchmark promotion
+        run: |
+          python - "$RUNNER_TEMP/mq01_fileday/fileday_results.json" <<'PY'
+          import json,sys
+          result=json.load(open(sys.argv[1]))
+          assert result["source_md5_verified"]
+          assert len(result["source_archive_sha256"])==64
+          assert not result["g2_qualified"] and not result["g3_tank"] and not result["safety_grade"]
+          assert not result["grouping_verified_as_independent_physical_session"]
+          assert not result["source_signal_units_verified"]
+          assert all(x["n_test_files"]==50 for x in result["experiments"])
+          print("Exploratory measured-source benchmark only; 0 G2 promotion")
+          PY
+      - name: Upload per-file features and complete predictions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tank-g2-mq01-fileday-exploratory
+          path: ${{ runner.temp }}/mq01_fileday/
+          if-no-files-found: warn
