@@ -95,3 +95,18 @@ jobs:
         run: python -m unittest discover -p 'test_*.py' -v
       - name: Record research-only scope
         run: echo 'G1 software validation only; no gas G3 approval'
+
+  g2-source-evidence-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: G2 fail-closed adversarial tests
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_evidence_audit.py' -v
+      - name: Run 80-source empirical evidence audit
+        run: python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_audit_results.json
+      - name: Check no unsupported G2 approvals
+        run: python -c "import json; x=json.load(open('/tmp/g2_audit_results.json')); assert x['g2_pass_candidates']==0 and x['g2_blocked']==80, x"
