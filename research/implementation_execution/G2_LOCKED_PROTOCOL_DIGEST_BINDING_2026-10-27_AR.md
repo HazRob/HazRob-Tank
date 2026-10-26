@@ -32,5 +32,5 @@ python -m unittest -v test_g2_signal_lineage_gate test_g2_evidence_audit test_g2
 cd ../..
 python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_audit_results.json
 ```
-- GitHub Actions: `g2-signal-lineage-v4.yml`. التشغيل الأول `40411516997` على الالتزام البرمجي وحده فشل، لأن العينات الاصطناعية لم تكن بعد قد حدّثت حقل `protocol_sha256`؛ عُدلت العينات والاختبارات في الالتزام اللاحق. يجب الرجوع إلى نتيجة تشغيل الالتزام الأخير قبل الادعاء بنجاح CI.
+- GitHub Actions: `g2-signal-lineage-v4.yml`. التشغيل الأول `40411516997` على الالتزام البرمجي وحده فشل، لأن العينات الاصطناعية لم تكن بعد قد حدّثت حقل `protocol_sha256`؛ عُدلت العينات والاختبارات في الالتزام اللاحق. التشغيل [40411550717](https://github.com/HazRob/HazRob-Tank/actions/runs/40411550717) على الالتزام `9360607ce029875f0b932e0edcb5c9eeac368120` **SUCCESS**: نجحت 121/121 اختبارات، ونُفذ تدقيق 80/80 (`g2_pass_candidates=0`, `g2_blocked=80`) ورُفع الأثر `tank-v4-g2-signal-r0-gate` (artifact ID `12693811746`).
 - الحالة العلمية الثابتة: **0/80 مرشحين، 80/80 محجوبين** إلى حين استيفاء أدلة القياس المستقل.
