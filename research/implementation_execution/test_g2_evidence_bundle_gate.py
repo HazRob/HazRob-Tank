@@ -23,6 +23,15 @@ def synthetic_bundle(root):
         "raw_manifest.json": {
             "raw_sha256": record["raw_sha256"], "dataset_uri": record["dataset_uri"]
         },
+        "source_qualification.json": {
+            key: record[key] for key in
+            ("source_kind", "dataset_uri", "raw_sha256",
+             "raw_sha256_verified_from_bytes", "source_raw_data_accessible")
+        },
+        "signal_lineage.json": {
+            key: record[key] for key in
+            ("signal_processing", "measurement_units", "sensor_metadata")
+        },
         "split_manifest.json": {
             key: record[key] for key in
             ("train_group_ids", "calibration_group_ids", "test_group_ids")
@@ -252,6 +261,38 @@ class EvidenceBundleTests(unittest.TestCase):
                 '{"low":0.7,"high":0.9,"method":"ROW_BOOTSTRAP",'
                 '"grouping_key":"device_session_id","independent_test_groups":2}')
             self.assertIn("UNCERTAINTY_RECORD_MISMATCH", audit_record(record, temp)["issues"])
+
+    def test_source_qualification_conflict_even_with_matching_sha_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            source = json.loads((base / "source_qualification.json").read_text())
+            source["source_kind"] = "SYNTHETIC"
+            self.replace_bytes(record, base, "source_qualification.json",
+                               json.dumps(source))
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            self.assertIn("SOURCE_QUALIFICATION_RECORD_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_signal_lineage_conflict_even_with_matching_sha_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            signal = json.loads((base / "signal_lineage.json").read_text())
+            signal["signal_processing"]["r0_mode"] = "NOT_USED"
+            self.replace_bytes(record, base, "signal_lineage.json",
+                               json.dumps(signal))
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            self.assertIn("SIGNAL_LINEAGE_RECORD_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_placeholder_source_or_signal_cannot_be_candidate(self):
+        for filename, issue in (
+            ("source_qualification.json", "SOURCE_QUALIFICATION_RECORD_MISMATCH"),
+            ("signal_lineage.json", "SIGNAL_LINEAGE_RECORD_MISMATCH"),
+        ):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                self.replace_bytes(record, base, filename, '{"fixture":"synthetic"}')
+                self.assertIn(issue, audit_record(record, temp)["issues"])
 
     def test_raw_manifest_conflicts_with_evidence_record(self):
         with tempfile.TemporaryDirectory() as temp:
