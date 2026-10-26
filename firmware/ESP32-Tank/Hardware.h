@@ -20,6 +20,9 @@ void motionStop(),emergencyStop();
 
 bool relaySetMask(uint8_t on);
 void sensorPowerOff();
+bool calibrationStart(uint16_t warmSeconds,uint16_t sampleSeconds);
+void calibrationCancel();
+String calibrationJson();
 bool measureStart();
 void measureCancel();
 
