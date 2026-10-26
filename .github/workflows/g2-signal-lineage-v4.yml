@@ -1,0 +1,40 @@
+name: "Tank V4 G2 — source signal and R0 evidence gate"
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - 'research/implementation_execution/g2_*.py'
+      - 'research/implementation_execution/test_g2_*.py'
+      - 'research/implementation_execution/G2_UCI1081_SIGNAL_R0_PROVENANCE_2026-10-26.json'
+      - '.github/workflows/g2-signal-lineage-v4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g2-signal-lineage-fail-closed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: "Compile and execute G2 negative source/R0 controls"
+        run: |
+          python -m compileall -q research/implementation_execution/g2_signal_lineage_gate.py research/implementation_execution/g2_evidence_audit.py
+          cd research/implementation_execution
+          python -m unittest -v test_g2_signal_lineage_gate test_g2_evidence_audit test_g2_uci1081_signal_manifest
+      - name: "Run full 80-technique G2 fail-closed evidence audit"
+        run: |
+          python research/implementation_execution/g2_evidence_audit.py --output "$RUNNER_TEMP/g2_audit_results.json"
+          python -c 'import json,sys; x=json.load(open(sys.argv[1])); assert x["g2_pass_candidates"] == 0 and x["g2_blocked"] == 80, x' "$RUNNER_TEMP/g2_audit_results.json"
+      - name: "Upload reproducible G2 gate output"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tank-v4-g2-signal-r0-gate
+          path: ${{ runner.temp }}/g2_audit_results.json
+          if-no-files-found: ignore
