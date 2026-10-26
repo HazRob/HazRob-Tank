@@ -146,6 +146,35 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
 
+    def test_extra_sample_id_cannot_disguise_reused_physical_session(self):
+        # Regression: adding sample_id to declared provenance previously
+        # made the same device/session appear independent across splits.
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["grouping_source_field"] = "device_id,session_id,sample_id"
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id,gas_reference_id,device_id,session_id,sample_id\n"
+                "tr,d1-s1,GAS_A,d1,s1,train-unique\n"
+                "ca,d1-s2,GAS_B,d1,s2,calibration-unique\n"
+                "te1,d2-s1,GAS_A,d1,s1,blind-unique\n"
+                "te2,d2-s2,GAS_B,d2,s2,blind-two\n")
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("PHYSICAL_GROUP_ALIAS_ACROSS_SPLITS", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_extra_provenance_column_does_not_block_distinct_sessions(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["grouping_source_field"] = "device_id,session_id,sample_id"
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id,gas_reference_id,device_id,session_id,sample_id\n"
+                "tr,d1-s1,GAS_A,d1,s1,sample-1\n"
+                "ca,d1-s2,GAS_B,d1,s2,sample-2\n"
+                "te1,d2-s1,GAS_A,d2,s1,sample-3\n"
+                "te2,d2-s2,GAS_B,d2,s2,sample-4\n")
+            self.assertEqual(audit_record(record, temp)["status"],
+                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
     def test_physical_session_alias_across_split_ids_is_blocked(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
