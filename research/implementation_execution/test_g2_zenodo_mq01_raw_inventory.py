@@ -33,12 +33,23 @@ class ZenodoMQ01Tests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "MD5_MISMATCH"):
                 download_verified(Path(d) / "copy.bin", source.as_uri())
 
+    def test_published_md5_match_but_sha256_mismatch_is_rejected(self):
+        # Synthetic bytes: proves both digests must match independently.
+        with tempfile.TemporaryDirectory() as d:
+            source = Path(d) / "source.bin"
+            payload = b"synthetic-source-with-matching-md5-only"
+            source.write_bytes(payload)
+            with patch("g2_zenodo_mq01_raw_inventory.PUBLISHED_MD5", hashlib.md5(payload).hexdigest()):
+                with self.assertRaisesRegex(RuntimeError, "ORIGINAL_ARCHIVE_SHA256_MISMATCH"):
+                    download_verified(Path(d) / "copy.bin", source.as_uri())
+
     def test_checksum_match_is_byte_verified(self):
         with tempfile.TemporaryDirectory() as d:
             source = Path(d) / "source.bin"
             payload = b"synthetic-only"
             source.write_bytes(payload)
-            with patch("g2_zenodo_mq01_raw_inventory.PUBLISHED_MD5", hashlib.md5(payload).hexdigest()):
+            with patch("g2_zenodo_mq01_raw_inventory.PUBLISHED_MD5", hashlib.md5(payload).hexdigest()), \
+                 patch("g2_zenodo_mq01_raw_inventory.PINNED_SHA256", hashlib.sha256(payload).hexdigest()):
                 record = download_verified(Path(d) / "copy.bin", source.as_uri())
             self.assertEqual(record["sha256"], hashlib.sha256(payload).hexdigest())
 
