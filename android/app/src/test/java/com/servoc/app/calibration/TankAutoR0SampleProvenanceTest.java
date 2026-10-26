@@ -6,22 +6,27 @@ import java.nio.file.Paths;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/** The firmware streams scan_cycle; do not mistake repeated Android refreshes for fresh Rs. */
+/** V4: firmware owns scan timing and collects each ADC cycle once; phone only imports verified R0. */
 public final class TankAutoR0SampleProvenanceTest {
-    @Test public void eachAcceptedR0ReadingRequiresMonotonicallyNewMqScan() throws Exception {
-        String source=new String(Files.readAllBytes(Paths.get(
-            "src/main/java/com/servoc/app/ui/DeveloperR0Tab.java")),StandardCharsets.UTF_8);
-        assertTrue(source.contains("long cycle=sample.optLong(\"scan_cycle\",-1L);"));
-        assertTrue(source.contains("if(cycle<=0||cycle<=lastCycles[i])continue;"));
-        assertTrue(source.contains("lastCycles[i]=cycle;"));
-        assertTrue(source.indexOf("lastCycles[i]=cycle;")<
-            source.indexOf("autoSampler.accept(i,window,rs);"));
+    private String read(String path)throws Exception{
+        return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/"+path)),StandardCharsets.UTF_8);
     }
-    @Test public void approvedTwentyMinuteCycleHasNoExtraWarmupOrPowerOff() throws Exception {
-        String source=new String(Files.readAllBytes(Paths.get(
-            "src/main/java/com/servoc/app/ui/DeveloperR0Tab.java")),StandardCharsets.UTF_8);
-        assertTrue(source.contains("host.robotApi().mqPower(true)"));
-        assertTrue(source.contains("TankAutoR0Math.TOTAL_MS"));
-        assertFalse(source.contains("host.robotApi().mqPower(false)"));
+    @Test public void appNeverCountsScreenRefreshesAsMQSamples()throws Exception{
+        String ui=read("ui/DeveloperR0Tab.java");
+        assertTrue(ui.contains("host.robotApi().calibrationStatus()"));
+        assertTrue(ui.contains("FirmwareR0Contract.committedValues(response)"));
+        assertFalse(ui.contains("autoSampler.accept("));
+        assertFalse(ui.contains("TankAutoR0Math.captureWindow("));
+        assertFalse(ui.contains("lastCycles[i]"));
+    }
+    @Test public void firmwareControls300Plus60AndPhoneDoesNotPowerOffSensorsAfterCapture()throws Exception{
+        String ui=read("ui/DeveloperR0Tab.java");
+        assertTrue(ui.contains("host.robotApi().mqPower(true)"));
+        assertTrue(ui.contains("host.robotApi().calibrationStart(300,60)"));
+        assertFalse(ui.contains("host.robotApi().mqPower(false)"));
+        String contract=read("calibration/FirmwareR0Contract.java");
+        assertTrue(contract.contains("p.counts.get(key)<10"));
+        assertTrue(contract.contains("!p.committed"));
+        assertTrue(contract.contains("SCHEMA=\"tank-r0-fw-v4/1\""));
     }
 }
