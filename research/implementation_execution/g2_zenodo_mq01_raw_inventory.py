@@ -111,6 +111,11 @@ def main():
         writer = csv.DictWriter(fp, fieldnames=["path", "bytes", "compressed_bytes", "crc32"])
         writer.writeheader()
         writer.writerows(members)
+    # Inventory paths are source facts, not verified exposure-group IDs.
+    print("SOURCE_ARCHIVE_MEMBERS_BEGIN")
+    for member in members:
+        print(json.dumps({"path": member["path"], "bytes": member["bytes"]}, ensure_ascii=False))
+    print("SOURCE_ARCHIVE_MEMBERS_END")
     print(json.dumps({"dataset_id": "MQ-EXT-01", "archive_sha256": provenance["sha256"],
                       "files": len(members), "g2_qualified": False}))
 
