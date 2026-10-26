@@ -219,8 +219,8 @@ void calibrationUpdate(){
  if(calState!=CAL_WARM&&calState!=CAL_SAMPLE)return;
  if(!mqPowerOn){calState=CAL_ERROR;calError="power_off";return;}
  uint32_t now=millis();
- if(calState==CAL_WARM){if(mqPowerMs()>=calWarmMs){calState=CAL_SAMPLE;calAt=now;calLastCycle=0;}return;}
- if(mqScanCycle!=calLastCycle&&mqIndex==0){
+ if(calState==CAL_WARM){if(mqPowerMs()>=calWarmMs){calState=CAL_SAMPLE;calAt=now;calLastCycle=mqScanCycle;}return;}
+ if(now-calAt<calWindowMs&&mqScanCycle!=calLastCycle&&mqIndex==0){
   calLastCycle=mqScanCycle;
   for(uint8_t i=0;i<Cfg::MQ_N;i++){
    if(!mq[i].ok||mq[i].scanCycle!=mqScanCycle||!ff(mq[i].rs)||mq[i].rs<=0)continue;
@@ -229,7 +229,7 @@ void calibrationUpdate(){
  }
  if(now-calAt<calWindowMs)return;
  for(uint8_t i=0;i<Cfg::MQ_N;i++){
-  if(calCount[i]<10||!cleanAir[i])continue;
+  if(calCount[i]<10||!cleanAir[i]||!adsOK(Cfg::mq[i].ads))continue;
   float v=(float)(calSum[i]/calCount[i]/cleanAir[i]);
   if(!ff(v)||v<=0)continue;
   String key="mq_r0_"+String(i),nk="mq_n_"+String(i);
@@ -273,10 +273,10 @@ String diagJson(){String j="{\"fw\":\""+String(Cfg::FW)+"\",\"build_revision\":\
 
 bool calibrationStart(uint16_t warmSeconds,uint16_t sampleSeconds){
  if(calState==CAL_WARM||calState==CAL_SAMPLE||stage==MEASURE||!mqPowerOn||sampleSeconds<1||sampleSeconds>3600||warmSeconds>3600)return false;
- if(!ads1ok&&!ads2ok)return false;
+ if(!ads1ok||!ads2ok)return false;
  calWarmMs=(uint32_t)warmSeconds*1000UL;calWindowMs=(uint32_t)sampleSeconds*1000UL;
  memset(calSum,0,sizeof(calSum));memset(calCount,0,sizeof(calCount));
- calError="";calAt=millis();calLastCycle=0;calState=CAL_WARM;return true;
+ calError="";calAt=millis();calLastCycle=mqScanCycle;calState=CAL_WARM;return true;
 }
 void calibrationCancel(){calState=CAL_CANCEL;}
 String calibrationJson(){
