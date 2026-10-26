@@ -91,17 +91,34 @@ public final class RobotApi {
         // Handle both published canonical snapshots and direct diag/data MQTT envelopes.
         // All eight channels use the latest DURABLY saved per-sensor R0 on Android.
         if(snapshot==null)return null;
+        String deviceId=snapshot.optString("device_id","");
         JSONObject mq=snapshot.optJSONObject("mq");
-        reconcileMq(mq);
+        reconcileMq(mq,deviceId);
         JSONObject measurement=snapshot.optJSONObject("measurement");
-        if(measurement!=null)reconcileMq(measurement.optJSONObject("mq"));
+        if(measurement!=null)reconcileMq(measurement.optJSONObject("mq"),deviceId);
         return snapshot;
     }
-    private static void reconcileMq(JSONObject mq){
+    private static void reconcileMq(JSONObject mq,String deviceId){
         if(mq==null)return;
         for(String key:ManualR0Calibration.keys()){
             JSONObject sensor=mq.optJSONObject(key);
-            if(sensor!=null)ManualR0Calibration.apply(key,sensor);
+            if(sensor==null)continue;
+            String source=ManualR0Calibration.getSource(key);
+            String bound=ManualR0Calibration.getDeviceId(key);
+            // Reject cross-robot reuse of firmware-measured R0, including MQTT
+            // snapshots which lack a verified controller identity.
+            if("firmware_clean_air_r0".equals(source)&&
+                    (bound.isEmpty()||!bound.equals(deviceId))){
+                sensor.remove("ratio");sensor.remove("r0");
+                try{
+                    sensor.put("r0_calibrated",false);
+                    sensor.put("r0_source","device_mismatch");
+                    sensor.put("r0_provenance_complete",false);
+                    sensor.put("r0_reference_validated",false);
+                }catch(org.json.JSONException ignored){}
+                continue;
+            }
+            ManualR0Calibration.apply(key,sensor);
         }
     }
     public JSONObject snapshot(int commandedLeft,int commandedRight)throws Exception{
