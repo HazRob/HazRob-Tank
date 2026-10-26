@@ -16,7 +16,8 @@ def eligible_fixture():
               "baseline_metric_value":0.5, "protocol_sha256":SHA,
               "evaluation_artifact_sha256":SHA, "raw_sha256_verified_from_bytes":True,
               "hyperparameters_selected_on_test":False, "blind_holdout":True,
-              "measurement_units":"OHM", "confidence_interval":{"low":0.7,"high":0.9},
+              "measurement_units":"OHM", "confidence_interval":{"low":0.7,"high":0.9, "method":"GROUP_BOOTSTRAP",
+                                     "grouping_key":"device_session_id", "independent_test_groups":2},
               "source_raw_data_accessible":True})
     return x
 
@@ -46,6 +47,22 @@ class AuditTests(unittest.TestCase):
     def test_invalid_confidence_interval(self):
         x=eligible_fixture();x["confidence_interval"]={"low":0.95,"high":0.7}
         self.assertIn("INVALID_UNCERTAINTY_INTERVAL",audit_record(x)["issues"])
+    def test_row_level_interval_cannot_qualify(self):
+        x=eligible_fixture()
+        x["confidence_interval"]["method"]="ROW_BOOTSTRAP"
+        self.assertIn("UNCERTAINTY_GROUPING_NOT_VERIFIED",audit_record(x)["issues"])
+    def test_grouping_mismatch_in_interval_cannot_qualify(self):
+        x=eligible_fixture()
+        x["confidence_interval"]["grouping_key"]="replicate_ordinal"
+        self.assertIn("UNCERTAINTY_GROUPING_NOT_VERIFIED",audit_record(x)["issues"])
+    def test_metric_outside_interval_cannot_qualify(self):
+        x=eligible_fixture()
+        x["confidence_interval"].update(low=0.1, high=0.2)
+        self.assertIn("METRIC_OUTSIDE_REPORTED_CONFIDENCE_INTERVAL",audit_record(x)["issues"])
+    def test_one_independent_test_group_cannot_qualify_uncertainty(self):
+        x=eligible_fixture()
+        x["confidence_interval"]["independent_test_groups"]=1
+        self.assertIn("UNCERTAINTY_GROUPING_NOT_VERIFIED",audit_record(x)["issues"])
     def test_raw_hash_must_be_verified(self):
         x=eligible_fixture();x["raw_sha256_verified_from_bytes"]=False
         self.assertIn("RAW_SOURCE_BYTES_NOT_SHA_VERIFIED",audit_record(x)["issues"])
