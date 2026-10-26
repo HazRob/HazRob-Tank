@@ -10,6 +10,7 @@ import io
 import json
 import math
 import re
+import random
 import statistics
 import tempfile
 import zipfile
@@ -89,6 +90,70 @@ def evaluate(records, channels):
                  "total": 5} for label in sorted({x["actual"] for x in predictions})],
             "predictions": predictions}
 
+def permutation_negative_control(records, channels, n_permutations=1999, seed=20261026):
+    """Conditional *descriptive* null, shuffling class labels within filename-day.
+
+    1NN nearest-file indices are computed from the measured features and
+    training-day files only; labels are never used to choose neighbours.
+    This cannot establish independent physical sessions or a valid p-value
+    for generalization beyond the archive.
+    """
+    if not isinstance(n_permutations, int) or n_permutations < 1:
+        raise ValueError("INVALID_PERMUTATION_COUNT")
+    by_day = {day: sorted((r for r in records if r["day"] == day),
+                          key=lambda r: r["file"]) for day in range(1, 6)}
+    if any(len(items) != 10 or len({r["label"] for r in items}) != 10
+           for items in by_day.values()):
+        raise ValueError("UNBALANCED_FILEDAY_PERMUTATION_STRATA")
+    if len({r["file"] for r in records}) != len(records):
+        raise ValueError("DUPLICATE_SOURCE_FILE_ID")
+    neighbours = {}
+    for day, heldout in by_day.items():
+        train = [r for r in records if r["day"] != day]
+        means = {c: statistics.mean(r["medians"][c] for r in train) for c in channels}
+        scales = {c: statistics.pstdev(r["medians"][c] for r in train) or 1.0 for c in channels}
+        for test in heldout:
+            closest = min(train, key=lambda r: (
+                sum(((r["medians"][c] - test["medians"][c]) / scales[c]) ** 2
+                    for c in channels), r["file"]))
+            neighbours[test["file"]] = closest["file"]
+    labels = {r["file"]: r["label"] for r in records}
+    observed = sum(labels[f] == labels[n] for f, n in neighbours.items())
+    rng = random.Random(seed)
+    null_counts = []
+    for _ in range(n_permutations):
+        permuted = {}
+        for day, items in by_day.items():
+            values = [r["label"] for r in items]
+            rng.shuffle(values)
+            permuted.update({r["file"]: value for r, value in zip(items, values)})
+        null_counts.append(sum(permuted[f] == permuted[n] for f, n in neighbours.items()))
+    ordered = sorted(null_counts)
+    return {"source_files": len(records), "observed_correct": observed,
+            "permutations": n_permutations, "seed": seed,
+            "null_mean_correct": sum(null_counts) / n_permutations,
+            "null_median_correct": ordered[n_permutations // 2],
+            "null_p95_correct": ordered[int(0.95 * (n_permutations - 1))],
+            "null_ge_observed": sum(x >= observed for x in null_counts),
+            "conditional_tail_fraction_plus_one": (
+                1 + sum(x >= observed for x in null_counts)) / (n_permutations + 1),
+            "inference_scope": "DESCRIPTIVE_FILEDAY_LABEL_RANDOMIZATION_ONLY",
+            "independent_session_significance_claim": False}
+
+
+def paired_channel_comparison(first, second):
+    """Report paired 8-vs-9 correctness, not two independent proportions."""
+    left = {r["file"]: r["correct"] for r in first["predictions"]}
+    right = {r["file"]: r["correct"] for r in second["predictions"]}
+    if left.keys() != right.keys():
+        raise ValueError("UNMATCHED_PAIRED_TEST_FILES")
+    return {"both_correct": sum(left[k] and right[k] for k in left),
+            "only_first_correct": sum(left[k] and not right[k] for k in left),
+            "only_second_correct": sum(right[k] and not left[k] for k in left),
+            "both_wrong": sum(not left[k] and not right[k] for k in left),
+            "comparison": "PAIRED_DESCRIPTIVE_NOT_INDEPENDENT_SAMPLES"}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--output-dir", required=True)
@@ -100,6 +165,9 @@ def main():
         source = download_verified(archive)
         records = load_source(archive)
     experiments = [evaluate(records, TANK_MQ), evaluate(records, ALL_MQ)]
+    controls = [permutation_negative_control(records, channels) for channels in (TANK_MQ, ALL_MQ)]
+    paired = paired_channel_comparison(*experiments)
+    assert all(c["observed_correct"] == e["correct"] for c, e in zip(controls, experiments))
     result = {"schema": "hazrob.g2.mq01.exploratory-fileday-v1",
               "source_archive_sha256": source["sha256"],
               "source_md5_verified": True,
@@ -112,6 +180,8 @@ def main():
               "model": "1NN standardized Euclidean; no tuning",
               "baselines": {"majority_class_accuracy": 0.1},
               "experiments": experiments,
+              "permutation_controls": controls,
+              "paired_channel_comparison": paired,
               "g2_qualified": False, "g3_tank": False, "safety_grade": False}
     (output / "source_file_features.json").write_text(json.dumps(records, indent=2) + "\n")
     (output / "fileday_results.json").write_text(json.dumps(result, indent=2) + "\n")
@@ -120,6 +190,11 @@ def main():
                       "experiments": [{"channels": len(x["channels"]),
                                        "correct": x["correct"], "total": x["n_test_files"]}
                                       for x in experiments],
+                      "permutation_controls": [{"observed_correct": x["observed_correct"],
+                                                "null_p95_correct": x["null_p95_correct"],
+                                                "conditional_tail_fraction_plus_one": x["conditional_tail_fraction_plus_one"]}
+                                               for x in controls],
+                      "paired": paired,
                       "g2_qualified": False}))
 
 if __name__ == "__main__":
