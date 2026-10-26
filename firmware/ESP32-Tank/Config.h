@@ -9,10 +9,7 @@ constexpr char HW_PROFILE[]="tank-doit-v1-2servo-8mq-echo-bme";
 constexpr char SSID[]="HazRob",NVS[]="servoc",CAM[]="192.168.4.2";
 
 // Rear-mounted continuous-rotation servos; polarity is calibrated per track.
-// Reserve GPIO16/17 for legacy L298N enable channels; dedicated servo PWM outputs.
-constexpr uint8_t SERVO_L_PIN=4,SERVO_R_PIN=5;
-// GPIO4/5 are boot-strapping pins on classic ESP32; servo inputs must not pull them
-// to an unsafe level during reset. Validate with the actual servo wiring before deployment.
+constexpr uint8_t SERVO_L_PIN=16,SERVO_R_PIN=17; // V4 original; drive-mode redesign deferred
 constexpr bool SERVO_L_INVERT=false,SERVO_R_INVERT=true; // provisional; verify wheels raised
 constexpr uint16_t SERVO_L_NEUTRAL_US=1500,SERVO_R_NEUTRAL_US=1500;
 constexpr uint16_t SERVO_L_RANGE_US=500,SERVO_R_RANGE_US=500;
