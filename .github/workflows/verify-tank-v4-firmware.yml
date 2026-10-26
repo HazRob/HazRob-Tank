@@ -1,0 +1,53 @@
+name: Verify Tank V4 firmware candidate
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/tank-v4-mq-unified-r0]
+    paths:
+      - 'firmware/ESP32-Tank/**'
+      - '.github/workflows/verify-tank-v4-firmware.yml'
+permissions:
+  contents: read
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static safety and calibration invariants
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          h=Path('firmware/ESP32-Tank/Hardware.cpp').read_text()
+          ino=Path('firmware/ESP32-Tank/ESP32-Tank.ino').read_text()
+          cfg=Path('firmware/ESP32-Tank/Config.h').read_text()
+          assert 'CONTROL_COMMAND_TIMEOUT_MS=500' in cfg
+          assert 'if(transportLost || now-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS)' in h
+          assert 'motionStopImmediate();' in h
+          assert 'web.on("/estop"' in ino
+          assert 'EnvWire.begin(Cfg::ENV_SDA,Cfg::ENV_SCL)' in h
+          assert 'calSum[i]/calCount[i]/cleanAir[i]' in h
+          assert 'now-calAt<calWindowMs' in h
+          assert 'if(calCount[i]<10' in h
+          assert 'web.on("/r0"' in ino
+          print('PASS: source invariants')
+          PY
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install pinned ESP32 core
+        run: |
+          set -euo pipefail
+          INDEX=https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index --additional-urls "$INDEX"
+          arduino-cli core install esp32:esp32@2.0.17 --additional-urls "$INDEX"
+      - name: Compile (unreleased)
+        run: |
+          arduino-cli compile --warnings all --fqbn esp32:esp32:esp32 --output-dir firmware-build firmware/ESP32-Tank
+      - name: Record SHA256 and binary sizes
+        run: |
+          sha256sum firmware-build/*.bin
+          du -h firmware-build/*.bin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tank-v4-UNRELEASED-compile-candidate
+          path: firmware-build/*.bin
+          retention-days: 7
