@@ -130,7 +130,7 @@ public final class RobotApi {
             // phone calibration. Re-normalize a copy before any UI, alarm or ChemCore consumer.
             return CanonicalMeasurementNormalizer.enrich(applyActiveR0(new JSONObject(s.toString())),"REMOTE");
         }
-        return CanonicalMeasurementNormalizer.enrich(directNormalizedSnapshot(commandedLeft,commandedRight),"DIRECT");
+        return CanonicalMeasurementNormalizer.enrich(applyActiveR0(directNormalizedSnapshot(commandedLeft,commandedRight)),"DIRECT");
     }
     public JSONObject diagnostics()throws Exception{RemoteConnection r=remote();if(r!=null){if(!r.isConnected())throw new IllegalStateException("remote MQTT disconnected");JSONObject s=r.snapshot(0,0);if(s==null)throw new IllegalStateException("remote telemetry unavailable");return s;}return diagnosticsRaw();}
     public JSONObject data()throws Exception{RemoteConnection r=remote();if(r!=null){if(!r.isConnected())throw new IllegalStateException("remote MQTT disconnected");JSONObject s=r.snapshot(0,0);if(s==null)throw new IllegalStateException("remote telemetry unavailable");return s;}return dataRaw();}
