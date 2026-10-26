@@ -12,8 +12,23 @@ from g2_cluster_bootstrap_gate import audit_group_bootstrap_accuracy
 
 
 def _read_csv(base, name):
+    """Reject ambiguous CSV schemas even when the file hash is valid.
+
+    DictReader silently overwrites duplicate column names, puts surplus cells
+    under the None key, and pads short rows with None. Any of these can hide
+    the true physical grouping, blind labels or per-group counts.
+    """
     with (base / name).open(newline="", encoding="utf-8") as stream:
-        return list(csv.DictReader(stream, strict=True))
+        reader = csv.DictReader(stream, strict=True)
+        header = reader.fieldnames
+        if (not header or any(not col or col != col.strip() for col in header)
+                or len(set(header)) != len(header)):
+            raise ValueError("CSV_HEADER_AMBIGUOUS")
+        rows = list(reader)
+        if any(None in row or any(value is None for value in row.values())
+               for row in rows):
+            raise ValueError("CSV_ROW_WIDTH_MISMATCH")
+        return rows
 
 
 def _same_number(left, right):
