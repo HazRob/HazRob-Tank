@@ -345,6 +345,9 @@ class EvidenceBundleTests(unittest.TestCase):
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "predictions_blind.csv",
                 "exposure_id,group_id\ntr,d1-s1\nte2,d2-s2\n")
+            # Rebind the altered synthetic prediction bytes to test the deeper
+            # arithmetic/leakage gate rather than failing at digest integrity.
+            record["evaluation_artifact_sha256"] = record["evidence_files"]["predictions_blind.csv"]
             issues = audit_record(record, temp)["issues"]
             self.assertIn("BLIND_PREDICTION_EXPOSURE_OR_GROUP_LEAKAGE", issues)
             self.assertIn("BLIND_PREDICTION_COVERAGE_MISMATCH", issues)
@@ -448,6 +451,9 @@ class EvidenceBundleTests(unittest.TestCase):
                 "exposure_id,group_id,true_reference,predicted_reference\n"
                 "te1,d2-s1,GAS_A,GAS_A\n"
                 "te2,d2-s2,GAS_B,GAS_A\n")
+            # Rebind the altered synthetic prediction bytes to test the deeper
+            # arithmetic/leakage gate rather than failing at digest integrity.
+            record["evaluation_artifact_sha256"] = record["evidence_files"]["predictions_blind.csv"]
             self.assertIn("ACCURACY_RECOMPUTATION_FIELDS_MISSING",
                           audit_record(record, temp)["issues"])
 
@@ -458,6 +464,9 @@ class EvidenceBundleTests(unittest.TestCase):
                 "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\n"
                 "te1,d2-s1,GAS_A,GAS_A,GAS_A\n"
                 "te2,d2-s2,GAS_B,GAS_A,GAS_B\n")
+            # Rebind the altered synthetic prediction bytes to test the deeper
+            # arithmetic/leakage gate rather than failing at digest integrity.
+            record["evaluation_artifact_sha256"] = record["evidence_files"]["predictions_blind.csv"]
             self.assertIn("BLIND_BASELINE_ACCURACY_RECOMPUTATION_MISMATCH",
                           audit_record(record, temp)["issues"])
 
@@ -467,6 +476,9 @@ class EvidenceBundleTests(unittest.TestCase):
             self.replace_bytes(record, base, "predictions_blind.csv",
                 "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\n"
                 "te1,d2-s1,GAS_B,GAS_A,GAS_A\nte2,d2-s2,GAS_B,GAS_A,GAS_A\n")
+            # Rebind the altered synthetic prediction bytes to test the deeper
+            # arithmetic/leakage gate rather than failing at digest integrity.
+            record["evaluation_artifact_sha256"] = record["evidence_files"]["predictions_blind.csv"]
             self.assertIn("BLIND_PREDICTION_TRUTH_MISMATCH",
                           audit_record(record, temp)["issues"])
 
@@ -483,6 +495,9 @@ class EvidenceBundleTests(unittest.TestCase):
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "predictions_blind.csv",
                 "exposure_id,group_id\nte1,d2-s1\nte2,d2-s2\n")
+            # Rebind the altered synthetic prediction bytes to test the deeper
+            # arithmetic/leakage gate rather than failing at digest integrity.
+            record["evaluation_artifact_sha256"] = record["evidence_files"]["predictions_blind.csv"]
             self.assertIn("ACCURACY_RECOMPUTATION_FIELDS_MISSING",
                           audit_record(record, temp)["issues"])
 
