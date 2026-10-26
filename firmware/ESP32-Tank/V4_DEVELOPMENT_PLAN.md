@@ -15,6 +15,10 @@ Scope: firmware/ESP32-Tank only. Tank remains independent from the original whee
 - Keep code and diagnostics concise; do not remove essential safety checks to reduce binary size.
 
 ## Implementation checkpoint 2026-10-27
+- c5b3e67: fixed declaration ordering causing CI compile failure.
+- 66081e2: added Arduino IDE ZIP packaging to CI.
+- GitHub Actions run 40414404284: SUCCESS (static invariants, ESP32 core 2.0.17 compile, ZIP packaging, artifact upload). Arduino ZIP inspected locally: 18 files, ZIP CRC check passed. This proves source compiles, NOT physical MQ calibration or safety-grade accuracy.
+
 - 0537174: replaced per-channel writes with a single versioned, checksummed eight-channel R0 NVS record. All eight channels must have >=10 valid readings and ADS health before commit; failure preserves prior record. Legacy per-channel NVS values remain readable as fallback. Build run 40413775523 pending at documentation time.
 - This is a single-record commit, NOT proven power-loss atomicity on actual flash. Requires interruption/reboot test and post-write readback verification.
 
