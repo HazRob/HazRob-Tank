@@ -11,7 +11,7 @@ def eligible_fixture():
               "dataset_uri":"https://example.org/dataset", "sensor_metadata":{"MQ135":"unit-001"},
               "grouping_key":"device_session_id", "grouping_source_verified":True,
               "grouping_source_field":"device_id,session_id", "train_group_ids":["d1-s1"],
-              "test_group_ids":["d2-s1"], "target_definition":"lab gas reference",
+              "calibration_group_ids":["d1-s2"], "test_group_ids":["d2-s1"], "target_definition":"lab gas reference",
               "metric_name":"classification_accuracy", "metric_value":0.85,
               "baseline_metric_value":0.5, "protocol_sha256":SHA,
               "evaluation_artifact_sha256":SHA, "raw_sha256_verified_from_bytes":True,
@@ -29,6 +29,23 @@ class AuditTests(unittest.TestCase):
     def test_group_overlap(self):
         x=eligible_fixture();x["test_group_ids"]=["d1-s1"]
         self.assertIn("GROUP_LEAKAGE",audit_record(x)["issues"])
+    def test_calibration_group_overlaps_train(self):
+        x=eligible_fixture();x["calibration_group_ids"]=["d1-s1"]
+        self.assertIn("GROUP_LEAKAGE",audit_record(x)["issues"])
+    def test_calibration_group_overlaps_test(self):
+        x=eligible_fixture();x["calibration_group_ids"]=["d2-s1"]
+        self.assertIn("GROUP_LEAKAGE",audit_record(x)["issues"])
+    def test_calibration_group_missing(self):
+        x=eligible_fixture();del x["calibration_group_ids"]
+        self.assertIn("GROUP_TRAIN_CALIBRATION_TEST_NOT_DOCUMENTED",audit_record(x)["issues"])
+    def test_duplicate_evidence_record_cannot_override(self):
+        x=eligible_fixture();y=eligible_fixture();y["metric_value"]=0.99
+        r=audit_all(["01.2"],[x,y])[0]
+        self.assertEqual(r["status"],"G2_BLOCKED")
+        self.assertIn("DUPLICATE_EVIDENCE_RECORD_ID",r["issues"])
+    def test_invalid_confidence_interval(self):
+        x=eligible_fixture();x["confidence_interval"]={"low":0.95,"high":0.7}
+        self.assertIn("INVALID_UNCERTAINTY_INTERVAL",audit_record(x)["issues"])
     def test_raw_hash_must_be_verified(self):
         x=eligible_fixture();x["raw_sha256_verified_from_bytes"]=False
         self.assertIn("RAW_SOURCE_BYTES_NOT_SHA_VERIFIED",audit_record(x)["issues"])
