@@ -52,7 +52,8 @@ public final class ManualR0Calibration {
                 .putString("manual_r0_"+key,Double.toString(r0))
                 .putString("manual_r0_source_"+key,"manual_device_r0")
                 .putString("manual_r0_session_"+key,session)
-                .putString("manual_r0_utc_"+key,utc);
+                .putString("manual_r0_utc_"+key,utc)
+                .remove("manual_r0_device_"+key);
         // Do not change live ChemCore R0 until durable phone storage has succeeded.
         if(!edit.commit())return false;
         values.put(key,r0);sources.put(key,"manual_device_r0");sessions.put(key,session);utcs.put(key,utc);
@@ -78,6 +79,7 @@ public final class ManualR0Calibration {
             e.putString("manual_r0_source_"+k,"manual_device_r0");
             e.putString("manual_r0_session_"+k,session);
             e.putString("manual_r0_utc_"+k,utc);
+            e.remove("manual_r0_device_"+k);
         }
         if(!e.commit())return false;
         for(String k:KEYS){
@@ -111,12 +113,43 @@ public final class ManualR0Calibration {
         loaded=true;return true;
     }
 
+
+    /** Persist one complete, firmware-verified R0 revision with its originating ESP32 identity. */
+    public static synchronized boolean saveFirmware(SharedPreferences p,Map<String,Double> proposal,String deviceId){
+        if(p==null||proposal==null||proposal.size()!=KEYS.length||deviceId==null||deviceId.trim().isEmpty())return false;
+        for(String key:KEYS){
+            Double v=proposal.get(key);
+            if(v==null||!Double.isFinite(v)||v<=0)return false;
+        }
+        long now=System.currentTimeMillis();String utc=iso(now),session="FIRMWARE-R0-"+now;
+        SharedPreferences.Editor edit=p.edit();
+        for(String key:KEYS){
+            edit.putString("manual_r0_"+key,Double.toString(proposal.get(key)))
+                .putString("manual_r0_source_"+key,"firmware_clean_air_r0")
+                .putString("manual_r0_session_"+key,session)
+                .putString("manual_r0_utc_"+key,utc)
+                .putString("manual_r0_device_"+key,deviceId.trim());
+        }
+        if(!edit.commit())return false;
+        for(String key:KEYS){
+            values.put(key,proposal.get(key));sources.put(key,"firmware_clean_air_r0");
+            sessions.put(key,session);utcs.put(key,utc);
+        }
+        loaded=true;return true;
+    }
+
+    public static String firmwareDevice(SharedPreferences prefs,String key){
+        if(prefs==null||!supported(norm(key)))return "";
+        return prefs.getString("manual_r0_device_"+norm(key),"");
+    }
+
     /** Reset one Tank channel to uncalibrated; never reactivate inherited HR069 R0 constants. */
     public static synchronized boolean reset(SharedPreferences p,String key){
         key=norm(key);
         if(p==null||!supported(key))return false;
         if(!p.edit().remove("manual_r0_"+key).remove("manual_r0_source_"+key)
-                .remove("manual_r0_session_"+key).remove("manual_r0_utc_"+key).commit())return false;
+                .remove("manual_r0_session_"+key).remove("manual_r0_utc_"+key)
+                .remove("manual_r0_device_"+key).commit())return false;
         values.remove(key);sources.remove(key);sessions.remove(key);utcs.remove(key);
         // Clearing Tank calibration must not revive legacy field or firmware R0.
         loaded=true;
