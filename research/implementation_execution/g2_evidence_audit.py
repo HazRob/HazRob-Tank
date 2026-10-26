@@ -9,6 +9,7 @@ import math
 import re
 from pathlib import Path
 from g2_signal_lineage_gate import audit_signal_lineage
+from g2_evidence_bundle_gate import audit_evidence_bundle
 
 REQUIRED = ("raw_sha256", "dataset_uri", "sensor_metadata", "grouping_key",
             "train_group_ids", "calibration_group_ids", "test_group_ids", "target_definition",
@@ -20,7 +21,7 @@ PHYSICAL_GROUP_KEYS = {"session_id", "device_session_id", "batch_id", "campaign_
 def _nonempty_str(value):
     return isinstance(value, str) and bool(value.strip())
 
-def audit_record(item):
+def audit_record(item, repo_root=Path(".")):
     issues = []
     for key in REQUIRED:
         if key not in item or item[key] is None or item[key] == "":
@@ -100,6 +101,7 @@ def audit_record(item):
         if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)):
             issues.append("INVALID_" + metric.upper())
     issues.extend(audit_signal_lineage(item))
+    issues.extend(audit_evidence_bundle(item, repo_root=repo_root))
     return {"id": item.get("id"),
             "status": "G2_PASS_CANDIDATE_REQUIRES_REVIEW" if not issues else "G2_BLOCKED",
             "issues": issues}
