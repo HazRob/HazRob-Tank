@@ -228,16 +228,19 @@ void calibrationUpdate(){
   }
  }
  if(now-calAt<calWindowMs)return;
+ R0Record rec={};rec.magic=R0_MAGIC;
+ bool complete=true;
  for(uint8_t i=0;i<Cfg::MQ_N;i++){
-  if(calCount[i]<10||!cleanAir[i]||!adsOK(Cfg::mq[i].ads))continue;
+  if(calCount[i]<10||!cleanAir[i]||!adsOK(Cfg::mq[i].ads)){complete=false;break;}
   float v=(float)(calSum[i]/calCount[i]/cleanAir[i]);
-  if(!ff(v)||v<=0)continue;
-  String key="mq_r0_"+String(i),nk="mq_n_"+String(i);
-  if(nv.putFloat(key.c_str(),v)==sizeof(float)){
-   activeR0[i]=v;r0Samples[i]=(uint16_t)min(calCount[i],(uint32_t)UINT16_MAX);
-   nv.putUShort(nk.c_str(),r0Samples[i]);
-  }
+  if(!ff(v)||v<=0){complete=false;break;}
+  rec.values[i]=v;rec.counts[i]=calCount[i];
  }
+ if(!complete){calState=CAL_ERROR;calError="insufficient_or_invalid_samples";return;}
+ rec.checksum=r0Checksum(rec);
+ if(!saveR0Record(rec)){calState=CAL_ERROR;calError="nvs_write_failed";return;}
+ for(uint8_t i=0;i<Cfg::MQ_N;i++){activeR0[i]=rec.values[i];r0Samples[i]=(uint16_t)min(rec.counts[i],(uint32_t)UINT16_MAX);}
+
  calState=CAL_READY;
 }
 
@@ -246,7 +249,21 @@ bool linkArmed=false;uint32_t linkAt=0;
 
 /* JSON */
 String num(float v,uint8_t d=2){return ff(v)?String(v,(unsigned)d):"null";}const char* bj(bool v){return v?"true":"false";}
-void loadSettings(){nv.begin(Cfg::NVS,false);for(uint8_t i=0;i<Cfg::MQ_N;i++){String key="mq_r0_"+String(i);float v=nv.getFloat(key.c_str(),NAN);activeR0[i]=ff(v)&&v>0?v:NAN;r0Samples[i]=ff(activeR0[i])?nv.getUShort(("mq_n_"+String(i)).c_str(),0):0;}settings.cam=nv.getString("camIP",Cfg::CAM);settings.speed=constrain(nv.getInt("speed",100),20,100);uint32_t w=nv.getUInt("warmup",Cfg::OPERATIONAL_WARMUP_SEC),m=nv.getUInt("measure",Cfg::ANALYSIS_WINDOW_SEC);settings.warm=(uint16_t)min(w,(uint32_t)3600);settings.measure=(uint16_t)constrain(m,5UL,600UL);}
+struct R0Record{uint32_t magic;float values[Cfg::MQ_N];uint32_t counts[Cfg::MQ_N];uint32_t checksum;};
+constexpr uint32_t R0_MAGIC=0x52305634UL;
+uint32_t r0Checksum(const R0Record& rec){
+ const uint8_t* p=(const uint8_t*)&rec;uint32_t h=2166136261UL;
+ for(size_t i=0;i<sizeof(rec)-sizeof(rec.checksum);i++){h^=p[i];h*=16777619UL;}return h;
+}
+bool loadR0Record(R0Record& rec){
+ if(nv.getBytesLength("r0_v4")!=sizeof(rec))return false;
+ if(nv.getBytes("r0_v4",&rec,sizeof(rec))!=sizeof(rec))return false;
+ if(rec.magic!=R0_MAGIC||rec.checksum!=r0Checksum(rec))return false;
+ for(uint8_t i=0;i<Cfg::MQ_N;i++)if(!ff(rec.values[i])&&rec.counts[i])return false;
+ return true;
+}
+bool saveR0Record(const R0Record& rec){return nv.putBytes("r0_v4",&rec,sizeof(rec))==sizeof(rec);}
+void loadSettings(){nv.begin(Cfg::NVS,false);R0Record stored={};bool haveStored=loadR0Record(stored);for(uint8_t i=0;i<Cfg::MQ_N;i++){float v=haveStored?stored.values[i]:nv.getFloat(("mq_r0_"+String(i)).c_str(),NAN);activeR0[i]=ff(v)&&v>0?v:NAN;r0Samples[i]=ff(activeR0[i])?(uint16_t)min(haveStored?stored.counts[i]:(uint32_t)nv.getUShort(("mq_n_"+String(i)).c_str(),0),(uint32_t)UINT16_MAX):0;}settings.cam=nv.getString("camIP",Cfg::CAM);settings.speed=constrain(nv.getInt("speed",100),20,100);uint32_t w=nv.getUInt("warmup",Cfg::OPERATIONAL_WARMUP_SEC),m=nv.getUInt("measure",Cfg::ANALYSIS_WINDOW_SEC);settings.warm=(uint16_t)min(w,(uint32_t)3600);settings.measure=(uint16_t)constrain(m,5UL,600UL);}
 String envJson(){uint32_t age=envLastOkAt?millis()-envLastOkAt:0;String j="{\"ok\":"+String(bj(envOk()))+",\"t\":"+num(temp,2)+",\"h\":"+num(hum,2)+",\"p\":"+num(press,1);j+=",\"type\":"+String(envType)+",\"addr\":"+String(envAddr)+",\"chip_id\":"+String(envId)+",\"status\":\""+String(envStatus)+"\",\"ack_0x76\":"+String(bj(envAck76))+",\"ack_0x77\":"+String(bj(envAck77))+",\"last_addr\":"+String(envLastAddr)+",\"last_chip_id\":"+String(envLastId)+",\"read_failures\":"+String(envReadFails)+",\"last_ok_age_ms\":"+String(age)+",\"reprobe_ms\":"+String(ENV_REPROBE_MS)+",\"total_read_errors\":"+String(envReadErrorTotal)+",\"bus_recoveries\":"+String(envBusRecoveries)+",\"i2c_timeout_ms\":25"+",\"bus\":{\"sda\":"+String(Cfg::ENV_SDA)+",\"scl\":"+String(Cfg::ENV_SCL)+",\"hz\":"+String(Cfg::ENV_I2C_HZ)+"}}";return j;}
 String acquisitionJson(){return "{\"model\":\"ADS1115\",\"rate_sps\":"+String(Cfg::ADS_RATE_SPS)+",\"gain\":\"GAIN_TWOTHIRDS\",\"full_scale_v\":"+num(Cfg::ADS_FULL_SCALE_V,3)+",\"supply_v\":"+num(Cfg::ADS_SUPPLY_V,3)+",\"conversions_per_channel\":"+String(Cfg::ADC_SAMPLES)+",\"scan_period_ms\":"+String(Cfg::MQ_PERIOD)+",\"channels\":"+String(Cfg::MQ_N)+",\"sequential\":true,\"bus_sda\":"+String(Cfg::SDA)+",\"bus_scl\":"+String(Cfg::SCL)+"}";}
 String mqJson(bool avg){bool powered=avg?measurePower:mqPowerOn;String j="{";uint32_t nowUs=micros();for(uint8_t i=0;i<Cfg::MQ_N;i++){if(i)j+=",";const auto&c=Cfg::mq[i];j+="\""+String(c.name)+"\":{";if(avg){if(!cnt[i])j+="\"ok\":false";else{float n=cnt[i],rs=rsSum[i]/n;j+="\"ok\":true,\"raw\":"+num(rawSum[i]/n,1)+",\"adc\":"+num(adcSum[i]/n,3)+",\"ao\":"+num(aoSum[i]/n,3)+",\"rs\":"+num(rs,3)+",\"ratio\":"+num(ff(activeR0[i])&&activeR0[i]>0?rs/activeR0[i]:NAN,3);}}else{j+="\"ok\":"+String(bj(mq[i].ok))+",\"raw\":"+String(mq[i].raw)+",\"adc\":"+num(mq[i].adc,3)+",\"ao\":"+num(mq[i].ao,3)+",\"rs\":"+num(mq[i].rs,3)+",\"ratio\":"+num(mq[i].ratio,3);if(mq[i].sampleUs)j+=",\"sample_us\":"+String(mq[i].sampleUs)+",\"scan_cycle\":"+String(mq[i].scanCycle)+",\"channel_offset_us\":"+String(mq[i].channelOffsetUs)+",\"age_us\":"+String(nowUs-mq[i].sampleUs);}j+=",\"powered\":"+String(bj(powered))+",\"relay\":1,\"row\":1,\"ads\":"+String(c.ads)+",\"ch\":"+String(c.ch)+",\"r0\":"+num(activeR0[i],3)+",\"r0_calibrated\":"+String(bj(ff(activeR0[i])&&activeR0[i]>0))+",\"r0_source\":\""+(r0Samples[i]?"mq_unified_clean_air":"uncalibrated")+"\",\"r0_reference_validated\":"+String(bj(Cfg::R0_REFERENCE_GAS_VALIDATED))+",\"r0_session\":\""+String(Cfg::R0_SESSION)+"\",\"r0_samples\":"+String(r0Samples[i])+",\"r0_environment_compensated\":"+String(bj(Cfg::R0_ENVIRONMENT_COMPENSATED))+"}";}return j+"}";}
