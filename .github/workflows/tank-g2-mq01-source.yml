@@ -1,0 +1,48 @@
+name: Tank G2 MQ-EXT-01 original Zenodo source audit (no qualification)
+
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - research/implementation_execution/g2_zenodo_mq01_raw_inventory.py
+      - research/implementation_execution/test_g2_zenodo_mq01_raw_inventory.py
+      - .github/workflows/tank-g2-mq01-source.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-source-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify offline source checksum and ZIP safety negative controls
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_zenodo_mq01_raw_inventory.py' -v
+      - name: Download original Zenodo archive and verify published checksum
+        run: python research/implementation_execution/g2_zenodo_mq01_raw_inventory.py --output-dir "$RUNNER_TEMP/mq01_source_audit"
+      - name: Assert original bytes do not imply G2 or Tank qualification
+        run: |
+          python - "$RUNNER_TEMP/mq01_source_audit" <<'PY'
+          import json, pathlib, sys
+          folder = pathlib.Path(sys.argv[1])
+          m = json.loads((folder / "raw_manifest.json").read_text())
+          q = json.loads((folder / "source_qualification.json").read_text())
+          assert len(m["archive"]["sha256"]) == 64
+          assert m["archive"]["md5"] == "008b8ccb62d7a7d51ff9ffcfd698a1e5"
+          assert m["file_count"] > 0
+          assert not m["g2_pass"] and not m["g3_tank"] and not q["g2_qualified"]
+          print("original archive verified; G2 and G3 explicitly not qualified")
+          PY
+      - name: Upload source manifest and inventory only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tank-g2-mq01-original-source-inventory
+          path: ${{ runner.temp }}/mq01_source_audit/
+          if-no-files-found: warn
