@@ -4,6 +4,8 @@ This is an integrity/availability gate, not independent scientific review.
 All paths are anchored under research/g2/evidence/<technique>/<dataset>/<run>/.
 """
 import hashlib
+import json
+import csv
 import re
 from pathlib import Path
 
@@ -58,7 +60,7 @@ def audit_evidence_bundle(record, repo_root=Path(".")):
         try:
             resolved = path.resolve(strict=True)
             resolved.relative_to(root)
-            if path.is_symlink() or not resolved.is_file():
+            if resolved != path.absolute() or path.is_symlink() or not resolved.is_file():
                 raise ValueError("not a regular non-symlink file")
             sha = hashlib.sha256()
             with resolved.open("rb") as stream:
@@ -69,4 +71,24 @@ def audit_evidence_bundle(record, repo_root=Path(".")):
             continue
         if sha.hexdigest() != digest:
             issues.append("EVIDENCE_FILE_SHA256_MISMATCH:" + filename)
+            continue
+        # Byte integrity alone is insufficient: reject unreadable/empty
+        # evidence containers before they become review candidates.
+        try:
+            if filename.endswith(".json"):
+                payload = json.loads(resolved.read_text(encoding="utf-8"))
+                if not isinstance(payload, dict) or not payload:
+                    raise ValueError("empty or non-object JSON")
+            elif filename.endswith(".csv"):
+                with resolved.open(newline="", encoding="utf-8") as stream:
+                    rows = csv.reader(stream)
+                    header = next(rows)
+                    data = next(rows)
+                    if not header or any(not c.strip() for c in header) or len(data) != len(header):
+                        raise ValueError("invalid CSV header or first data row")
+            elif filename == "reproduce.sh":
+                if not resolved.read_text(encoding="utf-8").startswith("#!/"):
+                    raise ValueError("missing executable script header")
+        except (OSError, ValueError, UnicodeError, StopIteration, csv.Error):
+            issues.append("INVALID_EVIDENCE_FILE_CONTENT:" + filename)
     return issues
