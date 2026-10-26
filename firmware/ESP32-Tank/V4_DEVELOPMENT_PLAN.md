@@ -1,0 +1,59 @@
+# HazRob Tank V4 — Firmware Development & Recovery Plan
+Updated: 2026-10-27 UTC | Status: IN PROGRESS / NOT RELEASED
+Repository: HazRob/HazRob-Tank
+Branch: feature/tank-v4-mq-unified-r0
+Scope: firmware/ESP32-Tank only. Tank remains independent from the original wheeled HazRob.
+
+## Approved decisions
+- Eight MQ sensors: MQ2, MQ4, MQ5, MQ8, MQ3, MQ7, MQ9, MQ135 via two ADS1115 (0x48, 0x49) on GPIO21/22.
+- BME280 directly connected to ESP32 on independent I2C GPIO13/14 (TwoWire(1)); do not move it to ADS or a hub.
+- MQUnifiedsensor externalADCUpdate(voltage) and calibrate(cleanAirRatio); confirm actual library version, factors, units and licensing before integration. Do not fabricate fixed factory R0 values.
+- No legacy R0 fallback or artificial acceptance band. Uncalibrated R0 = NaN; report Rs, voltage, raw values, but null ratio/ppm until calibration.
+- Five-minute warm-up, then ten valid samples per channel, nonblocking state machine; save valid per-channel R0 to ESP32 NVS only on successful completion. Preserve prior NVS values on failure.
+- Software calibration does not establish certified gas concentration or manufacturer-specific heater cycling for MQ7/MQ9. Clearly distinguish software R0 from physical validation.
+- Keep existing dual-servo drive GPIO16/17, link-loss stop, ultrasonic, relay, alerts, camera/network and direct/remote functionality unchanged. Deferred: dual drive-mode redesign.
+- Keep code and diagnostics concise; do not remove essential safety checks to reduce binary size.
+
+## Current verified code checkpoint
+- 4829bc0: removed historical fixed R0 defaults in Config.h; default NaN.
+- 543ac2b: blocked invalid Rs/R0 ratio and corrected displayed calibration flag.
+- 31ba3f5: added activeR0[8], loading per-sensor mq_r0_<index> from NVS, and switched read/JSON ratio to runtime values.
+- WARNING: 31ba3f5 sets r0Samples=10 when a persisted value exists, without stored sample provenance. This must be corrected before release.
+- No actual MQUnifiedsensor integration, calibration state machine, calibration API, or tested firmware binary yet.
+- No build, automated test, or hardware test success has been demonstrated.
+
+## Execution checklist (update this file after each completed task)
+- [x] D01 Remove fixed historical R0 defaults.
+- [x] D02 Use runtime R0 and avoid divide-by-NaN.
+- [ ] D03 Audit all R0/ratio/ppm references; remove stale static provenance, fix NVS sample-count provenance and JSON status. Ensure all paths compile.
+- [ ] D04 Pin and verify MQUnifiedsensor version; verify clean-air factors from examples and manufacturer documentation, RL units, ADC voltage, and ADS full-scale vs supply.
+- [ ] D05 Implement nonblocking 300 s warm-up + ten valid readings per sensor. Define power-cycle/restart/cancel semantics and invalid-channel behavior. No blocking delays in control loop.
+- [ ] D06 Add explicit calibration start/status/cancel API; structured per-sample readings (sensor, timestamp, raw, voltage, Rs, candidate R0, error); never claim calibration when only R0 is loaded.
+- [ ] D07 Atomic/rollback-safe NVS update policy. Persist R0, count, method/version, timestamp/session as available; restore after reboot. Reject nonfinite/zero candidates without old-R0 proximity restrictions.
+- [ ] D08 Ensure no gas ppm/rank is presented as validated from software-only R0. Test missing sensor, bad ADS, relay off, unstable power, NaN, restart, partial channels, concurrent measurement.
+- [ ] D09 Regression-check BME280 direct I2C, servos, emergency stop, ultrasonic, AP/direct, remote mode, telemetry and relay.
+- [ ] D10 Compile for actual ESP32 board/core using reproducible toolchain and capture logs, flash/RAM size and warnings. Add CI if needed.
+- [ ] D11 Run automated host/API checks, bench tests with real sensors/ADS/BME and independent verification of clean-air environment. Hardware results must be labelled NOT RUN if no device is available.
+- [ ] D12 Only after review and test gates, tag/release V4 binary with SHA256, source commit, dependencies, release notes and reproducible build evidence.
+
+## Acceptance gate
+1. Clean compilation, zero unresolved symbols, version-pinned dependencies and reproducible build.
+2. Each MQ yields a finite positive R0 only after ten valid samples and warm-up; sample evidence is retained.
+3. Power loss or calibration failure cannot overwrite last accepted R0; fresh devices remain uncalibrated.
+4. Runtime and reboot NVS values agree; JSON never outputs NaN/Infinity as invalid JSON.
+5. No safety/control regression; servo stop and emergency stop tested.
+6. Actual-hardware calibration, ppm accuracy and MQ7/MQ9 heater compliance remain unverified until physically demonstrated. Do not claim certification.
+
+## Recovery instructions
+1. Open this file on branch feature/tank-v4-mq-unified-r0 and check latest commit/history.
+2. Inspect Config.h, Hardware.cpp/.h, ESP32-Tank.ino, build workflow and pinned dependencies.
+3. Resume at the first unchecked D-task; do not reapply completed commits blindly.
+4. After each verified step: commit code, update this checklist with commit SHA and test evidence. Do not mark an item complete from intent alone.
+5. Do not publish V4 binary until acceptance gate is satisfied. If only static/CI testing is possible, disclose hardware tests as pending.
+
+## Evidence to retain
+firmware/ESP32-Tank/docs/v4/BUILD.md
+firmware/ESP32-Tank/docs/v4/TEST_RESULTS.md
+firmware/ESP32-Tank/docs/v4/CALIBRATION_PROTOCOL.md
+firmware/ESP32-Tank/docs/v4/RELEASE_GATE.md
+Create these only as real evidence accumulates; record command, tool versions, result, timestamp and source commit.
