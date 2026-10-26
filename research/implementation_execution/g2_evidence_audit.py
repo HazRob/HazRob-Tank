@@ -45,11 +45,16 @@ def audit_record(item):
     partitions = (train, calibration, test)
     if any(not isinstance(p, list) or not p for p in partitions):
         issues.append("GROUP_TRAIN_CALIBRATION_TEST_NOT_DOCUMENTED")
-    elif (any(not _nonempty_str(g) for p in partitions for g in p) or
-          any(len(set(p)) != len(p) for p in partitions)):
+    if any(isinstance(p, list) and
+           (any(not _nonempty_str(g) for g in p) or
+            any(p.count(g) > 1 for g in p)) for p in partitions):
         issues.append("INVALID_OR_DUPLICATE_GROUP_IDS")
-    elif (set(train) & set(calibration) or set(train) & set(test) or
-          set(calibration) & set(test)):
+    # Report known train/test leakage even when calibration provenance is absent.
+    # The missing calibration group is a separate failure, not a reason to hide overlap.
+    valid_sets = [set(p) if isinstance(p, list) and
+                  all(_nonempty_str(g) for g in p) else set() for p in partitions]
+    if (valid_sets[0] & valid_sets[1] or valid_sets[0] & valid_sets[2] or
+        valid_sets[1] & valid_sets[2]):
         issues.append("GROUP_LEAKAGE")
     if item.get("hyperparameters_selected_on_test", True) is not False:
         issues.append("TEST_SET_SELECTION_LEAKAGE_OR_UNKNOWN")
