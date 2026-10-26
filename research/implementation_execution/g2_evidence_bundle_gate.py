@@ -48,6 +48,11 @@ def audit_evidence_bundle(record, repo_root=Path(".")):
         issues.append("MISSING_EVIDENCE_FILES:" + ",".join(sorted(missing)))
     if extra:
         issues.append("UNEXPECTED_EVIDENCE_FILES:" + ",".join(sorted(extra)))
+    # A syntactically valid protocol digest is not evidence that the locked
+    # protocol file is the one declared by the candidate. Bind the digest to
+    # the byte-verified file; the later loop independently verifies its bytes.
+    if record.get("protocol_sha256") != manifest.get("protocol_locked.json"):
+        issues.append("PROTOCOL_DIGEST_NOT_BOUND_TO_LOCKED_FILE")
     base = (Path(repo_root).resolve() / "research" / "g2" / "evidence"
             / technique_id / dataset_id / run_id)
     root = Path(repo_root).resolve()
