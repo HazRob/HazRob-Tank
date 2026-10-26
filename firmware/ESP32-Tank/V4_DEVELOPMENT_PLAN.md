@@ -15,6 +15,11 @@ Scope: firmware/ESP32-Tank only. Tank remains independent from the original whee
 - Keep code and diagnostics concise; do not remove essential safety checks to reduce binary size.
 
 ## Implementation checkpoint 2026-10-27
+- 05b1c14: calibration window bounded; both ADS required at start; reject invalid channels.
+- 1adbae6: new V4 GitHub Actions compile/safety workflow, run 40412870990 initiated (result pending at documentation time).
+- Pending review: source currently computes Rs mean / clean-air factor directly; user-approved MQUnifiedsensor API still must be integrated and verified.
+- Pending review: NVS multi-key update is not atomic; failure may yield mixed channel values. Do not promote to release before transactional policy and tests.
+
 - 84f51b8: first nonblocking duration-based calibration collector in Hardware.cpp; one Rs mean / clean-air factor per sensor.
 - 6a1b16f, 497b361: declarations and /r0 HTTP start/cancel/status route.
 - 75c738f: avoid partial MQ scans and simultaneous measurement.
