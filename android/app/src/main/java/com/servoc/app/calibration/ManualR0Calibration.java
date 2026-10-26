@@ -144,6 +144,8 @@ public final class ManualR0Calibration {
                 // development-era calibration cannot masquerade as a fresh capture.
                 if(Double.isFinite(r0)&&r0>0)q.put("r0",r0);else q.remove("r0");
                 q.remove("ratio");
+                q.remove("r0_session");q.remove("r0_utc");q.remove("r0_age_ms");
+                q.remove("r0_samples");q.remove("r0_window_s");q.remove("r0_environment_compensated");
                 q.put("r0_calibrated",false);q.put("r0_source","unavailable");q.put("r0_reference_validated",false);q.put("r0_age_known",false);q.put("r0_provenance_complete",false);
             }
         }catch(Exception ignored){}
