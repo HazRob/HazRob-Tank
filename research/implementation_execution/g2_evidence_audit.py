@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 from g2_signal_lineage_gate import audit_signal_lineage
 from g2_evidence_bundle_gate import audit_evidence_bundle
+from g2_cross_artifact_gate import audit_cross_artifact
 
 REQUIRED = ("raw_sha256", "dataset_uri", "sensor_metadata", "grouping_key",
             "train_group_ids", "calibration_group_ids", "test_group_ids", "target_definition",
@@ -101,7 +102,10 @@ def audit_record(item, repo_root=Path(".")):
         if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)):
             issues.append("INVALID_" + metric.upper())
     issues.extend(audit_signal_lineage(item))
-    issues.extend(audit_evidence_bundle(item, repo_root=repo_root))
+    bundle_issues = audit_evidence_bundle(item, repo_root=repo_root)
+    issues.extend(bundle_issues)
+    if not bundle_issues:
+        issues.extend(audit_cross_artifact(item, repo_root=repo_root))
     return {"id": item.get("id"),
             "status": "G2_PASS_CANDIDATE_REQUIRES_REVIEW" if not issues else "G2_BLOCKED",
             "issues": issues}
