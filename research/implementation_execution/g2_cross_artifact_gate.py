@@ -110,6 +110,43 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         if seen != set(record.get("test_group_ids", [])):
             issues.append("METRICS_PER_GROUP_COVERAGE_MISMATCH")
 
+    # Classification accuracy must be computed from the actual blind rows,
+    # not accepted solely because two JSON summaries agree with one another.
+    # A matching digest proves integrity, not the arithmetic of the claim.
+    if record.get("metric_name") == "classification_accuracy":
+        required_truth = {"exposure_id", "group_id", "gas_reference_id"}
+        required_pred = {"exposure_id", "group_id", "true_reference", "predicted_reference"}
+        required_group_metric = {"group_id", "sample_count", "correct_count"}
+        if (any(not required_truth <= set(row) for row in groups) or
+                any(not required_pred <= set(row) for row in predictions) or
+                any(not required_group_metric <= set(row) for row in per_group)):
+            issues.append("ACCURACY_RECOMPUTATION_FIELDS_MISSING")
+        else:
+            truths = {row["exposure_id"]: row["gas_reference_id"] for row in groups}
+            correct = Counter()
+            total = 0
+            for row in predictions:
+                eid, gid = row["exposure_id"], row["group_id"]
+                truth = row["true_reference"]
+                prediction = row["predicted_reference"]
+                if not truth.strip() or not prediction.strip() or truth != truths.get(eid):
+                    issues.append("BLIND_PREDICTION_TRUTH_MISMATCH")
+                if truth == prediction:
+                    correct[gid] += 1
+                total += 1
+            if total == 0 or not _same_number(record.get("metric_value"),
+                                                sum(correct.values()) / total):
+                issues.append("BLIND_ACCURACY_RECOMPUTATION_MISMATCH")
+            for row in per_group:
+                try:
+                    value = int(row["correct_count"])
+                    if (str(value) != row["correct_count"] or value < 0 or
+                            value > counts.get(row["group_id"], 0) or
+                            value != correct[row["group_id"]]):
+                        issues.append("PER_GROUP_CORRECT_COUNT_MISMATCH")
+                except (ValueError, TypeError):
+                    issues.append("PER_GROUP_CORRECT_COUNT_MISMATCH")
+
     if (metrics.get("metric_name") != record.get("metric_name") or
             not _same_number(metrics.get("metric_value"), record.get("metric_value")) or
             not _same_number(metrics.get("baseline_metric_value"), record.get("baseline_metric_value"))):
