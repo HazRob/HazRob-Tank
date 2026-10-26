@@ -38,7 +38,7 @@ def synthetic_bundle(root):
     }
     csv_payloads = {
         "group_manifest.csv": "exposure_id,group_id,gas_reference_id\ntr,d1-s1,GAS_A\nca,d1-s2,GAS_B\nte1,d2-s1,GAS_A\nte2,d2-s2,GAS_B\n",
-        "predictions_blind.csv": "exposure_id,group_id,true_reference,predicted_reference\nte1,d2-s1,GAS_A,GAS_A\nte2,d2-s2,GAS_B,GAS_A\n",
+        "predictions_blind.csv": "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\nte1,d2-s1,GAS_A,GAS_A,GAS_A\nte2,d2-s2,GAS_B,GAS_A,GAS_A\n",
         "metrics_per_group.csv": "group_id,sample_count,correct_count\nd2-s1,1,1\nd2-s2,1,0\n",
     }
     manifest = {}
@@ -139,6 +139,36 @@ class EvidenceBundleTests(unittest.TestCase):
             self.replace_bytes(record, base, "uncertainty_grouped.json",
                 json.dumps(record["confidence_interval"]))
             self.assertIn("BLIND_ACCURACY_RECOMPUTATION_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_inflated_baseline_with_matching_json_and_hash_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["baseline_metric_value"] = 0.9
+            self.replace_bytes(record, base, "metrics_summary.json",
+                '{"metric_name":"classification_accuracy","metric_value":0.5,'
+                '"baseline_metric_value":0.9}')
+            self.assertIn("BLIND_BASELINE_ACCURACY_RECOMPUTATION_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_missing_baseline_predictions_block_classification_candidate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "predictions_blind.csv",
+                "exposure_id,group_id,true_reference,predicted_reference\\n"
+                "te1,d2-s1,GAS_A,GAS_A\\n"
+                "te2,d2-s2,GAS_B,GAS_A\\n")
+            self.assertIn("ACCURACY_RECOMPUTATION_FIELDS_MISSING",
+                          audit_record(record, temp)["issues"])
+
+    def test_baseline_predictions_must_match_declared_baseline(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "predictions_blind.csv",
+                "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\\n"
+                "te1,d2-s1,GAS_A,GAS_A,GAS_A\\n"
+                "te2,d2-s2,GAS_B,GAS_A,GAS_B\\n")
+            self.assertIn("BLIND_BASELINE_ACCURACY_RECOMPUTATION_MISMATCH",
                           audit_record(record, temp)["issues"])
 
     def test_false_truth_label_with_matching_hash_is_blocked(self):
