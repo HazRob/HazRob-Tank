@@ -63,6 +63,7 @@ def synthetic_bundle(root):
         manifest[name] = hashlib.sha256(payload).hexdigest()
     record["evidence_files"] = manifest
     record["protocol_sha256"] = manifest["protocol_locked.json"]
+    record["evaluation_artifact_sha256"] = manifest["predictions_blind.csv"]
     return record, base
 
 
@@ -114,6 +115,37 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertEqual(audit_evidence_bundle(record, temp), [])
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
+    def test_evaluation_digest_must_bind_blind_prediction_bytes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            record["evaluation_artifact_sha256"] = "f" * 64
+            self.assertIn("EVALUATION_DIGEST_NOT_BOUND_TO_BLIND_PREDICTIONS",
+                          audit_evidence_bundle(record, temp))
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_rehashed_predictions_cannot_bypass_stale_evaluation_claim(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            original = (base / "predictions_blind.csv").read_text()
+            self.replace_bytes(record, base, "predictions_blind.csv",
+                               original.replace("GAS_A,GAS_A,GAS_A", "GAS_A,GAS_B,GAS_A"))
+            self.assertIn("EVALUATION_DIGEST_NOT_BOUND_TO_BLIND_PREDICTIONS",
+                          audit_evidence_bundle(record, temp))
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_updated_evaluation_hash_is_integrity_only_not_metric_approval(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            original = (base / "predictions_blind.csv").read_text()
+            self.replace_bytes(record, base, "predictions_blind.csv",
+                               original.replace("GAS_A,GAS_A,GAS_A", "GAS_A,GAS_B,GAS_A"))
+            record["evaluation_artifact_sha256"] = record["evidence_files"]["predictions_blind.csv"]
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            result = audit_record(record, temp)
+            self.assertEqual(result["status"], "G2_BLOCKED")
+            self.assertIn("BLIND_ACCURACY_RECOMPUTATION_MISMATCH", result["issues"])
 
     def test_non_accuracy_metric_with_matching_hashes_cannot_reach_review(self):
         # These metrics require their own exposure-level recomputation and
