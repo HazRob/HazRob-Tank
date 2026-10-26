@@ -102,6 +102,49 @@ class EvidenceBundleTests(unittest.TestCase):
         (base / name).write_bytes(data)
         record["evidence_files"][name] = hashlib.sha256(data).hexdigest()
 
+    def test_duplicate_csv_headers_cannot_hide_conflicting_physical_fields(self):
+        # DictReader normally silently keeps the last occurrence of a name.
+        # Hash verification alone cannot disambiguate the original columns.
+        for filename in ("group_manifest.csv", "predictions_blind.csv",
+                         "metrics_per_group.csv"):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                lines = (base / filename).read_text().splitlines()
+                column = lines[0].split(",")[0]
+                altered = [lines[0] + "," + column]
+                altered += [line + "," + line.split(",")[0] for line in lines[1:]]
+                self.replace_bytes(record, base, filename, "\\n".join(altered) + "\\n")
+                self.assertEqual(audit_evidence_bundle(record, temp), [])
+                result = audit_record(record, temp)
+                self.assertIn("CROSS_ARTIFACT_READ_FAILED", result["issues"])
+                self.assertEqual(result["status"], "G2_BLOCKED")
+
+    def test_surplus_csv_cells_cannot_be_silently_discarded(self):
+        # DictReader stores unlabelled surplus cells under the None key.
+        for filename in ("group_manifest.csv", "predictions_blind.csv",
+                         "metrics_per_group.csv"):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                lines = (base / filename).read_text().splitlines()
+                lines[1] += ",EXTRA"
+                self.replace_bytes(record, base, filename, "\\n".join(lines) + "\\n")
+                self.assertEqual(audit_evidence_bundle(record, temp), [])
+                self.assertIn("CROSS_ARTIFACT_READ_FAILED",
+                              audit_record(record, temp)["issues"])
+
+    def test_missing_csv_cells_in_unused_provenance_column_are_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            filename = "group_manifest.csv"
+            lines = (base / filename).read_text().splitlines()
+            altered = [lines[0] + ",extra_provenance"]
+            altered += [line + ",tag" for line in lines[1:]]
+            altered[2] = lines[2]  # Short row, all mandatory columns still present.
+            self.replace_bytes(record, base, filename, "\\n".join(altered) + "\\n")
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            self.assertIn("CROSS_ARTIFACT_READ_FAILED",
+                          audit_record(record, temp)["issues"])
+
     def test_physical_group_columns_required_not_just_metadata(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
