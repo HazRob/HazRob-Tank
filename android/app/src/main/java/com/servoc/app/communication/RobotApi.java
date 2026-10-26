@@ -134,6 +134,25 @@ public final class RobotApi {
         String cam=URLEncoder.encode(cameraIp==null?"":cameraIp,StandardCharsets.UTF_8.name());return getJson("/cfg?cam="+cam+"&speed="+speed+"&warm="+warmupSec+"&measure="+measureSec,1500);
     }
 
+    /** Direct-only firmware V4 R0 service: phone never synthesizes an R0 sampling series. */
+    public JSONObject calibrationStatus()throws Exception{
+        RemoteConnection r=remote();
+        if(r!=null)throw new UnsupportedOperationException("Firmware R0 remote command not implemented");
+        return getJson("/r0",1500);
+    }
+    public JSONObject calibrationStart(int warmupSeconds,int captureSeconds)throws Exception{
+        if(warmupSeconds<0||warmupSeconds>3600||captureSeconds<1||captureSeconds>3600)
+            throw new IllegalArgumentException("Invalid R0 time window");
+        RemoteConnection r=remote();
+        if(r!=null)throw new UnsupportedOperationException("Firmware R0 remote command not implemented");
+        return getJson("/r0?cmd=start&warm="+warmupSeconds+"&duration="+captureSeconds,2000);
+    }
+    public JSONObject calibrationCancel()throws Exception{
+        RemoteConnection r=remote();
+        if(r!=null)throw new UnsupportedOperationException("Firmware R0 remote command not implemented");
+        return getJson("/r0?cmd=cancel",1500);
+    }
+
     public void startMeasurement()throws Exception{RemoteConnection r=remote();if(r!=null){r.startMeasurement();return;}getText("/measure?cmd=start",800);}
     public void cancelMeasurement()throws Exception{RemoteConnection r=remote();if(r!=null){r.cancelMeasurement();return;}getText("/measure?cmd=cancel",800);}
 
