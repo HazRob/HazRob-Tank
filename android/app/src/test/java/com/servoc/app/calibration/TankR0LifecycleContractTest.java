@@ -15,13 +15,17 @@ public final class TankR0LifecycleContractTest {
         assertTrue(src("MainActivity.java").contains("if(developerTab!=null)developerTab.release()"));
         assertTrue(src("ui/DeveloperTab.java").contains("if(r0!=null)r0.release()"));
     }
-    @Test public void cancellationPreventsLateSaveAndTimerLeak()throws Exception{
+    @Test public void cancellationAndActivityDestroyCannotAccidentallyApplyLateR0()throws Exception{
         String s=src("ui/DeveloperR0Tab.java");
         assertTrue(s.contains("private volatile boolean disposed=false"));
-        assertTrue(s.contains("if(disposed)return; // Do not restart acquisition"));
+        assertTrue(s.contains("if(disposed||!automaticActive)return"));
         assertTrue(s.contains("clock.removeCallbacks(autoTick)"));
-        assertTrue(s.contains("automaticSaveDialog.dismiss()"));
-        assertTrue(s.contains("awaitingSave=false"));
         assertTrue(s.contains("scroll.setKeepScreenOn(false)"));
+        assertTrue(s.contains("host.robotApi().calibrationCancel()"));
+        assertTrue(s.contains("FirmwareR0Contract.committedValues(response)"));
+        assertTrue(s.contains("ManualR0Calibration.saveFirmware("));
+        assertFalse(s.contains("automaticSaveDialog"));
+        assertFalse(s.contains("awaitingSave"));
     }
+
 }
