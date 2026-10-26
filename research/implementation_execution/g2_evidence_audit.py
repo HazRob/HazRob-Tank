@@ -1,12 +1,24 @@
-"""G2 evidence audit: fail closed without independent raw measured holdout evidence."""
+"""G2 evidence audit: fail closed without independent raw measured holdout evidence.
+
+No status here is automatic scientific certification. The highest outcome
+is a review candidate. Synthetic software tests cannot satisfy G2.
+"""
 import argparse
 import json
+import math
+import re
 from pathlib import Path
+from g2_signal_lineage_gate import audit_signal_lineage
 
 REQUIRED = ("raw_sha256", "dataset_uri", "sensor_metadata", "grouping_key",
             "train_group_ids", "test_group_ids", "target_definition",
             "metric_name", "metric_value", "baseline_metric_value",
             "protocol_sha256", "evaluation_artifact_sha256")
+HEX64 = re.compile(r"^[0-9a-f]{64}$")
+PHYSICAL_GROUP_KEYS = {"session_id", "device_session_id", "batch_id", "campaign_id", "site_day_device"}
+
+def _nonempty_str(value):
+    return isinstance(value, str) and bool(value.strip())
 
 def audit_record(item):
     issues = []
@@ -15,10 +27,23 @@ def audit_record(item):
             issues.append("MISSING_" + key.upper())
     if item.get("source_kind") != "INDEPENDENT_MEASURED":
         issues.append("NOT_INDEPENDENT_MEASURED_SOURCE")
+    for key in ("raw_sha256", "protocol_sha256", "evaluation_artifact_sha256"):
+        digest = item.get(key)
+        if digest is not None and digest != "" and (not isinstance(digest, str) or not HEX64.fullmatch(digest)):
+            issues.append("INVALID_" + key.upper())
+    if item.get("raw_sha256_verified_from_bytes") is not True:
+        issues.append("RAW_SOURCE_BYTES_NOT_SHA_VERIFIED")
+    if not isinstance(item.get("grouping_key"), str) or item.get("grouping_key") not in PHYSICAL_GROUP_KEYS:
+        issues.append("GROUPING_NOT_VERIFIED_PHYSICAL_UNIT")
+    if item.get("grouping_source_verified") is not True or not _nonempty_str(item.get("grouping_source_field")):
+        issues.append("GROUPING_SOURCE_PROVENANCE_UNVERIFIED")
     train, test = item.get("train_group_ids"), item.get("test_group_ids")
     if not isinstance(train, list) or not isinstance(test, list) or not train or not test:
         issues.append("GROUP_HOLDOUT_NOT_DOCUMENTED")
-    elif set(map(str, train)) & set(map(str, test)):
+    elif (any(not _nonempty_str(g) for g in train + test) or
+          len(set(train)) != len(train) or len(set(test)) != len(test)):
+        issues.append("INVALID_OR_DUPLICATE_GROUP_IDS")
+    elif set(train) & set(test):
         issues.append("GROUP_LEAKAGE")
     if item.get("hyperparameters_selected_on_test", True) is not False:
         issues.append("TEST_SET_SELECTION_LEAKAGE_OR_UNKNOWN")
@@ -30,7 +55,14 @@ def audit_record(item):
         issues.append("MISSING_UNCERTAINTY_INTERVAL")
     if item.get("source_raw_data_accessible", False) is not True:
         issues.append("RAW_DATA_UNAVAILABLE")
-    return {"id": item.get("id"), "status": "G2_PASS_CANDIDATE_REQUIRES_REVIEW" if not issues else "G2_BLOCKED", "issues": issues}
+    for metric in ("metric_value", "baseline_metric_value"):
+        v = item.get(metric)
+        if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)):
+            issues.append("INVALID_" + metric.upper())
+    issues.extend(audit_signal_lineage(item))
+    return {"id": item.get("id"),
+            "status": "G2_PASS_CANDIDATE_REQUIRES_REVIEW" if not issues else "G2_BLOCKED",
+            "issues": issues}
 
 def audit_all(ids, records):
     index = {r.get("id"): r for r in records}
