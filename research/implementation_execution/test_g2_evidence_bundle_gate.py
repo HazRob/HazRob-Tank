@@ -37,9 +37,9 @@ def synthetic_bundle(root):
         "uncertainty_grouped.json": record["confidence_interval"],
     }
     csv_payloads = {
-        "group_manifest.csv": "exposure_id,group_id\ntr,d1-s1\nca,d1-s2\nte1,d2-s1\nte2,d2-s2\n",
-        "predictions_blind.csv": "exposure_id,group_id\nte1,d2-s1\nte2,d2-s2\n",
-        "metrics_per_group.csv": "group_id,sample_count\nd2-s1,1\nd2-s2,1\n",
+        "group_manifest.csv": "exposure_id,group_id,gas_reference_id\ntr,d1-s1,GAS_A\nca,d1-s2,GAS_B\nte1,d2-s1,GAS_A\nte2,d2-s2,GAS_B\n",
+        "predictions_blind.csv": "exposure_id,group_id,true_reference,predicted_reference\nte1,d2-s1,GAS_A,GAS_A\nte2,d2-s2,GAS_B,GAS_A\n",
+        "metrics_per_group.csv": "group_id,sample_count,correct_count\nd2-s1,1,1\nd2-s2,1,0\n",
     }
     manifest = {}
     for name in FILES:
@@ -127,6 +127,44 @@ class EvidenceBundleTests(unittest.TestCase):
             self.replace_bytes(record, base, "raw_manifest.json",
                 '{"raw_sha256":"' + "b"*64 + '","dataset_uri":"https://example.org/dataset"}')
             self.assertIn("RAW_MANIFEST_RECORD_MISMATCH", audit_record(record, temp)["issues"])
+
+    def test_inflated_accuracy_with_matching_record_and_hash_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["metric_value"] = 1.0
+            record["confidence_interval"]["high"] = 1.0
+            self.replace_bytes(record, base, "metrics_summary.json",
+                '{"metric_name":"classification_accuracy","metric_value":1.0,'
+                '"baseline_metric_value":0.5}')
+            self.replace_bytes(record, base, "uncertainty_grouped.json",
+                json.dumps(record["confidence_interval"]))
+            self.assertIn("BLIND_ACCURACY_RECOMPUTATION_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_false_truth_label_with_matching_hash_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "predictions_blind.csv",
+                "exposure_id,group_id,true_reference,predicted_reference\\n"
+                "te1,d2-s1,GAS_B,GAS_A\\nte2,d2-s2,GAS_B,GAS_A\\n")
+            self.assertIn("BLIND_PREDICTION_TRUTH_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_inflated_per_group_correct_count_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "metrics_per_group.csv",
+                "group_id,sample_count,correct_count\\nd2-s1,1,1\\nd2-s2,1,1\\n")
+            self.assertIn("PER_GROUP_CORRECT_COUNT_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_accuracy_missing_truth_columns_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "predictions_blind.csv",
+                "exposure_id,group_id\\nte1,d2-s1\\nte2,d2-s2\\n")
+            self.assertIn("ACCURACY_RECOMPUTATION_FIELDS_MISSING",
+                          audit_record(record, temp)["issues"])
 
     def test_tampered_file_blocks_promotion(self):
         with tempfile.TemporaryDirectory() as temp:
