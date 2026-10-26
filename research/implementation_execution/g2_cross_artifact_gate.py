@@ -64,6 +64,38 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     if not groups or any(not required_group_columns <= set(row) for row in groups):
         issues.append("GROUP_MANIFEST_SCHEMA_MISMATCH")
         return issues
+    # A textual group ID alone cannot prove a physical holdout. Bind each
+    # declared group to the source's physical columns and reject aliases:
+    # two different group IDs for the same device/session would otherwise
+    # allow one physical session to appear in train and blind test.
+    source_field = record.get("grouping_source_field")
+    physical_columns = ([name.strip() for name in source_field.split(",")]
+                        if isinstance(source_field, str) else [])
+    if (not physical_columns or any(not name or
+            not name.replace("_", "").isalnum() for name in physical_columns)
+            or len(set(physical_columns)) != len(physical_columns)):
+        issues.append("GROUPING_SOURCE_COLUMNS_INVALID")
+        physical_columns = []
+    elif not set(physical_columns) <= set(groups[0]):
+        issues.append("GROUPING_SOURCE_COLUMNS_MISSING")
+        physical_columns = []
+    if physical_columns:
+        group_to_physical = {}
+        physical_to_group = {}
+        for row in groups:
+            gid = row.get("group_id")
+            physical = tuple((row.get(name) or "").strip()
+                             for name in physical_columns)
+            if any(not value for value in physical):
+                issues.append("GROUPING_SOURCE_VALUE_MISSING")
+                continue
+            if gid in group_to_physical and group_to_physical[gid] != physical:
+                issues.append("GROUP_ID_MAPS_TO_MULTIPLE_PHYSICAL_UNITS")
+            if physical in physical_to_group and physical_to_group[physical] != gid:
+                issues.append("PHYSICAL_GROUP_ALIAS_ACROSS_SPLITS")
+            group_to_physical[gid] = physical
+            physical_to_group[physical] = gid
+
     exposures = {}
     counts = Counter()
     for row in groups:
