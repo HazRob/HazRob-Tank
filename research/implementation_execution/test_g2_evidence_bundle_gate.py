@@ -91,9 +91,9 @@ class EvidenceBundleTests(unittest.TestCase):
             record, base = synthetic_bundle(temp)
             record["grouping_source_field"] = "sample_id"
             self.replace_bytes(record, base, "group_manifest.csv",
-                "exposure_id,group_id,gas_reference_id,sample_id\\n"
-                "tr,d1-s1,GAS_A,unique1\\nca,d1-s2,GAS_B,unique2\\n"
-                "te1,d2-s1,GAS_A,unique3\\nte2,d2-s2,GAS_B,unique4\\n")
+                "exposure_id,group_id,gas_reference_id,sample_id\n"
+                "tr,d1-s1,GAS_A,unique1\nca,d1-s2,GAS_B,unique2\n"
+                "te1,d2-s1,GAS_A,unique3\nte2,d2-s2,GAS_B,unique4\n")
             issues = audit_record(record, temp)["issues"]
             self.assertIn("GROUPING_SOURCE_COLUMNS_NOT_PHYSICAL_FOR_KEY", issues)
             self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
@@ -103,9 +103,9 @@ class EvidenceBundleTests(unittest.TestCase):
             record, base = synthetic_bundle(temp)
             record["grouping_source_field"] = "session_id"
             self.replace_bytes(record, base, "group_manifest.csv",
-                "exposure_id,group_id,gas_reference_id,session_id\\n"
-                "tr,d1-s1,GAS_A,s1\\nca,d1-s2,GAS_B,s2\\n"
-                "te1,d2-s1,GAS_A,s3\\nte2,d2-s2,GAS_B,s4\\n")
+                "exposure_id,group_id,gas_reference_id,session_id\n"
+                "tr,d1-s1,GAS_A,s1\nca,d1-s2,GAS_B,s2\n"
+                "te1,d2-s1,GAS_A,s3\nte2,d2-s2,GAS_B,s4\n")
             self.assertIn("GROUPING_SOURCE_COLUMNS_NOT_PHYSICAL_FOR_KEY",
                           audit_record(record, temp)["issues"])
 
