@@ -31,3 +31,9 @@ python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_a
 - `research/implementation_execution/g2_cross_artifact_gate.py`
 - `research/implementation_execution/test_g2_evidence_bundle_gate.py`
 - هذا التقرير.
+
+## CI موثق
+- الالتزام البرمجي `66e8085f12ab46cf3ba92c7db8dcb6620978e6ea` اجتاز بوابة G2 على GitHub Actions، التشغيل `40331470056`: https://github.com/HazRob/HazRob-Tank/actions/runs/40331470056 .
+- نجح تشغيل UCI1081 متعدد القنوات `40331470136` على الالتزام نفسه: https://github.com/HazRob/HazRob-Tank/actions/runs/40331470136 .
+- الالتزام التوثيقي التالي `bd1d2ac5bcd12659dbcbc5b57c1ea67f5de56c5d` قد يطلق تشغيلات إضافية؛ لا تعني حالة نجاح التزام سابق اجتياز التزام أحدث.
+- بقيت نتيجة التأهيل 0/80 مرشحاً و80/80 محجوباً، بسبب عدم وجود أدلة فيزيائية مستقلة مؤهلة.
