@@ -11,7 +11,7 @@ from pathlib import Path
 from g2_signal_lineage_gate import audit_signal_lineage
 
 REQUIRED = ("raw_sha256", "dataset_uri", "sensor_metadata", "grouping_key",
-            "train_group_ids", "test_group_ids", "target_definition",
+            "train_group_ids", "calibration_group_ids", "test_group_ids", "target_definition",
             "metric_name", "metric_value", "baseline_metric_value",
             "protocol_sha256", "evaluation_artifact_sha256")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -37,13 +37,19 @@ def audit_record(item):
         issues.append("GROUPING_NOT_VERIFIED_PHYSICAL_UNIT")
     if item.get("grouping_source_verified") is not True or not _nonempty_str(item.get("grouping_source_field")):
         issues.append("GROUPING_SOURCE_PROVENANCE_UNVERIFIED")
-    train, test = item.get("train_group_ids"), item.get("test_group_ids")
-    if not isinstance(train, list) or not isinstance(test, list) or not train or not test:
-        issues.append("GROUP_HOLDOUT_NOT_DOCUMENTED")
-    elif (any(not _nonempty_str(g) for g in train + test) or
-          len(set(train)) != len(train) or len(set(test)) != len(test)):
+    # Calibration/threshold selection is a separate physical-group partition.
+    # Checking train vs test alone would miss leakage through the calibrator.
+    train = item.get("train_group_ids")
+    calibration = item.get("calibration_group_ids")
+    test = item.get("test_group_ids")
+    partitions = (train, calibration, test)
+    if any(not isinstance(p, list) or not p for p in partitions):
+        issues.append("GROUP_TRAIN_CALIBRATION_TEST_NOT_DOCUMENTED")
+    elif (any(not _nonempty_str(g) for p in partitions for g in p) or
+          any(len(set(p)) != len(p) for p in partitions)):
         issues.append("INVALID_OR_DUPLICATE_GROUP_IDS")
-    elif set(train) & set(test):
+    elif (set(train) & set(calibration) or set(train) & set(test) or
+          set(calibration) & set(test)):
         issues.append("GROUP_LEAKAGE")
     if item.get("hyperparameters_selected_on_test", True) is not False:
         issues.append("TEST_SET_SELECTION_LEAKAGE_OR_UNKNOWN")
@@ -51,8 +57,14 @@ def audit_record(item):
         issues.append("NO_BLIND_HOLDOUT")
     if item.get("measurement_units") in (None, ""):
         issues.append("MISSING_MEASUREMENT_UNITS")
-    if item.get("confidence_interval") is None:
+    interval = item.get("confidence_interval")
+    if interval is None:
         issues.append("MISSING_UNCERTAINTY_INTERVAL")
+    elif (not isinstance(interval, dict) or
+          any(isinstance(interval.get(k), bool) or not isinstance(interval.get(k), (int, float)) or
+              not math.isfinite(interval[k]) for k in ("low", "high")) or
+          interval["low"] > interval["high"]):
+        issues.append("INVALID_UNCERTAINTY_INTERVAL")
     if item.get("source_raw_data_accessible", False) is not True:
         issues.append("RAW_DATA_UNAVAILABLE")
     for metric in ("metric_value", "baseline_metric_value"):
@@ -65,8 +77,24 @@ def audit_record(item):
             "issues": issues}
 
 def audit_all(ids, records):
-    index = {r.get("id"): r for r in records}
-    return [audit_record(index.get(tid, {"id": tid})) for tid in ids]
+    # Never silently pick the last of two conflicting evidence records.
+    index = {}
+    duplicate_ids = set()
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        rid = record.get("id")
+        if rid in index:
+            duplicate_ids.add(rid)
+        index[rid] = record
+    results = []
+    for tid in ids:
+        result = audit_record(index.get(tid, {"id": tid}))
+        if tid in duplicate_ids:
+            result["issues"].append("DUPLICATE_EVIDENCE_RECORD_ID")
+            result["status"] = "G2_BLOCKED"
+        results.append(result)
+    return results
 
 def main():
     ap = argparse.ArgumentParser()
