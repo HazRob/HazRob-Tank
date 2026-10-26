@@ -102,8 +102,7 @@ class EvidenceBundleTests(unittest.TestCase):
     def test_late_malformed_csv_row_with_matching_hash_is_blocked(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
-            bad = b"sensor,score\\nMQ2,0.5\\nMQ3,0.6,EXTRA\\n"
-            bad = bad.replace(b"\\\\n", b"\\n")
+            bad = b"sensor,score\nMQ2,0.5\nMQ3,0.6,EXTRA\n"
             (base / "predictions_blind.csv").write_bytes(bad)
             record["evidence_files"]["predictions_blind.csv"] = hashlib.sha256(bad).hexdigest()
             self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:predictions_blind.csv",
@@ -112,7 +111,7 @@ class EvidenceBundleTests(unittest.TestCase):
     def test_duplicate_csv_header_with_matching_hash_is_blocked(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
-            bad = b"sensor,sensor\\nMQ2,0.5\\n".replace(b"\\\\n", b"\\n")
+            bad = b"sensor,sensor\nMQ2,0.5\n"
             (base / "metrics_per_group.csv").write_bytes(bad)
             record["evidence_files"]["metrics_per_group.csv"] = hashlib.sha256(bad).hexdigest()
             self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:metrics_per_group.csv",
