@@ -6,6 +6,7 @@ download failure is not replaced by synthetic data or a GitHub mirror.
 import argparse
 import csv
 import hashlib
+import io
 import json
 import os
 import tempfile
@@ -71,6 +72,23 @@ def inspect_archive(archive):
                             "compressed_bytes": info.compress_size, "crc32": f"{info.CRC:08x}"})
     return members
 
+def inspect_csv_previews(archive, limit=5):
+    """Read source bytes for schema reconnaissance; never infer physical groups."""
+    previews = []
+    with zipfile.ZipFile(archive) as zf:
+        names = [x.filename for x in zf.infolist() if not x.is_dir()
+                 and x.filename.lower().endswith(".csv")]
+        for name in names[:limit]:
+            with zf.open(name) as binary:
+                with io.TextIOWrapper(binary, encoding="utf-8-sig", errors="replace", newline="") as stream:
+                    reader = csv.reader(stream)
+                    first = next(reader, [])
+                    second = next(reader, [])
+            previews.append({"path": name, "first_row": first[:24],
+                             "second_row": second[:24],
+                             "column_count_first_row": len(first)})
+    return previews
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--output-dir", required=True)
@@ -81,6 +99,7 @@ def main():
         archive = Path(temp) / FILENAME
         provenance = download_verified(archive)
         members = inspect_archive(archive)
+        previews = inspect_csv_previews(archive)
     manifest = {
         "schema": "hazrob.g2.original-source-inventory.v1",
         "dataset_id": "MQ-EXT-01",
@@ -105,6 +124,7 @@ def main():
         "status": "SOURCE_BYTES_VERIFIED_G2_GROUPING_AND_CALIBRATION_PENDING",
         "g2_qualified": False
     }
+    (output / "source_csv_preview.json").write_text(json.dumps(previews, indent=2, ensure_ascii=False) + "\\n")
     (output / "raw_manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     (output / "source_qualification.json").write_text(json.dumps(qualification, indent=2, ensure_ascii=False) + "\n")
     with (output / "archive_inventory.csv").open("w", newline="") as fp:
@@ -116,6 +136,7 @@ def main():
     for member in members:
         print(json.dumps({"path": member["path"], "bytes": member["bytes"]}, ensure_ascii=False))
     print("SOURCE_ARCHIVE_MEMBERS_END")
+    print("SOURCE_CSV_PREVIEW " + json.dumps(previews, ensure_ascii=False))
     print(json.dumps({"dataset_id": "MQ-EXT-01", "archive_sha256": provenance["sha256"],
                       "files": len(members), "g2_qualified": False}))
 
