@@ -88,7 +88,7 @@ def main():
                   "physical_grouping_verified": False,
                   "reference_gas_ppm_verified": False,
                   "g2_qualified": False, "g3_tank": False}
-    Path(args.output).write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\\n")
+    Path(args.output).write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps({"dataset_id": result["dataset_id"],
                       "status": result["metadata_fetch_status"],
                       "files": result.get("files_reported", 0),
