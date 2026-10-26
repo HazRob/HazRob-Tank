@@ -2817,5 +2817,13 @@
     "G2_v4_scientific_qualified": "NOT_CLAIMED",
     "G3_Tank_physical": 0,
     "limitations": "G1 source-software tests and synthetic fixtures do not prove model algorithm parity, source holdout generalization, concentration accuracy or physical sensor selectivity"
+  },
+  "latest_g2_v4": {
+    "status": "BLOCKED_PENDING_INDEPENDENT_MEASURED_EVIDENCE",
+    "g2_empirical_pass": 0,
+    "g2_evidence_unverified": 80,
+    "source_evidence_register": "research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json",
+    "audit_script": "research/implementation_execution/g2_evidence_audit.py",
+    "interpretation": "Legacy baseline G2_reviewed=80 means literature/source review, not new V4 independent empirical qualification"
   }
 }
