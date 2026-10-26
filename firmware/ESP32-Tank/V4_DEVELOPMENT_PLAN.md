@@ -18,14 +18,14 @@ Scope: firmware/ESP32-Tank only. Tank remains independent from the original whee
 - 4829bc0: removed historical fixed R0 defaults in Config.h; default NaN.
 - 543ac2b: blocked invalid Rs/R0 ratio and corrected displayed calibration flag.
 - 31ba3f5: added activeR0[8], loading per-sensor mq_r0_<index> from NVS, and switched read/JSON ratio to runtime values.
-- WARNING: 31ba3f5 sets r0Samples=10 when a persisted value exists, without stored sample provenance. This must be corrected before release.
+- ebff389: corrected invented NVS sample count; unknown historical provenance now remains 0. Existing R0 values without provenance still require explicit migration/acceptance policy before release.
 - No actual MQUnifiedsensor integration, calibration state machine, calibration API, or tested firmware binary yet.
 - No build, automated test, or hardware test success has been demonstrated.
 
 ## Execution checklist (update this file after each completed task)
 - [x] D01 Remove fixed historical R0 defaults.
 - [x] D02 Use runtime R0 and avoid divide-by-NaN.
-- [ ] D03 Audit all R0/ratio/ppm references; remove stale static provenance, fix NVS sample-count provenance and JSON status. Ensure all paths compile.
+- [ ] D03 Audit all R0/ratio/ppm references; remove stale static provenance, fix NVS sample-count provenance and JSON status. Ensure all paths compile. Partial: ebff389 fixes sample-count invention; remaining audit and compilation outstanding.
 - [ ] D04 Pin and verify MQUnifiedsensor version; verify clean-air factors from examples and manufacturer documentation, RL units, ADC voltage, and ADS full-scale vs supply.
 - [ ] D05 Implement nonblocking 300 s warm-up + ten valid readings per sensor. Define power-cycle/restart/cancel semantics and invalid-channel behavior. No blocking delays in control loop.
 - [ ] D06 Add explicit calibration start/status/cancel API; structured per-sample readings (sensor, timestamp, raw, voltage, Rs, candidate R0, error); never claim calibration when only R0 is loaded.
