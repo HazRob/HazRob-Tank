@@ -215,6 +215,21 @@ uint32_t calAt=0,calLastCycle=0,calWarmMs=300000,calWindowMs=60000;
 double calSum[Cfg::MQ_N]={};
 uint32_t calCount[Cfg::MQ_N]={};
 const char* calError="";
+struct R0Record{uint32_t magic;float values[Cfg::MQ_N];uint32_t counts[Cfg::MQ_N];uint32_t checksum;};
+constexpr uint32_t R0_MAGIC=0x52305634UL;
+uint32_t r0Checksum(const R0Record& rec){
+ const uint8_t* p=(const uint8_t*)&rec;uint32_t h=2166136261UL;
+ for(size_t i=0;i<sizeof(rec)-sizeof(rec.checksum);i++){h^=p[i];h*=16777619UL;}return h;
+}
+bool loadR0Record(R0Record& rec){
+ if(nv.getBytesLength("r0_v4")!=sizeof(rec))return false;
+ if(nv.getBytes("r0_v4",&rec,sizeof(rec))!=sizeof(rec))return false;
+ if(rec.magic!=R0_MAGIC||rec.checksum!=r0Checksum(rec))return false;
+ for(uint8_t i=0;i<Cfg::MQ_N;i++)if(!ff(rec.values[i])&&rec.counts[i])return false;
+ return true;
+}
+bool saveR0Record(const R0Record& rec){return nv.putBytes("r0_v4",&rec,sizeof(rec))==sizeof(rec);}
+
 void calibrationUpdate(){
  if(calState!=CAL_WARM&&calState!=CAL_SAMPLE)return;
  if(!mqPowerOn){calState=CAL_ERROR;calError="power_off";return;}
@@ -249,20 +264,6 @@ bool linkArmed=false;uint32_t linkAt=0;
 
 /* JSON */
 String num(float v,uint8_t d=2){return ff(v)?String(v,(unsigned)d):"null";}const char* bj(bool v){return v?"true":"false";}
-struct R0Record{uint32_t magic;float values[Cfg::MQ_N];uint32_t counts[Cfg::MQ_N];uint32_t checksum;};
-constexpr uint32_t R0_MAGIC=0x52305634UL;
-uint32_t r0Checksum(const R0Record& rec){
- const uint8_t* p=(const uint8_t*)&rec;uint32_t h=2166136261UL;
- for(size_t i=0;i<sizeof(rec)-sizeof(rec.checksum);i++){h^=p[i];h*=16777619UL;}return h;
-}
-bool loadR0Record(R0Record& rec){
- if(nv.getBytesLength("r0_v4")!=sizeof(rec))return false;
- if(nv.getBytes("r0_v4",&rec,sizeof(rec))!=sizeof(rec))return false;
- if(rec.magic!=R0_MAGIC||rec.checksum!=r0Checksum(rec))return false;
- for(uint8_t i=0;i<Cfg::MQ_N;i++)if(!ff(rec.values[i])&&rec.counts[i])return false;
- return true;
-}
-bool saveR0Record(const R0Record& rec){return nv.putBytes("r0_v4",&rec,sizeof(rec))==sizeof(rec);}
 void loadSettings(){nv.begin(Cfg::NVS,false);R0Record stored={};bool haveStored=loadR0Record(stored);for(uint8_t i=0;i<Cfg::MQ_N;i++){float v=haveStored?stored.values[i]:nv.getFloat(("mq_r0_"+String(i)).c_str(),NAN);activeR0[i]=ff(v)&&v>0?v:NAN;r0Samples[i]=ff(activeR0[i])?(uint16_t)min(haveStored?stored.counts[i]:(uint32_t)nv.getUShort(("mq_n_"+String(i)).c_str(),0),(uint32_t)UINT16_MAX):0;}settings.cam=nv.getString("camIP",Cfg::CAM);settings.speed=constrain(nv.getInt("speed",100),20,100);uint32_t w=nv.getUInt("warmup",Cfg::OPERATIONAL_WARMUP_SEC),m=nv.getUInt("measure",Cfg::ANALYSIS_WINDOW_SEC);settings.warm=(uint16_t)min(w,(uint32_t)3600);settings.measure=(uint16_t)constrain(m,5UL,600UL);}
 String envJson(){uint32_t age=envLastOkAt?millis()-envLastOkAt:0;String j="{\"ok\":"+String(bj(envOk()))+",\"t\":"+num(temp,2)+",\"h\":"+num(hum,2)+",\"p\":"+num(press,1);j+=",\"type\":"+String(envType)+",\"addr\":"+String(envAddr)+",\"chip_id\":"+String(envId)+",\"status\":\""+String(envStatus)+"\",\"ack_0x76\":"+String(bj(envAck76))+",\"ack_0x77\":"+String(bj(envAck77))+",\"last_addr\":"+String(envLastAddr)+",\"last_chip_id\":"+String(envLastId)+",\"read_failures\":"+String(envReadFails)+",\"last_ok_age_ms\":"+String(age)+",\"reprobe_ms\":"+String(ENV_REPROBE_MS)+",\"total_read_errors\":"+String(envReadErrorTotal)+",\"bus_recoveries\":"+String(envBusRecoveries)+",\"i2c_timeout_ms\":25"+",\"bus\":{\"sda\":"+String(Cfg::ENV_SDA)+",\"scl\":"+String(Cfg::ENV_SCL)+",\"hz\":"+String(Cfg::ENV_I2C_HZ)+"}}";return j;}
 String acquisitionJson(){return "{\"model\":\"ADS1115\",\"rate_sps\":"+String(Cfg::ADS_RATE_SPS)+",\"gain\":\"GAIN_TWOTHIRDS\",\"full_scale_v\":"+num(Cfg::ADS_FULL_SCALE_V,3)+",\"supply_v\":"+num(Cfg::ADS_SUPPLY_V,3)+",\"conversions_per_channel\":"+String(Cfg::ADC_SAMPLES)+",\"scan_period_ms\":"+String(Cfg::MQ_PERIOD)+",\"channels\":"+String(Cfg::MQ_N)+",\"sequential\":true,\"bus_sda\":"+String(Cfg::SDA)+",\"bus_scl\":"+String(Cfg::SCL)+"}";}
