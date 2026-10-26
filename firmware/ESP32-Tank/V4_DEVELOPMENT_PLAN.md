@@ -9,7 +9,7 @@ Scope: firmware/ESP32-Tank only. Tank remains independent from the original whee
 - BME280 directly connected to ESP32 on independent I2C GPIO13/14 (TwoWire(1)); do not move it to ADS or a hub.
 - MQUnifiedsensor externalADCUpdate(voltage) and calibrate(cleanAirRatio); confirm actual library version, factors, units and licensing before integration. Do not fabricate fixed factory R0 values.
 - No legacy R0 fallback or artificial acceptance band. Uncalibrated R0 = NaN; report Rs, voltage, raw values, but null ratio/ppm until calibration.
-- Five-minute warm-up, then ten valid samples per channel, nonblocking state machine. Compute ONE final R0 per sensor as the arithmetic mean of the ten MQUnifiedsensor.calibrate(cleanAirRatio) results (equivalently mean Rs divided by the fixed clean-air ratio). Store only this final R0 per sensor in NVS; sample count is metadata, not additional R0 values. Preserve prior NVS values on failure.
+- Five-minute warm-up, then a variable number N of valid samples per channel (minimum 10, no fixed maximum of 10), nonblocking state machine. Compute ONE final R0 per sensor from the arithmetic mean of all N valid MQUnifiedsensor.calibrate(cleanAirRatio) results (equivalently mean Rs divided by the fixed clean-air ratio). Use a running sum/mean with overflow protection. Store only this final R0 per sensor in NVS; actual sample count N is metadata, not additional R0 values. Preserve prior NVS values on failure.
 - Software calibration does not establish certified gas concentration or manufacturer-specific heater cycling for MQ7/MQ9. Clearly distinguish software R0 from physical validation.
 - Keep existing dual-servo drive GPIO16/17, link-loss stop, ultrasonic, relay, alerts, camera/network and direct/remote functionality unchanged. Deferred: dual drive-mode redesign.
 - Keep code and diagnostics concise; do not remove essential safety checks to reduce binary size.
@@ -27,7 +27,7 @@ Scope: firmware/ESP32-Tank only. Tank remains independent from the original whee
 - [x] D02 Use runtime R0 and avoid divide-by-NaN.
 - [ ] D03 Audit all R0/ratio/ppm references; remove stale static provenance, fix NVS sample-count provenance and JSON status. Ensure all paths compile. Partial: ebff389 fixes sample-count invention; remaining audit and compilation outstanding.
 - [ ] D04 Pin and verify MQUnifiedsensor version; verify clean-air factors from examples and manufacturer documentation, RL units, ADC voltage, and ADS full-scale vs supply.
-- [ ] D05 Implement nonblocking 300 s warm-up + ten valid readings per sensor and one averaged R0 per sensor. Define power-cycle/restart/cancel semantics and invalid-channel behavior. No blocking delays in control loop.
+- [ ] D05 Implement nonblocking 300 s warm-up + at least ten valid readings per sensor, allow more samples, and calculate one averaged R0 per sensor. Define power-cycle/restart/cancel semantics and invalid-channel behavior. No blocking delays in control loop.
 - [ ] D06 Add explicit calibration start/status/cancel API; structured per-sample readings (sensor, timestamp, raw, voltage, Rs, candidate R0, error); never claim calibration when only R0 is loaded.
 - [ ] D07 Atomic/rollback-safe NVS update policy. Persist R0, count, method/version, timestamp/session as available; restore after reboot. Reject nonfinite/zero candidates without old-R0 proximity restrictions.
 - [ ] D08 Ensure no gas ppm/rank is presented as validated from software-only R0. Test missing sensor, bad ADS, relay off, unstable power, NaN, restart, partial channels, concurrent measurement.
@@ -38,7 +38,7 @@ Scope: firmware/ESP32-Tank only. Tank remains independent from the original whee
 
 ## Acceptance gate
 1. Clean compilation, zero unresolved symbols, version-pinned dependencies and reproducible build.
-2. Each MQ yields a finite positive R0 only after ten valid samples and warm-up; sample evidence is retained.
+2. Each MQ yields a finite positive R0 only after at least ten valid samples and warm-up; sample evidence is retained.
 3. Power loss or calibration failure cannot overwrite last accepted R0; fresh devices remain uncalibrated.
 4. Runtime and reboot NVS values agree; JSON never outputs NaN/Infinity as invalid JSON.
 5. No safety/control regression; servo stop and emergency stop tested.
