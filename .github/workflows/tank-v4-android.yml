@@ -15,8 +15,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    env:
-      HAZROB_SOURCE_READ_TOKEN: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
