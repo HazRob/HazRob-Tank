@@ -37,7 +37,7 @@ def synthetic_bundle(root):
         "uncertainty_grouped.json": record["confidence_interval"],
     }
     csv_payloads = {
-        "group_manifest.csv": "exposure_id,group_id,gas_reference_id\ntr,d1-s1,GAS_A\nca,d1-s2,GAS_B\nte1,d2-s1,GAS_A\nte2,d2-s2,GAS_B\n",
+        "group_manifest.csv": "exposure_id,group_id,gas_reference_id,device_id,session_id\ntr,d1-s1,GAS_A,d1,s1\nca,d1-s2,GAS_B,d1,s2\nte1,d2-s1,GAS_A,d2,s1\nte2,d2-s2,GAS_B,d2,s2\n",
         "predictions_blind.csv": "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\nte1,d2-s1,GAS_A,GAS_A,GAS_A\nte2,d2-s2,GAS_B,GAS_A,GAS_A\n",
         "metrics_per_group.csv": "group_id,sample_count,correct_count\nd2-s1,1,1\nd2-s2,1,0\n",
     }
@@ -73,6 +73,47 @@ class EvidenceBundleTests(unittest.TestCase):
         data = data.encode("utf-8")
         (base / name).write_bytes(data)
         record["evidence_files"][name] = hashlib.sha256(data).hexdigest()
+
+    def test_physical_group_columns_required_not_just_metadata(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id,gas_reference_id\\n"
+                "tr,d1-s1,GAS_A\\nca,d1-s2,GAS_B\\n"
+                "te1,d2-s1,GAS_A\\nte2,d2-s2,GAS_B\\n")
+            self.assertIn("GROUPING_SOURCE_COLUMNS_MISSING",
+                          audit_record(record, temp)["issues"])
+
+    def test_physical_session_alias_across_split_ids_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id,gas_reference_id,device_id,session_id\\n"
+                "tr,d1-s1,GAS_A,d1,s1\\nca,d1-s2,GAS_B,d1,s2\\n"
+                "te1,d2-s1,GAS_A,d1,s1\\nte2,d2-s2,GAS_B,d2,s2\\n")
+            self.assertIn("PHYSICAL_GROUP_ALIAS_ACROSS_SPLITS",
+                          audit_record(record, temp)["issues"])
+
+    def test_one_group_cannot_represent_two_physical_sessions(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id,gas_reference_id,device_id,session_id\\n"
+                "tr,d1-s1,GAS_A,d1,s1\\nca,d1-s2,GAS_B,d1,s2\\n"
+                "te1,d2-s1,GAS_A,d2,s1\\nte1b,d2-s1,GAS_A,d2,s9\\n"
+                "te2,d2-s2,GAS_B,d2,s2\\n")
+            self.assertIn("GROUP_ID_MAPS_TO_MULTIPLE_PHYSICAL_UNITS",
+                          audit_record(record, temp)["issues"])
+
+    def test_blank_source_session_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id,gas_reference_id,device_id,session_id\\n"
+                "tr,d1-s1,GAS_A,d1,s1\\nca,d1-s2,GAS_B,d1,s2\\n"
+                "te1,d2-s1,GAS_A,d2,\\nte2,d2-s2,GAS_B,d2,s2\\n")
+            self.assertIn("GROUPING_SOURCE_VALUE_MISSING",
+                          audit_record(record, temp)["issues"])
 
     def test_split_manifest_mismatch_with_valid_hash_is_blocked(self):
         with tempfile.TemporaryDirectory() as temp:
