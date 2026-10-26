@@ -34,6 +34,8 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     issues = []
     try:
         raw = json.loads((base / "raw_manifest.json").read_text(encoding="utf-8"))
+        source = json.loads((base / "source_qualification.json").read_text(encoding="utf-8"))
+        signal = json.loads((base / "signal_lineage.json").read_text(encoding="utf-8"))
         split = json.loads((base / "split_manifest.json").read_text(encoding="utf-8"))
         calibration = json.loads((base / "calibration_manifest.json").read_text(encoding="utf-8"))
         metrics = json.loads((base / "metrics_summary.json").read_text(encoding="utf-8"))
@@ -47,6 +49,20 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     if (raw.get("raw_sha256") != record.get("raw_sha256") or
             raw.get("dataset_uri") != record.get("dataset_uri")):
         issues.append("RAW_MANIFEST_RECORD_MISMATCH")
+    # A matching SHA256 proves the bundle was not altered after recording;
+    # it does not prove the source or sensor lineage agrees with the claim.
+    # Bind source and transformation metadata to their byte-verified files.
+    source_fields = ("source_kind", "dataset_uri", "raw_sha256",
+                     "raw_sha256_verified_from_bytes", "source_raw_data_accessible")
+    if (not isinstance(source, dict) or
+            any(key not in source or source[key] != record.get(key)
+                for key in source_fields)):
+        issues.append("SOURCE_QUALIFICATION_RECORD_MISMATCH")
+    signal_fields = ("signal_processing", "measurement_units", "sensor_metadata")
+    if (not isinstance(signal, dict) or
+            any(key not in signal or signal[key] != record.get(key)
+                for key in signal_fields)):
+        issues.append("SIGNAL_LINEAGE_RECORD_MISMATCH")
     parts = ("train_group_ids", "calibration_group_ids", "test_group_ids")
     if any(not isinstance(split.get(p), list) or
            split[p] != record.get(p) for p in parts):
