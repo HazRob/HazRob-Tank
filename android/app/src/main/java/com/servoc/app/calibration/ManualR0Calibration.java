@@ -14,11 +14,11 @@ public final class ManualR0Calibration {
     private ManualR0Calibration(){}
     private static final String[] KEYS={"mq2","mq3","mq4","mq5","mq7","mq8","mq9","mq135"};
     private static final Map<String,Double> values=new HashMap<>();
-    private static final Map<String,String> sources=new HashMap<>(),sessions=new HashMap<>(),utcs=new HashMap<>();
+    private static final Map<String,String> sources=new HashMap<>(),sessions=new HashMap<>(),utcs=new HashMap<>(),deviceIds=new HashMap<>();
     private static boolean loaded=false;
 
     public static synchronized void load(SharedPreferences p){
-        values.clear();sources.clear();sessions.clear();utcs.clear();
+        values.clear();sources.clear();sessions.clear();utcs.clear();deviceIds.clear();
         for(String k:KEYS){
             if(p!=null){
                 String s=p.getString("manual_r0_"+k,"");
@@ -28,6 +28,7 @@ public final class ManualR0Calibration {
                         values.put(k,v);sources.put(k,p.getString("manual_r0_source_"+k,"manual_device_r0"));
                         String session=p.getString("manual_r0_session_"+k,"");if(!session.isEmpty())sessions.put(k,session);
                         String utc=p.getString("manual_r0_utc_"+k,"");if(!utc.isEmpty())utcs.put(k,utc);
+                        String device=p.getString("manual_r0_device_"+k,"");if(!device.isEmpty())deviceIds.put(k,device);
                     }
                 }catch(Exception ignored){}
             }
@@ -41,6 +42,7 @@ public final class ManualR0Calibration {
     public static synchronized String getSource(String key){key=norm(key);String s=sources.get(key);return s!=null&&!s.isEmpty()?s:"unavailable";}
     public static synchronized String getSession(String key){key=norm(key);return sessions.getOrDefault(key,"");}
     public static synchronized String getUtc(String key){key=norm(key);return utcs.getOrDefault(key,"");}
+    public static synchronized String getDeviceId(String key){return deviceIds.getOrDefault(norm(key),"");}
     public static synchronized boolean has(String key){double v=get(key);return Double.isFinite(v)&&v>0;}
 
     /** Device-specific clean-air baseline, NOT a reference-gas/ppm curve calibration. */
@@ -56,7 +58,7 @@ public final class ManualR0Calibration {
                 .remove("manual_r0_device_"+key);
         // Do not change live ChemCore R0 until durable phone storage has succeeded.
         if(!edit.commit())return false;
-        values.put(key,r0);sources.put(key,"manual_device_r0");sessions.put(key,session);utcs.put(key,utc);
+        values.put(key,r0);sources.put(key,"manual_device_r0");sessions.put(key,session);utcs.put(key,utc);deviceIds.remove(key);
         loaded=true;
         return true;
     }
@@ -84,7 +86,7 @@ public final class ManualR0Calibration {
         if(!e.commit())return false;
         for(String k:KEYS){
             values.put(k,updated.get(k));sources.put(k,"manual_device_r0");
-            sessions.put(k,session);utcs.put(k,utc);
+            sessions.put(k,session);utcs.put(k,utc);deviceIds.remove(k);
         }
         loaded=true;
         return true;
@@ -108,7 +110,7 @@ public final class ManualR0Calibration {
         if(!e.commit())return false;
         for(Map.Entry<String,Double> a:proposed.entrySet()){
             String k=a.getKey();values.put(k,a.getValue());sources.put(k,"automatic_clean_air_field_r0");
-            sessions.put(k,session);utcs.put(k,utc);
+            sessions.put(k,session);utcs.put(k,utc);deviceIds.remove(k);
         }
         loaded=true;return true;
     }
@@ -133,7 +135,7 @@ public final class ManualR0Calibration {
         if(!edit.commit())return false;
         for(String key:KEYS){
             values.put(key,proposal.get(key));sources.put(key,"firmware_clean_air_r0");
-            sessions.put(key,session);utcs.put(key,utc);
+            sessions.put(key,session);utcs.put(key,utc);deviceIds.put(key,deviceId.trim());
         }
         loaded=true;return true;
     }
@@ -150,7 +152,7 @@ public final class ManualR0Calibration {
         if(!p.edit().remove("manual_r0_"+key).remove("manual_r0_source_"+key)
                 .remove("manual_r0_session_"+key).remove("manual_r0_utc_"+key)
                 .remove("manual_r0_device_"+key).commit())return false;
-        values.remove(key);sources.remove(key);sessions.remove(key);utcs.remove(key);
+        values.remove(key);sources.remove(key);sessions.remove(key);utcs.remove(key);deviceIds.remove(key);
         // Clearing Tank calibration must not revive legacy field or firmware R0.
         loaded=true;
         return true;
@@ -167,6 +169,7 @@ public final class ManualR0Calibration {
                     && !isUnavailable(q)){
                 q.put("r0",r0);q.put("ratio",rs/r0);q.put("r0_calibrated",true);q.put("r0_source",source);q.put("r0_reference_validated",false);
                 if(!session.isEmpty())q.put("r0_session",session);if(!utc.isEmpty())q.put("r0_utc",utc);
+                if(!getDeviceId(key).isEmpty())q.put("r0_device_id",getDeviceId(key));
                 long age=ageMs(utc);q.put("r0_age_known",age>=0);if(age>=0)q.put("r0_age_ms",age);
                 q.put("r0_provenance_complete",!source.isEmpty()&&!"unavailable".equals(source)&&!session.isEmpty()&&!utc.isEmpty());
                 if(FieldR0Baseline.SOURCE.equals(source)){
