@@ -237,6 +237,66 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertIn("ACCURACY_RECOMPUTATION_FIELDS_MISSING",
                           audit_record(record, temp)["issues"])
 
+    def test_forged_group_bootstrap_interval_with_matching_hash_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["confidence_interval"].update(low=0.1, high=0.9)
+            self.replace_bytes(record, base, "uncertainty_grouped.json",
+                               json.dumps(record["confidence_interval"]))
+            self.assertIn("GROUP_BOOTSTRAP_INTERVAL_RECOMPUTATION_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_group_bootstrap_seed_missing_in_both_records_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            del record["confidence_interval"]["seed"]
+            self.replace_bytes(record, base, "uncertainty_grouped.json",
+                               json.dumps(record["confidence_interval"]))
+            self.assertIn("GROUP_BOOTSTRAP_PROTOCOL_INVALID",
+                          audit_record(record, temp)["issues"])
+
+    def test_group_bootstrap_metadata_disagreement_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            uncertainty = dict(record["confidence_interval"], resamples=5000)
+            self.replace_bytes(record, base, "uncertainty_grouped.json",
+                               json.dumps(uncertainty))
+            self.assertIn("UNCERTAINTY_RECORD_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_unsupported_classification_ci_method_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["confidence_interval"]["method"] = "CLUSTER_ROBUST"
+            self.replace_bytes(record, base, "uncertainty_grouped.json",
+                               json.dumps(record["confidence_interval"]))
+            self.assertIn("CLASSIFICATION_INTERVAL_METHOD_NOT_RECOMPUTABLE",
+                          audit_record(record, temp)["issues"])
+
+    def test_bootstrap_group_order_invariance(self):
+        from g2_cluster_bootstrap_gate import audit_group_bootstrap_accuracy
+        interval = dict(eligible_fixture()["confidence_interval"])
+        counts = {"d2-s1": 1, "d2-s2": 1}
+        correct = {"d2-s1": 1, "d2-s2": 0}
+        self.assertEqual(audit_group_bootstrap_accuracy(counts, correct, interval), [])
+        self.assertEqual(audit_group_bootstrap_accuracy(
+            {"d2-s2": 1, "d2-s1": 1}, {"d2-s2": 0, "d2-s1": 1}, interval), [])
+
+    def test_group_bootstrap_rejects_invalid_protocol_and_group_counts(self):
+        from g2_cluster_bootstrap_gate import audit_group_bootstrap_accuracy
+        base = eligible_fixture()["confidence_interval"]
+        for key, value in (("seed", True), ("seed", -1),
+                           ("resamples", 10), ("confidence_level", 0.8),
+                           ("quantile_method", "nearest")):
+            with self.subTest(key=key, value=value):
+                interval = dict(base, **{key: value})
+                self.assertIn("GROUP_BOOTSTRAP_PROTOCOL_INVALID",
+                              audit_group_bootstrap_accuracy({"a": 1, "b": 1},
+                                                             {"a": 1, "b": 0}, interval))
+        self.assertIn("GROUP_BOOTSTRAP_GROUP_COUNTS_INVALID",
+                      audit_group_bootstrap_accuracy({"a": 1, "b": 0},
+                                                     {"a": 1, "b": 0}, base))
+
     def test_tampered_file_blocks_promotion(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
