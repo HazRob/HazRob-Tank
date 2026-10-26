@@ -37,16 +37,23 @@ def audit_group_bootstrap_accuracy(group_counts, group_correct, interval):
             or interval.get("statistic") != "pooled_accuracy"
             or interval.get("quantile_method") != "linear"):
         return ["GROUP_BOOTSTRAP_PROTOCOL_INVALID"]
+    # Missing numerator entries must not silently become zero correct cases.
+    # Validate input types before sorting: malformed evidence must fail closed
+    # rather than crash the whole 80-technique audit with TypeError.
+    if (not isinstance(group_counts, dict) or
+            not isinstance(group_correct, dict) or
+            len(group_counts) < 2 or
+            set(group_counts) != set(group_correct) or
+            any(not isinstance(g, str) or not g.strip() for g in group_counts)):
+        return ["GROUP_BOOTSTRAP_GROUP_COUNTS_INVALID"]
     ids = sorted(group_counts)
-    if (len(ids) < 2 or set(group_correct) - set(ids) or
-            any(isinstance(group_counts[g], bool) or not isinstance(group_counts[g], int)
-                or group_counts[g] <= 0 or
-                isinstance(group_correct.get(g, 0), bool)
-                or not isinstance(group_correct.get(g, 0), int)
-                or not 0 <= group_correct.get(g, 0) <= group_counts[g] for g in ids)):
+    if any(isinstance(group_counts[g], bool) or not isinstance(group_counts[g], int)
+           or group_counts[g] <= 0 or
+           isinstance(group_correct[g], bool) or not isinstance(group_correct[g], int)
+           or not 0 <= group_correct[g] <= group_counts[g] for g in ids):
         return ["GROUP_BOOTSTRAP_GROUP_COUNTS_INVALID"]
     counts = [group_counts[g] for g in ids]
-    correct = [group_correct.get(g, 0) for g in ids]
+    correct = [group_correct[g] for g in ids]
     generator = random.Random(seed)
     samples = []
     for _ in range(resamples):
