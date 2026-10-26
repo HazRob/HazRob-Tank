@@ -11,7 +11,7 @@ def eligible_fixture():
               "dataset_uri":"https://example.org/dataset", "sensor_metadata":{"MQ135":"unit-001"},
               "grouping_key":"device_session_id", "grouping_source_verified":True,
               "grouping_source_field":"device_id,session_id", "train_group_ids":["d1-s1"],
-              "calibration_group_ids":["d1-s2"], "test_group_ids":["d2-s1"], "target_definition":"lab gas reference",
+              "calibration_group_ids":["d1-s2"], "test_group_ids":["d2-s1","d2-s2"], "target_definition":"lab gas reference",
               "metric_name":"classification_accuracy", "metric_value":0.85,
               "baseline_metric_value":0.5, "protocol_sha256":SHA,
               "evaluation_artifact_sha256":SHA, "raw_sha256_verified_from_bytes":True,
@@ -59,6 +59,10 @@ class AuditTests(unittest.TestCase):
         x=eligible_fixture()
         x["confidence_interval"].update(low=0.1, high=0.2)
         self.assertIn("METRIC_OUTSIDE_REPORTED_CONFIDENCE_INTERVAL",audit_record(x)["issues"])
+    def test_interval_group_count_must_match_test_split(self):
+        x=eligible_fixture()
+        x["confidence_interval"]["independent_test_groups"]=3
+        self.assertIn("UNCERTAINTY_GROUPING_NOT_VERIFIED",audit_record(x)["issues"])
     def test_one_independent_test_group_cannot_qualify_uncertainty(self):
         x=eligible_fixture()
         x["confidence_interval"]["independent_test_groups"]=1
