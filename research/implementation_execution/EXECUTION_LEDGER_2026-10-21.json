@@ -1,6 +1,6 @@
 {
   "schema_version": "hazrob.tank.chemcore80.execution-ledger-v4",
-  "as_of": "2026-10-21",
+  "as_of": "2026-10-26",
   "scope": "NEW_IMPLEMENTATION_WORK_NOT_LEGACY_G1G2",
   "baseline": {
     "G1_pass": 80,
@@ -1782,7 +1782,7 @@
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-20",
         "TOOL-MQ-01"
@@ -1800,14 +1800,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.1",
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-01",
         "MQ-EXT-10"
@@ -1825,14 +1826,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.2",
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-17",
         "MQ-EXT-10"
@@ -1850,14 +1852,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.3",
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-01",
         "CN-PAT-03",
@@ -1876,14 +1879,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.4",
       "batch": 7,
       "priority": "P2",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-01",
         "MOS-EXT-18"
@@ -1901,14 +1905,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.5",
       "batch": 7,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-17",
         "CN-RSCH-01"
@@ -1926,14 +1931,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.6",
       "batch": 7,
       "priority": "P1",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-17",
         "SYS-23",
@@ -1952,14 +1958,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.7",
       "batch": 7,
       "priority": "P1",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-17",
         "SYS-05",
@@ -1978,14 +1985,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.8",
       "batch": 7,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-02",
         "SYS-11",
@@ -2005,14 +2013,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.9",
       "batch": 7,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-06",
         "SYS-07",
@@ -2035,14 +2044,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "d04f0d9f04771ddd63acd8188f4e06d7b96a0737",
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.10",
       "batch": 8,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-06",
         "SYS-10",
@@ -2064,14 +2074,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "c20302de847e055e08507335ce03ae37965fdfde",
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.11",
       "batch": 8,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-18",
         "SYS-19",
@@ -2086,14 +2097,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "08.12",
       "batch": 8,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "MQ-EXT-01",
         "MQ-EXT-02",
@@ -2108,14 +2120,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "09.1",
       "batch": 8,
       "priority": "P2",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-12",
         "SYS-23"
@@ -2128,14 +2141,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "09.2",
       "batch": 8,
       "priority": "P2",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-12",
         "SYS-17"
@@ -2148,14 +2162,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "09.3",
       "batch": 8,
       "priority": "P2",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-12",
         "SYS-23"
@@ -2168,14 +2183,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "09.4",
       "batch": 8,
       "priority": "P1",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-11",
         "SYS-23",
@@ -2189,14 +2205,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "09.5",
       "batch": 8,
       "priority": "P1",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-17",
         "SYS-12"
@@ -2209,14 +2226,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "09.6",
       "batch": 8,
       "priority": "P2",
       "research_decision": "UPGRADE_IMPL",
-      "new_implementation_status": "PLANNED_NOT_EXECUTED",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "SYS-23",
         "SYS-12"
@@ -2229,14 +2247,15 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": null,
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     },
     {
       "id": "10.1",
       "batch": 8,
       "priority": "P0",
       "research_decision": "REDESIGN_RESEARCH",
-      "new_implementation_status": "CODE_COMMITTED_CI_PENDING",
+      "new_implementation_status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_G2_G3_PENDING",
       "source_refs": [
         "QSPR-REF-09",
         "R0-PEER-01",
@@ -2256,7 +2275,8 @@
       "new_G2": "NO_NEW_SOURCE_TEST",
       "G3": "BLOCKED_REAL_TANK_REFERENCE",
       "last_commit": "27d25fe7335cd232098c2eb1f3149524fe08680f",
-      "limits": "Historical G1/G2 evidence unchanged"
+      "limits": "Historical G1/G2 evidence unchanged",
+      "G1_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083"
     }
   ],
   "batch_state": [
@@ -2472,7 +2492,7 @@
     },
     {
       "id": 7,
-      "status": "TEN_SOURCE_MODULES_COMMITTED_BUT_CI_PRESTEP_FAILURE_LOCAL_08_9_8_PASS",
+      "status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_10_OF_10_G2_G3_PENDING",
       "techniques": [
         "07.10",
         "08.1",
@@ -2485,20 +2505,20 @@
         "08.8",
         "08.9"
       ],
-      "number_newly_implemented": 0,
-      "verified_CI": null,
+      "number_newly_implemented": 10,
+      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083",
       "documentation": "research/implementation_execution/BATCH07_EVIDENCE_AR.md",
       "code_committed_count": 10,
       "shared_tests_written": 22,
       "local_verified_subset": {
         "08.9": 8
       },
-      "ci_obstruction": "https://github.com/HazRob/HazRob-Tank/actions/runs/40235160153 (jobs fail with steps=[]); prior successful workflows fail too",
-      "source_readiness": "research/implementation_execution/BATCH07_SOURCE_READINESS_2026-10-23.json"
+      "source_readiness": "research/implementation_execution/BATCH07_SOURCE_READINESS_2026-10-23.json",
+      "ci_jobs_passed_total": 22
     },
     {
       "id": 8,
-      "status": "LOCAL_TWO_IDS_08_10_AND_10_1_TESTED_FULL_BATCH_CI_PENDING",
+      "status": "G1_V4_SOURCE_SOFTWARE_CI_PASS_10_OF_10_G2_G3_PENDING",
       "techniques": [
         "08.10",
         "08.11",
@@ -2511,15 +2531,16 @@
         "09.6",
         "10.1"
       ],
-      "number_newly_implemented": 0,
-      "verified_CI": null,
+      "number_newly_implemented": 10,
+      "verified_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083",
       "documentation": "research/implementation_execution/BATCH08_EVIDENCE_AR.md",
-      "code_committed_count": 2,
+      "code_committed_count": 10,
       "local_verified_subset": {
         "08.10": 10,
         "10.1": 10
       },
-      "local_audit": "research/implementation_execution/LOCAL_AUDIT_2026-10-26_AR.md"
+      "local_audit": "research/implementation_execution/LOCAL_AUDIT_2026-10-26_AR.md",
+      "ci_jobs_passed_total": 22
     }
   ],
   "checkpoints": [
@@ -2784,5 +2805,17 @@
     "tank_physical_status": "0/80",
     "workflow_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321",
     "engineering_plan_and_all_ten_gate": "https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103"
+  },
+  "latest_g1_v4": {
+    "status": "80_OF_80_SOFTWARE_CI_PASS_NOT_PHYSICAL",
+    "verified_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/40247142083",
+    "run_jobs_passed": 22,
+    "verified_batch_ids": [
+      7,
+      8
+    ],
+    "G2_v4_scientific_qualified": "NOT_CLAIMED",
+    "G3_Tank_physical": 0,
+    "limitations": "G1 source-software tests and synthetic fixtures do not prove model algorithm parity, source holdout generalization, concentration accuracy or physical sensor selectivity"
   }
 }
