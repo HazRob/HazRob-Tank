@@ -101,6 +101,22 @@ def audit_record(item, repo_root=Path(".")):
         v = item.get(metric)
         if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)):
             issues.append("INVALID_" + metric.upper())
+    # Accuracy and its interval are proportions. A signed or >100% value
+    # must not become a review candidate simply because all self-declared
+    # JSON artifacts repeat the same number and their hashes are correct.
+    # Other metric families (e.g. RMSE) intentionally have different domains.
+    if item.get("metric_name") == "classification_accuracy":
+        for field in ("metric_value", "baseline_metric_value"):
+            v = item.get(field)
+            if (isinstance(v, (int, float)) and not isinstance(v, bool)
+                    and math.isfinite(v) and not 0.0 <= v <= 1.0):
+                issues.append("CLASSIFICATION_ACCURACY_OUT_OF_RANGE:" + field)
+        if isinstance(interval, dict):
+            for field in ("low", "high"):
+                v = interval.get(field)
+                if (isinstance(v, (int, float)) and not isinstance(v, bool)
+                        and math.isfinite(v) and not 0.0 <= v <= 1.0):
+                    issues.append("CLASSIFICATION_INTERVAL_OUT_OF_RANGE:" + field)
     issues.extend(audit_signal_lineage(item))
     bundle_issues = audit_evidence_bundle(item, repo_root=repo_root)
     issues.extend(bundle_issues)
