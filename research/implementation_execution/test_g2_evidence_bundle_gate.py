@@ -115,6 +115,13 @@ class EvidenceBundleTests(unittest.TestCase):
             record["grouping_key"] = "session_id"
             record["grouping_source_field"] = "session_id"
             record["confidence_interval"]["grouping_key"] = "session_id"
+            # Session-only identity requires globally distinct session IDs.
+            self.replace_bytes(record, base, "group_manifest.csv",
+                "exposure_id,group_id,gas_reference_id,device_id,session_id\n"
+                "tr,d1-s1,GAS_A,d1,unique-s1\n"
+                "ca,d1-s2,GAS_B,d1,unique-s2\n"
+                "te1,d2-s1,GAS_A,d2,unique-s3\n"
+                "te2,d2-s2,GAS_B,d2,unique-s4\n")
             self.replace_bytes(record, base, "uncertainty_grouped.json",
                                json.dumps(record["confidence_interval"]))
             self.assertEqual(audit_record(record, temp)["status"],
