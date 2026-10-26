@@ -53,6 +53,11 @@ def audit_evidence_bundle(record, repo_root=Path(".")):
     # the byte-verified file; the later loop independently verifies its bytes.
     if record.get("protocol_sha256") != manifest.get("protocol_locked.json"):
         issues.append("PROTOCOL_DIGEST_NOT_BOUND_TO_LOCKED_FILE")
+    # The declared evaluation digest must identify the exact blind-prediction
+    # bytes included in this evidence bundle, not an unverified external hash.
+    # File-byte validation below independently checks that digest.
+    if record.get("evaluation_artifact_sha256") != manifest.get("predictions_blind.csv"):
+        issues.append("EVALUATION_DIGEST_NOT_BOUND_TO_BLIND_PREDICTIONS")
     base = (Path(repo_root).resolve() / "research" / "g2" / "evidence"
             / technique_id / dataset_id / run_id)
     root = Path(repo_root).resolve()
