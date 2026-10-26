@@ -42,3 +42,26 @@ G. Run Gradle/JVM/instrumented tests, manual UI/device tests, publish unsigned d
 - Firmware V4 compile/ZIP: PASS, Actions 40414404284.
 - Android V4 integration build: NOT RUN in this audit.
 - Device calibration, ChemCore accuracy and Android field acceptance: NOT VERIFIED.
+
+## Additional mandatory owner requirements (2026-10-27)
+11. **Sessions crash/hang P0:** pressing Sessions must not crash, freeze, or trigger a callback loop. Audit FieldSessionsTab.refresh()/renderSessionUi(), Spinner reentrancy, FieldSessionRepository.verifySessionSchema(), SQLite migration, lifecycle, main-thread DB access, and exception logging. Existing catch block is not proof of fix. Verify on upgraded pre-V4 database and fresh install; collect Logcat, UI tests and ANR traces. Never delete existing sites/sessions.
+12. **Sessions functionality and reports P0:** verify site create/select, dependent session list, start/close/approval, session switching, empty/error state, PDF and Excel exports, aggregated site report, persisted results and reopened PDFs. Validate no duplicate entries, no orphan sessions, correct RTL and content, and SAF permissions. Include regression test on a populated legacy DB.
+13. **Black text + outlined controls P1:** all Spinner selected rows and popup rows, dropdowns, selection fields and EditText controls must use visible dark/black text and a clear outline on light backgrounds in light/dark Android themes. UiKit.outlinedSpinner and ensureLightRow exist, but require coverage audit of every screen, popup and dynamically created row; screenshot tests at multiple densities.
+14. **Restore previous HazRob logo P1:** restore the previously approved original logo as Android launcher/adaptive icon and entry screen logo, without replacing it with an invented image. Identify authoritative asset from repository history or documented design file; inspect density variants, AndroidManifest and launch/entry layouts. Current drawable contains ic_hazrob_tank_v3.xml; do not assume this is the requested original. If authoritative asset is unavailable, mark blocked and request it only after searching project history.
+
+## Durable resumable implementation plan (checkpoint discipline)
+Every task must be recorded in `docs/implementation/V4-APP-CHEMCORE-EXECUTION-LOG-2026-10-27.md` with unique ID, source path, original defect, patch commit SHA, test command, test output or CI run URL, status (TODO/IN_PROGRESS/BLOCKED/PASS), remaining risks and next exact action. Commit after each cohesive task. Do not mark PASS based on static inspection alone.
+
+**Execution order and gates:**
+- V4-A01 baseline inventory: branch SHA, manifest/version, app navigation, DB migrations, logo candidates, existing Gradle tests; preserve current data and baseline artifacts.
+- V4-A02 reproduce and fix Sessions crash/ANR on legacy/fresh DB, guard Spinner reentrancy and offload expensive DB queries if found; unit/instrumentation tests and Logcat evidence.
+- V4-A03 exercise sessions/site report lifecycle PDF/XLSX, SAF, RTL and re-open regression; protect session identity and existing records.
+- V4-A04 audit and normalize outlined dropdowns, black text in fields, popup rows, dialogs and selection widgets; screenshot/contrast tests.
+- V4-A05 restore original logo from verified asset to launcher and entry UI; inspect on actual Android launcher and login screen.
+- V4-A06 firmware `/r0` protocol contract, accepted-vs-preview values, persistent calibration metadata and error/cancel behavior; mock API tests.
+- V4-A07 integrate calibration state machine in Android; remove conflicting 20-minute automatic path from default workflow; verify 300s/60s and configurable duration.
+- V4-A08 migrate and reconcile R0 authority, preserving old R0 provenance and archived records.
+- V4-A09 ChemCore immutable per-snapshot R0, source validation, Stable SHA integrity, unknown/open-set and grouped holdout evaluation; no unsupported ppm certification.
+- V4-A10 full app regression (offline/AP/remote, UI, DB, reports, emergency stop, watchdog), Gradle debug build, installation and on-device acceptance; then V4 APK packaging and README update. Firmware remains separately versioned.
+
+**Resume procedure:** open this audit, then the execution log; inspect the latest commit and CI run; resume the first IN_PROGRESS/BLOCKED/TODO task. Never assume an interrupted action succeeded without checking the repository. Keep APK status UNRELEASED until required gates pass.
