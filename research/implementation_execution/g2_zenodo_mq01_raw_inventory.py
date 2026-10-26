@@ -18,6 +18,8 @@ from pathlib import Path
 RECORD_ID = "17285312"
 FILENAME = "Food-Freshness-E-Nose-Dataset.zip"
 PUBLISHED_MD5 = "008b8ccb62d7a7d51ff9ffcfd698a1e5"
+# Pinned from byte-verified original archive; reject any MD5-collision/repacked payload.
+PINNED_SHA256 = "fde5a3836fe9ddb04fee90102b9c1a5816f48a78d37bf7125074e66a3f3b5f5a"
 SOURCE = "https://zenodo.org/records/" + RECORD_ID
 DOWNLOAD = SOURCE + "/files/" + FILENAME + "?download=1"
 MAX_ARCHIVE_BYTES = 30 * 1024 * 1024
@@ -44,6 +46,8 @@ def download_verified(destination, url=DOWNLOAD):
                     out.write(chunk)
             if md5.hexdigest() != PUBLISHED_MD5:
                 raise ValueError("ZENODO_PUBLISHED_MD5_MISMATCH: " + md5.hexdigest())
+            if sha256.hexdigest() != PINNED_SHA256:
+                raise ValueError("ORIGINAL_ARCHIVE_SHA256_MISMATCH: " + sha256.hexdigest())
             return {"bytes": size, "md5": md5.hexdigest(), "sha256": sha256.hexdigest(),
                     "source_url": url, "record_url": SOURCE}
         except (OSError, ValueError) as exc:
