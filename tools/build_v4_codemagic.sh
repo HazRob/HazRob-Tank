@@ -4,34 +4,17 @@ set -Eeuo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 echo "[Tank V4] branch / commit:"; git rev-parse --abbrev-ref HEAD; git rev-parse HEAD
-if [ -z "${HAZROB_SOURCE_READ_TOKEN:-}" ]; then
-  echo "Missing HAZROB_SOURCE_READ_TOKEN. Add it as a secret in Codemagic group hazrob_source." >&2
-  exit 1
-fi
 for check in tools/verify_v4_session_queries.py tools/verify_v4_echo_r0_contract.py tools/verify_v4_screening_stable_contract.py tools/verify_approved_report_sql.py; do
   echo "[Tank V4] Source contract $check"
   python3 "$check"
 done
-echo "[Tank V4] All preflight source contracts passed; now checking private original repository access"
+echo "[Tank V4] All preflight source contracts passed; now checking public original repository access"
 if [ -e source ]; then echo "Refusing to overwrite existing source directory" >&2; exit 1; fi
-# Avoid embedding GitHub credentials in Git remote URLs or command-line arguments.
-ASKPASS="$(mktemp /tmp/tank-v4-askpass-XXXXXX)"
-chmod 700 "$ASKPASS"
-cat > "$ASKPASS" <<'GIT_AUTH'
-#!/usr/bin/env bash
-case "$1" in
-  *Username*) printf 'x-access-token\n' ;;
-  *Password*) printf '%s\n' "$HAZROB_SOURCE_READ_TOKEN" ;;
-  *) printf '\n' ;;
-esac
-GIT_AUTH
-trap 'rm -f "$ASKPASS"' EXIT
-if ! GIT_ASKPASS="$ASKPASS" GIT_TERMINAL_PROMPT=0 git -c credential.helper= clone --quiet "https://github.com/sohpany/SERVOC-Android.git" source; then
-  echo "[Tank V4] PRIVATE-SOURCE-CLONE-FAILED: Verify HAZROB_SOURCE_READ_TOKEN is a real GitHub PAT with Contents:Read on sohpany/SERVOC-Android and accessible to Codemagic hazrob_source group. No Gradle build has started." >&2
+# Public upstream is read-only and pinned; no credentials required.
+if ! GIT_TERMINAL_PROMPT=0 git -c credential.helper= clone --quiet "https://github.com/sohpany/SERVOC-Android.git" source; then
+  echo "[Tank V4] PUBLIC-SOURCE-CLONE-FAILED: verify public access to upstream" >&2
   exit 1
 fi
-rm -f "$ASKPASS"
-trap - EXIT
 PIN="6281d3eb7c1c961ce63b0b5e4ae0792874626720"
 git -C source checkout --quiet --detach "$PIN"
 test "$(git -C source rev-parse HEAD)" = "$PIN"
