@@ -170,3 +170,13 @@ Continue from the V4 branch head after these commits and requirements. Verify CI
 2. On Tank Android device, verify active Stable version/hash/valid imported prior count and compare controlled reference-curve estimates against direct source-registry baseline; exercise 8 MQ R0 snapshots, fields and candidate matching.
 3. Independently confirm Tank MQ initial conditioning, heater profile and actual errors via known reference gases; do not turn screening risk indications into safety/clearance certificates.
 4. Record physical phone `الجلسات` Logcat, UI contrasting/portrait and Echo ruler measurements; package candidate artifacts only after gates pass.
+
+
+## Checkpoint — 2026-10-27 — توسيع النطاق إلى جميع تبويبات المطور والمختبر
+
+**حالة الخطوة:** توثيق متطلبات وفحص مصادر فقط (`PLAN_UPDATED`)، دون اعتماد أي وظيفة من التطبيق أو نجاح اختبار APK جديد.
+
+- طلب المستخدم صراحة شمول **كامل وظائف** الأقسام الخمسة داخل مساحة المطور: التجارب، المختبر، R0، الاتصال، المكتبة، بما فيها التجارب المعتمدة، المقارنات العلمية، صادرات PDF/Excel، التحديث والنشر ومصدر البيانات. رُبطت جميع البنود بمعايير اختبار فردية.
+- الملف المرجعي الجديد: [مصفوفة Developer + Laboratory](V4-DEVELOPER-LAB-COVERAGE-MATRIX-2026-10-27.md)، المعرّفات `V4-D01` إلى `V4-D09`.
+- **ملاحظة مراجعة تستلزم التحقق:** `DeveloperTab.java` يُنشئ فئات `DeveloperExperimentsTab` و`AnalyticalLabTab` و`DeveloperConnectionDiagnosticsTab` و`CentralLibraryDashboardTab` التي لم تظهر في قائمة مصادر `ui` على الفرعين المفحوصين. لا بد من مراجعة بقية مصادر البناء ثم تشغيل Gradle لتحديد أثر ذلك، قبل اختبار المختبر عمليًا.
+- **الخطوة التالية بعد الاستئناف:** مراجعة حالة الفرعين `feature/tank-v4-implementation` و`feature/tank-v4-mq-unified-r0` واستخراج آخر SHA، ثم فحص تعريفات فئات المطور الخمس ومسارات بنائها، ثم الاختبارات `V4-D01`، وبعدها `V4-D02..D09`. لا دمج ولا إصدار نهائي قبل نتائج فعلية.
