@@ -145,8 +145,8 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "predictions_blind.csv",
-                "exposure_id,group_id,true_reference,predicted_reference\\n"
-                "te1,d2-s1,GAS_B,GAS_A\\nte2,d2-s2,GAS_B,GAS_A\\n")
+                "exposure_id,group_id,true_reference,predicted_reference\n"
+                "te1,d2-s1,GAS_B,GAS_A\nte2,d2-s2,GAS_B,GAS_A\n")
             self.assertIn("BLIND_PREDICTION_TRUTH_MISMATCH",
                           audit_record(record, temp)["issues"])
 
@@ -154,7 +154,7 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "metrics_per_group.csv",
-                "group_id,sample_count,correct_count\\nd2-s1,1,1\\nd2-s2,1,1\\n")
+                "group_id,sample_count,correct_count\nd2-s1,1,1\nd2-s2,1,1\n")
             self.assertIn("PER_GROUP_CORRECT_COUNT_MISMATCH",
                           audit_record(record, temp)["issues"])
 
@@ -162,7 +162,7 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "predictions_blind.csv",
-                "exposure_id,group_id\\nte1,d2-s1\\nte2,d2-s2\\n")
+                "exposure_id,group_id\nte1,d2-s1\nte2,d2-s2\n")
             self.assertIn("ACCURACY_RECOMPUTATION_FIELDS_MISSING",
                           audit_record(record, temp)["issues"])
 
