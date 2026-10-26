@@ -40,7 +40,10 @@ public final class HR069R1FieldUXRegressionsTest {
         assertTrue(code.contains("siteDropdown=new Spinner(c)"));
         assertTrue(code.contains("sessionDropdown=new Spinner(c)"));
         assertTrue(code.contains("repo.sessionsForSite(selectedSiteId)"));
-        assertTrue(code.contains("selectedSessionId=all.get(pos).id"));
+        assertTrue(code.contains("selectedSessionId=sessionOptionIds.get(pos);refresh()"));
+        assertTrue(code.contains("if(selectingScope||refreshing||selectedSiteId.isEmpty()"));
+        assertTrue(code.contains("repo.verifySessionSchema()"));
+        assertTrue(code.contains("catch(RuntimeException ex)"));
     }
     @Test public void reportsDoNotAllocateBlankChartsForMissingEvidence()throws Exception {
         String code=source("ui/ReportsTab.java");
