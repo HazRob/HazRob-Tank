@@ -16,8 +16,11 @@ def eligible_fixture():
               "baseline_metric_value":0.5, "protocol_sha256":SHA,
               "evaluation_artifact_sha256":SHA, "raw_sha256_verified_from_bytes":True,
               "hyperparameters_selected_on_test":False, "blind_holdout":True,
-              "measurement_units":"OHM", "confidence_interval":{"low":0.4,"high":0.9, "method":"GROUP_BOOTSTRAP",
-                                     "grouping_key":"device_session_id", "independent_test_groups":2},
+              "measurement_units":"OHM", "confidence_interval":{"low":0.0,"high":1.0, "method":"GROUP_BOOTSTRAP",
+                                     "grouping_key":"device_session_id", "independent_test_groups":2,
+                                     "seed":20261026, "resamples":2000, "confidence_level":0.95,
+                                     "resampling_unit":"group_id", "statistic":"pooled_accuracy",
+                                     "quantile_method":"linear"},
               "source_raw_data_accessible":True})
     return x
 
