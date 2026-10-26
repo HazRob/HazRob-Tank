@@ -254,6 +254,8 @@ void calibrationUpdate(){
  if(!complete){calState=CAL_ERROR;calError="insufficient_or_invalid_samples";return;}
  rec.checksum=r0Checksum(rec);
  if(!saveR0Record(rec)){calState=CAL_ERROR;calError="nvs_write_failed";return;}
+ R0Record verified={};
+ if(!loadR0Record(verified)||verified.checksum!=rec.checksum){calState=CAL_ERROR;calError="nvs_verify_failed";return;}
  for(uint8_t i=0;i<Cfg::MQ_N;i++){activeR0[i]=rec.values[i];r0Samples[i]=(uint16_t)min(rec.counts[i],(uint32_t)UINT16_MAX);}
 
  calState=CAL_READY;
@@ -299,7 +301,7 @@ bool calibrationStart(uint16_t warmSeconds,uint16_t sampleSeconds){
 void calibrationCancel(){calState=CAL_CANCEL;}
 String calibrationJson(){
  const char* names[]={"idle","warmup","sampling","ready","error","cancelled"};
- String j="{\"state\":\""+String(names[(uint8_t)calState])+"\",\"error\":\""+String(calError)+"\",\"elapsed_ms\":"+String(millis()-calAt)+",\"duration_ms\":"+String(calWindowMs)+",\"channels\":{";
+ String j="{\"state\":\""+String(names[(uint8_t)calState])+"\",\"committed\":"+(calState==CAL_READY?"true":"false")+",\"schema\":\"tank-r0-fw-v4/1\",\"warmup_ms\":"+String(calWarmMs)+",\"error\":\""+String(calError)+"\",\"elapsed_ms\":"+String(millis()-calAt)+",\"duration_ms\":"+String(calWindowMs)+",\"channels\":{";
  for(uint8_t i=0;i<Cfg::MQ_N;i++){if(i)j+=",";j+="\""+String(Cfg::mq[i].name)+"\":{\"samples\":"+String(calCount[i])+",\"r0\":"+ (calCount[i]?String((float)(calSum[i]/calCount[i]/cleanAir[i]),4):String("null"))+"}";}
  return j+"}}";
 }
