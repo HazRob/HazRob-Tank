@@ -7,12 +7,18 @@ on:
       - 'research/implementation_execution/g2_*.py'
       - 'research/implementation_execution/test_g2_*.py'
       - 'research/implementation_execution/G2_UCI1081_SIGNAL_R0_PROVENANCE_2026-10-26.json'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
+      - 'research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json'
+      - 'research/g2/evidence/**'
       - '.github/workflows/g2-signal-lineage-v4.yml'
   pull_request:
     paths:
       - 'research/implementation_execution/g2_*.py'
       - 'research/implementation_execution/test_g2_*.py'
       - 'research/implementation_execution/G2_UCI1081_SIGNAL_R0_PROVENANCE_2026-10-26.json'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
+      - 'research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json'
+      - 'research/g2/evidence/**'
       - '.github/workflows/g2-signal-lineage-v4.yml'
   workflow_dispatch:
 
