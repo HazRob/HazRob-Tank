@@ -291,22 +291,12 @@ public final class MeasurementsTab {
         }
         content.addView(table,UiKit.full(c));
         content.addView(UiKit.title(c,"📈 المخططات"),UiKit.full(c));
-        Spinner charts=new Spinner(c);
-        charts.setAdapter(UiKit.lightOptions(c,new String[]{"التغير الزمني للتركيز","مقارنة أحجام الجزيئات","توزيع الجزيئات"}));UiKit.outlinedSpinner(charts);
-        content.addView(charts,UiKit.full(c));
-        TextView chart=card("لا توجد عينات لعرض المخطط.");
-        chart.setOnClickListener(v->new AlertDialog.Builder(c)
-            .setTitle(String.valueOf(charts.getSelectedItem()))
-            .setMessage("لا توجد عينات جزيئات مسجلة لعرض مخطط فعلي.")
-            .setPositiveButton("إغلاق",null).show());
-        content.addView(chart,UiKit.full(c));
-        Button openChart=UiKit.button(c,"📈 عرض المخطط");
-        openChart.setOnClickListener(v->chart.performClick());
-        content.addView(openChart,UiKit.full(c));
-        charts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
-            public void onItemSelected(AdapterView<?> p,View v,int position,long id){chart.setText("📈 "+charts.getSelectedItem()+"\nلا توجد عينات مسجلة.");}
-            public void onNothingSelected(AdapterView<?> p){}
-        });
+        TextView unavailable=card("المخططات غير متاحة: لم تُسجل بيانات حقيقية من حساس PM1.0/PM2.5/PM10.");
+        unavailable.setTextColor(0xFF805100);
+        unavailable.setContentDescription("لا توجد مستشعرات جزيئات نشطة، ولا يمكن عرض رسوم بيانية أو قياسات مصطنعة");
+        content.addView(unavailable,UiKit.full(c));
+        // Never present a selectable or clickable chart unless recorded particulate
+        // samples are connected. This avoids confusing a placeholder with a real plot.
         Button report=UiKit.button(c,"📄 التقرير الذكي للجزيئات");
         report.setEnabled(false);
         content.addView(report,UiKit.full(c));
