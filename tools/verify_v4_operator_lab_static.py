@@ -49,6 +49,10 @@ require(reports,'else host.requestFieldSessionExport(format,chosenSessionId)',"r
 
 experiments=read("android/app/src/main/java/com/servoc/app/ui/DeveloperExperimentsTab.java")
 require(experiments,"qualifiedReferenceChannels(","reference-8-channel-validation")
+require(experiments,"TankReferenceR0Gate.qualifiedEight(channels,controllerId)","reference-gate-centralization")
+gate=read("android/app/src/main/java/com/servoc/app/calibration/TankReferenceR0Gate.java")
+require(gate,'!controllerId.equals(q.optString("r0_device_id",""))',"eight-channel-source-device-binding")
+require(gate,'!q.optBoolean("r0_provenance_complete",false)',"reject-reference-without-R0-evidence")
 require(experiments,"recorded_r0_provenance","reference-frozen-r0-provenance")
 require(experiments,"ManualR0Calibration.getDeviceId(key)","reference-device-binding")
 assert "private void openR0Maintenance()" not in experiments,"Duplicate R0 editor must not remain"
