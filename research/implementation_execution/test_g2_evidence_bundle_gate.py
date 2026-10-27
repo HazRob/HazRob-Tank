@@ -1052,8 +1052,9 @@ class EvidenceBundleTests(unittest.TestCase):
                                json.dumps(protocol))
             record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
             self.assertEqual(audit_evidence_bundle(record, temp), [])
-            self.assertEqual(audit_record(record, temp)["status"],
-                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+            result = audit_record(record, temp)
+            self.assertEqual(result["status"], "G2_PASS_CANDIDATE_REQUIRES_REVIEW",
+                             result["issues"])
 
 
 if __name__ == "__main__":
