@@ -41,3 +41,13 @@ Owner instruction: notify when fully ready to start build; **do not start Gradle
 - Independently inspected 11 live source/workflow files and checked 10 targeted invariants: **10/10 matched**, including background field sessions/reports, device R0, Stable integrity and manual-only build trigger. This is **NOT** Java compilation, UI test or APK acceptance.
 - Last authorized diagnostic build `40437121019` remains **FAIL** at test Java compilation. Its two `Files.readString` mistakes have been corrected in current source but no follow-up compile was started under the build hold.
 - **Current readiness: NOT READY_TO_BUILD** pending complete per-feature audit and objective successful future build preflight; no APK created.
+
+
+## Updated source inventory — 2026-10-27 continued work (no build)
+- The four `ESP32-Tank` firmware source files have identical Git blob hashes on both V4 branches. No blind branch-merging or firmware replacement is needed.
+- `DeveloperConnectionDiagnosticsTab` came from pinned upstream Android and therefore was never a missing assembled Java class; it is now explicitly overridden by Tank commit `2ae12ca` for light UI contrast and safe UI-state ownership in asynchronous WAN provisioning.
+- Tank-only `GitHubReferencePublisher` overlay at `e3344759` plus `84471d9` isolates reviewed uploads to dedicated `research/tank-v4-review-staging` and verifies uploaded bytes against GitHub GET SHA-256; the staging branch exists but authentication/permission checks and a real network round-trip were **not performed**.
+- `403fab7` stores the actual GitHub commit SHA and content SHA-256 in the developer publication audit when a submission succeeds. `879ef7d` adds a corresponding source contract.
+- Additional JUnit source-contract files: `TankV4ResearchStagingContractTest.java` and `TankV4DeveloperConnectionContrastContractTest.java`. Their existence does **not** mean they have passed compilation.
+- Direct repository readback source markers 18/18 (prior to latest audit-string patch) matched. This is not a full source review or CI verification.
+- **Readiness decision unchanged: NOT_READY_TO_BUILD.** Last run 40437121019 failed in test-source javac; corrected current sources and new tests await authorized Gradle compilation. Android sessions/exports, migration, signing, hardware and deployment are not verified.
