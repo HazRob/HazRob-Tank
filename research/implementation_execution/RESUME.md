@@ -1,3 +1,13 @@
+## 2026-10-27 — G2 ASCII edge-whitespace identity gate (192/192 CI)
+
+- **Research-only branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`. Software commit `a0c70b6df42b412a84eefe4fd0db2537639d94e3`; code/test changes restricted to `research/implementation_execution/`. Documentation: `G2_ASCII_EDGE_WHITESPACE_IDENTITY_FAIL_CLOSED_2026-10-27_AR.md`.
+- **Fix:** reject leading/trailing ASCII spaces in CSV header/cells in both evidence byte-integrity and cross-artifact replay gates; retain valid interior spaces. Prevent fake `majority_train` accuracy improvement through inconsistent normalization of train vs blind labels. Six rehashed negative controls in two new tests.
+- **Verified CI:** [G2 run 40559691241](https://github.com/HazRob/HazRob-Tank/actions/runs/40559691241), job `122385061083`: **192/192 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. Other workflows on final doc commit require separate status check.
+- **Central references:** `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json` Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` reverified. Independent evidence register remains `records: []`.
+- **Scientific limits:** 0/80 physically qualified G2, no G3, no ChemCore Stable change. Next: check final-commit CI, then source-qualified raw physical reference measurements and independently held-out groups; synthetic tests are never G2 scientific approval.
+
+---
+
 ## 2026-10-27 — G2 canonical Unicode identity and CI checkpoint
 
 - **Branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`; software commits `825aa43e75ddbca0c66f6c3fefd8ccca663eb128` and `3edf52c7c893ec3aa63c859eb3a0099f1c4e4f91`. Research-only edits to three files under `research/implementation_execution/`; no ChemCore Stable changes.
