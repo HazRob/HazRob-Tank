@@ -46,3 +46,6 @@ keep meaningful tests enabled and record any fresh failure before an APK claim.
 
 ### Authorized V4 test-suite remediation retry
 Run 40550963771 compiled the Tank V4 main Java successfully and executed **711 JUnit tests: 696 passed, 15 failed**. Failure logs identify legacy HR069 car/version/repository assertions plus obsolete synchronous-SQLite UI test expectations and a firmware R0 provenance fixture missing the now-mandatory sample count. The 15 named failures were individually reviewed and corresponding Tank V4 test overlays committed, preserving safety tests and approved-only report/database semantics. This repeat run is explicitly covered by the owner's 27 October permission to produce the new diagnostic APK, contingent on all tests being green.
+
+### Authorized final contract-text retry
+Run 40552169227 completed 711 Java tests with one failing inherited review-staging wording assertion (HR069 source string). No production code was weakened; commit d018a4d updates the test to assert the actual Tank-specific staging action. Owner's explicit authorization extends to this remedial diagnostic retry. APK publication remains conditioned on a green test suite and artifact verification.
