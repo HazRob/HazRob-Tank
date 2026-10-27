@@ -98,7 +98,7 @@ public final class DeveloperExperimentsTab {
 
     private EditText field(LinearLayout parent,String label,String value){parent.addView(UiKit.small(context,label),UiKit.full(context));EditText e=UiKit.input(context,value);parent.addView(e,UiKit.full(context));return e;}
     private String selectedKind(){return referenceKindSpinner.getSelectedItemPosition()==1?"calibration":"fingerprint";}
-    private void updateKindHelp(){boolean cal="calibration".equals(selectedKind());kindHelp.setText(cal?"معايرة كمية: أدخل ppm معلومًا. M4 لا تصبح معتمدة إلا من منحنيات HR069 المبنية من تجارب معتمدة.":"بصمة تعريفية: يبني HazRob متجه الاستجابة من الجلسة ويحفظ الأصل للتدقيق.");}
+    private void updateKindHelp(){boolean cal="calibration".equals(selectedKind());kindHelp.setText(cal?"معايرة كمية: أدخل تركيز ppm معروف المصدر؛ يلزم R0 موثقة في القياسات الثمانية. اعتماد التجربة لا يثبت صلاحية M4 أو قياس ppm الموثوق.":"بصمة تعريفية: يبني HazRob متجه الاستجابة من الجلسة ويحفظ الأصل للتدقيق.");}
 
     private void selectInitialChemical(){List<ChemicalRepository.Chemical> rows=chemicals.search("",1);if(!rows.isEmpty())selectChemical(rows.get(0),statusRepo.status(rows.get(0)));}
     private void openChemicalMatrix(){new ChemicalExperimentMatrixDialog(context,statusRepo,this::selectChemical).show();}
@@ -149,15 +149,38 @@ public final class DeveloperExperimentsTab {
             host.showToast("يجب إكمال معايرة R0 الثمانية في ESP32 وتوثيق مصدرها قبل حفظ مرجع علمي");return;
         }
         JSONObject env=d.optJSONObject("env");Double t=env!=null&&Double.isFinite(env.optDouble("temperature",Double.NaN))?env.optDouble("temperature"):null;Double rh=env!=null&&Double.isFinite(env.optDouble("humidity",Double.NaN))?env.optDouble("humidity"):null;JSONObject relay=d.optJSONObject("relay");long powerMs=relay==null?0:Math.max(0,relay.optLong("power_ms",0));int mask=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0)?1:0;String ts=isoNow();String analytics=AnalyticsSnapshot.toJson(d);
-        JSONObject meta=new JSONObject();try{meta.put("schema","hazrob-reference-capture-v0.10.2");meta.put("reference_kind",kind);meta.put("session_id",session);meta.put("hardware_profile",d.optString("hardware_profile",HazRobHardwareProfile.ID));meta.put("mq_power",mask==1);meta.put("mq_power_gpio",25);meta.put("mq_power_architecture","single_relay_8_sensors");meta.put("warmup_observed_ms",powerMs);meta.put("warmup_source","relay.power_ms");meta.put("capture_state","ready_average");if(t!=null)meta.put("temperature_c",t);if(rh!=null)meta.put("rh_pct",rh);meta.put("notes",experimentNotes.getText().toString().trim());meta.put("analytics_version",LibraryStatus.ANALYTICS_VERSION);meta.put("calibration_version",LibraryStatus.CALIBRATION_VERSION);meta.put("mqdatascience_version",MqDataScience76Catalog.VERSION);meta.put("r0_scope","DEVICE_LOCAL_NOT_DISTRIBUTED");meta.put("r0_channels_available",r0Count());meta.put("r0_channels_qualified",8);meta.put("r0_procedure","firmware_v4_clean_air_300s_60s");meta.put("device_id",d.optString("device_id",""));}catch(Exception ignored){}
+        JSONObject meta=new JSONObject();try{meta.put("schema","hazrob-reference-capture-v0.10.2");meta.put("reference_kind",kind);meta.put("session_id",session);meta.put("hardware_profile",d.optString("hardware_profile",HazRobHardwareProfile.ID));meta.put("mq_power",mask==1);meta.put("mq_power_gpio",25);meta.put("mq_power_architecture","single_relay_8_sensors");meta.put("warmup_observed_ms",powerMs);meta.put("warmup_source","relay.power_ms");meta.put("capture_state","ready_average");if(t!=null)meta.put("temperature_c",t);if(rh!=null)meta.put("rh_pct",rh);meta.put("notes",experimentNotes.getText().toString().trim());meta.put("analytics_version",LibraryStatus.ANALYTICS_VERSION);meta.put("calibration_version",LibraryStatus.CALIBRATION_VERSION);meta.put("mqdatascience_version",MqDataScience76Catalog.VERSION);meta.put("r0_scope","DEVICE_LOCAL_NOT_DISTRIBUTED");meta.put("r0_channels_available",r0Count());meta.put("r0_channels_qualified",8);meta.put("r0_procedure","device_local_calibration_from_recorded_snapshot");
+            meta.put("device_id",d.optString("device_id",""));
+            JSONObject channelR0=new JSONObject();
+            for(String key:ManualR0Calibration.keys()){
+                JSONObject channel=source.optJSONObject(key);
+                if(channel==null)continue;
+                JSONObject p=new JSONObject();
+                p.put("r0_kohm",channel.optDouble("r0",Double.NaN));
+                p.put("rs_kohm",channel.optDouble("rs",Double.NaN));
+                p.put("source",channel.optString("r0_source",""));
+                p.put("session",channel.optString("r0_session",""));
+                p.put("timestamp",channel.optString("r0_utc",""));
+                p.put("controller_id",channel.optString("r0_device_id",""));
+                channelR0.put(key,p);
+            }
+            meta.put("recorded_r0_provenance",channelR0);}catch(Exception ignored){}
         final Double known=ppm;final String feature=meta.toString();final String protocol=("calibration".equals(kind)?"Reference calibration: ":"Reference fingerprint: ")+chemical.label()+(known==null?"":" @ "+known+" ppm")+" • ready_average • session "+session;
         host.io().execute(()->{try{long captureId=host.database().saveCaptureForChemical(chemical.uid,chemical.legacyId,known,ts,session,t,rh,"ready_average",source.toString(),feature);if(captureId<=0)throw new IllegalStateException("capture");long id=host.database().saveReferenceExperiment(ts,d.toString(),protocol,analytics,session,captureId,chemical.uid,kind,known);if(id<=0)throw new IllegalStateException("experiment");host.showToast("حُفظت التجربة #"+id+" كمسودة للمراجعة");host.refreshAllTabs();}catch(Exception e){host.showToast("تعذر حفظ التجربة المرجعية");}});
     }
 
-    private int r0Count(){int n=0;for(String key:ManualR0Calibration.keys()){double x=ManualR0Calibration.get(key);if(Double.isFinite(x)&&x>0)n++;}return n;}
-    private void openR0Maintenance(){
-        LinearLayout box=UiKit.vbox(context);box.setPadding(UiKit.dp(context,14),UiKit.dp(context,6),UiKit.dp(context,14),0);Map<String,EditText> fields=new LinkedHashMap<>();for(String key:ManualR0Calibration.keys()){double x=ManualR0Calibration.get(key);EditText e=UiKit.input(context,Double.isFinite(x)?String.format(Locale.US,"%.6f",x):"");e.setHint(key.toUpperCase(Locale.US)+" R0");e.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);box.addView(e,UiKit.full(context));fields.put(key,e);}TextView note=UiKit.small(context,"هذه القيم خاصة بهذا الروبوت/مجموعة الحساسات ولا تُرفع إلى المكتبة المركزية.");note.setTextColor(0xFF9A5A00);box.addView(note,UiKit.full(context));
-        AlertDialog d=new AlertDialog.Builder(context).setTitle("صيانة R0 المحلية").setView(box).setNegativeButton("إلغاء",null).setNeutralButton("مسح R0",null).setPositiveButton("حفظ",null).create();d.setOnShowListener(x->{d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v->{int saved=0;for(Map.Entry<String,EditText> e:fields.entrySet()){String s=e.getValue().getText().toString().trim();if(s.isEmpty())continue;try{double q=Double.parseDouble(s);if(ManualR0Calibration.save(host.preferences(),e.getKey(),q))saved++;}catch(Exception ignored){}}host.showToast("تم حفظ R0 لـ "+saved+" حساسات محليًا");refreshR0();d.dismiss();});d.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v->{for(String key:ManualR0Calibration.keys())ManualR0Calibration.clear(host.preferences(),key);host.showToast("تم مسح R0 المحلية");refreshR0();d.dismiss();});});d.show();
+    private int r0Count(){
+        JSONObject diag=host.latestDiagnostics();
+        String deviceId=diag==null?"":diag.optString("device_id","");
+        int n=0;
+        for(String key:ManualR0Calibration.keys()){
+            double x=ManualR0Calibration.get(key);
+            if(!Double.isFinite(x)||x<=0)continue;
+            if("firmware_clean_air_r0".equals(ManualR0Calibration.getSource(key))
+                    &&(deviceId.isEmpty()||!deviceId.equals(ManualR0Calibration.getDeviceId(key))))continue;
+            n++;
+        }
+        return n;
     }
     private void captureBaseline(){int n=host.captureCleanAirBaseline();host.showToast(n>0?"تم اعتماد baseline نظيف لـ "+n+" حساسات":"يلزم هواء نظيف وقراءات صالحة");refreshHealth();}
     private void checkDrift(){int n=host.evaluateCleanAirDrift();host.showToast(n>0?"تم فحص drift لـ "+n+" حساسات":"لا يوجد baseline صالح للمقارنة");refreshHealth();}
