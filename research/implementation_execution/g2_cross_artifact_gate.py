@@ -109,6 +109,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         if (any(not isinstance(g, str) or not g.strip() for g in fitted) or
                 len(fitted) != len(set(fitted)) or
                 not isinstance(train_ids, list) or
+                any(not isinstance(g, str) for g in train_ids) or
                 not set(fitted).issubset(set(train_ids)) or
                 (baseline["fit_policy"] == "NO_FIT" and fitted) or
                 (baseline["fit_policy"] == "TRAIN_ONLY" and not fitted)):
