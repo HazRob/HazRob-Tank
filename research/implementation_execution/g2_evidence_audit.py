@@ -13,6 +13,55 @@ from g2_evidence_bundle_gate import audit_evidence_bundle
 from g2_cross_artifact_gate import audit_cross_artifact
 from g2_raw_source_gate import audit_raw_source_bytes
 
+def _read_strict_input_json(path):
+    """Reject ambiguous JSON in the top-level G2 ledger and evidence register.
+
+    Evidence bundles already use strict JSON, but the controlling register and
+    execution ledger must not silently accept duplicate keys or nonfinite
+    numbers. SHA256 integrity alone does not resolve ambiguous JSON semantics.
+    """
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("G2_INPUT_DUPLICATE_JSON_KEY:" + key)
+            result[key] = value
+        return result
+
+    def reject_constant(token):
+        raise ValueError("G2_INPUT_NONFINITE_NUMBER:" + token)
+
+    def finite_float(token):
+        value = float(token)
+        if not math.isfinite(value):
+            raise ValueError("G2_INPUT_NONFINITE_NUMBER:" + token)
+        return value
+
+    return json.loads(
+        Path(path).read_text(encoding="utf-8"),
+        object_pairs_hook=unique_object,
+        parse_constant=reject_constant,
+        parse_float=finite_float,
+    )
+
+
+def load_g2_inputs(ledger_path, evidence_path):
+    """Load controlling manifests without silently treating invalid evidence as empty."""
+    ledger = _read_strict_input_json(ledger_path)
+    evidence = _read_strict_input_json(evidence_path)
+    if (not isinstance(ledger, dict) or
+            ledger.get("schema_version") != "hazrob.tank.chemcore80.execution-ledger-v4" or
+            not isinstance(ledger.get("work_items"), list) or
+            not all(isinstance(item, dict) and isinstance(item.get("id"), str)
+                    for item in ledger["work_items"])):
+        raise ValueError("G2_EXECUTION_LEDGER_SCHEMA_INVALID")
+    if (not isinstance(evidence, dict) or
+            evidence.get("schema") != "hazrob.g2.independent-evidence.v1" or
+            not isinstance(evidence.get("records"), list)):
+        raise ValueError("G2_EVIDENCE_REGISTER_SCHEMA_INVALID")
+    return ledger, evidence
+
+
 REQUIRED = ("raw_sha256", "dataset_uri", "sensor_metadata", "grouping_key",
             "train_group_ids", "calibration_group_ids", "test_group_ids", "target_definition",
             "metric_name", "metric_value", "baseline_metric_value",
@@ -171,8 +220,7 @@ def main():
     ap.add_argument("--evidence", default="research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json")
     ap.add_argument("--output", default="research/implementation_execution/G2_AUDIT_RESULTS.json")
     args = ap.parse_args()
-    ledger = json.loads(Path(args.ledger).read_text())
-    evidence = json.loads(Path(args.evidence).read_text())
+    ledger, evidence = load_g2_inputs(args.ledger, args.evidence)
     ids = [x["id"] for x in ledger["work_items"]]
     records = evidence.get("records", [])
     validate_ledger_scope(ids, records)
