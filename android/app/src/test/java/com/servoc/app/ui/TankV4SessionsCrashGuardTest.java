@@ -21,12 +21,12 @@ public final class TankV4SessionsCrashGuardTest {
     }
     @Test public void databaseExceptionOrReentrantAdapterCannotTerminateActivity()throws Exception{
         String s=src("ui/FieldSessionsTab.java");
-        assertTrue(s.contains("if(refreshing)return;"));
+        assertTrue(s.contains("if(refreshing){refreshQueued=true;return;}"));
         assertTrue(s.contains("repo.verifySessionSchema();"));
         assertTrue(s.contains("catch(RuntimeException ex)"));
         assertTrue(s.contains("showSessionLoadError();"));
-        assertTrue(s.contains("if(selectingScope||refreshing||pos!=siteDropdown.getSelectedItemPosition())return;"));
-        assertTrue(s.contains("if(selectingScope||refreshing||selectedSiteId.isEmpty()||pos!=sessionDropdown.getSelectedItemPosition())return;"));
+        assertTrue(s.contains("if(selectingScope||pos!=siteDropdown.getSelectedItemPosition())return;"));
+        assertTrue(s.contains("if(selectingScope||selectedSiteId.isEmpty()||pos!=sessionDropdown.getSelectedItemPosition())return;"));
         assertTrue(s.contains("siteOptionIds.get(pos)"));
         assertTrue(s.contains("sessionOptionIds.get(pos)"));
         assertTrue(s.contains("siteOptionIds.clear();sessionOptionIds.clear();"));
@@ -39,7 +39,7 @@ public final class TankV4SessionsCrashGuardTest {
         assertTrue(s.contains("GROUP BY f.field_session_id"));
         assertTrue(s.contains("LEFT JOIN field_session_measurements"));
         String ui=src("ui/FieldSessionsTab.java");
-        assertTrue(ui.contains("repo.measurementCountsForSite(selectedSiteId)"));
+        assertTrue(ui.contains("repo.measurementCountsForSite(id)"));
         assertFalse(ui.contains("for(FieldSessionRepository.FieldSession q:children)measurementCount+=repo.measurementSessionIds("));
     }
 }
