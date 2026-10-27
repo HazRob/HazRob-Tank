@@ -1,3 +1,11 @@
+## 2026-10-27 — G2 locked physical holdout allocation gate
+
+- Research-only: require group_assignment_sha256 in protocol_locked.json to bind exposure IDs, physical source columns and group assignments without blind gas labels. Four synthetic regression controls in test_g2_evidence_bundle_gate.py.
+- Documentation: G2_LOCKED_PHYSICAL_HOLDOUT_ASSIGNMENT_2026-10-27_AR.md. Verify CI on final commit before reporting success.
+- No independent measured physical G2 evidence (records: []), 0/80 G2 candidates, 80/80 blocked; no G3 or ChemCore Stable changes. Digest matching alone cannot establish chronological preregistration.
+
+---
+
 ## 2026-10-27 — G2 ASCII edge-whitespace identity gate (192/192 CI)
 
 - **Research-only branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`. Software commit `a0c70b6df42b412a84eefe4fd0db2537639d94e3`; code/test changes restricted to `research/implementation_execution/`. Documentation: `G2_ASCII_EDGE_WHITESPACE_IDENTITY_FAIL_CLOSED_2026-10-27_AR.md`.

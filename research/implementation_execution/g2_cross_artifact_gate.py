@@ -177,6 +177,26 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     elif not set(physical_columns) <= set(groups[0]):
         issues.append("GROUPING_SOURCE_COLUMNS_MISSING")
         physical_columns = []
+    # Lock exposure-to-physical-group assignments before unblinding. Group
+    # names alone do not freeze which exposures belong in blind evaluation.
+    # The digest excludes blinded gas truth labels, but includes physical IDs.
+    # Matching bytes cannot establish the historical preregistration date.
+    assignment_rows = sorted(
+        [[row.get("exposure_id"), row.get("group_id"),
+          [[name, row.get(name)] for name in sorted(physical_columns)]]
+         for row in groups],
+        key=lambda values: (values[0] or "", values[1] or ""))
+    assignment_bytes = json.dumps(
+        assignment_rows, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    actual_assignment_sha = hashlib.sha256(assignment_bytes).hexdigest()
+    locked_assignment_sha = protocol.get("group_assignment_sha256")
+    if (not isinstance(locked_assignment_sha, str) or
+            len(locked_assignment_sha) != 64 or
+            any(ch not in "0123456789abcdef" for ch in locked_assignment_sha)):
+        issues.append("GROUP_ASSIGNMENT_DIGEST_NOT_LOCKED")
+    elif locked_assignment_sha != actual_assignment_sha:
+        issues.append("GROUP_ASSIGNMENT_DIGEST_MISMATCH")
+
     # A declared physical grouping key must be backed by the actual source
     # identity columns, not arbitrary per-row identifiers (e.g. sample_id).
     # Additional source columns are allowed, but may not replace the minimum.

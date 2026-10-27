@@ -4,6 +4,7 @@ Temporary synthetic files validate software only, not gas identity or ppm.
 """
 import hashlib
 import io
+import csv
 import json
 import tempfile
 import unittest
@@ -81,6 +82,15 @@ def synthetic_bundle(root):
         "predictions_blind.csv": "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\nte1,d2-s1,GAS_A,GAS_A,GAS_A\nte2,d2-s2,GAS_B,GAS_A,GAS_A\n",
         "metrics_per_group.csv": "group_id,sample_count,correct_count,baseline_correct_count\nd2-s1,1,1,1\nd2-s2,1,0,0\n",
     }
+    # Canonical exposure/group/physical allocation; no blind truth labels.
+    allocation = sorted(
+        [[row["exposure_id"], row["group_id"],
+          [[name, row[name]] for name in ("device_id", "session_id")]]
+         for row in csv.DictReader(io.StringIO(csv_payloads["group_manifest.csv"]))],
+        key=lambda values: (values[0], values[1]))
+    documents["protocol_locked.json"]["group_assignment_sha256"] = hashlib.sha256(
+        json.dumps(allocation, ensure_ascii=False,
+                   separators=(",", ":")).encode("utf-8")).hexdigest()
     manifest = {}
     for name in FILES:
         if name.endswith(".json"):
@@ -1403,6 +1413,60 @@ class UnicodeCanonicalCsvEvidenceTests(unittest.TestCase):
                 record, base = synthetic_bundle(temp)
                 self._assert_rehashed_mutation_blocked(
                     temp, record, base, name, old, new)
+
+
+class LockedPhysicalHoldoutAssignmentTests(unittest.TestCase):
+    """Synthetic negative controls; never independent physical G2 evidence."""
+
+    @staticmethod
+    def rehash(record, base, name, text):
+        payload = text.encode("utf-8")
+        (base / name).write_bytes(payload)
+        record["evidence_files"][name] = hashlib.sha256(payload).hexdigest()
+        if name == "predictions_blind.csv":
+            record["evaluation_artifact_sha256"] = record["evidence_files"][name]
+        if name == "protocol_locked.json":
+            record["protocol_sha256"] = record["evidence_files"][name]
+
+    def test_unmodified_locked_assignment_replays(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            self.assertEqual(audit_record(record, temp)["status"],
+                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
+    def test_rehashed_blind_exposure_rename_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            for name in ("group_manifest.csv", "predictions_blind.csv"):
+                original = (base / name).read_text(encoding="utf-8")
+                self.assertIn("te1,", original)
+                self.rehash(record, base, name, original.replace("te1,", "te1-new,"))
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("GROUP_ASSIGNMENT_DIGEST_MISMATCH", issues)
+            self.assertNotIn("BLIND_PREDICTION_COVERAGE_MISMATCH", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_rehashed_physical_identity_change_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "group_manifest.csv"
+            original = (base / name).read_text(encoding="utf-8")
+            self.assertIn("te1,d2-s1,GAS_A,d2,s1", original)
+            self.rehash(record, base, name, original.replace(
+                "te1,d2-s1,GAS_A,d2,s1", "te1,d2-s1,GAS_A,d9,s1"))
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("GROUP_ASSIGNMENT_DIGEST_MISMATCH", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_missing_locked_assignment_is_rejected_with_valid_hash(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "protocol_locked.json"
+            protocol = json.loads((base / name).read_text(encoding="utf-8"))
+            del protocol["group_assignment_sha256"]
+            self.rehash(record, base, name, json.dumps(protocol) + "\n")
+            self.assertIn("GROUP_ASSIGNMENT_DIGEST_NOT_LOCKED",
+                          audit_record(record, temp)["issues"])
 
 
 if __name__ == "__main__":
