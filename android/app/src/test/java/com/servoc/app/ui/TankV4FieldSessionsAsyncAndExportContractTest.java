@@ -52,6 +52,15 @@ public final class TankV4FieldSessionsAsyncAndExportContractTest {
         assertTrue(activity.contains("FieldSessionReportExporter.writeXlsx(out,db,fieldId,chemicals)"));
     }
 
+    @Test public void pendingSessionRefreshesCannotOutliveTheActivity()throws Exception{
+        String sessions=src("ui/FieldSessionsTab.java");
+        String host=src("MainActivity.java");
+        assertTrue(sessions.contains("private volatile boolean disposed=false"));
+        assertTrue(sessions.contains("main.removeCallbacksAndMessages(null)"));
+        assertTrue(sessions.contains("if(disposed){refreshing=false;return;}"));
+        assertTrue(host.contains("if(fieldSessionsTab!=null)fieldSessionsTab.release()"));
+    }
+
     @Test public void exactSiteAndSessionExportFormatsArePreserved()throws Exception{
         String code=src("ui/FieldSessionsTab.java");
         assertTrue(code.contains("SiteSummaryExportActivity.start(scroll.getContext(),selectedSiteId,\"pdf\")"));
