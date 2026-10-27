@@ -637,7 +637,7 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "metrics_per_group.csv",
-                "group_id,sample_count,correct_count\\nd2-s1,1,1\\nd2-s2,1,0\\n")
+                "group_id,sample_count,correct_count\nd2-s1,1,1\nd2-s2,1,0\n")
             self.assertIn("ACCURACY_RECOMPUTATION_FIELDS_MISSING",
                           audit_record(record, temp)["issues"])
 
@@ -645,8 +645,8 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "metrics_per_group.csv",
-                "group_id,sample_count,correct_count,baseline_correct_count\\n"
-                "d2-s1,1,1,0\\nd2-s2,1,0,1\\n")
+                "group_id,sample_count,correct_count,baseline_correct_count\n"
+                "d2-s1,1,1,0\nd2-s2,1,0,1\n")
             issues = audit_record(record, temp)["issues"]
             self.assertIn("PER_GROUP_BASELINE_CORRECT_COUNT_MISMATCH", issues)
             self.assertNotIn("BLIND_BASELINE_ACCURACY_RECOMPUTATION_MISMATCH", issues)
@@ -655,9 +655,9 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "predictions_blind.csv",
-                "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\\n"
-                "te1,d2-s1,GAS_A,GAS_A,GAS_B\\n"
-                "te2,d2-s2,GAS_B,GAS_A,GAS_B\\n")
+                "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\n"
+                "te1,d2-s1,GAS_A,GAS_A,GAS_B\n"
+                "te2,d2-s2,GAS_B,GAS_A,GAS_B\n")
             record["evaluation_artifact_sha256"] = record["evidence_files"]["predictions_blind.csv"]
             issues = audit_record(record, temp)["issues"]
             self.assertIn("PER_GROUP_BASELINE_CORRECT_COUNT_MISMATCH", issues)
