@@ -108,11 +108,23 @@ def audit_evidence_bundle(record, repo_root=Path(".")):
                         raise ValueError("nonfinite JSON number: " + token)
                     return value
 
+                def finite_int(token):
+                    # Huge JSON integers may overflow float conversion in
+                    # downstream metrics and must not crash the entire audit.
+                    try:
+                        value = int(token)
+                        if not math.isfinite(float(value)):
+                            raise OverflowError("integer outside finite numeric domain")
+                    except (ValueError, OverflowError) as exc:
+                        raise ValueError("out-of-range JSON integer") from exc
+                    return value
+
                 payload = json.loads(
                     resolved.read_text(encoding="utf-8"),
                     object_pairs_hook=unique_object,
                     parse_constant=reject_constant,
                     parse_float=finite_float,
+                    parse_int=finite_int,
                 )
                 if not isinstance(payload, dict) or not payload:
                     raise ValueError("empty or non-object JSON")
