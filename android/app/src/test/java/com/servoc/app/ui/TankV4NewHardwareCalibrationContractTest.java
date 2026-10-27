@@ -68,7 +68,7 @@ public final class TankV4NewHardwareCalibrationContractTest {
         String field=src("ui/FieldSessionsTab.java");
         assertTrue(field.contains("if(!boundSiteIds.equals(siteOptionIds)||!boundSiteLabels.equals(siteNames))"));
         assertTrue(field.contains("if(!boundSessionIds.equals(sessionOptionIds)||!boundSessionLabels.equals(names))"));
-        assertTrue(field.contains("if(refreshing)return;"));
+        assertTrue(field.contains("if(refreshing){refreshQueued=true;return;}"));
         assertTrue(field.contains("showSessionLoadError();"));
     }
 }
