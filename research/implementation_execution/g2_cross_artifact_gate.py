@@ -82,6 +82,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         calibration = json.loads((base / "calibration_manifest.json").read_text(encoding="utf-8"))
         metrics = json.loads((base / "metrics_summary.json").read_text(encoding="utf-8"))
         uncertainty = json.loads((base / "uncertainty_grouped.json").read_text(encoding="utf-8"))
+        review = json.loads((base / "review_decision.json").read_text(encoding="utf-8"))
         groups = _read_csv(base, "group_manifest.csv")
         predictions = _read_csv(base, "predictions_blind.csv")
         per_group = _read_csv(base, "metrics_per_group.csv")
@@ -92,7 +93,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     # invoked independently by regression tests and external research tools.
     # Never let an array/scalar at any verified JSON path crash the audit.
     documents = (raw, source, signal, split, protocol, calibration,
-                 metrics, uncertainty)
+                 metrics, uncertainty, review)
     if any(not isinstance(document, dict) for document in documents):
         return ["CROSS_ARTIFACT_JSON_SCHEMA_INVALID"]
 
@@ -229,6 +230,34 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                 issues.append("CALIBRATION_LABEL_DIGEST_NOT_LOCKED")
             elif locked_calibration_sha != actual_calibration_sha:
                 issues.append("CALIBRATION_LABEL_DIGEST_MISMATCH")
+
+    # Blind truth belongs to the post-unblinding review artifact, never to
+    # the pre-unblinding locked protocol. This is only an internal integrity
+    # commitment; it does not authenticate the reference or release time.
+    test_ids = record.get("test_group_ids")
+    if (not isinstance(test_ids, list) or not test_ids or
+            any(not isinstance(gid, str) for gid in test_ids)):
+        issues.append("BLIND_TRUTH_RELEASE_UNAVAILABLE")
+    else:
+        truth_rows = sorted(
+            [[row.get("exposure_id"), row.get("group_id"),
+              row.get("gas_reference_id")]
+             for row in groups if row.get("group_id") in test_ids],
+            key=lambda values: (values[0] or "", values[1] or ""))
+        if (not truth_rows or any(
+                not isinstance(v, str) or not v.strip()
+                for row in truth_rows for v in row)):
+            issues.append("BLIND_TRUTH_RELEASE_UNAVAILABLE")
+        else:
+            actual = hashlib.sha256(json.dumps(
+                truth_rows, ensure_ascii=False,
+                separators=(",", ":")).encode("utf-8")).hexdigest()
+            locked = review.get("blind_truth_release_sha256")
+            if (not isinstance(locked, str) or len(locked) != 64 or
+                    any(c not in "0123456789abcdef" for c in locked)):
+                issues.append("BLIND_TRUTH_RELEASE_DIGEST_NOT_LOCKED")
+            elif locked != actual:
+                issues.append("BLIND_TRUTH_RELEASE_DIGEST_MISMATCH")
 
     # A declared physical grouping key must be backed by the actual source
     # identity columns, not arbitrary per-row identifiers (e.g. sample_id).
