@@ -25,6 +25,7 @@ require(sessions,"private static final class SessionData","snapshot-immutable-by
 require(sessions,"host.io().execute(()->{","field-sessions-background-queries")
 require(sessions,"repo.verifySessionSchema()","migrated-DB-schema-guard")
 require(sessions,"if(refreshing){refreshQueued=true;return;}","coalesced-UI-refresh")
+require(sessions,"main.removeCallbacksAndMessages(null)","destroyed-Activity-session-task-cleanup")
 require(sessions,"if(!requestedSite.equals(selectedSiteId))","discard-stale-site-result")
 require(sessions,'SiteSummaryExportActivity.start(scroll.getContext(),selectedSiteId,"pdf")',"site-PDF-route")
 require(sessions,'SiteSummaryExportActivity.start(scroll.getContext(),selectedSiteId,"xlsx")',"site-XLSX-route")
@@ -35,6 +36,8 @@ checks.append("site-selection-during-refresh")
 
 activity=read("android/app/src/main/java/com/servoc/app/MainActivity.java")
 require(activity,"pendingFieldSessionPicker=true","no-overlapping-report-picker")
+require(activity,"if(fieldSessionsTab!=null)fieldSessionsTab.release()","session-UI-lifecycle-release")
+require(activity,"ensureInstalled(getApplicationContext())","offline-Stable-startup-activation")
 require(activity,"selected=new FieldSessionRepository(db).fieldSessionById(fs)","report-lookup-in-worker")
 require(activity,"if(!selectedRow.approved())","approved-session-before-picker")
 require(activity,'pendingFieldSessionPicker=false;pendingFieldSessionId="";',"report-picker-reset-on-cancel")
@@ -55,6 +58,9 @@ require(gate,'!controllerId.equals(q.optString("r0_device_id",""))',"eight-chann
 require(gate,'!q.optBoolean("r0_provenance_complete",false)',"reject-reference-without-R0-evidence")
 require(experiments,"recorded_r0_provenance","reference-frozen-r0-provenance")
 require(experiments,"ManualR0Calibration.getDeviceId(key)","reference-device-binding")
+require(experiments,"TankReferenceR0Gate.qualifiedEight","shared-eight-channel-approval-gate")
+reference_gate=read("android/app/src/main/java/com/servoc/app/calibration/TankReferenceR0Gate.java")
+require(reference_gate,'!controllerId.equals(q.optString("r0_device_id",""))',"mandatory-recorded-controller-identity")
 assert "private void openR0Maintenance()" not in experiments,"Duplicate R0 editor must not remain"
 checks.append("single-authority-R0-editor")
 
@@ -63,6 +69,8 @@ require(calibration,"host.robotApi().calibrationStart(300,60)","firmware-owned-3
 require(calibration,"FirmwareR0Contract.committedValues(response)","committed-R0-only")
 require(calibration,"ManualR0Calibration.saveFirmware(","durable-phone-R0-mirror")
 require(calibration,"تأكيد التجاوز","explicit-manual-calibration-override")
+require(calibration,"final boolean uncertain=startRequested","async-calibration-command-race-guard")
+require(calibration,"ManualR0Calibration.saveAllForDevice(","device-bound-manual-overrides")
 r0=read("android/app/src/main/java/com/servoc/app/calibration/FirmwareR0Contract.java")
 require(r0,'SCHEMA="tank-r0-fw-v4/1"',"firmware-R0-schema-version")
 require(r0,"p.counts.get(key)<10","eight-channel-R0-min-samples")
@@ -71,6 +79,7 @@ quality=read("android/app/src/main/java/com/servoc/app/chemcore/ChemCoreLabQuali
 require(quality,"controllerId.equals(sensorDeviceId)","laboratory-cross-robot-block")
 require(quality,"referenceFromDb>=0?referenceFromDb:0","M4-from-curated-DB-not-telemetry")
 require(quality,'channel.put("device_id",sensorDeviceId)',"lab-calibration-provenance")
+require(quality,"mq7_mq9_heater_cycle_not_physically_qualified","MQ7-MQ9-heater-limitation")
 
 firmware=read("firmware/ESP32-Tank/ESP32-Tank.ino")
 require(firmware,'web.on("/r0"',"ESP32-firmware-calibration-route")
