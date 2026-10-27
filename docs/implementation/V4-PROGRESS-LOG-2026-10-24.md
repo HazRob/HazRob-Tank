@@ -355,3 +355,21 @@ No automatic work or later notification is promised from this conversation alone
 - No claim of `CI_PASS`, complete `UNIT_PASS`, `DEVICE_PASS`, developer GitHub publication acceptance, SHA verified *inside a new APK*, NVS power-loss safety or release-ready gas analysis.
 
 **STOP POINT:** Current work is `SOURCE_UPDATED / STATIC_MARKERS_18_OF_18 / NEW_TESTS_NOT_RUN / NOT_READY_TO_BUILD / V4_UNRELEASED`. Resume from this branch's latest HEAD, review the two added contract tests and GitHub publisher against the pinned base, validate fresh + migrated SQLite and full developer-tab interactions. Obtain separate owner permission for a controlled Gradle diagnostic build; after passing tests, perform device/SAF/report/robot gates before claiming release readiness.
+
+## Checkpoint — 2026-10-27 — Owner-authorized V4 APK + ESP32/CAM builds COMPLETED (diagnostic, not release)
+
+**Authorization:** Owner expressly asked for a downloadable V4 Android APK and V4 firmware ZIP at 17:26 UTC. The prior no-build hold was lifted for these diagnostic builds. The last validated Android source SHA is `1f1ea7d84b30c26b5825299e39ab53ad9c90a836`.
+
+### Objective pass evidence
+- Android [GitHub Actions 40552448040](https://github.com/HazRob/HazRob-Tank/actions/runs/40552448040): **SUCCESS**, `:app:testDebugUnitTest`, `:app:assembleDebug`, `apksigner verify`, offline ChemCore Stable payload SHA-256 and 4.0 manifest check, resulting diagnostic debug APK uploaded. Historical failures and remediation are preserved in earlier entries.
+- ESP32-Tank [40550815552](https://github.com/HazRob/HazRob-Tank/actions/runs/40550815552): **SUCCESS**, Arduino-ESP32 core 2.0.17; standalone Arduino ZIP + compiled binaries.
+- ESP32-CAM [40552291396](https://github.com/HazRob/HazRob-Tank/actions/runs/40552291396): **SUCCESS**, Arduino-ESP32 core 3.3.11; V3 camera source carried unchanged into V4; standalone Arduino ZIP + compiled binaries.
+- Full build evidence and exact SHA256 for downloadable conversation attachments: [V4-BUILD-EVIDENCE-2026-10-27.md](V4-BUILD-EVIDENCE-2026-10-27.md).
+
+### Strict readiness classification
+`SOFTWARE_TESTS_PASS / APK_DEBUG_BUILT / FIRMWARE_COMPILED / DOWNLOADS_VERIFIED / DEVICE_NOT_TESTED / NOT_STABLY_SIGNED / UNRELEASED`.
+
+Signing workflow reported persistent signing credentials absent and **skipped signed-release output**. The available `.apk` is DEBUG-SIGNED, not a production upgrade-compatible signed app. No Android-device acceptance, actual sensor safety testing, NVS power-loss trials or validated gas-reference measurements are implied. Do not silently promote ChemCore Research/Stable screening priors to M4. Preserve owner data and historical failures.
+
+### Next exact continuation
+Review actual Android installation, legacy SQLite schema migration and on-device Sessions/SAF regressions, then physical Tank tests; configure persistent signing before attempting a stable user update. **Do not overwrite this software build's SHA with later docs-only commits.**
