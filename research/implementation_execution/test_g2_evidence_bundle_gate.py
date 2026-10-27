@@ -837,6 +837,59 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:metrics_summary.json",
                           audit_evidence_bundle(record, temp))
 
+    def test_majority_train_baseline_replays_from_training_labels(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            self.assertNotIn("BASELINE_MAJORITY_TRAIN_REPLAY_MISMATCH",
+                             audit_record(record, temp)["issues"])
+            self.assertEqual(audit_record(record, temp)["status"],
+                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
+    def test_rehashed_blind_baseline_predictions_must_match_train_majority(self):
+        # A baseline can be internally consistent with per-group metrics but
+        # still contradict its declared majority_train algorithm.
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "predictions_blind.csv"
+            data = (base / name).read_text().replace(
+                "GAS_A,GAS_A,GAS_A", "GAS_A,GAS_A,GAS_B")
+            self.replace_bytes(record, base, name, data)
+            record["evaluation_artifact_sha256"] = record["evidence_files"][name]
+            self.assertIn("BASELINE_MAJORITY_TRAIN_REPLAY_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_unimplemented_baseline_algorithm_cannot_claim_replay(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol["baseline_model"]["algorithm_id"] = "unverified_oracle"
+            self.replace_bytes(record, base, "protocol_locked.json",
+                               json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertIn("BASELINE_ALGORITHM_REPLAY_UNAVAILABLE",
+                          audit_record(record, temp)["issues"])
+
+    def test_majority_train_tie_requires_locked_tie_policy(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "group_manifest.csv"
+            data = (base / name).read_text().replace(
+                "tr,d1-s1,GAS_A,d1,s1\\n",
+                "tr,d1-s1,GAS_A,d1,s1\\ntr2,d1-s1,GAS_B,d1,s1\\n")
+            self.replace_bytes(record, base, name, data)
+            self.assertIn("BASELINE_MAJORITY_TIE_POLICY_UNSPECIFIED",
+                          audit_record(record, temp)["issues"])
+
+    def test_majority_train_blank_training_truth_cannot_be_replayed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "group_manifest.csv"
+            data = (base / name).read_text().replace(
+                "tr,d1-s1,GAS_A,d1,s1", "tr,d1-s1,,d1,s1")
+            self.replace_bytes(record, base, name, data)
+            self.assertIn("BASELINE_TRAINING_LABELS_UNAVAILABLE",
+                          audit_record(record, temp)["issues"])
+
     def test_invalid_digest_blocks_promotion(self):
         with tempfile.TemporaryDirectory() as temp:
             record, _ = synthetic_bundle(temp)
