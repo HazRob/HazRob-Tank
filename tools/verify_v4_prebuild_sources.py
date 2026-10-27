@@ -35,7 +35,7 @@ for x in ("calibrationStart(300,60)","FirmwareR0Contract.committedValues(respons
     assert x in r0,x
 
 report=(source/"com/servoc/app/ui/ReportsTab.java").read_text(encoding="utf-8")
-for x in ("approvedSessionsForSite(chosenSiteId)",
+for x in ("fieldSessions.approvedSessionsForSite(effectiveSite)",
           "if(released||chartGeneration!=request||selectedId!=experimentId)"):
     assert x in report,x
 
