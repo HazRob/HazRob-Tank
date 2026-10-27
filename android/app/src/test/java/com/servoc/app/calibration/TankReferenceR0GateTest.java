@@ -15,6 +15,7 @@ public final class TankReferenceR0GateTest {
             q.put("ok",true).put("rs",20.0).put("r0",10.0)
                 .put("r0_calibrated",true)
                 .put("r0_provenance_complete",true)
+                .put("r0_samples",32)
                 .put("r0_source",source)
                 .put("r0_device_id",ID);
             all.put(key,q);
@@ -48,6 +49,14 @@ public final class TankReferenceR0GateTest {
         channels=captured("firmware_clean_air_r0");
         channels.getJSONObject("mq2").put("r0_provenance_complete",false);
         assertFalse(TankReferenceR0Gate.qualifiedEight(channels,ID));
+    }
+
+    @Test public void firmwareSampleCountUnderTenRejectsAllEight()throws Exception{
+        JSONObject channels=captured("firmware_clean_air_r0");
+        channels.getJSONObject("mq7").put("r0_samples",9);
+        assertFalse(TankReferenceR0Gate.qualifiedEight(channels,ID));
+        channels.getJSONObject("mq7").put("r0_samples",10);
+        assertTrue(TankReferenceR0Gate.qualifiedEight(channels,ID));
     }
 
     @Test public void syntheticR0OrInvalidRsDoNotProduceScientificReferences()throws Exception{
