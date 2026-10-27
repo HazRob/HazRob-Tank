@@ -38,6 +38,20 @@ public final class TankV4FieldSessionsAsyncAndExportContractTest {
         assertTrue(code.contains("main.post(this::showSessionLoadError)"));
     }
 
+    @Test public void reportPickerChecksApprovalOffMainAndNeverOverlaps()throws Exception{
+        String activity=src("MainActivity.java");
+        assertTrue(activity.contains("if(pendingFieldSessionPicker)"));
+        assertTrue(activity.contains("workers.execute(()->{"));
+        assertTrue(activity.contains("selected=new FieldSessionRepository(db).fieldSessionById(fs)"));
+        assertTrue(activity.contains("ui.post(()->{"));
+        assertTrue(activity.contains("if(!selectedRow.approved())"));
+        assertTrue(activity.contains("pendingFieldSessionId=fs"));
+        assertTrue(activity.contains("startActivityForResult(i,pdf?EXPORT_FIELD_PDF:EXPORT_FIELD_XLSX)"));
+        assertTrue(activity.contains("pendingFieldSessionPicker=false;pendingFieldSessionId=\"\";"));
+        assertTrue(activity.contains("FieldSessionReportExporter.writePdf(out,db,fieldId,chemicals)"));
+        assertTrue(activity.contains("FieldSessionReportExporter.writeXlsx(out,db,fieldId,chemicals)"));
+    }
+
     @Test public void exactSiteAndSessionExportFormatsArePreserved()throws Exception{
         String code=src("ui/FieldSessionsTab.java");
         assertTrue(code.contains("SiteSummaryExportActivity.start(scroll.getContext(),selectedSiteId,\"pdf\")"));
