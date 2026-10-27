@@ -62,9 +62,32 @@ public final class FieldSessionsTab {
         state=UiKit.text(c,"لا توجد جلسة ميدانية نشطة");state.setBackgroundColor(0xFFEDEFF2);managePane.addView(state,UiKit.full(c));
 
         LinearLayout actions=UiKit.hbox(c);
-        Button addSite=UiKit.button(c,"إضافة موقع");addSite.setOnClickListener(v->ask(c,"اسم الموقع","",name->{try{selectedSiteId=repo.createSite(name,"");selectedSessionId="";host.showToast("تم إنشاء الموقع");refresh();}catch(Exception e){host.showToast("تعذر إنشاء الموقع");}}));actions.addView(addSite,UiKit.weight(1));
-        Button addSession=UiKit.button(c,"بدء جلسة");addSession.setOnClickListener(v->{if(selectedSiteId.isEmpty()){host.showToast("اختر موقعًا أولًا");return;}ask(c,"اسم الجلسة","",name->{try{selectedSessionId=repo.startFieldSession(selectedSiteId,name);host.showToast("بدأت الجلسة الميدانية");refresh();}catch(Exception e){host.showToast("تعذر بدء الجلسة: "+e.getMessage());}});});actions.addView(addSession,UiKit.weight(1));
-        Button close=UiKit.button(c,"إنهاء الجلسة");close.setOnClickListener(v->{try{FieldSessionRepository.FieldSession a=repo.activeFieldSession();if(a==null){host.showToast("لا توجد جلسة نشطة");return;}boolean ok=repo.closeFieldSession(a.id);host.showToast(ok?"تم إنهاء الجلسة":"تعذر الإنهاء قبل اكتمال القياس");refresh();}catch(RuntimeException ex){android.util.Log.e("TankSessions","Close session failed",ex);showSessionLoadError();}});actions.addView(close,UiKit.weight(1));
+        Button addSite=UiKit.button(c,"إضافة موقع");addSite.setOnClickListener(v->ask(c,"اسم الموقع","",name->host.io().execute(()->{
+            try{
+                final String id=repo.createSite(name,"");
+                main.post(()->{selectedSiteId=id;selectedSessionId="";host.showToast("تم إنشاء الموقع");refresh();});
+            }catch(Exception e){host.showToast("تعذر إنشاء الموقع");}
+        })));actions.addView(addSite,UiKit.weight(1));
+        Button addSession=UiKit.button(c,"بدء جلسة");addSession.setOnClickListener(v->{if(selectedSiteId.isEmpty()){host.showToast("اختر موقعًا أولًا");return;}ask(c,"اسم الجلسة","",name->{
+            final String site=selectedSiteId;
+            host.io().execute(()->{
+                try{
+                    final String id=repo.startFieldSession(site,name);
+                    main.post(()->{selectedSiteId=site;selectedSessionId=id;host.showToast("بدأت الجلسة الميدانية");refresh();});
+                }catch(Exception e){host.showToast("تعذر بدء الجلسة: "+e.getMessage());}
+            });
+        });});actions.addView(addSession,UiKit.weight(1));
+        Button close=UiKit.button(c,"إنهاء الجلسة");close.setOnClickListener(v->host.io().execute(()->{
+            try{
+                FieldSessionRepository.FieldSession a=repo.activeFieldSession();
+                if(a==null){host.showToast("لا توجد جلسة نشطة");return;}
+                boolean ok=repo.closeFieldSession(a.id);
+                main.post(()->{host.showToast(ok?"تم إنهاء الجلسة":"تعذر الإنهاء قبل اكتمال القياس");refresh();});
+            }catch(RuntimeException ex){
+                android.util.Log.e("TankSessions","Close session failed",ex);
+                main.post(this::showSessionLoadError);
+            }
+        }));actions.addView(close,UiKit.weight(1));
         managePane.addView(actions,UiKit.full(c));
 
         TextView localNote=UiKit.small(c,"المواقع والجلسات محفوظة محليًا داخل التطبيق. لا تُرفع بيانات جلسات المستخدم إلى المكتبة العلمية المركزية. إدارة المزامنة والنشر محصورة في واجهات المطور.");localNote.setTextColor(0xFF505966);managePane.addView(localNote,UiKit.full(c));
@@ -157,6 +180,8 @@ public final class FieldSessionsTab {
                         if(error!=null){
                             android.util.Log.e("TankSessions","Unable to load user sessions",error);
                             showSessionLoadError();
+                        }else if(!requestedSite.equals(selectedSiteId)){
+                            refreshQueued=true; // A newer site selection supersedes the DB snapshot.
                         }else renderSessionUi(result);
                     }catch(RuntimeException ex){
                         android.util.Log.e("TankSessions","Unable to render user sessions",ex);
@@ -231,11 +256,15 @@ public final class FieldSessionsTab {
                 .setMessage("اعتماد جلسة «"+q.name+"» بعد التحقق من وجود قياس مكتمل واحد. بعدها ستظهر في التقارير.")
                 .setNegativeButton("إلغاء",null)
                 .setPositiveButton("اعتماد",(d,w)->{
-                    try{
-                        boolean ok=repo.approveFieldSession(q.id);
-                        host.showToast(ok?"تم اعتماد الجلسة":"تعذر الاعتماد: يلزم قياس مكتمل وصالح واحد");
-                        refresh();
-                    }catch(RuntimeException approvalError){android.util.Log.e("TankSessions","Approve session failed",approvalError);showSessionLoadError();}
+                    host.io().execute(()->{
+                        try{
+                            boolean ok=repo.approveFieldSession(q.id);
+                            main.post(()->{host.showToast(ok?"تم اعتماد الجلسة":"تعذر الاعتماد: يلزم قياس مكتمل وصالح واحد");refresh();});
+                        }catch(RuntimeException approvalError){
+                            android.util.Log.e("TankSessions","Approve session failed",approvalError);
+                            main.post(this::showSessionLoadError);
+                        }
+                    });
                 }).show());
             card.addView(approve,UiKit.full(sessions.getContext()));
             Button remove=UiKit.button(sessions.getContext(),"حذف الجلسة وبياناتها");remove.setEnabled(!q.active()&&!q.approved());
