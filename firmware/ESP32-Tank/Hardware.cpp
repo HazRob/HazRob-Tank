@@ -306,15 +306,15 @@ String calibrationJson(){
  bool committed=storedOK&&(calState==CAL_READY||calState==CAL_IDLE);
  const char* reported=committed?"ready":names[(uint8_t)calState];
  uint32_t elapsed=(calState==CAL_WARM||calState==CAL_SAMPLE)?millis()-calAt:0;
- String j="{\\"device_id\\":\\""+WiFi.softAPmacAddress()+"\\",\\"state\\":\\""+String(reported)+"\\",\\"committed\\":"+
-   (committed?"true":"false")+",\\"schema\\":\\"tank-r0-fw-v4/1\\",\\"warmup_ms\\":"+String(calWarmMs)+
-   ",\\"error\\":\\""+String(calError)+"\\",\\"elapsed_ms\\":"+String(elapsed)+
-   ",\\"duration_ms\\":"+String(calWindowMs)+",\\"channels\\":{";
+ String j="{\"device_id\":\""+WiFi.softAPmacAddress()+"\",\"state\":\""+String(reported)+"\",\"committed\":"+
+   (committed?"true":"false")+",\"schema\":\"tank-r0-fw-v4/1\",\"warmup_ms\":"+String(calWarmMs)+
+   ",\"error\":\""+String(calError)+"\",\"elapsed_ms\":"+String(elapsed)+
+   ",\"duration_ms\":"+String(calWindowMs)+",\"channels\":{";
  for(uint8_t i=0;i<Cfg::MQ_N;i++){
   if(i)j+=",";
   uint32_t count=committed?stored.counts[i]:calCount[i];
   float value=committed?stored.values[i]:(calCount[i]?(float)(calSum[i]/calCount[i]/cleanAir[i]):NAN);
-  j+="\\""+String(Cfg::mq[i].name)+"\\":{\\"samples\\":"+String(count)+",\\"r0\\":"+num(value,7)+"}";
+  j+="\""+String(Cfg::mq[i].name)+"\":{\"samples\":"+String(count)+",\"r0\":"+num(value,7)+"}";
  }
  return j+"}}";
 }
