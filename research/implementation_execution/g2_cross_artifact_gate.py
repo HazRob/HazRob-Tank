@@ -233,6 +233,35 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     # A matching digest proves integrity, not the arithmetic of the claim.
     interval = record.get("confidence_interval")
     if record.get("metric_name") == "classification_accuracy":
+        # Replay the locked majority-class baseline from training labels, not
+        # only from blind predictions. A self-declared algorithm name and a
+        # matching blind accuracy cannot establish baseline reproducibility.
+        # Other algorithms require explicit replay adapters before review.
+        if isinstance(baseline, dict):
+            if baseline.get("algorithm_id") != "majority_train":
+                issues.append("BASELINE_ALGORITHM_REPLAY_UNAVAILABLE")
+            elif baseline.get("fit_policy") != "TRAIN_ONLY":
+                issues.append("BASELINE_MAJORITY_TRAIN_FIT_POLICY_INVALID")
+            else:
+                fitted_ids = baseline.get("fitted_group_ids")
+                if not isinstance(fitted_ids, list) or not fitted_ids:
+                    issues.append("BASELINE_TRAINING_LABELS_UNAVAILABLE")
+                else:
+                    labels = [row.get("gas_reference_id", "").strip()
+                              for row in groups
+                              if row.get("group_id") in fitted_ids]
+                    if not labels or any(not label for label in labels):
+                        issues.append("BASELINE_TRAINING_LABELS_UNAVAILABLE")
+                    else:
+                        label_counts = Counter(labels)
+                        max_count = max(label_counts.values())
+                        winners = [label for label, n in label_counts.items()
+                                   if n == max_count]
+                        if len(winners) != 1:
+                            issues.append("BASELINE_MAJORITY_TIE_POLICY_UNSPECIFIED")
+                        elif any(row.get("baseline_predicted_reference") != winners[0]
+                                 for row in predictions):
+                            issues.append("BASELINE_MAJORITY_TRAIN_REPLAY_MISMATCH")
         required_truth = {"exposure_id", "group_id", "gas_reference_id"}
         # Baseline accuracy must be reproducible from the *same* blind rows.
         # A self-declared baseline_metric_value in two matching JSON files is
