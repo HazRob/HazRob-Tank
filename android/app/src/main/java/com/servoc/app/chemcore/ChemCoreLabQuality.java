@@ -28,8 +28,8 @@ import java.util.Set;
  *  - referenceValidatedChannels: sensors having at least one active HR069 M4 curve.
  *
  * A device R0 baseline is sufficient for Rs/R0 normalization, but never by itself permits
- * quantitative ppm interpretation. The active R0 policy is manual override when present,
- * otherwise the accepted field clean-air baseline. No synthetic/default R0 is created.
+ * quantitative ppm interpretation. Only explicitly persisted device values are accepted;
+ * firmware-imported revisions are bound to a matching physical controller identity.
  */
 public final class ChemCoreLabQuality {
     public static final String SCHEMA="chemcore-lab-quality/1";
@@ -75,25 +75,33 @@ public final class ChemCoreLabQuality {
         boolean power=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0);
         boolean a1=adc!=null&&adc.optBoolean("ads1",false),a2=adc!=null&&adc.optBoolean("ads2",false);
         boolean stationary=driveLeft==0&&driveRight==0;
-        int valid=0,r0=0,field=0,telemetryReference=0,firmwareR0Mismatch=0;
+        int valid=0,r0=0,field=0,firmwareR0Mismatch=0;
         for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){
             JSONObject s=mq==null?null:mq.optJSONObject(hw.key);
             if(s!=null&&s.optBoolean("ok",s.optBoolean("valid",false)))valid++;
 
-            // Tank V4 requires device-specific, explicitly imported or entered R0.
-            // Unverified telemetry defaults never normalize the lab's chemical evidence.
+            // Tank V4: only explicitly persisted device R0 contributes. A firmware-
+            // sourced revision must belong to THIS controller, never a different Tank.
             if(ManualR0Calibration.has(hw.key)){
-                r0++;
-                if(FieldR0Baseline.SOURCE.equals(ManualR0Calibration.getSource(hw.key)))field++;
+                String acceptedSource=ManualR0Calibration.getSource(hw.key);
+                String boundId=ManualR0Calibration.getDeviceId(hw.key);
+                String currentId=d.optString("device_id","");
+                boolean firmwareSource="firmware_clean_air_r0".equals(acceptedSource);
+                boolean sameDevice=!firmwareSource||(!boundId.isEmpty()&&boundId.equals(currentId));
+                if(sameDevice){
+                    r0++;
+                    if(FieldR0Baseline.SOURCE.equals(acceptedSource))field++;
+                }else firmwareR0Mismatch++;
             }
 
-            if(s!=null&&s.optBoolean("r0_reference_validated",false))telemetryReference++;
             if(s!=null&&ManualR0Calibration.has(hw.key)){
                 double fw=s.optDouble("r0",Double.NaN),accepted=ManualR0Calibration.get(hw.key);
                 if(Double.isFinite(fw)&&fw>0&&Math.abs(fw-accepted)/accepted>0.001)firmwareR0Mismatch++;
             }
         }
-        int reference=referenceFromDb>=0?referenceFromDb:telemetryReference;
+        // Sensor telemetry alone cannot attest a reviewed, active, manufacturer-valid
+        // reference-gas calibration. Only source-qualified local DB records can do so.
+        int reference=referenceFromDb>=0?referenceFromDb:0;
         boolean envOk=env!=null&&env.optBoolean("ok",false)&&finite(env,"temperature")&&finite(env,"pressure");
         String envType=env==null?"NONE":env.optString("type",env.optString("sensor","NONE"));
         boolean needsHumidity="BME280".equalsIgnoreCase(envType);
@@ -141,8 +149,11 @@ public final class ChemCoreLabQuality {
             o.put("exploratory_screening_ready",exploratoryScreeningReady());o.put("exploratory_results_may_be_exported",true);
             o.put("exploratory_measurement_not_quantitative_calibration",true);o.put("fingerprint_normalization_ready",fingerprintNormalizationReady());o.put("any_reference_gas_calibration_available",anyReferenceGasCalibrationAvailable());
             JSONObject r0=new JSONObject();
-            String source=fieldR0Channels==r0NormalizedChannels?FieldR0Baseline.SOURCE
-                    :fieldR0Channels==0?"manual_device_r0":"mixed_device_r0";
+            java.util.Set<String> calibrationSources=new java.util.LinkedHashSet<>();
+            for(String key:ManualR0Calibration.keys())if(ManualR0Calibration.has(key))
+                calibrationSources.add(ManualR0Calibration.getSource(key));
+            String source=calibrationSources.isEmpty()?"unavailable":
+                    calibrationSources.size()==1?calibrationSources.iterator().next():"mixed_device_r0";
             java.util.Set<String> sessionsUsed=new java.util.LinkedHashSet<>();
             JSONObject channels=new JSONObject();
             for(String key:ManualR0Calibration.keys()){
