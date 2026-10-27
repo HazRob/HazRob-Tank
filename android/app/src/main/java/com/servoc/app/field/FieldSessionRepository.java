@@ -198,10 +198,10 @@ public final class FieldSessionRepository {
 
     /** Gives a readable error if a historical or damaged DB lacks the required v9 tables. */
     public void verifySessionSchema(){
-        String[] required={"sites","field_sessions","field_session_measurements"};
+        String[] required={"sites","field_sessions","field_session_measurements","measurement_sessions","telemetry_samples"};
         java.util.HashSet<String> found=new java.util.HashSet<>();
         try(Cursor c=db.getReadableDatabase().rawQuery(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('sites','field_sessions','field_session_measurements')",null)){
+            "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('sites','field_sessions','field_session_measurements','measurement_sessions','telemetry_samples')",null)){
             while(c.moveToNext())found.add(c.getString(0));
         }
         for(String table:required)if(!found.contains(table))
