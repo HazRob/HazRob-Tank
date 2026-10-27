@@ -181,6 +181,21 @@ class StrictInputManifestTests(unittest.TestCase):
                 '{"schema":"hazrob.g2.independent-evidence.v1",'
                 '"records":[{"id":"01.1","metric_value":1e9999}]}')
 
+    def test_huge_integer_in_evidence_register_fails_closed(self):
+        huge = "9" * 310
+        with self.assertRaisesRegex(ValueError, "G2_INPUT_INTEGER_OUT_OF_RANGE"):
+            self.read_pair(
+                '{"schema":"hazrob.g2.independent-evidence.v1",'
+                '"records":[{"id":"01.1","metric_value":' + huge + '}]}')
+
+    def test_huge_integer_in_execution_ledger_fails_closed(self):
+        huge = "9" * 310
+        with self.assertRaisesRegex(ValueError, "G2_INPUT_INTEGER_OUT_OF_RANGE"):
+            self.read_pair(
+                '{"schema":"hazrob.g2.independent-evidence.v1","records":[]}',
+                '{"schema_version":"hazrob.tank.chemcore80.execution-ledger-v4",'
+                '"work_items":[{"id":"01.1","source_counter":' + huge + '}]}')
+
     def test_missing_records_not_silently_treated_as_empty(self):
         with self.assertRaisesRegex(ValueError, "G2_EVIDENCE_REGISTER_SCHEMA_INVALID"):
             self.read_pair('{"schema":"hazrob.g2.independent-evidence.v1"}')
