@@ -1,4 +1,5 @@
 #include "Hardware.h"
+#include <esp_arduino_version.h>  // ESP32 Arduino 2.x vs 3.x LEDC API
 #include "Alerts.h"
 #include <Preferences.h>
 #include <Wire.h>
@@ -20,7 +21,24 @@ struct ServoTrack{uint8_t pin,channel;bool invert;uint16_t neutral,range;float *
 ServoTrack tracks[]={{Cfg::SERVO_L_PIN,6,Cfg::SERVO_L_INVERT,Cfg::SERVO_L_NEUTRAL_US,Cfg::SERVO_L_RANGE_US,&curL,&targetL},
                     {Cfg::SERVO_R_PIN,7,Cfg::SERVO_R_INVERT,Cfg::SERVO_R_NEUTRAL_US,Cfg::SERVO_R_RANGE_US,&curR,&targetR}};
 float lim(float v){return constrain(v,-(float)settings.speed,(float)settings.speed);}
-void servoWrite(ServoTrack &s){float v=*s.cur*(s.invert?-1.0f:1.0f);uint16_t us=constrain((int)(s.neutral+v*s.range/100.0f),1000,2000);ledcWrite(s.channel,(uint32_t)us*65535UL/20000UL);}
+/** Core 3.x LEDC is pin-centric; retain the fixed, independent servo channels 6/7. */
+bool servoPwmBegin(const ServoTrack &s){
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
+  return ledcAttachChannel(s.pin,Cfg::SERVO_HZ,16,s.channel);
+#else
+  if(ledcSetup(s.channel,Cfg::SERVO_HZ,16)<=0)return false;
+  ledcAttachPin(s.pin,s.channel);
+  return true;
+#endif
+}
+void servoPwmWrite(const ServoTrack &s,uint32_t duty){
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
+  ledcWriteChannel(s.channel,duty);
+#else
+  ledcWrite(s.channel,duty);
+#endif
+}
+void servoWrite(ServoTrack &s){float v=*s.cur*(s.invert?-1.0f:1.0f);uint16_t us=constrain((int)(s.neutral+v*s.range/100.0f),1000,2000);servoPwmWrite(s,(uint32_t)us*65535UL/20000UL);}
 void motionStopImmediate(){
   targetL=targetR=curL=curR=0;
   for(auto &s:tracks){s.pauseUntil=0;servoWrite(s);}
@@ -277,7 +295,7 @@ const char* measurementStateName(){switch(stage){case WARM:return"warmup";case M
 String measurementJson(){uint16_t remaining=stage==MEASURE&&settings.measure>measureElapsedSec?settings.measure-measureElapsedSec:0;return "{\"state\":\""+String(measurementStateName())+"\",\"mask\":"+String(measurePower?1:0)+",\"power\":"+String(bj(measurePower))+",\"manual_power\":true,\"manual_warmup\":true,\"duration_s\":"+String(settings.measure)+",\"elapsed_s\":"+String(measureElapsedSec)+",\"remaining_s\":"+String(remaining)+",\"error\":\""+String(measureErrorName())+"\",\"valid_channels\":"+String(validChannels())+",\"mq\":"+mqJson(true)+"}";}
 }
 
-void hwBegin(){loadSettings();Alerts::begin();pinMode(Cfg::RELAY_MQ,OUTPUT);relayRaw(false);pinMode(Cfg::LDR_PIN,INPUT);pinMode(Cfg::SOUND_PIN,INPUT);pinMode(Cfg::BATTERY_PIN,INPUT);pinMode(Cfg::ULTRA_TRIG_PIN,OUTPUT);digitalWrite(Cfg::ULTRA_TRIG_PIN,LOW);pinMode(Cfg::ULTRA_ECHO_PIN,INPUT);attachInterrupt(digitalPinToInterrupt(Cfg::ULTRA_ECHO_PIN),ultraEchoIsr,CHANGE);analogReadResolution(12);analogSetPinAttenuation(Cfg::SOUND_PIN,ADC_11db);analogSetPinAttenuation(Cfg::BATTERY_PIN,ADC_11db);for(auto &s:tracks){ledcSetup(s.channel,Cfg::SERVO_HZ,16);ledcAttachPin(s.pin,s.channel);servoWrite(s);}cmdAt=driveAt=energyAt=millis();Wire.begin(Cfg::SDA,Cfg::SCL);Wire.setClock(Cfg::ADS_I2C_HZ);EnvWire.begin(Cfg::ENV_SDA,Cfg::ENV_SCL);EnvWire.setClock(Cfg::ENV_I2C_HZ);EnvWire.setTimeOut(25);adsBegin(0);adsBegin(1);adsHealthAt=millis();envBegin();}
+void hwBegin(){loadSettings();Alerts::begin();pinMode(Cfg::RELAY_MQ,OUTPUT);relayRaw(false);pinMode(Cfg::LDR_PIN,INPUT);pinMode(Cfg::SOUND_PIN,INPUT);pinMode(Cfg::BATTERY_PIN,INPUT);pinMode(Cfg::ULTRA_TRIG_PIN,OUTPUT);digitalWrite(Cfg::ULTRA_TRIG_PIN,LOW);pinMode(Cfg::ULTRA_ECHO_PIN,INPUT);attachInterrupt(digitalPinToInterrupt(Cfg::ULTRA_ECHO_PIN),ultraEchoIsr,CHANGE);analogReadResolution(12);analogSetPinAttenuation(Cfg::SOUND_PIN,ADC_11db);analogSetPinAttenuation(Cfg::BATTERY_PIN,ADC_11db);for(auto &s:tracks){if(servoPwmBegin(s)){servoWrite(s);}else{pinMode(s.pin,OUTPUT);digitalWrite(s.pin,LOW);}}cmdAt=driveAt=energyAt=millis();Wire.begin(Cfg::SDA,Cfg::SCL);Wire.setClock(Cfg::ADS_I2C_HZ);EnvWire.begin(Cfg::ENV_SDA,Cfg::ENV_SCL);EnvWire.setClock(Cfg::ENV_I2C_HZ);EnvWire.setTimeOut(25);adsBegin(0);adsBegin(1);adsHealthAt=millis();envBegin();}
 void hwUpdate(){driveUpdate();energyUpdate();adsHealthUpdate();mqUpdate();calibrationUpdate();envUpdate();soundUpdate();ldrUpdate();batteryUpdate();ultraUpdate();measureUpdate();Alerts::update();}
 void driveSet(int l,int r){if(transportLost){motionStopImmediate();staleStop=true;return;}targetL=lim(l);targetR=lim(r);cmdAt=millis();staleStop=false;}
 void motionStop(){motionStopInternal();}void emergencyStop(){motionStopImmediate();resetMeasurement();calState=CAL_CANCEL;relayRaw(false);Alerts::emergencyStop();}
