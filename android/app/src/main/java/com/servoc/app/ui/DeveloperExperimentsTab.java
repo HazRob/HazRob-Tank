@@ -231,7 +231,8 @@ public final class DeveloperExperimentsTab {
                     derived=GitHubReferencePublisher.publishArtifact(token,host.database(),a);
                 boolean fullySubmitted=!derivedExpected||(derived!=null&&derived.success);
                 String status=fullySubmitted?"STAGED_FOR_REVIEW":"STAGED_EXPERIMENT_DERIVED_PENDING";
-                String paths=raw.path+(derived==null?"":" | "+derived.path);
+                String paths=raw.path+" • commit="+raw.commitSha+" • sha256="+raw.payloadSha256+
+                    (derived==null?"":" | "+derived.path+" • commit="+derived.commitSha+" • sha256="+derived.payloadSha256);
                 ReferencePublishAudit.record(host.database(),r.id,status,isoNow(),raw.payloadSha256,paths);
                 final boolean complete=fullySubmitted;
                 scroll.post(()->{
