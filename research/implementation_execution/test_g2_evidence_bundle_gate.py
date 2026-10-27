@@ -101,6 +101,18 @@ def synthetic_bundle(root):
     documents["protocol_locked.json"]["calibration_labels_sha256"] = hashlib.sha256(
         json.dumps(calibration_rows, ensure_ascii=False,
                    separators=(",", ":")).encode("utf-8")).hexdigest()
+    # Post-unblinding reference release: internal integrity, not source proof.
+    blind_rows = sorted(
+        [[row["exposure_id"], row["group_id"], row["gas_reference_id"]]
+         for row in csv.DictReader(io.StringIO(csv_payloads["group_manifest.csv"]))
+         if row["group_id"] in record["test_group_ids"]],
+        key=lambda values: (values[0], values[1]))
+    documents["review_decision.json"] = {
+        "blind_truth_release_sha256": hashlib.sha256(
+            json.dumps(blind_rows, ensure_ascii=False,
+                       separators=(",", ":")).encode("utf-8")).hexdigest(),
+        "review_status": "SYNTHETIC_NOT_SCIENTIFIC_REVIEW",
+    }
     manifest = {}
     for name in FILES:
         if name.endswith(".json"):
@@ -1553,6 +1565,54 @@ class LockedCalibrationLabelsTests(unittest.TestCase):
             self.assertIn("CALIBRATION_LABELS_UNAVAILABLE",
                           audit_record(record, temp)["issues"])
 
+
+
+class PostUnblindingTruthReleaseTests(unittest.TestCase):
+    """Synthetic integrity checks; no independent physical truth implied."""
+
+    def test_unchanged_release_replays(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            result = audit_record(record, temp)
+            self.assertEqual(result["status"], "G2_PASS_CANDIDATE_REQUIRES_REVIEW",
+                             result["issues"])
+
+    def test_rehashed_blind_truth_relabel_is_detected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            old = (base / "group_manifest.csv").read_text(encoding="utf-8")
+            LockedPhysicalHoldoutAssignmentTests.rehash(
+                record, base, "group_manifest.csv",
+                old.replace("te2,d2-s2,GAS_B,d2,s2", "te2,d2-s2,GAS_A,d2,s2"))
+            old = (base / "predictions_blind.csv").read_text(encoding="utf-8")
+            LockedPhysicalHoldoutAssignmentTests.rehash(
+                record, base, "predictions_blind.csv",
+                old.replace("te2,d2-s2,GAS_B,GAS_A,GAS_A",
+                            "te2,d2-s2,GAS_A,GAS_A,GAS_A"))
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("BLIND_TRUTH_RELEASE_DIGEST_MISMATCH", issues)
+            self.assertNotIn("GROUP_ASSIGNMENT_DIGEST_MISMATCH", issues)
+            self.assertNotIn("CALIBRATION_LABEL_DIGEST_MISMATCH", issues)
+
+    def test_missing_release_digest_is_rejected_after_rehash(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            review = json.loads((base / "review_decision.json").read_text())
+            del review["blind_truth_release_sha256"]
+            LockedPhysicalHoldoutAssignmentTests.rehash(
+                record, base, "review_decision.json", json.dumps(review) + "\n")
+            self.assertIn("BLIND_TRUTH_RELEASE_DIGEST_NOT_LOCKED",
+                          audit_record(record, temp)["issues"])
+
+    def test_empty_blind_reference_is_rejected_after_rehash(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            old = (base / "group_manifest.csv").read_text(encoding="utf-8")
+            LockedPhysicalHoldoutAssignmentTests.rehash(
+                record, base, "group_manifest.csv",
+                old.replace("te2,d2-s2,GAS_B,d2,s2", "te2,d2-s2,,d2,s2"))
+            self.assertIn("BLIND_TRUTH_RELEASE_UNAVAILABLE",
+                          audit_record(record, temp)["issues"])
 
 if __name__ == "__main__":
     unittest.main()
