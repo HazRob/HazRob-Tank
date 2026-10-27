@@ -1,3 +1,12 @@
+## 2026-10-28 — G2 central 14-dataset provenance and source-readiness audit
+
+- Research-only source `g2_reference_catalog_readiness.py` validates the exact central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, 80 unique entries and 14 external measurement datasets. It rejects truthy qualification strings, raw mirror/inspection claims without original SHA256, unverified physical groups and unverified reference traceability. **This is catalogue triage, never G2 scientific qualification.**
+- Machine matrix: `G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json`; Arabic methodology: `G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28_AR.md`. **0/14 source-review ready, 14/14 source-review blocked**. MQ-EXT-03 and MQ-EXT-15 have previously inspected/verified-elsewhere raw status but no independently qualified G2 physical-group/reference provenance in this catalogue; MQ-EXT-07 and MQ-EXT-09 require source access. Do not double-count UCI1081 or the MultimodalGasData mirror.
+- Five new regression tests appended to `test_g2_evidence_bundle_gate.py`, including the pinned matrix. Test/CI status must be verified on the final commit; do not infer PASS from code writes.
+- The previously documented independent G2 register remains `records: []`; last confirmed scientific audit `g2_pass_candidates=0`, `g2_blocked=80`. No G2/G3 approval or ChemCore Stable change.
+
+---
+
 ## 2026-10-28 — G2 post-unblinding blind-truth integrity (204/204 CI)
 
 - Research-only: `g2_cross_artifact_gate.py` checks `review_decision.json.blind_truth_release_sha256` against canonical blind reference labels **after unblinding**; never puts blind truth into the pre-unblinding protocol. Four synthetic regression tests added to `test_g2_evidence_bundle_gate.py`.
