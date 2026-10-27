@@ -3,10 +3,12 @@
 Temporary synthetic files validate software only, not gas identity or ppm.
 """
 import hashlib
+import io
 import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from g2_evidence_bundle_gate import FILES, audit_evidence_bundle
 from g2_evidence_audit import audit_record
@@ -158,7 +160,83 @@ class R0RawSourceReplayTests(unittest.TestCase):
             self.assertIn("R0_RAW_SOURCE_SIZE_NOT_DOCUMENTED",
                           audit_r0_source_bytes(record, temp))
 
+    def test_r0_source_streamed_length_rechecked_after_stat(self):
+        # Simulate a source being truncated between stat() and open().
+        # Its digest is recomputed for the truncated stream, while the
+        # originally declared file size remains unchanged.
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            raw = Path(temp) / "research/g2/raw/synthetic_r0_source.bin"
+            truncated = raw.read_bytes()[:-5]
+            record["signal_processing"]["r0_reference"]["raw_sha256"] = (
+                hashlib.sha256(truncated).hexdigest())
+            original_open = Path.open
+
+            def changed_stream(path, mode="r", *args, **kwargs):
+                if path == raw and mode == "rb":
+                    return io.BytesIO(truncated)
+                return original_open(path, mode, *args, **kwargs)
+
+            with patch.object(Path, "open", changed_stream):
+                self.assertIn("R0_RAW_SOURCE_BYTE_SIZE_MISMATCH",
+                              audit_r0_source_bytes(record, temp))
+
+    def test_r0_source_symlink_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            raw = Path(temp) / "research/g2/raw/synthetic_r0_source.bin"
+            target = raw.with_name("actual_r0_source.bin")
+            raw.rename(target)
+            raw.symlink_to(target)
+            self.assertIn("R0_RAW_SOURCE_BYTES_UNAVAILABLE_OR_UNSAFE",
+                          audit_r0_source_bytes(record, temp))
+
+    def test_all_sensor_r0_sources_must_replay(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            p = record["signal_processing"]
+            first_id = p["sensor_ids"][0]
+            first = p.pop("r0_reference")
+            second_id = "MQ7#unit-002"
+            second_raw = Path(temp) / "research/g2/raw/second_r0.bin"
+            second_bytes = b"synthetic second sensor R0 source\\n"
+            second_raw.write_bytes(second_bytes)
+            second = dict(first, sensor_instance_id=second_id,
+                          raw_local_path="research/g2/raw/second_r0.bin",
+                          raw_size_bytes=len(second_bytes),
+                          raw_sha256=hashlib.sha256(second_bytes).hexdigest())
+            p["sensor_ids"] = [first_id, second_id]
+            p["r0_references"] = {first_id: first, second_id: second}
+            self.assertEqual(audit_r0_source_bytes(record, temp), [])
+            second_raw.write_bytes(b"X" + second_bytes[1:])
+            self.assertIn("R0_RAW_SOURCE_BYTE_DIGEST_MISMATCH",
+                          audit_r0_source_bytes(record, temp))
+
 class EvidenceBundleTests(unittest.TestCase):
+    def test_raw_source_streamed_length_rechecked_after_stat(self):
+        # An archive can change after stat(); matching the bytes read to
+        # a newly claimed digest is not sufficient when size is stale.
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            raw = Path(temp) / "research/g2/raw/synthetic_source.bin"
+            truncated = raw.read_bytes()[:-4]
+            digest = hashlib.sha256(truncated).hexdigest()
+            record["raw_sha256"] = digest
+            manifest_path = base / "raw_manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["raw_sha256"] = digest
+            manifest_path.write_text(json.dumps(manifest))
+            original_open = Path.open
+
+            def changed_stream(path, mode="r", *args, **kwargs):
+                if path == raw and mode == "rb":
+                    return io.BytesIO(truncated)
+                return original_open(path, mode, *args, **kwargs)
+
+            with patch.object(Path, "open", changed_stream):
+                self.assertIn("RAW_SOURCE_BYTE_SIZE_MISMATCH",
+                              audit_raw_source_bytes(record, temp))
+
     def test_raw_source_bytes_required_for_review_candidate(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
