@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -41,7 +42,20 @@ public final class CentralLibraryDashboardTab {
     public CentralLibraryDashboardTab(Context context,HazRobHost host){
         this.context=context.getApplicationContext();this.host=host;this.manager=new ChemCoreLibraryManager(context);this.statusRepo=new ChemicalExperimentStatusRepository(host.database());
         root=UiKit.vbox(context);root.setBackgroundColor(0xFFF7F8FA);root.setPadding(UiKit.dp(context,4),UiKit.dp(context,4),UiKit.dp(context,4),UiKit.dp(context,8));
-        bar=UiKit.hbox(context);String[] names={"لوحة المكتبة","التوزيع","المنصات","السجل"};for(int i=0;i<names.length;i++){final int x=i;tabs[i]=UiKit.button(context,names[i]);tabs[i].setTextSize(9);tabs[i].setOnClickListener(v->show(x));bar.addView(tabs[i],UiKit.weight(1));}root.addView(bar,UiKit.full(context));page=new FrameLayout(context);root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));
+        bar=UiKit.hbox(context);
+        String[] names={"لوحة المكتبة","التوزيع","المنصات","السجل"};
+        for(int i=0;i<names.length;i++){
+            final int x=i;tabs[i]=UiKit.button(context,names[i]);
+            tabs[i].setTextSize(13);tabs[i].setMinWidth(UiKit.dp(context,105));
+            tabs[i].setOnClickListener(v->show(x));
+            LinearLayout.LayoutParams buttonLayout=new LinearLayout.LayoutParams(-2,-2);
+            buttonLayout.setMargins(UiKit.dp(context,2),0,UiKit.dp(context,2),0);
+            bar.addView(tabs[i],buttonLayout);
+        }
+        HorizontalScrollView strip=new HorizontalScrollView(context);
+        strip.setHorizontalScrollBarEnabled(false);
+        strip.addView(bar,new HorizontalScrollView.LayoutParams(-2,-2));
+        root.addView(strip,UiKit.full(context));page=new FrameLayout(context);root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));
 
         ScrollView dashboard=scroll(context);LinearLayout d=(LinearLayout)dashboard.getChildAt(0);d.addView(UiKit.title(context,"المكتبة المركزية • HazRob"),UiKit.full(context));TextView canon=UiKit.small(context,"المصدر العلمي المرجعي: HazRob/build-harness • التحديث للمستخدم قراءة فقط • R0 معايرة جهاز محلية ولا تدخل في المعرفة المركزية.");canon.setTextColor(0xFF167443);canon.setBackgroundColor(0xFFE8F5E9);d.addView(canon,UiKit.full(context));LinearLayout vcard=UiKit.card(context);vcard.addView(UiKit.title(context,"الإصدار والمراجعات"),UiKit.full(context));versionText=box(context);vcard.addView(versionText,UiKit.full(context));d.addView(vcard,UiKit.full(context));LinearLayout ccard=UiKit.card(context);ccard.addView(UiKit.title(context,"تغطية المكتبة"),UiKit.full(context));coverageText=box(context);ccard.addView(coverageText,UiKit.full(context));d.addView(ccard,UiKit.full(context));dashboardView=dashboard;
 
