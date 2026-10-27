@@ -52,6 +52,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         source = json.loads((base / "source_qualification.json").read_text(encoding="utf-8"))
         signal = json.loads((base / "signal_lineage.json").read_text(encoding="utf-8"))
         split = json.loads((base / "split_manifest.json").read_text(encoding="utf-8"))
+        protocol = json.loads((base / "protocol_locked.json").read_text(encoding="utf-8"))
         calibration = json.loads((base / "calibration_manifest.json").read_text(encoding="utf-8"))
         metrics = json.loads((base / "metrics_summary.json").read_text(encoding="utf-8"))
         uncertainty = json.loads((base / "uncertainty_grouped.json").read_text(encoding="utf-8"))
@@ -84,6 +85,36 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         issues.append("SPLIT_MANIFEST_RECORD_MISMATCH")
     if calibration.get("calibration_group_ids") != record.get("calibration_group_ids"):
         issues.append("CALIBRATION_GROUPS_RECORD_MISMATCH")
+
+    # A blind baseline must be defined in the byte-verified locked protocol,
+    # not invented after seeing the blind labels to inflate the comparison.
+    # This checks consistency and documented group isolation; it cannot prove
+    # that the protocol was actually registered before unblinding.
+    protocol_fields = ("target_definition", "metric_name", "grouping_key",
+                       "train_group_ids", "calibration_group_ids", "test_group_ids")
+    if (not isinstance(protocol, dict) or any(
+            protocol.get(field) != record.get(field) for field in protocol_fields)):
+        issues.append("LOCKED_PROTOCOL_RECORD_MISMATCH")
+    baseline = protocol.get("baseline_model") if isinstance(protocol, dict) else None
+    if (not isinstance(baseline, dict) or
+            not isinstance(baseline.get("algorithm_id"), str) or
+            not baseline["algorithm_id"].strip() or
+            baseline.get("prediction_column") != "baseline_predicted_reference" or
+            not isinstance(baseline.get("fitted_group_ids"), list) or
+            baseline.get("fit_policy") not in ("TRAIN_ONLY", "NO_FIT")):
+        issues.append("BASELINE_PROTOCOL_NOT_LOCKED")
+    else:
+        fitted = baseline["fitted_group_ids"]
+        train_ids = record.get("train_group_ids")
+        if (any(not isinstance(g, str) or not g.strip() for g in fitted) or
+                len(fitted) != len(set(fitted)) or
+                not isinstance(train_ids, list) or
+                not set(fitted).issubset(set(train_ids)) or
+                (baseline["fit_policy"] == "NO_FIT" and fitted) or
+                (baseline["fit_policy"] == "TRAIN_ONLY" and not fitted)):
+            issues.append("BASELINE_TRAINING_GROUP_LEAKAGE_OR_INVALID_FIT")
+        if baseline.get("selected_on_test") is not False:
+            issues.append("BASELINE_TEST_SELECTION_NOT_FROZEN")
 
     expected_groups = {}
     for part in parts:
