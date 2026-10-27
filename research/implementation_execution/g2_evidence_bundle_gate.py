@@ -22,6 +22,11 @@ HEX64 = re.compile(r"^[0-9a-f]{64}$")
 SAFE_SEGMENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$")
 
 
+def _csv_has_control(value):
+    """NUL and C0/DEL controls cannot be trusted in evidence identifiers."""
+    return any(ord(ch) < 32 or ord(ch) == 127 for ch in value)
+
+
 def _safe(value):
     return (isinstance(value, str) and bool(SAFE_SEGMENT.fullmatch(value))
             and value not in {".", ".."} and ".." not in value)
@@ -135,13 +140,14 @@ def audit_evidence_bundle(record, repo_root=Path(".")):
                 with resolved.open(newline="", encoding="utf-8") as stream:
                     rows = csv.reader(stream, strict=True)
                     header = next(rows)
-                    if (not header or any(not c.strip() for c in header)
+                    if (not header or any(not c.strip() or _csv_has_control(c)
+                              for c in header)
                             or len(set(header)) != len(header)):
                         raise ValueError("invalid or duplicate CSV headers")
                     count = 0
                     for data in rows:
-                        if len(data) != len(header):
-                            raise ValueError("inconsistent CSV row width")
+                        if len(data) != len(header) or any(_csv_has_control(c) for c in data):
+                            raise ValueError("inconsistent CSV row or control character")
                         count += 1
                     if count == 0:
                         raise ValueError("CSV contains no data rows")

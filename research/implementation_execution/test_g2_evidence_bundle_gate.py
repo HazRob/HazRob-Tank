@@ -1230,5 +1230,40 @@ class EvidenceBundleTests(unittest.TestCase):
                              result["issues"])
 
 
+class CsvControlCharacterEvidenceTests(unittest.TestCase):
+    """Byte-valid CSV with embedded controls must still fail closed."""
+
+    def test_control_character_in_header_rejected_after_rehash(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "group_manifest.csv"
+            altered = (base / name).read_text().replace(
+                "exposure_id,group_id", "exposure_id,group\\x00_id")
+            altered = altered.replace("\\x00", "\x00")
+            payload = altered.encode("utf-8")
+            (base / name).write_bytes(payload)
+            record["evidence_files"][name] = hashlib.sha256(payload).hexdigest()
+            self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:" + name,
+                          audit_evidence_bundle(record, temp))
+            self.assertIn("CROSS_ARTIFACT_READ_FAILED",
+                          audit_cross_artifact(record, temp))
+
+    def test_control_character_in_blind_label_rejected_after_rehash(self):
+        for char in ("\\x00", "\\x1f", "\\x7f"):
+            with self.subTest(char=repr(char)), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                name = "predictions_blind.csv"
+                payload = (base / name).read_text().replace(
+                    "GAS_A,GAS_A,GAS_A", "GAS_A,GAS_" + char + "A,GAS_A").encode("utf-8")
+                (base / name).write_bytes(payload)
+                record["evidence_files"][name] = hashlib.sha256(payload).hexdigest()
+                record["evaluation_artifact_sha256"] = record["evidence_files"][name]
+                self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:" + name,
+                              audit_evidence_bundle(record, temp))
+                self.assertIn("CROSS_ARTIFACT_READ_FAILED",
+                              audit_cross_artifact(record, temp))
+                self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+
 if __name__ == "__main__":
     unittest.main()
