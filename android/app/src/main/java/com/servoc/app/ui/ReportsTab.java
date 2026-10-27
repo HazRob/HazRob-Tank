@@ -56,7 +56,8 @@ public final class ReportsTab {
     private final List<String> boundSessionIds=new ArrayList<>(),boundSessionLabels=new ArrayList<>();
     private boolean rebindingScope=false;
     private final List<Integer> availableCharts=new ArrayList<>();
-    private long chartGeneration=0;
+    private volatile long chartGeneration=0;
+    private volatile boolean released=false;
     private String chosenSiteId="",chosenSessionId="";
     private final ImageView chartView;
     private final ChemCoreDecisionRepository decisions;
@@ -106,7 +107,7 @@ public final class ReportsTab {
         TextView chartTitle=UiKit.small(c,"الرسوم التحليلية • البيانات المسجلة فقط • لا توجد نقاط مصطنعة");chartTitle.setTextColor(MUTED);root.addView(chartTitle,UiKit.full(c));
         chartSelector=new Spinner(c);UiKit.outlinedSpinner(chartSelector);root.addView(chartSelector,UiKit.full(c));
         chartStatus=card(c,"المخطط • اختر جلسة محفوظة");root.addView(chartStatus,UiKit.full(c));
-        chartView=new ImageView(c);chartView.setAdjustViewBounds(true);chartView.setMinimumHeight(UiKit.dp(c,220));chartView.setBackgroundColor(CARD2);chartView.setVisibility(View.GONE);root.addView(chartView,UiKit.full(c));
+        chartView=new ImageView(c);chartView.setAdjustViewBounds(true);chartView.setScaleType(ImageView.ScaleType.FIT_CENTER);chartView.setMinimumHeight(UiKit.dp(c,220));chartView.setBackgroundColor(CARD2);chartView.setVisibility(View.GONE);root.addView(chartView,UiKit.full(c));
         chartView.setContentDescription("مخطط البيانات المحفوظة، اضغط لفتحه بحجم كبير");
         chartView.setOnClickListener(v->showChartDialog());
         openChart=UiKit.button(c,"🔍 عرض المخطط بحجم كبير");
@@ -122,6 +123,8 @@ public final class ReportsTab {
     }
 
     public View view(){return scroll;}
+    /** Prevent late chart callbacks from drawing into a destroyed Activity. */
+    public void release(){released=true;chartGeneration++;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);}
     public void selectScope(String siteId,String sessionId){
         chosenSiteId=siteId==null?"":siteId;
         chosenSessionId=sessionId==null?"":sessionId;
@@ -232,6 +235,7 @@ public final class ReportsTab {
 
     /** Only expose diagrams backed by the selected record's actual persisted evidence. */
     private void refreshAvailableCharts(SessionSeries.Series series,JSONObject chemcore){
+        if(released)return;
         chartGeneration++; // invalidate any chart drawing for the previous record
         availableCharts.clear();List<String> labels=new ArrayList<>();
         for(int i=0;i<CHARTS.length;i++){
@@ -251,6 +255,7 @@ public final class ReportsTab {
     }
 
     private void renderSelectedChart(int selectedIndex){
+        if(released)return;
         if(selectedIndex<0||selectedIndex>=availableCharts.size()){chartGeneration++;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("المخطط غير متاح لهذه الجلسة");return;}
         final int pos=availableCharts.get(selectedIndex);
         final long experimentId=selectedId,request=++chartGeneration;
@@ -258,17 +263,28 @@ public final class ReportsTab {
         // DB reconstruction and rasterisation are potentially expensive: never do them on UI.
         host.io().execute(()->{
             try{
+                if(released||chartGeneration!=request)return;
                 ExperimentQueries.Record r=ExperimentQueries.byId(host.database(),experimentId);
-                if(r==null)return;
+                if(r==null){
+                    scroll.post(()->{
+                        if(released||chartGeneration!=request)return;
+                        chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);
+                        openChart.setEnabled(false);
+                        chartStatus.setText("تعذر العثور على جلسة المخطط المحفوظة");
+                        chartStatus.setTextColor(WARN);
+                    });
+                    return;
+                }
                 SessionSeries.Series ss=SessionSeries.forExperiment(host.database(),r);
                 String sid=r.sessionId==null?"":r.sessionId.trim();
                 JSONObject cc=sid.isEmpty()?null:decisions.latestPayloadForSession(sid);
                 boolean needsChem=pos>=3&&pos<=10;
                 boolean ready=TankChartEligibility.hasData(pos,ss,cc);
                 if(!ready){
-                    scroll.post(()->{if(chartGeneration!=request)return;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("بيانات الرسم غير متوفرة لهذه الجلسة");});
+                    scroll.post(()->{if(released||chartGeneration!=request)return;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("بيانات الرسم غير متوفرة لهذه الجلسة");});
                     return;
                 }
+                if(released||chartGeneration!=request)return;
                 Bitmap b=Bitmap.createBitmap(1200,650,Bitmap.Config.ARGB_8888);
                 Canvas canvas=new Canvas(b);canvas.drawColor(Color.WHITE);RectF box=new RectF(12,12,1188,638);
         switch(pos){
@@ -278,13 +294,13 @@ public final class ReportsTab {
             default:AnalyticalCharts.candidates(canvas,box,cc);
         }
                 scroll.post(()->{
-                    if(chartGeneration!=request||selectedId!=experimentId){b.recycle();return;}
+                    if(released||chartGeneration!=request||selectedId!=experimentId){b.recycle();return;}
                     chartView.setImageBitmap(b);chartView.setVisibility(View.VISIBLE);openChart.setEnabled(true);
                     chartStatus.setText("● "+CHARTS[pos]+" • "+(needsChem?"ChemCore محفوظ":"سلسلة زمنية محفوظة"));
                     chartStatus.setTextColor(GOOD);
                 });
             }catch(Exception failure){
-                scroll.post(()->{if(chartGeneration!=request)return;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("تعذر رسم المخطط • "+failure.getClass().getSimpleName());chartStatus.setTextColor(WARN);});
+                scroll.post(()->{if(released||chartGeneration!=request)return;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("تعذر رسم المخطط • "+failure.getClass().getSimpleName());chartStatus.setTextColor(WARN);});
             }
         });
     }
