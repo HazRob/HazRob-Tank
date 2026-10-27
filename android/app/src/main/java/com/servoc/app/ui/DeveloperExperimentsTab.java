@@ -125,11 +125,12 @@ public final class DeveloperExperimentsTab {
             if(!"manual_device_r0".equals(kind)&&!"automatic_clean_air_field_r0".equals(kind)
                     &&!"firmware_clean_air_r0".equals(kind))return false;
             String channelController=q.optString("r0_device_id","");
-            // Any device-bound R0 (manual or firmware) must belong to the source
-            // Tank; firmware R0 is never allowed to be unbound.
-            if(("firmware_clean_air_r0".equals(kind)&&channelController.isEmpty())
-                    ||(!channelController.isEmpty()&&
-                    (controllerId==null||!channelController.equals(controllerId))))return false;
+            // References require traceability to the originating physical Tank for
+            // ALL R0 sources. Unbound legacy/manual R0 may remain for exploratory
+            // screening, but cannot become an approved scientific reference.
+            if(controllerId==null||controllerId.isEmpty()
+                    ||channelController.isEmpty()||!controllerId.equals(channelController))
+                return false;
         }
         return true;
     }
@@ -147,9 +148,12 @@ public final class DeveloperExperimentsTab {
 
     private void captureReference(){
         final ChemicalRepository.Chemical chemical=selectedChemical;if(chemical==null){host.showToast("اختر مادة من القائمة");return;}final String kind=selectedKind();Double ppm=null;String rawPpm=knownPpm.getText().toString().trim();if(!rawPpm.isEmpty())try{double x=Double.parseDouble(rawPpm);if(!Double.isFinite(x)||x<=0)throw new IllegalArgumentException();ppm=x;}catch(Exception e){host.showToast("قيمة ppm غير صالحة");return;}if("calibration".equals(kind)&&ppm==null){host.showToast("أدخل التركيز المرجعي ppm");return;}
+        if(r0Count()!=8){
+            host.showToast("يجب إدخال/استيراد معايرة موثقة لكل حساسات Tank الثمانية أولًا");return;
+        }
         JSONObject d=host.latestDiagnostics();if(d==null){host.showToast("لا توجد بيانات حية من الروبوت");return;}JSONObject m=d.optJSONObject("measurement");boolean ready=m!=null&&"ready".equalsIgnoreCase(m.optString("state"))&&m.optJSONObject("mq")!=null;if(!ready){host.showToast("أكمل دورة averaging حتى READY أولاً");return;}JSONObject source=m.optJSONObject("mq");String session=host.lastMeasurementSessionId();if(source==null||source.length()==0||session==null||session.isEmpty()||!host.database().sessionExists(session)){host.showToast("جلسة القياس المرجعية غير مكتملة");return;}if(!ExperimentQueries.isDeveloperMeasurementSession(host.database(),session)){host.showToast("هذا قياس مستخدم محلي، ولا يمكن حفظه كتجربة مرجعية للمطور");return;}
         if(!qualifiedReferenceChannels(source,d.optString("device_id",""))){
-            host.showToast("يجب إكمال معايرة R0 الثمانية في ESP32 وتوثيق مصدرها قبل حفظ مرجع علمي");return;
+            host.showToast("يلزم توثيق Rs/R0 للحساسات الثمانية بهوية ESP32 نفسها قبل حفظ التجربة المرجعية");return;
         }
         JSONObject env=d.optJSONObject("env");Double t=env!=null&&Double.isFinite(env.optDouble("temperature",Double.NaN))?env.optDouble("temperature"):null;Double rh=env!=null&&Double.isFinite(env.optDouble("humidity",Double.NaN))?env.optDouble("humidity"):null;JSONObject relay=d.optJSONObject("relay");long powerMs=relay==null?0:Math.max(0,relay.optLong("power_ms",0));int mask=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0)?1:0;String ts=isoNow();String analytics=AnalyticsSnapshot.toJson(d);
         JSONObject meta=new JSONObject();try{meta.put("schema","hazrob-reference-capture-v0.10.2");meta.put("reference_kind",kind);meta.put("session_id",session);meta.put("hardware_profile",d.optString("hardware_profile",HazRobHardwareProfile.ID));meta.put("mq_power",mask==1);meta.put("mq_power_gpio",25);meta.put("mq_power_architecture","single_relay_8_sensors");meta.put("warmup_observed_ms",powerMs);meta.put("warmup_source","relay.power_ms");meta.put("capture_state","ready_average");if(t!=null)meta.put("temperature_c",t);if(rh!=null)meta.put("rh_pct",rh);meta.put("notes",experimentNotes.getText().toString().trim());meta.put("analytics_version",LibraryStatus.ANALYTICS_VERSION);meta.put("calibration_version",LibraryStatus.CALIBRATION_VERSION);meta.put("mqdatascience_version",MqDataScience76Catalog.VERSION);meta.put("r0_scope","DEVICE_LOCAL_NOT_DISTRIBUTED");meta.put("r0_channels_available",r0Count());meta.put("r0_channels_qualified",8);meta.put("r0_procedure","device_local_calibration_from_recorded_snapshot");
