@@ -202,7 +202,7 @@ public final class ReportsTab {
         list.removeAllViews();List<ExperimentQueries.Record> rows=ExperimentQueries.approvedFieldReports(host.database(),100);
         // WHERE APPROVED runs inside SQL before LIMIT, so older approved records are not starved by drafts.
         archiveCard.setText("التقارير المعتمدة • "+rows.size()+" قياس معتمد (الأحدث أولاً)");
-        if(rows.isEmpty()){selectedId=-1;setEnabled(false);sessionCard.setText("الجلسة\n—");decisionCard.setText("القرار\n—");qualityCard.setText("الجودة\n—");safetyCard.setText("السلامة\n—");candidateCard.setText("المرشحون • —");technical.setText("لا توجد بيانات تقرير.");availableCharts.clear();chartSelector.setAdapter(null);chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("المخطط • لا توجد جلسة محفوظة");return;}
+        if(rows.isEmpty()){chartGeneration++;selectedId=-1;setEnabled(false);sessionCard.setText("الجلسة\n—");decisionCard.setText("القرار\n—");qualityCard.setText("الجودة\n—");safetyCard.setText("السلامة\n—");candidateCard.setText("المرشحون • —");technical.setText("لا توجد بيانات تقرير.");availableCharts.clear();chartSelector.setAdapter(null);chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("المخطط • لا توجد جلسة محفوظة");return;}
         if(selectedId<0)selectedId=rows.get(0).id;boolean found=false;
         for(ExperimentQueries.Record r:rows){if(r.id==selectedId)found=true;Button b=UiKit.button(list.getContext(),(r.id==selectedId?"● ":"")+"#"+r.id+"   "+safe(r.ts)+"   "+safe(r.protocol));b.setOnClickListener(v->select(r.id));list.addView(b,UiKit.full(list.getContext()));}
         if(!found)selectedId=rows.get(0).id;showSelected();
@@ -251,7 +251,7 @@ public final class ReportsTab {
     }
 
     private void renderSelectedChart(int selectedIndex){
-        if(selectedIndex<0||selectedIndex>=availableCharts.size())return;
+        if(selectedIndex<0||selectedIndex>=availableCharts.size()){chartGeneration++;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("المخطط غير متاح لهذه الجلسة");return;}
         final int pos=availableCharts.get(selectedIndex);
         final long experimentId=selectedId,request=++chartGeneration;
         chartStatus.setText("جارٍ إعداد الرسم • "+CHARTS[pos]);openChart.setEnabled(false);
