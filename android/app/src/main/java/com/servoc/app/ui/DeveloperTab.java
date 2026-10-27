@@ -59,11 +59,18 @@ public final class DeveloperTab {
         d.setOnShowListener(x->d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v->{if(RoleGate.DEVELOPER_PIN.equals(pin.getText().toString().trim())){d.dismiss();unlock();}else{pin.setText("");Toast.makeText(context,"كلمة المرور غير صحيحة",Toast.LENGTH_SHORT).show();}}));d.show();
     }
 
+    /**
+     * Unlock only installs the five navigation destinations. Constructing every
+     * laboratory screen eagerly used to make one SQLite/UI constructor failure
+     * crash the complete developer workspace before a tab could be opened.
+     */
     private void unlock(){
-        if(unlocked)return;unlocked=true;if(onUnlock!=null)onUnlock.run();
-        experiments=new DeveloperExperimentsTab(context,host);chemCore=new AnalyticalLabTab(context,host);r0=new DeveloperR0Tab(context,host);connectionSetup=new DeveloperConnectionDiagnosticsTab(context,host);library=new CentralLibraryDashboardTab(context,host);
-        views=new View[]{experiments.view(),chemCore.view(),r0.view(),connectionSetup.view(),library.view()};
-        String[] names={"التجارب","المختبر","معايرة R0","الاتصال","المكتبة"};tabs=new Button[names.length];bar.removeAllViews();
+        if(unlocked)return;
+        unlocked=true;
+        if(onUnlock!=null)onUnlock.run();
+        views=new View[5];
+        String[] names={"التجارب","المختبر","معايرة R0","الاتصال","المكتبة"};
+        tabs=new Button[names.length];bar.removeAllViews();
         for(int i=0;i<names.length;i++){
             final int x=i;Button b=UiKit.button(context,names[i]);
             b.setTextSize(13);b.setMinWidth(UiKit.dp(context,96));
@@ -75,8 +82,67 @@ public final class DeveloperTab {
         show(0);host.showToast("تم فتح مساحة المطور");
     }
 
-    private void show(int index){if(!unlocked||views==null)return;selected=Math.max(0,Math.min(views.length-1,index));page.removeAllViews();page.addView(views[selected],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabs.length;i++){tabs[i].setTextColor(Color.BLACK);
-            tabs[i].setBackground(UiKit.outline(context,i==selected?0xFFFFBD36:0xFFF1F3F6,0xFF8994A3));}refresh();}
+    /** Returns a localized error surface on failure; a later selection can retry. */
+    private View obtainView(int index){
+        if(views[index]!=null)return views[index];
+        try{
+            switch(index){
+                case 0:
+                    if(experiments==null)experiments=new DeveloperExperimentsTab(context,host);
+                    views[index]=experiments.view();break;
+                case 1:
+                    if(chemCore==null)chemCore=new AnalyticalLabTab(context,host);
+                    views[index]=chemCore.view();break;
+                case 2:
+                    if(r0==null)r0=new DeveloperR0Tab(context,host);
+                    views[index]=r0.view();break;
+                case 3:
+                    if(connectionSetup==null)connectionSetup=new DeveloperConnectionDiagnosticsTab(context,host);
+                    views[index]=connectionSetup.view();break;
+                case 4:
+                    if(library==null)library=new CentralLibraryDashboardTab(context,host);
+                    views[index]=library.view();break;
+                default:throw new IllegalArgumentException("Unknown developer tab");
+            }
+            if(views[index]==null)throw new IllegalStateException("Null developer screen");
+            return views[index];
+        }catch(RuntimeException ex){
+            android.util.Log.e("TankDeveloper","Cannot open developer tab "+index,ex);
+            // Do not cache a failure placeholder: returning to this tab retries.
+            TextView warning=UiKit.small(context,
+                    "تعذر فتح هذا القسم. بقية أقسام المطور متاحة؛ راجع سجل التشخيص وأعد المحاولة.");
+            warning.setTextColor(0xFFB42318);
+            warning.setPadding(UiKit.dp(context,16),UiKit.dp(context,20),
+                    UiKit.dp(context,16),UiKit.dp(context,20));
+            return warning;
+        }
+    }
 
-    public void refresh(){if(!unlocked)return;if(selected==0&&experiments!=null)experiments.refresh();else if(selected==1&&chemCore!=null)chemCore.refresh();else if(selected==2&&r0!=null)r0.refresh();else if(selected==3&&connectionSetup!=null)connectionSetup.refresh();else if(selected==4&&library!=null)library.refresh();}
+    private void show(int index){
+        if(!unlocked||views==null)return;
+        selected=Math.max(0,Math.min(views.length-1,index));
+        View screen=obtainView(selected);
+        page.removeAllViews();
+        page.addView(screen,new FrameLayout.LayoutParams(-1,-1));
+        for(int i=0;i<tabs.length;i++){
+            tabs[i].setTextColor(Color.BLACK);
+            tabs[i].setBackground(UiKit.outline(context,i==selected?0xFFFFBD36:0xFFF1F3F6,0xFF8994A3));
+        }
+        refresh();
+    }
+
+    public void refresh(){
+        if(!unlocked||views==null||views[selected]==null)return;
+        try{
+            if(selected==0&&experiments!=null)experiments.refresh();
+            else if(selected==1&&chemCore!=null)chemCore.refresh();
+            else if(selected==2&&r0!=null)r0.refresh();
+            else if(selected==3&&connectionSetup!=null)connectionSetup.refresh();
+            else if(selected==4&&library!=null)library.refresh();
+        }catch(RuntimeException ex){
+            android.util.Log.e("TankDeveloper","Developer refresh failure tab="+selected,ex);
+            host.showToast("تعذر تحديث قسم المطور؛ البيانات المحلية محفوظة");
+        }
+    }
+
 }
