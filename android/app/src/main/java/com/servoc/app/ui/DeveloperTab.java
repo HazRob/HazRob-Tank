@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +26,12 @@ public final class DeveloperTab {
     public DeveloperTab(Context c,HazRobHost host,Runnable onUnlock){
         context=c;this.host=host;this.onUnlock=onUnlock;
         root=UiKit.vbox(c);root.setBackgroundColor(0xFFF7F8FA);root.setPadding(UiKit.dp(c,6),UiKit.dp(c,6),UiKit.dp(c,6),UiKit.dp(c,10));
-        bar=UiKit.hbox(c);root.addView(bar,UiKit.full(c));
+        bar=UiKit.hbox(c);
+        HorizontalScrollView strip=new HorizontalScrollView(c);
+        strip.setHorizontalScrollBarEnabled(false);
+        strip.setFillViewport(false);
+        strip.addView(bar,new HorizontalScrollView.LayoutParams(-2,-2));
+        root.addView(strip,UiKit.full(c));
         page=new FrameLayout(c);root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));
         renderLocked();
     }
@@ -58,11 +64,19 @@ public final class DeveloperTab {
         experiments=new DeveloperExperimentsTab(context,host);chemCore=new AnalyticalLabTab(context,host);r0=new DeveloperR0Tab(context,host);connectionSetup=new DeveloperConnectionDiagnosticsTab(context,host);library=new CentralLibraryDashboardTab(context,host);
         views=new View[]{experiments.view(),chemCore.view(),r0.view(),connectionSetup.view(),library.view()};
         String[] names={"التجارب","المختبر","معايرة R0","الاتصال","المكتبة"};tabs=new Button[names.length];bar.removeAllViews();
-        for(int i=0;i<names.length;i++){final int x=i;Button b=UiKit.button(context,names[i]);b.setTextSize(9);b.setOnClickListener(v->show(x));tabs[i]=b;bar.addView(b,UiKit.weight(1));}
+        for(int i=0;i<names.length;i++){
+            final int x=i;Button b=UiKit.button(context,names[i]);
+            b.setTextSize(13);b.setMinWidth(UiKit.dp(context,96));
+            b.setOnClickListener(v->show(x));tabs[i]=b;
+            LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-2,-2);
+            p.setMargins(UiKit.dp(context,2),0,UiKit.dp(context,2),0);
+            bar.addView(b,p);
+        }
         show(0);host.showToast("تم فتح مساحة المطور");
     }
 
-    private void show(int index){if(!unlocked||views==null)return;selected=Math.max(0,Math.min(views.length-1,index));page.removeAllViews();page.addView(views[selected],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabs.length;i++){tabs[i].setTextColor(i==selected?Color.WHITE:Color.DKGRAY);tabs[i].setBackgroundColor(i==selected?0xFF263238:0xFFE0E0E0);}refresh();}
+    private void show(int index){if(!unlocked||views==null)return;selected=Math.max(0,Math.min(views.length-1,index));page.removeAllViews();page.addView(views[selected],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabs.length;i++){tabs[i].setTextColor(Color.BLACK);
+            tabs[i].setBackground(UiKit.outline(context,i==selected?0xFFFFBD36:0xFFF1F3F6,0xFF8994A3));}refresh();}
 
     public void refresh(){if(!unlocked)return;if(selected==0&&experiments!=null)experiments.refresh();else if(selected==1&&chemCore!=null)chemCore.refresh();else if(selected==2&&r0!=null)r0.refresh();else if(selected==3&&connectionSetup!=null)connectionSetup.refresh();else if(selected==4&&library!=null)library.refresh();}
 }
