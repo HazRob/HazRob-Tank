@@ -301,3 +301,13 @@ Audit `ReportsTab`/session export, laboratory completed-session consumption, and
 
 ### No-background guarantee
 No automatic work or later notification is promised from this conversation alone. Any subsequent work/notification occurs only through a new conversation turn or an explicitly configured scheduled check.
+
+
+### Source fixes and prevention after failed run 40437121019 — 2026-10-27
+- JDK/source compatibility regression fixed in both V4 source-test helpers: commits `1b82a68` (FieldSessions test) and `f28d47d` (UI Chart test) now use `new String(Files.readAllBytes(...), StandardCharsets.UTF_8)`. This removes the two exact `Files.readString(Path,Charset)` compile errors from job 121968356375. No new Gradle run executed in response.
+- `33cbe4b` corrected an obsolete chart assertion to test the stronger `released||chartGeneration!=request||selectedId!=experimentId` bitmap-release guard already present in the source. No safety assertion was skipped.
+- `81d47fa` added `tools/verify_v4_prebuild_sources.py`: build-free guards for source overlays, Java source compatibility across Tank test overrides, sessions lifecycle, saved report display, firmware R0 and offline Stable packaging requirements.
+- `2c36367` and `e660e58` added this source-only preflight to both **future** controlled V4 build paths; the push trigger remains restricted to the already-authorized marker path. No APK build was requested or run in this checkpoint.
+- User specifically requested notification when the app becomes fully build-ready. A separate condition-based daily readiness check was configured to examine the repository and report only after sufficient evidence, without triggering any build or release. This does not replace outstanding Android tests and source review.
+
+**CURRENT DECISION: NOT FULLY BUILD-READY / NO NEW BUILD STARTED.** The previous Java main-source compile passed. We have patched known test compile errors, but the 665+ JUnit tests and APK assembly have not yet run successfully on the resulting revision. Do not claim current code has passed Gradle or full device acceptance. Resume by inspecting new source-only gate and remaining tests, then request explicit owner permission before controlled diagnostic build.
