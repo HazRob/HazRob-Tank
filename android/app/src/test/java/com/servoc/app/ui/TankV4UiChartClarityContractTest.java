@@ -35,7 +35,7 @@ public final class TankV4UiChartClarityContractTest {
         String code=src("ReportsTab.java");
         assertTrue(code.contains("TankChartEligibility.hasData("));
         assertTrue(code.contains("chartGeneration++;selectedId=-1"));
-        assertTrue(code.contains("if(chartGeneration!=request||selectedId!=experimentId)"));
+        assertTrue(code.contains("if(released||chartGeneration!=request||selectedId!=experimentId){b.recycle();return;}"));
         assertTrue(code.contains("UiKit.outlinedSpinner(chartSelector)"));
         assertTrue(code.contains("UiKit.lightOptions(scroll.getContext(),labels.toArray(new String[0]))"));
     }
