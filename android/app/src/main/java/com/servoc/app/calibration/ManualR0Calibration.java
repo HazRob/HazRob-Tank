@@ -47,18 +47,24 @@ public final class ManualR0Calibration {
 
     /** Device-specific clean-air baseline, NOT a reference-gas/ppm curve calibration. */
     public static synchronized boolean save(SharedPreferences p,String key,double r0){
+        return saveForDevice(p,key,r0,"");
+    }
+    public static synchronized boolean saveForDevice(SharedPreferences p,String key,double r0,String deviceId){
         key=norm(key);
+        deviceId=deviceId==null?"":deviceId.trim();
         if(p==null||!supported(key)||!Double.isFinite(r0)||r0<=0)return false;
         String utc=iso(System.currentTimeMillis()),session="MANUAL-R0-"+System.currentTimeMillis();
         SharedPreferences.Editor edit=p.edit()
                 .putString("manual_r0_"+key,Double.toString(r0))
                 .putString("manual_r0_source_"+key,"manual_device_r0")
                 .putString("manual_r0_session_"+key,session)
-                .putString("manual_r0_utc_"+key,utc)
-                .remove("manual_r0_device_"+key);
+                .putString("manual_r0_utc_"+key,utc);
+        if(deviceId.isEmpty())edit.remove("manual_r0_device_"+key);
+        else edit.putString("manual_r0_device_"+key,deviceId);
         // Do not change live ChemCore R0 until durable phone storage has succeeded.
         if(!edit.commit())return false;
-        values.put(key,r0);sources.put(key,"manual_device_r0");sessions.put(key,session);utcs.put(key,utc);deviceIds.remove(key);
+        values.put(key,r0);sources.put(key,"manual_device_r0");sessions.put(key,session);utcs.put(key,utc);
+        if(deviceId.isEmpty())deviceIds.remove(key);else deviceIds.put(key,deviceId);
         loaded=true;
         return true;
     }
@@ -68,6 +74,10 @@ public final class ManualR0Calibration {
      * All values are checked before writing; no partial in-memory or on-disk updates.
      */
     public static synchronized boolean saveAll(SharedPreferences p,Map<String,Double> updated){
+        return saveAllForDevice(p,updated,"");
+    }
+    public static synchronized boolean saveAllForDevice(SharedPreferences p,Map<String,Double> updated,String deviceId){
+        deviceId=deviceId==null?"":deviceId.trim();
         if(p==null||updated==null||updated.size()!=KEYS.length)return false;
         for(String k:KEYS){
             Double v=updated.get(k);
@@ -81,12 +91,14 @@ public final class ManualR0Calibration {
             e.putString("manual_r0_source_"+k,"manual_device_r0");
             e.putString("manual_r0_session_"+k,session);
             e.putString("manual_r0_utc_"+k,utc);
-            e.remove("manual_r0_device_"+k);
+            if(deviceId.isEmpty())e.remove("manual_r0_device_"+k);
+            else e.putString("manual_r0_device_"+k,deviceId);
         }
         if(!e.commit())return false;
         for(String k:KEYS){
             values.put(k,updated.get(k));sources.put(k,"manual_device_r0");
-            sessions.put(k,session);utcs.put(k,utc);deviceIds.remove(k);
+            sessions.put(k,session);utcs.put(k,utc);
+            if(deviceId.isEmpty())deviceIds.remove(k);else deviceIds.put(k,deviceId);
         }
         loaded=true;
         return true;
