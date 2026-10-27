@@ -25,6 +25,8 @@ public final class TankV4FieldSessionsAsyncAndExportContractTest {
         assertFalse(code.contains("void renderSessionUi(){"));
         assertTrue(code.contains("refreshQueued=true"));
         assertTrue(code.contains("!requestedSite.equals(selectedSiteId)"));
+        assertFalse(code.contains("selectingScope||refreshing||"));
+        assertTrue(code.contains("if(refreshing){refreshQueued=true;return;}"));
     }
 
     @Test public void fieldWritesRunOnExecutorNotBlockingUiCallbacks()throws Exception{
