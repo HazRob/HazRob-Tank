@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import static org.junit.Assert.*;
 
-/** Guards the owner-ratified RC2 scientific source authority against legacy library reintroduction. */
+/** Guards the independent Tank V4 scientific review staging authority against legacy library reintroduction. */
 public final class HR069R1DeveloperSubmissionContractTest {
     private static String src(String path)throws Exception{
         return new String(Files.readAllBytes(Paths.get(path)),StandardCharsets.UTF_8);
@@ -18,7 +18,7 @@ public final class HR069R1DeveloperSubmissionContractTest {
         assertTrue(p.contains("ExperimentQueries.isDeveloperReference(db,record.id)"));
         assertTrue(p.contains("ReferenceLineageGuard.artifactSourcesValid(db,artifact)"));
         assertTrue(p.contains("derived content SHA-256 mismatch"));
-        assertTrue(p.contains("submit")||p.contains("Stage HR069"));
+        assertTrue(p.contains("Stage Tank developer experiment for scientific review "));
         assertFalse(p.contains("public static Result publish(String token,ExperimentQueries.Record record)"));
         assertFalse(p.contains("REPOSITORY=\"HazRob/build-harness\""));
         assertFalse(p.contains("BRANCH=\"main\""));
