@@ -225,7 +225,7 @@ bool loadR0Record(R0Record& rec){
  if(nv.getBytesLength("r0_v4")!=sizeof(rec))return false;
  if(nv.getBytes("r0_v4",&rec,sizeof(rec))!=sizeof(rec))return false;
  if(rec.magic!=R0_MAGIC||rec.checksum!=r0Checksum(rec))return false;
- for(uint8_t i=0;i<Cfg::MQ_N;i++)if(!ff(rec.values[i])&&rec.counts[i])return false;
+ for(uint8_t i=0;i<Cfg::MQ_N;i++)if(rec.counts[i]<10||!ff(rec.values[i])||rec.values[i]<=0)return false;
  return true;
 }
 bool saveR0Record(const R0Record& rec){return nv.putBytes("r0_v4",&rec,sizeof(rec))==sizeof(rec);}
@@ -301,7 +301,20 @@ bool calibrationStart(uint16_t warmSeconds,uint16_t sampleSeconds){
 void calibrationCancel(){calState=CAL_CANCEL;}
 String calibrationJson(){
  const char* names[]={"idle","warmup","sampling","ready","error","cancelled"};
- String j="{\"device_id\":\""+WiFi.softAPmacAddress()+"\",\"state\":\""+String(names[(uint8_t)calState])+"\",\"committed\":"+(calState==CAL_READY?"true":"false")+",\"schema\":\"tank-r0-fw-v4/1\",\"warmup_ms\":"+String(calWarmMs)+",\"error\":\""+String(calError)+"\",\"elapsed_ms\":"+String(millis()-calAt)+",\"duration_ms\":"+String(calWindowMs)+",\"channels\":{";
- for(uint8_t i=0;i<Cfg::MQ_N;i++){if(i)j+=",";j+="\""+String(Cfg::mq[i].name)+"\":{\"samples\":"+String(calCount[i])+",\"r0\":"+ (calCount[i]?String((float)(calSum[i]/calCount[i]/cleanAir[i]),4):String("null"))+"}";}
+ R0Record stored={};
+ bool storedOK=loadR0Record(stored);
+ bool committed=storedOK&&(calState==CAL_READY||calState==CAL_IDLE);
+ const char* reported=committed?"ready":names[(uint8_t)calState];
+ uint32_t elapsed=(calState==CAL_WARM||calState==CAL_SAMPLE)?millis()-calAt:0;
+ String j="{\\"device_id\\":\\""+WiFi.softAPmacAddress()+"\\",\\"state\\":\\""+String(reported)+"\\",\\"committed\\":"+
+   (committed?"true":"false")+",\\"schema\\":\\"tank-r0-fw-v4/1\\",\\"warmup_ms\\":"+String(calWarmMs)+
+   ",\\"error\\":\\""+String(calError)+"\\",\\"elapsed_ms\\":"+String(elapsed)+
+   ",\\"duration_ms\\":"+String(calWindowMs)+",\\"channels\\":{";
+ for(uint8_t i=0;i<Cfg::MQ_N;i++){
+  if(i)j+=",";
+  uint32_t count=committed?stored.counts[i]:calCount[i];
+  float value=committed?stored.values[i]:(calCount[i]?(float)(calSum[i]/calCount[i]/cleanAir[i]):NAN);
+  j+="\\""+String(Cfg::mq[i].name)+"\\":{\\"samples\\":"+String(count)+",\\"r0\\":"+num(value,7)+"}";
+ }
  return j+"}}";
 }
