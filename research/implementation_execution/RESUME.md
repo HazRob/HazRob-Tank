@@ -1,3 +1,12 @@
+## 2026-10-28 — G2 central catalog strict schema and complete category accounting (214/214 CI)
+
+- Research-only `g2_reference_catalog_readiness.py`: validates exact complete `counts_by_type` against all 80 source entries (not just 14 external datasets); strict integer counts; ASCII canonical IDs/categories; rejects duplicate JSON keys, nonfinite JSON numbers, and float overflow even with matching blob SHA.
+- Five new negative regression methods in `test_g2_evidence_bundle_gate.py`, including a corrected complete-category positive fixture. Code/test commit `cb47d3cb1d1259b9325bde4fea1e1b9ae358876f`. Verified G2 Actions [40601261833](https://github.com/HazRob/HazRob-Tank/actions/runs/40601261833), job `122529679909`: **214/214 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. Intermediate commit `d2a042d7` had a failed G2 run because the old positive fixture lacked non-dataset category accounting; corrected before PASS.
+- Evidence: `G2_CATALOG_SCHEMA_CANONICAL_ACCOUNTING_2026-10-28_AR.md`. Pinned central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, 80 entries, 14 external datasets; source matrix remains 0/14 ready, 14/14 blocked; independent evidence register remains `records: []`. No G2/G3 scientific approval or ChemCore Stable edits.
+- **Next:** recheck final documentation commit CI separately; prioritize independent original raw source bytes, physical concentration reference, device/session/exposure IDs and preregistered grouped holdout. No more synthetic test count should be treated as scientific progress.
+
+---
+
 ## 2026-10-28 — G2 central 14-dataset provenance and source-readiness audit
 
 - Research-only source `g2_reference_catalog_readiness.py` validates the exact central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, 80 unique entries and 14 external measurement datasets. It rejects truthy qualification strings, raw mirror/inspection claims without original SHA256, unverified physical groups and unverified reference traceability. **This is catalogue triage, never G2 scientific qualification.**
