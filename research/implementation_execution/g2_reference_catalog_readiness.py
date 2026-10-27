@@ -7,6 +7,7 @@ physical-group, raw-byte, and reference-traceability evidence for G2.
 import argparse
 import hashlib
 import json
+import math
 import re
 from collections import Counter
 from pathlib import Path
@@ -111,13 +112,21 @@ def _reject_nonfinite(token):
     raise ValueError("CENTRAL_CATALOG_NONFINITE_JSON_NUMBER")
 
 
+def _finite_json_float(token):
+    value = float(token)
+    if not math.isfinite(value):
+        raise ValueError("CENTRAL_CATALOG_NONFINITE_JSON_NUMBER")
+    return value
+
+
 def audit_catalog_bytes(data, expected_blob=PINNED_CATALOG_BLOB):
     if git_blob_sha(data) != expected_blob:
         raise ValueError("CENTRAL_CATALOG_GIT_BLOB_MISMATCH")
     try:
         catalog = json.loads(data.decode("utf-8"),
                              object_pairs_hook=_unique_object_pairs,
-                             parse_constant=_reject_nonfinite)
+                             parse_constant=_reject_nonfinite,
+                             parse_float=_finite_json_float)
     except (UnicodeError, ValueError) as exc:
         raise ValueError("CENTRAL_CATALOG_JSON_INVALID") from exc
     result = audit_source_catalog(catalog)
