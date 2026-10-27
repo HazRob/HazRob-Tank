@@ -239,7 +239,8 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         # not independent arithmetic evidence and could inflate an improvement.
         required_pred = {"exposure_id", "group_id", "true_reference",
                          "predicted_reference", "baseline_predicted_reference"}
-        required_group_metric = {"group_id", "sample_count", "correct_count"}
+        required_group_metric = {"group_id", "sample_count", "correct_count",
+                                 "baseline_correct_count"}
         if (any(not required_truth <= set(row) for row in groups) or
                 any(not required_pred <= set(row) for row in predictions) or
                 any(not required_group_metric <= set(row) for row in per_group)):
@@ -248,6 +249,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
             truths = {row["exposure_id"]: row["gas_reference_id"] for row in groups}
             correct = Counter()
             baseline_correct = 0
+            baseline_correct_by_group = Counter()
             total = 0
             for row in predictions:
                 eid, gid = row["exposure_id"], row["group_id"]
@@ -261,6 +263,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                     correct[gid] += 1
                 if truth == baseline_prediction:
                     baseline_correct += 1
+                    baseline_correct_by_group[gid] += 1
                 total += 1
             if total == 0 or not _same_number(record.get("metric_value"),
                                                 sum(correct.values()) / total):
@@ -277,6 +280,16 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                         issues.append("PER_GROUP_CORRECT_COUNT_MISMATCH")
                 except (ValueError, TypeError):
                     issues.append("PER_GROUP_CORRECT_COUNT_MISMATCH")
+                # A global baseline accuracy can conceal group-specific errors:
+                # recompute the baseline numerator for every blind group too.
+                try:
+                    baseline_n = int(row["baseline_correct_count"])
+                    if (str(baseline_n) != row["baseline_correct_count"] or
+                            baseline_n < 0 or baseline_n > counts.get(row["group_id"], 0) or
+                            baseline_n != baseline_correct_by_group[row["group_id"]]):
+                        issues.append("PER_GROUP_BASELINE_CORRECT_COUNT_MISMATCH")
+                except (ValueError, TypeError):
+                    issues.append("PER_GROUP_BASELINE_CORRECT_COUNT_MISMATCH")
             issues.extend(audit_group_bootstrap_accuracy(
                 {gid: counts[gid] for gid in record.get("test_group_ids", []) if gid in counts},
                 {gid: correct[gid] for gid in record.get("test_group_ids", []) if gid in counts},
