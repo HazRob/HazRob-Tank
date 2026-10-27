@@ -85,6 +85,9 @@ jobs:
           manifest.write_text(t)
           PY
 
+      - name: Apply Tank V4 runtime / Stable manifest compatibility (source only)
+        run: python3 tank/tools/prepare_v4_stable_source.py source
+
       - name: Embed offline ChemCore Stable library in APK
         shell: bash
         working-directory: source
@@ -101,6 +104,7 @@ jobs:
           assert hashlib.sha256(payload).hexdigest()==manifest['payload_sha256']
           assert manifest['chemical_count']==652
           assert manifest['library_version']=='1.0.0-hr069r1'
+          assert manifest['min_app_version']=='4.0' and manifest['max_app_version']=='4.0'
           assert manifest['calibration_count']==0
           print('Embedded ChemCore verified:',manifest['library_version'],len(payload),'bytes')
           PY
