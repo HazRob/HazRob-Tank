@@ -280,3 +280,24 @@ Audit `ReportsTab`/session export, laboratory completed-session consumption, and
 - Previous R0 scientific evidence gates and at-least-10 real calibration samples remain intact; no physical accuracy claims.
 - **Build authorization and scope:** workflow `68d89ff` is now scoped to a single marker path (no ordinary source commits trigger builds), owner authorization marker `abbb4e5` triggered [Actions run 40437121019](https://github.com/HazRob/HazRob-Tank/actions/runs/40437121019). Status when logged: in progress. Debug output is UNRELEASED and conditioned on all required Gradle tests passing. Source tests and UI visibility still require device verification.
 - **Next exact action:** retrieve run 40437121019 job steps/logs; if any failure occurs, patch source and tests without suppressing relevant safety checks. A new source commit alone cannot retrigger the scoped build; subsequent controlled build requires another explicit authorization or a directly available manual dispatch mechanism.
+
+
+## Checkpoint — 2026-10-27 — Pre-build readiness review after controlled CI failure
+
+**User request:** report when V4 is completely ready for a new build. **No build is to be started merely because sources change.** This checkpoint is a source-only continuation.
+
+### Latest completed CI evidence (not a release)
+- Controlled GitHub Actions build [40437121019](https://github.com/HazRob/HazRob-Tank/actions/runs/40437121019), triggered by the prior documented owner authorization at commit `abbb4e5`, **FAILED**.
+- Passed: operator/lab/Stable static contracts, grouped sessions SQL, Echo/R0/screening checks, pinned source checkout and overlay, embedded offline ChemCore Stable staging with SHA256 and V4 compatibility, firmware API4 contract, and real SQLite reporting query tests.
+- Java **main** application compilation `:app:compileDebugJavaWithJavac` **PASSED**.
+- Blocking defect occurred at `:app:compileDebugUnitTestJavaWithJavac`: two source-test helpers used Java-11 `Files.readString(Path,Charset)` under the Java source compatibility selected by the project. Result: test source compilation failed before running any JUnit assertions, and APK assemble/packaging was skipped.
+- Corrections in source-only commits `1b82a68` / `f28d47d` replaced both helpers with Java-compatible `new String(Files.readAllBytes(...),StandardCharsets.UTF_8)`; `33cbe4b` aligned the chart contract test with existing stronger `released||chartGeneration!=request||selectedId!=experimentId` protection. **These fixes are NOT yet verified by another Gradle run**.
+- A source contract pre-audit of UI charts inspected 21 expected markers and identified only the chart-test mismatch above; the source itself already had the stronger guard. Not an Android execution test.
+
+### Current gate
+**PREBUILD_STATUS = CONDITIONAL / NOT VERIFIED.** The main Java source compiled on the previous controlled commit, and the known test compilation blockers were patched. Complete unit-test pass, assembled APK integrity, launcher/login logo, stable assets actually inside APK, Android sessions ANR, report PDF/XLSX, and eight real MQ measurements remain unverified.
+
+**Do not assert FULLY READY TO BUILD or RELEASED** based only on source inspection. Next exact action: finish static source/test consistency inspection and any necessary non-building edits; obtain explicit current user permission before rerunning Gradle; review complete unit-test output; only then notify readiness for package build and separately qualify real hardware.
+
+### No-background guarantee
+No automatic work or later notification is promised from this conversation alone. Any subsequent work/notification occurs only through a new conversation turn or an explicitly configured scheduled check.
