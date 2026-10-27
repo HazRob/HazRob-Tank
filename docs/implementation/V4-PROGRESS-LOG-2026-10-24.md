@@ -250,3 +250,25 @@ Continue from the V4 branch head after these commits and requirements. Verify CI
 - Inspect DeveloperExperimentsTab/AnalyticalLabTab together for R0 conflict, measured-session provenance and multi-gas evidentiary limitations.
 - Audit report and lab Java overrides for compilation blockers by static inspection only; finalize test suite changes without triggering Gradle.
 - After the owner provides additional modifications AND explicitly authorizes the build, run Gradle CI/Android APK inspection and actual device tests. Until then UNRELEASED.
+
+
+## Checkpoint — 2026-10-27 — Report SAF and source-only verification
+
+**Owner build hold still enforced.** This checkpoint is source review / edits and **did not start GitHub Actions, Gradle, APK assembly, installation, or sensor qualification**.
+
+### Completed changes (actual commits)
+- `e580c4e`: fixed MainActivity field-session report dispatcher. Approval and session ID lookup are performed in background, picker opens on the UI thread, and a pending guard prevents two simultaneous Android SAF requests. Cancellation, missing session, invalid format, failure to open picker and activity disposal reset the request state; PDF/XLSX writing remains on a worker and uses the exact saved session ID.
+- `1563128`: added Android test source asserting off-main report lookup, approved-only PDF/XLSX, session identifier preservation and clearing the pending SAF state.
+- `0f966c4`: integrated six additional report SAF invariants into the build-free static source gate `tools/verify_v4_operator_lab_static.py`. This script remains configured for future **manual-only** V4 CI, not an automated build.
+- Inspected latest DeveloperExperimentsTab and ChemCoreLabQuality; verified previous commits `5bb4128`/`fd15bcd` already enforce controller matching for BOTH firmware-sourced and manually device-bound R0. Did not duplicate an existing patch.
+- At checkpoint: 30 targeted source-string assertions were checked against live GitHub contents and **30/30 matched**. **Scope**: static source presence only, not Java compilation, UI behavior, database query semantics, document formatting or APK packaging.
+
+### Remaining acceptance tests — NOT PASSED
+- Fresh + upgraded populated SQLite: site create/select, session start/close/approve, one completed valid USER measurement linked to exactly one field session, deletion, rapid scope switching; no ANR/uncaught exceptions.
+- Site and session PDF/XLSX export on actual Android through SAF; validate file signature, page count/readability, right-to-left Arabic, reopened files, scoped grouping and no cross-site data.
+- Firmware /r0 300+60 calibration against real sensors, power-loss NVS readback, MQTT vs direct identity, eight-channel valid samples, manual override audit and ChemCore frozen replay.
+- Current actual bundled APK `assets/generated/chemcore/embedded_stable/`: verify library manifest's 4.0 compatibility and SHA256, snapshot parser in offline mode, 652 chemical identities and 0 accepted M4. **No APK currently assembled in this checkpoint.**
+- Complete five developer tabs, logo, outlined black dropdowns, permission flows, crash regression on devices. CI baseline from pre-hold is historical (665 tests / 2 failures) and cannot validate these new changes.
+
+### Next exact source-only action
+Audit `ReportsTab`/session export, laboratory completed-session consumption, and Stable source package integrity for version mismatches or cross-device R0 contamination. Add meaningful test sources and checkpoints, without invoking any build or tool that triggers a build. Resume at the first open V4-D02/V4-D03/V4-D05 work item after checking repository HEAD.
