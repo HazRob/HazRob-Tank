@@ -1,14 +1,11 @@
 name: HazRob Tank V4 Android APK
+# V4 BUILD HOLD: explicit owner instruction 2026-10-27.
+# DO NOT trigger Android Gradle/CI/APK builds on source commits.
+# Retain manual dispatch only; do not dispatch until owner supplies further changes
+# and authorizes a build.
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feature/tank-v4-implementation
-    paths:
-      - 'android/**'
-      - 'tools/build_v4_codemagic.sh'
-      - 'tools/verify_*.py'
-      - '.github/workflows/tank-v4-android.yml'
+
 permissions:
   contents: read
 jobs:
