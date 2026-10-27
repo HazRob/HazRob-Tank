@@ -147,6 +147,7 @@ public final class DeveloperExperimentsTab {
                 if(channel==null)continue;
                 JSONObject p=new JSONObject();
                 p.put("r0_kohm",channel.optDouble("r0",Double.NaN));
+                p.put("r0_samples",channel.optInt("r0_samples",0));
                 p.put("rs_kohm",channel.optDouble("rs",Double.NaN));
                 p.put("source",channel.optString("r0_source",""));
                 p.put("session",channel.optString("r0_session",""));
