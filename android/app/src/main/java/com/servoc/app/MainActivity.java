@@ -103,6 +103,8 @@ public final class MainActivity extends Activity implements HazRobHost {
             pendingInstantAnalysis=b.getString("tank_v4_instant_analysis","{}");
             pendingInstantId=b.getString("tank_v4_instant_id","");
             pendingInstantTime=b.getLong("tank_v4_instant_time",0);
+            pendingFieldSessionPicker=b.getBoolean("tank_v4_field_export_picker",false);
+            pendingFieldSessionId=b.getString("tank_v4_field_export_session","");
         }
         workers.execute(()->{
             try{
@@ -263,6 +265,8 @@ public final class MainActivity extends Activity implements HazRobHost {
         super.onPause();
     }
     @Override protected void onSaveInstanceState(Bundle out){
+        out.putBoolean("tank_v4_field_export_picker",pendingFieldSessionPicker);
+        if(pendingFieldSessionPicker)out.putString("tank_v4_field_export_session",pendingFieldSessionId);
         out.putBoolean("tank_v3_physical_export_waiting",pendingPhysicalDocumentRequest);
         if(pendingPhysicalDocumentRequest){
             out.putString("tank_v3_physical_export_snapshot",pendingPhysicalSnapshot);
