@@ -97,7 +97,7 @@ public final class FieldSessionsTab {
         siteDropdown=new Spinner(c);UiKit.outlinedSpinner(siteDropdown);managePane.addView(siteDropdown,UiKit.full(c));
         siteDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> p,View v,int pos,long id){
-                if(selectingScope||refreshing||pos!=siteDropdown.getSelectedItemPosition())return;
+                if(selectingScope||pos!=siteDropdown.getSelectedItemPosition())return;
                 if(pos>=0&&pos<siteOptionIds.size()&&!siteOptionIds.get(pos).equals(selectedSiteId)){
                     selectedSiteId=siteOptionIds.get(pos);selectedSessionId="";refresh();
                 }
@@ -119,7 +119,7 @@ public final class FieldSessionsTab {
         sessionDropdown=new Spinner(c);UiKit.outlinedSpinner(sessionDropdown);managePane.addView(sessionDropdown,UiKit.full(c));
         sessionDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> p,View v,int pos,long id){
-                if(selectingScope||refreshing||selectedSiteId.isEmpty()||pos!=sessionDropdown.getSelectedItemPosition())return;
+                if(selectingScope||selectedSiteId.isEmpty()||pos!=sessionDropdown.getSelectedItemPosition())return;
                 if(pos>=0&&pos<sessionOptionIds.size()&&!sessionOptionIds.get(pos).equals(selectedSessionId)){
                     selectedSessionId=sessionOptionIds.get(pos);refresh();
                 }
