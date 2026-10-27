@@ -15,14 +15,13 @@ public final class HR069R1BrandingContractTest {
         return ((x[off]&255)<<24)|((x[off+1]&255)<<16)|((x[off+2]&255)<<8)|(x[off+3]&255);
     }
 
-    @Test public void launcherAndConnectionUseNewLogo()throws Exception{
+    @Test public void launcherAndEntryReuseApprovedHr069R1HighResolutionLogo()throws Exception{
         String manifest=new String(Files.readAllBytes(Paths.get("src/main/AndroidManifest.xml")),StandardCharsets.UTF_8);
         String gate=new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/auth/ConnectionGate.java")),StandardCharsets.UTF_8);
-        // Tank V3 uses its own vector icon; the build overlays the pinned HR069 manifest.
-        assertTrue(manifest.contains("android:icon=\"@drawable/ic_hazrob_tank_v3\""));
-        assertTrue(manifest.contains("android:roundIcon=\"@drawable/ic_hazrob_tank_v3\""));
-        assertTrue(manifest.contains("android:label=\"HazRob Tank\""));
-        assertTrue(gate.contains("R.drawable.ic_hazrob_tank_v3"));
+        assertTrue(manifest.contains("android:icon=\\"@drawable/ic_hazrob_hr069_r1\\""));
+        assertTrue(manifest.contains("android:roundIcon=\\"@drawable/ic_hazrob_hr069_r1\\""));
+        assertTrue(manifest.contains("android:label=\\"HazRob Tank\\""));
+        assertTrue(gate.contains("R.drawable.ic_hazrob_hr069_r1"));
         assertTrue(gate.contains("ImageView.ScaleType.CENTER_INSIDE"));
     }
 
