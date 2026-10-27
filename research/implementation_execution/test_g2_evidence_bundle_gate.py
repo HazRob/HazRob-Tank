@@ -964,6 +964,20 @@ class EvidenceBundleTests(unittest.TestCase):
                         audit_evidence_bundle(record, temp))
                     self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
 
+    def test_huge_integer_with_matching_hash_is_rejected_before_metric_audit(self):
+        # Python's json.loads accepts large integer tokens, but
+        # math.isfinite(10**310) raises OverflowError downstream.
+        for filename in ("metrics_summary.json", "raw_manifest.json",
+                         "uncertainty_grouped.json"):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                payload = (base / filename).read_text(encoding="utf-8").rstrip()
+                payload = payload[:-1] + ',"huge_integer":' + ("9" * 310) + '}'
+                self.replace_bytes(record, base, filename, payload + "\n")
+                self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:" + filename,
+                              audit_evidence_bundle(record, temp))
+                self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
     def test_invalid_digest_blocks_promotion(self):
         with tempfile.TemporaryDirectory() as temp:
             record, _ = synthetic_bundle(temp)
