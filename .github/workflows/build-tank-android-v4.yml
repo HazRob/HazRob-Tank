@@ -82,8 +82,8 @@ jobs:
           if 'android:label=' in t:
               import re
               t=re.sub(r'android:label="[^"]*"', 'android:label="HazRob Tank"', t, count=1)
-              t=t.replace('android:icon="@drawable/ic_hazrob_hr069_r1"', 'android:icon="@drawable/ic_hazrob_tank_v3"')
-              t=t.replace('android:roundIcon="@drawable/ic_hazrob_hr069_r1"', 'android:roundIcon="@drawable/ic_hazrob_tank_v3"')
+              t=t.replace('android:icon="@drawable/ic_hazrob_hr069_r1"', 'android:icon="@drawable/ic_hazrob_app"')
+              t=t.replace('android:roundIcon="@drawable/ic_hazrob_hr069_r1"', 'android:roundIcon="@drawable/ic_hazrob_app"')
           manifest.write_text(t)
           PY
 
