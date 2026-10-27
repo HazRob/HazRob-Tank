@@ -120,6 +120,11 @@ public final class ChemCoreLabQuality {
         if(connected&&power&&valid<MIN_VALID_CHANNELS)advisories.add("valid_mq_channels_below_capture_gate:"+valid+"/8");
         if(firmwareR0Mismatch>0)advisories.add("esp32_r0_sync_pending:"+firmwareR0Mismatch+"/8;app_normalizes_from_rs_with_active_device_r0");
         if(!envOk)advisories.add("environmental_compensation_unavailable:"+(env==null?"missing":env.optString("status_code","unknown")));
+        // MQ-7 and MQ-9 manufacturer protocols require a cycled heater supply;
+        // our shared 5-V MQ relay alone does not constitute that qualification.
+        if(!HazRobHardwareProfile.manufacturerHeaterProtocolValid("mq7")
+                ||!HazRobHardwareProfile.manufacturerHeaterProtocolValid("mq9"))
+            advisories.add("mq7_mq9_heater_cycle_not_physically_qualified");
         if(reference==0)advisories.add("hr069_m4_calibration_not_available");
         else if(reference<REQUIRED_R0_CHANNELS)advisories.add("hr069_m4_calibration_partial:"+reference+"/8");
         return new ChemCoreLabQuality(connected,power,a1,a2,stationary,valid,r0,field,reference,config,capture,envOk,d.optString("device_id",""),
