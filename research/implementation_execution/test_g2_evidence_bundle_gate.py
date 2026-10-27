@@ -57,7 +57,8 @@ def synthetic_bundle(root):
             "algorithm_id": "majority_train", "fit_policy": "TRAIN_ONLY",
             "fitted_group_ids": ["d1-s1"],
             "prediction_column": "baseline_predicted_reference",
-            "selected_on_test": False}},
+            "selected_on_test": False,
+            "training_labels_sha256": "3128ffc949ec6b8404b83489c4349b18eb8098c57e381a5189ee2afe95e7de47"}},
         "metrics_summary.json": {
             key: record[key] for key in
             ("metric_name", "metric_value", "baseline_metric_value")
@@ -890,11 +891,50 @@ class EvidenceBundleTests(unittest.TestCase):
             self.replace_bytes(record, base, name, data)
             protocol = json.loads((base / "protocol_locked.json").read_text())
             protocol["baseline_model"]["tie_policy"] = "LEXICOGRAPHIC_ASC"
+            protocol["baseline_model"]["training_labels_sha256"] = (
+                "ce26be9a5f7e2df591ad0863d4899bc1dad0c97cad96360940e2afc8c485e8e0")
             self.replace_bytes(record, base, "protocol_locked.json",
                                json.dumps(protocol))
             record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
+    def test_majority_training_labels_digest_is_required(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            del protocol["baseline_model"]["training_labels_sha256"]
+            self.replace_bytes(record, base, "protocol_locked.json",
+                               json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertIn("BASELINE_TRAINING_LABEL_DIGEST_NOT_LOCKED",
+                          audit_record(record, temp)["issues"])
+
+    def test_invalid_majority_training_digest_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol["baseline_model"]["training_labels_sha256"] = "not-a-sha"
+            self.replace_bytes(record, base, "protocol_locked.json",
+                               json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertIn("BASELINE_TRAINING_LABEL_DIGEST_NOT_LOCKED",
+                          audit_record(record, temp)["issues"])
+
+    def test_rehashed_training_rows_cannot_keep_stale_locked_label_digest(self):
+        # A second training row with the same gas does not change the
+        # majority prediction, but must invalidate the locked training digest.
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "group_manifest.csv"
+            data = (base / name).read_text().replace(
+                "tr,d1-s1,GAS_A,d1,s1\n",
+                "tr,d1-s1,GAS_A,d1,s1\ntr2,d1-s1,GAS_A,d1,s1\n")
+            self.replace_bytes(record, base, name, data)
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("BASELINE_TRAINING_LABEL_DIGEST_MISMATCH", issues)
+            self.assertNotIn("BASELINE_MAJORITY_TRAIN_REPLAY_MISMATCH", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
 
     def test_majority_train_blank_training_truth_cannot_be_replayed(self):
         with tempfile.TemporaryDirectory() as temp:
