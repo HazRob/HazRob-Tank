@@ -1375,5 +1375,35 @@ class UnicodeCanonicalCsvEvidenceTests(unittest.TestCase):
                         temp, record, base, name, old, new.format(token=token))
 
 
+    def test_ascii_edge_whitespace_identity_tokens_rejected(self):
+        from g2_evidence_bundle_gate import _csv_has_control as bundle_invalid
+        from g2_cross_artifact_gate import _csv_has_control as replay_invalid
+        for valid in ("GAS_A", "ethanol 50 ppm", "غاز الإيثانول"):
+            with self.subTest(valid=valid):
+                self.assertFalse(bundle_invalid(valid))
+                self.assertFalse(replay_invalid(valid))
+        for invalid in (" GAS_A", "GAS_A ", " GAS_A ", "50 ppm ", " gas_reference_id"):
+            with self.subTest(invalid=repr(invalid)):
+                self.assertTrue(bundle_invalid(invalid))
+                self.assertTrue(replay_invalid(invalid))
+
+    def test_rehashed_ascii_edge_whitespace_cannot_change_identity_or_metrics(self):
+        # SHA256 alone cannot prevent labels with trailing/leading ASCII spaces
+        # from weakening the majority baseline or aliasing physical groups.
+        mutations = (
+            ("group_manifest.csv", "GAS_A,d1,s1", "GAS_A ,d1,s1"),
+            ("group_manifest.csv", "gas_reference_id", " gas_reference_id"),
+            ("predictions_blind.csv", "GAS_A,GAS_A,GAS_A", "GAS_A, GAS_A,GAS_A"),
+            ("predictions_blind.csv", "GAS_A,GAS_A,GAS_A", "GAS_A,GAS_A,GAS_A "),
+            ("metrics_per_group.csv", "d2-s1,1,1,1", " d2-s1,1,1,1"),
+            ("metrics_per_group.csv", "sample_count", "sample_count "),
+        )
+        for name, old, new in mutations:
+            with self.subTest(file=name, mutation=new), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                self._assert_rehashed_mutation_blocked(
+                    temp, record, base, name, old, new)
+
+
 if __name__ == "__main__":
     unittest.main()
