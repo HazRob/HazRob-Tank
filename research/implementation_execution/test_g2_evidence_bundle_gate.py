@@ -107,6 +107,30 @@ def synthetic_bundle(root):
     return record, base
 
 
+def relock_assignment(record, base):
+    """Re-freeze a deliberately revised *synthetic* holdout allocation.
+
+    Only positive fixture tests may call this after they change source groups.
+    Negative controls must leave the original lock intact.
+    """
+    fields = sorted(part.strip() for part in record["grouping_source_field"].split(","))
+    with (base / "group_manifest.csv").open(newline="", encoding="utf-8") as stream:
+        rows = list(csv.DictReader(stream))
+    allocation = sorted(
+        [[row["exposure_id"], row["group_id"],
+          [[name, row[name]] for name in fields]] for row in rows],
+        key=lambda values: (values[0], values[1]))
+    protocol_path = base / "protocol_locked.json"
+    protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    protocol["group_assignment_sha256"] = hashlib.sha256(
+        json.dumps(allocation, ensure_ascii=False,
+                   separators=(",", ":")).encode("utf-8")).hexdigest()
+    payload = (json.dumps(protocol) + "\n").encode("utf-8")
+    protocol_path.write_bytes(payload)
+    record["evidence_files"]["protocol_locked.json"] = hashlib.sha256(payload).hexdigest()
+    record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+
+
 class MalformedPhysicalGroupingKeyTests(unittest.TestCase):
     def test_unhashable_grouping_key_fails_closed_during_cross_artifact_replay(self):
         for bad in ([], {"grouping": "device_session_id"}):
@@ -600,6 +624,7 @@ class EvidenceBundleTests(unittest.TestCase):
             record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
             self.replace_bytes(record, base, "uncertainty_grouped.json",
                                json.dumps(record["confidence_interval"]))
+            relock_assignment(record, base)
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
 
@@ -629,6 +654,7 @@ class EvidenceBundleTests(unittest.TestCase):
                 "ca,d1-s2,GAS_B,d1,s2,sample-2\n"
                 "te1,d2-s1,GAS_A,d2,s1,sample-3\n"
                 "te2,d2-s2,GAS_B,d2,s2,sample-4\n")
+            relock_assignment(record, base)
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
 
@@ -1098,6 +1124,7 @@ class EvidenceBundleTests(unittest.TestCase):
             self.replace_bytes(record, base, "protocol_locked.json",
                                json.dumps(protocol))
             record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            relock_assignment(record, base)
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
 
@@ -1234,6 +1261,7 @@ class EvidenceBundleTests(unittest.TestCase):
             self.replace_bytes(record, base, "protocol_locked.json",
                                json.dumps(protocol))
             record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            relock_assignment(record, base)
             self.assertEqual(audit_evidence_bundle(record, temp), [])
             result = audit_record(record, temp)
             self.assertEqual(result["status"], "G2_PASS_CANDIDATE_REQUIRES_REVIEW",
