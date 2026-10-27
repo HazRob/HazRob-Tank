@@ -86,7 +86,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private volatile JSONObject latestDiag;private volatile int left=0,right=0;private volatile boolean foreground=false;private volatile String flashMode="off";
     private volatile int trackingTarget=-1;private volatile String trackingName="";
     private volatile int lastGasAlertLevel=GasAlertCoordinator.NONE;private volatile long gasAlertSentAt=0;
-    private boolean developerMode=false,entered=false,commsScheduled=false;private FrameLayout page;private TextView globalStatus;private Button[] tabButtons;private int selectedTab=0;private long pendingExperimentId=-1;private String pendingFieldSessionId="";
+    private boolean developerMode=false,entered=false,commsScheduled=false;private FrameLayout page;private TextView globalStatus;private Button[] tabButtons;private int selectedTab=0;private long pendingExperimentId=-1;private String pendingFieldSessionId="";private boolean pendingFieldSessionPicker=false;
     private ControlTab controlTab;private FieldSessionsTab fieldSessionsTab;private MeasurementsTab measurementsTab;private ReportsTab reportsTab;private StatusTab statusTab;private SettingsTab settingsTab;private DeveloperTab developerTab;private View[] tabViews;
 
     @Override public void onCreate(Bundle b){
@@ -360,23 +360,54 @@ public final class MainActivity extends Activity implements HazRobHost {
     }
 
     @Override public void requestFieldSessionExport(String format,String fieldSessionId){
-        String fs=fieldSessionId==null?"":fieldSessionId.trim();
+        if(Looper.myLooper()!=Looper.getMainLooper()){
+            ui.post(()->requestFieldSessionExport(format,fieldSessionId));return;
+        }
+        final String fs=fieldSessionId==null?"":fieldSessionId.trim();
         if(fs.isEmpty()){showToast("الجلسة غير صالحة");return;}
-        // Only a lightweight indexed ID lookup is allowed on the Android UI thread.
-        // FieldSessionReportExporter.resolve + PDF/XLSX construction execute later on workers.
-        FieldSessionRepository.FieldSession selected;
-        try{selected=new FieldSessionRepository(db).fieldSessionById(fs);}
-        catch(Exception e){showToast("تعذر قراءة الجلسة");return;}
-        if(selected==null){showToast("هذه الجلسة غير موجودة");return;}
-        if(!selected.approved()){showToast("لا يمكن تصدير تقرير لجلسة غير معتمدة");return;}
-        pendingFieldSessionId=fs;
-        boolean pdf="pdf".equalsIgnoreCase(format);
-        Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType(pdf?"application/pdf":"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        String safeName=selected.name.replaceAll("[^A-Za-z0-9._-]","_");
-        i.putExtra(Intent.EXTRA_TITLE,"HazRob_FieldSession_"+safeName+"_"+fs.replaceAll("[^A-Za-z0-9._-]","_")+"_"+fileStamp()+(pdf?".pdf":".xlsx"));
-        startActivityForResult(i,pdf?EXPORT_FIELD_PDF:EXPORT_FIELD_XLSX);
+        if(pendingFieldSessionPicker){showToast("هناك عملية اختيار ملف تقرير قيد التنفيذ");return;}
+        final boolean pdf="pdf".equalsIgnoreCase(format);
+        if(!pdf&&!"xlsx".equalsIgnoreCase(format)){
+            showToast("صيغة التقرير غير مدعومة");return;
+        }
+        pendingFieldSessionPicker=true; // Guard against two overlapping SAF requests.
+        try{
+            workers.execute(()->{
+                FieldSessionRepository.FieldSession selected=null;
+                try{selected=new FieldSessionRepository(db).fieldSessionById(fs);}
+                catch(RuntimeException ex){android.util.Log.e("TankFieldExport","Field session lookup failed",ex);}
+                final FieldSessionRepository.FieldSession selectedRow=selected;
+                ui.post(()->{
+                    if(isFinishing()||isDestroyed()){
+                        pendingFieldSessionPicker=false;pendingFieldSessionId="";return;
+                    }
+                    if(selectedRow==null){
+                        pendingFieldSessionPicker=false;showToast("هذه الجلسة غير موجودة أو تعذر قراءتها");return;
+                    }
+                    if(!selectedRow.approved()){
+                        pendingFieldSessionPicker=false;showToast("لا يمكن تصدير تقرير لجلسة غير معتمدة");return;
+                    }
+                    try{
+                        pendingFieldSessionId=fs;
+                        Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                        i.addCategory(Intent.CATEGORY_OPENABLE);
+                        i.setType(pdf?"application/pdf":"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                        String safeName=selectedRow.name.replaceAll("[^A-Za-z0-9._-]","_");
+                        i.putExtra(Intent.EXTRA_TITLE,"HazRob_FieldSession_"+safeName+"_"+
+                                fs.replaceAll("[^A-Za-z0-9._-]","_")+"_"+fileStamp()+(pdf?".pdf":".xlsx"));
+                        startActivityForResult(i,pdf?EXPORT_FIELD_PDF:EXPORT_FIELD_XLSX);
+                    }catch(RuntimeException ex){
+                        pendingFieldSessionPicker=false;pendingFieldSessionId="";
+                        android.util.Log.e("TankFieldExport","Cannot open report destination",ex);
+                        showToast("تعذر فتح اختيار ملف التقرير");
+                    }
+                });
+            });
+        }catch(RuntimeException ex){
+            pendingFieldSessionPicker=false;pendingFieldSessionId="";
+            android.util.Log.e("TankFieldExport","Cannot schedule session report",ex);
+            showToast("تعذر بدء عملية تصدير الجلسة");
+        }
     }
 
     @Override public void openReportsForSite(String siteId,String fieldSessionId){
@@ -415,6 +446,11 @@ public final class MainActivity extends Activity implements HazRobHost {
 
     @Override protected void onActivityResult(int requestCode,int resultCode,Intent data){
         super.onActivityResult(requestCode,resultCode,data);
+        if((requestCode==EXPORT_FIELD_PDF||requestCode==EXPORT_FIELD_XLSX)
+                &&(resultCode!=RESULT_OK||data==null||data.getData()==null)){
+            pendingFieldSessionPicker=false;pendingFieldSessionId="";
+            return;
+        }
         if(requestCode==EXPORT_PHYSICAL_PDF&&(resultCode!=RESULT_OK||data==null||data.getData()==null)){
             pendingPhysicalDocumentRequest=false;
             pendingPhysicalSnapshot="{}";pendingPhysicalUtc="";
@@ -459,6 +495,7 @@ public final class MainActivity extends Activity implements HazRobHost {
         }
         if(requestCode==EXPORT_FIELD_PDF||requestCode==EXPORT_FIELD_XLSX){
             final Uri uri=data.getData();final int req=requestCode;final String fieldId=pendingFieldSessionId;
+            pendingFieldSessionPicker=false;pendingFieldSessionId="";
             workers.execute(()->{
                 if(fieldId==null||fieldId.trim().isEmpty()){showToast("تعذر تحديد الجلسة");return;}
                 try(OutputStream out=getContentResolver().openOutputStream(uri,"wt")){
