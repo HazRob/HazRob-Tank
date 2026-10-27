@@ -25,3 +25,14 @@ a failing CI is a blocker requiring repairs, not permission to ignore tests.
 
 Do not modify this request file for ordinary code changes. Further build requests
 must be explicitly authorized and use a new controlled request.
+
+## Explicit second build authorization — 2026-10-27 17:26 UTC (20:26 Asia/Aden)
+Owner requested generation of standalone Tank V4 APK and independently downloadable
+ESP32 Arduino ZIP. This marker authorizes GitHub Actions Android Gradle diagnostics,
+test compilation and APK assembly from the current canonical V4 branch, not
+automatic scientific certification or hardware deployment.
+
+Unlike source-only phases, the owner has expressly lifted the build hold.
+Do not erase user data, silently ignore failed tests, publish a stable signed
+release without verifying the signing identity, or claim a produced APK when
+its CI did not complete. Record this run and its SHA in the V4 ledger.
