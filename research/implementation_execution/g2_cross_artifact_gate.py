@@ -22,6 +22,12 @@ def _csv_has_control(value):
     non-ASCII-space Zs characters (e.g. NBSP, thin and ideographic spaces).
     Ordinary ASCII spaces and NFC multilingual text remain valid.
     """
+    # Edge whitespace can create visually identical but distinct gas/group IDs.
+    # In particular, majority_train strips training labels while blind truth
+    # comparison uses exact CSV strings; an edge space could fake an improvement.
+    # Interior ASCII spaces (e.g. "ethanol 50 ppm") remain valid.
+    if value != value.strip():
+        return True
     if unicodedata.normalize("NFC", value) != value:
         return True
     return any(unicodedata.category(ch).startswith("C") or
