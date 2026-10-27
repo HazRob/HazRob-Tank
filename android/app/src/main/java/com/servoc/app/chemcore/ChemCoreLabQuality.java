@@ -39,19 +39,20 @@ public final class ChemCoreLabQuality {
     public final boolean connected,mqPower,ads1,ads2,stationary;
     public final int validMqChannels,r0NormalizedChannels,fieldR0Channels,referenceValidatedChannels;
     public final boolean configurationReady,captureReady,environmentReady;
-    public final String environmentSensor,environmentStatus,environmentAddress,environmentChipId;
+    public final String environmentSensor,environmentStatus,environmentAddress,environmentChipId,controllerId;
     public final double temperatureC,humidityRh,pressureHpa;
     public final List<String> blockers,advisories;
 
     private ChemCoreLabQuality(boolean connected,boolean mqPower,boolean ads1,boolean ads2,boolean stationary,
             int validMqChannels,int r0NormalizedChannels,int fieldR0Channels,int referenceValidatedChannels,
-            boolean configurationReady,boolean captureReady,boolean environmentReady,String environmentSensor,
+            boolean configurationReady,boolean captureReady,boolean environmentReady,String controllerId,String environmentSensor,
             String environmentStatus,String environmentAddress,String environmentChipId,double temperatureC,
             double humidityRh,double pressureHpa,List<String> blockers,List<String> advisories){
         this.connected=connected;this.mqPower=mqPower;this.ads1=ads1;this.ads2=ads2;this.stationary=stationary;
         this.validMqChannels=validMqChannels;this.r0NormalizedChannels=r0NormalizedChannels;
         this.fieldR0Channels=fieldR0Channels;this.referenceValidatedChannels=referenceValidatedChannels;
         this.configurationReady=configurationReady;this.captureReady=captureReady;this.environmentReady=environmentReady;
+        this.controllerId=nz(controllerId);
         this.environmentSensor=nz(environmentSensor);this.environmentStatus=nz(environmentStatus);
         this.environmentAddress=nz(environmentAddress);this.environmentChipId=nz(environmentChipId);
         this.temperatureC=temperatureC;this.humidityRh=humidityRh;this.pressureHpa=pressureHpa;
@@ -120,7 +121,7 @@ public final class ChemCoreLabQuality {
         if(!envOk)advisories.add("environmental_compensation_unavailable:"+(env==null?"missing":env.optString("status_code","unknown")));
         if(reference==0)advisories.add("hr069_m4_calibration_not_available");
         else if(reference<REQUIRED_R0_CHANNELS)advisories.add("hr069_m4_calibration_partial:"+reference+"/8");
-        return new ChemCoreLabQuality(connected,power,a1,a2,stationary,valid,r0,field,reference,config,capture,envOk,
+        return new ChemCoreLabQuality(connected,power,a1,a2,stationary,valid,r0,field,reference,config,capture,envOk,d.optString("device_id",""),
                 envType,env==null?"missing":env.optString("status_code",envOk?"ok":"unknown"),
                 env==null?"":env.optString("address",""),env==null?"":env.optString("chip_id",""),
                 value(env,"temperature"),value(env,"humidity"),value(env,"pressure"),blockers,advisories);
@@ -143,15 +144,20 @@ public final class ChemCoreLabQuality {
 
     public JSONObject toJson(){
         try{
-            JSONObject o=new JSONObject();o.put("schema",SCHEMA);o.put("connected",connected);o.put("mq_power",mqPower);o.put("ads1_ready",ads1);o.put("ads2_ready",ads2);o.put("stationary",stationary);
+            JSONObject o=new JSONObject();o.put("schema",SCHEMA);o.put("connected",connected);o.put("controller_id",controllerId);o.put("mq_power",mqPower);o.put("ads1_ready",ads1);o.put("ads2_ready",ads2);o.put("stationary",stationary);
             o.put("valid_mq_channels",validMqChannels);o.put("r0_normalized_channels",r0NormalizedChannels);o.put("field_r0_channels",fieldR0Channels);o.put("reference_validated_channels",referenceValidatedChannels);
             o.put("configuration_ready",configurationReady);o.put("capture_ready",captureReady);
             o.put("exploratory_screening_ready",exploratoryScreeningReady());o.put("exploratory_results_may_be_exported",true);
             o.put("exploratory_measurement_not_quantitative_calibration",true);o.put("fingerprint_normalization_ready",fingerprintNormalizationReady());o.put("any_reference_gas_calibration_available",anyReferenceGasCalibrationAvailable());
             JSONObject r0=new JSONObject();
             java.util.Set<String> calibrationSources=new java.util.LinkedHashSet<>();
-            for(String key:ManualR0Calibration.keys())if(ManualR0Calibration.has(key))
-                calibrationSources.add(ManualR0Calibration.getSource(key));
+            for(String key:ManualR0Calibration.keys()){
+                if(!ManualR0Calibration.has(key))continue;
+                String channelSource=ManualR0Calibration.getSource(key);
+                if("firmware_clean_air_r0".equals(channelSource)&&
+                        !controllerId.equals(ManualR0Calibration.getDeviceId(key)))continue;
+                calibrationSources.add(channelSource);
+            }
             String source=calibrationSources.isEmpty()?"unavailable":
                     calibrationSources.size()==1?calibrationSources.iterator().next():"mixed_device_r0";
             java.util.Set<String> sessionsUsed=new java.util.LinkedHashSet<>();
@@ -160,10 +166,14 @@ public final class ChemCoreLabQuality {
                 double value=ManualR0Calibration.get(key);
                 if(!Double.isFinite(value)||value<=0)continue;
                 String src=ManualR0Calibration.getSource(key),session=ManualR0Calibration.getSession(key);
+                String sensorDeviceId=ManualR0Calibration.getDeviceId(key);
+                if("firmware_clean_air_r0".equals(src)&&
+                        (controllerId.isEmpty()||!controllerId.equals(sensorDeviceId)))continue;
                 if(!session.isEmpty())sessionsUsed.add(session);
                 JSONObject channel=new JSONObject();
                 channel.put("r0",value);channel.put("source",src);channel.put("session",session);
                 channel.put("utc",ManualR0Calibration.getUtc(key));
+                if(!sensorDeviceId.isEmpty())channel.put("device_id",sensorDeviceId);
                 channel.put("device_local",true);channel.put("reference_gas_validated",false);
                 channels.put(key,channel);
             }
