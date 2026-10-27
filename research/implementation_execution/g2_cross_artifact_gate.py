@@ -197,6 +197,39 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     elif locked_assignment_sha != actual_assignment_sha:
         issues.append("GROUP_ASSIGNMENT_DIGEST_MISMATCH")
 
+    # Freeze calibration reference labels separately from training labels.
+    # Otherwise an analyst could relabel the calibration split after examining
+    # blind outcomes, rehash every changed artifact, and still pass the group
+    # assignment lock (which deliberately excludes all gas truth labels).
+    # This is an internal commitment, NOT proof of preregistration or physical
+    # reference authenticity; independent timestamped evidence is still needed.
+    calibration_ids = record.get("calibration_group_ids")
+    if (not isinstance(calibration_ids, list) or
+            any(not isinstance(gid, str) for gid in calibration_ids)):
+        issues.append("CALIBRATION_LABELS_UNAVAILABLE")
+    else:
+        calibration_rows = sorted(
+            [[row.get("exposure_id"), row.get("group_id"),
+              row.get("gas_reference_id")]
+             for row in groups if row.get("group_id") in calibration_ids],
+            key=lambda values: (values[0] or "", values[1] or ""))
+        if (not calibration_rows or
+                any(not isinstance(value, str) or not value.strip()
+                    for row in calibration_rows for value in row)):
+            issues.append("CALIBRATION_LABELS_UNAVAILABLE")
+        else:
+            calibration_bytes = json.dumps(
+                calibration_rows, ensure_ascii=False,
+                separators=(",", ":")).encode("utf-8")
+            actual_calibration_sha = hashlib.sha256(calibration_bytes).hexdigest()
+            locked_calibration_sha = protocol.get("calibration_labels_sha256")
+            if (not isinstance(locked_calibration_sha, str) or
+                    len(locked_calibration_sha) != 64 or
+                    any(ch not in "0123456789abcdef" for ch in locked_calibration_sha)):
+                issues.append("CALIBRATION_LABEL_DIGEST_NOT_LOCKED")
+            elif locked_calibration_sha != actual_calibration_sha:
+                issues.append("CALIBRATION_LABEL_DIGEST_MISMATCH")
+
     # A declared physical grouping key must be backed by the actual source
     # identity columns, not arbitrary per-row identifiers (e.g. sample_id).
     # Additional source columns are allowed, but may not replace the minimum.
