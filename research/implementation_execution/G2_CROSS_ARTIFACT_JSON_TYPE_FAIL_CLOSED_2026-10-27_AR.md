@@ -1,0 +1,36 @@
+# G2 — منع انهيار إعادة تشغيل الأدلة عند تغيير نوع وثائق JSON
+
+التاريخ: 2026-10-27 | المشروع: HazRob Tank | الفرع: `research/chemcore80-central-evidence-gap-analysis-20261021` | البحث فقط.
+
+## 1. حالة الاستئناف
+- بدأت الجولة من الالتزام `c648b30c567df878c189ac6124e0262c4ddc7c03`، مع مراجعة سجل التنفيذ السابق، و`research/PROGRESS_80.json`، و`research/REFERENCE_BENCHMARK_INVENTORY.md`.
+- سجل `research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json` لا يزال `records: []`. بيانات UCI المرجعية الخارجية مفيدة للبحث، لكنها ليست قياسات Tank المستقلة ولا تثبت معايرة MQ8 أو ppm.
+- تمت مراجعة سجل GitHub Actions السابق: تشغيل G2 `40473011157`، الوظيفة `122084396925`، نجح فيه 164 اختباراً، مع 0 مرشحين و80 محجوبين.
+
+## 2. الفجوة والإصلاح
+- كانت `audit_cross_artifact` تفترض أن وثائق JSON الثماني (raw/source/signal/split/protocol/calibration/metrics/uncertainty) كائنات قاموسية، ثم تستدعي `.get` عليها. في الاستدعاء المستقل لإعادة التشغيل، كان يمكن لملف JSON صحيح نحوياً من نوع قائمة أو قيمة مفردة أن يسبب `AttributeError` بدلاً من نتيجة رفض منضبطة.
+- أُضيف فحص صريح لأنواع الوثائق قبل الوصول إلى حقولها؛ النتيجة عند المخالفة `CROSS_ARTIFACT_JSON_SCHEMA_INVALID`.
+- أُضيف اختبار انحدار واحد يحوي 32 حالة فرعية: 8 وثائق × 4 قيم (`[]`، `null`، سلسلة نصية، وعدد)، مع إعادة حساب SHA256 لكل ملف. يتأكد الاختبار من رفض بوابة الملفات، ومن رفض إعادة التشغيل المستقلة، ومن عدم ترقية السجل.
+- هذا تقوية لواجهة إعادة التشغيل المستقلة؛ مسار `audit_record` كان يرفض JSON غير الكائني مسبقاً بواسطة `audit_evidence_bundle`. لا تُنسب إليه ترقية علمية أو اكتشاف خطأ في بيانات قياس حقيقية.
+
+## 3. الالتزامات وإعادة الإنتاج
+- تعديل الشيفرة: `d6e2b2f7c40b3a648b7b0b4f4c55cda205b7cf73`.
+- تعديل الاختبارات: `9a636c33f174dbcf08a2be7fe47c3a2feb3ba9ae`.
+- الملفات المتغيرة حصرياً: `research/implementation_execution/g2_cross_artifact_gate.py` و`research/implementation_execution/test_g2_evidence_bundle_gate.py`.
+- من جذر المستودع على التزام الاختبارات:
+
+```bash
+cd research/implementation_execution
+python -m unittest -v test_g2_signal_lineage_gate test_g2_evidence_audit test_g2_evidence_bundle_gate test_g2_cluster_bootstrap_gate test_g2_uci1081_signal_manifest
+cd ../..
+python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_audit_results.json
+```
+
+## 4. CI والأدلة
+- GitHub Actions G2 `40479592215`، الوظيفة `122106248977`: **165/165 PASS**؛ يظهر اسم اختبار الانحدار الجديد في السجل.
+- تدقيق الأدلة في التشغيل نفسه: `g2_pass_candidates=0`، `g2_blocked=80`.
+- عند أول مراجعة بعد التنفيذ، نجحت 9 من 11 مساراً، وبقي مسارا batch07 (`40479592184`) وbatch08 (`40479591978`) في قائمة الانتظار؛ لا يُفترض نجاحهما قبل التحقق النهائي.
+- مقارنة `c648b30c...9a636c33` تثبت اقتصار التغيير على الملفين البحثيين أعلاه. لم يتغير ChemCore Stable أو تطبيق الإنتاج.
+
+## 5. حدود الاستنتاج والخطوة التالية
+الاختبارات برمجية اصطناعية لإثبات سلامة فشل البوابة، وليست دليلاً على هوية الغاز أو دقة التركيز. يبقى استكمال G2 العلمي مشروطاً بوجود ملفات قياس أصلية مستقلة، ووحدات مرجعية موثقة، ومعرفات جلسات/أجهزة فيزيائية، واختبار محجوب معاد الإنتاج ومراجعة مستقلة. لا يُمنح اعتماد G2 أو G3. ينبغي إعادة فحص مساري CI المعلقين وتحديث نتيجة التحقق إذا اكتمل تشغيلهما.
