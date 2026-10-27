@@ -258,9 +258,16 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                         winners = [label for label, n in label_counts.items()
                                    if n == max_count]
                         if len(winners) != 1:
-                            issues.append("BASELINE_MAJORITY_TIE_POLICY_UNSPECIFIED")
-                        elif any(row.get("baseline_predicted_reference") != winners[0]
-                                 for row in predictions):
+                            if baseline.get("tie_policy") == "LEXICOGRAPHIC_ASC":
+                                expected_label = min(winners)
+                            else:
+                                expected_label = None
+                                issues.append("BASELINE_MAJORITY_TIE_POLICY_UNSPECIFIED")
+                        else:
+                            expected_label = winners[0]
+                        if (expected_label is not None and
+                                any(row.get("baseline_predicted_reference") != expected_label
+                                    for row in predictions)):
                             issues.append("BASELINE_MAJORITY_TRAIN_REPLAY_MISMATCH")
         required_truth = {"exposure_id", "group_id", "gas_reference_id"}
         # Baseline accuracy must be reproducible from the *same* blind rows.
