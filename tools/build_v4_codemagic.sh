@@ -106,7 +106,7 @@ APK="source/app/build/outputs/apk/debug/app-debug.apk"
 test -s "$APK"
 "$SDK/build-tools/36.0.0/apksigner" verify --verbose "$APK"
 python3 - <<'PY'
-import json,zipfile
+import hashlib,json,zipfile
 apk="source/app/build/outputs/apk/debug/app-debug.apk"
 base="assets/generated/chemcore/embedded_stable/"
 with zipfile.ZipFile(apk) as z:
@@ -114,11 +114,19 @@ with zipfile.ZipFile(apk) as z:
     assert base+"manifest.json" in names, "Embedded Stable manifest absent"
     assert base+"chemcore-stable-snapshot.json" in names, "Embedded Stable data absent"
     m=json.loads(z.read(base+"manifest.json"))
+    payload=z.read(base+m["payload_file"])
     assert m["library_version"]=="1.0.0-hr069r1"
+    assert m["min_app_version"]=="4.0" and m["max_app_version"]=="4.0"
     assert m["chemical_count"]==652
-print("[Tank V4] Verified embedded Stable 652 identities and version")
-PY
-mkdir -p dist-v4
+    assert m["calibration_count"]==0, "Unvalidated M4 data must not be bundled"
+    assert len(payload)==m["payload_size_bytes"], "Stable payload length mismatch"
+    assert hashlib.sha256(payload).hexdigest()==m["payload_sha256"], "Stable payload SHA256 mismatch"
+    root=json.loads(payload)
+    assert root["schema"]==m["payload_schema"]
+    assert root["source_commit_sha"]==m["source_commit_sha"]
+    assert not root["knowledge"]["response_priors"]["policy"]["external_m4"]
+print("[Tank V4] Verified offline Stable package: v4-compatible, 652 identities, 0 M4 calibrations and SHA256")
+PYmkdir -p dist-v4
 cp "$APK" dist-v4/HazRob-Tank-v4-UNRELEASED-debug.apk
 shasum -a 256 dist-v4/*.apk > dist-v4/SHA256SUMS.txt
 cat dist-v4/SHA256SUMS.txt
