@@ -86,6 +86,17 @@ def synthetic_bundle(root):
     return record, base
 
 
+class MalformedPhysicalGroupingKeyTests(unittest.TestCase):
+    def test_unhashable_grouping_key_fails_closed_during_cross_artifact_replay(self):
+        for bad in ([], {"grouping": "device_session_id"}):
+            with self.subTest(bad=bad), tempfile.TemporaryDirectory() as temp:
+                record, _ = synthetic_bundle(temp)
+                record["grouping_key"] = bad
+                issues = audit_cross_artifact(record, temp)
+                self.assertIn("GROUPING_SOURCE_COLUMNS_NOT_PHYSICAL_FOR_KEY", issues)
+                self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+
 class EvidenceBundleTests(unittest.TestCase):
     def test_raw_source_bytes_required_for_review_candidate(self):
         with tempfile.TemporaryDirectory() as temp:
