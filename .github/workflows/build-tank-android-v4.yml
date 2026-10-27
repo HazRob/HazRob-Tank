@@ -20,6 +20,9 @@ jobs:
         with:
           path: tank
 
+      - name: Verify all Tank V4 operator, laboratory R0 and Stable source contracts
+        run: python3 tank/tools/verify_v4_operator_lab_static.py
+
       - name: Verify V4 grouped session queries against real SQLite
         run: python3 tank/tools/verify_v4_session_queries.py
 
