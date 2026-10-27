@@ -62,6 +62,33 @@ def load_g2_inputs(ledger_path, evidence_path):
     return ledger, evidence
 
 
+def load_canonical_technique_ids(path):
+    """Load the authoritative 80-ID registry; a count of 80 alone is insufficient.
+
+    An execution ledger containing 80 substituted IDs must not silently
+    certify that the original 80 techniques were all audited.
+    """
+    try:
+        registry = _read_strict_input_json(path)
+    except (OSError, UnicodeError, ValueError, TypeError) as exc:
+        raise ValueError("G2_CANONICAL_TECHNIQUE_REGISTRY_INVALID") from exc
+    if (not isinstance(registry, dict) or
+            registry.get("total_techniques") != 80 or
+            isinstance(registry.get("total_techniques"), bool) or
+            not isinstance(registry.get("techniques"), list)):
+        raise ValueError("G2_CANONICAL_TECHNIQUE_REGISTRY_INVALID")
+    entries = registry["techniques"]
+    ids = [entry.get("id") if isinstance(entry, dict) else None
+           for entry in entries]
+    if (len(ids) != 80 or
+            any(not isinstance(tid, str) or
+                re.fullmatch(r"[0-9]{2}\.[0-9]{1,2}", tid) is None
+                for tid in ids) or
+            len(set(ids)) != 80):
+        raise ValueError("G2_CANONICAL_TECHNIQUE_REGISTRY_INVALID")
+    return ids
+
+
 REQUIRED = ("raw_sha256", "dataset_uri", "sensor_metadata", "grouping_key",
             "train_group_ids", "calibration_group_ids", "test_group_ids", "target_definition",
             "metric_name", "metric_value", "baseline_metric_value",
@@ -199,16 +226,21 @@ def audit_all(ids, records):
         results.append(result)
     return results
 
-def validate_ledger_scope(ids, records, expected_count=80):
-    """Fail closed if a duplicate ledger ID hides an unevaluated technique."""
-    if (len(ids) != expected_count or
-            any(not _nonempty_str(tid) for tid in ids) or
+def validate_ledger_scope(ids, records, expected_count=80, canonical_ids=None):
+    """Reject incomplete, substituted, or malformed technique/evidence IDs."""
+    if (not isinstance(ids, list) or len(ids) != expected_count or
+            any(not _nonempty_str(tid) or tid != tid.strip() for tid in ids) or
             len(set(ids)) != expected_count):
         raise ValueError("G2_LEDGER_SCOPE_NOT_80_UNIQUE_TECHNIQUES")
+    if canonical_ids is not None and set(ids) != set(canonical_ids):
+        raise ValueError("G2_LEDGER_CANONICAL_TECHNIQUE_IDS_MISMATCH")
     if not isinstance(records, list) or any(not isinstance(r, dict) for r in records):
         raise ValueError("INVALID_G2_EVIDENCE_RECORDS")
+    if any(not _nonempty_str(r.get("id")) or
+           r["id"] != r["id"].strip() for r in records):
+        raise ValueError("INVALID_G2_EVIDENCE_RECORD_ID")
     known = set(ids)
-    unknown = [r.get("id") for r in records if r.get("id") not in known]
+    unknown = [r["id"] for r in records if r["id"] not in known]
     if unknown:
         raise ValueError("UNKNOWN_G2_EVIDENCE_TECHNIQUE_IDS: " + repr(unknown))
     return True
@@ -223,7 +255,8 @@ def main():
     ledger, evidence = load_g2_inputs(args.ledger, args.evidence)
     ids = [x["id"] for x in ledger["work_items"]]
     records = evidence.get("records", [])
-    validate_ledger_scope(ids, records)
+    canonical_ids = load_canonical_technique_ids("research/PROGRESS_80.json")
+    validate_ledger_scope(ids, records, canonical_ids=canonical_ids)
     results = audit_all(ids, records)
     output = {"schema": "hazrob.g2.audit.v1", "scope": "new V4 independent source qualification",
               "g2_pass_candidates": sum(x["status"].startswith("G2_PASS") for x in results),
