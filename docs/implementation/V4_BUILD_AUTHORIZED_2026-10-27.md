@@ -36,3 +36,10 @@ Unlike source-only phases, the owner has expressly lifted the build hold.
 Do not erase user data, silently ignore failed tests, publish a stable signed
 release without verifying the signing identity, or claim a produced APK when
 its CI did not complete. Record this run and its SHA in the V4 ledger.
+
+### Authorized diagnostic retry (2026-10-27 UTC)
+First authorized run 40550809159 failed at the static prebuild gate, because its assertion
+referenced an obsolete synchronous selected-site query. Source test corrected in
+b3d9ad2 to assert the new worker-thread `approvedSessionsForSite(effectiveSite)`.
+The owner's existing permission to build V4 includes this diagnostic retry;
+keep meaningful tests enabled and record any fresh failure before an APK claim.
