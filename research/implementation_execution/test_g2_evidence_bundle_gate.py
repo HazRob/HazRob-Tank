@@ -67,7 +67,7 @@ def synthetic_bundle(root):
     csv_payloads = {
         "group_manifest.csv": "exposure_id,group_id,gas_reference_id,device_id,session_id\ntr,d1-s1,GAS_A,d1,s1\nca,d1-s2,GAS_B,d1,s2\nte1,d2-s1,GAS_A,d2,s1\nte2,d2-s2,GAS_B,d2,s2\n",
         "predictions_blind.csv": "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\nte1,d2-s1,GAS_A,GAS_A,GAS_A\nte2,d2-s2,GAS_B,GAS_A,GAS_A\n",
-        "metrics_per_group.csv": "group_id,sample_count,correct_count\nd2-s1,1,1\nd2-s2,1,0\n",
+        "metrics_per_group.csv": "group_id,sample_count,correct_count,baseline_correct_count\nd2-s1,1,1,1\nd2-s2,1,0,0\n",
     }
     manifest = {}
     for name in FILES:
@@ -506,7 +506,7 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "metrics_per_group.csv",
-                "group_id,sample_count\nd2-s1,2\nd2-s2,1\n")
+                "group_id,sample_count,correct_count,baseline_correct_count\nd2-s1,2,1,1\nd2-s2,1,0,0\n")
             self.assertIn("METRICS_PER_GROUP_COUNT_MISMATCH", audit_record(record, temp)["issues"])
 
     def test_metric_summary_conflicts_with_evidence_record(self):
@@ -629,9 +629,39 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             self.replace_bytes(record, base, "metrics_per_group.csv",
-                "group_id,sample_count,correct_count\nd2-s1,1,1\nd2-s2,1,1\n")
+                "group_id,sample_count,correct_count,baseline_correct_count\nd2-s1,1,1,1\nd2-s2,1,1,0\n")
             self.assertIn("PER_GROUP_CORRECT_COUNT_MISMATCH",
                           audit_record(record, temp)["issues"])
+
+    def test_baseline_group_count_required_for_blind_audit(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "metrics_per_group.csv",
+                "group_id,sample_count,correct_count\\nd2-s1,1,1\\nd2-s2,1,0\\n")
+            self.assertIn("ACCURACY_RECOMPUTATION_FIELDS_MISSING",
+                          audit_record(record, temp)["issues"])
+
+    def test_forged_baseline_per_group_counts_blocked_even_if_global_unchanged(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "metrics_per_group.csv",
+                "group_id,sample_count,correct_count,baseline_correct_count\\n"
+                "d2-s1,1,1,0\\nd2-s2,1,0,1\\n")
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("PER_GROUP_BASELINE_CORRECT_COUNT_MISMATCH", issues)
+            self.assertNotIn("BLIND_BASELINE_ACCURACY_RECOMPUTATION_MISMATCH", issues)
+
+    def test_baseline_prediction_group_swap_cannot_hide_behind_same_global_accuracy(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            self.replace_bytes(record, base, "predictions_blind.csv",
+                "exposure_id,group_id,true_reference,predicted_reference,baseline_predicted_reference\\n"
+                "te1,d2-s1,GAS_A,GAS_A,GAS_B\\n"
+                "te2,d2-s2,GAS_B,GAS_A,GAS_B\\n")
+            record["evaluation_artifact_sha256"] = record["evidence_files"]["predictions_blind.csv"]
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("PER_GROUP_BASELINE_CORRECT_COUNT_MISMATCH", issues)
+            self.assertNotIn("BLIND_BASELINE_ACCURACY_RECOMPUTATION_MISMATCH", issues)
 
     def test_accuracy_missing_truth_columns_is_blocked(self):
         with tempfile.TemporaryDirectory() as temp:
