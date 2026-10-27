@@ -874,8 +874,8 @@ class EvidenceBundleTests(unittest.TestCase):
             record, base = synthetic_bundle(temp)
             name = "group_manifest.csv"
             data = (base / name).read_text().replace(
-                "tr,d1-s1,GAS_A,d1,s1\\n",
-                "tr,d1-s1,GAS_A,d1,s1\\ntr2,d1-s1,GAS_B,d1,s1\\n")
+                "tr,d1-s1,GAS_A,d1,s1\n",
+                "tr,d1-s1,GAS_A,d1,s1\ntr2,d1-s1,GAS_B,d1,s1\n")
             self.replace_bytes(record, base, name, data)
             self.assertIn("BASELINE_MAJORITY_TIE_POLICY_UNSPECIFIED",
                           audit_record(record, temp)["issues"])
