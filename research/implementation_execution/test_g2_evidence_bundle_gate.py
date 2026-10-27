@@ -11,6 +11,7 @@ from pathlib import Path
 from g2_evidence_bundle_gate import FILES, audit_evidence_bundle
 from g2_evidence_audit import audit_record
 from g2_cross_artifact_gate import audit_cross_artifact
+from g2_raw_source_gate import audit_raw_source_bytes
 from test_g2_evidence_audit import eligible_fixture
 
 
@@ -130,6 +131,22 @@ class EvidenceBundleTests(unittest.TestCase):
             raw_file.symlink_to(target)
             self.assertIn("RAW_SOURCE_BYTES_UNAVAILABLE_OR_UNSAFE",
                           audit_record(record, temp)["issues"])
+
+    def test_unmaterialized_lfs_pointer_cannot_pass_raw_byte_gate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            pointer = (b"version https://git-lfs.github.com/spec/v1\\n"
+                       b"oid sha256:" + b"0" * 64 + b"\\nsize 100000\\n")
+            raw_file = Path(temp) / "research/g2/raw/synthetic_source.bin"
+            raw_file.write_bytes(pointer)
+            manifest = json.loads((base / "raw_manifest.json").read_text())
+            manifest["raw_sha256"] = hashlib.sha256(pointer).hexdigest()
+            manifest["raw_size_bytes"] = len(pointer)
+            record["raw_sha256"] = manifest["raw_sha256"]
+            self.replace_bytes(record, base, "raw_manifest.json",
+                               json.dumps(manifest))
+            self.assertIn("RAW_SOURCE_GIT_LFS_POINTER_NOT_MATERIALIZED",
+                          audit_raw_source_bytes(record, temp))
 
     def test_raw_source_size_metadata_is_mandatory(self):
         with tempfile.TemporaryDirectory() as temp:
