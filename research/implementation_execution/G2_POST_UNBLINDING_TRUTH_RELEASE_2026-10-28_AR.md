@@ -30,3 +30,6 @@ python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_a
 
 ## التحقق من CI
 تُوثّق نتيجة GitHub Actions على الالتزام النهائي بعد اكتمال التشغيل؛ لا يُستدل على النجاح من كتابة الاختبارات وحدها.
+
+## نتيجة الاختبارات الفعلية
+نجحت **204/204** اختبارات Python في تشغيل GitHub Actions رقم `40586663420`، الوظيفة `122479787293`، على الالتزام البرمجي `99abe3f67736baad593a8decb8e8f3d5f53d560c`. أعاد تدقيق G2: `g2_pass_candidates=0` و`g2_blocked=80`. رابط التشغيل: https://github.com/HazRob/HazRob-Tank/actions/runs/40586663420 . أما بقية مسارات CI فيُتحقق منها بصورة مستقلة؛ لا تُعد مسارات ما زالت في الطابور ناجحة حتى تكتمل.
