@@ -1013,5 +1013,48 @@ class EvidenceBundleTests(unittest.TestCase):
                           audit_evidence_bundle(record, temp))
 
 
+    def test_majority_train_rejects_partial_training_group_fit(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["train_group_ids"].append("d1-s3")
+            data = (base / "group_manifest.csv").read_text().replace(
+                "tr,d1-s1,GAS_A,d1,s1\n",
+                "tr,d1-s1,GAS_A,d1,s1\ntr2,d1-s3,GAS_A,d1,s3\n")
+            self.assertIn("tr2,d1-s3", data)
+            self.replace_bytes(record, base, "group_manifest.csv", data)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol["train_group_ids"] = record["train_group_ids"]
+            self.replace_bytes(record, base, "protocol_locked.json",
+                               json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            self.assertIn("BASELINE_MAJORITY_TRAIN_PARTIAL_FIT",
+                          audit_record(record, temp)["issues"])
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_majority_train_full_training_group_fit_replays(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["train_group_ids"].append("d1-s3")
+            data = (base / "group_manifest.csv").read_text().replace(
+                "tr,d1-s1,GAS_A,d1,s1\n",
+                "tr,d1-s1,GAS_A,d1,s1\ntr2,d1-s3,GAS_A,d1,s3\n")
+            self.assertIn("tr2,d1-s3", data)
+            self.replace_bytes(record, base, "group_manifest.csv", data)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol["train_group_ids"] = record["train_group_ids"]
+            protocol["baseline_model"]["fitted_group_ids"] = list(record["train_group_ids"])
+            labels = [["tr", "d1-s1", "GAS_A"], ["tr2", "d1-s3", "GAS_A"]]
+            protocol["baseline_model"]["training_labels_sha256"] = hashlib.sha256(
+                json.dumps(labels, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+            ).hexdigest()
+            self.replace_bytes(record, base, "protocol_locked.json",
+                               json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            self.assertEqual(audit_record(record, temp)["status"],
+                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
+
 if __name__ == "__main__":
     unittest.main()
