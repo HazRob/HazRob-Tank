@@ -880,6 +880,22 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertIn("BASELINE_MAJORITY_TIE_POLICY_UNSPECIFIED",
                           audit_record(record, temp)["issues"])
 
+    def test_locked_lexicographic_tie_policy_replays_majority_baseline(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "group_manifest.csv"
+            data = (base / name).read_text().replace(
+                "tr,d1-s1,GAS_A,d1,s1\n",
+                "tr,d1-s1,GAS_A,d1,s1\ntr2,d1-s1,GAS_B,d1,s1\n")
+            self.replace_bytes(record, base, name, data)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol["baseline_model"]["tie_policy"] = "LEXICOGRAPHIC_ASC"
+            self.replace_bytes(record, base, "protocol_locked.json",
+                               json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertEqual(audit_record(record, temp)["status"],
+                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
     def test_majority_train_blank_training_truth_cannot_be_replayed(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
