@@ -12,6 +12,7 @@ from g2_evidence_bundle_gate import FILES, audit_evidence_bundle
 from g2_evidence_audit import audit_record
 from g2_cross_artifact_gate import audit_cross_artifact
 from g2_raw_source_gate import audit_raw_source_bytes
+from g2_r0_source_gate import audit_r0_source_bytes
 from test_g2_evidence_audit import eligible_fixture
 
 
@@ -24,6 +25,14 @@ def synthetic_bundle(root):
     raw_file.parent.mkdir(parents=True, exist_ok=True)
     raw_file.write_bytes(raw_bytes)
     record["raw_sha256"] = hashlib.sha256(raw_bytes).hexdigest()
+    # R0 is a separate measured-reference claim, requiring separate source bytes.
+    r0_bytes = b"synthetic R0 reference source: not a gas standard\\n"
+    r0_file = Path(root) / "research/g2/raw/synthetic_r0_source.bin"
+    r0_file.write_bytes(r0_bytes)
+    record["signal_processing"]["r0_reference"].update(
+        raw_local_path="research/g2/raw/synthetic_r0_source.bin",
+        raw_size_bytes=len(r0_bytes),
+        raw_sha256=hashlib.sha256(r0_bytes).hexdigest())
     base = (Path(root) / "research/g2/evidence" / record["id"]
             / record["dataset_id"] / record["run_id"])
     base.mkdir(parents=True)
@@ -96,6 +105,58 @@ class MalformedPhysicalGroupingKeyTests(unittest.TestCase):
                 self.assertIn("GROUPING_SOURCE_COLUMNS_NOT_PHYSICAL_FOR_KEY", issues)
                 self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
 
+
+
+class R0RawSourceReplayTests(unittest.TestCase):
+    def test_verified_r0_reference_replays_original_bytes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            self.assertEqual(audit_r0_source_bytes(record, temp), [])
+            self.assertEqual(audit_record(record, temp)["status"],
+                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
+    def test_boolean_r0_verification_without_archive_is_not_enough(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            (Path(temp) / "research/g2/raw/synthetic_r0_source.bin").unlink()
+            self.assertIn("R0_RAW_SOURCE_BYTES_UNAVAILABLE_OR_UNSAFE",
+                          audit_record(record, temp)["issues"])
+
+    def test_rehashed_bundle_does_not_hide_r0_source_mutation(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            raw = Path(temp) / "research/g2/raw/synthetic_r0_source.bin"
+            raw.write_bytes(b"x" * raw.stat().st_size)
+            self.assertIn("R0_RAW_SOURCE_BYTE_DIGEST_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_r0_source_path_traversal_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            record["signal_processing"]["r0_reference"]["raw_local_path"] = (
+                "research/g2/raw/../outside.bin")
+            self.assertIn("R0_RAW_SOURCE_PATH_MISSING_OR_UNSAFE",
+                          audit_r0_source_bytes(record, temp))
+
+    def test_r0_lfs_pointer_is_not_source_archive(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            pointer = (b"version https://git-lfs.github.com/spec/v1\n"
+                       b"oid sha256:" + b"a" * 64 + b"\nsize 42\n")
+            raw = Path(temp) / "research/g2/raw/synthetic_r0_source.bin"
+            raw.write_bytes(pointer)
+            ref = record["signal_processing"]["r0_reference"]
+            ref["raw_size_bytes"] = len(pointer)
+            ref["raw_sha256"] = hashlib.sha256(pointer).hexdigest()
+            self.assertIn("R0_RAW_SOURCE_GIT_LFS_POINTER_NOT_MATERIALIZED",
+                          audit_r0_source_bytes(record, temp))
+
+    def test_r0_missing_archive_size_is_blocking(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            del record["signal_processing"]["r0_reference"]["raw_size_bytes"]
+            self.assertIn("R0_RAW_SOURCE_SIZE_NOT_DOCUMENTED",
+                          audit_r0_source_bytes(record, temp))
 
 class EvidenceBundleTests(unittest.TestCase):
     def test_raw_source_bytes_required_for_review_candidate(self):

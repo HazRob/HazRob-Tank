@@ -12,6 +12,7 @@ from g2_signal_lineage_gate import audit_signal_lineage
 from g2_evidence_bundle_gate import audit_evidence_bundle
 from g2_cross_artifact_gate import audit_cross_artifact
 from g2_raw_source_gate import audit_raw_source_bytes
+from g2_r0_source_gate import audit_r0_source_bytes
 
 def _read_strict_input_json(path):
     """Reject ambiguous JSON in the top-level G2 ledger and evidence register.
@@ -214,6 +215,7 @@ def audit_record(item, repo_root=Path(".")):
         # A manifest checksum is a claim, not evidence that original raw
         # bytes were ever acquired or can be replayed by an independent CI.
         issues.extend(audit_raw_source_bytes(item, repo_root=repo_root))
+        issues.extend(audit_r0_source_bytes(item, repo_root=repo_root))
         issues.extend(audit_cross_artifact(item, repo_root=repo_root))
     return {"id": item.get("id"),
             "status": "G2_PASS_CANDIDATE_REQUIRES_REVIEW" if not issues else "G2_BLOCKED",
