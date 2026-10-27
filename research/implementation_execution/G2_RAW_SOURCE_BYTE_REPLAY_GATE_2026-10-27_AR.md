@@ -28,7 +28,7 @@
 7. غياب حجم الملف يؤدي إلى `RAW_SOURCE_SIZE_NOT_DOCUMENTED`.
 8. مؤشر Git LFS غير المحمّل يؤدي إلى `RAW_SOURCE_GIT_LFS_POINTER_NOT_MATERIALIZED`.
 
-تشغيل CI المثبت بعد أول ستة اختبارات: [Actions 40426378014](https://github.com/HazRob/HazRob-Tank/actions/runs/40426378014) على الالتزام `0aa4d85a628fc55977fa26387bff37334daa5836`: **130/130 اختباراً ناجحاً**، و`g2_pass_candidates=0`، و`g2_blocked=80`. اختبار Git LFS أضيف بعد ذلك، ويتطلب تشغيل CI على الالتزام اللاحق.
+نجح [تشغيل CI الأول 40426378014](https://github.com/HazRob/HazRob-Tank/actions/runs/40426378014) على الالتزام `0aa4d85a628fc55977fa26387bff37334daa5836`: **130/130 اختباراً**. وبعد إضافة ضابط Git LFS نجح [تشغيل CI النهائي للشيفرة 40426573210](https://github.com/HazRob/HazRob-Tank/actions/runs/40426573210) على الالتزام `73d20a19b60dc34be3c188b10e2435cb2b40e48e`: **131/131 اختباراً**، و`g2_pass_candidates=0`، و`g2_blocked=80`.
 
 ## أوامر إعادة الإنتاج
 ```bash
