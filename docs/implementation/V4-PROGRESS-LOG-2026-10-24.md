@@ -272,3 +272,11 @@ Continue from the V4 branch head after these commits and requirements. Verify CI
 
 ### Next exact source-only action
 Audit `ReportsTab`/session export, laboratory completed-session consumption, and Stable source package integrity for version mismatches or cross-device R0 contamination. Add meaningful test sources and checkpoints, without invoking any build or tool that triggers a build. Resume at the first open V4-D02/V4-D03/V4-D05 work item after checking repository HEAD.
+
+
+## Checkpoint — 2026-10-27 — Source/UI audit completed; owner-authorized diagnostic build started
+- Earlier NO-BUILD directive honored during source development. Owner later requested source/UI/menus/chart audit and proceeding to build if no source blocker remained.
+- Source edits: `34f4c9c` corrected ChemCore status/result dark-on-dark cards, `1b6518f` replaced unusable PM fake chart controls with an accurate no-data state, `7c46777` invalidates stale report charts, `201f564` persists session report SAF identity across Activity recreation, `11f3022` adds screen/chart clarity unit tests, `b0e645e` labels known-ppm captures as exploratory, not automatically M4-approved.
+- Previous R0 scientific evidence gates and at-least-10 real calibration samples remain intact; no physical accuracy claims.
+- **Build authorization and scope:** workflow `68d89ff` is now scoped to a single marker path (no ordinary source commits trigger builds), owner authorization marker `abbb4e5` triggered [Actions run 40437121019](https://github.com/HazRob/HazRob-Tank/actions/runs/40437121019). Status when logged: in progress. Debug output is UNRELEASED and conditioned on all required Gradle tests passing. Source tests and UI visibility still require device verification.
+- **Next exact action:** retrieve run 40437121019 job steps/logs; if any failure occurs, patch source and tests without suppressing relevant safety checks. A new source commit alone cannot retrigger the scoped build; subsequent controlled build requires another explicit authorization or a directly available manual dispatch mechanism.
