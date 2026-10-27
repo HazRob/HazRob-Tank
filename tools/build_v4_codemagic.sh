@@ -59,6 +59,7 @@ t=re.sub(r'android:label="[^"]*"', 'android:label="HazRob Tank"',t,count=1)
 mf.write_text(t)
 print("V4 applicationId=com.hazrob.tank; versionName=4.0; debug identity is separate")
 PY
+python3 tools/prepare_v4_stable_source.py source
 echo "[Tank V4] Tank overlay complete; preparing Android SDK and Gradle"
 SDK="$(printenv ANDROID_SDK_ROOT || printenv ANDROID_HOME || true)"
 test -n "$SDK" && test -d "$SDK" || { echo "Android SDK not available" >&2; exit 1; }
