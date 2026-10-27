@@ -958,7 +958,7 @@ class EvidenceBundleTests(unittest.TestCase):
                     altered = original.rstrip()
                     self.assertTrue(altered.endswith("}"))
                     altered = altered[:-1] + ',"overflow_control":{"numeric":' + token + '}}'
-                    self.replace_bytes(record, base, filename, altered + "\\n")
+                    self.replace_bytes(record, base, filename, altered + "\n")
                     self.assertIn(
                         "INVALID_EVIDENCE_FILE_CONTENT:" + filename,
                         audit_evidence_bundle(record, temp))
