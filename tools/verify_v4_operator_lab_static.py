@@ -70,6 +70,25 @@ require(reference_gate,'!controllerId.equals(q.optString("r0_device_id",""))',"m
 assert "private void openR0Maintenance()" not in experiments,"Duplicate R0 editor must not remain"
 checks.append("single-authority-R0-editor")
 
+publisher=read("android/app/src/main/java/com/servoc/app/github/GitHubReferencePublisher.java")
+require(publisher,'REPOSITORY="HazRob/HazRob-Tank"',"Tank-only-publisher")
+require(publisher,'BRANCH="research/tank-v4-review-staging"',"isolated-research-review-branch")
+require(publisher,'LIBRARY_ROOT="research_data/tank_v4_scientific_review"',"non-runtime-research-path")
+require(publisher,"readBackMatches(secret,path,payloadHash)","post-upload-SHA256-readback")
+require(publisher,"ReferenceLineageGuard.valid(db,record)","approved-developer-lineage-gate")
+for legacy in ("sohpany/SERVOC-Android","release/hazrob-0.10.2-rc2",
+               "research_data/hr069_developer_submissions"):
+    assert legacy not in publisher,f"Legacy HazRob upload destination must be absent: {legacy}"
+checks.append("legacy-remote-publication-blocked")
+
+connection=read("android/app/src/main/java/com/servoc/app/ui/DeveloperConnectionDiagnosticsTab.java")
+require(connection,"root.setBackgroundColor(0xFFF7F8FA)","developer-connection-light-background")
+require(connection,"remember.setTextColor(0xFF111827)","developer-connection-black-checkbox")
+require(connection,"final boolean rememberWan=remember.isChecked()","WAN-checkbox-UI-thread-snapshot")
+require(connection,"if(rememberWan)store.save(s,p);else store.clear()","WAN-worker-uses-frozen-input")
+assert "remember.setTextColor(Color.WHITE)" not in connection
+checks.append("developer-connection-dark-legacy-removed")
+
 calibration=read("android/app/src/main/java/com/servoc/app/ui/DeveloperR0Tab.java")
 require(calibration,"host.robotApi().calibrationStart(300,60)","firmware-owned-300+60")
 require(calibration,"FirmwareR0Contract.committedValues(response)","committed-R0-only")
