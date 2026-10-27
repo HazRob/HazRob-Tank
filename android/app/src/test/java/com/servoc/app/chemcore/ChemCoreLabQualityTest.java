@@ -105,6 +105,9 @@ public class ChemCoreLabQualityTest {
             assertFalse(q.configurationReady);assertFalse(q.fingerprintNormalizationReady());
             assertEquals(0,q.r0NormalizedChannels);
             assertTrue(q.advisories.toString().contains("esp32_r0_sync_pending"));
+            assertEquals(0,q.toJson().getJSONObject("r0_standard")
+                    .getJSONObject("per_sensor").length());
+            assertEquals("unavailable",q.toJson().getJSONObject("r0_standard").getString("source"));
             ChemCoreLabQuality same=ChemCoreLabQuality.evaluate(diagnostic(true,false),0,0);
             assertTrue(same.configurationReady);assertTrue(same.fingerprintNormalizationReady());
         }finally{ManualR0Calibration.load(null);}
