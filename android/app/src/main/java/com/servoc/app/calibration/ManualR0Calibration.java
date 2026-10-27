@@ -126,11 +126,12 @@ public final class ManualR0Calibration {
             e.putString("manual_r0_session_"+k,session);
             e.putString("manual_r0_utc_"+k,utc);
             e.remove("manual_r0_device_"+k);
+            e.remove("manual_r0_samples_"+k);
         }
         if(!e.commit())return false;
         for(Map.Entry<String,Double> a:proposed.entrySet()){
             String k=a.getKey();values.put(k,a.getValue());sources.put(k,"automatic_clean_air_field_r0");
-            sessions.put(k,session);utcs.put(k,utc);deviceIds.remove(k);
+            sessions.put(k,session);utcs.put(k,utc);deviceIds.remove(k);sampleCounts.remove(k);
         }
         loaded=true;return true;
     }
@@ -206,7 +207,8 @@ public final class ManualR0Calibration {
                 if(!getDeviceId(key).isEmpty())q.put("r0_device_id",getDeviceId(key));
                 if(getSamples(key)>0)q.put("r0_samples",getSamples(key));
                 long age=ageMs(utc);q.put("r0_age_known",age>=0);if(age>=0)q.put("r0_age_ms",age);
-                q.put("r0_provenance_complete",!source.isEmpty()&&!"unavailable".equals(source)&&!session.isEmpty()&&!utc.isEmpty());
+                q.put("r0_provenance_complete",!source.isEmpty()&&!"unavailable".equals(source)&&!session.isEmpty()&&!utc.isEmpty()
+                        &&(!"firmware_clean_air_r0".equals(source)||getSamples(key)>=10));
                 if(FieldR0Baseline.SOURCE.equals(source)){
                     q.put("r0_samples",FieldR0Baseline.SAMPLE_COUNT);q.put("r0_window_s",FieldR0Baseline.WINDOW_SECONDS);q.put("r0_environment_compensated",FieldR0Baseline.ENVIRONMENT_COMPENSATED);
                 }
