@@ -63,6 +63,14 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     except (OSError, UnicodeError, ValueError, csv.Error, KeyError, TypeError):
         return ["CROSS_ARTIFACT_READ_FAILED"]
 
+    # The byte gate rejects non-object JSON, but this replay function is also
+    # invoked independently by regression tests and external research tools.
+    # Never let an array/scalar at any verified JSON path crash the audit.
+    documents = (raw, source, signal, split, protocol, calibration,
+                 metrics, uncertainty)
+    if any(not isinstance(document, dict) for document in documents):
+        return ["CROSS_ARTIFACT_JSON_SCHEMA_INVALID"]
+
     if (raw.get("raw_sha256") != record.get("raw_sha256") or
             raw.get("dataset_uri") != record.get("dataset_uri")):
         issues.append("RAW_MANIFEST_RECORD_MISMATCH")
