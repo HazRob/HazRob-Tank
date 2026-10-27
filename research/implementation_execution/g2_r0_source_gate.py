@@ -56,13 +56,20 @@ def audit_r0_source_bytes(record, repo_root=Path(".")):
                 issues.append("R0_RAW_SOURCE_BYTE_SIZE_MISMATCH")
                 continue
             actual = hashlib.sha256()
+            bytes_hashed = 0
             with resolved.open("rb") as stream:
                 if stream.read(64).startswith(LFS_HEADER):
                     issues.append("R0_RAW_SOURCE_GIT_LFS_POINTER_NOT_MATERIALIZED")
                     continue
                 stream.seek(0)
                 for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                    bytes_hashed += len(chunk)
                     actual.update(chunk)
+            # Recheck the bytes actually hashed: stat() precedes open() and
+            # cannot guarantee that an archive stayed the same size while read.
+            if bytes_hashed != size:
+                issues.append("R0_RAW_SOURCE_BYTE_SIZE_MISMATCH")
+                continue
             if actual.hexdigest() != digest:
                 issues.append("R0_RAW_SOURCE_BYTE_DIGEST_MISMATCH")
         except (OSError, ValueError):
