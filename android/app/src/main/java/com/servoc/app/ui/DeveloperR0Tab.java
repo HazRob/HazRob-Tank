@@ -147,11 +147,13 @@ public final class DeveloperR0Tab {
         if(!Double.isFinite(value)){host.showToast("قيمة R0 غير صالحة — أدخل رقمًا موجبًا");return;}
         Runnable persist=()->{
             if(calibrationChangeBlocked())return;
-            if(!ManualR0Calibration.save(host.preferences(),keys[index],value)){
+            JSONObject diag=host.latestDiagnostics();
+            String controller=diag==null?"":diag.optString("device_id","");
+            if(!ManualR0Calibration.saveForDevice(host.preferences(),keys[index],value,controller)){
                 host.showToast("تعذّر حفظ R0 في الهاتف");return;
             }
             reloadFields();host.refreshAllTabs();
-            host.showToast("تم تحديث R0 لـ "+keys[index].toUpperCase(Locale.US)+" — يسري على القياسات الجديدة");
+            host.showToast("تم تحديث R0 لـ "+keys[index].toUpperCase(Locale.US)+"؛ "+(controller.isEmpty()?"لا توجد هوية جهاز متصل لتوثيقها":"مرتبطة بالروبوت "+controller));
         };
         if("firmware_clean_air_r0".equals(ManualR0Calibration.getSource(keys[index]))){
             new AlertDialog.Builder(context)
@@ -172,11 +174,13 @@ public final class DeveloperR0Tab {
         }
         Runnable persist=()->{
             if(calibrationChangeBlocked())return;
-            if(!ManualR0Calibration.saveAll(host.preferences(),values)){
+            JSONObject diag=host.latestDiagnostics();
+            String controller=diag==null?"":diag.optString("device_id","");
+            if(!ManualR0Calibration.saveAllForDevice(host.preferences(),values,controller)){
                 host.showToast("فشل الحفظ — لم تتغير أي قيمة من R0");return;
             }
             reloadFields();host.refreshAllTabs();
-            host.showToast("تم حفظ قيم R0 الثماني مع سجل مصدر وتوقيت معايرة واحد");
+            host.showToast("تم حفظ ثماني قيم R0؛ "+(controller.isEmpty()?"غير مرتبطة بهوية جهاز متصل":"مرتبطة بالروبوت "+controller));
         };
         boolean firmwarePresent=false;
         for(String key:keys)if("firmware_clean_air_r0".equals(ManualR0Calibration.getSource(key))){
