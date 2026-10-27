@@ -7,14 +7,22 @@ import csv
 import hashlib
 import json
 import math
+import unicodedata
 from collections import Counter
 from pathlib import Path
 from g2_cluster_bootstrap_gate import audit_group_bootstrap_accuracy
 
 
 def _csv_has_control(value):
-    """Disallow hidden control characters in source groups and blind labels."""
-    return any(ord(ch) < 32 or ord(ch) == 127 for ch in value)
+    """Reject invisible Unicode format/control code points in evidence CSV.
+
+    SHA256 confirms bytes, not that a reviewer sees the same physical group
+    identifier or gas label. Reject C* categories (including C1, bidi and
+    zero-width formatting) and Unicode line/paragraph separators. Printable
+    multilingual letters, marks and ordinary spaces remain valid.
+    """
+    return any(unicodedata.category(ch).startswith("C") or
+               unicodedata.category(ch) in ("Zl", "Zp") for ch in value)
 
 
 def _read_csv(base, name):
