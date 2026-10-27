@@ -8,11 +8,14 @@ import argparse
 import hashlib
 import json
 import re
+from collections import Counter
 from pathlib import Path
 
 PINNED_CATALOG_BLOB = "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f"
 DATASET_CATEGORY = "EXTERNAL_MEASUREMENT_DATASET"
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
+CANONICAL_ID = re.compile(r"^[A-Z0-9]+(?:-[A-Z0-9]+)*$")
+CANONICAL_CATEGORY = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
 
 def git_blob_sha(data):
@@ -33,12 +36,24 @@ def audit_source_catalog(catalog, expected_total=80, expected_datasets=14):
         raise ValueError("CENTRAL_CATALOG_SCHEMA_INVALID")
     entries = catalog["primary_catalog_entries"]
     if (len(entries) != expected_total or
-            catalog.get("record_count") != expected_total or
-            isinstance(catalog.get("record_count"), bool) or
+            type(catalog.get("record_count")) is not int or
+            catalog["record_count"] != expected_total or
             any(not isinstance(row, dict) or
-                not isinstance(row.get("id"), str) or not row["id"].strip() or
-                not isinstance(row.get("category"), str) for row in entries)):
+                not isinstance(row.get("id"), str) or
+                not CANONICAL_ID.fullmatch(row["id"]) or
+                not isinstance(row.get("category"), str) or
+                not CANONICAL_CATEGORY.fullmatch(row["category"]) for row in entries)):
         raise ValueError("CENTRAL_CATALOG_ENTRY_COUNT_OR_SCHEMA_INVALID")
+    # The declared category inventory is part of source provenance. A correct
+    # external-dataset count cannot conceal a changed non-dataset category or
+    # an invented/omitted category. JSON 14.0 and true are not integer counts.
+    declared = catalog["counts_by_type"]
+    actual = dict(Counter(row["category"] for row in entries))
+    if (any(not isinstance(key, str) or
+            not CANONICAL_CATEGORY.fullmatch(key) or
+            type(value) is not int or value < 0
+            for key, value in declared.items()) or declared != actual):
+        raise ValueError("CENTRAL_CATALOG_CATEGORY_INVENTORY_MISMATCH")
     ids = [row["id"] for row in entries]
     if len(set(ids)) != len(ids):
         raise ValueError("CENTRAL_CATALOG_DUPLICATE_ID")
@@ -83,11 +98,26 @@ def audit_source_catalog(catalog, expected_total=80, expected_datasets=14):
     }
 
 
+def _unique_object_pairs(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("CENTRAL_CATALOG_DUPLICATE_JSON_KEY")
+        result[key] = value
+    return result
+
+
+def _reject_nonfinite(token):
+    raise ValueError("CENTRAL_CATALOG_NONFINITE_JSON_NUMBER")
+
+
 def audit_catalog_bytes(data, expected_blob=PINNED_CATALOG_BLOB):
     if git_blob_sha(data) != expected_blob:
         raise ValueError("CENTRAL_CATALOG_GIT_BLOB_MISMATCH")
     try:
-        catalog = json.loads(data.decode("utf-8"))
+        catalog = json.loads(data.decode("utf-8"),
+                             object_pairs_hook=_unique_object_pairs,
+                             parse_constant=_reject_nonfinite)
     except (UnicodeError, ValueError) as exc:
         raise ValueError("CENTRAL_CATALOG_JSON_INVALID") from exc
     result = audit_source_catalog(catalog)
