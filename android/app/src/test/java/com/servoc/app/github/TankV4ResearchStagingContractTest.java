@@ -31,7 +31,7 @@ public final class TankV4ResearchStagingContractTest {
         assertTrue(pub.contains("expectedHash.equalsIgnoreCase(sha256(verified))"));
         assertTrue(pub.contains("verified.length==item.optLong(\"size\",-1)"));
         assertTrue(pub.contains("return new Result(true,code,path,commitSha"));
-        assertTrue(pub.contains("if(!ExperimentQueries.isDeveloperReference(db,record.id)"));
+        assertTrue(pub.contains("!ExperimentQueries.isDeveloperReference(db,record.id)"));
     }
 
     @Test public void uploadIsOperatorInitiatedAndNeverAnAutomaticStablePromotion()throws Exception{
