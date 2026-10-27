@@ -118,6 +118,7 @@ public final class ManualR0Calibration {
             e.putString("manual_r0_source_"+k,"automatic_clean_air_field_r0");
             e.putString("manual_r0_session_"+k,session);
             e.putString("manual_r0_utc_"+k,utc);
+            e.remove("manual_r0_device_"+k);
         }
         if(!e.commit())return false;
         for(Map.Entry<String,Double> a:proposed.entrySet()){
