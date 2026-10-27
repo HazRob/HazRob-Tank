@@ -217,7 +217,8 @@ public final class DeveloperR0Tab {
             double rs=sample==null?Double.NaN:sample.optDouble("rs",Double.NaN);
             String rsLabel=Double.isFinite(rs)&&rs>0?String.format(Locale.US,"%.5f kΩ",rs):"غير متاح";
             info[i].setText("Rs اللحظية: "+rsLabel+" • المصدر: "+ManualR0Calibration.getSource(k)+
-                "\nآخر حفظ: "+ManualR0Calibration.getUtc(k)+" • جلسة: "+ManualR0Calibration.getSession(k));
+                "\nآخر حفظ: "+ManualR0Calibration.getUtc(k)+" • جلسة: "+ManualR0Calibration.getSession(k)+
+                " • عينات R0 الموثقة: "+ManualR0Calibration.getSamples(k));
         }
         summary.setText("R0 الحالية محفوظة على الهاتف ضمن إعدادات الجهاز ولا تُستبدل بواسطة ChemCore Stable. " +
             "الإدخال اليدوي لا يغيّر تقارير جلسات قديمة، ولا يثبت معايرة الغاز المرجعي.");
