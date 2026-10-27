@@ -1,0 +1,32 @@
+# G2 — تدقيق خط الأساس على مستوى كل مجموعة اختبار مستقلة
+التاريخ: 2026-10-27 | المشروع: HazRob Tank | النطاق: فرع البحث فقط
+
+## الفجوة التي عولجت
+كانت بوابة G2 تعيد حساب دقة النموذج المرجعي `baseline_metric_value` من تنبؤات الاختبار المحجوب إجمالاً، لكنها لا تعيد حساب صحة النموذج المرجعي لكل مجموعة اختبار في `metrics_per_group.csv`. يمكن تغيير التنبؤات المرجعية بين مجموعتين بحيث تبقى الدقة الكلية ثابتة بينما تتغير أخطاء المجموعات، دون أن تكتشف البوابة ذلك على مستوى المجموعات.
+
+## التعديل
+- أصبح العمود `baseline_correct_count` إلزامياً في `metrics_per_group.csv` عند تقييم `classification_accuracy`.
+- يعيد `g2_cross_artifact_gate.py` حساب عدد التنبؤات المرجعية الصحيحة لكل `group_id` من `predictions_blind.csv`، ويقارنه بالقيمة المصرح بها.
+- ترفض البوابة القيم غير الصحيحة أو السالبة أو التي تتجاوز `sample_count` أو لا تطابق العد المعاد حسابه، مع رمز `PER_GROUP_BASELINE_CORRECT_COUNT_MISMATCH`.
+- تظل مطابقة التجزئات، وبروتوكول النموذج المرجعي المقفل، وفصل الجلسات الفيزيائية، وإعادة حساب الدقة الإجمالية وفترات الثقة العنقودية إلزامية كما كانت.
+
+## اختبارات الانحدار الاصطناعية
+1. رفض حزمة لا تتضمن عمود صحة النموذج المرجعي لكل مجموعة.
+2. رفض قيم مرجعية لكل مجموعة متلاعب بها حتى عندما تبقى الدقة الإجمالية صحيحة.
+3. رفض تبديل تنبؤات النموذج المرجعي بين مجموعتين مع بقاء الدقة الإجمالية نفسها.
+4. تبقى حالة التحكم الإيجابية الاصطناعية قادرة على الوصول إلى حالة **مرشح للمراجعة فقط**، لا اعتماد علمي.
+
+الأوامر القابلة لإعادة الإنتاج من جذر المستودع:
+```bash
+cd research/implementation_execution
+python -m unittest -v test_g2_signal_lineage_gate test_g2_evidence_audit test_g2_evidence_bundle_gate test_g2_cluster_bootstrap_gate test_g2_uci1081_signal_manifest
+cd ../..
+python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_audit_results.json
+```
+
+## مصدر الأدلة وحالة الاعتماد
+- فهرس المراجع المركزية: `research/systems_analysis/TECH80_CENTRAL_REFERENCE_CROSSWALK_2026-10-21.json`، مصدره `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json`، نسخة المصدر الموثقة في الفهرس `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`.
+- سجل المصادر المستقلة المؤهلة: `research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json`، وهو خالٍ من سجلات القياسات المستقلة عند هذه المراجعة.
+- لذلك يبقى **G2: صفر مرشحين، 80 محجوبة** ما لم يثبت تشغيل التدقيق خلاف ذلك بمصادر مستقلة؛ ولا يتغير **Tank G3: 0/80**.
+- هذا تدقيق برمجي لاتساق الأدلة فقط. لا يثبت صحة المصدر الفيزيائي أو الغاز أو ppm، ولا يسمح بتعديل ChemCore Stable أو منح اعتماد.
+- مرجع التحقق CI: `https://github.com/HazRob/HazRob-Tank/actions/workflows`؛ يجب ربط التشغيل الناجح والالتزام النهائي بعد اكتماله، ولا يُفترض النجاح قبل فحصه.
