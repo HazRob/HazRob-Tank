@@ -1614,5 +1614,77 @@ class PostUnblindingTruthReleaseTests(unittest.TestCase):
             self.assertIn("BLIND_TRUTH_RELEASE_UNAVAILABLE",
                           audit_record(record, temp)["issues"])
 
+
+class CentralReferenceCatalogReadinessTests(unittest.TestCase):
+    """Catalog metadata must not be mistaken for independent G2 measurements."""
+
+    @staticmethod
+    def fixture():
+        return {
+            "record_count": 2,
+            "counts_by_type": {"EXTERNAL_MEASUREMENT_DATASET": 1},
+            "primary_catalog_entries": [
+                {"id": "MQ-EXT-01", "category": "EXTERNAL_MEASUREMENT_DATASET",
+                 "title": "synthetic catalogue entry",
+                 "measurement_qualification": "claim_not_verified",
+                 "experiment_independence": "NOT_AUDITED",
+                 "raw_file_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED",
+                 "raw_sha256": "a" * 64,
+                 "physical_reference_traceability": "reported_only"},
+                {"id": "METHOD-01", "category": "ANALYTICAL_METHOD_STUDY"},
+            ],
+        }
+
+    def test_truthy_claim_strings_never_qualify_a_dataset(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        result = audit_source_catalog(self.fixture(), expected_total=2,
+                                      expected_datasets=1)
+        self.assertEqual(result["source_review_ready"], 0)
+        self.assertEqual(result["source_review_blocked"], 1)
+        self.assertIn("MEASUREMENT_QUALIFICATION_NOT_VERIFIED",
+                      result["datasets"][0]["blockers"])
+        self.assertIn("PHYSICAL_REFERENCE_TRACEABILITY_NOT_VERIFIED",
+                      result["datasets"][0]["blockers"])
+
+    def test_raw_inspected_and_git_mirror_sha_do_not_prove_original_bytes(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        result = audit_source_catalog(self.fixture(), expected_total=2,
+                                      expected_datasets=1)
+        self.assertIn("ORIGINAL_RAW_BYTES_NOT_CATALOG_VERIFIED",
+                      result["datasets"][0]["blockers"])
+        self.assertIn("INDEPENDENT_PHYSICAL_GROUPS_NOT_VERIFIED",
+                      result["datasets"][0]["blockers"])
+
+    def test_catalogue_metadata_only_ready_never_claims_g2_or_g3(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        row = catalog["primary_catalog_entries"][0]
+        row.update(measurement_qualification=True,
+                   experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                   raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                   physical_reference_traceability=True)
+        result = audit_source_catalog(catalog, expected_total=2,
+                                      expected_datasets=1)
+        self.assertEqual(result["source_review_ready"], 1)
+        self.assertEqual(result["source_review_blocked"], 0)
+        self.assertEqual(result["scope"],
+                         "SOURCE_CATALOG_ONLY_NOT_TECHNIQUE_APPROVAL")
+        self.assertIn("NOT A G2 PASS", result["datasets"][0]["notes"])
+
+    def test_catalogue_id_count_and_blob_integrity_fail_closed(self):
+        from g2_reference_catalog_readiness import (
+            audit_source_catalog, audit_catalog_bytes, git_blob_sha)
+        catalog = self.fixture()
+        catalog["primary_catalog_entries"][1]["id"] = "MQ-EXT-01"
+        with self.assertRaisesRegex(ValueError, "CENTRAL_CATALOG_DUPLICATE_ID"):
+            audit_source_catalog(catalog, expected_total=2, expected_datasets=1)
+        catalog = self.fixture()
+        with self.assertRaisesRegex(ValueError, "CENTRAL_CATALOG_DATASET_COUNT_MISMATCH"):
+            audit_source_catalog(catalog, expected_total=2, expected_datasets=2)
+        raw = json.dumps(catalog).encode("utf-8")
+        with self.assertRaisesRegex(ValueError, "CENTRAL_CATALOG_GIT_BLOB_MISMATCH"):
+            audit_catalog_bytes(raw, "0" * 40)
+        self.assertEqual(len(git_blob_sha(raw)), 40)
+
 if __name__ == "__main__":
     unittest.main()
