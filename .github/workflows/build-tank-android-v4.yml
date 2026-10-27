@@ -171,11 +171,21 @@ jobs:
           import zipfile
           apk='source/app/build/outputs/apk/debug/app-debug.apk'
           root='assets/generated/chemcore/embedded_stable/'
+          import hashlib,json
           with zipfile.ZipFile(apk) as z:
               names=set(z.namelist())
               assert root+'manifest.json' in names
               assert root+'chemcore-stable-snapshot.json' in names
-          print('PASS: embedded ChemCore snapshot and manifest')
+              m=json.loads(z.read(root+'manifest.json'))
+              payload=z.read(root+m['payload_file'])
+              assert m['min_app_version']=='4.0' and m['max_app_version']=='4.0'
+              assert m['chemical_count']==652 and m['calibration_count']==0
+              assert len(payload)==m['payload_size_bytes']
+              assert hashlib.sha256(payload).hexdigest()==m['payload_sha256']
+              snapshot=json.loads(payload)
+              assert snapshot['schema']==m['payload_schema']
+              assert not snapshot['knowledge']['response_priors']['policy']['external_m4']
+          print('PASS: embedded offline Stable v4 + SHA256 + non-M4 policy')
           PY
           mkdir -p out-debug
           cp "$APK" out-debug/HazRob-Tank-v4-UNRELEASED-debug.apk
