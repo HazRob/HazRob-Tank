@@ -40,6 +40,9 @@ public final class TankV4ResearchStagingContractTest {
         assertTrue(ui.contains(".setPositiveButton(\"إرسال\","));
         assertTrue(ui.contains("GitHubReferencePublisher.publish(token,host.database(),r)"));
         assertTrue(ui.contains("STAGED_FOR_REVIEW"));
+        assertTrue(ui.contains("commit="+raw.commitSha"));
+        assertTrue(ui.contains("sha256="+raw.payloadSha256"));
+        assertTrue(ui.contains("derived.payloadSha256"));
         assertFalse(ui.contains("منطقة مراجعة HR069-R1"));
         assertFalse(ui.contains("التجارب المرجعية • HazRob Tank V4"));
     }
