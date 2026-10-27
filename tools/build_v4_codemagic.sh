@@ -4,7 +4,7 @@ set -Eeuo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 echo "[Tank V4] branch / commit:"; git rev-parse --abbrev-ref HEAD; git rev-parse HEAD
-for check in tools/verify_v4_operator_lab_static.py tools/verify_v4_session_queries.py tools/verify_v4_echo_r0_contract.py tools/verify_v4_screening_stable_contract.py tools/verify_approved_report_sql.py; do
+for check in tools/verify_v4_prebuild_sources.py tools/verify_v4_operator_lab_static.py tools/verify_v4_session_queries.py tools/verify_v4_echo_r0_contract.py tools/verify_v4_screening_stable_contract.py tools/verify_approved_report_sql.py; do
   echo "[Tank V4] Source contract $check"
   python3 "$check"
 done
