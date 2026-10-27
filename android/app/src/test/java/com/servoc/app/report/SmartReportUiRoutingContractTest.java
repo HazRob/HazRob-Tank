@@ -14,7 +14,7 @@ public final class SmartReportUiRoutingContractTest {
 
     @Test public void centralReportSelectorIsOneSessionOrFullSite()throws Exception{
         String s=read("src/main/java/com/servoc/app/ui/ReportsTab.java");
-        assertTrue(s.contains("fieldSessions.approvedSessionsForSite(chosenSiteId)"));
+        assertTrue(s.contains("fieldSessions.approvedSessionsForSite(effectiveSite)"));
         assertTrue(s.contains("SiteSummaryExportActivity.start(scroll.getContext(),chosenSiteId,format)"));
         assertTrue(s.contains("host.requestFieldSessionExport(format,chosenSessionId)"));
         assertTrue(s.contains("الجلسات المعتمدة للموقع"));
@@ -24,8 +24,9 @@ public final class SmartReportUiRoutingContractTest {
 
     @Test public void userSessionTabRoutesThroughSameReportScope()throws Exception{
         String s=read("src/main/java/com/servoc/app/ui/FieldSessionsTab.java");
-        assertTrue(s.contains("host.openReportsForSite(selectedSiteId,q.id)"));
-        assertTrue(s.contains("host.openReportsForSite(selectedSiteId,\"\")"));
+        assertTrue(s.contains("host.openReportsForSite(q.siteId,q.id)"));
+        assertTrue(s.contains("SiteSummaryExportActivity.start("));
+        assertTrue(s.contains("host.requestFieldSessionExport("));
         assertFalse(s.contains("host.syncUserLibrary()"));
         assertFalse(s.contains("requestUserLibraryFolder()"));
     }
