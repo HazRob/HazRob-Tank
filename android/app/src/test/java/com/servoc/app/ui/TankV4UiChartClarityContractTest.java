@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  */
 public final class TankV4UiChartClarityContractTest {
     private static String src(String file)throws Exception{
-        return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/ui/"+file),StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/ui/"+file)),StandardCharsets.UTF_8);
     }
 
     @Test public void chemCoreUsesReadableLightOutlinedStatusAndResults()throws Exception{
