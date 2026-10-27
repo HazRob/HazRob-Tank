@@ -91,6 +91,16 @@ def synthetic_bundle(root):
     documents["protocol_locked.json"]["group_assignment_sha256"] = hashlib.sha256(
         json.dumps(allocation, ensure_ascii=False,
                    separators=(",", ":")).encode("utf-8")).hexdigest()
+    # Calibration reference labels are committed before blind evaluation,
+    # independently of the baseline's training-label commitment.
+    calibration_rows = sorted(
+        [[row["exposure_id"], row["group_id"], row["gas_reference_id"]]
+         for row in csv.DictReader(io.StringIO(csv_payloads["group_manifest.csv"]))
+         if row["group_id"] in record["calibration_group_ids"]],
+        key=lambda values: (values[0], values[1]))
+    documents["protocol_locked.json"]["calibration_labels_sha256"] = hashlib.sha256(
+        json.dumps(calibration_rows, ensure_ascii=False,
+                   separators=(",", ":")).encode("utf-8")).hexdigest()
     manifest = {}
     for name in FILES:
         if name.endswith(".json"):
@@ -1494,6 +1504,53 @@ class LockedPhysicalHoldoutAssignmentTests(unittest.TestCase):
             del protocol["group_assignment_sha256"]
             self.rehash(record, base, name, json.dumps(protocol) + "\n")
             self.assertIn("GROUP_ASSIGNMENT_DIGEST_NOT_LOCKED",
+                          audit_record(record, temp)["issues"])
+
+
+class LockedCalibrationLabelsTests(unittest.TestCase):
+    """Calibration-label commitments are synthetic integrity checks only."""
+
+    def test_calibration_labels_replay_with_unmodified_fixture(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            result = audit_record(record, temp)
+            self.assertEqual(result["status"], "G2_PASS_CANDIDATE_REQUIRES_REVIEW",
+                             result["issues"])
+
+    def test_rehashed_calibration_relabel_cannot_escape_locked_protocol(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "group_manifest.csv"
+            old = (base / name).read_text(encoding="utf-8")
+            self.assertIn("ca,d1-s2,GAS_B,d1,s2", old)
+            new = old.replace("ca,d1-s2,GAS_B,d1,s2",
+                              "ca,d1-s2,GAS_A,d1,s2")
+            LockedPhysicalHoldoutAssignmentTests.rehash(record, base, name, new)
+            issues = audit_record(record, temp)["issues"]
+            self.assertIn("CALIBRATION_LABEL_DIGEST_MISMATCH", issues)
+            self.assertNotIn("GROUP_ASSIGNMENT_DIGEST_MISMATCH", issues)
+            self.assertNotIn("BASELINE_TRAINING_LABEL_DIGEST_MISMATCH", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_missing_calibration_commitment_blocks_even_with_valid_sha(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "protocol_locked.json"
+            protocol = json.loads((base / name).read_text(encoding="utf-8"))
+            del protocol["calibration_labels_sha256"]
+            LockedPhysicalHoldoutAssignmentTests.rehash(
+                record, base, name, json.dumps(protocol) + "\n")
+            self.assertIn("CALIBRATION_LABEL_DIGEST_NOT_LOCKED",
+                          audit_record(record, temp)["issues"])
+
+    def test_blank_calibration_truth_blocks_even_with_rehashed_csv(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            name = "group_manifest.csv"
+            old = (base / name).read_text(encoding="utf-8")
+            new = old.replace("ca,d1-s2,GAS_B,d1,s2", "ca,d1-s2,,d1,s2")
+            LockedPhysicalHoldoutAssignmentTests.rehash(record, base, name, new)
+            self.assertIn("CALIBRATION_LABELS_UNAVAILABLE",
                           audit_record(record, temp)["issues"])
 
 
