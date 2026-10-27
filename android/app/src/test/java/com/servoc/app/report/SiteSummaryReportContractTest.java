@@ -45,10 +45,10 @@ public class SiteSummaryReportContractTest {
   assertTrue(s.contains("Excel ذكي للموقع"));
   assertTrue(s.contains("تقرير الجلسة PDF • 4–5 صفحات أفقية"));
   assertTrue(s.contains("Excel ذكي للجلسة"));
-  assertTrue(s.contains("host.openReportsForSite(selectedSiteId,\"\")"));
-  assertTrue(s.contains("host.openReportsForSite(selectedSiteId,\"\")"));
-  assertTrue(s.contains("host.openReportsForSite(selectedSiteId,q.id)"));
-  assertTrue(s.contains("host.openReportsForSite(selectedSiteId,q.id)"));
+  assertTrue(s.contains("SiteSummaryExportActivity.start("));
+  assertTrue(s.contains("host.requestFieldSessionExport("));
+  assertTrue(s.contains("host.openReportsForSite(q.siteId,q.id)"));
+  assertTrue(s.contains("q.approved()"));
  }
 
  @Test public void siteExportUsesDedicatedSafActivityForSmartPdfAndXlsx() throws Exception {
