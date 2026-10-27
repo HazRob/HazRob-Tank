@@ -31,7 +31,8 @@ def _audit_r0_reference(ref, sensor_id, problems):
         problems.append("INVALID_R0_OHMS")
     if ref.get("sensor_instance_id") != sensor_id:
         problems.append("R0_SENSOR_INSTANCE_MISMATCH")
-    if ref.get("heater_phase") not in {"HIGH", "LOW", "CONSTANT"}:
+    if (not isinstance(ref.get("heater_phase"), str) or
+            ref["heater_phase"] not in {"HIGH", "LOW", "CONSTANT"}):
         problems.append("R0_HEATER_PHASE_UNDOCUMENTED")
     if not isinstance(ref.get("reference_id"), str) or not ref["reference_id"].strip():
         problems.append("R0_REFERENCE_ID_MISSING")
@@ -94,11 +95,13 @@ def audit_signal_lineage(record):
     if formula == "RS_OVER_R0":
         if mode == "NOT_USED":
             problems.append("RS_OVER_R0_REQUIRES_R0")
-        if source_units not in {"OHM", "KOHM"} or output_units != "DIMENSIONLESS":
+        if (not isinstance(source_units, str) or
+                source_units not in {"OHM", "KOHM"} or output_units != "DIMENSIONLESS"):
             problems.append("RS_OVER_R0_REQUIRES_RESISTANCE_INPUT_AND_DIMENSIONLESS_OUTPUT")
         # R0 is stored in OHM, whereas source Rs may be in KOHM.
         # An undocumented division of kOhm by Ohm distorts Rs/R0 by 1000x.
-        expected_multiplier = {"OHM": 1.0, "KOHM": 1000.0}.get(source_units)
+        expected_multiplier = ({"OHM": 1.0, "KOHM": 1000.0}.get(source_units)
+                               if isinstance(source_units, str) else None)
         multiplier = p.get("rs_to_ohm_multiplier")
         if expected_multiplier is not None:
             if multiplier is None:
@@ -129,6 +132,6 @@ def audit_signal_lineage(record):
             problems.append("MISSING_PER_SENSOR_R0_REFERENCES")
         else:
             _audit_r0_reference(p.get("r0_reference"), valid_ids[0] if valid_ids else None, problems)
-    elif mode in {"MEASURED_REFERENCE", "MANUFACTURER_CURVE_PRIOR"}:
+    elif isinstance(mode, str) and mode in {"MEASURED_REFERENCE", "MANUFACTURER_CURVE_PRIOR"}:
         problems.append("R0_DECLARED_BUT_NOT_USED_IN_FORMULA")
     return problems
