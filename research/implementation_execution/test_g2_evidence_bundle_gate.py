@@ -503,6 +503,21 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertIn("GROUPING_SOURCE_VALUE_MISSING",
                           audit_record(record, temp)["issues"])
 
+    def test_malformed_test_group_ids_fail_closed_without_typeerror(self):
+        # JSON-valid nested values previously crashed set() and bootstrap
+        # comprehensions during cross-artifact replay instead of blocking.
+        for invalid in (
+            ["d2-s1", {"nested": "d2-s2"}],
+            ["d2-s1", ["d2-s2"]],
+            42,
+        ):
+            with self.subTest(invalid=invalid), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                record["test_group_ids"] = invalid
+                issues = audit_record(record, temp)["issues"]
+                self.assertIn("SPLIT_MANIFEST_RECORD_MISMATCH", issues)
+                self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
     def test_split_manifest_mismatch_with_valid_hash_is_blocked(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)

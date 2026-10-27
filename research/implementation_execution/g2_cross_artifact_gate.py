@@ -234,7 +234,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                     issues.append("METRICS_PER_GROUP_COUNT_MISMATCH")
             except (ValueError, TypeError):
                 issues.append("METRICS_PER_GROUP_COUNT_MISMATCH")
-        if seen != set(record.get("test_group_ids", [])):
+        if seen != {gid for gid, part in expected_groups.items() if part == "test_group_ids"}:
             issues.append("METRICS_PER_GROUP_COVERAGE_MISMATCH")
 
     # Classification accuracy must be computed from the actual blind rows,
@@ -361,8 +361,10 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                 except (ValueError, TypeError):
                     issues.append("PER_GROUP_BASELINE_CORRECT_COUNT_MISMATCH")
             issues.extend(audit_group_bootstrap_accuracy(
-                {gid: counts[gid] for gid in record.get("test_group_ids", []) if gid in counts},
-                {gid: correct[gid] for gid in record.get("test_group_ids", []) if gid in counts},
+                {gid: counts[gid] for gid, part in expected_groups.items()
+                 if part == "test_group_ids" and gid in counts},
+                {gid: correct[gid] for gid, part in expected_groups.items()
+                 if part == "test_group_ids" and gid in counts},
                 interval))
 
     # Only classification_accuracy has a verified arithmetic path from the
