@@ -1,6 +1,8 @@
 """G2 audit regression tests; synthetic fixtures never become G2 evidence."""
 import unittest
-from g2_evidence_audit import audit_record, audit_all, validate_ledger_scope
+import tempfile
+from pathlib import Path
+from g2_evidence_audit import audit_record, audit_all, validate_ledger_scope, load_g2_inputs
 from test_g2_signal_lineage_gate import normalized
 
 SHA = "a"*64
@@ -126,6 +128,71 @@ class AuditTests(unittest.TestCase):
     def test_empty_80_evidence(self):
         a=audit_all([f"{i:02d}.1" for i in range(1,81)],[])
         self.assertEqual(sum(x["status"]=="G2_BLOCKED" for x in a),80)
+
+class StrictInputManifestTests(unittest.TestCase):
+    """Synthetic parser controls; no gas or ppm qualification is implied."""
+
+    def read_pair(self, evidence_text, ledger_text=None):
+        if ledger_text is None:
+            ledger_text = ('{"schema_version":"hazrob.tank.chemcore80.execution-ledger-v4",'
+                           '"work_items":[{"id":"01.1"}]}')
+        with tempfile.TemporaryDirectory() as temp:
+            ledger = Path(temp) / "ledger.json"
+            evidence = Path(temp) / "evidence.json"
+            ledger.write_text(ledger_text, encoding="utf-8")
+            evidence.write_text(evidence_text, encoding="utf-8")
+            return load_g2_inputs(ledger, evidence)
+
+    def test_valid_empty_register_is_explicit_not_inferred(self):
+        ledger, evidence = self.read_pair(
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[]}')
+        self.assertEqual(evidence["records"], [])
+        self.assertEqual(ledger["work_items"][0]["id"], "01.1")
+
+    def test_duplicate_top_level_records_key_rejected(self):
+        with self.assertRaisesRegex(ValueError, "G2_INPUT_DUPLICATE_JSON_KEY:records"):
+            self.read_pair(
+                '{"schema":"hazrob.g2.independent-evidence.v1",'
+                '"records":[{"id":"01.1"}],"records":[]}')
+
+    def test_duplicate_nested_evidence_record_key_rejected(self):
+        with self.assertRaisesRegex(ValueError, "G2_INPUT_DUPLICATE_JSON_KEY:id"):
+            self.read_pair(
+                '{"schema":"hazrob.g2.independent-evidence.v1",'
+                '"records":[{"id":"01.1","id":"02.1"}]}')
+
+    def test_duplicate_ledger_work_items_key_rejected(self):
+        with self.assertRaisesRegex(ValueError, "G2_INPUT_DUPLICATE_JSON_KEY:work_items"):
+            self.read_pair(
+                '{"schema":"hazrob.g2.independent-evidence.v1","records":[]}',
+                '{"schema_version":"hazrob.tank.chemcore80.execution-ledger-v4",'
+                '"work_items":[{"id":"01.1"}],"work_items":[]}')
+
+    def test_nan_in_evidence_register_rejected(self):
+        with self.assertRaisesRegex(ValueError, "G2_INPUT_NONFINITE_NUMBER:NaN"):
+            self.read_pair(
+                '{"schema":"hazrob.g2.independent-evidence.v1",'
+                '"records":[{"id":"01.1","metric_value":NaN}]}')
+
+    def test_overflowed_json_number_rejected(self):
+        with self.assertRaisesRegex(ValueError, "G2_INPUT_NONFINITE_NUMBER:1e9999"):
+            self.read_pair(
+                '{"schema":"hazrob.g2.independent-evidence.v1",'
+                '"records":[{"id":"01.1","metric_value":1e9999}]}')
+
+    def test_missing_records_not_silently_treated_as_empty(self):
+        with self.assertRaisesRegex(ValueError, "G2_EVIDENCE_REGISTER_SCHEMA_INVALID"):
+            self.read_pair('{"schema":"hazrob.g2.independent-evidence.v1"}')
+
+    def test_wrong_schema_and_invalid_ledger_fail_closed(self):
+        with self.assertRaisesRegex(ValueError, "G2_EVIDENCE_REGISTER_SCHEMA_INVALID"):
+            self.read_pair('{"schema":"unknown","records":[]}')
+        with self.assertRaisesRegex(ValueError, "G2_EXECUTION_LEDGER_SCHEMA_INVALID"):
+            self.read_pair(
+                '{"schema":"hazrob.g2.independent-evidence.v1","records":[]}',
+                '{"schema_version":"hazrob.tank.chemcore80.execution-ledger-v4",'
+                '"work_items":[{"id":null}]}')
+
 
 class LegacyContractTests(unittest.TestCase):
     def test_missing_source_fails_closed(self):
