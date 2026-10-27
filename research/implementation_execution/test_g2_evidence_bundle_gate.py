@@ -1351,7 +1351,7 @@ class UnicodeCanonicalCsvEvidenceTests(unittest.TestCase):
         for label in ("غاز_الإيثانول", "éthanol", "ethanol 50 ppm"):
             self.assertFalse(bundle_invalid(label))
             self.assertFalse(replay_invalid(label))
-        for token in ("\\u00a0", "\\u2009", "\\u202f", "\\u3000", "e\\u0301"):
+        for token in (chr(0x00A0), chr(0x2009), chr(0x202F), chr(0x3000), "e" + chr(0x0301)):
             with self.subTest(token=repr(token)), tempfile.TemporaryDirectory() as temp:
                 record, base = synthetic_bundle(temp)
                 self.assertTrue(bundle_invalid(token))
@@ -1367,7 +1367,7 @@ class UnicodeCanonicalCsvEvidenceTests(unittest.TestCase):
              "GAS_A,GAS_A{token},GAS_A"),
             ("metrics_per_group.csv", "d2-s1,1,1,1", "d2-s1{token},1,1,1"),
         )
-        for token in ("\\u00a0", "\\u2009", "\\u202f", "\\u3000", "e\\u0301"):
+        for token in (chr(0x00A0), chr(0x2009), chr(0x202F), chr(0x3000), "e" + chr(0x0301)):
             for name, old, new in mutations:
                 with self.subTest(token=repr(token), file=name), tempfile.TemporaryDirectory() as temp:
                     record, base = synthetic_bundle(temp)
