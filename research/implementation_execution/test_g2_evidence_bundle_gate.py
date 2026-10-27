@@ -1671,6 +1671,22 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
                          "SOURCE_CATALOG_ONLY_NOT_TECHNIQUE_APPROVAL")
         self.assertIn("NOT A G2 PASS", result["datasets"][0]["notes"])
 
+    def test_pinned_14_source_matrix_is_fail_closed_and_noncertifying(self):
+        from g2_reference_catalog_readiness import PINNED_CATALOG_BLOB
+        path = Path(__file__).parent / "G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json"
+        matrix = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(matrix["source_git_blob_sha1"], PINNED_CATALOG_BLOB)
+        self.assertEqual(matrix["catalog_entries"], 80)
+        self.assertEqual(matrix["external_measurement_datasets"], 14)
+        self.assertEqual(matrix["source_review_ready"], 0)
+        self.assertEqual(matrix["source_review_blocked"], 14)
+        self.assertEqual(len({row["id"] for row in matrix["datasets"]}), 14)
+        self.assertTrue(all(row["blockers"] and
+                            row["catalog_source_review_ready"] is False
+                            for row in matrix["datasets"]))
+        self.assertEqual(matrix["scope"],
+                         "SOURCE_CATALOG_ONLY_NOT_TECHNIQUE_APPROVAL")
+
     def test_catalogue_id_count_and_blob_integrity_fail_closed(self):
         from g2_reference_catalog_readiness import (
             audit_source_catalog, audit_catalog_bytes, git_blob_sha)
