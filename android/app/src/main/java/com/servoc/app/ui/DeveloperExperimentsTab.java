@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.servoc.app.analytics.AnalyticsSnapshot;
 import com.servoc.app.analytics.LibraryStatus;
 import com.servoc.app.calibration.ManualR0Calibration;
+import com.servoc.app.calibration.TankReferenceR0Gate;
 import com.servoc.app.chemical.ChemicalExperimentStatusRepository;
 import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.data.ExperimentQueries;
@@ -114,25 +115,7 @@ public final class DeveloperExperimentsTab {
      * having eight R0 in the phone settings does not qualify an archived capture.
      */
     private static boolean qualifiedReferenceChannels(JSONObject channels,String controllerId){
-        if(channels==null)return false;
-        for(String key:ManualR0Calibration.keys()){
-            JSONObject q=channels.optJSONObject(key);
-            if(q==null||!q.optBoolean("ok",q.optBoolean("valid",false)))return false;
-            double rs=q.optDouble("rs",Double.NaN),r0=q.optDouble("r0",Double.NaN);
-            if(!Double.isFinite(rs)||rs<=0||!Double.isFinite(r0)||r0<=0)return false;
-            if(!q.optBoolean("r0_calibrated",false)||!q.optBoolean("r0_provenance_complete",false))return false;
-            String kind=q.optString("r0_source","");
-            if(!"manual_device_r0".equals(kind)&&!"automatic_clean_air_field_r0".equals(kind)
-                    &&!"firmware_clean_air_r0".equals(kind))return false;
-            String channelController=q.optString("r0_device_id","");
-            // References require traceability to the originating physical Tank for
-            // ALL R0 sources. Unbound legacy/manual R0 may remain for exploratory
-            // screening, but cannot become an approved scientific reference.
-            if(controllerId==null||controllerId.isEmpty()
-                    ||channelController.isEmpty()||!controllerId.equals(channelController))
-                return false;
-        }
-        return true;
+        return TankReferenceR0Gate.qualifiedEight(channels,controllerId);
     }
 
     private static boolean qualifiedArchivedCapture(ExperimentQueries.Record record){
