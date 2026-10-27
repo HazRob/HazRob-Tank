@@ -6,6 +6,7 @@ All paths are anchored under research/g2/evidence/<technique>/<dataset>/<run>/.
 import hashlib
 import json
 import csv
+import math
 import re
 from pathlib import Path
 
@@ -99,10 +100,19 @@ def audit_evidence_bundle(record, repo_root=Path(".")):
                 def reject_constant(value):
                     raise ValueError("nonfinite JSON constant: " + value)
 
+                def finite_float(token):
+                    # Python's JSON decoder accepts 1e9999 as infinity even
+                    # when parse_constant rejects literal Infinity/NaN.
+                    value = float(token)
+                    if not math.isfinite(value):
+                        raise ValueError("nonfinite JSON number: " + token)
+                    return value
+
                 payload = json.loads(
                     resolved.read_text(encoding="utf-8"),
                     object_pairs_hook=unique_object,
                     parse_constant=reject_constant,
+                    parse_float=finite_float,
                 )
                 if not isinstance(payload, dict) or not payload:
                     raise ValueError("empty or non-object JSON")
