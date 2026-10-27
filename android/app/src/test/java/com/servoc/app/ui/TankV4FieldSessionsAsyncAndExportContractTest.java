@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  */
 public final class TankV4FieldSessionsAsyncAndExportContractTest {
     private static String src(String path)throws Exception{
-        return Files.readString(Paths.get("src/main/java/com/servoc/app/"+path),StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/"+path),StandardCharsets.UTF_8);
     }
 
     @Test public void sessionDbQueriesAreDispatchedOffMainThread()throws Exception{
