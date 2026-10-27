@@ -49,6 +49,15 @@ def synthetic_bundle(root):
         "calibration_manifest.json": {
             "calibration_group_ids": record["calibration_group_ids"]
         },
+        "protocol_locked.json": {
+            key: record[key] for key in
+            ("target_definition", "metric_name", "grouping_key",
+             "train_group_ids", "calibration_group_ids", "test_group_ids")
+        } | {"baseline_model": {
+            "algorithm_id": "majority_train", "fit_policy": "TRAIN_ONLY",
+            "fitted_group_ids": ["d1-s1"],
+            "prediction_column": "baseline_predicted_reference",
+            "selected_on_test": False}},
         "metrics_summary.json": {
             key: record[key] for key in
             ("metric_name", "metric_value", "baseline_metric_value")
@@ -169,6 +178,45 @@ class EvidenceBundleTests(unittest.TestCase):
             self.assertEqual(audit_evidence_bundle(record, temp), [])
             self.assertEqual(audit_record(record, temp)["status"],
                              "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+
+    def test_locked_protocol_missing_baseline_cannot_pass(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol.pop("baseline_model")
+            self.replace_bytes(record, base, "protocol_locked.json", json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertIn("BASELINE_PROTOCOL_NOT_LOCKED", audit_record(record, temp)["issues"])
+
+    def test_locked_baseline_cannot_fit_blind_group(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol["baseline_model"]["fitted_group_ids"] = ["d2-s1"]
+            self.replace_bytes(record, base, "protocol_locked.json", json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertIn("BASELINE_TRAINING_GROUP_LEAKAGE_OR_INVALID_FIT",
+                          audit_record(record, temp)["issues"])
+
+    def test_locked_baseline_cannot_be_selected_on_blind_test(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol["baseline_model"]["selected_on_test"] = True
+            self.replace_bytes(record, base, "protocol_locked.json", json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertIn("BASELINE_TEST_SELECTION_NOT_FROZEN",
+                          audit_record(record, temp)["issues"])
+
+    def test_locked_protocol_cannot_relabel_target_or_splits(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol["test_group_ids"] = ["d1-s1"]
+            self.replace_bytes(record, base, "protocol_locked.json", json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
+            self.assertIn("LOCKED_PROTOCOL_RECORD_MISMATCH",
+                          audit_record(record, temp)["issues"])
 
     def test_protocol_digest_must_match_byte_verified_locked_protocol(self):
         with tempfile.TemporaryDirectory() as temp:
