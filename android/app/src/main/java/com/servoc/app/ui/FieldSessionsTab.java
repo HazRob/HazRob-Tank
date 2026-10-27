@@ -29,6 +29,7 @@ public final class FieldSessionsTab {
     private final TextView reportScope;
     private final Spinner siteDropdown,sessionDropdown;
     private boolean selectingScope=false,refreshing=false,refreshQueued=false;
+    private volatile boolean disposed=false;
     private final Handler main=new Handler(Looper.getMainLooper());
     private String selectedSessionId="";
     // IDs are bound to each Spinner adapter; a delayed selection never queries a changed DB cursor.
@@ -133,6 +134,13 @@ public final class FieldSessionsTab {
 
     public View view(){return scroll;}
 
+    /** Drop pending screen updates after the owning Activity closes. */
+    public void release(){
+        disposed=true;
+        refreshQueued=false;
+        main.removeCallbacksAndMessages(null);
+    }
+
     /** Immutable DB read snapshot. All SQLite joins run off the UI thread. */
     private static final class SessionData{
         final FieldSessionRepository.FieldSession active;
@@ -148,6 +156,7 @@ public final class FieldSessionsTab {
     }
 
     public void refresh(){
+        if(disposed)return;
         if(Looper.myLooper()!=Looper.getMainLooper()){
             main.post(this::refresh);return;
         }
@@ -156,6 +165,7 @@ public final class FieldSessionsTab {
         final String requestedSite=selectedSiteId;
         try{
             host.io().execute(()->{
+                if(disposed)return;
                 SessionData snapshot=null;RuntimeException failure=null;
                 try{
                     repo.verifySessionSchema();
@@ -175,7 +185,9 @@ public final class FieldSessionsTab {
                 }catch(RuntimeException ex){failure=ex;}
                 final SessionData result=snapshot;
                 final RuntimeException error=failure;
+                if(disposed)return;
                 main.post(()->{
+                    if(disposed){refreshing=false;return;}
                     try{
                         if(error!=null){
                             android.util.Log.e("TankSessions","Unable to load user sessions",error);
