@@ -88,7 +88,8 @@ public final class ChemCoreLabQuality {
                 String boundId=ManualR0Calibration.getDeviceId(hw.key);
                 String currentId=d.optString("device_id","");
                 boolean firmwareSource="firmware_clean_air_r0".equals(acceptedSource);
-                boolean sameDevice=!firmwareSource||(!boundId.isEmpty()&&boundId.equals(currentId));
+                boolean sameDevice=firmwareSource?(!boundId.isEmpty()&&boundId.equals(currentId))
+                        :(boundId.isEmpty()||boundId.equals(currentId));
                 if(sameDevice){
                     r0++;
                     if(FieldR0Baseline.SOURCE.equals(acceptedSource))field++;
@@ -154,8 +155,9 @@ public final class ChemCoreLabQuality {
             for(String key:ManualR0Calibration.keys()){
                 if(!ManualR0Calibration.has(key))continue;
                 String channelSource=ManualR0Calibration.getSource(key);
-                if("firmware_clean_air_r0".equals(channelSource)&&
-                        !controllerId.equals(ManualR0Calibration.getDeviceId(key)))continue;
+                String binding=ManualR0Calibration.getDeviceId(key);
+                if(("firmware_clean_air_r0".equals(channelSource)&&binding.isEmpty())
+                        ||(!binding.isEmpty()&&!controllerId.equals(binding)))continue;
                 calibrationSources.add(channelSource);
             }
             String source=calibrationSources.isEmpty()?"unavailable":
@@ -167,8 +169,8 @@ public final class ChemCoreLabQuality {
                 if(!Double.isFinite(value)||value<=0)continue;
                 String src=ManualR0Calibration.getSource(key),session=ManualR0Calibration.getSession(key);
                 String sensorDeviceId=ManualR0Calibration.getDeviceId(key);
-                if("firmware_clean_air_r0".equals(src)&&
-                        (controllerId.isEmpty()||!controllerId.equals(sensorDeviceId)))continue;
+                if(("firmware_clean_air_r0".equals(src)&&sensorDeviceId.isEmpty())
+                        ||(!sensorDeviceId.isEmpty()&&!controllerId.equals(sensorDeviceId)))continue;
                 if(!session.isEmpty())sessionsUsed.add(session);
                 JSONObject channel=new JSONObject();
                 channel.put("r0",value);channel.put("source",src);channel.put("session",session);
