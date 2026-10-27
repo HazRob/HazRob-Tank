@@ -9,7 +9,7 @@ constexpr char HW_PROFILE[]="tank-doit-v1-2servo-8mq-echo-bme";
 constexpr char SSID[]="HazRob",NVS[]="servoc",CAM[]="192.168.4.2";
 
 // Rear-mounted continuous-rotation servos; polarity is calibrated per track.
-constexpr uint8_t SERVO_L_PIN=16,SERVO_R_PIN=17;
+constexpr uint8_t SERVO_L_PIN=16,SERVO_R_PIN=17; // V4 original; drive-mode redesign deferred
 constexpr bool SERVO_L_INVERT=false,SERVO_R_INVERT=true; // provisional; verify wheels raised
 constexpr uint16_t SERVO_L_NEUTRAL_US=1500,SERVO_R_NEUTRAL_US=1500;
 constexpr uint16_t SERVO_L_RANGE_US=500,SERVO_R_RANGE_US=500;
@@ -42,24 +42,19 @@ constexpr uint8_t ULTRA_ECHO_PIN=39;      // input only; reduce 5 V echo to <=3.
 // Future quantitative illuminance: prefer BH1750 on an explicitly assigned bus after installation.
 constexpr bool LUX_SENSOR_INSTALLED=false;
 
-// Device-specific field clean-air normalization baseline accepted from three independent
-// 30.0 s sessions on 2026-09-13 (73 + 70 + 73 = 216 samples). Each session is first
-// aggregated as the geometric mean of Rs, then the three session means receive equal
-// weight in log space. Field wind suitability is controlled protocol context; T/RH/P
-// were unavailable from the onboard ENV channel and no environmental correction is claimed.
-// This is NOT manufacturer/reference-gas validation for quantitative ppm curves.
-constexpr char R0_SOURCE[]="field_clean_air_r0";
-constexpr char R0_SESSION[]="FIELD-R0-3SESSION-20260913";
-constexpr char R0_UTC[]="2026-09-13T01:00:47Z";
-constexpr uint16_t R0_SAMPLES=216;
-constexpr uint8_t R0_SESSIONS=3;
+// R0 is sensor-specific and must be established by an actual calibration run.
+// No historical field R0, arbitrary factory R0, or acceptance band is used as a fallback.
+// A missing calibration is represented by NaN; never interpret it as a valid gas ratio.
+constexpr char R0_SOURCE[]="uncalibrated";
+constexpr char R0_SESSION[]="";
+constexpr uint16_t R0_SAMPLES=0;
 constexpr bool R0_REFERENCE_GAS_VALIDATED=false;
 constexpr bool R0_ENVIRONMENT_COMPENSATED=false;
 
 struct MQ{const char* name;uint8_t ads,ch;float r0;};
 constexpr MQ mq[]={
-  {"mq2",0,0,91.734024f},{"mq4",0,1,65.269585f},{"mq5",0,2,251.964722f},{"mq8",0,3,54.888683f},
-  {"mq3",1,0,20.686031f},{"mq7",1,1,160.601349f},{"mq9",1,2,69.990082f},{"mq135",1,3,213.239044f}
+  {"mq2",0,0,NAN},{"mq4",0,1,NAN},{"mq5",0,2,NAN},{"mq8",0,3,NAN},
+  {"mq3",1,0,NAN},{"mq7",1,1,NAN},{"mq9",1,2,NAN},{"mq135",1,3,NAN}
 };
 constexpr uint8_t MQ_N=sizeof(mq)/sizeof(mq[0]);
 
