@@ -87,3 +87,13 @@ For every DEV-ID, attach:
 9. **V4-D09** final source audit, Gradle compile/tests, APK packaging and manual hardware acceptance.
 
 Log every completed step and next exact action in `V4-APP-CHEMCORE-EXECUTION-LOG-2026-10-27.md`. Never change task status to PASS based only on a code search.
+
+
+## Correction and implementation checkpoint — 2026-10-27
+The early inventory's warning about potentially missing developer destinations was a **source-overlay inventory limitation**, not a confirmed Java dependency error. `DeveloperConnectionDiagnosticsTab` exists in the pinned original Android source (Git blob `65b728a511f796966d7d11ee2a17692889c33156`). The other listed Tank developer destinations have source overlays, and the earlier controlled Android run `40437121019` compiled main Java. This does not prove the new current revision compiles or that five tabs are navigable without crash on a phone.
+
+New Tank override `DeveloperConnectionDiagnosticsTab.java` committed as `2ae12ca` replaces dark inherited colors with dark readable text on a light background, and takes `rememberWan` from the UI thread before WAN provisioning is dispatched to the worker. New Java contract `4277e11` is not yet Gradle-tested.
+
+Developer review publication source was isolated from the four-wheel product at `e3344759` and `84471d9` with a dedicated Tank scientific-review branch and SHA-256 readback. `403fab7` records commit SHA and payload hashes; `879ef7d` supplies a source-contract assertion. An authenticated send, retry/409/422, permission failure, duplicate/idempotence, crash recovery and complete audit trail remain **PENDING**.
+
+Proceed with the original DEV-01..DEV-07 acceptance matrix and preserve the distinction between `SOURCE_PRESENT`, `COMPILE_PASS`, `DEVICE_PASS` and `RELEASE_READY`. No release gate was promoted by this checkpoint.
