@@ -1265,5 +1265,65 @@ class CsvControlCharacterEvidenceTests(unittest.TestCase):
                 self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
 
 
+
+class UnicodeInvisibleCsvEvidenceTests(unittest.TestCase):
+    """Synthetic regression controls; these do not establish measured G2 evidence."""
+
+    def test_multilingual_printable_labels_remain_allowed(self):
+        from g2_evidence_bundle_gate import _csv_has_control as bundle_has_control
+        from g2_cross_artifact_gate import _csv_has_control as replay_has_control
+        for label in ("غاز_الإيثانول", "éthanol", "ethanol_50 ppm"):
+            with self.subTest(label=label):
+                self.assertFalse(bundle_has_control(label))
+                self.assertFalse(replay_has_control(label))
+
+    def test_unicode_invisible_header_rejected_with_valid_sha256(self):
+        from g2_cross_artifact_gate import _read_csv
+        for char in ("\u0085", "\u200b", "\u202e", "\ufeff", "\u2028", "\u2060"):
+            with self.subTest(char=repr(char)), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                name = "group_manifest.csv"
+                altered = (base / name).read_text(encoding="utf-8").replace(
+                    "gas_reference_id", "gas" + char + "_reference_id")
+                payload = altered.encode("utf-8")
+                (base / name).write_bytes(payload)
+                record["evidence_files"][name] = hashlib.sha256(payload).hexdigest()
+                self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:" + name,
+                              audit_evidence_bundle(record, temp))
+                with self.assertRaisesRegex(ValueError, "CSV_HEADER_AMBIGUOUS"):
+                    _read_csv(base, name)
+                self.assertIn("CROSS_ARTIFACT_READ_FAILED",
+                              audit_cross_artifact(record, temp))
+                self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_unicode_invisible_cells_rejected_with_valid_sha256(self):
+        from g2_cross_artifact_gate import _read_csv
+        mutations = (
+            ("group_manifest.csv", "GAS_A,d1,s1", "GAS_A{char},d1,s1"),
+            ("predictions_blind.csv", "GAS_A,GAS_A,GAS_A",
+             "GAS_A,GAS_{char}A,GAS_A"),
+            ("metrics_per_group.csv", "d2-s1,1,1,1", "d2-s1{char},1,1,1"),
+        )
+        for char in ("\u0085", "\u200b", "\u202e", "\ufeff", "\u2028", "\u2060"):
+            for name, original, changed in mutations:
+                with self.subTest(char=repr(char), file=name), tempfile.TemporaryDirectory() as temp:
+                    record, base = synthetic_bundle(temp)
+                    altered = (base / name).read_text(encoding="utf-8").replace(
+                        original, changed.format(char=char))
+                    payload = altered.encode("utf-8")
+                    (base / name).write_bytes(payload)
+                    record["evidence_files"][name] = hashlib.sha256(payload).hexdigest()
+                    if name == "predictions_blind.csv":
+                        record["evaluation_artifact_sha256"] = record["evidence_files"][name]
+                    self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:" + name,
+                                  audit_evidence_bundle(record, temp))
+                    with self.assertRaisesRegex(ValueError, "CSV_ROW_WIDTH_MISMATCH"):
+                        _read_csv(base, name)
+                    self.assertIn("CROSS_ARTIFACT_READ_FAILED",
+                                  audit_cross_artifact(record, temp))
+                    self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+
+
 if __name__ == "__main__":
     unittest.main()
