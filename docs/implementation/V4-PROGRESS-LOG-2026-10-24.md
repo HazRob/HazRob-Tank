@@ -322,3 +322,36 @@ No automatic work or later notification is promised from this conversation alone
 - **Readiness ledger:** `docs/implementation/V4-ANDROID-PREBUILD-READINESS-GATE-2026-10-27.md`, latest `dba24b4`, records PB-01..PB-09; state `NOT READY_TO_BUILD` pending residual audits and verification. Owner has requested notification at readiness. A condition-watch notification has been configured to alert only on objective, explicitly logged `READY_TO_BUILD`, without starting a build.
 - **Owner build restriction:** no Gradle, workflow dispatch, APK assembly or flash action in this checkpoint. A future authorized diagnostic build and real device acceptance are required separately.
 - **Next exact task:** inspect test-source compatibility, matrix for all five developer screens, controls/branding, stable version/provenance and report scope migration. Reconcile planned tests and blockers. Only mark `READY_TO_BUILD` when no known source blocker remains; do not equate an untested patch to a successful test.
+
+
+## Checkpoint — 2026-10-27 — Resumption, two-branch reconciliation and Tank-only research staging hardening
+
+**Owner direction:** resume from the 27 October checkpoint, finish remaining source work accurately. This entry documents source changes only; no Gradle build, CI dispatch, Android installation, ESP32 flash, developer upload, or actual device measurement was performed in this checkpoint. Keep the separately documented build hold until an explicit new build authorization.
+
+### Verified repository divergence
+- Canonical Android development branch: `feature/tank-v4-implementation`; preceding head was `e4d4db6a3a944acd75402ed298f62004b9b7322f`.
+- Firmware research branch: `feature/tank-v4-mq-unified-r0` (previous observed head `1d2bbc01308ab6ec59ad7007a10723395d7dfbab`).
+- Byte comparison using GitHub blob IDs confirms firmware `Config.h`, `Hardware.cpp`, `Hardware.h` and `ESP32-Tank.ino` are already identical across both heads. **Do not cherry-pick or overwrite firmware merely because Git comparison includes its changes against a shared ancestor.**
+- `DeveloperConnectionDiagnosticsTab` existed in the pinned original `sohpany/SERVOC-Android@6281d3e`; it was not absent from the assembled Java source. Previous successful main Java compilation in run `40437121019` confirms there was no missing developer-class compile blocker on that earlier candidate.
+
+### Concrete implementation commits
+| Commit | Change | Evidence scope |
+| --- | --- | --- |
+| `e3344759` | Added Tank-only overlay `github/GitHubReferencePublisher.java`, isolating publishing to `HazRob/HazRob-Tank` branch `research/tank-v4-review-staging` and path `research_data/tank_v4_scientific_review`. HTTP 201 is insufficient: require commit SHA and GitHub GET readback SHA-256 + byte-count match. | SOURCE_PRESENT only |
+| `84471d9` | Raised bounded GitHub readback text cap to support multi-kilobyte captured reference payloads, avoiding the original 16 KiB truncation failure. | SOURCE_PRESENT only |
+| `09ea5b7` | Corrected developer experiment text: no inherited app-version label; staging is Tank-only, operator confirmed and scientifically non-promoting. | SOURCE_PRESENT only |
+| `d986966`, `ceab99f` | Added/adjusted Java source-contract checks for target repository/branch, approved lineage, no original-HazRob publishing and post-upload readback integrity. | TEST_SOURCE_ADDED / NOT_RUN |
+| `2ae12ca` | Added light-color Tank override of inherited `DeveloperConnectionDiagnosticsTab`; changed white-on-dark labels/status/checkbox to legible dark-on-light. Captures `remember.isChecked()` on UI thread before the asynchronous WAN provisioning task. | SOURCE_PRESENT / DEVICE_PENDING |
+| `4277e11` | Added Java source-contract checks for developer WAN text/background contrast and UI-to-worker checkbox state ownership. | TEST_SOURCE_ADDED / NOT_RUN |
+| `7ff040c` | Wired publisher isolation, readback and WAN diagnostic source invariants into future source-only prebuild gate. | STATIC_GATE_UPDATED / NOT_RUN |
+
+- New independent `research/tank-v4-review-staging` branch created from `main`. **No reference file was uploaded**, no PAT was supplied, and actual GitHub Contents-write permission, readback API round-trip, conflicts and retry handling remain untested.
+- Direct live-GitHub readback compared 18 narrowly selected source/test markers: **18/18 matched**. This is a manual source-level structural verification, **not** execution of either JUnit test class, Python prebuild gate, Gradle or actual GitHub file upload.
+- Existing `DeveloperExperimentsTab` still requires full review of persistence/retry/idempotence and encrypted credential lifecycle; creating the staging branch does not authorize automatic publication or scientific promotion.
+- All changes are in Tank repository only; no files were changed in `sohpany/SERVOC-Android`, and no older SQLite user data were modified.
+
+### Latest objective build / acceptance truth
+- The last controlled Android Actions run `40437121019` failed in `compileDebugUnitTestJavaWithJavac` on two incompatible `Files.readString(Path,Charset)` test helpers. Main app Java compilation and earlier static/SQLite/embedded Stable staging steps succeeded on the *older* tested SHA. The two helpers were subsequently corrected to `Files.readAllBytes`; current changes and the new tests have not been compiled.
+- No claim of `CI_PASS`, complete `UNIT_PASS`, `DEVICE_PASS`, developer GitHub publication acceptance, SHA verified *inside a new APK*, NVS power-loss safety or release-ready gas analysis.
+
+**STOP POINT:** Current work is `SOURCE_UPDATED / STATIC_MARKERS_18_OF_18 / NEW_TESTS_NOT_RUN / NOT_READY_TO_BUILD / V4_UNRELEASED`. Resume from this branch's latest HEAD, review the two added contract tests and GitHub publisher against the pinned base, validate fresh + migrated SQLite and full developer-tab interactions. Obtain separate owner permission for a controlled Gradle diagnostic build; after passing tests, perform device/SAF/report/robot gates before claiming release readiness.
