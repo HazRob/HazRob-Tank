@@ -26,6 +26,8 @@ public final class TankReferenceR0Gate {
             // A legacy unbound manual R0 can be studied as exploratory evidence,
             // never silently associated with another physical sensor array.
             if(!controllerId.equals(q.optString("r0_device_id","")))return false;
+            if("firmware_clean_air_r0".equals(source)&&q.optInt("r0_samples",0)<10)
+                return false;
         }
         return true;
     }
