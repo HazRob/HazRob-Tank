@@ -170,6 +170,6 @@ public final class GitHubReferencePublisher {
     private static String sha256(byte[] data)throws Exception{byte[] h=MessageDigest.getInstance("SHA-256").digest(data);StringBuilder s=new StringBuilder(64);for(byte b:h)s.append(String.format(Locale.US,"%02x",b&255));return s.toString();}
     private static JSONObject json(String s){try{return s==null||s.isEmpty()?new JSONObject():new JSONObject(s);}catch(Exception e){return new JSONObject();}}
     private static String safeError(int code,String response){JSONObject j=json(response);String m=j.optString("message","");if(m.length()>180)m=m.substring(0,180);if(m.isEmpty())m="GitHub HTTP "+code;return m;}
-    private static String read(InputStream in)throws Exception{if(in==null)return"";StringBuilder s=new StringBuilder();try(BufferedReader r=new BufferedReader(new InputStreamReader(in,StandardCharsets.UTF_8))){String line;while((line=r.readLine())!=null&&s.length()<16_384)s.append(line);}return s.toString();}
+    private static String read(InputStream in)throws Exception{if(in==null)return"";StringBuilder s=new StringBuilder();try(BufferedReader r=new BufferedReader(new InputStreamReader(in,StandardCharsets.UTF_8))){String line;while((line=r.readLine())!=null&&s.length()<4_194_304)s.append(line);}return s.toString();}
     private static String n(String s){return s==null?"":s.trim();}
 }
