@@ -1,7 +1,7 @@
 ## 2026-10-28 — G2 post-unblinding blind-truth integrity (204/204 CI)
 
 - Research-only: `g2_cross_artifact_gate.py` checks `review_decision.json.blind_truth_release_sha256` against canonical blind reference labels **after unblinding**; never puts blind truth into the pre-unblinding protocol. Four synthetic regression tests added to `test_g2_evidence_bundle_gate.py`.
-- Code/test commit `99abe3f67736baad593a8decb8e8f3d5f53d560c`; G2 Actions [40586663420](https://github.com/HazRob/HazRob-Tank/actions/runs/40586663420), job `122479787293`: **204/204 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. Other workflows and final documentation commit require separate verification.
+- Code/test commit `99abe3f67736baad593a8decb8e8f3d5f53d560c`; G2 Actions [40586663420](https://github.com/HazRob/HazRob-Tank/actions/runs/40586663420), job `122479787293`: **204/204 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. All 11 workflow runs on the then-final documentation commit `ffd7acde0509c673ea0cdd59a356c001ab551039` were subsequently verified successful, including G2 run [40586914683](https://github.com/HazRob/HazRob-Tank/actions/runs/40586914683), job `122480711077` (204/204 PASS, 0/80 candidates, 80/80 blocked), and the 23/23 batch07 jobs in run `40586914598`. Verify CI again on any later checkpoint commit.
 - Evidence report `G2_POST_UNBLINDING_TRUTH_RELEASE_2026-10-28_AR.md`. Central source catalog Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries, 14 external measurement datasets, none source-qualified true); independent G2 register `records: []`. This hash is an internal integrity commitment, not externally authenticated unblinding or physical calibration. No G2/G3 scientific approval or ChemCore Stable change.
 
 ---
