@@ -37,11 +37,24 @@ def _read_strict_input_json(path):
             raise ValueError("G2_INPUT_NONFINITE_NUMBER:" + token)
         return value
 
+    def finite_int(token):
+        # Python accepts arbitrarily large JSON integers, but later
+        # math.isfinite(int_value) can raise OverflowError. Reject these
+        # before any candidate can crash the 80-technique audit.
+        try:
+            value = int(token)
+            if not math.isfinite(float(value)):
+                raise OverflowError("integer outside finite numeric domain")
+        except (ValueError, OverflowError) as exc:
+            raise ValueError("G2_INPUT_INTEGER_OUT_OF_RANGE") from exc
+        return value
+
     return json.loads(
         Path(path).read_text(encoding="utf-8"),
         object_pairs_hook=unique_object,
         parse_constant=reject_constant,
         parse_float=finite_float,
+        parse_int=finite_int,
     )
 
 
