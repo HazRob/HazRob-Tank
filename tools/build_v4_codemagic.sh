@@ -54,8 +54,8 @@ f.write_text(s)
 mf=Path('source/app/src/main/AndroidManifest.xml')
 t=mf.read_text()
 t=re.sub(r'android:label="[^"]*"', 'android:label="HazRob Tank"',t,count=1)
-t=t.replace('android:icon="@drawable/ic_hazrob_hr069_r1"', 'android:icon="@drawable/ic_hazrob_app"')
-t=t.replace('android:roundIcon="@drawable/ic_hazrob_hr069_r1"', 'android:roundIcon="@drawable/ic_hazrob_app"')
+# Keep the pinned original HR069-R1 high-resolution HazRob launcher icon.
+# The same original logo is used by ConnectionGate at app entry.
 mf.write_text(t)
 print("V4 applicationId=com.hazrob.tank; versionName=4.0; debug identity is separate")
 PY
