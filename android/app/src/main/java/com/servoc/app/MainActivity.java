@@ -107,7 +107,14 @@ public final class MainActivity extends Activity implements HazRobHost {
         workers.execute(()->{
             try{
                 // Verify and activate the bundled knowledge off the Android main thread.
-                com.servoc.app.chemcore.library.ChemCoreEmbeddedStableInstaller.ensureInstalled(getApplicationContext());
+                com.servoc.app.chemcore.library.ChemCoreLibraryStore.InstallResult stable=
+                        com.servoc.app.chemcore.library.ChemCoreEmbeddedStableInstaller.ensureInstalled(getApplicationContext());
+                // Diagnostic evidence for the Lab/Library: a bundled asset is not proof of
+                // a successfully verified offline activation on this installed device.
+                db.putMeta("tank_v4_stable_bootstrap_result",stable.reason);
+                db.putMeta("tank_v4_stable_bootstrap_version",stable.version);
+                db.putMeta("tank_v4_stable_bootstrap_active",Boolean.toString(stable.installed||
+                        "existing verified library retains precedence".equals(stable.reason)));
                 ChemicalSeedBootstrap.ensureNiosh(getApplicationContext(),db);
                 ExposureSeedBootstrap.ensureOshaZ1(getApplicationContext(),db);
                 db.putMeta("tank_v3_chemcore_bootstrap","IMPORTING");
