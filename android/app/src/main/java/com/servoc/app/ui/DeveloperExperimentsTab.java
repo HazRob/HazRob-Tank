@@ -67,8 +67,8 @@ public final class DeveloperExperimentsTab {
         this.context=context;this.host=host;ManualR0Calibration.load(host.preferences());
         chemicals=new ChemicalRepository(host.database());statusRepo=new ChemicalExperimentStatusRepository(host.database());
         scroll=new ScrollView(context);scroll.setFillViewport(true);LinearLayout root=UiKit.vbox(context);root.setPadding(UiKit.dp(context,8),UiKit.dp(context,6),UiKit.dp(context,8),UiKit.dp(context,14));root.setBackgroundColor(0xFFF7F8FA);scroll.addView(root);
-        root.addView(UiKit.title(context,"التجارب المرجعية • HazRob Tank V4"),UiKit.full(context));
-        TextView intro=UiKit.small(context,"اختيار المادة → قياس averaged → حفظ مسودة → مراجعة واعتماد → نشر المرجع إلى مكتبة HazRob المركزية. R0 معايرة محلية للجهاز ولا تُنشر كمعرفة مركزية.");intro.setTextColor(0xFF46515E);root.addView(intro,UiKit.full(context));
+        root.addView(UiKit.title(context,"التجارب المرجعية • HazRob Tank"),UiKit.full(context));
+        TextView intro=UiKit.small(context,"اختيار المادة → قياس averaged → حفظ مسودة → مراجعة واعتماد → إرسال المرجع المعتمد إلى فرع المراجعة العلمية للدبابة، دون تحديث المكتبة التشغيلية. R0 معايرة محلية للجهاز ولا تُنشر كمعرفة مركزية.");intro.setTextColor(0xFF46515E);root.addView(intro,UiKit.full(context));
 
         LinearLayout chooser=UiKit.card(context);chooser.addView(UiKit.title(context,"اختيار المادة وحالة المكتبة"),UiKit.full(context));
         Button choose=UiKit.button(context,"فتح قائمة المواد • بحث وفرز");choose.setOnClickListener(v->openChemicalMatrix());chooser.addView(choose,UiKit.full(context));
@@ -210,7 +210,7 @@ public final class DeveloperExperimentsTab {
         }
         new AlertDialog.Builder(context)
             .setTitle("إرسال للمراجعة العلمية فقط")
-            .setMessage("ستُرسل التجربة المعتمدة إلى منطقة مراجعة HR069-R1 غير التشغيلية في مستودع الإصدار الحالي. لا يُحدَّث ChemCore ولا تُمنح رتبة M4 بالرفع. تأكيد الإرسال؟")
+            .setMessage("ستُرسل التجربة المعتمدة إلى فرع مراجعة مستقل داخل مستودع HazRob Tank فقط، بعد تأكيدك وصلاحية حسابك. سيُتحقق من تطابق SHA-256 بعد الرفع. لا يُحدَّث ChemCore ولا تُمنح رتبة M4 بالرفع. تأكيد الإرسال؟")
             .setNegativeButton("إلغاء",null)
             .setPositiveButton("إرسال",(dialog,which)->submitSelectedForReview(r)).show();
     }
