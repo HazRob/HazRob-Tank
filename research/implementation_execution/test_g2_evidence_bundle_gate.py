@@ -306,6 +306,33 @@ class EvidenceBundleTests(unittest.TestCase):
                 self.assertIn("METRIC_FAMILY_NOT_RECOMPUTABLE", result["issues"])
                 self.assertEqual(result["status"], "G2_BLOCKED")
 
+    def test_non_object_json_replay_fails_closed_without_crash(self):
+        # Even with correctly rehashed bytes, replay must not throw on a
+        # JSON array, null, string, or number in any required document.
+        # Synthetic controls are not measured gas evidence.
+        names = (
+            "raw_manifest.json", "source_qualification.json",
+            "signal_lineage.json", "split_manifest.json",
+            "protocol_locked.json", "calibration_manifest.json",
+            "metrics_summary.json", "uncertainty_grouped.json",
+        )
+        for name in names:
+            for payload in ("[]", "null", '"unexpected"', "123"):
+                with self.subTest(name=name, payload=payload):
+                    with tempfile.TemporaryDirectory() as temp:
+                        record, base = synthetic_bundle(temp)
+                        self.replace_bytes(record, base, name, payload)
+                        if name == "protocol_locked.json":
+                            record["protocol_sha256"] = record["evidence_files"][name]
+                        self.assertIn(
+                            "INVALID_EVIDENCE_FILE_CONTENT:" + name,
+                            audit_evidence_bundle(record, temp))
+                        self.assertIn(
+                            "CROSS_ARTIFACT_JSON_SCHEMA_INVALID",
+                            audit_cross_artifact(record, temp))
+                        self.assertEqual(audit_record(record, temp)["status"],
+                                         "G2_BLOCKED")
+
     @staticmethod
     def replace_bytes(record, base, name, data):
         data = data.encode("utf-8")
