@@ -107,10 +107,11 @@ public final class DeveloperR0Tab {
             Button save=UiKit.button(c,"حفظ R0");
             save.setOnClickListener(v->saveOne(index));
             actions.addView(save,UiKit.weight(1));
-            Button reset=UiKit.button(c,"استعادة الأساس");
+            Button reset=UiKit.button(c,"مسح R0 المحلية");
             reset.setOnClickListener(v->new AlertDialog.Builder(c)
-                .setTitle("استعادة R0 السابقة")
-                .setMessage("هل تريد حذف القيمة اليدوية لـ"+keys[index].toUpperCase(Locale.US)+" واستعادة خط أساس الهواء النظيف المعتمد؟")
+                .setTitle("مسح R0 المحلية")
+                .setMessage("سيتم مسح R0 للهاتف للحساس "+keys[index].toUpperCase(Locale.US)+
+                    " ولن تُستعاد قيمة افتراضية. تبقى معايرة ESP32 محفوظة؛ استخدم «استيراد آخر R0» لاستعادتها.")
                 .setNegativeButton("إلغاء",null)
                 .setPositiveButton("استعادة",(d,w)->resetOne(index)).show());
             actions.addView(reset,UiKit.weight(1));
@@ -144,11 +145,22 @@ public final class DeveloperR0Tab {
         if(calibrationChangeBlocked())return;
         double value=parse(index);
         if(!Double.isFinite(value)){host.showToast("قيمة R0 غير صالحة — أدخل رقمًا موجبًا");return;}
-        if(!ManualR0Calibration.save(host.preferences(),keys[index],value)){
-            host.showToast("تعذّر حفظ R0 في الهاتف");return;
-        }
-        reloadFields();host.refreshAllTabs();
-        host.showToast("تم تحديث R0 لـ "+keys[index].toUpperCase(Locale.US)+" — يسري على القياسات الجديدة");
+        Runnable persist=()->{
+            if(calibrationChangeBlocked())return;
+            if(!ManualR0Calibration.save(host.preferences(),keys[index],value)){
+                host.showToast("تعذّر حفظ R0 في الهاتف");return;
+            }
+            reloadFields();host.refreshAllTabs();
+            host.showToast("تم تحديث R0 لـ "+keys[index].toUpperCase(Locale.US)+" — يسري على القياسات الجديدة");
+        };
+        if("firmware_clean_air_r0".equals(ManualR0Calibration.getSource(keys[index]))){
+            new AlertDialog.Builder(context)
+                .setTitle("تجاوز معايرة ESP32 يدويًا")
+                .setMessage("ستتجاوز القيمة اليدوية معايرة R0 المستوردة من ESP32 لهذا الحساس على الهاتف فقط. "+
+                    "لا تتغير معايرة ESP32 ولا تصبح قيمة R0 شهادة PPM. هل تؤكد؟")
+                .setNegativeButton("إلغاء",null)
+                .setPositiveButton("تأكيد التجاوز",(d,w)->persist.run()).show();
+        }else persist.run();
     }
     private void saveAll(){
         if(calibrationChangeBlocked())return;
@@ -158,11 +170,25 @@ public final class DeveloperR0Tab {
             if(!Double.isFinite(v)){host.showToast("قيمة R0 غير صالحة للحساس "+keys[i]);entry[i].requestFocus();return;}
             values.put(keys[i],v);
         }
-        if(!ManualR0Calibration.saveAll(host.preferences(),values)){
-            host.showToast("فشل الحفظ — لم تتغير أي قيمة من R0");return;
+        Runnable persist=()->{
+            if(calibrationChangeBlocked())return;
+            if(!ManualR0Calibration.saveAll(host.preferences(),values)){
+                host.showToast("فشل الحفظ — لم تتغير أي قيمة من R0");return;
+            }
+            reloadFields();host.refreshAllTabs();
+            host.showToast("تم حفظ قيم R0 الثماني مع سجل مصدر وتوقيت معايرة واحد");
+        };
+        boolean firmwarePresent=false;
+        for(String key:keys)if("firmware_clean_air_r0".equals(ManualR0Calibration.getSource(key))){
+            firmwarePresent=true;break;
         }
-        reloadFields();host.refreshAllTabs();
-        host.showToast("تم حفظ قيم R0 الثماني مع سجل مصدر وتوقيت معايرة واحد");
+        if(firmwarePresent)new AlertDialog.Builder(context)
+            .setTitle("تجاوز معايرة ESP32 لجميع الحساسات")
+            .setMessage("ستحل ثماني قيم يدوية محل معايرة ESP32 المستوردة إلى الهاتف فقط، "+
+                "مع حفظ مصدرها وتوقيتها. لا تتغير معايرة الروبوت الفعلية. هل تؤكد؟")
+            .setNegativeButton("إلغاء",null)
+            .setPositiveButton("تأكيد التجاوز",(d,w)->persist.run()).show();
+        else persist.run();
     }
     private void resetOne(int index){
         if(calibrationChangeBlocked())return;
@@ -170,7 +196,7 @@ public final class DeveloperR0Tab {
             host.showToast("تعذّر استعادة خط أساس R0");return;
         }
         reloadFields();host.refreshAllTabs();
-        host.showToast("استعيد خط أساس الهواء النظيف لـ "+keys[index].toUpperCase(Locale.US));
+        host.showToast("مُسحت R0 للهاتف للحساس "+keys[index].toUpperCase(Locale.US)+"؛ لم تُستعد أي قيمة افتراضية");
     }
     private void reloadFields(){
         for(int i=0;i<keys.length;i++){
@@ -221,9 +247,23 @@ public final class DeveloperR0Tab {
     /** Explicit recovery action after Activity destruction, reconnect or phone-side save failure. */
     private void syncFirmwareCalibration(){
         if(disposed||automaticActive||calibrationChangeBlocked())return;
-        automaticActive=true;autoStart.setEnabled(false);autoCancel.setEnabled(true);
-        autoProgress.setText("جارٍ قراءة حالة R0 من ESP32...");
-        clock.post(autoTick);
+        Runnable importNow=()->{
+            if(disposed||automaticActive||calibrationChangeBlocked())return;
+            automaticActive=true;autoStart.setEnabled(false);autoCancel.setEnabled(true);
+            autoProgress.setText("جارٍ قراءة حالة R0 من ESP32...");
+            clock.post(autoTick);
+        };
+        boolean override=false;
+        for(String key:keys)if("manual_device_r0".equals(ManualR0Calibration.getSource(key))){
+            override=true;break;
+        }
+        if(override)new AlertDialog.Builder(context)
+            .setTitle("استبدال قيم R0 اليدوية")
+            .setMessage("استيراد معايرة ESP32 سيستبدل القيم اليدوية المحفوظة في الهاتف بالقيم "+
+                "الموثقة على الروبوت. لا تتغير جلسات القياس القديمة. هل تريد المتابعة؟")
+            .setNegativeButton("إلغاء",null)
+            .setPositiveButton("استيراد",(d,w)->importNow.run()).show();
+        else importNow.run();
     }
 
     private void displayCalibration(FirmwareR0Contract.Progress p,JSONObject response){
