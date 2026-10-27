@@ -286,7 +286,7 @@ public final class DeveloperR0Tab {
                 Map<String,Double> values=FirmwareR0Contract.committedValues(response);
                 String deviceId=response.optString("device_id","");
                 if(deviceId.isEmpty())throw new IllegalStateException("Missing ESP32 device identity");
-                if(!ManualR0Calibration.saveFirmware(host.preferences(),values,deviceId))
+                if(!ManualR0Calibration.saveFirmware(host.preferences(),values,deviceId,p.counts))
                     throw new IllegalStateException("Phone could not durably save firmware R0");
                 finishAutomatic("تمت مزامنة 8 قيم R0 المعتمدة من ESP32 • الجهاز: "+deviceId);
                 reloadFields();host.refreshAllTabs();
