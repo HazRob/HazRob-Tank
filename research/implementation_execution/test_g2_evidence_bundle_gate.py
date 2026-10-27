@@ -1622,7 +1622,8 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
     def fixture():
         return {
             "record_count": 2,
-            "counts_by_type": {"EXTERNAL_MEASUREMENT_DATASET": 1},
+            "counts_by_type": {"EXTERNAL_MEASUREMENT_DATASET": 1,
+                               "ANALYTICAL_METHOD_STUDY": 1},
             "primary_catalog_entries": [
                 {"id": "MQ-EXT-01", "category": "EXTERNAL_MEASUREMENT_DATASET",
                  "title": "synthetic catalogue entry",
@@ -1701,6 +1702,81 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "CENTRAL_CATALOG_GIT_BLOB_MISMATCH"):
             audit_catalog_bytes(raw, "0" * 40)
         self.assertEqual(len(git_blob_sha(raw)), 40)
+
+
+    def test_category_inventory_cannot_hide_relabelled_non_dataset_entries(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        catalog["primary_catalog_entries"][1]["category"] = "SCIENTIFIC_REVIEW"
+        with self.assertRaisesRegex(
+                ValueError, "CENTRAL_CATALOG_CATEGORY_INVENTORY_MISMATCH"):
+            audit_source_catalog(catalog, expected_total=2, expected_datasets=1)
+        catalog = self.fixture()
+        catalog["counts_by_type"]["ANALYTICAL_METHOD_STUDY"] = 0
+        with self.assertRaisesRegex(
+                ValueError, "CENTRAL_CATALOG_CATEGORY_INVENTORY_MISMATCH"):
+            audit_source_catalog(catalog, expected_total=2, expected_datasets=1)
+
+    def test_boolean_and_float_catalog_counts_fail_closed(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        for invalid in (2.0, True, "2"):
+            with self.subTest(record_count=repr(invalid)):
+                catalog = self.fixture()
+                catalog["record_count"] = invalid
+                with self.assertRaisesRegex(
+                        ValueError, "CENTRAL_CATALOG_ENTRY_COUNT_OR_SCHEMA_INVALID"):
+                    audit_source_catalog(catalog, expected_total=2,
+                                         expected_datasets=1)
+        for invalid in (1.0, True, "1", -1):
+            with self.subTest(category_count=repr(invalid)):
+                catalog = self.fixture()
+                catalog["counts_by_type"]["EXTERNAL_MEASUREMENT_DATASET"] = invalid
+                with self.assertRaisesRegex(
+                        ValueError, "CENTRAL_CATALOG_CATEGORY_INVENTORY_MISMATCH"):
+                    audit_source_catalog(catalog, expected_total=2,
+                                         expected_datasets=1)
+
+    def test_ambiguous_unicode_and_whitespace_catalog_identifiers_fail_closed(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        for invalid in (" MQ-EXT-01", "MQ-EXT-01 ", "MQ–EXT–01",
+                        "MQ-EXT-01\\u200b", "MQ-EXT-01\\n"):
+            with self.subTest(identifier=repr(invalid)):
+                catalog = self.fixture()
+                catalog["primary_catalog_entries"][0]["id"] = invalid
+                with self.assertRaisesRegex(
+                        ValueError, "CENTRAL_CATALOG_ENTRY_COUNT_OR_SCHEMA_INVALID"):
+                    audit_source_catalog(catalog, expected_total=2,
+                                         expected_datasets=1)
+
+    def test_duplicate_json_keys_are_rejected_even_when_blob_hash_matches(self):
+        from g2_reference_catalog_readiness import audit_catalog_bytes, git_blob_sha
+        source = json.dumps(self.fixture())
+        variants = (
+            source.replace('"record_count": 2',
+                           '"record_count": 2, "record_count": 2', 1),
+            source.replace('"ANALYTICAL_METHOD_STUDY": 1',
+                           '"ANALYTICAL_METHOD_STUDY": 1, "ANALYTICAL_METHOD_STUDY": 1', 1),
+        )
+        for raw_text in variants:
+            with self.subTest(payload=raw_text[:100]):
+                raw = raw_text.encode("utf-8")
+                with self.assertRaisesRegex(
+                        ValueError, "CENTRAL_CATALOG_JSON_INVALID") as caught:
+                    audit_catalog_bytes(raw, expected_blob=git_blob_sha(raw))
+                self.assertIn("CENTRAL_CATALOG_DUPLICATE_JSON_KEY",
+                              str(caught.exception.__cause__))
+
+    def test_nonfinite_json_numbers_fail_even_when_blob_hash_matches(self):
+        from g2_reference_catalog_readiness import audit_catalog_bytes, git_blob_sha
+        source = json.dumps(self.fixture())
+        for token in ("NaN", "Infinity", "-Infinity", "1e309"):
+            with self.subTest(token=token):
+                raw = source.replace('"record_count": 2',
+                                     '"record_count": ' + token, 1).encode("utf-8")
+                with self.assertRaisesRegex(
+                        ValueError, "CENTRAL_CATALOG_JSON_INVALID"):
+                    audit_catalog_bytes(raw, expected_blob=git_blob_sha(raw))
+
 
 if __name__ == "__main__":
     unittest.main()
