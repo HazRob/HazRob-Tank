@@ -126,7 +126,8 @@ with zipfile.ZipFile(apk) as z:
     assert root["source_commit_sha"]==m["source_commit_sha"]
     assert not root["knowledge"]["response_priors"]["policy"]["external_m4"]
 print("[Tank V4] Verified offline Stable package: v4-compatible, 652 identities, 0 M4 calibrations and SHA256")
-PYmkdir -p dist-v4
+PY
+mkdir -p dist-v4
 cp "$APK" dist-v4/HazRob-Tank-v4-UNRELEASED-debug.apk
 shasum -a 256 dist-v4/*.apk > dist-v4/SHA256SUMS.txt
 cat dist-v4/SHA256SUMS.txt
