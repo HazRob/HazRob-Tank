@@ -223,3 +223,30 @@ Continue from the V4 branch head after these commits and requirements. Verify CI
 **Allowed next steps:** review those two assertion failures without executing new builds; review/fix source-only sessions, exports, lab, developer tabs, R0, logo and contrast; add/update meaningful test source code and log each commit. **Prohibited until explicit later approval:** `gradle`, `assembleDebug`, GitHub Actions workflow dispatch, triggering any equivalent APK build elsewhere, signing/publishing an APK, hardware flashing.
 
 **Resume rule:** On resumption, first inspect this checkpoint; do not treat the absence of new CI as a failure. Wait for owner's additional changes and subsequent authorization before manually starting build validation.
+
+
+## Checkpoint — 2026-10-27 — Owner additions: full sessions/reports, laboratory R0, embedded Stable (SOURCE ONLY)
+
+**Build hold remains active.** Changes are source-level only; NO Gradle, APK, GitHub build workflow dispatch or device qualification was run in this checkpoint.
+
+### Completed source commits
+- `1093947`: developer experiment R0 availability now verifies the current ESP32 identity for firmware-imported values, removes unused duplicate manual editor, and records each channel's observed Rs/R0/source/session/time/controller in immutable reference metadata; scientific M4/PPM is never implied by baseline R0.
+- `ed984f3`: moves FieldSessionsTab repository read set (sites, sessions, measurement counts, approvals, schema check) to background executor. Maintains UI-thread-only rendering and coalesces refresh triggers.
+- `1467fd2`: site creation, session start/close/approve now run off the main thread; discards stale site-selection query result and refreshes from latest choice.
+- `813669d`: fixes broken `PYmkdir` shell heredoc delimiter in the manual V4 build script. Discovered via source inspection, NOT claimed tested.
+- `98d676a`: manual R0 overwrite and firmware R0 re-import both require explicit confirmation when the other authority exists; reset UI truthfully says it clears the phone-only R0, not restores a synthetic fallback.
+- `1894338`: ChemCoreLabQuality output rejects foreign Tank controller R0 even in per_sensor provenance JSON; current controller identity recorded.
+- Prior `0cf7bc6` and `01b7d70`: report site/session spinner ID bindings with outlined light options and direct PDF/XLSX export routing from selected site/session.
+
+### Source-level architectural findings
+1. TelemetryRecorder (pinned original) creates USER `field_mq_cycle` measurement sessions and attaches them to the sole ACTIVE field session; developer controlled captures are deliberately excluded. Completion stores normalized telemetry samples and a ChemCore decision. User approval in FieldSessionRepository demands exactly one completed USER measurement with sampled rows and approved state. Cross-domain identity restrictions preserved.
+2. FieldSessionReportExporter and SiteSummaryReportExporter resolve exact field/site scopes; SiteSummaryExportActivity exports PDF/XLSX using SAF and an off-main-thread writer. Report buttons must target the exact selected scope; path updated.
+3. Original Android Gradle preBuild task generates offline `generated/chemcore/embedded_stable/{manifest.json,chemcore-stable-snapshot.json}`. Tank V4 preparation patches **both** manifest app-version boundaries to `4.0`; manual workflow asserts SHA-256/payload lengths, 652 molecular/chemical identities and no M4 calibrations. Source-only evidence **does not prove resulting APK assets** until an owner-authorized build and ZIP inspection.
+4. Baseline bundled library is the pinned `1.0.0-hr069r1` screening **pre-release** snapshot (49 M1/M2 research response priors, no accepted M4) and **not** a guaranteed newer Tank-scientific Stable model version. A later explicit, verified higher-version Stable snapshot may supersede it. Never invent or auto-promote external research results.
+5. Tested in past pre-hold CI only: 665 test cases / 2 failures. Recent source commits have not been compiled.
+
+### Next source actions (no build)
+- Add source-test assertions for nonblocking Sessions, correct report scope/format, firmware R0 controller binding and offline Stable manifest packaging; keep field devices and report formatting as device acceptance gates.
+- Inspect DeveloperExperimentsTab/AnalyticalLabTab together for R0 conflict, measured-session provenance and multi-gas evidentiary limitations.
+- Audit report and lab Java overrides for compilation blockers by static inspection only; finalize test suite changes without triggering Gradle.
+- After the owner provides additional modifications AND explicitly authorizes the build, run Gradle CI/Android APK inspection and actual device tests. Until then UNRELEASED.
