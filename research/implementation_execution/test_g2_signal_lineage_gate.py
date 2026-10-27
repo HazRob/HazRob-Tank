@@ -126,6 +126,37 @@ class LineageGateTests(unittest.TestCase):
         p=x["signal_processing"]
         p["r0_references"]={p["sensor_ids"][0]:dict(p["r0_reference"])}
         self.assertIn("AMBIGUOUS_R0_REFERENCE_LAYOUT",audit_signal_lineage(x))
+    def test_unhashable_source_units_fail_closed_for_rs_over_r0(self):
+        for bad in ([], {"unit": "OHM"}):
+            with self.subTest(bad=bad):
+                x = normalized()
+                x["signal_processing"]["source_signal_units"] = bad
+                issues = audit_signal_lineage(x)
+                self.assertIn("INVALID_SOURCE_SIGNAL_UNITS", issues)
+                self.assertIn(
+                    "RS_OVER_R0_REQUIRES_RESISTANCE_INPUT_AND_DIMENSIONLESS_OUTPUT",
+                    issues)
+
+    def test_unhashable_r0_mode_fail_closed(self):
+        for bad in ([], {"mode": "MEASURED_REFERENCE"}):
+            with self.subTest(bad=bad):
+                x = normalized()
+                x["signal_processing"]["r0_mode"] = bad
+                self.assertIn("R0_MODE_UNDOCUMENTED", audit_signal_lineage(x))
+
+    def test_unhashable_heater_phase_fail_closed(self):
+        for bad in ([], {"phase": "HIGH"}):
+            with self.subTest(bad=bad):
+                x = normalized()
+                x["signal_processing"]["r0_reference"]["heater_phase"] = bad
+                self.assertIn("R0_HEATER_PHASE_UNDOCUMENTED", audit_signal_lineage(x))
+
+    def test_unhashable_mode_with_raw_signal_fail_closed(self):
+        x = base()
+        x["signal_processing"]["feature_formula"] = "RAW_SIGNAL"
+        x["signal_processing"]["r0_mode"] = {"invalid": "mode"}
+        self.assertIn("R0_MODE_UNDOCUMENTED", audit_signal_lineage(x))
+
     def test_no_lineage(self):
         self.assertEqual(audit_signal_lineage({}),["MISSING_SIGNAL_PROCESSING_PROVENANCE"])
 
