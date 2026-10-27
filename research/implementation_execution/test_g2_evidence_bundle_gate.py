@@ -17,12 +17,20 @@ from test_g2_evidence_audit import eligible_fixture
 def synthetic_bundle(root):
     record = eligible_fixture()
     record.update(dataset_id="synthetic-dataset", run_id="synthetic-run")
+    # Original source bytes are mandatory even for a synthetic control.
+    raw_bytes = b"synthetic raw source: not a physical gas measurement\\n"
+    raw_file = Path(root) / "research/g2/raw/synthetic_source.bin"
+    raw_file.parent.mkdir(parents=True, exist_ok=True)
+    raw_file.write_bytes(raw_bytes)
+    record["raw_sha256"] = hashlib.sha256(raw_bytes).hexdigest()
     base = (Path(root) / "research/g2/evidence" / record["id"]
             / record["dataset_id"] / record["run_id"])
     base.mkdir(parents=True)
     documents = {
         "raw_manifest.json": {
-            "raw_sha256": record["raw_sha256"], "dataset_uri": record["dataset_uri"]
+            "raw_sha256": record["raw_sha256"], "dataset_uri": record["dataset_uri"],
+            "raw_local_path": "research/g2/raw/synthetic_source.bin",
+            "raw_size_bytes": len(raw_bytes)
         },
         "source_qualification.json": {
             key: record[key] for key in
@@ -68,6 +76,71 @@ def synthetic_bundle(root):
 
 
 class EvidenceBundleTests(unittest.TestCase):
+    def test_raw_source_bytes_required_for_review_candidate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            raw_file = Path(temp) / "research/g2/raw/synthetic_source.bin"
+            self.assertEqual(audit_record(record, temp)["status"],
+                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+            raw_file.unlink()
+            result = audit_record(record, temp)
+            self.assertEqual(result["status"], "G2_BLOCKED")
+            self.assertIn("RAW_SOURCE_BYTES_UNAVAILABLE_OR_UNSAFE", result["issues"])
+
+    def test_rehashed_raw_manifest_does_not_prove_source_bytes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            raw_file = Path(temp) / "research/g2/raw/synthetic_source.bin"
+            raw_file.write_bytes(b"modified synthetic raw source")
+            # The evidence bundle is still intact; only raw source bytes drifted.
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            self.assertIn("RAW_SOURCE_BYTE_SIZE_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_raw_source_digest_mismatch_with_same_byte_count(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            raw_file = Path(temp) / "research/g2/raw/synthetic_source.bin"
+            original = raw_file.read_bytes()
+            raw_file.write_bytes(b"X" + original[1:])
+            self.assertEqual(audit_evidence_bundle(record, temp), [])
+            self.assertIn("RAW_SOURCE_BYTE_DIGEST_MISMATCH",
+                          audit_record(record, temp)["issues"])
+
+    def test_raw_source_manifest_path_traversal_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            manifest = json.loads((base / "raw_manifest.json").read_text())
+            for raw_path in ("../../secret.bin", "/tmp/secret.bin",
+                             "research/g2/raw/../synthetic_source.bin",
+                             "research/g2/raw\\\\synthetic_source.bin"):
+                with self.subTest(path=raw_path):
+                    manifest["raw_local_path"] = raw_path
+                    self.replace_bytes(record, base, "raw_manifest.json",
+                                       json.dumps(manifest))
+                    self.assertIn("RAW_SOURCE_LOCAL_PATH_MISSING_OR_UNSAFE",
+                                  audit_record(record, temp)["issues"])
+
+    def test_raw_source_symlink_is_blocked(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            raw_file = Path(temp) / "research/g2/raw/synthetic_source.bin"
+            target = raw_file.with_name("real_source.bin")
+            raw_file.rename(target)
+            raw_file.symlink_to(target)
+            self.assertIn("RAW_SOURCE_BYTES_UNAVAILABLE_OR_UNSAFE",
+                          audit_record(record, temp)["issues"])
+
+    def test_raw_source_size_metadata_is_mandatory(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            manifest = json.loads((base / "raw_manifest.json").read_text())
+            manifest.pop("raw_size_bytes")
+            self.replace_bytes(record, base, "raw_manifest.json",
+                               json.dumps(manifest))
+            self.assertIn("RAW_SOURCE_SIZE_NOT_DOCUMENTED",
+                          audit_record(record, temp)["issues"])
+
     def test_metadata_only_cannot_be_candidate(self):
         record = eligible_fixture()
         record.update(dataset_id="d", run_id="r")
