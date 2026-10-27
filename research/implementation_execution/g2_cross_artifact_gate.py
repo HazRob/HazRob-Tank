@@ -14,15 +14,20 @@ from g2_cluster_bootstrap_gate import audit_group_bootstrap_accuracy
 
 
 def _csv_has_control(value):
-    """Reject invisible Unicode format/control code points in evidence CSV.
+    """Reject visually ambiguous Unicode in evidence CSV headers and cells.
 
-    SHA256 confirms bytes, not that a reviewer sees the same physical group
-    identifier or gas label. Reject C* categories (including C1, bidi and
-    zero-width formatting) and Unicode line/paragraph separators. Printable
-    multilingual letters, marks and ordinary spaces remain valid.
+    SHA256 proves byte identity, not canonical identity of a physical group
+    or gas label. Require NFC (so equivalent composed/decomposed identifiers
+    cannot be mixed), reject Unicode controls/formatting/separators and all
+    non-ASCII-space Zs characters (e.g. NBSP, thin and ideographic spaces).
+    Ordinary ASCII spaces and NFC multilingual text remain valid.
     """
+    if unicodedata.normalize("NFC", value) != value:
+        return True
     return any(unicodedata.category(ch).startswith("C") or
-               unicodedata.category(ch) in ("Zl", "Zp") for ch in value)
+               unicodedata.category(ch) in ("Zl", "Zp") or
+               (unicodedata.category(ch) == "Zs" and ch != " ")
+               for ch in value)
 
 
 def _read_csv(base, name):

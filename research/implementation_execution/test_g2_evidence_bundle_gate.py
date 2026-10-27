@@ -1325,5 +1325,55 @@ class UnicodeInvisibleCsvEvidenceTests(unittest.TestCase):
 
 
 
+class UnicodeCanonicalCsvEvidenceTests(unittest.TestCase):
+    """Rehashed negative controls for NFC aliases and nonstandard spaces."""
+
+    def _assert_rehashed_mutation_blocked(self, temp, record, base, name, old, new):
+        from g2_cross_artifact_gate import _read_csv
+        source = (base / name).read_text(encoding="utf-8")
+        self.assertIn(old, source)
+        payload = source.replace(old, new, 1).encode("utf-8")
+        (base / name).write_bytes(payload)
+        record["evidence_files"][name] = hashlib.sha256(payload).hexdigest()
+        if name == "predictions_blind.csv":
+            record["evaluation_artifact_sha256"] = record["evidence_files"][name]
+        self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:" + name,
+                      audit_evidence_bundle(record, temp))
+        with self.assertRaises(ValueError):
+            _read_csv(base, name)
+        self.assertIn("CROSS_ARTIFACT_READ_FAILED",
+                      audit_cross_artifact(record, temp))
+        self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_nonstandard_unicode_spaces_and_non_nfc_csv_headers_fail_closed(self):
+        from g2_evidence_bundle_gate import _csv_has_control as bundle_invalid
+        from g2_cross_artifact_gate import _csv_has_control as replay_invalid
+        for label in ("غاز_الإيثانول", "éthanol", "ethanol 50 ppm"):
+            self.assertFalse(bundle_invalid(label))
+            self.assertFalse(replay_invalid(label))
+        for token in ("\\u00a0", "\\u2009", "\\u202f", "\\u3000", "e\\u0301"):
+            with self.subTest(token=repr(token)), tempfile.TemporaryDirectory() as temp:
+                record, base = synthetic_bundle(temp)
+                self.assertTrue(bundle_invalid(token))
+                self.assertTrue(replay_invalid(token))
+                self._assert_rehashed_mutation_blocked(
+                    temp, record, base, "group_manifest.csv",
+                    "gas_reference_id", "gas" + token + "_reference_id")
+
+    def test_nonstandard_unicode_spaces_and_non_nfc_cells_fail_closed(self):
+        mutations = (
+            ("group_manifest.csv", "GAS_A,d1,s1", "GAS_A{token},d1,s1"),
+            ("predictions_blind.csv", "GAS_A,GAS_A,GAS_A",
+             "GAS_A,GAS_A{token},GAS_A"),
+            ("metrics_per_group.csv", "d2-s1,1,1,1", "d2-s1{token},1,1,1"),
+        )
+        for token in ("\\u00a0", "\\u2009", "\\u202f", "\\u3000", "e\\u0301"):
+            for name, old, new in mutations:
+                with self.subTest(token=repr(token), file=name), tempfile.TemporaryDirectory() as temp:
+                    record, base = synthetic_bundle(temp)
+                    self._assert_rehashed_mutation_blocked(
+                        temp, record, base, name, old, new.format(token=token))
+
+
 if __name__ == "__main__":
     unittest.main()
