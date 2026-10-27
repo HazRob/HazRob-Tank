@@ -52,6 +52,9 @@ public final class ReportsTab {
     private final Spinner chartSelector,siteSelector,fieldSelector;
     private final List<FieldSessionRepository.Site> scopeSites=new ArrayList<>();
     private final List<FieldSessionRepository.FieldSession> scopeSessions=new ArrayList<>();
+    private final List<String> boundSiteIds=new ArrayList<>(),boundSiteLabels=new ArrayList<>();
+    private final List<String> boundSessionIds=new ArrayList<>(),boundSessionLabels=new ArrayList<>();
+    private boolean rebindingScope=false;
     private final List<Integer> availableCharts=new ArrayList<>();
     private long chartGeneration=0;
     private String chosenSiteId="",chosenSessionId="";
@@ -73,16 +76,21 @@ public final class ReportsTab {
         fieldSelector=new Spinner(c);UiKit.outlinedSpinner(fieldSelector);root.addView(fieldSelector,UiKit.full(c));
         siteSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
-                if(position<0||position>=scopeSites.size())return;
-                String next=scopeSites.get(position).id;if(!next.equals(chosenSiteId))chosenSessionId="";
-                chosenSiteId=next;refreshSessionScope();
+                if(rebindingScope||position<0||position>=scopeSites.size()
+                        ||position!=siteSelector.getSelectedItemPosition())return;
+                String next=scopeSites.get(position).id;
+                if(next.equals(chosenSiteId))return;
+                chosenSiteId=next;chosenSessionId="";
+                refreshSessionScope();
             }
             public void onNothingSelected(AdapterView<?> parent){}
         });
         fieldSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> parent,View view,int position,long id){
-                chosenSessionId=position>0&&position<=scopeSessions.size()?scopeSessions.get(position-1).id:"";
-                updateExportButtonLabels();
+                if(rebindingScope||position!=fieldSelector.getSelectedItemPosition())return;
+                String next=position>0&&position<=scopeSessions.size()?scopeSessions.get(position-1).id:"";
+                if(next.equals(chosenSessionId))return;
+                chosenSessionId=next;updateExportButtonLabels();
             }
             public void onNothingSelected(AdapterView<?> parent){}
         });
@@ -119,31 +127,61 @@ public final class ReportsTab {
         chosenSessionId=sessionId==null?"":sessionId;
         refresh();
     }
+    /**
+     * Reuse adapters whenever site/session rows are unchanged. Spinner callbacks can run
+     * after an adapter change: all selections use stable UUIDs, not previous row indices.
+     */
     private void refreshSiteScope(){
-        List<FieldSessionRepository.Site> sites=fieldSessions.sites();
-        scopeSites.clear();scopeSites.addAll(sites);
-        List<String> names=new ArrayList<>();int selected=0;
-        for(int i=0;i<sites.size();i++){names.add(sites.get(i).name);if(sites.get(i).id.equals(chosenSiteId))selected=i;}
-        if(sites.isEmpty()){chosenSiteId="";scopeSessions.clear();chosenSessionId="";names.add("لا توجد مواقع");}
-        else chosenSiteId=sites.get(selected).id;
-        siteSelector.setAdapter(UiKit.lightOptions(scroll.getContext(),names.toArray(new String[0])));
-        siteSelector.setEnabled(!sites.isEmpty());siteSelector.setSelection(selected);
-        refreshSessionScope();
+        rebindingScope=true;
+        try{
+            List<FieldSessionRepository.Site> sites=fieldSessions.sites();
+            scopeSites.clear();scopeSites.addAll(sites);
+            List<String> ids=new ArrayList<>(),labels=new ArrayList<>();
+            int selected=0;
+            for(int i=0;i<sites.size();i++){
+                FieldSessionRepository.Site site=sites.get(i);
+                ids.add(site.id);labels.add(site.name);
+                if(site.id.equals(chosenSiteId))selected=i;
+            }
+            if(sites.isEmpty()){
+                chosenSiteId="";chosenSessionId="";labels.add("لا توجد مواقع");
+            }else if(!sites.get(selected).id.equals(chosenSiteId)){
+                chosenSiteId=sites.get(selected).id;chosenSessionId="";
+            }
+            if(siteSelector.getAdapter()==null||!boundSiteIds.equals(ids)||!boundSiteLabels.equals(labels)){
+                siteSelector.setAdapter(UiKit.lightOptions(scroll.getContext(),labels.toArray(new String[0])));
+                boundSiteIds.clear();boundSiteIds.addAll(ids);
+                boundSiteLabels.clear();boundSiteLabels.addAll(labels);
+            }
+            siteSelector.setEnabled(!sites.isEmpty());
+            if(siteSelector.getSelectedItemPosition()!=selected)siteSelector.setSelection(selected);
+            refreshSessionScope();
+        }finally{rebindingScope=false;}
     }
     private void refreshSessionScope(){
-        scopeSessions.clear();if(!chosenSiteId.isEmpty())scopeSessions.addAll(fieldSessions.approvedSessionsForSite(chosenSiteId));
-        List<String> names=new ArrayList<>();names.add("الجلسات المعتمدة للموقع • تقرير الموقع");
-        int selected=0;
-        for(int i=0;i<scopeSessions.size();i++){
-            FieldSessionRepository.FieldSession f=scopeSessions.get(i);
-            names.add(f.name+" • معتمدة");
-            if(f.id.equals(chosenSessionId))selected=i+1;
-        }
-        chosenSessionId=selected>0?scopeSessions.get(selected-1).id:"";
-        fieldSelector.setAdapter(new ArrayAdapter<String>(scroll.getContext(),android.R.layout.simple_spinner_dropdown_item,names));
-        fieldSelector.setSelection(selected);
-        fieldSelector.setEnabled(!chosenSiteId.isEmpty());
-        updateExportButtonLabels();
+        rebindingScope=true;
+        try{
+            List<FieldSessionRepository.FieldSession> sessions=new ArrayList<>();
+            if(!chosenSiteId.isEmpty())sessions.addAll(fieldSessions.approvedSessionsForSite(chosenSiteId));
+            scopeSessions.clear();scopeSessions.addAll(sessions);
+            List<String> ids=new ArrayList<>(),labels=new ArrayList<>();
+            labels.add("الجلسات المعتمدة للموقع • تقرير الموقع");
+            int selected=0;
+            for(int i=0;i<sessions.size();i++){
+                FieldSessionRepository.FieldSession f=sessions.get(i);
+                ids.add(f.id);labels.add(f.name+" • معتمدة");
+                if(f.id.equals(chosenSessionId))selected=i+1;
+            }
+            chosenSessionId=selected>0?sessions.get(selected-1).id:"";
+            if(fieldSelector.getAdapter()==null||!boundSessionIds.equals(ids)||!boundSessionLabels.equals(labels)){
+                fieldSelector.setAdapter(UiKit.lightOptions(scroll.getContext(),labels.toArray(new String[0])));
+                boundSessionIds.clear();boundSessionIds.addAll(ids);
+                boundSessionLabels.clear();boundSessionLabels.addAll(labels);
+            }
+            if(fieldSelector.getSelectedItemPosition()!=selected)fieldSelector.setSelection(selected);
+            fieldSelector.setEnabled(!chosenSiteId.isEmpty());
+            updateExportButtonLabels();
+        }finally{rebindingScope=false;}
     }
     private void updateExportButtonLabels(){
         if(pdf==null||xlsx==null)return;
