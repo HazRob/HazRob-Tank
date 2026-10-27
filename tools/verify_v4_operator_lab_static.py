@@ -33,6 +33,14 @@ require(sessions,'host.requestFieldSessionExport("xlsx",q.id)',"exact-session-XL
 assert "selectingScope||refreshing||" not in sessions, "user interaction must not be dropped during refresh"
 checks.append("site-selection-during-refresh")
 
+activity=read("android/app/src/main/java/com/servoc/app/MainActivity.java")
+require(activity,"pendingFieldSessionPicker=true","no-overlapping-report-picker")
+require(activity,"selected=new FieldSessionRepository(db).fieldSessionById(fs)","report-lookup-in-worker")
+require(activity,"if(!selectedRow.approved())","approved-session-before-picker")
+require(activity,'pendingFieldSessionPicker=false;pendingFieldSessionId="";',"report-picker-reset-on-cancel")
+require(activity,"FieldSessionReportExporter.writePdf(out,db,fieldId,chemicals)","session-pdf-exact-id")
+require(activity,"FieldSessionReportExporter.writeXlsx(out,db,fieldId,chemicals)","session-xlsx-exact-id")
+
 reports=read("android/app/src/main/java/com/servoc/app/ui/ReportsTab.java")
 require(reports,"fieldSessions.approvedSessionsForSite(chosenSiteId)","approved-site-session-scope")
 require(reports,"if(rebindingScope||position!=fieldSelector.getSelectedItemPosition())return","spinner-guard")
