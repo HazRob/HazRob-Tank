@@ -132,6 +132,16 @@ public class ChemCoreLabQualityTest {
         }finally{ManualR0Calibration.load(null);}
     }
 
+    @Test public void unqualifiedMq7Mq9HeaterCycleIsExplicitLabAdvisory()throws Exception{
+        try{
+            SharedPreferences prefs=memoryPreferences();ManualR0Calibration.load(prefs);
+            acceptEight(prefs,false);
+            ChemCoreLabQuality q=ChemCoreLabQuality.evaluate(diagnostic(true,false),0,0);
+            assertTrue(q.advisories.contains("mq7_mq9_heater_cycle_not_physically_qualified"));
+            assertEquals(0,q.referenceValidatedChannels);
+        }finally{ManualR0Calibration.load(null);}
+    }
+
     @Test public void motionOrMissingAdcAlwaysBlocksCapture()throws Exception{
         try{
             SharedPreferences prefs=memoryPreferences();ManualR0Calibration.load(prefs);
