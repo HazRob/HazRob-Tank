@@ -1,0 +1,84 @@
+package com.servoc.app.ui;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.servoc.app.ReleaseAudit;
+import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
+import com.servoc.app.chemcore.ChemCoreDecisionRepository;
+import com.servoc.app.chemcore.ChemCoreLabQuality;
+import com.servoc.app.measurement.MeasurementSessionRegistry;
+
+import org.json.JSONObject;
+
+import java.util.Locale;
+
+/** Developer analytical laboratory: controlled session plus concise results/diagnostics. */
+public final class AnalyticalLabTab {
+    private final Context context;private final HazRobHost host;private final ChemCoreAnalysisTab session;
+    private final LinearLayout root,bar;private final FrameLayout page;private final View sessionView,dashboardView;
+    private final Button sessionButton,dashboardButton;
+    private final TextView readiness,calibration,environment,result,candidates,math;
+    private final ChemCoreDecisionRepository decisions;
+    private int selected=0;private String lastBoundSession="";
+
+    public AnalyticalLabTab(Context c,HazRobHost host){
+        context=c;this.host=host;this.session=new ChemCoreAnalysisTab(c,host);this.decisions=new ChemCoreDecisionRepository(host.database());
+        root=UiKit.vbox(c);root.setBackgroundColor(0xFFF7F8FA);root.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,8));
+        root.addView(UiKit.title(c,"المختبر الكيميائي التحليلي الموسع • HazRob "+ReleaseAudit.VERSION),UiKit.full(c));
+        bar=UiKit.hbox(c);sessionButton=UiKit.button(c,"الجلسة المضبوطة");dashboardButton=UiKit.button(c,"النتائج والتشخيص");bar.addView(sessionButton,UiKit.weight(1));bar.addView(dashboardButton,UiKit.weight(1));root.addView(bar,UiKit.full(c));
+        page=new FrameLayout(c);root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));sessionView=session.view();
+
+        ScrollView scroll=new ScrollView(c);scroll.setFillViewport(true);LinearLayout dash=UiKit.vbox(c);dash.setPadding(UiKit.dp(c,8),UiKit.dp(c,6),UiKit.dp(c,8),UiKit.dp(c,14));scroll.addView(dash);dashboardView=scroll;
+        dash.addView(UiKit.title(c,"نتائج وتشخيص ChemCore • HazRob "+ReleaseAudit.VERSION),UiKit.full(c));
+        TextView scope=UiKit.small(c,"Screening متاح للجلسات الصالحة. PPM المهني لا يظهر كتفسير كمي إلا عندما تجتاز المادة بوابة M4 المستقلة.");scope.setTextColor(0xFF167443);scope.setBackgroundColor(0xFFE8F5E9);dash.addView(scope,UiKit.full(c));
+
+        LinearLayout readyCard=UiKit.card(c);readyCard.addView(UiKit.title(c,"الحالة التشغيلية"),UiKit.full(c));readiness=box(c);readyCard.addView(readiness,UiKit.full(c));dash.addView(readyCard,UiKit.full(c));
+        LinearLayout calCard=UiKit.card(c);calCard.addView(UiKit.title(c,"المعايرة والكمية"),UiKit.full(c));calibration=box(c);calCard.addView(calibration,UiKit.full(c));dash.addView(calCard,UiKit.full(c));
+        LinearLayout envCard=UiKit.card(c);envCard.addView(UiKit.title(c,"البيئة والحساس البيئي"),UiKit.full(c));environment=box(c);envCard.addView(environment,UiKit.full(c));dash.addView(envCard,UiKit.full(c));
+        LinearLayout resultCard=UiKit.card(c);resultCard.addView(UiKit.title(c,"قرار ChemCore الأخير"),UiKit.full(c));result=box(c);result.setTextIsSelectable(true);resultCard.addView(result,UiKit.full(c));candidates=box(c);candidates.setTextIsSelectable(true);resultCard.addView(candidates,UiKit.full(c));dash.addView(resultCard,UiKit.full(c));
+        LinearLayout mathCard=UiKit.card(c);mathCard.addView(UiKit.title(c,"التفسير الرياضي والبواقي"),UiKit.full(c));math=box(c);math.setTextIsSelectable(true);mathCard.addView(math,UiKit.full(c));dash.addView(mathCard,UiKit.full(c));
+
+        sessionButton.setOnClickListener(v->show(0));dashboardButton.setOnClickListener(v->show(1));show(0);
+    }
+
+    private static TextView box(Context c){TextView v=UiKit.text(c,"—");v.setBackground(UiKit.outline(c,0xFFF8FAFC,0xFF8994A3));v.setTextColor(Color.BLACK);return v;}
+    public View view(){return root;}
+
+    public void refresh(){session.refresh();JSONObject d=host.latestDiagnostics();ChemCoreLabQuality q=ChemCoreLabQuality.evaluate(d,host.driveLeft(),host.driveRight(),host.database());renderQuality(q);bindCompletedSession(q);renderDecision();}
+
+    private void show(int index){selected=index==1?1:0;page.removeAllViews();page.addView(selected==0?sessionView:dashboardView,new FrameLayout.LayoutParams(-1,-1));sessionButton.setTextColor(Color.BLACK);dashboardButton.setTextColor(Color.BLACK);sessionButton.setBackground(UiKit.outline(context,selected==0?0xFFF6B83D:0xFFF1F3F6,0xFF8994A3));dashboardButton.setBackground(UiKit.outline(context,selected==1?0xFFF6B83D:0xFFF1F3F6,0xFF8994A3));refresh();}
+
+    private void renderQuality(ChemCoreLabQuality q){
+        String state=!q.connected?"غير متصل":q.configurationReady?"جاهز لجلسة ChemCore مدعومة بمعايرة R0 (بحثية)":q.exploratoryScreeningReady()?"فحص بحثي متاح قبل R0":"يتطلب انتباه";
+        readiness.setText(state+" • Capture "+yes(q.captureReady)+" • ثابت "+yes(q.stationary)+" • قنوات R0 "+q.r0NormalizedChannels+"/8\n"+
+                (q.blockers==null||q.blockers.isEmpty()?"لا توجد قيود على التفسير":"قيود اعتماد النتائج: "+join(q.blockers))+
+                (q.advisories==null||q.advisories.isEmpty()?"":"\nتنبيهات: "+join(q.advisories)));
+        readiness.setTextColor(q.configurationReady||q.exploratoryScreeningReady()?0xFF167443:0xFF985000);
+
+        JSONObject r0Standard=q.toJson().optJSONObject("r0_standard");
+        String acceptedSource=r0Standard==null?"unavailable":r0Standard.optString("source","unavailable");
+        calibration.setText("معايرة R0 المقبولة: "+q.r0NormalizedChannels+"/8 • مصدرها: "+acceptedSource+
+                " • منحنيات غاز مرجعي M4 محققة: "+q.referenceValidatedChannels+"/8\n"+
+                (q.fingerprintNormalizationReady()?"Screening: R0 READY":"Screening: بحثي دون R0")+" • "+
+                (q.anyReferenceGasCalibrationAvailable()?"PPM/M4: متاح للمواد المؤهلة فقط":"PPM/M4: غير متاح كميًا بعد"));
+        calibration.setTextColor(q.fingerprintNormalizationReady()?0xFF167443:0xFF985000);
+
+        String t=finite(q.temperatureC)?String.format(Locale.US,"%.2f °C",q.temperatureC):"—",h=finite(q.humidityRh)?String.format(Locale.US,"%.1f %%RH",q.humidityRh):"—",p=finite(q.pressureHpa)?String.format(Locale.US,"%.1f hPa",q.pressureHpa):"—";
+        environment.setText(blank(q.environmentSensor)+" • "+blank(q.environmentStatus)+" • "+blank(q.environmentAddress)+"\nT "+t+" • RH "+h+" • P "+p+" • correction "+(q.environmentReady?"AVAILABLE":"WITHHELD"));environment.setTextColor(q.environmentReady?0xFF167443:0xFF985000);
+    }
+
+    private void bindCompletedSession(ChemCoreLabQuality q){String id=MeasurementSessionRegistry.lastCompletedSessionId();if(id==null||id.isEmpty()||id.equals(lastBoundSession))return;JSONObject payload=decisions.latestPayloadForSession(id);if(payload==null)return;if(payload.optJSONObject("lab_quality")==null)decisions.attachLabQuality(id,q.toJson(),System.currentTimeMillis());lastBoundSession=id;}
+    private void renderDecision(){String id=MeasurementSessionRegistry.lastCompletedSessionId();JSONObject p=id==null||id.isEmpty()?null:decisions.latestPayloadForSession(id);result.setText(ChemCoreAnalysisPresenter.summary(p));candidates.setText(ChemCoreAnalysisPresenter.candidates(p,8));math.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,4));}
+
+    private static String yes(boolean v){return v?"PASS":"NO";}
+    private static boolean finite(double v){return Double.isFinite(v);}
+    private static String blank(String s){return s==null||s.isEmpty()?"—":s;}
+    private static String join(java.util.List<String> x){if(x==null||x.isEmpty())return "—";StringBuilder s=new StringBuilder();for(String v:x){if(s.length()>0)s.append(", ");s.append(v);}return s.toString();}
+}
