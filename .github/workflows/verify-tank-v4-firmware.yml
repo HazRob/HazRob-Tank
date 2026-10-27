@@ -12,6 +12,10 @@ jobs:
   compile:
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        esp32_core: ['2.0.17', '3.3.11']
     steps:
       - uses: actions/checkout@v4
       - name: Static safety and calibration invariants
@@ -30,6 +34,10 @@ jobs:
           assert 'now-calAt<calWindowMs' in h
           assert 'if(calCount[i]<10' in h
           assert 'web.on("/r0"' in ino
+          assert '#if ESP_ARDUINO_VERSION_MAJOR >= 3' in h
+          assert 'ledcAttachChannel(s.pin,Cfg::SERVO_HZ,16,s.channel)' in h
+          assert 'ledcWriteChannel(s.channel,duty)' in h
+          assert 'ledcSetup(s.channel,Cfg::SERVO_HZ,16)' in h
           print('PASS: source invariants')
           PY
       - uses: arduino/setup-arduino-cli@v2
@@ -38,7 +46,7 @@ jobs:
           set -euo pipefail
           INDEX=https://espressif.github.io/arduino-esp32/package_esp32_index.json
           arduino-cli core update-index --additional-urls "$INDEX"
-          arduino-cli core install esp32:esp32@2.0.17 --additional-urls "$INDEX"
+          arduino-cli core install esp32:esp32@${{ matrix.esp32_core }} --additional-urls "$INDEX"
       - name: Compile (unreleased)
         run: |
           arduino-cli compile --warnings all --fqbn esp32:esp32:esp32 --output-dir firmware-build firmware/ESP32-Tank
@@ -61,7 +69,7 @@ jobs:
           du -h firmware-build/*.bin
       - uses: actions/upload-artifact@v4
         with:
-          name: tank-v4-UNRELEASED-compile-candidate
+          name: tank-v4-UNRELEASED-core-${{ matrix.esp32_core }}
           path: |
             firmware-build/*.bin
             arduino-package/*.zip
