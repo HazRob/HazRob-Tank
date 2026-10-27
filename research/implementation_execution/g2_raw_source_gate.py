@@ -44,15 +44,21 @@ def audit_raw_source_bytes(record, repo_root=Path(".")):
         if actual_size != size:
             return ["RAW_SOURCE_BYTE_SIZE_MISMATCH"]
         digest = hashlib.sha256()
+        bytes_hashed = 0
         with resolved.open("rb") as stream:
             # Git LFS pointer bytes are not the archived source measurements.
             if stream.read(64).startswith(b"version https://git-lfs.github.com/spec/v1"):
                 return ["RAW_SOURCE_GIT_LFS_POINTER_NOT_MATERIALIZED"]
             stream.seek(0)
             for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                bytes_hashed += len(chunk)
                 digest.update(chunk)
     except (OSError, ValueError):
         return ["RAW_SOURCE_BYTES_UNAVAILABLE_OR_UNSAFE"]
+    # stat() is only a preflight check. An archive replaced or truncated
+    # between stat and read must not pass with a newly declared digest.
+    if bytes_hashed != size:
+        return ["RAW_SOURCE_BYTE_SIZE_MISMATCH"]
     if (digest.hexdigest() != record.get("raw_sha256") or
             digest.hexdigest() != manifest.get("raw_sha256")):
         return ["RAW_SOURCE_BYTE_DIGEST_MISMATCH"]
