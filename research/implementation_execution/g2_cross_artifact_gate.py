@@ -253,8 +253,15 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                 issues.append("BASELINE_MAJORITY_TRAIN_FIT_POLICY_INVALID")
             else:
                 fitted_ids = baseline.get("fitted_group_ids")
-                if not isinstance(fitted_ids, list) or not fitted_ids:
+                if (not isinstance(fitted_ids, list) or not fitted_ids or
+                        any(not isinstance(g, str) for g in fitted_ids)):
                     issues.append("BASELINE_TRAINING_LABELS_UNAVAILABLE")
+                elif (not isinstance(record.get("train_group_ids"), list) or
+                      any(not isinstance(g, str) for g in record["train_group_ids"]) or
+                      set(fitted_ids) != set(record["train_group_ids"])):
+                    # A majority_train baseline must use all training groups.
+                    # Selecting a subset can artificially weaken its accuracy.
+                    issues.append("BASELINE_MAJORITY_TRAIN_PARTIAL_FIT")
                 else:
                     labels = [row.get("gas_reference_id", "").strip()
                               for row in groups
