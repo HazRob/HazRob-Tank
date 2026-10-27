@@ -1,3 +1,12 @@
+## 2026-10-27 — G2 calibration reference-label commitment (200/200 CI)
+
+- Research branch only. New `protocol_locked.json.calibration_labels_sha256` binds exposure/group/gas-reference labels of the calibration split independently of the physical holdout assignment and majority-train label locks. Rejects post-hoc calibration relabeling even when CSV SHA256 is refreshed.
+- Code `g2_cross_artifact_gate.py` commit `2f78455d13bad40d195a9aa3d06f3732783d9425`; four synthetic controls in `test_g2_evidence_bundle_gate.py` commit `4473942658a890f2fa9cc4f335d66312bd4cc07a`. Document `G2_LOCKED_CALIBRATION_REFERENCE_LABELS_2026-10-27_AR.md`.
+- Verified G2 CI run [40577570708](https://github.com/HazRob/HazRob-Tank/actions/runs/40577570708), job 122447989194: **200/200 PASS**; `g2_pass_candidates=0`, `g2_blocked=80`. Review all workflow conclusions on final documentation commit separately.
+- Central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` reverified; external MQ catalog source blob `522a7013d5fab3ac6e6c2e4cbad1fc20fb99f837` reverified on its original research branch. No physical independent measured G2 records; no G2/G3 scientific approval or ChemCore Stable edits. Internal digest does **not** establish chronological preregistration.
+
+---
+
 ## 2026-10-27 — G2 locked physical holdout allocation gate
 
 - Research-only: require group_assignment_sha256 in protocol_locked.json to bind exposure IDs, physical source columns and group assignments without blind gas labels. Four synthetic regression controls in test_g2_evidence_bundle_gate.py.
