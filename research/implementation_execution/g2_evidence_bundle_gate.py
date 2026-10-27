@@ -7,6 +7,7 @@ import hashlib
 import json
 import csv
 import math
+import unicodedata
 import re
 from pathlib import Path
 
@@ -23,8 +24,15 @@ SAFE_SEGMENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$")
 
 
 def _csv_has_control(value):
-    """NUL and C0/DEL controls cannot be trusted in evidence identifiers."""
-    return any(ord(ch) < 32 or ord(ch) == 127 for ch in value)
+    """Reject invisible Unicode format/control code points in evidence CSV.
+
+    SHA256 confirms bytes, not that a reviewer sees the same physical group
+    identifier or gas label. Reject C* categories (including C1, bidi and
+    zero-width formatting) and Unicode line/paragraph separators. Printable
+    multilingual letters, marks and ordinary spaces remain valid.
+    """
+    return any(unicodedata.category(ch).startswith("C") or
+               unicodedata.category(ch) in ("Zl", "Zp") for ch in value)
 
 
 def _safe(value):
