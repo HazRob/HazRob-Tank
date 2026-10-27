@@ -2,7 +2,8 @@
 import unittest
 import tempfile
 from pathlib import Path
-from g2_evidence_audit import audit_record, audit_all, validate_ledger_scope, load_g2_inputs
+from g2_evidence_audit import (audit_record, audit_all, validate_ledger_scope,
+                               load_g2_inputs, load_canonical_technique_ids)
 from test_g2_signal_lineage_gate import normalized
 
 SHA = "a"*64
@@ -192,6 +193,65 @@ class StrictInputManifestTests(unittest.TestCase):
                 '{"schema":"hazrob.g2.independent-evidence.v1","records":[]}',
                 '{"schema_version":"hazrob.tank.chemcore80.execution-ledger-v4",'
                 '"work_items":[{"id":null}]}')
+
+
+
+class CanonicalTechniqueScopeTests(unittest.TestCase):
+    """A passing 80-count is not evidence that the correct 80 IDs were audited."""
+
+    def test_actual_research_registry_and_ledger_match(self):
+        research = Path(__file__).resolve().parents[1]
+        ids = load_canonical_technique_ids(research / "PROGRESS_80.json")
+        ledger, evidence = load_g2_inputs(
+            Path(__file__).resolve().parent / "EXECUTION_LEDGER_2026-10-21.json",
+            Path(__file__).resolve().parent / "G2_INDEPENDENT_EVIDENCE.json")
+        self.assertEqual(len(ids), 80)
+        self.assertTrue(validate_ledger_scope(
+            [item["id"] for item in ledger["work_items"]],
+            evidence["records"], canonical_ids=ids))
+
+    def test_substituted_id_with_same_total_is_rejected(self):
+        canonical = [f"T{i:02d}" for i in range(80)]
+        substituted = canonical[:-1] + ["T80"]
+        with self.assertRaisesRegex(ValueError, "G2_LEDGER_CANONICAL_TECHNIQUE_IDS_MISMATCH"):
+            validate_ledger_scope(substituted, [], canonical_ids=canonical)
+
+    def test_invalid_record_ids_fail_closed_without_type_error(self):
+        ids = [f"T{i:02d}" for i in range(80)]
+        for bad in (None, [], {}, 1, "", "  ", "T01 "):
+            with self.subTest(bad=bad):
+                with self.assertRaisesRegex(ValueError, "INVALID_G2_EVIDENCE_RECORD_ID"):
+                    validate_ledger_scope(ids, [{"id": bad}])
+
+    def test_invalid_ledger_id_type_fails_closed(self):
+        ids = [f"T{i:02d}" for i in range(79)] + [[]]
+        with self.assertRaisesRegex(ValueError, "G2_LEDGER_SCOPE"):
+            validate_ledger_scope(ids, [])
+
+    def test_registry_requires_80_unique_well_formed_ids(self):
+        import json
+        ids = [f"01.{i}" for i in range(1, 81)]
+        valid = {"total_techniques": 80,
+                 "techniques": [{"id": tid} for tid in ids]}
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "progress.json"
+            path.write_text(json.dumps(valid), encoding="utf-8")
+            self.assertEqual(load_canonical_technique_ids(path), ids)
+            invalid_cases = [
+                {**valid, "total_techniques": 79},
+                {**valid, "techniques": valid["techniques"][:-1]},
+                {**valid, "techniques": valid["techniques"][:-1] + [valid["techniques"][0]]},
+                {**valid, "techniques": valid["techniques"][:-1] + [{"id": "bad"}]},
+                {**valid, "techniques": valid["techniques"][:-1] + [{"id": []}]},
+            ]
+            for case in invalid_cases:
+                with self.subTest(case=case["techniques"][-1]):
+                    path.write_text(json.dumps(case), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, "G2_CANONICAL_TECHNIQUE_REGISTRY_INVALID"):
+                        load_canonical_technique_ids(path)
+            path.unlink()
+            with self.assertRaisesRegex(ValueError, "G2_CANONICAL_TECHNIQUE_REGISTRY_INVALID"):
+                load_canonical_technique_ids(path)
 
 
 class LegacyContractTests(unittest.TestCase):
