@@ -45,6 +45,10 @@ def audit_raw_source_bytes(record, repo_root=Path(".")):
             return ["RAW_SOURCE_BYTE_SIZE_MISMATCH"]
         digest = hashlib.sha256()
         with resolved.open("rb") as stream:
+            # Git LFS pointer bytes are not the archived source measurements.
+            if stream.read(64).startswith(b"version https://git-lfs.github.com/spec/v1"):
+                return ["RAW_SOURCE_GIT_LFS_POINTER_NOT_MATERIALIZED"]
+            stream.seek(0)
             for chunk in iter(lambda: stream.read(1024 * 1024), b""):
                 digest.update(chunk)
     except (OSError, ValueError):
