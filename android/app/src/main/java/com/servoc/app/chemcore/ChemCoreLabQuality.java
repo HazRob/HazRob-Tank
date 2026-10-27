@@ -180,6 +180,7 @@ public final class ChemCoreLabQuality {
                 JSONObject channel=new JSONObject();
                 channel.put("r0",value);channel.put("source",src);channel.put("session",session);
                 channel.put("utc",ManualR0Calibration.getUtc(key));
+                channel.put("r0_samples",ManualR0Calibration.getSamples(key));
                 if(!sensorDeviceId.isEmpty())channel.put("device_id",sensorDeviceId);
                 channel.put("device_local",true);channel.put("reference_gas_validated",false);
                 channels.put(key,channel);
