@@ -1017,6 +1017,10 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             record["train_group_ids"].append("d1-s3")
+            split = json.loads((base / "split_manifest.json").read_text())
+            split["train_group_ids"] = record["train_group_ids"]
+            self.replace_bytes(record, base, "split_manifest.json",
+                               json.dumps(split))
             data = (base / "group_manifest.csv").read_text().replace(
                 "tr,d1-s1,GAS_A,d1,s1\n",
                 "tr,d1-s1,GAS_A,d1,s1\ntr2,d1-s3,GAS_A,d1,s3\n")
@@ -1036,6 +1040,10 @@ class EvidenceBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
             record["train_group_ids"].append("d1-s3")
+            split = json.loads((base / "split_manifest.json").read_text())
+            split["train_group_ids"] = record["train_group_ids"]
+            self.replace_bytes(record, base, "split_manifest.json",
+                               json.dumps(split))
             data = (base / "group_manifest.csv").read_text().replace(
                 "tr,d1-s1,GAS_A,d1,s1\n",
                 "tr,d1-s1,GAS_A,d1,s1\ntr2,d1-s3,GAS_A,d1,s3\n")
