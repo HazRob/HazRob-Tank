@@ -225,24 +225,33 @@ public final class DeveloperR0Tab {
 
     private void startAutomatic(){
         if(disposed||automaticActive||calibrationChangeBlocked())return;
-        autoStart.setEnabled(false);
+        // Lock manual edits immediately, BEFORE any asynchronous /relay or /r0 request.
+        // Otherwise a manual R0 save can race the ESP32 warm-up/commit.
+        automaticActive=true;
+        autoStart.setEnabled(false);autoCancel.setEnabled(true);
         autoProgress.setText("جارٍ بدء معايرة ESP32...");
         host.io().execute(()->{
+            boolean startRequested=false;
             try{
                 host.robotApi().mqPower(true);
+                startRequested=true;
                 JSONObject started=host.robotApi().calibrationStart(300,60);
                 FirmwareR0Contract.Progress p=FirmwareR0Contract.progress(started);
                 if(!p.active())throw new IllegalStateException("Firmware calibration did not start");
                 scroll.post(()->{
-                    if(disposed)return;
-                    automaticActive=true;autoCancel.setEnabled(true);
+                    if(disposed||!automaticActive)return;
                     scroll.setKeepScreenOn(true);displayCalibration(p,started);
                 });
             }catch(Exception ex){
+                final boolean uncertain=startRequested&&
+                        !(ex instanceof UnsupportedOperationException);
                 scroll.post(()->{
-                    if(disposed)return;
-                    autoStart.setEnabled(true);autoCancel.setEnabled(false);
-                    autoProgress.setText("تعذر بدء المعايرة: "+ex.getMessage());
+                    if(disposed||!automaticActive)return;
+                    if(uncertain){
+                        autoProgress.setText("لم يتأكد بدء المعايرة؛ جارٍ الاستعلام من ESP32 دون "+
+                                "السماح بتعديل R0 حتى تتضح الحالة: "+ex.getClass().getSimpleName());
+                        clock.post(autoTick);
+                    }else finishAutomatic("تعذر بدء المعايرة: "+ex.getMessage());
                 });
             }
         });
