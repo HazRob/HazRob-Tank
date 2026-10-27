@@ -45,7 +45,13 @@ require(activity,"FieldSessionReportExporter.writePdf(out,db,fieldId,chemicals)"
 require(activity,"FieldSessionReportExporter.writeXlsx(out,db,fieldId,chemicals)","session-xlsx-exact-id")
 
 reports=read("android/app/src/main/java/com/servoc/app/ui/ReportsTab.java")
-require(reports,"fieldSessions.approvedSessionsForSite(chosenSiteId)","approved-site-session-scope")
+require(reports,"fieldSessions.approvedSessionsForSite(effectiveSite)","approved-site-session-scope")
+require(reports,"ScopeData data=new ScopeData(siteId,sessionId,sites,sessions,records)","report-data-loaded-off-main")
+require(reports,"if(released||reportGeneration!=request)return","report-stale-result-guard")
+require(reports,"renderHistory(data.records)","report-UI-applies-background-archive")
+require(reports,"showSelectedReady(row,decision,series,fieldId)","saved-ChemCore-analysis-snapshot-on-worker")
+assert "private void refreshSiteScope(){" not in reports,"Report scope must not synchronously query the UI thread"
+checks.append("report-scopes-async")
 require(reports,"if(rebindingScope||position!=fieldSelector.getSelectedItemPosition())return","spinner-guard")
 require(reports,"UiKit.lightOptions(scroll.getContext(),labels.toArray(new String[0]))","outlined-black-text-dropdown")
 require(reports,'else host.requestFieldSessionExport(format,chosenSessionId)',"reports-exact-session-route")
