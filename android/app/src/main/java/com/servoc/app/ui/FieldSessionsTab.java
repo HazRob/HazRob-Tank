@@ -2,6 +2,8 @@ package com.servoc.app.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
@@ -26,7 +28,9 @@ public final class FieldSessionsTab {
     private final LinearLayout sites,sessions,reportSessionList;
     private final TextView reportScope;
     private final Spinner siteDropdown,sessionDropdown;
-    private boolean selectingScope=false,refreshing=false;private String selectedSessionId="";
+    private boolean selectingScope=false,refreshing=false,refreshQueued=false;
+    private final Handler main=new Handler(Looper.getMainLooper());
+    private String selectedSessionId="";
     // IDs are bound to each Spinner adapter; a delayed selection never queries a changed DB cursor.
     private final List<String> siteOptionIds=new ArrayList<>(),sessionOptionIds=new ArrayList<>();
     // Reusing unchanged adapters prevents posted Spinner events from triggering a reload loop.
@@ -106,16 +110,68 @@ public final class FieldSessionsTab {
 
     public View view(){return scroll;}
 
+    /** Immutable DB read snapshot. All SQLite joins run off the UI thread. */
+    private static final class SessionData{
+        final FieldSessionRepository.FieldSession active;
+        final List<FieldSessionRepository.Site> sites;
+        final String siteId;
+        final List<FieldSessionRepository.FieldSession> children,approved;
+        final java.util.Map<String,Integer> counts;
+        SessionData(FieldSessionRepository.FieldSession a,List<FieldSessionRepository.Site> ss,
+                String id,List<FieldSessionRepository.FieldSession> c,
+                List<FieldSessionRepository.FieldSession> p,java.util.Map<String,Integer> n){
+            active=a;sites=ss;siteId=id;children=c;approved=p;counts=n;
+        }
+    }
+
     public void refresh(){
-        if(refreshing)return; // Spinner callbacks may be posted during redraw.
+        if(Looper.myLooper()!=Looper.getMainLooper()){
+            main.post(this::refresh);return;
+        }
+        if(refreshing){refreshQueued=true;return;}
         refreshing=true;
+        final String requestedSite=selectedSiteId;
         try{
-            repo.verifySessionSchema();
-            renderSessionUi();
+            host.io().execute(()->{
+                SessionData snapshot=null;RuntimeException failure=null;
+                try{
+                    repo.verifySessionSchema();
+                    FieldSessionRepository.FieldSession active=repo.activeFieldSession();
+                    List<FieldSessionRepository.Site> ss=repo.sites();
+                    String id=requestedSite;
+                    boolean exists=false;
+                    for(FieldSessionRepository.Site q:ss)if(q.id.equals(id)){exists=true;break;}
+                    if(!exists)id=ss.isEmpty()?"":ss.get(0).id;
+                    List<FieldSessionRepository.FieldSession> children=id.isEmpty()
+                            ?new ArrayList<>():repo.sessionsForSite(id);
+                    List<FieldSessionRepository.FieldSession> approved=id.isEmpty()
+                            ?new ArrayList<>():repo.approvedSessionsForSite(id);
+                    java.util.Map<String,Integer> counts=id.isEmpty()
+                            ?new java.util.HashMap<>():repo.measurementCountsForSite(id);
+                    snapshot=new SessionData(active,ss,id,children,approved,counts);
+                }catch(RuntimeException ex){failure=ex;}
+                final SessionData result=snapshot;
+                final RuntimeException error=failure;
+                main.post(()->{
+                    try{
+                        if(error!=null){
+                            android.util.Log.e("TankSessions","Unable to load user sessions",error);
+                            showSessionLoadError();
+                        }else renderSessionUi(result);
+                    }catch(RuntimeException ex){
+                        android.util.Log.e("TankSessions","Unable to render user sessions",ex);
+                        showSessionLoadError();
+                    }finally{
+                        refreshing=false;
+                        if(refreshQueued){refreshQueued=false;refresh();}
+                    }
+                });
+            });
         }catch(RuntimeException ex){
-            android.util.Log.e("TankSessions","Unable to render user sessions",ex);
+            refreshing=false;
+            android.util.Log.e("TankSessions","Cannot schedule user session load",ex);
             showSessionLoadError();
-        }finally{refreshing=false;}
+        }
     }
 
     /** Preserve local data and keep navigation alive if a migrated DB is not readable. */
@@ -129,11 +185,11 @@ public final class FieldSessionsTab {
         siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);
         deleteSite.setEnabled(false);siteDropdown.setEnabled(false);sessionDropdown.setEnabled(false);
     }
-    private void renderSessionUi(){
-        FieldSessionRepository.FieldSession active=repo.activeFieldSession();
+    private void renderSessionUi(SessionData data){
+        FieldSessionRepository.FieldSession active=data.active;
         state.setText("تخزين محلي • لا مزامنة مركزية"+"\n"+(active==null?"لا توجد جلسة ميدانية نشطة":"جلسة نشطة: "+active.name+" • القياسات الجديدة ستُربط بهذه الجلسة"));
         state.setTextColor(active==null?0xFF985000:0xFF167443);
-        sites.removeAllViews();List<FieldSessionRepository.Site> ss=repo.sites();
+        sites.removeAllViews();List<FieldSessionRepository.Site> ss=data.sites;
         if(ss.isEmpty()){siteOptionIds.clear();sessionOptionIds.clear();reportScope.setText("لا توجد مواقع أو جلسات معتمدة");reportSessionList.removeAllViews();selectedSiteId="";selectedSessionId="";selectingScope=true;
             if(siteDropdown.getAdapter()==null||!boundSiteIds.isEmpty()){siteDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد مواقع"}));boundSiteIds.clear();boundSiteLabels.clear();}
             if(sessionDropdown.getAdapter()==null||!boundSessionIds.isEmpty()){sessionDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد جلسات"}));boundSessionIds.clear();boundSessionLabels.clear();}
@@ -148,7 +204,7 @@ public final class FieldSessionsTab {
         }
         if(siteDropdown.getSelectedItemPosition()!=siteIndex)siteDropdown.setSelection(siteIndex);
         siteDropdown.setEnabled(true);selectingScope=false;
-        List<FieldSessionRepository.FieldSession> children=repo.sessionsForSite(selectedSiteId);java.util.Map<String,Integer> measureCounts=repo.measurementCountsForSite(selectedSiteId);int measurementCount=0;for(Integer count:measureCounts.values())measurementCount+=count;selectedSiteSummary.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+"\nالجلسات: "+children.size()+" • القياسات الفنية: "+measurementCount+"\nتقارير الموقع تلخص الجلسات التابعة له دون دمج PPM بين الجلسات.");List<FieldSessionRepository.FieldSession> approved=repo.approvedSessionsForSite(selectedSiteId);boolean hasApproved=!approved.isEmpty();siteReportPdf.setEnabled(hasApproved);siteReportXlsx.setEnabled(hasApproved);deleteSite.setEnabled(children.isEmpty());reportScope.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+" • جلسات معتمدة: "+approved.size());
+        List<FieldSessionRepository.FieldSession> children=data.children;java.util.Map<String,Integer> measureCounts=data.counts;int measurementCount=0;for(Integer count:measureCounts.values())measurementCount+=count;selectedSiteSummary.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+"\nالجلسات: "+children.size()+" • القياسات الفنية: "+measurementCount+"\nتقارير الموقع تلخص الجلسات التابعة له دون دمج PPM بين الجلسات.");List<FieldSessionRepository.FieldSession> approved=data.approved;boolean hasApproved=!approved.isEmpty();siteReportPdf.setEnabled(hasApproved);siteReportXlsx.setEnabled(hasApproved);deleteSite.setEnabled(children.isEmpty());reportScope.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+" • جلسات معتمدة: "+approved.size());
         ArrayList<String> names=new ArrayList<>();sessionOptionIds.clear();int chosen=0;boolean found=false;
         for(int i=0;i<children.size();i++){FieldSessionRepository.FieldSession q=children.get(i);names.add(q.name+" • "+q.displayStatus()+(q.active()?" (نشطة)":""));sessionOptionIds.add(q.id);if(q.id.equals(selectedSessionId)){found=true;chosen=i;}}
         if(!found)selectedSessionId=children.isEmpty()?"":children.get(0).id;
