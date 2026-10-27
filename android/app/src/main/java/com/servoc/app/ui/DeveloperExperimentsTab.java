@@ -124,9 +124,12 @@ public final class DeveloperExperimentsTab {
             String kind=q.optString("r0_source","");
             if(!"manual_device_r0".equals(kind)&&!"automatic_clean_air_field_r0".equals(kind)
                     &&!"firmware_clean_air_r0".equals(kind))return false;
-            if("firmware_clean_air_r0".equals(kind)&&
-                    (controllerId==null||controllerId.isEmpty()||
-                    !controllerId.equals(q.optString("r0_device_id",""))))return false;
+            String channelController=q.optString("r0_device_id","");
+            // Any device-bound R0 (manual or firmware) must belong to the source
+            // Tank; firmware R0 is never allowed to be unbound.
+            if(("firmware_clean_air_r0".equals(kind)&&channelController.isEmpty())
+                    ||(!channelController.isEmpty()&&
+                    (controllerId==null||!channelController.equals(controllerId))))return false;
         }
         return true;
     }
@@ -176,8 +179,10 @@ public final class DeveloperExperimentsTab {
         for(String key:ManualR0Calibration.keys()){
             double x=ManualR0Calibration.get(key);
             if(!Double.isFinite(x)||x<=0)continue;
-            if("firmware_clean_air_r0".equals(ManualR0Calibration.getSource(key))
-                    &&(deviceId.isEmpty()||!deviceId.equals(ManualR0Calibration.getDeviceId(key))))continue;
+            String binding=ManualR0Calibration.getDeviceId(key);
+            String source=ManualR0Calibration.getSource(key);
+            if(("firmware_clean_air_r0".equals(source)&&binding.isEmpty())
+                    ||(!binding.isEmpty()&&!binding.equals(deviceId)))continue;
             n++;
         }
         return n;
