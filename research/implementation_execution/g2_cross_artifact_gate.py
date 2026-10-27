@@ -162,7 +162,8 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         "campaign_id": {"campaign_id"},
         "site_day_device": {"site_id", "day_id", "device_id"},
     }
-    required_physical = required_by_grouping_key.get(record.get("grouping_key"))
+    required_physical = (required_by_grouping_key.get(record["grouping_key"])
+                         if isinstance(record.get("grouping_key"), str) else None)
     if required_physical is None or not required_physical.issubset(set(physical_columns)):
         issues.append("GROUPING_SOURCE_COLUMNS_NOT_PHYSICAL_FOR_KEY")
     # Only the canonical physical identity for the declared grouping key
