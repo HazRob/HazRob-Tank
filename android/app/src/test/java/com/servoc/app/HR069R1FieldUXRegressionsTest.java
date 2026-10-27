@@ -39,9 +39,11 @@ public final class HR069R1FieldUXRegressionsTest {
         String code=source("ui/FieldSessionsTab.java");
         assertTrue(code.contains("siteDropdown=new Spinner(c)"));
         assertTrue(code.contains("sessionDropdown=new Spinner(c)"));
-        assertTrue(code.contains("repo.sessionsForSite(selectedSiteId)"));
+        assertTrue(code.contains("repo.sessionsForSite(id)"));
+        assertTrue(code.contains("host.io().execute(()->{"));
+        assertTrue(code.contains("if(refreshing){refreshQueued=true;return;}"));
         assertTrue(code.contains("selectedSessionId=sessionOptionIds.get(pos);refresh()"));
-        assertTrue(code.contains("if(selectingScope||refreshing||selectedSiteId.isEmpty()"));
+        assertTrue(code.contains("if(selectingScope||selectedSiteId.isEmpty()"));
         assertTrue(code.contains("repo.verifySessionSchema()"));
         assertTrue(code.contains("catch(RuntimeException ex)"));
     }
