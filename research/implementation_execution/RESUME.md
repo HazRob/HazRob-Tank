@@ -1,3 +1,12 @@
+## 2026-10-27 — G2 canonical Unicode identity and CI checkpoint
+
+- **Branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`; software commits `825aa43e75ddbca0c66f6c3fefd8ccca663eb128` and `3edf52c7c893ec3aa63c859eb3a0099f1c4e4f91`. Research-only edits to three files under `research/implementation_execution/`; no ChemCore Stable changes.
+- **G2 gate:** NFC normalization required for every CSV header/cell; reject Unicode nonstandard spaces (Zs except U+0020), C* and Zl/Zp. Two new synthetic regression tests, including rehashed CSV mutation controls. Details: `G2_UNICODE_NFC_SPACES_CANONICAL_IDENTITY_2026-10-27_AR.md`.
+- **CI:** 190/190 tests passed, [G2 Actions run 40551023321](https://github.com/HazRob/HazRob-Tank/actions/runs/40551023321), job 122354475793. Parallel runs: 19/21 success, two batch07 runs queued at last check. Recheck before claiming all CI green.
+- **Scientific status:** `g2_pass_candidates=0`, `g2_blocked=80`; independent evidence register `records: []`. Central source catalog pinned SHA `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` verified. No G2/G3 approval; physical reference and raw independent grouped holdout data remain necessary.
+
+---
+
 ## 2026-10-26 — G1 independent CI remediation
 - أعيد تشغيل 43 اختبار Python محلياً في `/mnt/data/hazrob_g1_validation`: `Ran 43 tests ... OK`؛ هذه تغطي 08.9 regression و09.5 و09.6 وست بوابات بحثية، **ولا تغطي الدفعة السابعة كاملة**.
 - أضيف workflow مستقل `.github/workflows/chemcore80-g1-batch07-08.yml` (commit `68d7294b244beec389452032174418e9faf2cc6d`) يختبر الدفعة السابعة (22+7) والثامنة (14+11+11)، ويعمل عبر push أو workflow_dispatch إذا كان GitHub Actions متاحاً.
