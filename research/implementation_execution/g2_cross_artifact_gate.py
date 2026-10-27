@@ -4,6 +4,7 @@ Requires a byte-verified bundle first. This checks *internal consistency* only:
 it does not authenticate the physical experiment, source or CI run.
 """
 import csv
+import hashlib
 import json
 import math
 from collections import Counter
@@ -253,6 +254,24 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                     if not labels or any(not label for label in labels):
                         issues.append("BASELINE_TRAINING_LABELS_UNAVAILABLE")
                     else:
+                        # Bind exact training labels to the locked protocol.
+                        # A changed label can preserve the majority class and
+                        # escape prediction-only replay.
+                        label_rows = sorted(
+                            [[row["exposure_id"], row["group_id"], row["gas_reference_id"]]
+                             for row in groups if row.get("group_id") in fitted_ids],
+                            key=lambda values: (values[0], values[1]))
+                        label_bytes = json.dumps(
+                            label_rows, ensure_ascii=False,
+                            separators=(",", ":")).encode("utf-8")
+                        actual_digest = hashlib.sha256(label_bytes).hexdigest()
+                        locked_digest = baseline.get("training_labels_sha256")
+                        if (not isinstance(locked_digest, str) or
+                                len(locked_digest) != 64 or
+                                any(c not in "0123456789abcdef" for c in locked_digest)):
+                            issues.append("BASELINE_TRAINING_LABEL_DIGEST_NOT_LOCKED")
+                        elif actual_digest != locked_digest:
+                            issues.append("BASELINE_TRAINING_LABEL_DIGEST_MISMATCH")
                         label_counts = Counter(labels)
                         max_count = max(label_counts.values())
                         winners = [label for label, n in label_counts.items()
