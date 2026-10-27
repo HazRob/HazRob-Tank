@@ -105,10 +105,14 @@ public final class RobotApi {
             if(sensor==null)continue;
             String source=ManualR0Calibration.getSource(key);
             String bound=ManualR0Calibration.getDeviceId(key);
-            // Reject cross-robot reuse of firmware-measured R0, including MQTT
-            // snapshots which lack a verified controller identity.
-            if("firmware_clean_air_r0".equals(source)&&
-                    (bound.isEmpty()||!bound.equals(deviceId))){
+            // Firmware R0 always needs an exact controller binding. New manually entered
+            // R0 also carries a controller ID; reject if that binding disagrees.
+            // Legacy manual R0 without an ID is preserved for explicit migration review.
+            boolean firmwareR0="firmware_clean_air_r0".equals(source);
+            boolean manualR0="manual_device_r0".equals(source)
+                    ||"automatic_clean_air_field_r0".equals(source);
+            boolean mismatch=!bound.isEmpty()&&!bound.equals(deviceId);
+            if((firmwareR0&&(bound.isEmpty()||mismatch))||(manualR0&&mismatch)){
                 sensor.remove("ratio");sensor.remove("r0");
                 try{
                     sensor.put("r0_calibrated",false);
