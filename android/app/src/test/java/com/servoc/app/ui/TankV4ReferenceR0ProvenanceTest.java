@@ -21,6 +21,7 @@ public final class TankV4ReferenceR0ProvenanceTest {
             q.put("r0_calibrated",true);
             q.put("r0_provenance_complete",true);
             q.put("r0_source",source);q.put("r0_device_id",deviceId);
+            q.put("r0_samples",12);
             channels.put(key,q);
         }
         return channels;
