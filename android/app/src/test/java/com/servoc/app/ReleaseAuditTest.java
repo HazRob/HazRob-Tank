@@ -29,8 +29,8 @@ public class ReleaseAuditTest {
     @Test public void v0102LocksCanonicalDriveContract(){
         assertTrue(ReleaseAudit.ESP32_API.contains("dual continuous rotation servos GPIO16/17"));
         assertTrue(ReleaseAudit.ESP32_API.contains("firmware R0 300s warmup 60s capture"));
-        assertTrue(ReleaseAudit.ESP32_API.contains("ADS I2C GPIO21-22"));
-        assertTrue(ReleaseAudit.ESP32_API.contains("ENV I2C GPIO13-14"));
+        assertTrue(ReleaseAudit.ESP32_API.contains("2xADS1115 I2C21/22"));
+        assertTrue(ReleaseAudit.ESP32_API.contains("BME280 I2C13/14"));
         assertFalse(ReleaseAudit.L298N_4WD_DRIVE);
         assertTrue(ReleaseAudit.CIRCULAR_JOYSTICK_DRIVE);
         assertTrue(ReleaseAudit.DIFFERENTIAL_SKID_STEER_MIX);
