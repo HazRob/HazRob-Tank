@@ -11,6 +11,7 @@ from pathlib import Path
 from g2_signal_lineage_gate import audit_signal_lineage
 from g2_evidence_bundle_gate import audit_evidence_bundle
 from g2_cross_artifact_gate import audit_cross_artifact
+from g2_raw_source_gate import audit_raw_source_bytes
 
 REQUIRED = ("raw_sha256", "dataset_uri", "sensor_metadata", "grouping_key",
             "train_group_ids", "calibration_group_ids", "test_group_ids", "target_definition",
@@ -121,6 +122,9 @@ def audit_record(item, repo_root=Path(".")):
     bundle_issues = audit_evidence_bundle(item, repo_root=repo_root)
     issues.extend(bundle_issues)
     if not bundle_issues:
+        # A manifest checksum is a claim, not evidence that original raw
+        # bytes were ever acquired or can be replayed by an independent CI.
+        issues.extend(audit_raw_source_bytes(item, repo_root=repo_root))
         issues.extend(audit_cross_artifact(item, repo_root=repo_root))
     return {"id": item.get("id"),
             "status": "G2_PASS_CANDIDATE_REQUIRES_REVIEW" if not issues else "G2_BLOCKED",
