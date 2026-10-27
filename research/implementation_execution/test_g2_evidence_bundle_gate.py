@@ -1249,7 +1249,7 @@ class CsvControlCharacterEvidenceTests(unittest.TestCase):
                           audit_cross_artifact(record, temp))
 
     def test_control_character_in_blind_label_rejected_after_rehash(self):
-        for char in ("\\x00", "\\x1f", "\\x7f"):
+        for char in ("\x00", "\x1f", "\x7f"):
             with self.subTest(char=repr(char)), tempfile.TemporaryDirectory() as temp:
                 record, base = synthetic_bundle(temp)
                 name = "predictions_blind.csv"
