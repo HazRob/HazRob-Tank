@@ -18,9 +18,9 @@ public final class HR069R1BrandingContractTest {
     @Test public void launcherAndEntryReuseApprovedHr069R1HighResolutionLogo()throws Exception{
         String manifest=new String(Files.readAllBytes(Paths.get("src/main/AndroidManifest.xml")),StandardCharsets.UTF_8);
         String gate=new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/auth/ConnectionGate.java")),StandardCharsets.UTF_8);
-        assertTrue(manifest.contains("android:icon=\\"@drawable/ic_hazrob_hr069_r1\\""));
-        assertTrue(manifest.contains("android:roundIcon=\\"@drawable/ic_hazrob_hr069_r1\\""));
-        assertTrue(manifest.contains("android:label=\\"HazRob Tank\\""));
+        assertTrue(manifest.contains("android:icon=\"@drawable/ic_hazrob_hr069_r1\""));
+        assertTrue(manifest.contains("android:roundIcon=\"@drawable/ic_hazrob_hr069_r1\""));
+        assertTrue(manifest.contains("android:label=\"HazRob Tank\""));
         assertTrue(gate.contains("R.drawable.ic_hazrob_hr069_r1"));
         assertTrue(gate.contains("ImageView.ScaleType.CENTER_INSIDE"));
     }
