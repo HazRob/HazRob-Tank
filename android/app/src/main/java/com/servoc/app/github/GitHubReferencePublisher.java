@@ -1,0 +1,175 @@
+package com.servoc.app.github;
+
+import com.servoc.app.data.ExperimentQueries;
+import com.servoc.app.data.ExperimentsDb;
+import com.servoc.app.data.ReferenceLineageGuard;
+import com.servoc.app.report.ReferenceBankExporter;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
+import java.util.Locale;
+
+/** Sends explicitly approved Tank developer evidence to a separate NON-runtime review branch. */
+public final class GitHubReferencePublisher {
+    /** Controlled RC2 developer submission destination; distinct from canonical active analytical corpus. */
+    public static final String REPOSITORY="HazRob/HazRob-Tank";
+    public static final String BRANCH="research/tank-v4-review-staging";
+    public static final String LIBRARY_ROOT="research_data/tank_v4_scientific_review";
+    public static final String DIRECTORY=LIBRARY_ROOT+"/approved_experiments";
+    public static final String DERIVED_DIRECTORY=LIBRARY_ROOT+"/derived_references";
+    private static final String API_VERSION="2022-11-28";
+    private GitHubReferencePublisher(){}
+
+    public static final class Result {
+        public final boolean success;public final int httpCode;public final String path,commitSha,message,payloadSha256;
+        Result(boolean success,int httpCode,String path,String commitSha,String message,String payloadSha256){this.success=success;this.httpCode=httpCode;this.path=path;this.commitSha=commitSha;this.message=message;this.payloadSha256=payloadSha256;}
+    }
+
+    /** Submits a developer-approved experiment into NON-OPERATIONAL REVIEW STAGING.
+     * Never updates the ChemCore runtime, canonical stable knowledge or M4 evidence.
+     */
+    public static Result publish(String token,ExperimentsDb db,ExperimentQueries.Record record)throws Exception{
+        validateApprovedRecord(record);
+        if(db==null||!ExperimentQueries.isDeveloperReference(db,record.id)
+                ||!ReferenceLineageGuard.valid(db,record))
+            throw new IllegalArgumentException("developer-only verified reference lineage required before staging upload");
+        ExperimentQueries.Record persisted=ExperimentQueries.byId(db,record.id);
+        if(persisted==null||!persisted.approved||!record.sessionId.equals(persisted.sessionId)
+                ||record.captureId!=persisted.captureId||record.chemicalUid!=persisted.chemicalUid
+                ||!record.approvedTs.equals(persisted.approvedTs))
+            throw new IllegalArgumentException("unverified or stale publication record");
+        String secret=secret(token);
+        byte[] bytes=serialize(persisted);
+        String fileName=canonicalFileName(persisted).replace(".json","")
+                +"_"+safeName(persisted.sessionId)+"_"+sha256(bytes).substring(0,16)+".json";
+        return put(secret,DIRECTORY+"/"+fileName,fileName,bytes,"Stage Tank developer experiment for scientific review ");
+    }
+
+    /** Derived artifacts require verified lineage of every approved source, not only a local UI click. */
+    public static Result publishArtifact(String token,ExperimentsDb db,ExperimentsDb.ReferenceArtifactRecord artifact)throws Exception{
+        validateDerivedArtifact(artifact);
+        if(db==null||!ReferenceLineageGuard.artifactSourcesValid(db,artifact))
+            throw new IllegalArgumentException("derived sources are not approved HR069 developer references");
+        String secret=secret(token);String kind=safeName(artifact.kind);String hash=artifact.sha256;
+        String prefix=hash.substring(0,12);
+        String fileName=String.format(Locale.US,"HazRob_DERIVED_%s_C%06d_A%06d_%s.json",kind,artifact.chemicalUid,artifact.id,prefix);
+        JSONObject root=new JSONObject();
+        root.put("schema","hazrob-derived-reference-publication/1");
+        root.put("release","4.0");
+        root.put("hardware_revision","HazRob-Tank-V4");
+        root.put("status","SUBMITTED_FOR_SCIENTIFIC_REVIEW");
+        root.put("scientific_promotion",false);root.put("m4_promotion",false);
+        root.put("canonical_repository",REPOSITORY);
+        root.put("canonical_branch",BRANCH);
+        root.put("artifact_id",artifact.id);root.put("chemical_uid",artifact.chemicalUid);root.put("kind",artifact.kind);
+        root.put("version",artifact.version);root.put("created_at_utc",artifact.createdTs);root.put("source_experiment_ids",artifact.sourceIds);
+        root.put("payload_sha256",artifact.sha256);root.put("metrics",json(artifact.metrics));root.put("reference",json(artifact.payload));
+        byte[] bytes=root.toString(2).getBytes(StandardCharsets.UTF_8);
+        return put(secret,DERIVED_DIRECTORY+"/"+fileName,fileName,bytes,"Stage Tank derived artifact for scientific review ");
+    }
+
+    private static void validateApprovedRecord(ExperimentQueries.Record r){
+        if(r==null)throw new IllegalArgumentException("record required");
+        if(!r.approved)throw new IllegalArgumentException("record must be APPROVED before publication");
+        if(!r.isReference()||r.captureId<=0||r.chemicalUid<=0)throw new IllegalArgumentException("HR069 reference lineage required");
+        String kind=n(r.referenceKind).toLowerCase(Locale.US),session=n(r.sessionId);
+        if(!"fingerprint".equals(kind)&&!"calibration".equals(kind))throw new IllegalArgumentException("unsupported HR069 reference kind");
+        if(session.isEmpty())throw new IllegalArgumentException("HR069 session_id required");
+        if(n(r.ts).isEmpty()||n(r.approvedTs).isEmpty())throw new IllegalArgumentException("reference timestamps required");
+        if(!canonicalFileName(r).equals(n(r.referenceName)))throw new IllegalArgumentException("canonical approval reference mismatch");
+        if("calibration".equals(kind)&&(r.knownPpm==null||!Double.isFinite(r.knownPpm)||r.knownPpm<=0))throw new IllegalArgumentException("positive known ppm required for HR069 calibration");
+    }
+
+    private static void validateDerivedArtifact(ExperimentsDb.ReferenceArtifactRecord a){
+        if(a==null)throw new IllegalArgumentException("artifact required");
+        String kind=n(a.kind).toLowerCase(Locale.US),hash=n(a.sha256),payload=n(a.payload);
+        if(a.id<=0||a.chemicalUid<=0)throw new IllegalArgumentException("derived artifact identity required");
+        if(!"fingerprint".equals(kind)&&!"calibration".equals(kind))throw new IllegalArgumentException("unsupported derived reference kind");
+        if(n(a.version).isEmpty()||n(a.createdTs).isEmpty()||n(a.sourceIds).isEmpty())throw new IllegalArgumentException("derived provenance required");
+        if(!hash.matches("[0-9a-fA-F]{64}"))throw new IllegalArgumentException("derived SHA-256 required");
+        if(payload.isEmpty())throw new IllegalArgumentException("derived payload required");
+        try{if(!sha256(payload.getBytes(StandardCharsets.UTF_8)).equalsIgnoreCase(hash))throw new IllegalArgumentException("derived content SHA-256 mismatch");}
+        catch(IllegalArgumentException e){throw e;}catch(Exception e){throw new IllegalArgumentException("derived SHA-256 calculation failed",e);}
+        JSONObject ref=json(payload);String schema=ref.optString("schema","");
+        if(!schema.startsWith("hazrob-derived-"))throw new IllegalArgumentException("unexpected derived schema");
+    }
+
+    /**
+     * Fail closed: HTTP 201 is not proof that GitHub stored the intended bytes.
+     * The exact staged file is fetched back from the dedicated review branch and
+     * hashed before recording a successful scientific-review submission.
+     */
+    private static Result put(String secret,String path,String fileName,byte[] bytes,String messagePrefix)throws Exception{
+        if(!path.startsWith(LIBRARY_ROOT+"/"))throw new SecurityException("Unexpected Tank staging path");
+        String payloadHash=sha256(bytes);JSONObject request=buildRequest(fileName,bytes,messagePrefix);
+        URL url=new URL("https://api.github.com/repos/"+REPOSITORY+"/contents/"+path);
+        HttpURLConnection c=(HttpURLConnection)url.openConnection();
+        c.setRequestMethod("PUT");c.setConnectTimeout(12_000);c.setReadTimeout(20_000);
+        c.setDoOutput(true);c.setUseCaches(false);c.setRequestProperty("Accept","application/vnd.github+json");
+        c.setRequestProperty("Authorization","Bearer "+secret);c.setRequestProperty("X-GitHub-Api-Version",API_VERSION);
+        c.setRequestProperty("User-Agent","HazRob-Tank-Android/4.0");c.setRequestProperty("Content-Type","application/json; charset=utf-8");
+        byte[] body=request.toString().getBytes(StandardCharsets.UTF_8);c.setFixedLengthStreamingMode(body.length);
+        int code;String response;
+        try{
+            try(OutputStream out=c.getOutputStream()){out.write(body);out.flush();}
+            code=c.getResponseCode();
+            response=read(code>=200&&code<300?c.getInputStream():c.getErrorStream());
+        }finally{c.disconnect();}
+        if(code!=201)return new Result(false,code,path,"",safeError(code,response),payloadHash);
+        JSONObject j=json(response);JSONObject commit=j.optJSONObject("commit");
+        String commitSha=commit==null?"":commit.optString("sha","");
+        if(!commitSha.matches("[0-9a-fA-F]{40}"))
+            return new Result(false,code,path,"","unverified_commit_sha",payloadHash);
+        if(!readBackMatches(secret,path,payloadHash))
+            return new Result(false,code,path,commitSha,"readback_sha256_mismatch",payloadHash);
+        return new Result(true,code,path,commitSha,"staged_and_readback_verified",payloadHash);
+    }
+
+    private static boolean readBackMatches(String secret,String path,String expectedHash)throws Exception{
+        URL url=new URL("https://api.github.com/repos/"+REPOSITORY+"/contents/"+path+
+                "?ref="+java.net.URLEncoder.encode(BRANCH,"UTF-8"));
+        HttpURLConnection c=(HttpURLConnection)url.openConnection();
+        c.setRequestMethod("GET");c.setConnectTimeout(12_000);c.setReadTimeout(20_000);
+        c.setUseCaches(false);c.setRequestProperty("Accept","application/vnd.github+json");
+        c.setRequestProperty("Authorization","Bearer "+secret);
+        c.setRequestProperty("X-GitHub-Api-Version",API_VERSION);
+        c.setRequestProperty("User-Agent","HazRob-Tank-Android/4.0");
+        int code;String response;
+        try{
+            code=c.getResponseCode();response=read(code>=200&&code<300?c.getInputStream():c.getErrorStream());
+        }finally{c.disconnect();}
+        if(code!=200)return false;
+        JSONObject item=json(response);
+        if(!"base64".equals(item.optString("encoding","")))return false;
+        String content=item.optString("content","");
+        if(content.isEmpty()||item.optLong("size",-1)<0)return false;
+        byte[] verified=Base64.getMimeDecoder().decode(content);
+        return verified.length==item.optLong("size",-1) &&
+                expectedHash.equalsIgnoreCase(sha256(verified));
+    }
+
+    public static String canonicalFileName(ExperimentQueries.Record record){if(record==null)throw new IllegalArgumentException("record required");return ReferenceBankExporter.fileName(record.id,record.ts);}
+    public static JSONObject buildRequest(String fileName,byte[] recordBytes)throws Exception{return buildRequest(fileName,recordBytes,"Add HazRob approved reference experiment ");}
+    private static JSONObject buildRequest(String fileName,byte[] bytes,String prefix)throws Exception{
+        if(fileName==null||fileName.trim().isEmpty())throw new IllegalArgumentException("fileName");
+        if(fileName.contains("/")||fileName.contains("\\")||fileName.contains(".."))throw new IllegalArgumentException("unsafe fileName");
+        if(bytes==null||bytes.length==0)throw new IllegalArgumentException("recordBytes");
+        JSONObject j=new JSONObject();j.put("message",prefix+fileName);j.put("content",Base64.getEncoder().encodeToString(bytes));j.put("branch",BRANCH);return j;
+    }
+    private static byte[] serialize(ExperimentQueries.Record r)throws Exception{ByteArrayOutputStream out=new ByteArrayOutputStream(32*1024);ReferenceBankExporter.writeJson(out,r);return out.toByteArray();}
+    private static String secret(String token){String s=token==null?"":token.trim();if(s.length()<20)throw new IllegalArgumentException("GitHub token required");return s;}
+    private static String safeName(String s){String x=s==null?"reference":s.toLowerCase(Locale.US).replaceAll("[^a-z0-9_-]","_");return x.isEmpty()?"reference":x;}
+    private static String sha256(byte[] data)throws Exception{byte[] h=MessageDigest.getInstance("SHA-256").digest(data);StringBuilder s=new StringBuilder(64);for(byte b:h)s.append(String.format(Locale.US,"%02x",b&255));return s.toString();}
+    private static JSONObject json(String s){try{return s==null||s.isEmpty()?new JSONObject():new JSONObject(s);}catch(Exception e){return new JSONObject();}}
+    private static String safeError(int code,String response){JSONObject j=json(response);String m=j.optString("message","");if(m.length()>180)m=m.substring(0,180);if(m.isEmpty())m="GitHub HTTP "+code;return m;}
+    private static String read(InputStream in)throws Exception{if(in==null)return"";StringBuilder s=new StringBuilder();try(BufferedReader r=new BufferedReader(new InputStreamReader(in,StandardCharsets.UTF_8))){String line;while((line=r.readLine())!=null&&s.length()<16_384)s.append(line);}return s.toString();}
+    private static String n(String s){return s==null?"":s.trim();}
+}
