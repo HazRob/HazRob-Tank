@@ -251,8 +251,9 @@ class EvidenceBundleTests(unittest.TestCase):
                 json.dumps({"fixture": "synthetic", "new_protocol": True}))
             record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
             self.assertEqual(audit_evidence_bundle(record, temp), [])
-            self.assertEqual(audit_record(record, temp)["status"],
-                             "G2_PASS_CANDIDATE_REQUIRES_REVIEW")
+            self.assertIn("LOCKED_PROTOCOL_RECORD_MISMATCH",
+                          audit_record(record, temp)["issues"])
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
 
     def test_evaluation_digest_must_bind_blind_prediction_bytes(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -405,6 +406,10 @@ class EvidenceBundleTests(unittest.TestCase):
                 "ca,d1-s2,GAS_B,d1,unique-s2\n"
                 "te1,d2-s1,GAS_A,d2,unique-s3\n"
                 "te2,d2-s2,GAS_B,d2,unique-s4\n")
+            protocol = json.loads((base / "protocol_locked.json").read_text())
+            protocol["grouping_key"] = "session_id"
+            self.replace_bytes(record, base, "protocol_locked.json", json.dumps(protocol))
+            record["protocol_sha256"] = record["evidence_files"]["protocol_locked.json"]
             self.replace_bytes(record, base, "uncertainty_grouped.json",
                                json.dumps(record["confidence_interval"]))
             self.assertEqual(audit_record(record, temp)["status"],
