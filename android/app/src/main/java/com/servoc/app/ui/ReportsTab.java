@@ -1,6 +1,7 @@
 package com.servoc.app.ui;
 
 import android.content.Context;
+import android.os.Looper;
 import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -58,6 +59,7 @@ public final class ReportsTab {
     private final List<Integer> availableCharts=new ArrayList<>();
     private volatile long chartGeneration=0;
     private volatile boolean released=false;
+    private volatile long reportGeneration=0;
     private String chosenSiteId="",chosenSessionId="";
     private final ImageView chartView;
     private final ChemCoreDecisionRepository decisions;
@@ -82,7 +84,7 @@ public final class ReportsTab {
                 String next=scopeSites.get(position).id;
                 if(next.equals(chosenSiteId))return;
                 chosenSiteId=next;chosenSessionId="";
-                refreshSessionScope();
+                refresh();
             }
             public void onNothingSelected(AdapterView<?> parent){}
         });
@@ -124,7 +126,7 @@ public final class ReportsTab {
 
     public View view(){return scroll;}
     /** Prevent late chart callbacks from drawing into a destroyed Activity. */
-    public void release(){released=true;chartGeneration++;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);}
+    public void release(){released=true;reportGeneration++;chartGeneration++;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);}
     public void selectScope(String siteId,String sessionId){
         chosenSiteId=siteId==null?"":siteId;
         chosenSessionId=sessionId==null?"":sessionId;
@@ -134,10 +136,24 @@ public final class ReportsTab {
      * Reuse adapters whenever site/session rows are unchanged. Spinner callbacks can run
      * after an adapter change: all selections use stable UUIDs, not previous row indices.
      */
-    private void refreshSiteScope(){
+    private static final class ScopeData {
+        final String requestedSite,requestedSession;
+        final List<FieldSessionRepository.Site> sites;
+        final List<FieldSessionRepository.FieldSession> sessions;
+        final List<ExperimentQueries.Record> records;
+        ScopeData(String site,String session,List<FieldSessionRepository.Site> sites,
+                  List<FieldSessionRepository.FieldSession> sessions,
+                  List<ExperimentQueries.Record> records){
+            requestedSite=site;requestedSession=session;this.sites=sites;
+            this.sessions=sessions;this.records=records;
+        }
+    }
+
+    /** Pure UI update from background-loaded SQLite results. */
+    private void refreshSiteScope(ScopeData data){
         rebindingScope=true;
         try{
-            List<FieldSessionRepository.Site> sites=fieldSessions.sites();
+            List<FieldSessionRepository.Site> sites=data.sites;
             scopeSites.clear();scopeSites.addAll(sites);
             List<String> ids=new ArrayList<>(),labels=new ArrayList<>();
             int selected=0;
@@ -158,14 +174,12 @@ public final class ReportsTab {
             }
             siteSelector.setEnabled(!sites.isEmpty());
             if(siteSelector.getSelectedItemPosition()!=selected)siteSelector.setSelection(selected);
-            refreshSessionScope();
+            refreshSessionScope(data.sessions);
         }finally{rebindingScope=false;}
     }
-    private void refreshSessionScope(){
+    private void refreshSessionScope(List<FieldSessionRepository.FieldSession> sessions){
         rebindingScope=true;
         try{
-            List<FieldSessionRepository.FieldSession> sessions=new ArrayList<>();
-            if(!chosenSiteId.isEmpty())sessions.addAll(fieldSessions.approvedSessionsForSite(chosenSiteId));
             scopeSessions.clear();scopeSessions.addAll(sessions);
             List<String> ids=new ArrayList<>(),labels=new ArrayList<>();
             labels.add("الجلسات المعتمدة للموقع • تقرير الموقع");
@@ -201,23 +215,117 @@ public final class ReportsTab {
 
 
     public void refresh(){
-        refreshSiteScope();
-        list.removeAllViews();List<ExperimentQueries.Record> rows=ExperimentQueries.approvedFieldReports(host.database(),100);
-        // WHERE APPROVED runs inside SQL before LIMIT, so older approved records are not starved by drafts.
-        archiveCard.setText("التقارير المعتمدة • "+rows.size()+" قياس معتمد (الأحدث أولاً)");
-        if(rows.isEmpty()){chartGeneration++;selectedId=-1;setEnabled(false);sessionCard.setText("الجلسة\n—");decisionCard.setText("القرار\n—");qualityCard.setText("الجودة\n—");safetyCard.setText("السلامة\n—");candidateCard.setText("المرشحون • —");technical.setText("لا توجد بيانات تقرير.");availableCharts.clear();chartSelector.setAdapter(null);chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("المخطط • لا توجد جلسة محفوظة");return;}
-        if(selectedId<0)selectedId=rows.get(0).id;boolean found=false;
-        for(ExperimentQueries.Record r:rows){if(r.id==selectedId)found=true;Button b=UiKit.button(list.getContext(),(r.id==selectedId?"● ":"")+"#"+r.id+"   "+safe(r.ts)+"   "+safe(r.protocol));b.setOnClickListener(v->select(r.id));list.addView(b,UiKit.full(list.getContext()));}
-        if(!found)selectedId=rows.get(0).id;showSelected();
+        if(released)return;
+        if(Looper.myLooper()!=Looper.getMainLooper()){scroll.post(this::refresh);return;}
+        final long request=++reportGeneration;
+        final String siteId=chosenSiteId,sessionId=chosenSessionId;
+        try{
+            host.io().execute(()->{
+                try{
+                    List<FieldSessionRepository.Site> sites=fieldSessions.sites();
+                    String effectiveSite=siteId;boolean found=false;
+                    for(FieldSessionRepository.Site site:sites){
+                        if(site.id.equals(effectiveSite)){found=true;break;}
+                    }
+                    if(!found)effectiveSite=sites.isEmpty()?"":sites.get(0).id;
+                    List<FieldSessionRepository.FieldSession> sessions=effectiveSite.isEmpty()
+                            ?new ArrayList<>():fieldSessions.approvedSessionsForSite(effectiveSite);
+                    List<ExperimentQueries.Record> records=ExperimentQueries.approvedFieldReports(host.database(),100);
+                    ScopeData data=new ScopeData(siteId,sessionId,sites,sessions,records);
+                    scroll.post(()->{
+                        if(released||reportGeneration!=request)return;
+                        if(!chosenSiteId.equals(siteId)||!chosenSessionId.equals(sessionId)){
+                            refresh();return;
+                        }
+                        refreshSiteScope(data);
+                        renderHistory(data.records);
+                    });
+                }catch(RuntimeException ex){
+                    android.util.Log.e("TankReports","Cannot load approved reports",ex);
+                    scroll.post(()->{
+                        if(released||reportGeneration!=request)return;
+                        archiveCard.setText("تعذر تحميل التقارير؛ تحقق من قاعدة البيانات وأعد المحاولة.");
+                        pdf.setEnabled(false);xlsx.setEnabled(false);
+                        chartGeneration++;chartView.setImageDrawable(null);
+                        chartView.setVisibility(View.GONE);openChart.setEnabled(false);
+                    });
+                }
+            });
+        }catch(RuntimeException ex){
+            android.util.Log.e("TankReports","Cannot schedule reports refresh",ex);
+            archiveCard.setText("تعذر بدء تحميل التقارير.");
+        }
     }
 
-    private void select(long id){selectedId=id;showSelected();refreshHistorySelection();}
-    private void refreshHistorySelection(){refresh();}
+    private void renderHistory(List<ExperimentQueries.Record> rows){
+        list.removeAllViews();
+        archiveCard.setText("التقارير المعتمدة • "+rows.size()+" قياس معتمد (الأحدث أولاً)");
+        if(rows.isEmpty()){
+            chartGeneration++;selectedId=-1;setEnabled(false);
+            sessionCard.setText("الجلسة\n—");decisionCard.setText("القرار\n—");
+            qualityCard.setText("الجودة\n—");safetyCard.setText("السلامة\n—");
+            candidateCard.setText("المرشحون • —");technical.setText("لا توجد بيانات تقرير.");
+            availableCharts.clear();chartSelector.setAdapter(null);chartView.setImageDrawable(null);
+            chartView.setVisibility(View.GONE);openChart.setEnabled(false);
+            chartStatus.setText("المخطط • لا توجد جلسة محفوظة");
+            return;
+        }
+        if(selectedId<0)selectedId=rows.get(0).id;
+        boolean found=false;
+        for(ExperimentQueries.Record row:rows){
+            if(row.id==selectedId)found=true;
+            Button button=UiKit.button(list.getContext(),(row.id==selectedId?"● ":"")+"#"+row.id+
+                    "   "+safe(row.ts)+"   "+safe(row.protocol));
+            button.setOnClickListener(v->select(row.id));
+            list.addView(button,UiKit.full(list.getContext()));
+        }
+        if(!found)selectedId=rows.get(0).id;
+        showSelected();
+    }
+
+    private void select(long id){selectedId=id;refresh();}
 
     private void showSelected(){
-        ExperimentQueries.Record r=ExperimentQueries.byId(host.database(),selectedId);if(r==null){setEnabled(false);return;}setEnabled(true);
-        JSONObject d=json(r.payload),m=d.optJSONObject("measurement"),e=d.optJSONObject("env"),relay=d.optJSONObject("relay"),a=json(r.analytics);String sid=r.sessionId==null?"":r.sessionId.trim();JSONObject cc=sid.isEmpty()?null:decisions.latestPayloadForSession(sid);SessionSeries.Series ss=SessionSeries.forExperiment(host.database(),r);
-        String fieldSessionId=sid.isEmpty()?"":fieldSessions.fieldSessionIdForMeasurement(sid);boolean fieldReport=!fieldSessionId.isEmpty();updateExportButtonLabels();
+        if(released)return;
+        final long id=selectedId,request=++reportGeneration;
+        try{
+            host.io().execute(()->{
+                try{
+                    ExperimentQueries.Record row=ExperimentQueries.byId(host.database(),id);
+                    if(row==null){
+                        scroll.post(()->{if(!released&&reportGeneration==request)setEnabled(false);});
+                        return;
+                    }
+                    String sid=row.sessionId==null?"":row.sessionId.trim();
+                    JSONObject decision=sid.isEmpty()?null:decisions.latestPayloadForSession(sid);
+                    SessionSeries.Series series=SessionSeries.forExperiment(host.database(),row);
+                    String fieldId=sid.isEmpty()?"":fieldSessions.fieldSessionIdForMeasurement(sid);
+                    scroll.post(()->{
+                        if(released||reportGeneration!=request||selectedId!=id)return;
+                        showSelectedReady(row,decision,series,fieldId);
+                    });
+                }catch(RuntimeException ex){
+                    android.util.Log.e("TankReports","Cannot load selected analysis",ex);
+                    scroll.post(()->{
+                        if(released||reportGeneration!=request)return;
+                        setEnabled(false);chartStatus.setText("تعذر تحميل بيانات القياس المحدد");
+                    });
+                }
+            });
+        }catch(RuntimeException ex){
+            android.util.Log.e("TankReports","Cannot schedule selected report",ex);
+            chartStatus.setText("تعذر عرض التقرير المحدد");
+        }
+    }
+
+    /** UI-only rendering of a saved, immutable ChemCore snapshot. */
+    private void showSelectedReady(ExperimentQueries.Record r,JSONObject cc,SessionSeries.Series ss,
+                                   String fieldSessionId){
+        setEnabled(true);
+        JSONObject d=json(r.payload),m=d.optJSONObject("measurement"),e=d.optJSONObject("env"),
+                relay=d.optJSONObject("relay"),a=json(r.analytics);
+        String sid=r.sessionId==null?"":r.sessionId.trim();
+        boolean fieldReport=!fieldSessionId.isEmpty();updateExportButtonLabels();
         boolean seriesOk=ss!=null&&ss.usable(),mqOn=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0);String state=m==null?"—":m.optString("state","—");
         sessionCard.setText("الجلسة #"+r.id+"\n"+(sid.isEmpty()?"بدون Session ID":sid)+"\n"+state+(seriesOk?" • "+ss.samples.size()+" عينة":" • لا سلسلة زمنية"));sessionCard.setTextColor(seriesOk?GOOD:WARN);
 
