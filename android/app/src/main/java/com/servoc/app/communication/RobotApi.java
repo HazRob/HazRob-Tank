@@ -113,6 +113,7 @@ public final class RobotApi {
                 try{
                     sensor.put("r0_calibrated",false);
                     sensor.put("r0_source","device_mismatch");
+                    sensor.put("calibration_status","TANK_R0_DEVICE_MISMATCH");
                     sensor.put("r0_provenance_complete",false);
                     sensor.put("r0_reference_validated",false);
                 }catch(org.json.JSONException ignored){}
