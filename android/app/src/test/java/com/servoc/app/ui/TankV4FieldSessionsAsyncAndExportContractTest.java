@@ -68,7 +68,7 @@ public final class TankV4FieldSessionsAsyncAndExportContractTest {
         assertTrue(code.contains("host.requestFieldSessionExport(\"pdf\",q.id)"));
         assertTrue(code.contains("host.requestFieldSessionExport(\"xlsx\",q.id)"));
         String reports=src("ui/ReportsTab.java");
-        assertTrue(reports.contains("fieldSessions.approvedSessionsForSite(chosenSiteId)"));
+        assertTrue(reports.contains("fieldSessions.approvedSessionsForSite(effectiveSite)"));
         assertTrue(reports.contains("UiKit.lightOptions(scroll.getContext(),labels.toArray(new String[0]))"));
         assertTrue(reports.contains("if(rebindingScope||position!=fieldSelector.getSelectedItemPosition())return"));
         assertTrue(reports.contains("if(chosenSessionId.isEmpty())SiteSummaryExportActivity.start("));
