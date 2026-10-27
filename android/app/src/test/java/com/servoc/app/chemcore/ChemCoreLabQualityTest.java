@@ -113,6 +113,25 @@ public class ChemCoreLabQualityTest {
         }finally{ManualR0Calibration.load(null);}
     }
 
+    @Test public void manualR0BoundToOneTankIsRejectedOnAnother()throws Exception{
+        try{
+            SharedPreferences prefs=memoryPreferences();ManualR0Calibration.load(prefs);
+            Map<String,Double> values=new LinkedHashMap<>();
+            for(int i=0;i<MQ.length;i++)values.put(MQ[i],30.0+i);
+            assertTrue(ManualR0Calibration.saveAllForDevice(prefs,values,"AA:BB:CC:DD:EE:FF"));
+            ChemCoreLabQuality matching=ChemCoreLabQuality.evaluate(diagnostic(true,false),0,0);
+            assertEquals(8,matching.r0NormalizedChannels);
+            assertTrue(matching.configurationReady);
+            JSONObject foreign=diagnostic(true,false).put("device_id","11:22:33:44:55:66");
+            ChemCoreLabQuality wrong=ChemCoreLabQuality.evaluate(foreign,0,0);
+            assertEquals(0,wrong.r0NormalizedChannels);
+            assertFalse(wrong.configurationReady);
+            JSONObject evidence=wrong.toJson().getJSONObject("r0_standard");
+            assertEquals(0,evidence.getJSONObject("per_sensor").length());
+            assertEquals("unavailable",evidence.getString("source"));
+        }finally{ManualR0Calibration.load(null);}
+    }
+
     @Test public void motionOrMissingAdcAlwaysBlocksCapture()throws Exception{
         try{
             SharedPreferences prefs=memoryPreferences();ManualR0Calibration.load(prefs);
