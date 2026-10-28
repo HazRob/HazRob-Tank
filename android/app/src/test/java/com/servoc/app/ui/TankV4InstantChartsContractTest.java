@@ -14,7 +14,8 @@ public final class TankV4InstantChartsContractTest {
     @Test public void chartPickerVisibleWithinChemCoreAndPreservesTwentySiteReportTypes()throws Exception{
         String ui=read("ui/MeasurementsTab.java");
         String reports=read("ui/ReportsTab.java");
-        assertTrue(ui.contains("قائمة اختيار مخططات ChemCore"));
+        assertTrue(ui.contains("مخططات ChemCore للعملية نفسها"));
+        assertTrue(ui.contains("analysisResults.box.addView(analysis.box"));
         assertTrue(ui.contains("chartChooser.setAdapter(UiKit.lightOptions"));
         assertTrue(ui.contains("TankInstantCharts.available"));
         assertTrue(ui.contains("TankInstantCharts.render"));
