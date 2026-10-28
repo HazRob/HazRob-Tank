@@ -82,3 +82,15 @@
 | V5-011 | `SOURCE_IMPLEMENTED_UNTESTED` — حدود مربعات عكس التوجيه؛ UI device pending |
 
 **السجل التنفيذي المعتمد:** [V5-PROGRESS-LOG-2026-10-28.md](../implementation/V5-PROGRESS-LOG-2026-10-28.md).
+
+
+## تحديث بعد الدفعة C — ChemCore والمختبر
+
+| المعرف | الحالة الجديدة الموثقة |
+| --- | --- |
+| V5-002 | `SOURCE_IMPLEMENTED_UNTESTED` — توحيد شاشة المشغل وإظهار PPM التقديري ورموز المرشح ☠/🔥؛ تحقق ميداني/علمي معلق |
+| V5-006 | `IN_PROGRESS` — إعداد V5 manifest ونسخ Dashboard؛ قناة GitHub العامة الفعلية لم تثبت/تنشر بعد |
+| V5-008 | `SOURCE_IMPLEMENTED_UNTESTED` — مختبر موحد مع الحفاظ على التجارب المرجعية، PIN والتشخيص |
+| V5-010 | `IN_PROGRESS` — النسخ والـrollback المصدرية مصححة؛ اختبار تبويبات المكتبة الأربعة على جهاز معلق |
+
+**مرجع تفاصيل التغيير:** [V5-ANALYSIS-LAB-INTEGRATION-2026-10-28.md](../implementation/V5-ANALYSIS-LAB-INTEGRATION-2026-10-28.md). لا يُرقّى أي بند إلى `DEVICE_PASS` أو `RELEASE_ACCEPTED` بدون اختبار فعلي.
