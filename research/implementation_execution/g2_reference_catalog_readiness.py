@@ -100,8 +100,14 @@ def _canonical_source_origin(row):
     if value.lower().startswith("doi:"):
         value = value[4:].strip()
     if value.lower().startswith(("https://", "http://")):
-        parsed = urlsplit(value)
-        host = (parsed.hostname or "").lower().rstrip(".")
+        # Malformed IPv6 brackets and NFKC-sensitive netloc characters can
+        # raise ValueError before row-level provenance blockers run. Never
+        # let one malformed source URL abort the entire 14-source matrix.
+        try:
+            parsed = urlsplit(value)
+            host = (parsed.hostname or "").lower().rstrip(".")
+        except ValueError:
+            return None
         if host in {"doi.org", "dx.doi.org", "www.doi.org", "www.dx.doi.org"}:
             candidate = unquote(parsed.path).strip("/ ")
             if re.fullmatch(r"10\.\d{4,9}/\S+", candidate, re.I):
