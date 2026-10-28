@@ -342,7 +342,7 @@ void hwUpdate(){driveUpdate();energyUpdate();adsHealthUpdate();mqUpdate();calibr
 void driveSet(int l,int r){if(transportLost){motionStopImmediate();staleStop=true;return;}targetL=lim(l);targetR=lim(r);cmdAt=millis();staleStop=false;}
 void motionStop(){motionStopInternal();}void emergencyStop(){motionStopImmediate();resetMeasurement();calibrationCancel();relayRaw(false);Alerts::emergencyStop();}
 bool relaySetMask(uint8_t on){if(on>1)return false;if(!on&&(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_PENDING))calibrationCancel();if(stage==MEASURE||stage==WARM)resetMeasurement();relayRaw(on);return true;}void sensorPowerOff(){resetMeasurement();calibrationCancel();relayRaw(false);}
-bool measureStart(){if(calState==CAL_WARM||calState==CAL_SAMPLE)return false;clearSums();measureError=ME_NONE;measureElapsedSec=0;measurePower=mqPowerOn;stageAt=sampleAt=millis();if(!measurePower){measureError=ME_POWER_OFF;stage=ERROR;return false;}if(!ads1ok&&!ads2ok){measureError=ME_ADS_MISSING;stage=ERROR;return false;}stage=MEASURE;return true;}void measureCancel(){resetMeasurement();Alerts::setGas(0);}
+bool measureStart(){if(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_PENDING)return false;clearSums();measureError=ME_NONE;measureElapsedSec=0;measurePower=mqPowerOn;stageAt=sampleAt=millis();if(!measurePower){measureError=ME_POWER_OFF;stage=ERROR;return false;}if(!ads1ok&&!ads2ok){measureError=ME_ADS_MISSING;stage=ERROR;return false;}stage=MEASURE;return true;}void measureCancel(){resetMeasurement();Alerts::setGas(0);}
 bool alertSet(uint8_t s,uint32_t ttl){if(s>2)return false;Alerts::setGas(s,ttl);return true;}void alertTest(){Alerts::test();}
 void linkHeartbeat(){linkArmed=true;linkAt=millis();transportLost=false;Alerts::setLink(false);}void transportLinkState(bool lost){if(lost&&linkArmed){if(!transportLost){transportLost=true;motionStopImmediate();staleStop=true;}}else if(!lost)transportLost=false;}
 void linkSetArmed(bool a){if(!a){motionStopImmediate();staleStop=true;}linkArmed=a;linkAt=a?millis():0;Alerts::setLink(false);}
@@ -361,7 +361,7 @@ bool calibrationStart(uint16_t warmSeconds,uint16_t sampleSeconds){
 }
 void calibrationCancel(){pendingR0Valid=false;pendingR0=R0Record();calState=CAL_CANCEL;}
 bool calibrationAccept(){
- if(calState!=CAL_PENDING||!pendingR0Valid)return false;
+ if(calState!=CAL_PENDING||!pendingR0Valid||stage==MEASURE||stage==WARM||!mqPowerOn)return false;
  R0Record candidate=pendingR0;
  if(candidate.magic!=R0_MAGIC||candidate.checksum!=r0Checksum(candidate))return false;
  for(uint8_t i=0;i<Cfg::MQ_N;i++)
