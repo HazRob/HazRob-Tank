@@ -2018,7 +2018,7 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
                 ("primary_url", "https://example.org:invalid/source"),
                 ("primary_url", "https:///missing-host"),
                 ("primary_url", "https://doi.org/not-a-doi"),
-                ("primary_url", "https://example.org/a\\nb"),
+                ("primary_url", "https://example.org/a\nb"),
                 ("primary_url", "https://example.org/\u200bhidden"),
             )
             for field, value in invalid:
