@@ -107,6 +107,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     ci_sha = ci_run.get("head_sha")
     ci_url = ci_run.get("html_url")
     if (type(ci_id) is not int or ci_id < 1 or
+            type(record.get("ci_run_id")) is not int or
             not isinstance(ci_sha, str) or len(ci_sha) != 40 or
             any(c not in "0123456789abcdef" for c in ci_sha) or
             ci_id != record.get("ci_run_id") or
