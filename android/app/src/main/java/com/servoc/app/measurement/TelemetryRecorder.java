@@ -63,9 +63,9 @@ public final class TelemetryRecorder {
             // Only explicitly armed FIELD cycles may link to a user session; instant
             // and scientific experiments are never linked automatically.
             if(fieldControlled){
-                FieldSessionRepository.FieldSession active=fieldSessions.activeFieldSession();
-                if(active==null||!fieldSessions.linkMeasurement(active.id,sessionId))
-                    throw new IllegalStateException("active field session cannot accept another measurement");
+                String owner=MeasurementSessionRegistry.fieldCaptureOwnerSessionId();
+                if(owner.isEmpty()||!fieldSessions.linkMeasurement(owner,sessionId))
+                    throw new IllegalStateException("field telemetry owner is missing or no longer active");
             }
         }catch(RuntimeException failure){
             try{db.getWritableDatabase().delete("measurement_sessions","session_id=?",
