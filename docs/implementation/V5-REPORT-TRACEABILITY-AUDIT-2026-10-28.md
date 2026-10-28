@@ -35,7 +35,7 @@ Site(site_id)
 | `SmartFieldSessionPdfWriter` يختصر النتائج وقد لا يعرض كل محاولات القياس | يمكن ألا تظهر المحاولات أو دورة رقم 8+ في PDF | صفحات ملحق متغيرة العدد: رقم الدورة، المحاولة، الحالة، الخيارات، التوقيت، معرف القياس، مختصر SHA |
 | `SmartFieldSessionXlsxWriter` | لا سجل تدقيق مرتبط بنفس snapshot التقرير أو احتمال قراءة متغيرة مستقلة | Sheet `دورات القياس` من `b.cycleLedger` نفسه؛ يحتفظ ببصمة SHA كاملة وأسباب الفشل والتاريخ |
 | `SiteSummaryReportExporter` | لا يُظهر صفًا تفصيليًا لكل دورة في كل جلسة | PDF يضيف صفحات `cycleMatrix` لجميع دورات جميع الجلسات المعتمدة، مع حساب تلقائي لعدد الصفحات |
-| `SmartSiteXlsxWriter` | جدول جلسات الموقع يحصي الدورات دون عرض تفاصيلها والتحليلات المستقلة | Sheet `دورات الموقع` يضم جميع المحاولات، IDs وSHA وCAS/Outcome إذا توافر، وestimated vs reportable ppm، دون دمج متوسطات |
+| `SmartSiteXlsxWriter` | جدول جلسات الموقع يحصي الدورات دون عرض تفاصيلها والتحليلات المستقلة | Sheet `دورات الموقع` يضم جميع المحاولات، IDs وSHA وOutcome عند توافره، وestimated vs reportable ppm، دون دمج متوسطات |
 | `SiteReportIntelligence.plan` | يقرأ `primaryDecision` فقط لمصفوفة 144، فيغفل دليل دورة ثانية | قراءة `screening_144` من كل دورة معتمدة، ثم اتحاد المواد **داخل الجلسة الواحدة** قبل حساب `supportedSessions` للموقع |
 | `SiteSummaryReportExporter.SessionSummary` | خطر أو LFL في دورة غير رئيسية قد لا يظهر على مستوى الموقع | فحص المخاطر في دورات الجلسة المعتمدة كلها، مع الاحتفاظ بالبوابة الكمية الصالحة للإنذار وعدم تحويل EST إلى تعرض مؤكد |
 | `SiteSummaryReportExporter.resolve` | لا تحقق صريح من المعرفات المكررة/دورة أو جلسة من موقع مختلف | بوابة `siteId` لكل جلسة، فحص bundle.site وbundle.fieldSession، منع التكرار والاختلاط بين المواقع |
