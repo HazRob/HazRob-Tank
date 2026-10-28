@@ -9,6 +9,8 @@ import android.graphics.pdf.PdfDocument;
 import com.servoc.app.ReleaseAudit;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.field.FieldSessionRepository;
+import com.servoc.app.field.FieldCycleRepository;
+import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,6 +29,26 @@ public final class SiteSummaryReportExporter {
     private static final float MARGIN=28.35f;
     private static final int ROWS_PER_MATRIX_PAGE=18;
 
+    /** One independently recorded and explicitly numbered field attempt. */
+    public static final class CycleSummary {
+        public final FieldCycleRepository.Cycle cycle;
+        public final String outcome,topCandidate,evidenceTier;
+        public final boolean hasAnalysis,ppmReportable;
+        public final double ppm,estimatedPpm;
+        CycleSummary(FieldCycleRepository.Cycle cycle,JSONObject analysis){
+            this.cycle=cycle;
+            // Rejected, cancelled and deleted attempts never contribute to
+            // site-level scientific recurrence or occupational conclusions.
+            hasAnalysis=cycle.approved()&&analysis!=null;
+            outcome=hasAnalysis?analysis.optString("outcome","—"):"—";
+            topCandidate=hasAnalysis?analysis.optString("chemical","—"):"—";
+            evidenceTier=hasAnalysis?analysis.optString("evidence_tier","—"):"—";
+            ppmReportable=hasAnalysis&&analysis.optBoolean("ppm_reportable",false);
+            ppm=ppmReportable?analysis.optDouble("ppm",Double.NaN):Double.NaN;
+            estimatedPpm=hasAnalysis?analysis.optDouble("screening_fit_ppm",Double.NaN):Double.NaN;
+        }
+    }
+
     public static final class SessionSummary {
         public final FieldSessionReportExporter.Bundle bundle;
         public final String outcome,chemical,evidenceTier;
@@ -34,11 +56,20 @@ public final class SiteSummaryReportExporter {
         public final boolean ppmReportable,safetyGate;
         public final int panelSupportedCount,panelAcceptedCount;
         public final JSONObject candidateHazards;
+        public final List<CycleSummary> cycles;
         SessionSummary(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
             bundle=b;JSONObject q=b.primaryDecision;
             outcome=q==null?"—":q.optString("outcome","—");chemical=q==null?"—":q.optString("chemical","—");evidenceTier=q==null?"—":q.optString("evidence_tier","—");posterior=q==null?Double.NaN:q.optDouble("top_posterior",Double.NaN);analyticalConfidencePct=q==null?Double.NaN:q.optDouble("analytical_confidence_pct",Double.NaN);ppmReportable=q!=null&&q.optBoolean("ppm_reportable",false);ppm=q==null?Double.NaN:q.optDouble("ppm",Double.NaN);
             JSONObject panel=q==null?null:q.optJSONObject("screening_144");panelSupportedCount=panel==null?0:panel.optInt("session_candidate_supported_count",0);panelAcceptedCount=panel==null?0:panel.optInt("accepted_identity_count",0);
             JSONObject g=q==null?null:q.optJSONObject("gas_exposure_ppm");safetyGate=g!=null&&g.optBoolean("input_gate_passed",false);hazardPriority=g==null?Double.NaN:g.optDouble("hazard_priority_percent",Double.NaN);percentLfl=g==null?Double.NaN:g.optDouble("percent_lfl",Double.NaN);candidateHazards=CandidateHazardContext.evaluate(db,q);
+            List<CycleSummary> temp=new ArrayList<>();
+            ChemCoreDecisionRepository decisions=new ChemCoreDecisionRepository(db);
+            for(FieldCycleRepository.Cycle cycle:b.cycleLedger){
+                JSONObject result=cycle.approved()&&!cycle.measurementId.isEmpty()
+                    ?decisions.latestPayloadForSession(cycle.measurementId):null;
+                temp.add(new CycleSummary(cycle,result));
+            }
+            cycles=Collections.unmodifiableList(temp);
         }
         boolean critical(){return safetyGate&&((Double.isFinite(hazardPriority)&&hazardPriority>=100)||(Double.isFinite(percentLfl)&&percentLfl>=100));}
         JSONObject priorityHazard(){JSONArray a=candidateHazards==null?null:candidateHazards.optJSONArray("candidates");if(a==null||a.length()==0)return null;JSONObject best=null;double score=-1;for(int i=0;i<a.length();i++){JSONObject q=a.optJSONObject(i);double s=hazardScore(q);if(q!=null&&(best==null||s>score)){best=q;score=s;}}return best;}
