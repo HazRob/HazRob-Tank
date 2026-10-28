@@ -1,0 +1,220 @@
+package com.servoc.app.field;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.servoc.app.data.ExperimentsDb;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.UUID;
+
+/**
+ * V5 documented field cycles. Site/session is a container; every user-authorized
+ * measurement attempt is immutable after approval. Never records INSTANT results.
+ *
+ * Contract: all calls perform SQLite work; callers MUST use an IO executor.
+ * The companion legacy field_session_measurements table remains for V4 reports.
+ */
+public final class FieldCycleRepository {
+    public static final String ARMED="ARMED",WARMUP="WARMUP",SAMPLING="SAMPLING";
+    public static final String REVIEW="REVIEW_READY",APPROVED="APPROVED";
+    public static final String FAILED="FAILED",CANCELLED="CANCELLED",SUPERSEDED="SUPERSEDED";
+
+    public static final class Options {
+        public final boolean gas,particles,physical;
+        public Options(boolean gas,boolean particles,boolean physical){
+            if(!gas&&!particles&&!physical)throw new IllegalArgumentException("Select at least one measurement family");
+            this.gas=gas;this.particles=particles;this.physical=physical;
+        }
+        public static Options defaults(){return new Options(true,false,true);}
+    }
+
+    public static final class Cycle {
+        public final String id,fieldSessionId,measurementId,state,started,completed,approved,supersedes;
+        public final int sequence,attempt;
+        public final Options modes;
+        Cycle(Cursor c){
+            id=c.getString(0);fieldSessionId=c.getString(1);sequence=c.getInt(2);
+            attempt=c.getInt(3);supersedes=nz(c.getString(4));measurementId=nz(c.getString(5));
+            modes=new Options(c.getInt(6)!=0,c.getInt(7)!=0,c.getInt(8)!=0);
+            state=c.getString(9);started=c.getString(10);completed=nz(c.getString(11));approved=nz(c.getString(12));
+        }
+        public boolean reviewReady(){return REVIEW.equals(state);}
+        public boolean approved(){return APPROVED.equals(state)||"LEGACY_APPROVED".equals(state);}
+    }
+
+    private static final String SELECT="SELECT cycle_id,field_session_id,sequence_no,attempt_no,"+
+        "supersedes_cycle_id,measurement_session_id,include_gas,include_particles,include_physical,"+
+        "state,started_ts,completed_ts,approved_ts FROM field_measurement_cycles";
+    private final ExperimentsDb db;
+    public FieldCycleRepository(ExperimentsDb db){
+        if(db==null)throw new IllegalArgumentException("Database required");
+        this.db=db;
+    }
+
+    public Cycle byId(String cycleId){
+        try(Cursor c=db.getReadableDatabase().rawQuery(SELECT+" WHERE cycle_id=?",
+                new String[]{required(cycleId)})){return c.moveToFirst()?new Cycle(c):null;}
+    }
+    public List<Cycle> forSession(String fieldId){
+        List<Cycle> rows=new ArrayList<>();
+        try(Cursor c=db.getReadableDatabase().rawQuery(SELECT+
+                " WHERE field_session_id=? ORDER BY sequence_no ASC",new String[]{required(fieldId)})){
+            while(c.moveToNext())rows.add(new Cycle(c));
+        }
+        return rows;
+    }
+
+    /** Reserve a unique sequence under one database transaction; do not power the relay here. */
+    public Cycle begin(String fieldSessionId,Options options){
+        return beginInternal(fieldSessionId,options,null);
+    }
+    private Cycle beginInternal(String fieldSessionId,Options options,Cycle predecessor){
+        String id=required(fieldSessionId);
+        if(options==null)throw new IllegalArgumentException("Options required");
+        SQLiteDatabase w=db.getWritableDatabase();
+        w.beginTransaction();
+        String cycleId="FC-"+UUID.randomUUID().toString();
+        try{
+            try(Cursor c=w.rawQuery("SELECT status FROM field_sessions WHERE field_session_id=?",
+                    new String[]{id})){
+                if(!c.moveToFirst()||!FieldSessionRepository.STATUS_ACTIVE.equals(c.getString(0)))
+                    throw new IllegalStateException("Field session must be active");
+            }
+            // Only one field cycle can own the physical acquisition system at any time.
+            try(Cursor c=w.rawQuery("SELECT 1 FROM field_measurement_cycles "+
+                    "WHERE state IN ('ARMED','WARMUP','SAMPLING') LIMIT 1",null)){
+                if(c.moveToFirst())throw new IllegalStateException("Another field cycle is active");
+            }
+            int next;
+            try(Cursor c=w.rawQuery("SELECT COALESCE(MAX(sequence_no),0)+1 FROM field_measurement_cycles "+
+                    "WHERE field_session_id=?",new String[]{id})){
+                if(!c.moveToFirst())throw new IllegalStateException("Cannot allocate sequence");
+                next=c.getInt(0);
+            }
+            String now=utc();
+            ContentValues v=new ContentValues();
+            v.put("cycle_id",cycleId);v.put("field_session_id",id);
+            v.put("sequence_no",next);v.put("attempt_no",predecessor==null?1:predecessor.attempt+1);
+            if(predecessor!=null)v.put("supersedes_cycle_id",predecessor.id);
+            v.put("include_gas",options.gas?1:0);v.put("include_particles",options.particles?1:0);
+            v.put("include_physical",options.physical?1:0);v.put("state",ARMED);
+            v.put("started_ts",now);v.put("updated_ts",now);
+            w.insertOrThrow("field_measurement_cycles",null,v);
+            w.setTransactionSuccessful();
+        }finally{w.endTransaction();}
+        return byId(cycleId);
+    }
+
+    /** The relay was actually observed ON (not just requested by Android). */
+    public boolean relayConfirmed(String cycleId,long monotonicMs,String deviceId){
+        if(monotonicMs<=0||deviceId==null||deviceId.trim().isEmpty())return false;
+        ContentValues v=new ContentValues();v.put("state",WARMUP);
+        v.put("warmup_started_ms",monotonicMs);v.put("device_id",deviceId.trim());v.put("updated_ts",utc());
+        return db.getWritableDatabase().update("field_measurement_cycles",v,
+                "cycle_id=? AND state=? AND include_gas=1",
+                new String[]{required(cycleId),ARMED})==1;
+    }
+    /** Non-gas operation needs no MQ relay; its timing is still documented. */
+    public boolean startedWithoutGas(String cycleId,long monotonicMs,String deviceId){
+        if(monotonicMs<=0||deviceId==null||deviceId.trim().isEmpty())return false;
+        ContentValues v=new ContentValues();v.put("state",SAMPLING);
+        v.put("sampling_started_ms",monotonicMs);v.put("device_id",deviceId.trim());v.put("updated_ts",utc());
+        return db.getWritableDatabase().update("field_measurement_cycles",v,
+                "cycle_id=? AND state=? AND include_gas=0",
+                new String[]{required(cycleId),ARMED})==1;
+    }
+    public boolean samplingStarted(String cycleId,long monotonicMs){
+        Cycle cycle=byId(cycleId);
+        if(cycle==null||!WARMUP.equals(cycle.state)||!cycle.modes.gas)return false;
+        ContentValues v=new ContentValues();v.put("state",SAMPLING);
+        v.put("sampling_started_ms",monotonicMs);v.put("updated_ts",utc());
+        return db.getWritableDatabase().update("field_measurement_cycles",v,
+                "cycle_id=? AND state=? AND warmup_started_ms>0 AND ?-warmup_started_ms>=60000",
+                new String[]{required(cycleId),WARMUP,Long.toString(monotonicMs)})==1;
+    }
+
+    /** Finalized telemetry must be a REAL, fresh, successful user acquisition. */
+    public boolean complete(String cycleId,String deviceId){
+        String cid=required(cycleId);SQLiteDatabase w=db.getWritableDatabase();w.beginTransaction();
+        try{
+            try(Cursor c=w.rawQuery(
+                "SELECT c.measurement_session_id,c.device_id,m.ended_ts,m.operator_role,m.kind,m.analytics,m.payload,"+
+                "(SELECT COUNT(*) FROM telemetry_samples t WHERE t.session_id=c.measurement_session_id) "+
+                "FROM field_measurement_cycles c LEFT JOIN measurement_sessions m "+
+                "ON m.session_id=c.measurement_session_id WHERE c.cycle_id=? AND c.state=?",
+                new String[]{cid,SAMPLING})){
+                if(!c.moveToFirst())return false;
+                String ms=nz(c.getString(0)),owner=nz(c.getString(1));
+                if(ms.isEmpty()||owner.isEmpty()||!owner.equals(deviceId)||
+                    nz(c.getString(2)).isEmpty()||!"USER".equals(c.getString(3))||
+                    !nz(c.getString(4)).startsWith("field_")||c.getInt(7)<1||
+                    !FieldSessionApprovalPolicy.completedSuccessfully(nz(c.getString(5)),nz(c.getString(6))))return false;
+                String fingerprint=sha256(ms+"|"+c.getString(5)+"|"+c.getString(6)+"|"+deviceId);
+                ContentValues v=new ContentValues();v.put("state",REVIEW);
+                v.put("evidence_sha256",fingerprint);v.put("completed_ts",utc());v.put("updated_ts",utc());
+                int updated=w.update("field_measurement_cycles",v,"cycle_id=? AND state=?",
+                        new String[]{cid,SAMPLING});
+                if(updated==1){w.setTransactionSuccessful();return true;}
+            }
+            return false;
+        }finally{w.endTransaction();}
+    }
+    public boolean approve(String cycleId){
+        String id=required(cycleId);
+        ContentValues v=new ContentValues();v.put("state",APPROVED);
+        v.put("approved_ts",utc());v.put("updated_ts",utc());
+        return db.getWritableDatabase().update("field_measurement_cycles",v,
+            "cycle_id=? AND state=? AND measurement_session_id IS NOT NULL "+
+            "AND device_id IS NOT NULL AND evidence_sha256 IS NOT NULL",
+            new String[]{id,REVIEW})==1;
+    }
+
+    /** New attempt with a NEW sequence; a pending or failed predecessor remains auditable. */
+    public Cycle retry(String cycleId){
+        Cycle old=byId(cycleId);
+        if(old==null||!(REVIEW.equals(old.state)||FAILED.equals(old.state)||CANCELLED.equals(old.state)))
+            throw new IllegalStateException("Only completed/rejected attempts can be retried");
+        SQLiteDatabase w=db.getWritableDatabase();
+        ContentValues v=new ContentValues();v.put("state",SUPERSEDED);v.put("updated_ts",utc());
+        if(w.update("field_measurement_cycles",v,"cycle_id=? AND state=?",
+                new String[]{old.id,old.state})!=1)throw new IllegalStateException("Cannot supersede stale attempt");
+        try{return beginInternal(old.fieldSessionId,old.modes,old);}
+        catch(RuntimeException ex){
+            ContentValues undo=new ContentValues();undo.put("state",old.state);
+            w.update("field_measurement_cycles",undo,"cycle_id=? AND state=?",new String[]{old.id,SUPERSEDED});
+            throw ex;
+        }
+    }
+    public boolean fail(String cycleId,String reason){
+        String cid=required(cycleId);String message=reason==null?"FAILED":reason.trim();
+        ContentValues v=new ContentValues();v.put("state",FAILED);v.put("fail_reason",message);
+        v.put("updated_ts",utc());
+        return db.getWritableDatabase().update("field_measurement_cycles",v,
+            "cycle_id=? AND state IN ('ARMED','WARMUP','SAMPLING')",new String[]{cid})==1;
+    }
+    public boolean cancel(String cycleId){
+        String cid=required(cycleId);ContentValues v=new ContentValues();v.put("state",CANCELLED);v.put("updated_ts",utc());
+        return db.getWritableDatabase().update("field_measurement_cycles",v,
+            "cycle_id=? AND state IN ('ARMED','WARMUP','SAMPLING','REVIEW_READY')",new String[]{cid})==1;
+    }
+
+    private static String required(String id){if(id==null||id.trim().isEmpty())throw new IllegalArgumentException("ID required");return id.trim();}
+    private static String nz(String x){return x==null?"":x;}
+    private static String utc(){SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",Locale.US);f.setTimeZone(TimeZone.getTimeZone("UTC"));return f.format(new Date());}
+    private static String sha256(String data){
+        try{
+            byte[] bytes=MessageDigest.getInstance("SHA-256").digest(data.getBytes(StandardCharsets.UTF_8));
+            StringBuilder out=new StringBuilder();for(byte b:bytes)out.append(String.format(Locale.US,"%02x",b&255));
+            return out.toString();
+        }catch(Exception ex){throw new IllegalStateException("SHA-256 unavailable",ex);}
+    }
+}
