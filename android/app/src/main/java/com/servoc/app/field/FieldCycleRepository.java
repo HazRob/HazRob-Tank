@@ -213,6 +213,41 @@ public final class FieldCycleRepository {
             return false;
         }finally{w.endTransaction();}
     }
+    /**
+     * Reverify the persisted source and the ChemCore decision immediately
+     * before a PDF/XLSX reads any approved V5 measurement. Legacy V9 imported
+     * rows have no historical SHA, so remain governed by their original
+     * approval checks rather than being assigned fabricated V5 evidence.
+     */
+    public boolean verifyApprovedEvidence(Cycle cycle){
+        if(cycle==null||!cycle.approved())return false;
+        if("LEGACY_APPROVED".equals(cycle.state))return true;
+        if(!APPROVED.equals(cycle.state)||cycle.measurementId.isEmpty()||
+           cycle.deviceId.isEmpty()||cycle.evidenceSha.length()!=64)return false;
+        SQLiteDatabase w=db.getWritableDatabase();
+        w.beginTransactionNonExclusive();
+        try{
+            String metadata,payload;
+            try(Cursor c=w.rawQuery(
+                    "SELECT m.analytics,m.payload,m.kind,m.operator_role "+
+                    "FROM measurement_sessions m JOIN field_measurement_cycles c "+
+                    "ON c.measurement_session_id=m.session_id "+
+                    "WHERE c.cycle_id=? AND c.state='APPROVED' "+
+                    "AND c.field_session_id=? AND m.session_id=?",
+                    new String[]{cycle.id,cycle.fieldSessionId,cycle.measurementId})){
+                if(!c.moveToFirst()||!"USER".equals(c.getString(3))||
+                    !nz(c.getString(2)).startsWith("field_"))return false;
+                metadata=nz(c.getString(0));payload=nz(c.getString(1));
+            }
+            if(!FieldSessionApprovalPolicy.completedSuccessfully(metadata,payload))
+                return false;
+            boolean verified=cycle.evidenceSha.equalsIgnoreCase(
+                evidenceDigest(w,cycle.measurementId,cycle.deviceId,metadata,payload));
+            if(verified)w.setTransactionSuccessful();
+            return verified;
+        }finally{w.endTransaction();}
+    }
+
     /** Review-to-approval is atomic and re-hashes the entire evidence sequence. */
     public boolean approve(String cycleId){
         String id=required(cycleId);SQLiteDatabase w=db.getWritableDatabase();w.beginTransaction();
