@@ -1,0 +1,66 @@
+name: Build HazRob Tank V5 ESP32 and ESP32-CAM firmware (diagnostic)
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/tank-v5-implementation]
+    paths:
+      - docs/implementation/V5_FIRMWARE_COMPILE_REQUEST_2026-10-28.md
+permissions:
+  contents: read
+jobs:
+  compile:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sketch: ESP32-Tank
+            board: esp32:esp32:esp32
+            core: '3.3.11'
+          - sketch: Cam-tank
+            board: esp32:esp32:esp32cam
+            core: '3.3.11'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install pinned Arduino ESP32 board core
+        shell: bash
+        run: |
+          set -euo pipefail
+          INDEX=https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index --additional-urls "$INDEX"
+          arduino-cli core install esp32:esp32@${{ matrix.core }} --additional-urls "$INDEX"
+      - name: Compile V5 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          arduino-cli compile --warnings all --fqbn ${{ matrix.board }} \
+             --output-dir compiled/${{ matrix.sketch }} firmware/${{ matrix.sketch }}
+      - name: Assemble BIN and source ZIP
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import zipfile,hashlib
+          from pathlib import Path
+          root=Path('firmware/${{ matrix.sketch }}')
+          out=Path('package')
+          out.mkdir(exist_ok=True)
+          zippath=out/'HazRob-Tank-V5-${{ matrix.sketch }}-Arduino.zip'
+          with zipfile.ZipFile(zippath,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              for p in sorted(root.iterdir()):
+                  if p.is_file() and p.suffix.lower() in ('.ino','.h','.cpp','.md') and not p.name.endswith('Secrets.h'):
+                      z.write(p,arcname=f'{root.name}/{p.name}')
+          bins=list(Path('compiled/${{ matrix.sketch }}').glob('*.bin'))
+          assert bins,'no compiled firmware binaries'
+          for p in bins:(out/p.name).write_bytes(p.read_bytes())
+          (out/'SHA256SUMS.txt').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n'
+             for p in sorted(out.iterdir()) if p.is_file() and p.name!='SHA256SUMS.txt'))
+          print('compiled firmware binaries:',[p.name for p in bins])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V5-${{ matrix.sketch }}-compiled-UNRELEASED
+          path: package/
+          if-no-files-found: error
+          retention-days: 14
