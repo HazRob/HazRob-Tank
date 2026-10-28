@@ -98,7 +98,7 @@ public final class FieldSessionRepository {
         }finally{w.endTransaction();}
     }
 
-    /** Approve a CLOSED field session with exactly one complete, actually sampled user acquisition. */
+    /** Approve a CLOSED field session with one or more accepted real cycles. */
     public boolean approveFieldSession(String fieldSessionId){
         String id=requiredId(fieldSessionId);
         SQLiteDatabase w=db.getWritableDatabase();w.beginTransaction();
@@ -112,10 +112,8 @@ public final class FieldSessionRepository {
                 "JOIN measurement_sessions ms ON ms.session_id=f.measurement_session_id WHERE f.field_session_id=?",
                 new String[]{id})){
                 while(c.moveToNext()){
-                    complete++;
                     String sid=c.getString(0),ended=nz(c.getString(1)),role=nz(c.getString(2)),kind=nz(c.getString(3));
                     if(!"USER".equals(role)||!kind.startsWith("field_")||ended.trim().isEmpty())return false;
-                    if(!FieldSessionApprovalPolicy.completedSuccessfully(nz(c.getString(4)),nz(c.getString(5))))return false;
                     String cycleState="";
                     try(Cursor matching=w.rawQuery(
                             "SELECT state FROM field_measurement_cycles WHERE field_session_id=? AND measurement_session_id=?",
@@ -123,6 +121,12 @@ public final class FieldSessionRepository {
                         if(!matching.moveToFirst())return false;
                         cycleState=nz(matching.getString(0));
                     }
+                    if(FieldCycleRepository.SUPERSEDED.equals(cycleState)||
+                       FieldCycleRepository.FAILED.equals(cycleState)||
+                       FieldCycleRepository.CANCELLED.equals(cycleState))
+                        continue; // Failed/retried attempts remain auditable, not approved.
+                    if(!FieldSessionApprovalPolicy.completedSuccessfully(
+                            nz(c.getString(4)),nz(c.getString(5))))return false;
                     if("LEGACY_IMPORTED".equals(cycleState)){
                         // Historical V9 records were complete and have the old approval
                         // evidence. Preserve their old semantics without promoting V5 drafts.
@@ -135,6 +139,7 @@ public final class FieldSessionRepository {
                     try(Cursor samples=w.rawQuery("SELECT 1 FROM telemetry_samples WHERE session_id=? LIMIT 1",new String[]{sid})){
                         if(!samples.moveToFirst())return false;
                     }
+                    complete++;
                 }
             }
             if(complete<1)return false;
@@ -240,9 +245,13 @@ public final class FieldSessionRepository {
             throw new IllegalStateException("Field-session database migration incomplete: "+table);
     }
 
+    /** Reports consume approved cycles only; rejected/retried attempts stay in the audit ledger. */
     public List<String> measurementSessionIds(String fieldSessionId){
         List<String> out=new ArrayList<>();
-        try(Cursor c=db.getReadableDatabase().rawQuery("SELECT measurement_session_id FROM field_session_measurements WHERE field_session_id=? ORDER BY linked_ts,measurement_session_id",new String[]{requiredId(fieldSessionId)})){
+        String sql="SELECT c.measurement_session_id FROM field_measurement_cycles c "+
+            "WHERE c.field_session_id=? AND c.measurement_session_id IS NOT NULL "+
+            "AND c.state IN ('APPROVED','LEGACY_APPROVED') ORDER BY c.sequence_no";
+        try(Cursor c=db.getReadableDatabase().rawQuery(sql,new String[]{requiredId(fieldSessionId)})){
             while(c.moveToNext())out.add(c.getString(0));
         }
         return out;
