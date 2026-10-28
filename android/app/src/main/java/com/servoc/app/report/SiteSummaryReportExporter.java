@@ -28,6 +28,7 @@ public final class SiteSummaryReportExporter {
     public static final int PAGE_WIDTH=842,PAGE_HEIGHT=595;
     private static final float MARGIN=28.35f;
     private static final int ROWS_PER_MATRIX_PAGE=18;
+    private static final int ROWS_PER_CYCLE_PAGE=15;
 
     /** One independently recorded and explicitly numbered field attempt. */
     public static final class CycleSummary {
@@ -87,9 +88,10 @@ public final class SiteSummaryReportExporter {
     }
 
     public static void writePdf(OutputStream out,ExperimentsDb db,String siteId)throws Exception{
-        if(out==null)throw new IllegalArgumentException("output required");SiteBundle b=resolve(db,siteId);SiteReportIntelligence.SitePlan plan=SiteReportIntelligence.plan(b.sessions);int matrixPages=Math.max(1,(b.sessions.size()+ROWS_PER_MATRIX_PAGE-1)/ROWS_PER_MATRIX_PAGE);int total=3+matrixPages;
+        if(out==null)throw new IllegalArgumentException("output required");SiteBundle b=resolve(db,siteId);SiteReportIntelligence.SitePlan plan=SiteReportIntelligence.plan(b.sessions);int matrixPages=Math.max(1,(b.sessions.size()+ROWS_PER_MATRIX_PAGE-1)/ROWS_PER_MATRIX_PAGE);int cycleCount=cycleRows(b).size();int cyclePages=Math.max(1,(cycleCount+ROWS_PER_CYCLE_PAGE-1)/ROWS_PER_CYCLE_PAGE);int total=3+matrixPages+cyclePages;
         PdfDocument pdf=new PdfDocument();int pageNo=1;PdfDocument.Page p=page(pdf,pageNo);overview(p.getCanvas(),b,plan);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);
         for(int chunk=0;chunk<matrixPages;chunk++){p=page(pdf,pageNo);matrix(p.getCanvas(),b,chunk);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);}
+        for(int chunk=0;chunk<cyclePages;chunk++){p=page(pdf,pageNo);cycleMatrix(p.getCanvas(),b,chunk);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);}
         p=page(pdf,pageNo);recurrence(p.getCanvas(),plan);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);
         p=page(pdf,pageNo);priority(p.getCanvas(),b,plan);chrome(p.getCanvas(),pageNo,total,b);pdf.finishPage(p);pdf.writeTo(out);pdf.close();
     }
@@ -111,6 +113,55 @@ public final class SiteSummaryReportExporter {
         if(start>=end){text(c,"لا توجد جلسات تحت هذا الموقع.",42,112,11,Color.DKGRAY,false);return;}
         for(int i=start;i<end;i++){SessionSummary s=b.sessions.get(i);Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor((i&1)==0?0xFFF7F8FA:Color.WHITE);p.setStyle(Paint.Style.FILL);c.drawRect(new RectF(26,y-13,816,y+7),p);JSONObject h=s.priorityHazard();String hazard=h==null?"—":shorten("#"+h.optInt("rank",0)+" "+h.optString("hazard_symbols","")+" "+hazardLabel(h),16);text(c,String.valueOf(i+1),29,y,6.5f,Color.BLACK,false);text(c,shorten(s.bundle.fieldSession.name,14),48,y,6.5f,Color.BLACK,false);text(c,shorten(s.bundle.fieldSession.startedTs,16),155,y,6.5f,Color.BLACK,false);text(c,String.valueOf(s.bundle.measurementSessionIds.size()),272,y,6.5f,Color.BLACK,false);text(c,shorten(s.outcome,11),309,y,6.5f,Color.BLACK,false);text(c,shorten(s.chemical,13),390,y,6.5f,Color.BLACK,false);text(c,pct100(s.analyticalConfidencePct),486,y,6.5f,Color.BLACK,false);text(c,String.valueOf(s.panelSupportedCount),541,y,6.5f,Color.BLACK,false);text(c,hazard,580,y,6.3f,hazardColor(h),false);text(c,s.ppmReportable&&Double.isFinite(s.ppm)?fmt(s.ppm):"—",697,y,6.5f,Color.BLACK,false);text(c,s.critical()?"⚠":s.safetyGate?"OK":"—",788,y,7.3f,s.critical()?0xFFC62828:Color.DKGRAY,true,Paint.Align.CENTER);y+=24;}
         text(c,"Support = positive-evidence index، وليس احتمالًا. خانة الخطر تعرض المرشح الأعلى أولوية سياقية مع رتبته؛ الإنذار الفعلي يبقى M4-gated.",42,535,7.2f,Color.DKGRAY,false);text(c,"PPM يبقى مرتبطًا بكل جلسة ولا يُجمع أو يُتوسط على مستوى الموقع.",42,551,7.2f,Color.DKGRAY,false);
+    }
+
+    /** Cycle-level audit appendix; scientific estimates remain independent by cycle. */
+    private static final class CycleRow {
+        final SessionSummary session;final CycleSummary entry;
+        CycleRow(SessionSummary s,CycleSummary e){session=s;entry=e;}
+    }
+    private static List<CycleRow> cycleRows(SiteBundle b){
+        List<CycleRow> out=new ArrayList<>();
+        for(SessionSummary session:b.sessions)
+            for(CycleSummary entry:session.cycles)out.add(new CycleRow(session,entry));
+        return out;
+    }
+    private static void cycleMatrix(Canvas c,SiteBundle b,int pageIndex){
+        List<CycleRow> rows=cycleRows(b);
+        int start=pageIndex*ROWS_PER_CYCLE_PAGE;
+        int end=Math.min(rows.size(),start+ROWS_PER_CYCLE_PAGE);
+        title(c,"سجل دورات القياس التابعة للموقع • "+(pageIndex+1),42);
+        text(c,"كل صف = محاولة مستقلة. البيانات التحليلية متاحة للدورات المعتمدة فقط، دون دمج PPM.",35,65,8,Color.DKGRAY,false);
+        String[] columns={"جلسة","دورة","محاولة","الحالة","فئات القياس","توقيت","المادة","Outcome","PPM","SHA"};
+        float[] xs={33,149,185,230,306,395,505,615,705,759};
+        for(int i=0;i<columns.length;i++)text(c,columns[i],xs[i],91,7.2f,Color.DKGRAY,true);
+        float y=112;
+        for(int i=start;i<end;i++){
+            CycleRow row=rows.get(i);
+            com.servoc.app.field.FieldCycleRepository.Cycle x=row.entry.cycle;
+            if(((i-start)&1)==0){
+                Paint bg=new Paint(Paint.ANTI_ALIAS_FLAG);bg.setColor(0xFFF2F5F7);
+                c.drawRect(new RectF(26,y-15,817,y+9),bg);
+            }
+            String family=(x.modes.gas?"G":"")+(x.modes.particles?"P":"")+
+                          (x.modes.physical?"F":"");
+            text(c,shorten(row.session.bundle.fieldSession.name,17),xs[0],y,6.6f,Color.BLACK,false);
+            text(c,Integer.toString(x.sequence),xs[1],y,6.6f,Color.BLACK,false);
+            text(c,Integer.toString(x.attempt),xs[2],y,6.6f,Color.BLACK,false);
+            text(c,shorten(x.state,15),xs[3],y,6.6f,x.approved()?0xFF1B5E20:0xFF944B15,true);
+            text(c,family,xs[4],y,6.6f,Color.BLACK,false);
+            text(c,shorten(x.started,17),xs[5],y,6.5f,Color.BLACK,false);
+            text(c,shorten(row.entry.topCandidate,15),xs[6],y,6.5f,Color.BLACK,false);
+            text(c,shorten(row.entry.outcome,12),xs[7],y,6.5f,Color.BLACK,false);
+            text(c,row.entry.ppmReportable&&Double.isFinite(row.entry.ppm)?fmt(row.entry.ppm):"—",
+                xs[8],y,6.5f,Color.BLACK,false);
+            text(c,x.evidenceSha.isEmpty()?"—":shorten(x.evidenceSha,9),
+                xs[9],y,6.4f,Color.DKGRAY,false);
+            y+=27;
+        }
+        if(start==end)text(c,"لا توجد دورات لهذا الموقع.",42,145,10,Color.DKGRAY,false);
+        text(c,"G=Gas  P=Particles  F=Physical • SHA للمراجعة؛ البصمة الكاملة ومبرر الرفض في Excel",36,537,8,Color.DKGRAY,false);
+        text(c,"لا يتم تصنيف المحاولات FAILED/SUPERSEDED/DELETED كقياسات ناجحة.",36,551,8,Color.DKGRAY,false);
     }
 
     private static void recurrence(Canvas c,SiteReportIntelligence.SitePlan plan){
