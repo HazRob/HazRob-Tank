@@ -69,7 +69,7 @@ final class SmartFieldSessionXlsxWriter {
         g.blank();
         g.header("Sequence","Attempt","Status","Measurement ID","Gas","PM","Physical",
                  "Start UTC","Complete UTC","Approve UTC","Device ID","Evidence SHA-256","Reason");
-        for(FieldCycleRepository.Cycle c:new FieldCycleRepository(db).forSession(b.fieldSessionId)){
+        for(FieldCycleRepository.Cycle c:b.cycleLedger){
             g.row(c.sequence,c.attempt,c.state,c.measurementId,
                 c.modes.gas?"YES":"NO",c.modes.particles?"YES":"NO",
                 c.modes.physical?"YES":"NO",c.started,c.completed,c.approved,
