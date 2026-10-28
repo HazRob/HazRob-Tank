@@ -1,13 +1,13 @@
 package com.servoc.app;
 
-/** HazRob Tank independent V4 Android development candidate; NOT a certified release. */
+/** HazRob Tank independent V5 Android development source; NOT a certified release. */
 public final class ReleaseAudit {
     private ReleaseAudit(){}
-    // HR069-R1 engineering increment; Main ESP32 and Android must match. Camera remains HR069 until a camera-side change is required.
-    public static final String VERSION="4.0";
-    public static final String ENGINEERING_REVISION="TANK-V4-UNRELEASED";
+    // V5 app source under development; firmware API compatibility must be verified before release.
+    public static final String VERSION="5.0";
+    public static final String ENGINEERING_REVISION="TANK-V5-IN-DEVELOPMENT";
     public static final String PROJECT_PREPARERS="شهاب الصهباني، مجدي ذيبان";
-    public static final int DATABASE_SCHEMA=9;
+    public static final int DATABASE_SCHEMA=10;
     public static final String ESP32_API="HazRob Tank API4 / dual continuous rotation servos GPIO16/17 / 8 MQ 2xADS1115 I2C21/22 / BME280 I2C13/14 / relay GPIO25 / firmware R0 300s warmup 60s capture / direct R0 only / screening not ppm certified";
 
     public static final boolean PRECALIBRATED_MQ=false;
