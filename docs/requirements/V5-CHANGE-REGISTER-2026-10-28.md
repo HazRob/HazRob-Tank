@@ -94,3 +94,15 @@
 | V5-010 | `IN_PROGRESS` — النسخ والـrollback المصدرية مصححة؛ اختبار تبويبات المكتبة الأربعة على جهاز معلق |
 
 **مرجع تفاصيل التغيير:** [V5-ANALYSIS-LAB-INTEGRATION-2026-10-28.md](../implementation/V5-ANALYSIS-LAB-INTEGRATION-2026-10-28.md). لا يُرقّى أي بند إلى `DEVICE_PASS` أو `RELEASE_ACCEPTED` بدون اختبار فعلي.
+
+
+## تحديث الدفعة D — سياسة عدم حجب المصادر العلمية
+
+| المتطلب | الحالة |
+| --- | --- |
+| V5-002 | `SOURCE_IMPLEMENTED_UNTESTED` — جميع المعادلات الموثقة متاحة لحساب PPM البحثي دون M4؛ بصمات مرشحين مستقلة؛ مصدر كل نموذج ودرجته |
+| V5-003 | `SOURCE_IMPLEMENTED_UNTESTED` — نافذة Ethanol تعرض المصادر المتداخلة كافة مع CAS/UID الأساسي من SQLite |
+| V5-005 | `PARTIALLY_AUDITED` — فحص 43 منحنى/8 MQ/13 مادة و6 MQ135 من المصدر؛ لا ترقية علمية غير موثقة لـStable |
+| V5-006 | `IN_PROGRESS` — تنسيق العرض من مكتبة SHA المثبتة؛ نشر وتثبيت مكتبة V5 APK لم ينفذ بعد |
+
+**مرجع:** [V5-ALL-SCIENTIFIC-SOURCES-ACTIVATION-2026-10-28.md](../implementation/V5-ALL-SCIENTIFIC-SOURCES-ACTIVATION-2026-10-28.md).
