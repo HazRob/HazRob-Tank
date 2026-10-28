@@ -48,7 +48,8 @@ public final class FieldSessionReportExporter {
         FieldSessionRepository repo=new FieldSessionRepository(db);if(!repo.isApproved(fs))throw new IllegalStateException("يجب اعتماد الجلسة قبل إصدار التقرير");FieldSessionRepository.Site site=null;FieldSessionRepository.FieldSession field=null;
         for(FieldSessionRepository.Site s:repo.sites()){for(FieldSessionRepository.FieldSession q:repo.sessionsForSite(s.id))if(fs.equals(q.id)){site=s;field=q;break;}if(field!=null)break;}
         if(field==null||site==null)throw new IllegalArgumentException("field session not found");
-        List<FieldCycleRepository.Cycle> cycleLedger=new FieldCycleRepository(db).forSession(fs);
+        FieldCycleRepository cycles=new FieldCycleRepository(db);
+        List<FieldCycleRepository.Cycle> cycleLedger=cycles.forSession(fs);
         List<String> sessions=repo.measurementSessionIds(fs);
         // A report must never quietly omit a valid approved cycle, duplicate an
         // acquisition, or include an ID from another Field Session.
@@ -58,6 +59,8 @@ public final class FieldSessionReportExporter {
             if(!fs.equals(cycle.fieldSessionId)||cycle.measurementId.isEmpty()||
                 !approvedIds.add(cycle.measurementId))
                 throw new IllegalStateException("Approved measurement ledger is inconsistent");
+            if(!cycles.verifyApprovedEvidence(cycle))
+                throw new IllegalStateException("Approved cycle evidence or ChemCore result changed: "+cycle.id);
         }
         if(approvedIds.isEmpty()||approvedIds.size()!=sessions.size()||
             !approvedIds.equals(new HashSet<>(sessions)))
