@@ -504,6 +504,63 @@ class CatalogMalformedOriginIsolationTests(unittest.TestCase):
                 "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in row["blockers"]
                 for row in result["datasets"]))
 
+    def test_ipv6_address_and_port_do_not_collide_in_source_identity(self):
+        """Synthetic raw-byte replay: IPv6 address segments are not port numbers."""
+        import hashlib
+        from g2_reference_catalog_readiness import (
+            _canonical_source_origin, audit_source_catalog)
+
+        def canonical(url):
+            return _canonical_source_origin({"primary_url": url})
+
+        self.assertNotEqual(canonical("https://[::1]:8080/data"),
+                            canonical("https://[::1:8080]/data"))
+        self.assertEqual(canonical("https://[::1]:443/data"),
+                         canonical("https://[::1]/data"))
+        self.assertEqual(canonical("http://[::1]:80/data"),
+                         canonical("http://[::1]/data"))
+        self.assertNotEqual(canonical("https://[2001:db8::1]:8443/data"),
+                            canonical("https://[2001:db8::1:8443]/data"))
+
+        catalog = self.fixture()
+        with tempfile.TemporaryDirectory() as temp:
+            for index, row in enumerate(catalog["primary_catalog_entries"]):
+                raw = ("synthetic IPv6 authority control " + str(index)).encode()
+                relative = "research/g2/raw/ipv6-authority-" + str(index) + ".bin"
+                path = Path(temp) / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+                row.update(
+                    primary_url=("https://[::1]:8080/data" if index == 0
+                                 else "https://[::1:8080]/data"),
+                    measurement_qualification=True,
+                    experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                    raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                    physical_reference_traceability=True,
+                    raw_local_path=relative,
+                    raw_size_bytes=len(raw),
+                    raw_sha256=hashlib.sha256(raw).hexdigest())
+
+            def verdict():
+                return audit_source_catalog(
+                    catalog, expected_total=2, expected_datasets=2,
+                    repo_root=temp)
+
+            distinct = verdict()
+            self.assertEqual(distinct["source_review_ready"], 2)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" not in item["blockers"]
+                for item in distinct["datasets"]))
+
+            # The same address and same non-default port are true aliases.
+            catalog["primary_catalog_entries"][1]["primary_url"] = (
+                "https://[::1]:8080/data")
+            duplicates = verdict()
+            self.assertEqual(duplicates["source_review_ready"], 0)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in item["blockers"]
+                for item in duplicates["datasets"]))
+
     def test_valid_origin_is_not_reclassified_as_malformed(self):
         from g2_reference_catalog_readiness import audit_source_catalog
         catalog = self.fixture()

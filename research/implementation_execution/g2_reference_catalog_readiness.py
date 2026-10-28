@@ -131,7 +131,12 @@ def _canonical_source_origin(row):
         # non-default authorities, not aliases of the standard endpoint.
         # Dropping either port could falsely merge distinct source records.
         default_port = 443 if parsed.scheme.lower() == "https" else 80
-        netloc = host + (":" + str(port) if port not in (None, default_port) else "")
+        # IPv6 literals require brackets. Without them, [::1]:8080 and
+        # [::1:8080] collapse to the same serialized authority, even though
+        # the former is an address plus port and the latter is another address.
+        host_authority = "[" + host + "]" if ":" in host else host
+        netloc = host_authority + (
+            ":" + str(port) if port not in (None, default_port) else "")
         path = parsed.path.rstrip("/") or "/"
         return "url:" + parsed.scheme.lower() + "://" + netloc + path + ("?" + parsed.query if parsed.query else "")
     candidate = unquote(value).rstrip("/")
