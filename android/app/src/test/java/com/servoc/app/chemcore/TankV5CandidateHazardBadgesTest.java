@@ -36,7 +36,7 @@ public final class TankV5CandidateHazardBadgesTest {
     }
     @Test public void absentOrInvalidEstimateDoesNotProduceSafetyIcons()throws Exception{
         assertEquals("",TankCandidateHazardBadges.forCandidate(null,64));
-        assertEquals("",TankCandidateHazardBadges.forCandidate(analysis(record(64,"LFL",Double.NaN)),64));
+        assertEquals("",TankCandidateHazardBadges.forCandidate(analysis(new JSONObject().put("chemical_uid",64).put("reference_role","LFL").put("conditional",true)),64));
         assertEquals("",TankCandidateHazardBadges.forCandidate(analysis(record(64,"CEILING",0.8)),64));
     }
 }
