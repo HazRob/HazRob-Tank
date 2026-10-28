@@ -107,8 +107,50 @@ jobs:
         working-directory: source
         run: gradle --no-daemon :app:testDebugUnitTest
 
-      - name: Build debug APK only after tests passed
+      - name: Require SAME V4 signing certificate before update-compatible V5 build
+        shell: bash
+        env:
+          V4_KEYSTORE_B64: ${{ secrets.HAZROB_TANK_V4_KEYSTORE_B64 }}
+          V4_STORE_PASS: ${{ secrets.HAZROB_TANK_V4_STORE_PASSWORD }}
+          V4_KEY_PASS: ${{ secrets.HAZROB_TANK_V4_KEY_PASSWORD }}
+          V4_KEY_ALIAS: ${{ secrets.HAZROB_TANK_V4_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          for v in V4_KEYSTORE_B64 V4_STORE_PASS V4_KEY_PASS V4_KEY_ALIAS; do
+            test -n "${!v:-}" || { echo "::error::Missing V4 signing material: $v"; exit 1; }
+          done
+          mkdir -p source/.tank-v5-signing
+          chmod 700 source/.tank-v5-signing
+          printf '%s' "$V4_KEYSTORE_B64" | base64 --decode > source/.tank-v5-signing/update.jks
+          chmod 600 source/.tank-v5-signing/update.jks
+          keytool -exportcert -keystore source/.tank-v5-signing/update.jks -alias "$V4_KEY_ALIAS" \
+            -storepass "$V4_STORE_PASS" -keypass "$V4_KEY_PASS" \
+            -file source/.tank-v5-signing/v4-cert.der >/dev/null
+          actual=$(sha256sum source/.tank-v5-signing/v4-cert.der | awk '{print toupper($1)}')
+          expected=799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6
+          test "$actual" = "$expected" || { echo "::error::V5 signer differs from installed V4; refusing unsafe upgrade APK"; exit 1; }
+          cat >> source/app/build.gradle <<'GRADLE'
+          android {
+              signingConfigs {
+                  tankV4Update {
+                      storeFile file(System.getenv("HAZROB_TANK_UPDATE_KEYSTORE_FILE"))
+                      storePassword System.getenv("HAZROB_TANK_UPDATE_STORE_PASSWORD")
+                      keyAlias System.getenv("HAZROB_TANK_UPDATE_KEY_ALIAS")
+                      keyPassword System.getenv("HAZROB_TANK_UPDATE_KEY_PASSWORD")
+                  }
+              }
+              buildTypes { debug { signingConfig signingConfigs.tankV4Update } }
+          }
+          GRADLE
+          echo "Verified exact V4 certificate SHA-256 and enabled update-compatible signing."
+
+      - name: Build debug APK only after tests and matching V4 signing passed
         working-directory: source
+        env:
+          HAZROB_TANK_UPDATE_KEYSTORE_FILE: ${{ github.workspace }}/source/.tank-v5-signing/update.jks
+          HAZROB_TANK_UPDATE_STORE_PASSWORD: ${{ secrets.HAZROB_TANK_V4_STORE_PASSWORD }}
+          HAZROB_TANK_UPDATE_KEY_PASSWORD: ${{ secrets.HAZROB_TANK_V4_KEY_PASSWORD }}
+          HAZROB_TANK_UPDATE_KEY_ALIAS: ${{ secrets.HAZROB_TANK_V4_KEY_ALIAS }}
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Check APK scientific content and release identity
