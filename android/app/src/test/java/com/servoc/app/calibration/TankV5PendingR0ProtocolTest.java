@@ -67,6 +67,10 @@ public final class TankV5PendingR0ProtocolTest {
         assertTrue(source.contains("if(!saveR0Record(candidate))"));
         assertTrue(source.contains("pendingR0Valid=false;pendingR0=R0Record();calState=CAL_CANCEL;"));
         assertTrue(api.contains("if(cmd==\"accept\"){bool ok=calibrationAccept()"));
+        assertTrue(source.contains("warmSeconds!=300||sampleSeconds!=60"));
+        assertTrue(source.contains("now-calAt>=calWarmMs&&mqPowerMs()>=calWarmMs"));
+        assertTrue(source.contains("calState==CAL_PENDING)return false"));
+        assertTrue(source.contains("stage==MEASURE||stage==WARM||!mqPowerOn"));
         assertTrue(source.contains("tank-r0-fw-v5/2"));
     }
 }
