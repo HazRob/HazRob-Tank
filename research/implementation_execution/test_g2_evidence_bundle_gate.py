@@ -1621,6 +1621,16 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
     @staticmethod
     def fixture():
         return {
+            "schema_version": "hazrob-unified-reference-bank-1.0",
+            "authority": "HazRob/build-harness/library/reference-bank/external-research/master_catalog.json",
+            "scope": "SHARED_BIBLIOGRAPHY_AND_RESEARCH_DATA_DISCOVERY_FOR_ALL_HAZROB_PROJECTS",
+            "qualification_policy": {
+                "raw_data_is_not_sensor_calibration": True,
+                "library_inclusion_does_not_promote_to_Tank_G3_or_HR069_M4": True,
+                "gas_label_not_equal_ppm_reference": True,
+                "raw_timeseries_not_independent_exposures": True,
+                "source_status_must_be_preserved": True,
+            },
             "record_count": 2,
             "counts_by_type": {"EXTERNAL_MEASUREMENT_DATASET": 1,
                                "ANALYTICAL_METHOD_STUDY": 1},
@@ -1636,6 +1646,38 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
                 {"id": "METHOD-01", "category": "ANALYTICAL_METHOD_STUDY"},
             ],
         }
+
+    def test_central_catalog_authority_and_noncertification_policy_are_locked(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        valid = self.fixture()
+        self.assertEqual(audit_source_catalog(
+            valid, expected_total=2, expected_datasets=1)["source_review_ready"], 0)
+        for field in ("schema_version", "authority", "scope"):
+            for invalid in (None, "", "attacker-controlled-replacement"):
+                with self.subTest(field=field, invalid=invalid):
+                    catalog = self.fixture()
+                    catalog[field] = invalid
+                    with self.assertRaisesRegex(
+                            ValueError, "CENTRAL_CATALOG_AUTHORITY_OR_SAFETY_POLICY_MISMATCH"):
+                        audit_source_catalog(catalog, expected_total=2,
+                                             expected_datasets=1)
+        for policy_field in valid["qualification_policy"]:
+            for invalid in (False, 1, "true", None):
+                with self.subTest(policy=policy_field, invalid=repr(invalid)):
+                    catalog = self.fixture()
+                    catalog["qualification_policy"][policy_field] = invalid
+                    with self.assertRaisesRegex(
+                            ValueError, "CENTRAL_CATALOG_AUTHORITY_OR_SAFETY_POLICY_MISMATCH"):
+                        audit_source_catalog(catalog, expected_total=2,
+                                             expected_datasets=1)
+        for invalid in (None, {}, "all true"):
+            with self.subTest(policy_container=repr(invalid)):
+                catalog = self.fixture()
+                catalog["qualification_policy"] = invalid
+                with self.assertRaisesRegex(
+                        ValueError, "CENTRAL_CATALOG_AUTHORITY_OR_SAFETY_POLICY_MISMATCH"):
+                    audit_source_catalog(catalog, expected_total=2,
+                                         expected_datasets=1)
 
     def test_truthy_claim_strings_never_qualify_a_dataset(self):
         from g2_reference_catalog_readiness import audit_source_catalog
