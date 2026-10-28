@@ -27,7 +27,7 @@ import java.util.Map;
 /** Compact evidence-driven Field Session PDF: 3 columns x 2 rows = 6 charts per analytical page. */
 public final class SmartFieldSessionPdfWriter {
     private SmartFieldSessionPdfWriter(){}
-    public static final int PAGE_WIDTH=842,PAGE_HEIGHT=595,MIN_PAGES=4,MAX_PAGES=5,CHARTS_PER_PAGE=6;
+    public static final int PAGE_WIDTH=842,PAGE_HEIGHT=595,MIN_PAGES=4,MAX_PAGES=5,CHARTS_PER_PAGE=6; // Base pages; V5 cycle annex paginates independently.
     private static final float MARGIN=28.35f;
     private static final int ROWS_PER_CYCLE_PAGE=15;
 
