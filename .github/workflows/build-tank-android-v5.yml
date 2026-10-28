@@ -86,16 +86,27 @@ jobs:
           print('Verified V5 embedded Stable payload and SHA-256.')
           PY
 
-      - name: Prepare Android build environment
-        uses: android-actions/setup-android@v3
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android platform 36
+        run: |
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null || true
+          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
 
       - name: Gradle JUnit and compilation first
         working-directory: source
-        run: ./gradlew --no-daemon :app:testDebugUnitTest
+        run: gradle --no-daemon :app:testDebugUnitTest
 
       - name: Build debug APK only after tests passed
         working-directory: source
-        run: ./gradlew --no-daemon :app:assembleDebug
+        run: gradle --no-daemon :app:assembleDebug
 
       - name: Check APK scientific content and release identity
         shell: bash
