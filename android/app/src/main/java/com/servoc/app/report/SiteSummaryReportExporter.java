@@ -50,7 +50,7 @@ public final class SiteSummaryReportExporter {
             evidenceTier=hasAnalysis?analysis.optString("evidence_tier","—"):"—";
             ppmReportable=hasAnalysis&&analysis.optBoolean("ppm_reportable",false);
             ppm=ppmReportable?analysis.optDouble("ppm",Double.NaN):Double.NaN;
-            estimatedPpm=hasAnalysis?analysis.optDouble("screening_fit_ppm",Double.NaN):Double.NaN;
+            estimatedPpm=hasAnalysis?analysis.optDouble("screening_ppm_estimate",analysis.optDouble("screening_fit_ppm",Double.NaN)):Double.NaN;
         }
     }
 
@@ -187,7 +187,7 @@ public final class SiteSummaryReportExporter {
         int end=Math.min(rows.size(),start+ROWS_PER_CYCLE_PAGE);
         title(c,"سجل دورات القياس التابعة للموقع • "+(pageIndex+1),42);
         text(c,"كل صف = محاولة مستقلة. البيانات التحليلية متاحة للدورات المعتمدة فقط، دون دمج PPM.",35,65,8,Color.DKGRAY,false);
-        String[] columns={"جلسة","دورة","محاولة","الحالة","فئات القياس","توقيت","المادة","Outcome","PPM","SHA"};
+        String[] columns={"جلسة","دورة","محاولة","الحالة","فئات القياس","توقيت","المادة","Outcome","ppm/EST","SHA"};
         float[] xs={33,149,185,230,306,395,505,615,705,759};
         for(int i=0;i<columns.length;i++)text(c,columns[i],xs[i],91,7.2f,Color.DKGRAY,true);
         float y=112;
@@ -208,14 +208,16 @@ public final class SiteSummaryReportExporter {
             text(c,shorten(x.started,17),xs[5],y,6.5f,Color.BLACK,false);
             text(c,shorten(row.entry.topCandidate,15),xs[6],y,6.5f,Color.BLACK,false);
             text(c,shorten(row.entry.outcome,12),xs[7],y,6.5f,Color.BLACK,false);
-            text(c,row.entry.ppmReportable&&Double.isFinite(row.entry.ppm)?fmt(row.entry.ppm):"—",
-                xs[8],y,6.5f,Color.BLACK,false);
+            String concentration=row.entry.ppmReportable&&Double.isFinite(row.entry.ppm)?
+                "M4 "+fmt(row.entry.ppm):Double.isFinite(row.entry.estimatedPpm)?
+                "~"+fmt(row.entry.estimatedPpm):"—";
+            text(c,concentration,xs[8],y,6.5f,Color.BLACK,false);
             text(c,x.evidenceSha.isEmpty()?"—":shorten(x.evidenceSha,9),
                 xs[9],y,6.4f,Color.DKGRAY,false);
             y+=27;
         }
         if(start==end)text(c,"لا توجد دورات لهذا الموقع.",42,145,10,Color.DKGRAY,false);
-        text(c,"G=Gas  P=Particles  F=Physical • SHA للمراجعة؛ البصمة الكاملة ومبرر الرفض في Excel",36,537,8,Color.DKGRAY,false);
+        text(c,"G=Gas P=Particles F=Physical • ~ppm = تقدير بحثي؛ M4 ppm = قياس متحقق • SHA الكامل في Excel",36,537,8,Color.DKGRAY,false);
         text(c,"لا يتم تصنيف المحاولات FAILED/SUPERSEDED/DELETED كقياسات ناجحة.",36,551,8,Color.DKGRAY,false);
     }
 
