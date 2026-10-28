@@ -93,7 +93,7 @@ def _canonical_source_origin(row):
         host = (parsed.hostname or "").lower().rstrip(".")
         if host in {"doi.org", "dx.doi.org", "www.doi.org", "www.dx.doi.org"}:
             candidate = unquote(parsed.path).strip("/ ")
-            if re.fullmatch(r"10\\.\\d{4,9}/\\S+", candidate, re.I):
+            if re.fullmatch(r"10\.\d{4,9}/\S+", candidate, re.I):
                 return "doi:" + candidate.lower()
         try:
             port = parsed.port
@@ -103,7 +103,7 @@ def _canonical_source_origin(row):
         path = parsed.path.rstrip("/") or "/"
         return "url:" + netloc + path + ("?" + parsed.query if parsed.query else "")
     candidate = unquote(value).rstrip("/")
-    if re.fullmatch(r"10\\.\\d{4,9}/\\S+", candidate, re.I):
+    if re.fullmatch(r"10\.\d{4,9}/\S+", candidate, re.I):
         return "doi:" + candidate.lower()
     return "url:" + value.lower().rstrip("/")
 
