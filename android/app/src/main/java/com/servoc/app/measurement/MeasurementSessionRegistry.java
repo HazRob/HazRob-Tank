@@ -19,6 +19,7 @@ public final class MeasurementSessionRegistry {
     private static final AtomicBoolean FIELD_CAPTURE = new AtomicBoolean(false);
     private static final AtomicBoolean FIELD_OPERATION = new AtomicBoolean(false);
     private static final AtomicReference<String> FIELD_STOP_REASON = new AtomicReference<>("");
+    private static final AtomicReference<String> FIELD_OWNER_SESSION = new AtomicReference<>("");
 
 
     private MeasurementSessionRegistry() {}
@@ -62,10 +63,19 @@ public final class MeasurementSessionRegistry {
     public static void endFieldOperation(){FIELD_OPERATION.set(false);}
 
     /** Explicit, operator-owned documented capture. Never a developer experiment. */
-    public static synchronized boolean requestFieldCapture(){
-        if(FIELD_CAPTURE.get()||CHEMCORE_CAPTURE.get()||!ACTIVE.get().isEmpty())return false;
+    public static synchronized boolean requestFieldCapture(String fieldSessionId){
+        String owner=fieldSessionId==null?"":fieldSessionId.trim();
+        if(owner.isEmpty()||!FIELD_OPERATION.get()||FIELD_CAPTURE.get()||
+            CHEMCORE_CAPTURE.get()||!ACTIVE.get().isEmpty())return false;
         FIELD_STOP_REASON.set("");
-        return FIELD_CAPTURE.compareAndSet(false,true);
+        FIELD_OWNER_SESSION.set(owner);
+        boolean reserved=FIELD_CAPTURE.compareAndSet(false,true);
+        if(!reserved)FIELD_OWNER_SESSION.set("");
+        return reserved;
+    }
+    /** Owner is immutable until this field capture has finished or failed. */
+    public static String fieldCaptureOwnerSessionId(){
+        return FIELD_CAPTURE.get()?FIELD_OWNER_SESSION.get():"";
     }
     public static boolean fieldCaptureRequested(){return FIELD_CAPTURE.get();}
     public static boolean requestFieldStop(String reason){
@@ -77,7 +87,7 @@ public final class MeasurementSessionRegistry {
     }
     public static String fieldStopReason(){return FIELD_STOP_REASON.get();}
     static void clearFieldCapture(){
-        FIELD_CAPTURE.set(false);FIELD_STOP_REASON.set("");
+        FIELD_CAPTURE.set(false);FIELD_STOP_REASON.set("");FIELD_OWNER_SESSION.set("");
     }
 
     /** Requests graceful finalization on the next telemetry snapshot. */
