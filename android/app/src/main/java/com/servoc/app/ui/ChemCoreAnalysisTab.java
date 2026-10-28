@@ -104,7 +104,7 @@ public final class ChemCoreAnalysisTab {
         // Operational conditioning below is NOT a substitute for R0 calibration.
         ChemCoreLabQuality gate=ChemCoreLabQuality.evaluate(d,host.driveLeft(),host.driveRight());
         if(!gate.fingerprintNormalizationReady()){
-            status.setText("لا يمكن بدء جلسة ChemCore المضبوطة: يجب اعتماد R0 للثمانية حساسات من تبويب معايرة R0 أولاً. يمكن عرض الفحص الاستكشافي في القياسات.");
+            status.setText("لا يمكن بدء جلسة ChemCore المضبوطة: يجب اعتماد R0 للثمانية حساسات من الإعدادات ← معايرة R0 أولاً. يمكن عرض الفحص الاستكشافي في القياسات.");
             return;
         }
         if(!mqPowered(d)){pendingPowerStart=true;status.setText("جارٍ تشغيل مصفوفة MQ الثمانية ثم التحقق من الريلاي...");host.io().execute(()->{try{host.robotApi().mqPower(true);host.refreshAllTabs();}catch(Exception e){pendingPowerStart=false;host.showToast("تعذر تشغيل MQ: "+e.getMessage());}});render();return;}beginAfterPowerConfirmed(SystemClock.elapsedRealtime());
@@ -172,7 +172,7 @@ public final class ChemCoreAnalysisTab {
             ContentValues v=new ContentValues();
             v.put("ts",isoNow());
             v.put("payload",d==null?"{}":d.toString());
-            v.put("protocol","HazRob Tank V4 • controlled ChemCore deep analytical session • R0 "+campaign);
+            v.put("protocol","HazRob Tank "+com.servoc.app.ReleaseAudit.VERSION+" • controlled ChemCore deep analytical session • R0 "+campaign);
             v.put("analytics",a.toString());
             v.put("session_id",attachedSessionId);
             v.put("reference_kind","chemcore_controlled_analysis");
