@@ -19,7 +19,7 @@ public final class TankV4FieldSessionsAsyncAndExportContractTest {
         String code=src("ui/FieldSessionsTab.java");
         assertTrue(code.contains("host.io().execute(()->{"));
         assertTrue(code.contains("repo.verifySessionSchema()"));
-        assertTrue(code.contains("new SessionData(active,ss,id,children,approved,counts)"));
+        assertTrue(code.contains("new SessionData(active,ss,id,children,approved,counts,rows)"));
         assertTrue(code.contains("main.post(()->{"));
         assertTrue(code.contains("renderSessionUi(result)"));
         assertFalse(code.contains("void renderSessionUi(){"));
