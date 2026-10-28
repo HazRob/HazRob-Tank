@@ -1,3 +1,13 @@
+## 2026-10-28 — G2 CI trigger coverage for raw archives and canonical registry (233/233 CI)
+
+- Reviewed research HEAD `c83bfa559e5534fd206e4578b61a51fe3a678b21`, source catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records, 14 external datasets), independent evidence `records: []`, and pinned matrix 0/14 source-review ready.
+- Fixed a reproducibility gap in research G2 workflow path filters: raw archives (`research/g2/raw/**`), canonical 80-technique registry (`research/PROGRESS_80.json`) and pinned source matrix now trigger the G2 audit for push and pull requests. Evidence bundle path was already covered.
+- Added regression `test_raw_archive_registry_and_pinned_source_matrix_trigger_g2_ci`; code/workflow SHA `d6e1c1a15823affe419f12d1b52160a3f9fd711d`. [G2 Actions #40704942493](https://github.com/HazRob/HazRob-Tank/actions/runs/40704942493) job `122874400293`: **233/233 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. **21/21** associated workflow runs succeeded.
+- Documentation: `G2_CI_RAW_EVIDENCE_TRIGGER_COVERAGE_2026-10-28_AR.md`. Only research G2 workflow and research test changed; no Stable, Android or firmware modifications; no G2/G3 scientific promotion.
+- Next: recheck final documentation commit CI, then acquire physically independent, source-qualified raw gas exposures and traceable concentration references before considering G2 promotion.
+
+---
+
 ## 2026-10-28 — G2 RFC3986 unreserved percent-encoded URL source aliases (232/232 CI)
 
 - Resumed from research HEAD `5efbe572c6f091b37939b021e50d7a6b2416a3f1` (20/20 CI success), pinned central reference catalog Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries; 14 external datasets), independent evidence `records: []`, and pinned source matrix 0/14 review-ready.
