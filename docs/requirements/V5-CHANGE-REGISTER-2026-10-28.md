@@ -106,3 +106,14 @@
 | V5-006 | `IN_PROGRESS` — تنسيق العرض من مكتبة SHA المثبتة؛ نشر وتثبيت مكتبة V5 APK لم ينفذ بعد |
 
 **مرجع:** [V5-ALL-SCIENTIFIC-SOURCES-ACTIVATION-2026-10-28.md](../implementation/V5-ALL-SCIENTIFIC-SOURCES-ACTIVATION-2026-10-28.md).
+
+
+## تقدم الدفعة E — ربط كل دورة ببياناتها العلمية
+
+| البند | الحالة |
+| --- | --- |
+| V5-001 | `SOURCE_INTEGRATION_FIXED / DEVICE_PENDING` — معرّف الجلسة محجوز منذ الطلب، ومدة القياس تُحلل من 10+ دورات مسح فعلية على الأقل، والتقرير يشمل هذا القرار |
+| V5-002 | `SOURCE_INTEGRATION_FIXED / JUNIT_PENDING` — البصمة وPPM والتعرض التقديري تُخزن لكل جلسة وتصل للتقارير؛ بدون اعتماد مهني غير مُثبت |
+| V5-009 | `SOURCE_ONLY / DEVICE_PENDING` — سلوك إغلاق Activity والريلاي أُصلح كمصدر؛ اختبار أمان فعلي معلق |
+
+**دليل التغيير:** [V5-FIELD-SCIENCE-INTEGRATION-AUDIT-2026-10-28.md](../implementation/V5-FIELD-SCIENCE-INTEGRATION-AUDIT-2026-10-28.md). لا يعتبر مصدر `PASS` عوضًا عن اختبار تشغيل هاتف/ESP32.
