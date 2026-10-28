@@ -36,13 +36,15 @@ public final class SiteSummaryReportExporter {
         public final String outcome,topCandidate,evidenceTier;
         public final boolean hasAnalysis,ppmReportable;
         public final JSONObject analysis;
+        public final JSONObject hazardContext;
         public final double ppm,estimatedPpm;
-        CycleSummary(FieldCycleRepository.Cycle cycle,JSONObject analysis){
+        CycleSummary(ExperimentsDb db,FieldCycleRepository.Cycle cycle,JSONObject analysis){
             this.cycle=cycle;
             // Rejected, cancelled and deleted attempts never contribute to
             // site-level scientific recurrence or occupational conclusions.
             hasAnalysis=cycle.approved()&&analysis!=null;
             this.analysis=hasAnalysis?analysis:null;
+            hazardContext=hasAnalysis?CandidateHazardContext.evaluate(db,analysis):null;
             outcome=hasAnalysis?analysis.optString("outcome","—"):"—";
             topCandidate=hasAnalysis?analysis.optString("chemical","—"):"—";
             evidenceTier=hasAnalysis?analysis.optString("evidence_tier","—"):"—";
@@ -70,12 +72,39 @@ public final class SiteSummaryReportExporter {
             for(FieldCycleRepository.Cycle cycle:b.cycleLedger){
                 JSONObject result=cycle.approved()&&!cycle.measurementId.isEmpty()
                     ?decisions.latestPayloadForSession(cycle.measurementId):null;
-                temp.add(new CycleSummary(cycle,result));
+                temp.add(new CycleSummary(db,cycle,result));
             }
             cycles=Collections.unmodifiableList(temp);
         }
-        boolean critical(){return safetyGate&&((Double.isFinite(hazardPriority)&&hazardPriority>=100)||(Double.isFinite(percentLfl)&&percentLfl>=100));}
-        JSONObject priorityHazard(){JSONArray a=candidateHazards==null?null:candidateHazards.optJSONArray("candidates");if(a==null||a.length()==0)return null;JSONObject best=null;double score=-1;for(int i=0;i<a.length();i++){JSONObject q=a.optJSONObject(i);double s=hazardScore(q);if(q!=null&&(best==null||s>score)){best=q;score=s;}}return best;}
+        boolean critical(){
+            if(safetyGate&&((Double.isFinite(hazardPriority)&&hazardPriority>=100)||
+                (Double.isFinite(percentLfl)&&percentLfl>=100)))return true;
+            for(CycleSummary c:cycles){
+                JSONObject q=c.analysis;
+                JSONObject v=q==null?null:q.optJSONObject("gas_exposure_ppm");
+                if(v==null||!v.optBoolean("input_gate_passed",false))continue;
+                double h=v.optDouble("hazard_priority_percent",Double.NaN);
+                double l=v.optDouble("percent_lfl",Double.NaN);
+                if((Double.isFinite(h)&&h>=100)||(Double.isFinite(l)&&l>=100))return true;
+            }
+            return false;
+        }
+        JSONObject priorityHazard(){
+            JSONObject best=null;double score=-1;
+            List<JSONObject> contexts=new ArrayList<>();
+            if(candidateHazards!=null)contexts.add(candidateHazards);
+            for(CycleSummary cy:cycles)if(cy.hazardContext!=null)contexts.add(cy.hazardContext);
+            for(JSONObject context:contexts){
+                JSONArray a=context.optJSONArray("candidates");
+                if(a==null)continue;
+                for(int i=0;i<a.length();i++){
+                    JSONObject q=a.optJSONObject(i);
+                    double candidate=hazardScore(q);
+                    if(q!=null&&(best==null||candidate>score)){best=q;score=candidate;}
+                }
+            }
+            return best;
+        }
     }
 
     public static final class SiteBundle {
