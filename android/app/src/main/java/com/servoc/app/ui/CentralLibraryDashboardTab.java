@@ -106,15 +106,15 @@ public final class CentralLibraryDashboardTab {
                 "بصمة/دليل هوية — أي مستوى: "+fpAny+" ("+pct(fpAny,total)+")\n"+
                 "بصمة READY: "+fpReady+" ("+pct(fpReady,total)+")\n"+
                 "بيانات PPM/منحنى — تشمل Transfer: "+ppm+" ("+pct(ppm,total)+")\n"+
-                "HR069 M4 قابل للتقرير: "+m4+" ("+pct(m4,total)+")\n"+
+                "M4 مرجعي قابل للتقرير: "+m4+" ("+pct(m4,total)+")\n"+
                 "مواد لها حدود تعرض: "+exposure+" ("+pct(exposure,total)+")\n"+
                 "التجارب المعتمدة محليًا: "+host.database().approvedCount()+"\n"+
                 "المراجع المشتقة محليًا: "+host.database().referenceArtifactCount()+"\n"+
                 "كل منحنيات المعايرة المحلية: "+host.database().calibrationCurveCount()+"\n"+
                 "Evidence revision: "+blank(statusRepo.libraryRevision()));
 
-        String endpoint=BuildConfig.CHEMCORE_LIBRARY_MANIFEST_URL==null?"":BuildConfig.CHEMCORE_LIBRARY_MANIFEST_URL.trim();
-        distributionText.setText("المصدر المركزي للكتابة: HazRob/build-harness (private)\nقناة قراءة المستخدم: "+(endpoint.isEmpty()?"غير منشورة بعد — Fail closed":"GitHub • "+endpoint)+"\nالسياسة: GitHub-only • لا Render في مسار تحديث المكتبة • لا Token للمستخدم\nSampling profile: "+ChemCoreLibraryManager.REQUIRED_SAMPLING_PROFILE);
+        String endpoint=manager.manifestUrl()==null?"":manager.manifestUrl().trim();
+        distributionText.setText("مصدر التطوير العلمي المركزي: HazRob/build-harness (خاص)\nقناة تحديث المستخدم: "+(endpoint.isEmpty()?"غير مهيأة — Fail closed":"GitHub • "+endpoint)+"\nالسياسة: GitHub-only • لا Render في مسار تحديث المكتبة • لا Token للمستخدم\nSampling profile: "+ChemCoreLibraryManager.REQUIRED_SAMPLING_PROFILE);
         updateTelemetryText.setText(formatUpdateTelemetry(host.database().getMeta("chemcore_update_telemetry_json","")));
         platformText.setText(formatPlatforms(host.database().getMeta("hazrob_platform_metrics_json","")));
         changelogText.setText(formatChangelog(host.database().getMeta("chemcore_changelog_summary",""),s));
