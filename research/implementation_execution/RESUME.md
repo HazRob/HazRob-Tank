@@ -1,3 +1,13 @@
+## 2026-10-28 — G2 complete offline test discovery (254/254 CI)
+
+- Resumed from research HEAD `74d13c87fbe5c9b84fc9ea23cffa65bb79260681`; verified central `HazRob/build-harness` catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets), independent evidence `records: []`, and pinned source readiness 0/14.
+- Fixed incomplete G2 CI test coverage: previously only five named test modules ran; three existing offline modules (MQ-EXT-01 file/day, Zenodo archive verification, Mendeley MQ-EXT-14 source metadata) were omitted. Workflow now compiles all research G2 modules and discovers every `test_g2_*.py` automatically. Added two regression tests to protect coverage.
+- Workflow SHA `dac4b36415d4162a09a1213314747aa71f07cdc7`; test SHA `1608e7c0fc67a78b3ba03fafbbf92f7f749c9902`. [G2 Actions #40715630169](https://github.com/HazRob/HazRob-Tank/actions/runs/40715630169), job `122912402190`: **254/254 PASS** (19 previously omitted tests + 2 new tests), `g2_pass_candidates=0`, `g2_blocked=80`.
+- Evidence: `G2_COMPLETE_OFFLINE_TEST_DISCOVERY_2026-10-28_AR.md`. Changes only on research branch, no ChemCore Stable, app or firmware edits, no G2/G3 scientific promotion.
+- Next: recheck all CI workflows on documentation checkpoint; physically independent original gas exposures, traceable ppm references, device/session/exposure identifiers and locked grouped blind holdouts remain prerequisite to any G2 promotion.
+
+---
+
 ## 2026-10-28 — G2 CI trigger coverage for raw archives and canonical registry (233/233 CI)
 
 - Reviewed research HEAD `c83bfa559e5534fd206e4578b61a51fe3a678b21`, source catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records, 14 external datasets), independent evidence `records: []`, and pinned matrix 0/14 source-review ready.
