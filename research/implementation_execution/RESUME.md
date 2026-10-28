@@ -1,3 +1,13 @@
+## 2026-10-28 — G2 IPv6 literal/port identity collision fix (230/230 CI)
+
+- Rechecked research HEAD `d5ac5632959e94205c12e6334b467b3595503202`, central reference bank Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries, 14 external datasets), and independent G2 evidence register `records: []`. Pinned catalogue matrix remains 0/14 source-review ready; no `research/g2/raw/` directory is present in the branch.
+- Fixed a real IPv6 authority serialization collision: `https://[::1]:8080/data` and `https://[::1:8080]/data` previously normalized identically. Bracketed IPv6 host serialization now preserves distinct address+port identities and true default-port aliases.
+- Added one real-byte synthetic regression with recomputed SHA256 and a duplicate-class control. Code/test SHA `471350d4227d66bdead9b35bd049fb477f84bd0d`.
+- Verified [G2 Actions #40679098186](https://github.com/HazRob/HazRob-Tank/actions/runs/40679098186), job `122784922243`: **230/230 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`; **21/21** workflows succeeded on code/test SHA. Compared to previous HEAD, only two files in `research/implementation_execution/` changed.
+- Documentation: `G2_IPV6_LITERAL_PORT_IDENTITY_2026-10-28_AR.md`. No Stable, Android, or firmware edits, no G2/G3 scientific promotion. Recheck CI on this documentation commit. Independent physical raw exposure records, traceable reference ppm, and locked grouped holdouts are still missing.
+
+---
+
 ## 2026-10-28 — G2 generic source URL scheme identity (229/229 G2 CI)
 
 - Rechecked research HEAD `d1df93de574036581fa8b9ab22b7277735f27a87` (20/20 CI successful), pinned central source catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, independent evidence register `records: []`, and last pinned source matrix 0/14 review-ready.
