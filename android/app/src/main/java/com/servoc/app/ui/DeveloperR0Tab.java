@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/** HR069-R1: developer-owned local editable clean-air R0, deliberately separate from ChemCore Stable. */
+/** V5: user-owned R0 in Settings, deliberately separate from ChemCore Stable. */
 public final class DeveloperR0Tab {
     private final Context context;
     private final HazRobHost host;
@@ -31,7 +31,8 @@ public final class DeveloperR0Tab {
     private final EditText[] entry=new EditText[keys.length];
     private final TextView[] info=new TextView[keys.length];
     private final TextView summary,autoProgress;
-    private final Button autoStart,autoCancel;
+    private final Button autoStart,autoCancel,autoApprove,autoRetry;
+    private JSONObject pendingFirmwareResult;
     private final Handler clock=new Handler(Looper.getMainLooper());
     private boolean automaticActive=false;
     private volatile boolean disposed=false;
@@ -89,6 +90,12 @@ public final class DeveloperR0Tab {
         Button sync=UiKit.button(c,"استيراد آخر R0 محفوظة");
         sync.setOnClickListener(v->syncFirmwareCalibration());
         autoActions.addView(sync,UiKit.weight(1.4f));
+        autoApprove=UiKit.button(c,"اعتماد R0 في التطبيق");
+        autoApprove.setEnabled(false);autoApprove.setOnClickListener(v->acceptFirmwareResult());
+        autoActions.addView(autoApprove,UiKit.weight(1.3f));
+        autoRetry=UiKit.button(c,"إعادة المعايرة");
+        autoRetry.setEnabled(false);autoRetry.setOnClickListener(v->retryAutomatic());
+        autoActions.addView(autoRetry,UiKit.weight(1f));
         autoCancel=UiKit.button(c,"إلغاء");
         autoCancel.setEnabled(false);autoCancel.setOnClickListener(v->cancelAutomatic());
         autoActions.addView(autoCancel,UiKit.weight(.8f));
@@ -225,11 +232,12 @@ public final class DeveloperR0Tab {
     }
 
     private void startAutomatic(){
-        if(disposed||automaticActive||calibrationChangeBlocked())return;
+        if(disposed||automaticActive||pendingFirmwareResult!=null||calibrationChangeBlocked())return;
         // Lock manual edits immediately, BEFORE any asynchronous /relay or /r0 request.
         // Otherwise a manual R0 save can race the ESP32 warm-up/commit.
         automaticActive=true;
-        autoStart.setEnabled(false);autoCancel.setEnabled(true);
+        autoStart.setEnabled(false);autoApprove.setEnabled(false);
+        autoRetry.setEnabled(false);autoCancel.setEnabled(true);
         autoProgress.setText("جارٍ بدء معايرة ESP32...");
         host.io().execute(()->{
             boolean startRequested=false;
@@ -284,16 +292,22 @@ public final class DeveloperR0Tab {
         if(disposed||!automaticActive)return;
         if("ready".equals(p.state)){
             try{
-                Map<String,Double> values=FirmwareR0Contract.committedValues(response);
+                // Validate every channel before presenting the operator decision.
+                FirmwareR0Contract.committedValues(response);
                 String deviceId=response.optString("device_id","");
-                if(deviceId.isEmpty())throw new IllegalStateException("Missing ESP32 device identity");
-                if(!ManualR0Calibration.saveFirmware(host.preferences(),values,deviceId,p.counts))
-                    throw new IllegalStateException("Phone could not durably save firmware R0");
-                finishAutomatic("تمت مزامنة 8 قيم R0 المعتمدة من ESP32 • الجهاز: "+deviceId);
-                reloadFields();host.refreshAllTabs();
+                if(deviceId.trim().isEmpty())throw new IllegalStateException("Missing ESP32 device identity");
+                pendingFirmwareResult=new JSONObject(response.toString());
+                automaticActive=false;clock.removeCallbacks(autoTick);
+                scroll.setKeepScreenOn(false);
+                autoStart.setEnabled(false);autoApprove.setEnabled(true);
+                autoRetry.setEnabled(true);autoCancel.setEnabled(true);
+                autoProgress.setText(
+                    "اكتمل قياس R0 على ESP32، وثبتت القيم في ذاكرته حسب بروتوكول V4. "+
+                    "لم تُستورد إلى الهاتف بعد. اضغط «اعتماد R0 في التطبيق» لاستيرادها، "+
+                    "أو «إعادة المعايرة» لمحاولة جديدة. «إلغاء» لا يتراجع عن سجل NVS في ESP32.");
             }catch(Exception ex){
-                finishAutomatic("حُفظت R0 على الروبوت، لكن لم تُعتمد على الهاتف: "+
-                    ex.getMessage()+" • استخدم زر استيراد آخر R0 محفوظة لإعادة المحاولة");
+                pendingFirmwareResult=null;
+                finishAutomatic("البيانات النهائية لا تستوفي شروط اعتماد الهاتف: "+ex.getMessage());
             }
             return;
         }
@@ -314,6 +328,36 @@ public final class DeveloperR0Tab {
         clock.postDelayed(autoTick,1000);
     }
 
+    /** Explicit phone-side acceptance; V4 firmware already committed NVS at READY. */
+    private void acceptFirmwareResult(){
+        if(disposed||automaticActive||pendingFirmwareResult==null)return;
+        try{
+            JSONObject result=pendingFirmwareResult;
+            FirmwareR0Contract.Progress progress=FirmwareR0Contract.progress(result);
+            Map<String,Double> values=FirmwareR0Contract.committedValues(result);
+            String deviceId=result.optString("device_id","").trim();
+            if(deviceId.isEmpty())throw new IllegalStateException("Missing device identity");
+            if(!ManualR0Calibration.saveFirmware(host.preferences(),values,deviceId,progress.counts))
+                throw new IllegalStateException("Cannot durably save phone calibration");
+            pendingFirmwareResult=null;
+            autoApprove.setEnabled(false);autoRetry.setEnabled(false);autoCancel.setEnabled(false);
+            finishAutomatic("تم اعتماد واستيراد 8 قيم R0 في التطبيق • الجهاز: "+deviceId+
+                " • نسخة ESP32 كانت محفوظة مسبقًا");
+            reloadFields();host.refreshAllTabs();
+        }catch(Exception ex){
+            autoProgress.setText("تعذر اعتماد R0 على الهاتف: "+ex.getMessage()+
+                " • بقيت النتائج متاحة للمراجعة أو الإعادة.");
+        }
+    }
+
+    private void retryAutomatic(){
+        if(disposed||automaticActive||pendingFirmwareResult==null)return;
+        pendingFirmwareResult=null;
+        autoApprove.setEnabled(false);autoRetry.setEnabled(false);autoCancel.setEnabled(false);
+        autoStart.setEnabled(true);
+        startAutomatic();
+    }
+
     private void finishAutomatic(String message){
         automaticActive=false;
         clock.removeCallbacks(autoTick);
@@ -323,7 +367,16 @@ public final class DeveloperR0Tab {
     }
 
     private void cancelAutomatic(){
-        if(!automaticActive||disposed)return;
+        if(disposed)return;
+        if(pendingFirmwareResult!=null){
+            // Cancellation here discards the PHONE import, NOT firmware NVS.
+            pendingFirmwareResult=null;
+            autoApprove.setEnabled(false);autoRetry.setEnabled(false);
+            finishAutomatic("أُلغي اعتماد الهاتف لهذه القراءة. لا يمكن لهذا الزر إلغاء R0 "+
+                "المحفوظة بالفعل في ESP32؛ يمكن استيرادها لاحقاً أو إعادة المعايرة.");
+            return;
+        }
+        if(!automaticActive)return;
         autoCancel.setEnabled(false);
         autoProgress.setText("جارٍ إرسال إلغاء المعايرة إلى ESP32...");
         host.io().execute(()->{
