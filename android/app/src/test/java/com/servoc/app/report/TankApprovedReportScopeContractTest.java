@@ -21,7 +21,9 @@ public final class TankApprovedReportScopeContractTest {
     @Test public void sessionApprovalRequiresReadyTerminalCapture() throws Exception{
         String s=new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/field/FieldSessionRepository.java")),StandardCharsets.UTF_8);
         assertTrue(s.contains("FieldSessionApprovalPolicy.completedSuccessfully"));
-        assertTrue(s.contains("if(complete!=1)return false"));
+        assertTrue(s.contains("if(complete<1)return false"));
+        assertTrue(s.contains("FieldCycleRepository.APPROVED.equals(cycleState)"));
+        assertTrue(s.contains("FieldCycleRepository.SUPERSEDED.equals(cycleState)"));
         assertTrue(s.contains("SELECT 1 FROM telemetry_samples"));
     }
 }
