@@ -4,6 +4,7 @@ Reads only the already-audited research outputs. Never upgrades a technique,
 infers physical independence, or turns a bibliography into ppm calibration.
 """
 import argparse
+import hashlib
 from collections import Counter
 import json
 import math
@@ -67,6 +68,11 @@ def read_json(path):
                       parse_int=_finite_integer)
 
 
+def _sha256_file(path):
+    """Digest the exact on-disk input bytes, not reserialized JSON objects."""
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
 def build_triage(audit_path, source_matrix_path,
                  ledger_path=DEFAULT_LEDGER, evidence_path=DEFAULT_EVIDENCE):
     """Recompute the 80-technique gate from controlling evidence before triage.
@@ -75,6 +81,17 @@ def build_triage(audit_path, source_matrix_path,
     report must match a fresh replay of the execution ledger and independent
     evidence register, including the pinned 14-source reconciliation.
     """
+    # Preserve byte-level lineage for all controlling inputs, including the
+    # canonical 80-ID registry. A valid replay without input digests is not
+    # sufficient to identify which exact evidence bytes produced an artifact.
+    inputs = {
+        "audit": audit_path,
+        "source_matrix": source_matrix_path,
+        "ledger": ledger_path,
+        "independent_evidence": evidence_path,
+        "canonical_registry": CANONICAL_REGISTRY,
+    }
+    before = {key: _sha256_file(path) for key, path in inputs.items()}
     source_matrix = load_pinned_source_matrix(source_matrix_path)
     audit = read_json(audit_path)
     ledger, evidence = load_g2_inputs(ledger_path, evidence_path)
@@ -92,7 +109,12 @@ def build_triage(audit_path, source_matrix_path,
     }
     if audit != expected:
         raise ValueError("G2_TRIAGE_AUDIT_REPLAY_MISMATCH")
-    return make_triage(audit, read_json(source_matrix_path))
+    result = make_triage(audit, read_json(source_matrix_path))
+    after = {key: _sha256_file(path) for key, path in inputs.items()}
+    if before != after:
+        raise ValueError("G2_TRIAGE_INPUT_MUTATED_DURING_REPLAY")
+    result["input_sha256"] = dict(sorted(after.items()))
+    return result
 
 
 def make_triage(audit, matrix):

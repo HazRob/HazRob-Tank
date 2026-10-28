@@ -1,9 +1,13 @@
 """Reproducibility and fail-closed tests for G2 acquisition triage."""
 import copy
+import hashlib
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
+
+import g2_acquisition_triage as triage_module
 
 from g2_acquisition_triage import (CANONICAL_REGISTRY, DEFAULT_EVIDENCE,
                                    DEFAULT_LEDGER, PINNED_MATRIX,
@@ -123,6 +127,75 @@ class AcquisitionTriageTests(unittest.TestCase):
                     path.write_text(json.dumps(forged), encoding="utf-8")
                     with self.assertRaisesRegex(ValueError, "G2_TRIAGE_AUDIT_REPLAY_MISMATCH"):
                         build_triage(path, PINNED_MATRIX)
+
+    def test_cli_pins_exact_replayed_input_bytes(self):
+        ledger, evidence = load_g2_inputs(DEFAULT_LEDGER, DEFAULT_EVIDENCE)
+        ids = [item["id"] for item in ledger["work_items"]]
+        rows = reconcile_catalog_source_evidence(
+            audit_all(ids, evidence["records"]), evidence["records"],
+            load_pinned_source_matrix(PINNED_MATRIX))
+        authentic = {
+            "schema": "hazrob.g2.audit.v1",
+            "scope": "new V4 independent source qualification",
+            "g2_blocked": sum(row["status"] == "G2_BLOCKED" for row in rows),
+            "g2_pass_candidates": sum(row["status"].startswith("G2_PASS") for row in rows),
+            "records": rows,
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            audit_path = Path(temp) / "audit.json"
+            audit_path.write_text(json.dumps(authentic), encoding="utf-8")
+            inputs = {
+                "audit": audit_path, "source_matrix": PINNED_MATRIX,
+                "ledger": DEFAULT_LEDGER, "independent_evidence": DEFAULT_EVIDENCE,
+                "canonical_registry": CANONICAL_REGISTRY,
+            }
+            first = build_triage(audit_path, PINNED_MATRIX)
+            self.assertEqual(first["input_sha256"], {
+                key: hashlib.sha256(path.read_bytes()).hexdigest()
+                for key, path in sorted(inputs.items())
+            })
+            self.assertEqual(first["g2_blocked"], 80)
+            self.assertEqual(first["g2_pass_candidates_requiring_review"], 0)
+            audit_path.write_text(audit_path.read_text(encoding="utf-8") + "\\n",
+                                  encoding="utf-8")
+            second = build_triage(audit_path, PINNED_MATRIX)
+            self.assertNotEqual(first["input_sha256"]["audit"],
+                                second["input_sha256"]["audit"])
+            for key in inputs:
+                if key != "audit":
+                    self.assertEqual(first["input_sha256"][key],
+                                     second["input_sha256"][key])
+            self.assertEqual(first["techniques"], second["techniques"])
+
+    def test_cli_rejects_input_changed_during_replay(self):
+        ledger, evidence = load_g2_inputs(DEFAULT_LEDGER, DEFAULT_EVIDENCE)
+        ids = [item["id"] for item in ledger["work_items"]]
+        rows = reconcile_catalog_source_evidence(
+            audit_all(ids, evidence["records"]), evidence["records"],
+            load_pinned_source_matrix(PINNED_MATRIX))
+        authentic = {
+            "schema": "hazrob.g2.audit.v1",
+            "scope": "new V4 independent source qualification",
+            "g2_blocked": sum(row["status"] == "G2_BLOCKED" for row in rows),
+            "g2_pass_candidates": sum(row["status"].startswith("G2_PASS") for row in rows),
+            "records": rows,
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            audit_path = Path(temp) / "audit.json"
+            audit_path.write_text(json.dumps(authentic), encoding="utf-8")
+            original_loader = triage_module.load_g2_inputs
+
+            def mutate_after_input_read(*args):
+                result = original_loader(*args)
+                audit_path.write_text(audit_path.read_text(encoding="utf-8") + " ",
+                                      encoding="utf-8")
+                return result
+
+            with patch.object(triage_module, "load_g2_inputs",
+                              side_effect=mutate_after_input_read):
+                with self.assertRaisesRegex(
+                        ValueError, "G2_TRIAGE_INPUT_MUTATED_DURING_REPLAY"):
+                    build_triage(audit_path, PINNED_MATRIX)
 
     def test_nonfinite_or_overflow_json_numbers_are_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
