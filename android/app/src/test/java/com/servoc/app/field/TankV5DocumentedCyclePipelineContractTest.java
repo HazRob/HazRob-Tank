@@ -15,7 +15,7 @@ public final class TankV5DocumentedCyclePipelineContractTest {
     @Test public void operatorOwnsOneFieldCaptureAndItsTimer()throws Exception{
         String registry=src("measurement/MeasurementSessionRegistry.java");
         String controller=src("measurement/FieldCycleController.java");
-        assertTrue(registry.contains("requestFieldCapture()"));
+        assertTrue(registry.contains("requestFieldCapture(String fieldSessionId)"));
         assertTrue(registry.contains("requestFieldStop(String reason)"));
         assertTrue(registry.contains("FIELD_CAPTURE.compareAndSet(false,true)"));
         assertTrue(controller.contains("WARMUP_MS=60000L,SAMPLING_MS=60000L"));
@@ -35,8 +35,8 @@ public final class TankV5DocumentedCyclePipelineContractTest {
         assertTrue(recorder.contains("fieldForced=MeasurementSessionRegistry.fieldCaptureRequested()"));
         assertTrue(recorder.contains("field_60s_cycle"));
         assertTrue(recorder.contains("instant_mq_cycle"));
-        assertTrue(recorder.contains("fieldSessions.linkMeasurement(active.id,sessionId)"));
-        assertTrue(recorder.contains("if(active==null||!fieldSessions.linkMeasurement"));
+        assertTrue(recorder.contains("fieldSessions.linkMeasurement(owner,sessionId)"));
+        assertTrue(recorder.contains("if(owner.isEmpty()||!fieldSessions.linkMeasurement"));
         assertTrue(recorder.contains("meta.put(\"field_60s_capture\",fieldCaptureSession)"));
         assertTrue(policy.contains("isDocumentedFieldCapture(analyticsJson)"));
         assertTrue(policy.contains("fieldDurationAndSamplesValid(analyticsJson)"));
