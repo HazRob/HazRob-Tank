@@ -137,7 +137,7 @@ public final class TelemetryRecorder {
         if(!wasChemCore&&"ready".equalsIgnoreCase(state)){
             try{
                 long duration=Math.max(0,endedMonotonic-startedElapsed);
-                CompletedSessionChemCoreAnalyzer.Outcome analysis=CompletedSessionChemCoreAnalyzer.analyzeAndPersist(appContext,db,completed,snapshot,duration);
+                CompletedSessionChemCoreAnalyzer.Outcome analysis=CompletedSessionChemCoreAnalyzer.analyzeAndPersist(appContext,db,completed,snapshot,duration,fieldCaptureSession);
                 db.putMeta("last_chemcore_screening_session_id",completed);
                 db.putMeta("last_chemcore_screening_candidate_count",Integer.toString(analysis.candidateCount));
                 db.putMeta("last_chemcore_screening_observed_channels",Integer.toString(analysis.observedChannels));
