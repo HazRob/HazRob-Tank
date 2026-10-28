@@ -227,13 +227,14 @@ void measureUpdate(){if(stage!=MEASURE)return;uint32_t n=millis();measureElapsed
 
 // Time-window R0 collection; one mean per sensor, no early sample-count stop.
 constexpr float cleanAir[Cfg::MQ_N]={9.83f,4.4f,6.5f,70.0f,60.0f,27.5f,9.6f,3.6f};
-enum CalState:uint8_t{CAL_IDLE,CAL_WARM,CAL_SAMPLE,CAL_READY,CAL_ERROR,CAL_CANCEL};
+enum CalState:uint8_t{CAL_IDLE,CAL_WARM,CAL_SAMPLE,CAL_READY,CAL_ERROR,CAL_CANCEL,CAL_PENDING};
 CalState calState=CAL_IDLE;
 uint32_t calAt=0,calLastCycle=0,calWarmMs=300000,calWindowMs=60000;
 double calSum[Cfg::MQ_N]={};
 uint32_t calCount[Cfg::MQ_N]={};
 const char* calError="";
 struct R0Record{uint32_t magic;float values[Cfg::MQ_N];uint32_t counts[Cfg::MQ_N];uint32_t checksum;};
+R0Record pendingR0={};bool pendingR0Valid=false;
 constexpr uint32_t R0_MAGIC=0x52305634UL;
 uint32_t r0Checksum(const R0Record& rec){
  const uint8_t* p=(const uint8_t*)&rec;uint32_t h=2166136261UL;
@@ -271,12 +272,9 @@ void calibrationUpdate(){
  }
  if(!complete){calState=CAL_ERROR;calError="insufficient_or_invalid_samples";return;}
  rec.checksum=r0Checksum(rec);
- if(!saveR0Record(rec)){calState=CAL_ERROR;calError="nvs_write_failed";return;}
- R0Record verified={};
- if(!loadR0Record(verified)||verified.checksum!=rec.checksum){calState=CAL_ERROR;calError="nvs_verify_failed";return;}
- for(uint8_t i=0;i<Cfg::MQ_N;i++){activeR0[i]=rec.values[i];r0Samples[i]=(uint16_t)min(rec.counts[i],(uint32_t)UINT16_MAX);}
-
- calState=CAL_READY;
+ // V5: calculations stay in volatile RAM until the user approves.
+ pendingR0=rec;pendingR0Valid=true;
+ calState=CAL_PENDING;
 }
 
 /* link health: diagnostic only; it never changes drive, measurement or MQ power */
@@ -298,8 +296,8 @@ String measurementJson(){uint16_t remaining=stage==MEASURE&&settings.measure>mea
 void hwBegin(){loadSettings();Alerts::begin();pinMode(Cfg::RELAY_MQ,OUTPUT);relayRaw(false);pinMode(Cfg::LDR_PIN,INPUT);pinMode(Cfg::SOUND_PIN,INPUT);pinMode(Cfg::BATTERY_PIN,INPUT);pinMode(Cfg::ULTRA_TRIG_PIN,OUTPUT);digitalWrite(Cfg::ULTRA_TRIG_PIN,LOW);pinMode(Cfg::ULTRA_ECHO_PIN,INPUT);attachInterrupt(digitalPinToInterrupt(Cfg::ULTRA_ECHO_PIN),ultraEchoIsr,CHANGE);analogReadResolution(12);analogSetPinAttenuation(Cfg::SOUND_PIN,ADC_11db);analogSetPinAttenuation(Cfg::BATTERY_PIN,ADC_11db);for(auto &s:tracks){if(servoPwmBegin(s)){servoWrite(s);}else{pinMode(s.pin,OUTPUT);digitalWrite(s.pin,LOW);}}cmdAt=driveAt=energyAt=millis();Wire.begin(Cfg::SDA,Cfg::SCL);Wire.setClock(Cfg::ADS_I2C_HZ);EnvWire.begin(Cfg::ENV_SDA,Cfg::ENV_SCL);EnvWire.setClock(Cfg::ENV_I2C_HZ);EnvWire.setTimeOut(25);adsBegin(0);adsBegin(1);adsHealthAt=millis();envBegin();}
 void hwUpdate(){driveUpdate();energyUpdate();adsHealthUpdate();mqUpdate();calibrationUpdate();envUpdate();soundUpdate();ldrUpdate();batteryUpdate();ultraUpdate();measureUpdate();Alerts::update();}
 void driveSet(int l,int r){if(transportLost){motionStopImmediate();staleStop=true;return;}targetL=lim(l);targetR=lim(r);cmdAt=millis();staleStop=false;}
-void motionStop(){motionStopInternal();}void emergencyStop(){motionStopImmediate();resetMeasurement();calState=CAL_CANCEL;relayRaw(false);Alerts::emergencyStop();}
-bool relaySetMask(uint8_t on){if(on>1)return false;if(!on&&(calState==CAL_WARM||calState==CAL_SAMPLE))calState=CAL_CANCEL;if(stage==MEASURE||stage==WARM)resetMeasurement();relayRaw(on);return true;}void sensorPowerOff(){resetMeasurement();calState=CAL_CANCEL;relayRaw(false);}
+void motionStop(){motionStopInternal();}void emergencyStop(){motionStopImmediate();resetMeasurement();calibrationCancel();relayRaw(false);Alerts::emergencyStop();}
+bool relaySetMask(uint8_t on){if(on>1)return false;if(!on&&(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_PENDING))calibrationCancel();if(stage==MEASURE||stage==WARM)resetMeasurement();relayRaw(on);return true;}void sensorPowerOff(){resetMeasurement();calibrationCancel();relayRaw(false);}
 bool measureStart(){if(calState==CAL_WARM||calState==CAL_SAMPLE)return false;clearSums();measureError=ME_NONE;measureElapsedSec=0;measurePower=mqPowerOn;stageAt=sampleAt=millis();if(!measurePower){measureError=ME_POWER_OFF;stage=ERROR;return false;}if(!ads1ok&&!ads2ok){measureError=ME_ADS_MISSING;stage=ERROR;return false;}stage=MEASURE;return true;}void measureCancel(){resetMeasurement();Alerts::setGas(0);}
 bool alertSet(uint8_t s,uint32_t ttl){if(s>2)return false;Alerts::setGas(s,ttl);return true;}void alertTest(){Alerts::test();}
 void linkHeartbeat(){linkArmed=true;linkAt=millis();transportLost=false;Alerts::setLink(false);}void transportLinkState(bool lost){if(lost&&linkArmed){if(!transportLost){transportLost=true;motionStopImmediate();staleStop=true;}}else if(!lost)transportLost=false;}
@@ -314,24 +312,46 @@ bool calibrationStart(uint16_t warmSeconds,uint16_t sampleSeconds){
  if(!ads1ok||!ads2ok)return false;
  calWarmMs=(uint32_t)warmSeconds*1000UL;calWindowMs=(uint32_t)sampleSeconds*1000UL;
  memset(calSum,0,sizeof(calSum));memset(calCount,0,sizeof(calCount));
+ pendingR0=R0Record();pendingR0Valid=false;
  calError="";calAt=millis();calLastCycle=mqScanCycle;calState=CAL_WARM;return true;
 }
-void calibrationCancel(){calState=CAL_CANCEL;}
+void calibrationCancel(){pendingR0Valid=false;pendingR0=R0Record();calState=CAL_CANCEL;}
+bool calibrationAccept(){
+ if(calState!=CAL_PENDING||!pendingR0Valid)return false;
+ R0Record candidate=pendingR0;
+ if(candidate.magic!=R0_MAGIC||candidate.checksum!=r0Checksum(candidate))return false;
+ for(uint8_t i=0;i<Cfg::MQ_N;i++)
+  if(candidate.counts[i]<10||!ff(candidate.values[i])||candidate.values[i]<=0)return false;
+ if(!saveR0Record(candidate)){calError="nvs_write_failed";return false;}
+ R0Record verified={};
+ if(!loadR0Record(verified)||verified.checksum!=candidate.checksum){
+  calError="nvs_verify_failed";return false;
+ }
+ for(uint8_t i=0;i<Cfg::MQ_N;i++){
+  activeR0[i]=candidate.values[i];
+  r0Samples[i]=(uint16_t)min(candidate.counts[i],(uint32_t)UINT16_MAX);
+ }
+ pendingR0Valid=false;pendingR0=R0Record();calError="";calState=CAL_READY;
+ return true;
+}
 String calibrationJson(){
- const char* names[]={"idle","warmup","sampling","ready","error","cancelled"};
+ const char* names[]={"idle","warmup","sampling","ready","error","cancelled","pending"};
  R0Record stored={};
  bool storedOK=loadR0Record(stored);
+ bool pending=calState==CAL_PENDING&&pendingR0Valid;
  bool committed=storedOK&&(calState==CAL_READY||calState==CAL_IDLE);
  const char* reported=committed?"ready":names[(uint8_t)calState];
  uint32_t elapsed=(calState==CAL_WARM||calState==CAL_SAMPLE)?millis()-calAt:0;
  String j="{\"device_id\":\""+WiFi.softAPmacAddress()+"\",\"state\":\""+String(reported)+"\",\"committed\":"+
-   (committed?"true":"false")+",\"schema\":\"tank-r0-fw-v4/1\",\"warmup_ms\":"+String(calWarmMs)+
+   (committed?"true":"false")+",\"pending\":"+(pending?"true":"false")+
+   ",\"schema\":\"tank-r0-fw-v5/2\",\"warmup_ms\":"+String(calWarmMs)+
    ",\"error\":\""+String(calError)+"\",\"elapsed_ms\":"+String(elapsed)+
    ",\"duration_ms\":"+String(calWindowMs)+",\"channels\":{";
  for(uint8_t i=0;i<Cfg::MQ_N;i++){
   if(i)j+=",";
-  uint32_t count=committed?stored.counts[i]:calCount[i];
-  float value=committed?stored.values[i]:(calCount[i]?(float)(calSum[i]/calCount[i]/cleanAir[i]):NAN);
+  uint32_t count=pending?pendingR0.counts[i]:(committed?stored.counts[i]:calCount[i]);
+  float value=pending?pendingR0.values[i]:(committed?stored.values[i]:
+    (calCount[i]?(float)(calSum[i]/calCount[i]/cleanAir[i]):NAN));
   j+="\""+String(Cfg::mq[i].name)+"\":{\"samples\":"+String(count)+",\"r0\":"+num(value,7)+"}";
  }
  return j+"}}";
