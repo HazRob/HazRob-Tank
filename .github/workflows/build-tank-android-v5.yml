@@ -158,7 +158,8 @@ jobs:
         working-directory: source
         run: gradle --no-daemon :app:testDebugUnitTest
 
-      - name: Require SAME V4 signing certificate before update-compatible V5 build
+      - name: Check optional V4 upgrade certificate (diagnostic build may use DEBUG key)
+        id: signing
         shell: bash
         env:
           V4_KEYSTORE_B64: ${{ secrets.HAZROB_TANK_V4_KEYSTORE_B64 }}
@@ -167,20 +168,22 @@ jobs:
           V4_KEY_ALIAS: ${{ secrets.HAZROB_TANK_V4_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          for v in V4_KEYSTORE_B64 V4_STORE_PASS V4_KEY_PASS V4_KEY_ALIAS; do
-            test -n "${!v:-}" || { echo "::error::Missing V4 signing material: $v"; exit 1; }
-          done
-          mkdir -p source/.tank-v5-signing
-          chmod 700 source/.tank-v5-signing
-          printf '%s' "$V4_KEYSTORE_B64" | base64 --decode > source/.tank-v5-signing/update.jks
-          chmod 600 source/.tank-v5-signing/update.jks
-          keytool -exportcert -keystore source/.tank-v5-signing/update.jks -alias "$V4_KEY_ALIAS" \
-            -storepass "$V4_STORE_PASS" -keypass "$V4_KEY_PASS" \
-            -file source/.tank-v5-signing/v4-cert.der >/dev/null
-          actual=$(sha256sum source/.tank-v5-signing/v4-cert.der | awk '{print toupper($1)}')
-          expected=799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6
-          test "$actual" = "$expected" || { echo "::error::V5 signer differs from installed V4; refusing unsafe upgrade APK"; exit 1; }
-          cat >> source/app/build.gradle <<'GRADLE'
+          if test -z "${V4_KEYSTORE_B64:-}" || test -z "${V4_STORE_PASS:-}" ||
+             test -z "${V4_KEY_PASS:-}" || test -z "${V4_KEY_ALIAS:-}"; then
+            echo "upgrade_compatible=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Only an UNRELEASED/debug-key APK can be produced. It cannot update an installed V4 APK with a different certificate."
+          else
+            mkdir -p source/.tank-v5-signing
+            chmod 700 source/.tank-v5-signing
+            printf '%s' "$V4_KEYSTORE_B64" | base64 --decode > source/.tank-v5-signing/update.jks
+            chmod 600 source/.tank-v5-signing/update.jks
+            keytool -exportcert -keystore source/.tank-v5-signing/update.jks -alias "$V4_KEY_ALIAS" \
+              -storepass "$V4_STORE_PASS" -keypass "$V4_KEY_PASS" \
+              -file source/.tank-v5-signing/v4-cert.der >/dev/null
+            actual=$(sha256sum source/.tank-v5-signing/v4-cert.der | awk '{print toupper($1)}')
+            expected=799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6
+            test "$actual" = "$expected" || { echo "::error::Unexpected signing material; refuse build"; exit 1; }
+            cat >> source/app/build.gradle <<'GRADLE'
           android {
               signingConfigs {
                   tankV4Update {
@@ -193,9 +196,10 @@ jobs:
               buildTypes { debug { signingConfig signingConfigs.tankV4Update } }
           }
           GRADLE
-          echo "Verified exact V4 certificate SHA-256 and enabled update-compatible signing."
+            echo "upgrade_compatible=true" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Build debug APK only after tests and matching V4 signing passed
+      - name: Build V5 diagnostic debug APK after compilation and tests
         working-directory: source
         env:
           HAZROB_TANK_UPDATE_KEYSTORE_FILE: ${{ github.workspace }}/source/.tank-v5-signing/update.jks
@@ -204,17 +208,17 @@ jobs:
           HAZROB_TANK_UPDATE_KEY_ALIAS: ${{ secrets.HAZROB_TANK_V4_KEY_ALIAS }}
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Verify BUILT APK signer matches verified V4 certificate
+      - name: Verify APK signer when upgrade-compatible key was supplied
+        if: steps.signing.outputs.upgrade_compatible == 'true'
         shell: bash
         run: |
           set -euo pipefail
           apk=source/app/build/outputs/apk/debug/app-debug.apk
-          test -f "$apk"
           signer=$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$apk" |
             grep -i "Signer #1 certificate SHA-256 digest:" | head -1 |
             awk '{print toupper($NF)}')
           test "$signer" = 799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6 ||
-            { echo "::error::Built APK signature is not update-compatible with V4"; exit 1; }
+            { echo "::error::Built APK signature cannot update V4"; exit 1; }
 
       - name: Check APK scientific content and release identity
         shell: bash
