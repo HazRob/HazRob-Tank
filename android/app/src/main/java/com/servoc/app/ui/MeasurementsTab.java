@@ -123,7 +123,7 @@ public final class MeasurementsTab {
         analysisShell=UiKit.vbox(c);
         LinearLayout sections=UiKit.hbox(c);
         String[] sectionNames={"⏱ القياس الآني","🧪 ChemCore والمرشحون"};
-        for(int i=0;i<3;i++){
+        for(int i=0;i<analysisTabs.length;i++){
             final int index=i;analysisTabs[i]=UiKit.button(c,sectionNames[i]);
             analysisTabs[i].setTextSize(11);
             analysisTabs[i].setOnClickListener(v->showAnalysisSection(index));
