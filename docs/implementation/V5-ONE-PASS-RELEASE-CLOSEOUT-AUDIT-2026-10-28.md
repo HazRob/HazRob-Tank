@@ -47,3 +47,19 @@
 ارجع إلى هذا الملف ثم `V5-RESUME-CHECKPOINT-2026-10-28.md`، وافحص HEAD الفعلي. لا تُعد أي علامة `SOURCE`/Python fixture بديلًا عن `DEVICE_PASS` أو `APK_VERIFIED`. صفة الإصدار الصحيحة حاليًا:
 
 `V5_SOURCE_INTEGRATION_ADVANCED / REAL_STABLE_NUMERICAL_49_49_PASS / SQLITE_FIXTURE_PASS / JUNIT_NOT_RUN / ESP32_NOT_TESTED / APK_NOT_BUILT`.
+
+
+## 5. تدقيق توقيع APK V4 الفعلي — شرط جديد مثبت بالبايتات
+
+جرى تحليل **APK Signing Block V2** في الملف الأصلي `HazRob-Tank-V4-debug.apk` الموجود في ملفات المحادثة، واستخراج شهادة X.509 مباشرة من كتلة signer. وثقت القراءة:
+
+- Subject: `C=US,O=Android,CN=Android Debug`.
+- توقيع الشهادة DER SHA-256: `799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6`.
+- شهادة تصدر `2026-10-27 17:39:47 UTC` وتنتهي `2056-10-19 17:39:47 UTC`.
+- أظهر الفحص أن إنشاء keystore Debug جديد لكل build في runner لا يمكن افتراض توافقه مع V4 الفعلي. ولذلك **لا يجوز تقديم V5 بملف Debug جديد على أنه ترقية تحافظ على بيانات V4**.
+
+عدّلنا `.github/workflows/build-tank-android-v5.yml` بحيث ينفذ JUnit أولًا ثم **يرفض بناء APK** إذا لم تتوافر Secrets الخاصة بمفتاح V4 الأصلي `HAZROB_TANK_V4_KEYSTORE_B64` وبياناته، أو لم تطابق الشهادة المستخرجة منه SHA أعلاه، ويعيد التحقق بواسطة `apksigner` من توقيع APK المخرَج قبل رفع artifact.
+
+وجود البصمة لا يمكّننا من إنشاء المفتاح الخاص؛ يجب توفير المفتاح الأصلي من الجهة التي بنت V4. إن تعذر الحصول عليه، فلا توجد ترقية in-place مضمونة، ويجب عدم الادعاء بإمكانية الحفاظ على بيانات المستخدم عبر إزالة التطبيق وإعادة التثبيت.
+
+**حالة فحص توقيع V4:** `CERTIFICATE_EXTRACTED_AND_SHA256_VERIFIED`؛ **حالة توقيع V5:** `KEY_MISSING / NO_APK`. لا bypass لهذا الشرط دون تغيير رسمي في سياسة الترقية والأرشفة.
