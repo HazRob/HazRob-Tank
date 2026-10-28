@@ -1,6 +1,8 @@
 package com.servoc.app.chemcore;
 
+import android.content.Context;
 import com.servoc.app.calibration.AcceptedR0Normalizer;
+import com.servoc.app.chemcore.library.ChemCoreLibraryStore;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.hardware.HazRobHardwareProfile;
 
@@ -19,7 +21,7 @@ import java.util.Map;
  * identity or reportable ppm merely because the MQ array responded strongly.
  */
 public final class CompletedSessionChemCoreAnalyzer {
-    public static final String MODEL_VERSION="chemcore-completed-session-screening/1";
+    public static final String MODEL_VERSION="chemcore-completed-session-screening/2-stable";
     private CompletedSessionChemCoreAnalyzer(){}
 
     public static final class Outcome {
@@ -34,6 +36,11 @@ public final class CompletedSessionChemCoreAnalyzer {
 
     /** Analyze and persist a completed firmware measurement session. */
     public static Outcome analyzeAndPersist(ExperimentsDb db,String sessionId,JSONObject terminalSnapshot,long tMs){
+        return analyzeAndPersist(null,db,sessionId,terminalSnapshot,tMs);
+    }
+    /** Use the installed, SHA-verified Stable payload if Android context is available. */
+    public static Outcome analyzeAndPersist(Context appContext,ExperimentsDb db,String sessionId,
+                                            JSONObject terminalSnapshot,long tMs){
         if(db==null||sessionId==null||sessionId.trim().isEmpty()||terminalSnapshot==null)
             return new Outcome(-1,0,0,null);
         String id=sessionId.trim();
@@ -59,16 +66,32 @@ public final class CompletedSessionChemCoreAnalyzer {
         }
 
         SamplingProfile profile=SamplingProfile.hazRobStandardChamberV2();
-        ChemCoreInferenceEngine.Context context=new ChemCoreInferenceEngine.Context(
-                id,profile.profileId,MODEL_VERSION,temperature,rh,null,false);
-        List<InverseMolecularSolver.Candidate> library=ChemCoreLegacyCandidateRegistry.acceptedReferenceCandidates();
-        ChemCoreResultEnvelope result=ChemCoreInferenceEngine.analyze(ratios,library,profile,context);
+        TankStableScreeningModelRegistry.LoadResult loaded=
+            TankStableRuntimeCatalog.responseModels(appContext,db);
+        String modelVersion=MODEL_VERSION+
+            (loaded.status.startsWith("ACTIVE_STABLE")?":"+loaded.version:":builtin");
+        ChemCoreInferenceEngine.Context inferenceContext=new ChemCoreInferenceEngine.Context(
+                id,profile.profileId,modelVersion,temperature,rh,null,false);
+        List<InverseMolecularSolver.Candidate> library=loaded.candidates;
+        ChemCoreResultEnvelope result=ChemCoreInferenceEngine.analyze(
+            ratios,library,profile,inferenceContext);
+        if(loaded.status.startsWith("ACTIVE_STABLE")&&appContext!=null){
+            ChemCoreLibraryStore store=new ChemCoreLibraryStore(appContext.getApplicationContext());
+            result=result.withLibraryProvenance(loaded.version,loaded.sha256,store.activeSourceCommit());
+        }
 
         try{
             JSONObject quality=new JSONObject();quality.put("state","FIELD_SCREENING");
             quality.put("valid_mq_channels",ratios.size());quality.put("r0_normalized_channels",ratios.size());
             quality.put("reference_validated_channels",0);quality.put("m4_quantitative_gate",false);
             quality.put("candidate_ranking_permitted",true);quality.put("named_identity_requires_open_set_acceptance",true);
+            quality.put("active_stable_status",loaded.status);
+            quality.put("stable_imported_response_models",loaded.importedModels);
+            quality.put("stable_rejected_response_models",loaded.rejectedModels);
+            quality.put("stable_sha256",loaded.sha256);
+            quality.put("stable_version",loaded.version);
+            quality.put("research_log_curves_enabled",loaded.importedModels>0);
+            quality.put("concentration_estimate_is_device_validated",false);
             result=result.withLabQuality(quality);
         }catch(Exception ignored){}
 
