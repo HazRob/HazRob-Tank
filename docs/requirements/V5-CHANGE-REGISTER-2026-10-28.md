@@ -117,3 +117,13 @@
 | V5-009 | `SOURCE_ONLY / DEVICE_PENDING` — سلوك إغلاق Activity والريلاي أُصلح كمصدر؛ اختبار أمان فعلي معلق |
 
 **دليل التغيير:** [V5-FIELD-SCIENCE-INTEGRATION-AUDIT-2026-10-28.md](../implementation/V5-FIELD-SCIENCE-INTEGRATION-AUDIT-2026-10-28.md). لا يعتبر مصدر `PASS` عوضًا عن اختبار تشغيل هاتف/ESP32.
+
+
+## تحديث الدفعة F — إذن بناء APK المشروط
+
+| الطلب | حالة التنفيذ |
+| --- | --- |
+| V5-007 | `FIRMWARE_AND_ANDROID_SOURCE_IMPLEMENTED/DEVICE_TEST_PENDING`: staged RAM result → user accept → NVS readback → phone save؛ يرفض الواجهة القديمة |
+| جميع V5 | `BUILD_CONDITIONAL_NOT_AUTHORIZED_NOW`: إذن المالك منوط بإتمام الخطة واختبارات التشغيل والتوثيق، وليس طلب assemble فورًا |
+
+مرجع البوابة: [V5-R0-STAGED-INTEGRATION-2026-10-28.md](../implementation/V5-R0-STAGED-INTEGRATION-2026-10-28.md).
