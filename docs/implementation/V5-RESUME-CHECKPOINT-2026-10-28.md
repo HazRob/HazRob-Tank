@@ -32,3 +32,16 @@
 عند العودة: اقرأ هذا الملف ثم [سجل المتطلبات](../requirements/V5-CHANGE-REGISTER-2026-10-28.md) و[الخطة](V5-EXECUTION-PLAN-2026-10-28.md) و[مصفوفة القبول](V5-ACCEPTANCE-AND-RESUME-2026-10-28.md). تحقق من `feature/tank-v5-implementation` HEAD الفعلي، ولا تفترض نجاح إجراء لم يُسجل له commit ونتيجة اختبار. أضف كل بند جديد برقم يبدأ من `V5-012`، وألحق كل دفعة عمل ببيانات `commit SHA / files / tests / result / blockers / next action`.
 
 `RELEASE_STATUS: V5_NOT_BUILT`.
+
+
+## نقطة الاستئناف الأحدث — تنفيذ الدفعة A (تتقدم على نقطة التخطيط أعلاه)
+
+**سجل الحقيقة:** [V5-PROGRESS-LOG-2026-10-28.md](V5-PROGRESS-LOG-2026-10-28.md).  
+**آخر commit تنفيذي/توثيقي مرصود قبل تحديث هذه الصفحة:** `179e554ea21f544f9f9a2a9337381da144494de5`.  
+**حالة البناء:** `NO_APK / NO_GRADLE / NO_ACTIONS / NO_HARDWARE_CERTIFICATION`.
+
+- اكتملت **الدفعة المصدرية الأولى** وحُفظت في GitHub، وليس تطبيق V5 كاملاً.
+- تعديل الدورات وR0 وStable وسهم القيادة والحالة وخانات الاختيار محفوظ؛ لم يبدأ بعد runner دورة الجلسة ولا دمج المرشحين والمختبر ولا إصدار V5.
+- اختبار SQL النموذجي: **PASS** بعد معالجة `'LEGACY-'||measurement_session_id`؛ اختبار مصدر عبر GitHub **PASS**؛ JUnit Android وinstrumentation **NOT_RUN**.
+- **الاستئناف التالي بالتحديد:** مراجعة `FieldCycleRepository` و`TelemetryRecorder` وربط cycle ذات 60 ثانية إحماء و60 ثانية قياس حقيقية؛ ثم تحديث FieldSessionsTab ببدء/إعادة/اعتماد الدورة ومصفوفة خيارات Gas/PM/Physical؛ ثم تصدير multi-cycle دون كسر V4.
+- **قرار مالك المشروع الساري:** ممنوع بناء التطبيق حتى يعلن انتهاء التعديلات والاختبارات ويصدر أمر بناء صريح.
