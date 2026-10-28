@@ -68,7 +68,7 @@ public final class ControlTab {
         speedControl=new VerticalSpeedControl(c);speedControl.setPercent(DriveSpeedLimiter.DEFAULT_PERCENT,false);FrameLayout.LayoutParams vsp=new FrameLayout.LayoutParams(UiKit.dp(c,64),controlSize,Gravity.LEFT|Gravity.BOTTOM);vsp.setMargins(UiKit.dp(c,8),0,0,controlBottom);cameraBox.addView(speedControl,vsp);speedControl.setListener(p->{speedPercent=DriveSpeedLimiter.clampPercent(p);speedBadge.setText("السرعة "+speedPercent+"%");if(driveMode!=DriveMode.TANK&&driveMode!=DriveMode.WHEEL)applyMappedDrive();});applySpeedControlVisibility();
 
         status=badge(c,"ROBOT —");FrameLayout.LayoutParams sp=new FrameLayout.LayoutParams(-2,-2,Gravity.RIGHT|Gravity.TOP);sp.setMargins(0,UiKit.dp(c,6),UiKit.dp(c,6),0);cameraBox.addView(status,sp);
-        distanceBadge=badge(c,"أمام — cm");FrameLayout.LayoutParams distp=new FrameLayout.LayoutParams(-2,-2,Gravity.RIGHT|Gravity.TOP);distp.setMargins(0,UiKit.dp(c,74),UiKit.dp(c,6),0);cameraBox.addView(distanceBadge,distp);
+        distanceBadge=badge(c,"أمام — cm");distanceBadge.setSingleLine(true);distanceBadge.setEllipsize(android.text.TextUtils.TruncateAt.END);distanceBadge.setMaxWidth(UiKit.dp(c,landscape?230:210));FrameLayout.LayoutParams distp=new FrameLayout.LayoutParams(-2,-2,Gravity.CENTER_HORIZONTAL|Gravity.TOP);distp.setMargins(0,UiKit.dp(c,landscape?6:10),0,0);cameraBox.addView(distanceBadge,distp);
         relayButton=UiKit.button(c,"MQ OFF");relayButton.setTextSize(11);relayButton.setTextColor(Color.WHITE);relayButton.setBackgroundColor(0xCC455A64);relayButton.setOnClickListener(v->toggleRelay());
 
         safetyWarning=badge(c,"");safetyWarning.setTextSize(13);safetyWarning.setTextColor(Color.WHITE);safetyWarning.setBackgroundColor(0xB3C62828);safetyWarning.setPadding(UiKit.dp(c,7),UiKit.dp(c,3),UiKit.dp(c,7),UiKit.dp(c,3));safetyWarning.setGravity(Gravity.CENTER);safetyWarning.setMaxLines(1);safetyWarning.setVisibility(View.GONE);FrameLayout.LayoutParams swp=new FrameLayout.LayoutParams(-2,-2,Gravity.CENTER_HORIZONTAL|Gravity.TOP);swp.setMargins(0,UiKit.dp(c,6),0,0);cameraBox.addView(safetyWarning,swp);
@@ -145,5 +145,19 @@ public final class ControlTab {
     }
 
     private void renderGas(LiveGasStateEngine.Snapshot g){if(g==null){gasBadge.setText("غازات —");gasBadge.setTextColor(0xFFCFD8DC);return;}switch(g.state){case RESPONSE_ALERT:gasBadge.setText("⛔ استجابة غاز قوية • "+g.respondingChannels+" قنوات");gasBadge.setTextColor(0xFFFF5252);break;case RESPONSE_WATCH:gasBadge.setText("⚠ استجابة غاز متعددة • "+g.respondingChannels+" قنوات");gasBadge.setTextColor(0xFFFFB74D);break;case INSTANT_RESPONSE:gasBadge.setText("⚠ استجابة MQ فورية");gasBadge.setTextColor(0xFFFFB74D);break;case NORMAL:gasBadge.setText("غازات ● طبيعي");gasBadge.setTextColor(0xFF81C784);break;case WARMING_UP:gasBadge.setText("MQ • تسخين");gasBadge.setTextColor(0xFF90CAF9);break;case BASELINE_REQUIRED:gasBadge.setText("MQ • خط أساس مطلوب");gasBadge.setTextColor(0xFFFFB74D);break;case DEGRADED:gasBadge.setText("MQ • قنوات غير كافية");gasBadge.setTextColor(0xFFFF7043);break;default:gasBadge.setText("غازات —");gasBadge.setTextColor(0xFFCFD8DC);}}
-    private void applyLandscapeFullscreenChrome(){if(!landscape)return;try{ViewParent p=root.getParent();if(p instanceof LinearLayout){LinearLayout wrapper=(LinearLayout)p;for(int i=0;i<wrapper.getChildCount();i++){View v=wrapper.getChildAt(i);if(v!=root)v.setVisibility(View.GONE);}ViewParent p2=wrapper.getParent();if(p2 instanceof FrameLayout){FrameLayout page=(FrameLayout)p2;ViewParent p3=page.getParent();if(p3 instanceof LinearLayout){LinearLayout shell=(LinearLayout)p3;for(int i=0;i<shell.getChildCount();i++){View v=shell.getChildAt(i);if(v!=page)v.setVisibility(View.GONE);}}}}if(uiContext instanceof Activity){Activity a=(Activity)uiContext;a.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}}catch(Exception ignored){}}
+    private void applyLandscapeFullscreenChrome(){
+        if(!landscape)return;
+        // No ViewParent traversal: MainActivity owns tab hiding, while this
+        // page retains full authority over its own video HUD and E-STOP.
+        if(uiContext instanceof Activity){
+            Activity a=(Activity)uiContext;
+            a.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|
+                View.SYSTEM_UI_FLAG_FULLSCREEN|
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
+    }
 }
