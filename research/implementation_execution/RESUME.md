@@ -1,3 +1,13 @@
+## 2026-10-28 — G2 equivalent IPv6 textual source aliases (231/231 CI)
+
+- Reviewed preceding research HEAD `ad4dbaa00d58ae965c1e6370f5a877bdfa5a07d7` (20/20 CI success), central reference catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records, 14 external datasets), independent G2 evidence `records: []`, and pinned external source matrix 0/14 review-ready.
+- Fixed `g2_reference_catalog_readiness.py`: IPv6 literal addresses are canonicalized with `IPv6Address(...).compressed` before source-origin deduplication. Brackets, scheme, nondefault port, path and query are retained; distinct address+port authorities stay distinct.
+- Added real-byte synthetic regression `test_equivalent_ipv6_spellings_are_one_source`, with recomputed SHA256, equivalent IPv6 spelling/IPv4-mapped controls, all-member duplicate blocking, and a distinct-host positive control. Code SHA `d3d284fcf178ddeb2fdc3a885d0a3bbc558b7dc3`; test SHA `2f1847b4631ff08d70b183a3b0140d2811ca7739`.
+- [G2 Actions #40687760138](https://github.com/HazRob/HazRob-Tank/actions/runs/40687760138), job `122814413498`: **231/231 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`; **21/21** workflow runs succeeded on test SHA. Compared with prior HEAD, only two files in `research/implementation_execution/` changed.
+- Documentation: `G2_IPV6_EQUIVALENT_TEXTUAL_SOURCE_DEDUP_2026-10-28_AR.md`. No ChemCore Stable, Android or firmware edits; no G2/G3 scientific promotion. **Next:** recheck CI on final documentation/RESUME commit; acquire source-qualified original physical exposures, traceable concentration references, device/session/exposure IDs, and locked blind grouped holdouts. Synthetic regression data is not scientific evidence.
+
+---
+
 ## 2026-10-28 — G2 IPv6 literal/port identity collision fix (230/230 CI)
 
 - Rechecked research HEAD `d5ac5632959e94205c12e6334b467b3595503202`, central reference bank Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries, 14 external datasets), and independent G2 evidence register `records: []`. Pinned catalogue matrix remains 0/14 source-review ready; no `research/g2/raw/` directory is present in the branch.
