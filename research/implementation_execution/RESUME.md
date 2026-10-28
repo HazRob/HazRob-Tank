@@ -1,3 +1,14 @@
+## 2026-10-28 — G2 DOI resolver authority and port fail-closed (227/227 G2 CI)
+
+- Rechecked prior branch HEAD `76d823109eddb934948510103562584c0de95e23`, 20/20 successful workflows, central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` from `HazRob/build-harness`, and independent evidence register `records: []`.
+- Fixed DOI-resolver origin normalization: reject credential-bearing `doi.org`/`dx.doi.org` URLs and non-default resolver ports, including when the URL is carried by the `doi` field (and `doi:` prefixed URL). Invalid resolver authority returns `None` and blocks only the affected record; normal HTTP/HTTPS default ports remain valid.
+- Added real-byte synthetic regression `test_doi_resolver_credentials_and_nondefault_ports_fail_closed` in `test_g2_evidence_audit.py`, covering both origin fields, 11 negative combinations and two valid aliases. Code/test commit `bb25fb83401bc9be7259fbee7dc90068497d2440`.
+- Verified [G2 Actions #40656402533](https://github.com/HazRob/HazRob-Tank/actions/runs/40656402533), job `122708373891`: **227/227 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`; **all 21/21 CI workflows on code SHA succeeded**.
+- Evidence: `G2_DOI_RESOLVER_AUTHORITY_FAIL_CLOSED_2026-10-28_AR.md`. External catalog 0/14 source-review ready, independent physical G2 records absent. No Stable, Android or firmware changes, no G2/G3 scientific promotion. Recheck CI on this documentation commit before the next implementation.
+- Next: acquire independently referenced raw physical exposures, traceable ppm references, device/session IDs, and blind grouped holdouts; no synthetic source may be promoted.
+
+---
+
 ## 2026-10-28 — G2 malformed source URL parser isolation (226/226 G2 CI)
 
 - Reviewed preceding `c6cc7c3fc2729a3d023c3c486c4cfadd2682008b` checkpoint, the central source catalog policy and independent G2 evidence register (`records: []`).
