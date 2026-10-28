@@ -289,7 +289,24 @@ public final class MainActivity extends Activity implements HazRobHost {
         }
         super.onSaveInstanceState(out);
     }
-    @Override protected void onDestroy(){entered=false;if(fieldSessionsTab!=null)fieldSessionsTab.release();if(reportsTab!=null)reportsTab.release();if(developerTab!=null)developerTab.release();if(settingsTab!=null)settingsTab.release();if(controlTab!=null)controlTab.releaseCamera();try{if(!isOffline()&&lastGasAlertLevel!=GasAlertCoordinator.NONE)robotApi.setAlertLevel(GasAlertCoordinator.NONE,500);}catch(Exception ignored){}if(phoneAlertTone!=null)try{phoneAlertTone.close();}catch(Exception ignored){}workers.shutdownNow();WifiRoute.unbind(this);if(db!=null)db.close();super.onDestroy();}
+    @Override protected void onDestroy(){entered=false;if(fieldSessionsTab!=null)fieldSessionsTab.release();if(reportsTab!=null)reportsTab.release();if(developerTab!=null)developerTab.release();if(settingsTab!=null)settingsTab.release();if(controlTab!=null)controlTab.releaseCamera();try{if(!isOffline()&&lastGasAlertLevel!=GasAlertCoordinator.NONE)robotApi.setAlertLevel(GasAlertCoordinator.NONE,500);}catch(Exception ignored){}if(phoneAlertTone!=null)try{phoneAlertTone.close();}catch(Exception ignored){}// V5: let queued field-cycle relay-off and failed-cycle persistence finish.
+        // shutdownNow() here previously interrupted those critical cleanup tasks.
+        workers.shutdown();
+        final ExperimentsDb closingDb=db;
+        final android.content.Context closingContext=getApplicationContext();
+        new Thread(()->{
+            try{
+                if(!workers.awaitTermination(5000,TimeUnit.MILLISECONDS))
+                    workers.shutdownNow();
+            }catch(InterruptedException interrupted){
+                workers.shutdownNow();
+                Thread.currentThread().interrupt();
+            }finally{
+                WifiRoute.unbind(closingContext);
+                if(closingDb!=null)try{closingDb.close();}catch(Exception ignored){}
+            }
+        },"tank-v5-safe-field-shutdown").start();
+        super.onDestroy();}
     private void startLinkService(){if(isOffline())return;try{RobotLinkService.start(getApplicationContext());}catch(Exception ignored){}}
 
     @Override public RobotApi robotApi(){return robotApi;}@Override public SharedPreferences preferences(){return prefs;}@Override public ExperimentsDb database(){return db;}@Override public ExecutorService io(){return workers;}@Override public String operatorRole(){return developerMode&&selectedTab==6?"DEVELOPER":"USER";}@Override public JSONObject latestDiagnostics(){return latestDiag;}@Override public void setLatestDiagnostics(JSONObject value){latestDiag=value;}@Override public void showToast(String text){ui.post(()->android.widget.Toast.makeText(this,text,android.widget.Toast.LENGTH_SHORT).show());}
