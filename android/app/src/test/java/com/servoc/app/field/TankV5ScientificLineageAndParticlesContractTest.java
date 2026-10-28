@@ -31,13 +31,16 @@ public final class TankV5ScientificLineageAndParticlesContractTest {
         assertTrue(repo.contains("add(d,nz(decisions.getString(2)))"));
         assertTrue(repo.contains("hash.equalsIgnoreCase(evidenceDigest(w,ms,device,metadata,payload))"));
         assertTrue(repo.contains("hasRequiredChemCoreDecision(ms,c.getInt(9)!=0)"));
+        assertTrue(repo.contains("public boolean verifyApprovedEvidence(Cycle cycle)"));
+        assertTrue(repo.contains("cycle.evidenceSha.equalsIgnoreCase("));
     }
     @Test public void approvedOnlyReportsPreserveRejectedAttemptLedger()throws Exception{
         String repo=src("field/FieldSessionRepository.java");
         assertTrue(repo.contains("c.state IN ('APPROVED','LEGACY_APPROVED')"));
         String fieldReport=src("report/FieldSessionReportExporter.java");
         String siteReport=src("report/SiteSummaryReportExporter.java");
-        assertTrue(fieldReport.contains("new FieldCycleRepository(db).forSession(fs)"));
+        assertTrue(fieldReport.contains("List<FieldCycleRepository.Cycle> cycleLedger=cycles.forSession(fs)"));
+        assertTrue(fieldReport.contains("if(!cycles.verifyApprovedEvidence(cycle))"));
         assertTrue(siteReport.contains("for(FieldCycleRepository.Cycle cycle:b.cycleLedger)"));
     }
 }
