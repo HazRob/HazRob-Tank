@@ -39,14 +39,14 @@ public final class FieldCycleRepository {
     }
 
     public static final class Cycle {
-        public final String id,fieldSessionId,measurementId,state,started,completed,approved,supersedes;
+        public final String id,fieldSessionId,measurementId,state,started,completed,approved,supersedes,deviceId,evidenceSha,failReason;
         public final int sequence,attempt;
         public final Options modes;
         Cycle(Cursor c){
             id=c.getString(0);fieldSessionId=c.getString(1);sequence=c.getInt(2);
             attempt=c.getInt(3);supersedes=nz(c.getString(4));measurementId=nz(c.getString(5));
             modes=new Options(c.getInt(6)!=0,c.getInt(7)!=0,c.getInt(8)!=0);
-            state=c.getString(9);started=c.getString(10);completed=nz(c.getString(11));approved=nz(c.getString(12));
+            state=c.getString(9);started=c.getString(10);completed=nz(c.getString(11));approved=nz(c.getString(12));deviceId=nz(c.getString(13));evidenceSha=nz(c.getString(14));failReason=nz(c.getString(15));
         }
         public boolean reviewReady(){return REVIEW.equals(state);}
         public boolean approved(){return APPROVED.equals(state)||"LEGACY_APPROVED".equals(state);}
@@ -54,7 +54,7 @@ public final class FieldCycleRepository {
 
     private static final String SELECT="SELECT cycle_id,field_session_id,sequence_no,attempt_no,"+
         "supersedes_cycle_id,measurement_session_id,include_gas,include_particles,include_physical,"+
-        "state,started_ts,completed_ts,approved_ts FROM field_measurement_cycles";
+        "state,started_ts,completed_ts,approved_ts,device_id,evidence_sha256,fail_reason FROM field_measurement_cycles";
     private final ExperimentsDb db;
     public FieldCycleRepository(ExperimentsDb db){
         if(db==null)throw new IllegalArgumentException("Database required");
