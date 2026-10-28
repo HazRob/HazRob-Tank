@@ -36,7 +36,7 @@ public final class TankV4FieldReportPipelineContractTest {
     @Test public void fieldMeasurementCannotSilentlyTurnIntoOrphan()throws Exception{
         String recorder=read("measurement/TelemetryRecorder.java");
         assertTrue(recorder.contains("MeasurementSessionRegistry.fieldCaptureOwnerSessionId()"));
-        assertTrue(recorder.contains("!fieldSessions.linkMeasurement(active.id,sessionId)"));
+        assertTrue(recorder.contains("!fieldSessions.linkMeasurement(owner,sessionId)"));
         assertTrue(recorder.contains("throw new IllegalStateException("));
         assertTrue(recorder.contains("delete(\"measurement_sessions\",\"session_id=?\""));
         assertTrue(recorder.contains("MeasurementSessionRegistry.started(sessionId)"));
