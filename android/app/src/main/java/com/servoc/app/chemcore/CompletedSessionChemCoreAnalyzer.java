@@ -1,6 +1,7 @@
 package com.servoc.app.chemcore;
 
 import android.content.Context;
+import android.database.Cursor;
 import com.servoc.app.calibration.AcceptedR0Normalizer;
 import com.servoc.app.chemcore.library.ChemCoreLibraryStore;
 import com.servoc.app.data.ExperimentsDb;
@@ -9,6 +10,9 @@ import com.servoc.app.hardware.HazRobHardwareProfile;
 import org.json.JSONObject;
 
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +45,12 @@ public final class CompletedSessionChemCoreAnalyzer {
     /** Use the installed, SHA-verified Stable payload if Android context is available. */
     public static Outcome analyzeAndPersist(Context appContext,ExperimentsDb db,String sessionId,
                                             JSONObject terminalSnapshot,long tMs){
+        return analyzeAndPersist(appContext,db,sessionId,terminalSnapshot,tMs,false);
+    }
+
+    /** A documented field capture derives its hypothesis from ALL archived 60-second samples. */
+    public static Outcome analyzeAndPersist(Context appContext,ExperimentsDb db,String sessionId,
+                                            JSONObject terminalSnapshot,long tMs,boolean fieldCapture){
         if(db==null||sessionId==null||sessionId.trim().isEmpty()||terminalSnapshot==null)
             return new Outcome(-1,0,0,null);
         String id=sessionId.trim();
@@ -51,7 +61,9 @@ public final class CompletedSessionChemCoreAnalyzer {
             return new Outcome(-2,0,count,null);
         }
 
-        Map<String,Double> ratios=observedRatios(terminalSnapshot);
+        Map<String,Double> ratios=fieldCapture?
+            observedRatiosAcrossFieldSamples(db,id):observedRatios(terminalSnapshot);
+        // Field sessions must never silently fall back to a single terminal snapshot.
         if(ratios.isEmpty())return new Outcome(-1,0,0,null);
 
         ChemCoreSessionFeatureAdapter.Extraction extraction=null;
@@ -84,6 +96,9 @@ public final class CompletedSessionChemCoreAnalyzer {
             JSONObject quality=new JSONObject();quality.put("state","FIELD_SCREENING");
             quality.put("valid_mq_channels",ratios.size());quality.put("r0_normalized_channels",ratios.size());
             quality.put("reference_validated_channels",0);quality.put("m4_quantitative_gate",false);
+            quality.put("ratio_aggregation_method",fieldCapture?
+                "60S_MEDIAN_DISTINCT_HARDWARE_SCAN_CYCLE":"TERMINAL_FIRMWARE_AVERAGE_OR_LIVE");
+            quality.put("field_60s_capture",fieldCapture);
             quality.put("candidate_ranking_permitted",true);quality.put("named_identity_requires_open_set_acceptance",true);
             quality.put(TankFingerprintScreening.KEY,TankFingerprintScreening.evaluate(ratios));
             quality.put("active_stable_status",loaded.status);
@@ -98,6 +113,53 @@ public final class CompletedSessionChemCoreAnalyzer {
 
         long row=decisions.save(Math.max(0,tMs),result);
         return new Outcome(row,ratios.size(),result==null?0:result.candidates.size(),result);
+    }
+
+    /**
+     * Calculates the per-sensor median of distinct firmware MQ scan cycles from
+     * the documented field capture. A 200ms Android poll may read the SAME MQ
+     * scan repeatedly; it must not create fake independent evidence.
+     *
+     * Uses R0/ratio FROZEN with each saved sample, never the user's current R0.
+     * No single-UDP/HTTP snapshot fallback is allowed for field acquisition.
+     */
+    public static Map<String,Double> observedRatiosAcrossFieldSamples(
+            ExperimentsDb db,String sessionId){
+        Map<String,Double> out=new LinkedHashMap<>();
+        if(db==null||sessionId==null||sessionId.trim().isEmpty())return out;
+        Map<String,java.util.Map<Long,Double>> perSensor=new LinkedHashMap<>();
+        for(HazRobHardwareProfile.Channel ch:HazRobHardwareProfile.MQ)
+            perSensor.put(ch.key,new LinkedHashMap<>());
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+                "SELECT mq_payload FROM telemetry_samples WHERE session_id=? ORDER BY t_ms,id",
+                new String[]{sessionId.trim()})){
+            while(c.moveToNext()){
+                JSONObject mq;
+                try{mq=new JSONObject(c.getString(0));}
+                catch(Exception invalid){continue;}
+                for(HazRobHardwareProfile.Channel ch:HazRobHardwareProfile.MQ){
+                    JSONObject q=mq.optJSONObject(ch.key);
+                    if(q==null||!q.optBoolean("ok",q.optBoolean("valid",false))||
+                        !q.optBoolean("powered",false)||
+                        !q.has("scan_cycle"))continue;
+                    long scan=q.optLong("scan_cycle",-1);
+                    if(scan<0)continue;
+                    double ratio=AcceptedR0Normalizer.recordedRatio(ch.key,q);
+                    if(Double.isFinite(ratio)&&ratio>0)
+                        perSensor.get(ch.key).putIfAbsent(scan,ratio);
+                }
+            }
+        }
+        for(Map.Entry<String,java.util.Map<Long,Double>> entry:perSensor.entrySet()){
+            java.util.List<Double> values=new ArrayList<>(entry.getValue().values());
+            if(values.size()<10)continue; // no synthetic signal from repeated HTTP polls
+            Collections.sort(values);
+            int n=values.size();
+            double median=n%2==1?values.get(n/2):
+                (values.get(n/2-1)+values.get(n/2))/2.0;
+            if(Double.isFinite(median)&&median>0)out.put(entry.getKey(),median);
+        }
+        return out;
     }
 
     /**
