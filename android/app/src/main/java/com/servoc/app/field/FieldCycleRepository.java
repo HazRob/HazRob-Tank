@@ -199,14 +199,32 @@ public final class FieldCycleRepository {
             return false;
         }finally{w.endTransaction();}
     }
+    /** Review-to-approval is atomic and re-hashes the entire evidence sequence. */
     public boolean approve(String cycleId){
-        String id=required(cycleId);
-        ContentValues v=new ContentValues();v.put("state",APPROVED);
-        v.put("approved_ts",utc());v.put("updated_ts",utc());
-        return db.getWritableDatabase().update("field_measurement_cycles",v,
-            "cycle_id=? AND state=? AND measurement_session_id IS NOT NULL "+
-            "AND device_id IS NOT NULL AND evidence_sha256 IS NOT NULL",
-            new String[]{id,REVIEW})==1;
+        String id=required(cycleId);SQLiteDatabase w=db.getWritableDatabase();w.beginTransaction();
+        try{
+            String ms,device,hash,metadata,payload;
+            try(Cursor c=w.rawQuery(
+                "SELECT c.measurement_session_id,c.device_id,c.evidence_sha256,"+
+                "m.analytics,m.payload FROM field_measurement_cycles c "+
+                "JOIN measurement_sessions m ON m.session_id=c.measurement_session_id "+
+                "WHERE c.cycle_id=? AND c.state=?",
+                new String[]{id,REVIEW})){
+                if(!c.moveToFirst())return false;
+                ms=nz(c.getString(0));device=nz(c.getString(1));hash=nz(c.getString(2));
+                metadata=nz(c.getString(3));payload=nz(c.getString(4));
+            }
+            if(ms.isEmpty()||device.isEmpty()||hash.length()!=64||
+                !FieldSessionApprovalPolicy.completedSuccessfully(metadata,payload)||
+                !hash.equalsIgnoreCase(evidenceDigest(w,ms,device,metadata,payload)))return false;
+            ContentValues v=new ContentValues();v.put("state",APPROVED);
+            v.put("approved_ts",utc());v.put("updated_ts",utc());
+            int n=w.update("field_measurement_cycles",v,
+                "cycle_id=? AND state=? AND measurement_session_id=?",
+                new String[]{id,REVIEW,ms});
+            if(n==1)w.setTransactionSuccessful();
+            return n==1;
+        }finally{w.endTransaction();}
     }
 
     /**
