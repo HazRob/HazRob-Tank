@@ -83,6 +83,7 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         metrics = json.loads((base / "metrics_summary.json").read_text(encoding="utf-8"))
         uncertainty = json.loads((base / "uncertainty_grouped.json").read_text(encoding="utf-8"))
         review = json.loads((base / "review_decision.json").read_text(encoding="utf-8"))
+        ci_run = json.loads((base / "ci_run.json").read_text(encoding="utf-8"))
         groups = _read_csv(base, "group_manifest.csv")
         predictions = _read_csv(base, "predictions_blind.csv")
         per_group = _read_csv(base, "metrics_per_group.csv")
@@ -93,9 +94,30 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     # invoked independently by regression tests and external research tools.
     # Never let an array/scalar at any verified JSON path crash the audit.
     documents = (raw, source, signal, split, protocol, calibration,
-                 metrics, uncertainty, review)
+                 metrics, uncertainty, review, ci_run)
     if any(not isinstance(document, dict) for document in documents):
         return ["CROSS_ARTIFACT_JSON_SCHEMA_INVALID"]
+
+    # ci_run.json is required by the fourteen-file bundle but previously was
+    # never inspected. A matching file hash alone permits arbitrary placeholder
+    # text to masquerade as a reproducible GitHub Actions execution.
+    # This is OFFLINE metadata binding, not GitHub API authentication: an
+    # independent reviewer must still verify the run and its artifacts.
+    ci_id = ci_run.get("run_id")
+    ci_sha = ci_run.get("head_sha")
+    ci_url = ci_run.get("html_url")
+    if (type(ci_id) is not int or ci_id < 1 or
+            not isinstance(ci_sha, str) or len(ci_sha) != 40 or
+            any(c not in "0123456789abcdef" for c in ci_sha) or
+            ci_id != record.get("ci_run_id") or
+            ci_sha != record.get("ci_head_sha") or
+            ci_run.get("repository") != "HazRob/HazRob-Tank" or
+            ci_run.get("workflow_path") !=
+                ".github/workflows/g2-signal-lineage-v4.yml" or
+            ci_run.get("conclusion") != "success" or
+            ci_run.get("event") not in ("push", "pull_request", "workflow_dispatch") or
+            ci_url != "https://github.com/HazRob/HazRob-Tank/actions/runs/" + str(ci_id)):
+        issues.append("CI_RUN_METADATA_NOT_BOUND_TO_G2_WORKFLOW")
 
     if (raw.get("raw_sha256") != record.get("raw_sha256") or
             raw.get("dataset_uri") != record.get("dataset_uri")):
