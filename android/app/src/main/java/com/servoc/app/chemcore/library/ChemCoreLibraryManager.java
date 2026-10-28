@@ -104,18 +104,43 @@ public final class ChemCoreLibraryManager {
         if (!value.isEmpty()) {
             try {
                 URL u = new URL(value);
-                if (!"https".equalsIgnoreCase(u.getProtocol()) || u.getUserInfo() != null)
-                    throw new IllegalArgumentException("ChemCore update source must be HTTPS without embedded credentials");
+                validateGitHubManifestUrl(u);
             } catch (IllegalArgumentException e) { throw e; }
             catch (Exception e) { throw new IllegalArgumentException("invalid ChemCore manifest URL", e); }
         }
         prefs.edit().putString(PREF_MANIFEST_URL, value).apply();
     }
 
+    /**
+     * V5 GitHub-only update channel. Reject impostor HTTPS hosts, username
+     * credentials and manifest URLs outside the HazRob GitHub organization.
+     * The downloaded payload is still independently validated by SHA-256 and
+     * the compatibility manifest before atomic activation.
+     */
+    private static void validateGitHubManifestUrl(URL u){
+        if(u==null||!"https".equalsIgnoreCase(u.getProtocol())||
+                u.getUserInfo()!=null||u.getPort()!=-1||u.getRef()!=null)
+            throw new IllegalArgumentException("ChemCore manifest requires plain GitHub HTTPS");
+        String host=u.getHost()==null?"":u.getHost().toLowerCase(java.util.Locale.US);
+        String path=u.getPath()==null?"":u.getPath();
+        boolean permitted;
+        if("raw.githubusercontent.com".equals(host)||"github.com".equals(host))
+            permitted=path.startsWith("/HazRob/")&&path.length()>"/HazRob/".length();
+        else if("api.github.com".equals(host))
+            permitted=path.startsWith("/repos/HazRob/")&&path.length()>"/repos/HazRob/".length();
+        else permitted=false;
+        if(!permitted||path.contains("/../")||path.contains("/./")||
+                !path.toLowerCase(java.util.Locale.US).endsWith(".json"))
+            throw new IllegalArgumentException(
+                "ChemCore update manifest must be a JSON file in the HazRob GitHub organization");
+    }
+
     public CheckSummary check(String appVersion) throws Exception {
         String raw = manifestUrl();
         if (raw == null || raw.trim().isEmpty()) throw new IllegalStateException("ChemCore update source is not configured");
-        ChemCoreLibraryUpdateClient.CheckResult remote = client.check(new URL(raw.trim()));
+        URL source=new URL(raw.trim());
+        validateGitHubManifestUrl(source);
+        ChemCoreLibraryUpdateClient.CheckResult remote = client.check(source);
         ChemCoreLibraryManifest m = remote.manifest;
         ChemCoreLibraryVerifier.VerificationResult validated =
                 ChemCoreLibraryVerifier.verifyManifestOnly(m, appVersion, REQUIRED_SAMPLING_PROFILE);
