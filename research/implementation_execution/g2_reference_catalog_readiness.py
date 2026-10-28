@@ -91,6 +91,24 @@ def _canonical_source_origin(row):
     return "url:" + value
 
 
+
+def _canonical_source_origins(row):
+    """All stated origin identities, not DOI *instead of* landing URL.
+
+    Each source contributes a set so DOI+URL aliases within one record cannot
+    create a spurious duplicate. Shared DOI or shared landing page across
+    *different* records is a conservative source-review blocker.
+    """
+    origins = set()
+    for field in ("doi", "primary_url"):
+        value = row.get(field)
+        if isinstance(value, str) and value.strip():
+            identity = _canonical_source_origin({field: value})
+            if identity is not None:
+                origins.add(identity)
+    return origins
+
+
 def audit_source_catalog(catalog, expected_total=80, expected_datasets=14, repo_root=Path(".")):
     """Return a source-only review matrix; never G2 technique pass decisions.
 
@@ -132,8 +150,7 @@ def audit_source_catalog(catalog, expected_total=80, expected_datasets=14, repo_
     # Otherwise the first catalogue ID stays "ready" merely because of
     # lexical ordering, while the same physical archive is duplicated later.
     origin_counts = Counter(
-        origin for origin in (_canonical_source_origin(row) for row in datasets)
-        if origin is not None)
+        origin for row in datasets for origin in _canonical_source_origins(row))
     raw_hash_counts = Counter(
         row["raw_sha256"] for row in datasets
         if isinstance(row.get("raw_sha256"), str)
@@ -144,8 +161,8 @@ def audit_source_catalog(catalog, expected_total=80, expected_datasets=14, repo_
         # A duplicate DOI/landing page or identical original raw bytes
         # blocks every member pending source-level provenance adjudication.
         # Distinct identifiers never establish independent physical exposure.
-        origin = _canonical_source_origin(row)
-        if origin is not None and origin_counts[origin] > 1:
+        origins = _canonical_source_origins(row)
+        if any(origin_counts[origin] > 1 for origin in origins):
             blockers.append("DUPLICATE_ORIGINAL_DATASET_ORIGIN")
         raw_digest = row.get("raw_sha256")
         if (isinstance(raw_digest, str) and HEX64.fullmatch(raw_digest)

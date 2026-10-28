@@ -1848,6 +1848,63 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
                 self.assertIn("DUPLICATE_ORIGINAL_RAW_BYTES",
                               after[identifier][1])
 
+    def test_catalogue_doi_does_not_mask_duplicate_landing_url(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        catalog["primary_catalog_entries"][1] = {
+            "id": "MQ-EXT-02", "category": "EXTERNAL_MEASUREMENT_DATASET"}
+        catalog["counts_by_type"] = {"EXTERNAL_MEASUREMENT_DATASET": 2}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            rows = catalog["primary_catalog_entries"]
+            for idx, row in enumerate(rows):
+                raw = ("distinct original exposure " + str(idx)).encode("ascii")
+                rel = "research/g2/raw/original-" + str(idx) + ".bin"
+                path = root / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+                row.update(
+                    doi="10.9999/source-" + str(idx),
+                    primary_url="https://example.org/landing/" + str(idx),
+                    measurement_qualification=True,
+                    experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                    raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                    physical_reference_traceability=True,
+                    raw_local_path=rel, raw_size_bytes=len(raw),
+                    raw_sha256=hashlib.sha256(raw).hexdigest())
+
+            def audit():
+                return audit_source_catalog(
+                    catalog, expected_total=2, expected_datasets=2,
+                    repo_root=root)
+
+            self.assertEqual(audit()["source_review_ready"], 2)
+            first, second = rows
+            # Different DOI strings cannot conceal one common landing page.
+            second["primary_url"] = first["primary_url"]
+            matrix = audit()
+            self.assertEqual(matrix["source_review_ready"], 0)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in item["blockers"]
+                for item in matrix["datasets"]))
+            rows.reverse()
+            self.assertEqual(audit()["source_review_ready"], 0)
+            rows.reverse()
+
+            # Cross-field DOI/URL aliases are the same original identity.
+            second["primary_url"] = "https://doi.org/" + first["doi"]
+            matrix = audit()
+            self.assertEqual(matrix["source_review_ready"], 0)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in item["blockers"]
+                for item in matrix["datasets"]))
+
+            # A DOI and its own resolver URL in one record is not a
+            # duplicate *between sources*: count identities per source.
+            second["primary_url"] = "https://example.org/landing/1"
+            first["primary_url"] = "https://doi.org/" + first["doi"]
+            self.assertEqual(audit()["source_review_ready"], 2)
+
     def test_catalogue_origin_normalizes_doi_aliases_and_url_fallback(self):
         from g2_reference_catalog_readiness import _canonical_source_origin
         original = {"doi": "10.17632/ABC.2"}

@@ -1,3 +1,11 @@
+## 2026-10-28 — G2 cross-field DOI/landing URL source deduplication (CI pending)
+
+- Research-only source-catalog audit now checks **both** DOI and landing-page identities per record; distinct DOIs sharing a landing page, or a DOI in one record repeated as resolver URL in another, block **all** source records. A DOI and its own URL in the same record are counted only once.
+- Synthetic original-byte controls in `test_catalogue_doi_does_not_mask_duplicate_landing_url` verify positive distinct sources, two cross-field duplicate modes, order invariance, and no within-record self-duplication. Document: `G2_CROSS_FIELD_DOI_URL_SOURCE_DEDUP_2026-10-28_AR.md`.
+- Central source catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` verified (80 entries, 14 datasets); independent G2 evidence register `records: []`; source matrix 0/14 review-ready. **CI pending on new commit**, do not report PASS yet. No G2/G3 scientific promotion or ChemCore Stable edits.
+
+---
+
 ## 2026-10-28 — G2 fail-closed for every duplicate source group member (219/219 G2 CI)
 
 - Reviewed previous research checkpoint and central reference catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`; independent G2 evidence register remains `records: []`.
