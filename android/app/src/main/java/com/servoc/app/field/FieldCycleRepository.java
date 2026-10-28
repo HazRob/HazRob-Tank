@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.servoc.app.data.ExperimentsDb;
+import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -58,6 +59,16 @@ public final class FieldCycleRepository {
     public FieldCycleRepository(ExperimentsDb db){
         if(db==null)throw new IllegalArgumentException("Database required");
         this.db=db;
+    }
+
+    /** Reconcile dead-process acquisitions only when the recorder has no owner. */
+    public int recoverAbandoned(){
+        if(com.servoc.app.measurement.MeasurementSessionRegistry.fieldCaptureRequested()||
+            !com.servoc.app.measurement.MeasurementSessionRegistry.activeSessionId().isEmpty())return 0;
+        ContentValues v=new ContentValues();v.put("state",FAILED);
+        v.put("fail_reason","PROCESS_INTERRUPTED_BEFORE_APPROVAL");v.put("updated_ts",utc());
+        return db.getWritableDatabase().update("field_measurement_cycles",v,
+                "state IN ('ARMED','WARMUP','SAMPLING')",null);
     }
 
     public Cycle byId(String cycleId){
@@ -163,7 +174,8 @@ public final class FieldCycleRepository {
         try{
             try(Cursor c=w.rawQuery(
                 "SELECT c.measurement_session_id,c.device_id,m.ended_ts,m.operator_role,m.kind,m.analytics,m.payload,"+
-                "(SELECT COUNT(*) FROM telemetry_samples t WHERE t.session_id=c.measurement_session_id),c.sampling_started_ms "+
+                "(SELECT COUNT(*) FROM telemetry_samples t WHERE t.session_id=c.measurement_session_id),c.sampling_started_ms,"+
+                "c.include_gas,c.include_physical,c.include_particles "+
                 "FROM field_measurement_cycles c LEFT JOIN measurement_sessions m "+
                 "ON m.session_id=c.measurement_session_id WHERE c.cycle_id=? AND c.state=?",
                 new String[]{cid,SAMPLING})){
@@ -174,7 +186,9 @@ public final class FieldCycleRepository {
                     !nz(c.getString(4)).startsWith("field_")||c.getInt(7)<1||
                     !FieldSessionApprovalPolicy.completedSuccessfully(nz(c.getString(5)),nz(c.getString(6)))||
                     c.isNull(8)||c.getLong(8)<=0||
-                    android.os.SystemClock.elapsedRealtime()-c.getLong(8)<60000L)return false;
+                    android.os.SystemClock.elapsedRealtime()-c.getLong(8)<60000L ||
+                    !hasMeasuredEvidence(w,ms,c.getInt(9)!=0,c.getInt(10)!=0,c.getInt(11)!=0))
+                    return false;
                 String fingerprint=sha256(ms+"|"+c.getString(5)+"|"+c.getString(6)+"|"+deviceId);
                 ContentValues v=new ContentValues();v.put("state",REVIEW);
                 v.put("evidence_sha256",fingerprint);v.put("completed_ts",utc());v.put("updated_ts",utc());
@@ -249,6 +263,47 @@ public final class FieldCycleRepository {
         String cid=required(cycleId);ContentValues v=new ContentValues();v.put("state",CANCELLED);v.put("updated_ts",utc());
         return db.getWritableDatabase().update("field_measurement_cycles",v,
             "cycle_id=? AND state IN ('ARMED','WARMUP','SAMPLING','REVIEW_READY')",new String[]{cid})==1;
+    }
+
+    /**
+     * Require genuine stored sensor observations; a full timer with stale,
+     * empty or fabricated zero-value snapshots is not an accepted field result.
+     * Minimum 10 independent poll records per selected measurement family.
+     */
+    private static boolean hasMeasuredEvidence(SQLiteDatabase w,String measurementId,
+                                               boolean gas,boolean physical,boolean particles){
+        int gasN=0,physicalN=0,particleN=0;
+        try(Cursor c=w.rawQuery("SELECT mq_payload,env_payload,motion_payload,t_ms "+
+                "FROM telemetry_samples WHERE session_id=? ORDER BY t_ms",
+                new String[]{measurementId})){
+            while(c.moveToNext()){
+                try{
+                    if(gas){
+                        JSONObject mq=new JSONObject(nz(c.getString(0)));
+                        java.util.Iterator<String> keys=mq.keys();
+                        while(keys.hasNext()){
+                            JSONObject v=mq.optJSONObject(keys.next());
+                            if(v!=null&&v.optBoolean("ok",false)&&
+                                v.optBoolean("powered",false)&&
+                                Double.isFinite(v.optDouble("rs",Double.NaN))&&
+                                v.optDouble("rs",0)>0){gasN++;break;}
+                        }
+                    }
+                    if(physical){
+                        JSONObject env=new JSONObject(nz(c.getString(1)));
+                        if(env.optBoolean("ok",false)&&
+                            Double.isFinite(env.optDouble("temperature",Double.NaN)))physicalN++;
+                    }
+                    if(particles){
+                        JSONObject aux=new JSONObject(nz(c.getString(2)));
+                        JSONObject pm=aux.optJSONObject("particles");
+                        if(pm!=null&&pm.optBoolean("ok",false))particleN++;
+                    }
+                }catch(Exception ignored){/* malformed samples count as invalid */ }
+            }
+        }
+        return (!gas||gasN>=10)&&(!physical||physicalN>=10)&&
+               (!particles||particleN>=10);
     }
 
     private static String required(String id){if(id==null||id.trim().isEmpty())throw new IllegalArgumentException("ID required");return id.trim();}
