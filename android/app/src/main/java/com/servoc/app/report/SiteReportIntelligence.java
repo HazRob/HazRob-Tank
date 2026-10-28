@@ -51,8 +51,8 @@ public final class SiteReportIntelligence {
                    "OUT_OF_VALIDATED_DOMAIN".equals(outcome)||
                    "INSUFFICIENT_EVIDENCE".equals(outcome))openSet++;
                 if("INVALID_MEASUREMENT".equals(outcome))invalid++;
-                if(s.critical())critical++;
             }
+            if(s.critical())critical++;
             // Deduplicate by material WITHIN one parent session. Ten measurement
             // cycles in the same room do not count as ten independent site sessions.
             Map<Integer,Boolean> supported=new HashMap<>();
