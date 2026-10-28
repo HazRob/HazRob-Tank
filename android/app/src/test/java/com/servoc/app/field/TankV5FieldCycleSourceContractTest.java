@@ -22,6 +22,8 @@ public final class TankV5FieldCycleSourceContractTest {
         assertTrue(db.contains("UNIQUE(field_session_id,sequence_no)"));
         assertTrue(db.contains("measurement_session_id TEXT UNIQUE"));
         assertTrue(db.contains("INSERT OR IGNORE INTO field_measurement_cycles("));
+        assertTrue(db.contains("'LEGACY-'||m.measurement_session_id"));
+        assertFalse(db.contains("'LEGACY-'+m.measurement_session_id"));
         assertTrue(db.contains("CASE WHEN f.status='APPROVED' THEN 'LEGACY_APPROVED' ELSE 'LEGACY_IMPORTED' END"));
         assertFalse(db.contains("DROP TABLE field_sessions"));
     }
