@@ -1,0 +1,124 @@
+name: HazRob Tank V5 gated test and diagnostic APK
+
+# Manual-only; never builds on ordinary commits.
+# A release-gate evidence file is required before the CONDITIONAL owner authorization applies.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v5-gated-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+
+      - name: Refuse to build before documented acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          gate=tank/docs/implementation/V5_RELEASE_GATE_APPROVED.md
+          test -f "$gate" || { echo "::error::V5 plan or physical tests incomplete; no APK"; exit 1; }
+          grep -Fxq 'V5_RELEASE_GATE=PASS' "$gate"
+          grep -Fxq 'OWNER_BUILD_PERMISSION=CONDITIONAL_COMPLETION_GRANTED_2026-10-28' "$gate"
+          echo "V5 release gate evidence file accepted."
+
+      - name: Checkout pinned read-only Android baseline
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+
+      - name: Check source-overlay identity and preserve user data
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          if test -d tank/android/app/src/test/java; then mkdir -p source/app/src/test/java; cp -a tank/android/app/src/test/java/. source/app/src/test/java/; fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('source/app/build.gradle')
+          s=p.read_text()
+          for token in ("applicationId 'com.servoc.app'","versionName '0.10.2'","versionCode 30","debug { signingConfig signingConfigs.prototype }"):
+              assert token in s, "Pinned original changed: "+token
+          s=s.replace("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'")
+          s=s.replace("versionName '0.10.2'","versionName '5.0'")
+          s=s.replace("versionCode 30","versionCode 5")
+          s=s.replace("debug { signingConfig signingConfigs.prototype }","debug { }")
+          p.write_text(s)
+          m=Path('source/app/src/main/AndroidManifest.xml')
+          m.write_text(re.sub(r'android:label="[^"]*"','android:label="HazRob Tank"',m.read_text(),count=1))
+          release=Path('source/app/src/main/java/com/servoc/app/ReleaseAudit.java').read_text()
+          assert 'VERSION="5.0"' in release
+          assert 'DATABASE_SCHEMA=10' in release
+          print('Tank V5 app identity and additive database verified.')
+          PY
+
+      - name: Prepare checked offline Stable manifest for V5
+        run: python3 tank/tools/prepare_v5_stable_source.py source
+
+      - name: Generate and SHA-verify embedded Stable (do not promote M4)
+        working-directory: source
+        shell: bash
+        run: |
+          python3 tools/build_hr069_embedded_stable.py --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          d=Path('app/build/generated/hazrobAssets/generated/chemcore/embedded_stable')
+          m=json.loads((d/'manifest.json').read_text())
+          p=(d/m['payload_file']).read_bytes()
+          assert m['min_app_version']==m['max_app_version']=='5.0'
+          assert m['library_version']=='1.0.0-hr069r1'
+          assert m['chemical_count']==652
+          assert m['calibration_count']==0
+          assert m['payload_sha256']==hashlib.sha256(p).hexdigest()
+          assert len(p)==m['payload_size_bytes']
+          print('Verified V5 embedded Stable payload and SHA-256.')
+          PY
+
+      - name: Prepare Android build environment
+        uses: android-actions/setup-android@v3
+
+      - name: Gradle JUnit and compilation first
+        working-directory: source
+        run: ./gradlew --no-daemon :app:testDebugUnitTest
+
+      - name: Build debug APK only after tests passed
+        working-directory: source
+        run: ./gradlew --no-daemon :app:assembleDebug
+
+      - name: Check APK scientific content and release identity
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,zipfile
+          from pathlib import Path
+          apk=Path('source/app/build/outputs/apk/debug/app-debug.apk')
+          assert apk.is_file() and apk.stat().st_size>0
+          base='assets/generated/chemcore/embedded_stable/'
+          with zipfile.ZipFile(apk) as z:
+              m=json.loads(z.read(base+'manifest.json'))
+              payload=z.read(base+m['payload_file'])
+              assert m['min_app_version']==m['max_app_version']=='5.0'
+              assert m['calibration_count']==0
+              assert m['chemical_count']==652
+              assert hashlib.sha256(payload).hexdigest()==m['payload_sha256']
+          print('Diagnostic V5 APK verified:',apk.stat().st_size,hashlib.sha256(apk.read_bytes()).hexdigest())
+          PY
+
+      - name: Upload UNRELEASED diagnostic V5 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V5-debug-UNRELEASED
+          path: source/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
