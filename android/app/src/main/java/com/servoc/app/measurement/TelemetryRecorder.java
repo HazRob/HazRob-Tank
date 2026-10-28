@@ -148,5 +148,44 @@ public final class TelemetryRecorder {
         MeasurementSessionRegistry.completed(completed);if(wasChemCore)MeasurementSessionRegistry.clearChemCoreCapture();if(fieldCaptureSession)MeasurementSessionRegistry.clearFieldCapture();sessionId=null;startedElapsed=startedUtcMs=lastSampleElapsed=sampleSeq=0;chemCoreCaptureSession=false;fieldCaptureSession=false;
     }
 
+    /**
+     * Run only AFTER telemetry workers have drained on Activity destruction.
+     * A killed UI must not leave an in-memory capture marked active or an
+     * apparently unended technical session. This NEVER creates a READY result.
+     */
+    public synchronized void abortInterruptedFieldCapture(String reason){
+        if(!fieldCaptureSession||sessionId==null||sessionId.isEmpty())return;
+        final String interrupted=sessionId;
+        try{
+            long utc=System.currentTimeMillis();
+            long mono=SystemClock.elapsedRealtime();
+            JSONObject metadata=new JSONObject();
+            metadata.put("terminal_state","error");
+            metadata.put("field_60s_capture",true);
+            metadata.put("sample_count",sampleSeq);
+            metadata.put("started_utc_ms",startedUtcMs);
+            metadata.put("ended_utc_ms",utc);
+            metadata.put("started_monotonic_ms",startedElapsed);
+            metadata.put("ended_monotonic_ms",mono);
+            metadata.put("duration_monotonic_ms",Math.max(0,mono-startedElapsed));
+            metadata.put("clock_contract","UTC_EPOCH_MS_PLUS_ANDROID_ELAPSED_REALTIME");
+            metadata.put("failure_reason",reason==null?"ACTIVITY_DESTROYED":reason);
+            ContentValues values=new ContentValues();
+            values.put("ended_ts",isoUtc(utc));
+            values.put("analytics",metadata.toString());
+            values.put("payload","{}");
+            db.getWritableDatabase().update("measurement_sessions",values,
+                "session_id=? AND (ended_ts IS NULL OR TRIM(ended_ts)='')",
+                new String[]{interrupted});
+        }catch(Exception error){
+            android.util.Log.e("TankV5FieldRecorder","Unable to persist interrupted field capture",error);
+        }finally{
+            MeasurementSessionRegistry.resetActive(interrupted);
+            MeasurementSessionRegistry.clearFieldCapture();
+            sessionId=null;startedElapsed=startedUtcMs=lastSampleElapsed=sampleSeq=0;
+            fieldCaptureSession=false;chemCoreCaptureSession=false;
+        }
+    }
+
     private static String isoUtc(long utcMs){SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",Locale.US);f.setTimeZone(TimeZone.getTimeZone("UTC"));return f.format(new Date(utcMs));}
 }
