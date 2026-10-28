@@ -21,7 +21,7 @@ public final class DeveloperTab {
     private final Context context;private final HazRobHost host;private final Runnable onUnlock;
     private final LinearLayout root;private final FrameLayout page;private final LinearLayout bar;
     private boolean unlocked=false;private int selected=0;
-    private Button[] tabs;private DeveloperExperimentsTab experiments;private AnalyticalLabTab chemCore;private DeveloperR0Tab r0;private DeveloperConnectionDiagnosticsTab connectionSetup;private CentralLibraryDashboardTab library;private View[] views;
+    private Button[] tabs;private DeveloperExperimentsTab experiments;private AnalyticalLabTab chemCore;private DeveloperConnectionDiagnosticsTab connectionSetup;private CentralLibraryDashboardTab library;private View[] views;
 
     public DeveloperTab(Context c,HazRobHost host,Runnable onUnlock){
         context=c;this.host=host;this.onUnlock=onUnlock;
@@ -36,8 +36,8 @@ public final class DeveloperTab {
         renderLocked();
     }
 
-    /** Cancels developer auto-R0 acquisition when host Activity is destroyed. */
-    public void release(){if(r0!=null)r0.release();}
+    /** R0 belongs to operator Settings in V5; no developer-owned R0 instance. */
+    public void release(){}
 
     public View view(){return root;}
     public boolean isUnlocked(){return unlocked;}
@@ -60,7 +60,7 @@ public final class DeveloperTab {
     }
 
     /**
-     * Unlock only installs the five navigation destinations. Constructing every
+     * Unlock only installs the four current developer destinations. Constructing every
      * laboratory screen eagerly used to make one SQLite/UI constructor failure
      * crash the complete developer workspace before a tab could be opened.
      */
@@ -68,8 +68,8 @@ public final class DeveloperTab {
         if(unlocked)return;
         unlocked=true;
         if(onUnlock!=null)onUnlock.run();
-        views=new View[5];
-        String[] names={"التجارب","المختبر","معايرة R0","الاتصال","المكتبة"};
+        views=new View[4];
+        String[] names={"التجارب","المختبر","الاتصال","المكتبة"};
         tabs=new Button[names.length];bar.removeAllViews();
         for(int i=0;i<names.length;i++){
             final int x=i;Button b=UiKit.button(context,names[i]);
@@ -94,12 +94,9 @@ public final class DeveloperTab {
                     if(chemCore==null)chemCore=new AnalyticalLabTab(context,host);
                     views[index]=chemCore.view();break;
                 case 2:
-                    if(r0==null)r0=new DeveloperR0Tab(context,host);
-                    views[index]=r0.view();break;
-                case 3:
                     if(connectionSetup==null)connectionSetup=new DeveloperConnectionDiagnosticsTab(context,host);
                     views[index]=connectionSetup.view();break;
-                case 4:
+                case 3:
                     if(library==null)library=new CentralLibraryDashboardTab(context,host);
                     views[index]=library.view();break;
                 default:throw new IllegalArgumentException("Unknown developer tab");
@@ -136,9 +133,8 @@ public final class DeveloperTab {
         try{
             if(selected==0&&experiments!=null)experiments.refresh();
             else if(selected==1&&chemCore!=null)chemCore.refresh();
-            else if(selected==2&&r0!=null)r0.refresh();
-            else if(selected==3&&connectionSetup!=null)connectionSetup.refresh();
-            else if(selected==4&&library!=null)library.refresh();
+            else if(selected==2&&connectionSetup!=null)connectionSetup.refresh();
+            else if(selected==3&&library!=null)library.refresh();
         }catch(RuntimeException ex){
             android.util.Log.e("TankDeveloper","Developer refresh failure tab="+selected,ex);
             host.showToast("تعذر تحديث قسم المطور؛ البيانات المحلية محفوظة");
