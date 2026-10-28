@@ -1,3 +1,11 @@
+## 2026-10-28 — G2 DOI/resolver cross-field consistency (CI verification pending)
+
+- Continued from research HEAD `91e1ee0ab3c7f440202b9489e00f6e8d6141f8b4` (20/20 latest workflows succeeded); central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` remains 80 entries/14 external sources. Independent evidence register `records: []`; source matrix 0/14 review-ready.
+- Added fail-closed `ORIGINAL_SOURCE_DOI_RESOLVER_CONFLICT` for contradictory DOI field versus DOI-resolver landing URL; regular publisher URLs are unaffected. Added three real-byte synthetic regression controls in `test_g2_origin_percent_authority.py`.
+- Documentation: `G2_CROSS_FIELD_DOI_RESOLVER_CONSISTENCY_2026-10-28_AR.md`. Only research implementation files changed; no Stable, app or firmware edits, no G2/G3 promotion. Check Actions for this commit; original independent physical exposure data, traceable reference ppm and locked grouped holdouts remain unavailable.
+
+---
+
 ## 2026-10-28 — G2 complete offline test discovery (254/254 CI)
 
 - Resumed from research HEAD `74d13c87fbe5c9b84fc9ea23cffa65bb79260681`; verified central `HazRob/build-harness` catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets), independent evidence `records: []`, and pinned source readiness 0/14.

@@ -230,6 +230,20 @@ def _source_origin_blockers(row):
                     return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
         except ValueError:
             return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
+    # A declared DOI and a DOI-resolver landing page must identify the
+    # same publication/dataset. Otherwise a row asserts contradictory source
+    # provenance even if both identifiers are individually well formed.
+    # An ordinary publisher URL is not a DOI resolver and is not compared.
+    doi = row.get("doi")
+    url = row.get("primary_url")
+    if isinstance(doi, str) and doi and isinstance(url, str) and url:
+        doi_identity = _canonical_source_origin({"doi": doi})
+        landing_identity = _canonical_source_origin({"primary_url": url})
+        if (doi_identity and landing_identity and
+                doi_identity.startswith("doi:") and
+                landing_identity.startswith("doi:") and
+                doi_identity != landing_identity):
+            return ["ORIGINAL_SOURCE_DOI_RESOLVER_CONFLICT"]
     return []
 
 

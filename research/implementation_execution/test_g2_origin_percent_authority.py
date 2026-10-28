@@ -103,5 +103,33 @@ class PercentAuthoritySourceProvenanceTests(unittest.TestCase):
             self.assertFalse(row["catalog_source_review_ready"])
 
 
+    def test_conflicting_declared_doi_and_resolver_are_blocked(self):
+        # Both identities are syntactically valid, but cannot describe one
+        # unambiguous original dataset. The unrelated source remains ready.
+        first = self.catalog["primary_catalog_entries"][0]
+        first["doi"] = "10.5555/first"
+        first["primary_url"] = "https://doi.org/10.5555/second"
+        a, b = self.matrix()
+        self.assertIn("ORIGINAL_SOURCE_DOI_RESOLVER_CONFLICT", a["blockers"])
+        self.assertFalse(a["catalog_source_review_ready"])
+        self.assertTrue(b["catalog_source_review_ready"])
+
+    def test_matching_declared_doi_and_resolver_aliases_are_accepted(self):
+        first = self.catalog["primary_catalog_entries"][0]
+        first["doi"] = "doi:10.5555/First"
+        first["primary_url"] = "https://dx.doi.org/10.5555%2Ffirst"
+        a, b = self.matrix()
+        self.assertTrue(a["catalog_source_review_ready"])
+        self.assertTrue(b["catalog_source_review_ready"])
+
+    def test_ordinary_publisher_landing_page_is_not_forced_to_match_doi(self):
+        first = self.catalog["primary_catalog_entries"][0]
+        first["doi"] = "10.5555/first"
+        first["primary_url"] = "https://publisher.example/datasets/first"
+        a, b = self.matrix()
+        self.assertTrue(a["catalog_source_review_ready"])
+        self.assertTrue(b["catalog_source_review_ready"])
+
+
 if __name__ == "__main__":
     unittest.main()
