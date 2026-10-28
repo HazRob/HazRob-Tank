@@ -1,3 +1,12 @@
+## 2026-10-28 — G2 generic source URL scheme identity (CI verification pending)
+
+- Rechecked research HEAD `d1df93de574036581fa8b9ab22b7277735f27a87` (20/20 CI successful), pinned central source catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, independent evidence register `records: []`, and last pinned source matrix 0/14 review-ready.
+- Fixed generic URL canonicalization to preserve `http://` versus `https://` as distinct origins while retaining scheme-specific default-port aliases and DOI resolver canonicalization.
+- Added `test_generic_url_scheme_is_preserved_for_source_identity` with two real-byte synthetic archives and recomputed SHA256, covering source review and duplicate-group blocking. Documentation: `G2_HTTP_HTTPS_SOURCE_SCHEME_IDENTITY_2026-10-28_AR.md`.
+- Pending: verify GitHub Actions G2 tests and all workflows on this commit. No scientific promotion, no Stable/Android/firmware changes. Physical independent evidence and traceable ppm reference still absent.
+
+---
+
 ## 2026-10-28 — G2 scheme-specific source URL port identity (228/228 G2 CI)
 
 - Reviewed prior research HEAD `0635db25129159a522b9fa8619ada5ac9ad0a9f7` (20/20 CI successful), central reference-bank Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, and independent G2 evidence register `records: []`.

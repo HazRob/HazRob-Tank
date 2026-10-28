@@ -133,7 +133,7 @@ def _canonical_source_origin(row):
         default_port = 443 if parsed.scheme.lower() == "https" else 80
         netloc = host + (":" + str(port) if port not in (None, default_port) else "")
         path = parsed.path.rstrip("/") or "/"
-        return "url:" + netloc + path + ("?" + parsed.query if parsed.query else "")
+        return "url:" + parsed.scheme.lower() + "://" + netloc + path + ("?" + parsed.query if parsed.query else "")
     candidate = unquote(value).rstrip("/")
     if re.fullmatch(r"10\.\d{4,9}/\S+", candidate, re.I):
         return "doi:" + candidate.lower()
