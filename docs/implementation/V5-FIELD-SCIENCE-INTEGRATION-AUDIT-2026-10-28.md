@@ -66,3 +66,14 @@ Field Session selected by operator (immutable field_session_id)
 7. لا يُشغّل `assemble` أو Actions APK حتى يأذن المالك صراحة.
 
 **نقطة الاستئناف:** `V5-W01/W03: OWNER_PINNED + FIELD_MEDIAN_SAVED + REPORT_WARNING_CONTEXT_SAVED / NO_APK / NEXT: NON_BUILD_SOURCE_QA_AND_ANDROID_DEVICE_GATES`.
+
+
+## 6. تدقيق الاسترداد النهائي عند إغلاق Android Activity
+
+بعد إعداد المسار الأول للإغلاق، ظهر أن `workers.shutdown()` قد يوقف polling قبل أن يستهلك `TelemetryRecorder` طلب `requestFieldStop("error")`؛ فتظل جلسة تقنية مفتوحة في قاعدة البيانات أو يبقى علم `FIELD_CAPTURE` مفعلاً في الذاكرة، رغم أن `FieldCycleRepository` قد وسم الدورة بالفشل.
+
+**الإصلاح:** أضيف `TelemetryRecorder.abortInterruptedFieldCapture(reason)` وهو يعمل بعد تصريف/إيقاف workers وبالتزامن مع قفل recorder، لتخزين `ended_ts` و`terminal_state="error"` ومدة الالتقاط الحقيقية وسبب الفشل، ثم تحرير `ACTIVE/FIELD_CAPTURE`. تستدعيه `MainActivity.onDestroy` قبل `WifiRoute.unbind` و`db.close`.
+
+**الفحص:** `9/9` تحقق بنيوي لملفات Java التي مسها تغيير دورة الحياة، و`10/10` فحص تكامل مصدر إضافي، جميعها PASS. أضيفت assertions إلى `TankV5IntegrationOwnerAndEvidenceContractTest` ولم تُشغّل JUnit.
+
+**حد الأمان:** هذا يغطي الإغلاق الطبيعي المسموح به من Android؛ أما `force-stop` وانقطاع الكهرباء أو قتل العملية من النظام فلا يضمنان تنفيذ أي callback. يحتاج الروبوت سياسة Relay Watchdog داخل الفيرموير واختبار أمان فعلي. لا يُعد `V5-001` مُعتمدًا ميدانيًا بهذه الفحوص.
