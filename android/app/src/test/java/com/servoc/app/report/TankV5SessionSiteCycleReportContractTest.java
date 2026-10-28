@@ -45,6 +45,10 @@ public final class TankV5SessionSiteCycleReportContractTest {
         assertTrue(site.contains("for(FieldCycleRepository.Cycle cycle:b.cycleLedger)"));
         assertTrue(site.contains("cycleMatrix(p.getCanvas(),b,chunk)"));
         assertTrue(site.contains("int total=3+matrixPages+cyclePages"));
+        assertTrue(site.contains("screening_ppm_estimate"));
+        assertTrue(site.contains("ppm/EST"));
+        assertTrue(site.contains("~ppm = تقدير بحثي"));
+
         assertTrue(site.contains("for(CycleSummary entry:session.cycles)"));
         assertTrue(xlsx.contains("new SmartXlsxPackage.Sheet(\"دورات الموقع\",allFieldCycles(b))"));
         assertTrue(xlsx.contains("for(SiteSummaryReportExporter.SessionSummary session:b.sessions)"));
