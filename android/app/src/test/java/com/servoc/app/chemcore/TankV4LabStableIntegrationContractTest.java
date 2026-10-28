@@ -36,13 +36,13 @@ public final class TankV4LabStableIntegrationContractTest {
 
     @Test public void installedStableMustBeVersionCompatibleAndContentVerified()throws Exception{
         String rel=read("src/main/java/com/servoc/app/ReleaseAudit.java");
-        assertTrue(rel.contains("VERSION=\"4.0\""));
+        assertTrue(rel.contains("VERSION=\"5.0\""));
         String config=read("build.gradle");
         assertTrue(config.contains("assets.srcDir generatedHazrobAssets"));
         assertTrue(config.contains("prepareHr069EmbeddedStable"));
         String stableBuilder=read("../tools/build_hr069_embedded_stable.py");
-        assertTrue(stableBuilder.contains("\"min_app_version\":\"4.0\""));
-        assertTrue(stableBuilder.contains("\"max_app_version\":\"4.0\""));
+        assertTrue(stableBuilder.contains("\"min_app_version\":\"5.0\""));
+        assertTrue(stableBuilder.contains("\"max_app_version\":\"5.0\""));
         assertTrue(stableBuilder.contains("\"calibration_count\":0"));
         String host=read("src/main/java/com/servoc/app/MainActivity.java");
         assertTrue(host.contains("ChemCoreEmbeddedStableInstaller.ensureInstalled"));
