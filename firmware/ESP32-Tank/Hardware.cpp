@@ -240,14 +240,58 @@ uint32_t r0Checksum(const R0Record& rec){
  const uint8_t* p=(const uint8_t*)&rec;uint32_t h=2166136261UL;
  for(size_t i=0;i<sizeof(rec)-sizeof(rec.checksum);i++){h^=p[i];h*=16777619UL;}return h;
 }
-bool loadR0Record(R0Record& rec){
- if(nv.getBytesLength("r0_v4")!=sizeof(rec))return false;
- if(nv.getBytes("r0_v4",&rec,sizeof(rec))!=sizeof(rec))return false;
- if(rec.magic!=R0_MAGIC||rec.checksum!=r0Checksum(rec))return false;
- for(uint8_t i=0;i<Cfg::MQ_N;i++)if(rec.counts[i]<10||!ff(rec.values[i])||rec.values[i]<=0)return false;
+// Two-slot, generation-numbered V5 R0 storage. A torn update cannot overwrite
+// the last complete slot. Legacy V4 NVS is read-only fallback for migration.
+constexpr uint32_t R0_SLOT_MAGIC=0x52305335UL;
+struct R0Slot{uint32_t magic;uint32_t generation;R0Record record;uint32_t checksum;};
+uint32_t r0SlotChecksum(const R0Slot& slot){
+ const uint8_t* b=(const uint8_t*)&slot;uint32_t h=2166136261UL;
+ for(size_t i=0;i<sizeof(slot)-sizeof(slot.checksum);i++){h^=b[i];h*=16777619UL;}return h;
+}
+bool validR0Record(const R0Record& r){
+ if(r.magic!=R0_MAGIC||r.checksum!=r0Checksum(r))return false;
+ for(uint8_t i=0;i<Cfg::MQ_N;i++)
+  if(r.counts[i]<10||!ff(r.values[i])||r.values[i]<=0)return false;
  return true;
 }
-bool saveR0Record(const R0Record& rec){return nv.putBytes("r0_v4",&rec,sizeof(rec))==sizeof(rec);}
+bool loadR0Slot(const char* key,R0Slot& slot){
+ if(nv.getBytesLength(key)!=sizeof(slot))return false;
+ if(nv.getBytes(key,&slot,sizeof(slot))!=sizeof(slot))return false;
+ return slot.magic==R0_SLOT_MAGIC&&slot.generation>0&&
+        slot.checksum==r0SlotChecksum(slot)&&validR0Record(slot.record);
+}
+bool newerR0Generation(uint32_t a,uint32_t b){
+ return (int32_t)(a-b)>0;
+}
+bool loadR0Record(R0Record& rec){
+ R0Slot a={},b={};
+ bool va=loadR0Slot("r0_v5_a",a),vb=loadR0Slot("r0_v5_b",b);
+ if(va||vb){
+  rec=va&&(!vb||!newerR0Generation(b.generation,a.generation))?
+      a.record:b.record;
+  return true;
+ }
+ // Preserve already-approved V4 calibrations without rewriting their NVS key.
+ if(nv.getBytesLength("r0_v4")!=sizeof(rec))return false;
+ if(nv.getBytes("r0_v4",&rec,sizeof(rec))!=sizeof(rec))return false;
+ return validR0Record(rec);
+}
+bool saveR0Record(const R0Record& rec){
+ if(!validR0Record(rec))return false;
+ R0Slot a={},b={};
+ bool va=loadR0Slot("r0_v5_a",a),vb=loadR0Slot("r0_v5_b",b);
+ bool latestA=va&&(!vb||!newerR0Generation(b.generation,a.generation));
+ uint32_t generation=(va||vb)?
+   (latestA?a.generation:b.generation)+1:1;
+ if(generation==0)generation=1;
+ const char* target=latestA?"r0_v5_b":"r0_v5_a";
+ R0Slot next={};next.magic=R0_SLOT_MAGIC;next.generation=generation;
+ next.record=rec;next.checksum=r0SlotChecksum(next);
+ if(nv.putBytes(target,&next,sizeof(next))!=sizeof(next))return false;
+ R0Slot check={};
+ return loadR0Slot(target,check)&&check.generation==next.generation&&
+        check.record.checksum==rec.checksum;
+}
 
 void calibrationUpdate(){
  if(calState!=CAL_WARM&&calState!=CAL_SAMPLE)return;
