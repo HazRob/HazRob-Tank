@@ -200,7 +200,8 @@ public final class FieldCycleRepository {
                     !FieldSessionApprovalPolicy.completedSuccessfully(nz(c.getString(5)),nz(c.getString(6)))||
                     c.isNull(8)||c.getLong(8)<=0||
                     android.os.SystemClock.elapsedRealtime()-c.getLong(8)<60000L ||
-                    !hasMeasuredEvidence(w,ms,c.getInt(9)!=0,c.getInt(10)!=0,c.getInt(11)!=0))
+                    !hasMeasuredEvidence(w,ms,c.getInt(9)!=0,c.getInt(10)!=0,c.getInt(11)!=0)||
+                    !hasRequiredChemCoreDecision(ms,c.getInt(9)!=0))
                     return false;
                 String fingerprint=evidenceDigest(w,ms,deviceId,c.getString(5),c.getString(6));
                 ContentValues v=new ContentValues();v.put("state",REVIEW);
@@ -353,6 +354,18 @@ public final class FieldCycleRepository {
      * empty or fabricated zero-value snapshots is not an accepted field result.
      * Minimum 10 independent poll records per selected measurement family.
      */
+    /** A documented gas cycle must carry a persisted ChemCore screening decision
+     *  (including INSUFFICIENT_EVIDENCE), never merely a timed raw sample sequence.
+     *  Physical/particle-only cycles do not manufacture a gas identification.
+     */
+    private boolean hasRequiredChemCoreDecision(String measurementId,boolean gas){
+        if(!gas)return true;
+        try{
+            return new com.servoc.app.chemcore.ChemCoreDecisionRepository(db)
+                .latestPayloadForSession(measurementId)!=null;
+        }catch(Exception ex){return false;}
+    }
+
     private static boolean hasMeasuredEvidence(SQLiteDatabase w,String measurementId,
                                                boolean gas,boolean physical,boolean particles){
         int physicalN=0,particleN=0;
