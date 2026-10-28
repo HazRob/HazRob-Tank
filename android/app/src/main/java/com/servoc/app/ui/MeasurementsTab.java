@@ -42,6 +42,7 @@ import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
 import com.servoc.app.chemcore.TankPpmEstimate;
 import com.servoc.app.chemcore.TankExposureReferenceCatalog;
 import com.servoc.app.chemcore.TankScreeningExposureWarning;
+import com.servoc.app.chemcore.TankCandidateHazardBadges;
 import com.servoc.app.chemcore.TankInstantAnalyzer;
 import com.servoc.app.report.TankInstantCharts;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
@@ -65,7 +66,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/** HazRob 0.10.2 / HR069 operator measurement + ChemCore dashboard. */
+/** HazRob Tank V5 operator measurements: one ChemCore analysis plus candidate workbench. */
 public final class MeasurementsTab {
     private static final int BG=0xFFF7F8FA,CARD=0xFFFFFFFF,CARD_ALT=0xFFE8EBEF;
     private static final int TEXT=0xFF101820,MUTED=0xFF4B5563,GOOD=0xFF167443,WARN=0xFF955000,BAD=0xFFB42318,INFO=0xFF1455A3;
@@ -84,7 +85,7 @@ public final class MeasurementsTab {
     private final AnalysisResultsPane analysisResults;
     private final LinearLayout analysisShell;
     private final FrameLayout analysisPage;
-    private final Button[] analysisTabs=new Button[3];
+    private final Button[] analysisTabs=new Button[2];
     private final ScrollView searchView;
     private final android.os.Handler searchHandler=new android.os.Handler(android.os.Looper.getMainLooper());
     private Runnable pendingSearch;
@@ -114,11 +115,14 @@ public final class MeasurementsTab {
         root.addView(bar,UiKit.full(c));
         page=new FrameLayout(c);root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));
         physical=new PhysicalPane();live=new LivePane();analysis=new AnalysisPane();analysisResults=new AnalysisResultsPane();
+        // V5 keeps one computed operation and a single results workspace.
+        // Charts are injected into the candidate workbench without duplicating its results.
+        analysisResults.box.addView(analysis.box,UiKit.full(c));
         searchView=buildSearchLanding();
         particlesView=buildParticlesLanding();
         analysisShell=UiKit.vbox(c);
         LinearLayout sections=UiKit.hbox(c);
-        String[] sectionNames={"⏱ القياس الآني","🧪 ChemCore","🏅 المرشحون"};
+        String[] sectionNames={"⏱ القياس الآني","🧪 ChemCore والمرشحون"};
         for(int i=0;i<3;i++){
             final int index=i;analysisTabs[i]=UiKit.button(c,sectionNames[i]);
             analysisTabs[i].setTextSize(11);
@@ -234,7 +238,7 @@ public final class MeasurementsTab {
             public void onNothingSelected(AdapterView<?> p){}
         });
         Button candidates=UiKit.button(c,"🏅 أفضل مرشحي ChemCore — اختر مادة للتتبع");
-        candidates.setOnClickListener(v->{show(1);showAnalysisSection(2);});
+        candidates.setOnClickListener(v->{show(1);showAnalysisSection(1);});
         content.addView(candidates,UiKit.full(c));
         refreshChemicalSearch();
         return scroll;
@@ -331,17 +335,16 @@ public final class MeasurementsTab {
         switch(selected){
             case 1:
                 if(analysisSection==0)live.refresh();
-                else if(analysisSection==1)analysis.refresh();
-                else analysisResults.refresh();
+                else{analysisResults.refresh();analysis.refresh();}
                 break;
             case 2:physical.refresh();break;
             default:break;
         }
     }
     private void showAnalysisSection(int index){
-        analysisSection=Math.max(0,Math.min(2,index));
+        analysisSection=Math.max(0,Math.min(1,index));
         if(analysisPage==null)return;
-        View target=analysisSection==0?live.view:analysisSection==1?analysis.view:analysisResults.view;
+        View target=analysisSection==0?live.view:analysisResults.view;
         if(target.getParent() instanceof android.view.ViewGroup)((android.view.ViewGroup)target.getParent()).removeView(target);
         analysisPage.removeAllViews();
         analysisPage.addView(target,new FrameLayout.LayoutParams(-1,-1));
@@ -684,41 +687,31 @@ public final class MeasurementsTab {
         }
     }
 
+    /**
+     * V5 charts-only companion to the ONE ChemCore candidate/results workspace.
+     * Shares currentOperation.analysis with the candidate cards and instant PDF.
+     * It is intentionally not a separate user-facing tab or a second analyzer.
+     */
     private final class AnalysisPane {
-        final ScrollView view;final LinearLayout box;
-        final TextView readiness,topCandidate,confidence,evidence,quantitative,quality,candidatePreview,referenceInventory,screeningWarnings;
-        TextView technical;
-        final Button technicalToggle,largeChart;
+        final LinearLayout box;
         final Spinner chartChooser;
         final ImageView chartImage;
         final TextView chartState;
-        final ChemCoreDecisionRepository decisions;
+        final Button largeChart;
         private final java.util.ArrayList<Integer> availableCharts=new java.util.ArrayList<>();
         private String chartOperationId="";
-        boolean technicalVisible=false;
 
         AnalysisPane(){
-            view=new ScrollView(c);view.setVerticalScrollBarEnabled(true);view.setScrollbarFadingEnabled(false);box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,10));view.addView(box);
-            box.addView(UiKit.title(c,"ChemCore • لوحة التحليل"),UiKit.full(c));
-            box.addView(UiKit.small(c,"المرشحون مرتّبون بحسب أدلة ChemCore المحفوظة؛ ترتيبهم لا يعني إثبات الهوية أو اعتماد PPM."),UiKit.full(c));
-            candidatePreview=card("المرشحون: —");candidatePreview.setTextIsSelectable(true);box.addView(candidatePreview,UiKit.full(c));
-            LinearLayout r1=UiKit.hbox(c);readiness=kpi("الجاهزية\n—");topCandidate=kpi("المرشح الأول\n—");r1.addView(readiness,UiKit.weight(1));r1.addView(topCandidate,UiKit.weight(1));box.addView(r1,UiKit.full(c));
-            LinearLayout r2=UiKit.hbox(c);confidence=kpi("الثقة\n—");evidence=kpi("الدليل\n—");r2.addView(confidence,UiKit.weight(1));r2.addView(evidence,UiKit.weight(1));box.addView(r2,UiKit.full(c));
-            quantitative=kpi("PPM الكمي\n—");box.addView(quantitative,UiKit.full(c));
-            screeningWarnings=card("تحذيرات PPM التقديرية\n—");screeningWarnings.setTextIsSelectable(true);box.addView(screeningWarnings,UiKit.full(c));
-            referenceInventory=card("حدود التعرض المرجعية\n—");referenceInventory.setTextIsSelectable(true);box.addView(referenceInventory,UiKit.full(c));
-            quality=card("جودة التحليل: —");box.addView(quality,UiKit.full(c));
-            LinearLayout nav=UiKit.hbox(c);Button openResults=UiKit.button(c,"فتح النتائج التفصيلية");openResults.setOnClickListener(v->showAnalysisSection(2));nav.addView(openResults,UiKit.weight(1.4f));technicalToggle=UiKit.button(c,"التفاصيل التقنية");technicalToggle.setOnClickListener(v->{technicalVisible=!technicalVisible;technical.setVisibility(technicalVisible?View.VISIBLE:View.GONE);technicalToggle.setText(technicalVisible?"إخفاء التفاصيل":"التفاصيل التقنية");});nav.addView(technicalToggle,UiKit.weight(1));box.addView(nav,UiKit.full(c));
-            technical=card("");technical.setTextIsSelectable(true);technical.setVisibility(View.GONE);box.addView(technical,UiKit.full(c));
-            box.addView(UiKit.title(c,"📊 قائمة اختيار مخططات ChemCore"),UiKit.full(c));
-            box.addView(UiKit.small(c,"الرسوم التي تسمح بها بيانات العملية المكتملة فقط؛ لا توجد مخططات زمنية من لقطة واحدة."),UiKit.full(c));
+            box=UiKit.vbox(c);
+            box.addView(UiKit.title(c,"📊 مخططات ChemCore للعملية نفسها"),UiKit.full(c));
+            box.addView(UiKit.small(c,"تُعرض المخططات الممكنة من بيانات العملية الواحدة، ولا تُختلق سلسلة زمنية من لقطة واحدة."),UiKit.full(c));
             chartChooser=new Spinner(c);UiKit.outlinedSpinner(chartChooser);
             box.addView(chartChooser,UiKit.full(c));
-            chartState=card("أكمل القياس الآني لعرض المخططات المتاحة");box.addView(chartState,UiKit.full(c));
+            chartState=card("أكمل القياس الآني لعرض المخططات المتاحة");
+            box.addView(chartState,UiKit.full(c));
             chartImage=new ImageView(c);chartImage.setAdjustViewBounds(true);
             chartImage.setVisibility(View.GONE);box.addView(chartImage,UiKit.full(c));
-            largeChart=UiKit.button(c,"🔍 تكبير المخطط");
-            largeChart.setEnabled(false);
+            largeChart=UiKit.button(c,"🔍 تكبير المخطط");largeChart.setEnabled(false);
             largeChart.setOnClickListener(v->openLargeChart());
             chartImage.setOnClickListener(v->openLargeChart());
             box.addView(largeChart,UiKit.full(c));
@@ -726,33 +719,11 @@ public final class MeasurementsTab {
                 public void onItemSelected(AdapterView<?> parent,View view,int pos,long id){showSelectedChart(pos);}
                 public void onNothingSelected(AdapterView<?> parent){}
             });
-            LinearLayout exp=UiKit.hbox(c);Button pdf=UiKit.button(c,"PDF");pdf.setOnClickListener(v->export("pdf"));exp.addView(pdf,UiKit.weight(1));Button xls=UiKit.button(c,"Excel");xls.setOnClickListener(v->export("xlsx"));exp.addView(xls,UiKit.weight(1));Button raw=UiKit.button(c,"Raw");raw.setOnClickListener(v->export("raw"));exp.addView(raw,UiKit.weight(1));box.addView(exp,UiKit.full(c));
-            decisions=new ChemCoreDecisionRepository(host.database());
+            Button pdf=UiKit.button(c,"📄 التقرير الذكي للعملية الآنية PDF");
+            pdf.setOnClickListener(v->export());
+            box.addView(pdf,UiKit.full(c));
         }
-        void refresh(){
-            JSONObject d=host.latestDiagnostics();ChemCoreLabQuality q=ChemCoreLabQuality.evaluate(d,host.driveLeft(),host.driveRight(),host.database());
-            boolean ready=q.configurationReady&&q.captureReady;
-            boolean exploratory=q.exploratoryScreeningReady();
-            readiness.setText("الجاهزية\n"+(ready?"● مُهيّأ للمعايرة/التحليل":exploratory?"● فحص بحثي متاح قبل R0":"● انتظار حساسات MQ"));
-            colorState(readiness,ready,exploratory);
-            quality.setText("MQ صالح "+q.validMqChannels+"/8 • R0 "+q.r0NormalizedChannels+"/8 • M4-ref "+q.referenceValidatedChannels+"/8 • ENV "+(q.environmentReady?"جاهز":"محجوب"));quality.setTextColor(q.validMqChannels>=6?GOOD:WARN);
-            TankInstantAnalyzer.Result completed=currentOperation;JSONObject p=completed==null?null:completed.analysis;
-            refreshChartChoices(completed);
-            if(p==null){topCandidate.setText("المرشح الأول\n—");confidence.setText("الثقة\n—");evidence.setText("الدليل\n—");quantitative.setText("PPM الكمي\nلا توجد جلسة محللة");exposureStyle(quantitative,false);candidatePreview.setText("لا توجد نتيجة ChemCore مرتبطة بجلسة مكتملة.");technical.setText("لا توجد تفاصيل تقنية.");referenceInventory.setText("حدود التعرض: لا يوجد تحليل حالي.");screeningWarnings.setText("تحذيرات PPM: لا توجد عملية قياس محللة.");return;}
-            String chemical=p.optString("chemical","—"),tier=p.optString("evidence_tier","—"),outcome=p.optString("outcome","—");double post=p.optDouble("top_posterior",Double.NaN),runner=p.optDouble("runner_up_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN),ood=p.optDouble("ood_score",Double.NaN),entropy=p.optDouble("normalized_entropy",Double.NaN);
-            topCandidate.setText("المرشح الأول\n"+chemical);topCandidate.setTextColor(INFO);
-            confidence.setText("الثقة\n"+pct(post)+" • Δ "+pct(margin));confidence.setTextColor(Double.isFinite(post)&&post>=0.7?GOOD:Double.isFinite(post)&&post>=0.4?WARN:BAD);
-            evidence.setText("الدليل\n"+tier+" • "+outcome);evidence.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
-            TankPpmEstimate.Result result=TankPpmEstimate.from(p);boolean reportable=result.reportable;double ppm=result.ppm;String ppmText=result.available()?String.format(Locale.US,"%.2f ppm • %s",ppm,result.qualityAr()):"لا توجد نتيجة رقمية من الطرق المتاحة";quantitative.setText("PPM — نتائج الطرق المتاحة\n"+ppmText);quantitative.setTextColor(reportable?GOOD:INFO);
-            JSONObject exposure=p.optJSONObject("gas_exposure_ppm");
-            if(reportable&&Double.isFinite(ppm)&&exposureExceeded(exposure))exposureStyle(quantitative,true);
-            else quantitative.setTypeface(Typeface.DEFAULT,Typeface.NORMAL);
-            quality.setText("جودة التحليل • MQ "+q.validMqChannels+"/8 • ENV "+(q.environmentReady?"READY":"WITHHELD")+" • OOD "+fmt(ood)+" • Entropy "+fmt(entropy)+" • Runner "+pct(runner));
-            referenceInventory.setText(TankExposureReferenceCatalog.summary(p,3,8));
-            screeningWarnings.setText(TankScreeningExposureWarning.summary(p,4));styleScreeningWarning(screeningWarnings,p);
-            candidatePreview.setText(compactCandidates(p,4));
-            technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,4));
-        }
+        void refresh(){refreshChartChoices(currentOperation);}
         private void refreshChartChoices(TankInstantAnalyzer.Result item){
             String id=item==null?"":item.id;
             if(id.equals(chartOperationId))return;
@@ -770,8 +741,8 @@ public final class MeasurementsTab {
             chartImage.setImageDrawable(null);
             largeChart.setEnabled(false);
             chartState.setText(item==null?"أكمل القياس الآني لعرض المخططات":
-                    availableCharts.isEmpty()?"لا تتوفر بيانات كافية للرسم":
-                    "اختر أحد "+availableCharts.size()+" مخططات متاحة");
+                availableCharts.isEmpty()?"لا تتوفر بيانات كافية للرسم":
+                "اختر أحد "+availableCharts.size()+" مخططات متاحة");
             if(!availableCharts.isEmpty())showSelectedChart(0);
         }
         private void showSelectedChart(int selectedIndex){
@@ -795,12 +766,9 @@ public final class MeasurementsTab {
             new AlertDialog.Builder(c).setTitle(String.valueOf(chartChooser.getSelectedItem()))
                 .setView(enlarged).setPositiveButton("إغلاق",null).show();
         }
-        void export(String format){
+        private void export(){
             TankInstantAnalyzer.Result result=currentOperation;
-            if(result==null){host.showToast("أكمل عملية القياس الآني أولاً");return;}
-            if(!"pdf".equalsIgnoreCase(format)){
-                host.showToast("تقرير هذه العملية الآنية متوفر PDF فقط");return;
-            }
+            if(result==null){host.showToast("أكمل القياس الآني أولاً");return;}
             host.requestInstantReportPdf(result.original,result.analysis,result.id,result.capturedAtMs);
         }
     }
@@ -913,7 +881,7 @@ public final class MeasurementsTab {
             // Recreate only the bounded current results. Do not append duplicates when selecting a candidate.
             candidateList.removeAllViews();
             JSONArray a=p.optJSONArray("candidates");if(a==null||a.length()==0){candidateList.addView(card("لا توجد فرضيات قابلة للحل"),UiKit.full(c));return;}int n=Math.min(12,a.length());
-            for(int i=0;i<n;i++){JSONObject q=a.optJSONObject(i);if(q==null)continue;int rank=q.optInt("rank",i+1);long uid=q.optLong("chemical_uid",-1);String name=q.optString("label","—");double posterior=q.optDouble("posterior",Double.NaN),coverage=q.optDouble("coverage_pct",Double.NaN),agreement=q.optDouble("agreement_pct",Double.NaN),residual=q.optDouble("residual_rms",Double.NaN);String tier=q.optString("evidence_tier",p.optString("evidence_tier","—"));double fitPpm=q.optDouble("screening_fit_ppm",q.optDouble("best_ppm",Double.NaN));String ppmLine=Double.isFinite(fitPpm)&&fitPpm>=0?"\nPPM حسابي: "+String.format(Locale.US,"%.2f",fitPpm)+" • تقدير غير مرجعي":"";int bg=candidateColor(rank-1,"");Button row=UiKit.button(c,(uid==selectedCandidateId?"◉ ":"")+"#"+rank+"  "+name+"\nPosterior "+pct(posterior)+" • Coverage "+pctAny(coverage)+" • Agreement "+pctAny(agreement)+" • Residual "+fmt(residual)+" • "+tier+ppmLine);row.setAllCaps(false);row.setTextColor(foregroundFor(bg));row.setBackgroundColor(bg);row.setOnClickListener(v->{selectedCandidateId=(int)uid;selectedCandidateName=name;selected.setText("المرشح المحدد • "+name+" (#"+uid+") • الاختيار لا يعني قبول الهوية");startTracking.setEnabled(uid>=0);renderCandidates(p);});candidateList.addView(row,UiKit.full(c));}
+            for(int i=0;i<n;i++){JSONObject q=a.optJSONObject(i);if(q==null)continue;int rank=q.optInt("rank",i+1);long uid=q.optLong("chemical_uid",-1);String name=q.optString("label","—");double posterior=q.optDouble("posterior",Double.NaN),coverage=q.optDouble("coverage_pct",Double.NaN),agreement=q.optDouble("agreement_pct",Double.NaN),residual=q.optDouble("residual_rms",Double.NaN);String tier=q.optString("evidence_tier",p.optString("evidence_tier","—"));double fitPpm=q.optDouble("screening_fit_ppm",q.optDouble("best_ppm",Double.NaN));String ppmLine=Double.isFinite(fitPpm)&&fitPpm>=0?"\nPPM حسابي: "+String.format(Locale.US,"%.2f",fitPpm)+" • تقدير غير مرجعي":"";String hazard=TankCandidateHazardBadges.forCandidate(p,uid);int bg=candidateColor(rank-1,"");Button row=UiKit.button(c,(uid==selectedCandidateId?"◉ ":"")+"#"+rank+"  "+name+hazard+"\nPosterior "+pct(posterior)+" • Coverage "+pctAny(coverage)+" • Agreement "+pctAny(agreement)+" • Residual "+fmt(residual)+" • "+tier+ppmLine);row.setAllCaps(false);row.setTextColor(foregroundFor(bg));row.setBackgroundColor(bg);row.setOnClickListener(v->{selectedCandidateId=(int)uid;selectedCandidateName=name;selected.setText("المرشح المحدد • "+name+" (#"+uid+") • الاختيار لا يعني قبول الهوية");startTracking.setEnabled(uid>=0);renderCandidates(p);});candidateList.addView(row,UiKit.full(c));}
         }
         private void renderScreening(JSONObject screening,JSONObject p){
             JSONArray rows=screening==null?null:screening.optJSONArray("rows");if(rows==null){screeningList.addView(card("لا توجد مصفوفة فحص 144"),UiKit.full(c));return;}HashMap<Long,Integer> ranks=new HashMap<>();JSONArray candidates=p.optJSONArray("candidates");if(candidates!=null)for(int i=0;i<candidates.length();i++){JSONObject q=candidates.optJSONObject(i);if(q!=null)ranks.put(q.optLong("chemical_uid",-1),i);}
