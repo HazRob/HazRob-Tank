@@ -504,6 +504,73 @@ class CatalogMalformedOriginIsolationTests(unittest.TestCase):
                 "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in row["blockers"]
                 for row in result["datasets"]))
 
+    def test_equivalent_ipv6_spellings_are_one_source(self):
+        """IPv6 zero compression and IPv4-mapped notation are source aliases.
+
+        Real-byte synthetic fixtures verify the complete source catalogue
+        verdict, not merely the normalized URL string. No gas measurements
+        or independent exposures are inferred from these fixtures.
+        """
+        import hashlib
+        from g2_reference_catalog_readiness import (
+            _canonical_source_origin, audit_source_catalog)
+
+        def canonical(value):
+            return _canonical_source_origin({"primary_url": value})
+
+        self.assertEqual(
+            canonical("https://[2001:0DB8:0:0:0:0:0:1]/data"),
+            canonical("https://[2001:db8::1]:443/data"))
+        self.assertEqual(
+            canonical("https://[::ffff:192.0.2.1]/data"),
+            canonical("https://[::ffff:c000:201]/data"))
+        self.assertNotEqual(
+            canonical("https://[2001:db8::1]:8443/data"),
+            canonical("https://[2001:db8::1]/data"))
+        self.assertNotEqual(
+            canonical("https://[2001:db8::1]:8080/data"),
+            canonical("https://[2001:db8::8080]/data"))
+
+        catalog = self.fixture()
+        with tempfile.TemporaryDirectory() as temp:
+            for index, row in enumerate(catalog["primary_catalog_entries"]):
+                raw = ("synthetic IPv6 spelling " + str(index)).encode("ascii")
+                relative = "research/g2/raw/ipv6-spelling-" + str(index) + ".bin"
+                path = Path(temp) / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+                row.update(
+                    primary_url=("https://[2001:0DB8:0:0:0:0:0:1]/data"
+                                 if index == 0 else
+                                 "https://[2001:db8::1]:443/data"),
+                    measurement_qualification=True,
+                    experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                    raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                    physical_reference_traceability=True,
+                    raw_local_path=relative,
+                    raw_size_bytes=len(raw),
+                    raw_sha256=hashlib.sha256(raw).hexdigest())
+
+            def verdict():
+                return audit_source_catalog(
+                    catalog, expected_total=2, expected_datasets=2,
+                    repo_root=temp)
+
+            duplicate = verdict()
+            self.assertEqual(duplicate["source_review_ready"], 0)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in row["blockers"]
+                for row in duplicate["datasets"]))
+            # A different IPv6 endpoint remains distinct, with verified
+            # synthetic bytes and no accidental origin duplicate.
+            catalog["primary_catalog_entries"][1]["primary_url"] = (
+                "https://[2001:db8::2]/data")
+            distinct = verdict()
+            self.assertEqual(distinct["source_review_ready"], 2)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" not in row["blockers"]
+                for row in distinct["datasets"]))
+
     def test_ipv6_address_and_port_do_not_collide_in_source_identity(self):
         """Synthetic raw-byte replay: IPv6 address segments are not port numbers."""
         import hashlib
