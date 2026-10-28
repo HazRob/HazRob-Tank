@@ -55,9 +55,11 @@ public final class FieldCycleController {
                 android.util.Log.e("TankFieldCycle","Cannot cancel active cycle",ex);
                 MeasurementSessionRegistry.requestFieldStop("error");
             }
-        }else{
+        }else if(!busy){
             MeasurementSessionRegistry.endFieldOperation();
         }
+        // If busy during ARMING, there is no cycleId yet. The arming worker
+        // owns cleanup and must release the reservation AFTER relay power-off.
     }
     public boolean busy(){return busy;}
     public String currentCycleId(){return cycleId;}
@@ -94,8 +96,19 @@ public final class FieldCycleController {
                     repo.startedWithoutGas(row.id,at,id);
                 if(!saved)throw new IllegalStateException("تعذر توثيق بداية الإحماء");
                 final String cid=row.id;
+                if(disposed){
+                    failWorker(cid,"ACTIVITY_DESTROYED_DURING_ARMING",modes.gas);
+                    MeasurementSessionRegistry.endFieldOperation();
+                    return;
+                }
                 main.post(()->{
-                    if(disposed)return;
+                    if(disposed){
+                        host.io().execute(()->{
+                            try{failWorker(cid,"ACTIVITY_DESTROYED_BEFORE_TIMER",modes.gas);}
+                            finally{MeasurementSessionRegistry.endFieldOperation();}
+                        });
+                        return;
+                    }
                     cycleId=cid;deviceId=id;gas=modes.gas;busy=true;
                     lastSnapshot=verified;lastFreshMs=SystemClock.elapsedRealtime();
                     message("WARMUP","إحماء الحساسات/استقرار التشغيل • 60 ثانية",cid);
@@ -105,7 +118,8 @@ public final class FieldCycleController {
             }catch(Exception ex){
                 String failedId=row==null?"":row.id;
                 failWorker(failedId,ex.getMessage(),modes.gas);
-                main.post(()->end("FAILED","تعذر بدء القياس: "+ex.getMessage(),failedId));
+                if(disposed)MeasurementSessionRegistry.endFieldOperation();
+                else main.post(()->end("FAILED","تعذر بدء القياس: "+ex.getMessage(),failedId));
             }
         });
     }
@@ -144,7 +158,13 @@ public final class FieldCycleController {
                 row=repo.retry(predecessor);
                 final FieldCycleRepository.Cycle next=row;
                 main.post(()->{
-                    if(disposed)return;
+                    if(disposed){
+                        host.io().execute(()->{
+                            try{failWorker(next.id,"ACTIVITY_DESTROYED_DURING_RETRY",next.modes.gas);}
+                            finally{MeasurementSessionRegistry.endFieldOperation();}
+                        });
+                        return;
+                    }
                     busy=false;
                     startReserved(next);
                 });
@@ -152,7 +172,8 @@ public final class FieldCycleController {
                 // If retry itself failed, old review evidence remains unchanged.
                 final String reason=ex.getMessage();
                 if(row!=null)repo.fail(row.id,reason);
-                main.post(()->end("FAILED","تعذر إعادة القياس: "+reason,predecessor));
+                if(disposed)MeasurementSessionRegistry.endFieldOperation();
+                else main.post(()->end("FAILED","تعذر إعادة القياس: "+reason,predecessor));
             }
         });
     }
@@ -175,8 +196,19 @@ public final class FieldCycleController {
                 long at=SystemClock.elapsedRealtime();
                 if(!(gas?repo.relayConfirmed(cid,at,id):repo.startedWithoutGas(cid,at,id)))
                     throw new IllegalStateException("تعذر تسجيل بداية المحاولة");
+                if(disposed){
+                    failWorker(cid,"ACTIVITY_DESTROYED_DURING_RETRY_ARMING",gas);
+                    MeasurementSessionRegistry.endFieldOperation();
+                    return;
+                }
                 main.post(()->{
-                    if(disposed)return;
+                    if(disposed){
+                        host.io().execute(()->{
+                            try{failWorker(cid,"ACTIVITY_DESTROYED_BEFORE_RETRY_TIMER",gas);}
+                            finally{MeasurementSessionRegistry.endFieldOperation();}
+                        });
+                        return;
+                    }
                     cycleId=cid;deviceId=id;lastSnapshot=verified;
                     lastFreshMs=SystemClock.elapsedRealtime();
                     message("WARMUP","المحاولة التالية • الإحماء 60 ثانية",cid);
@@ -184,7 +216,8 @@ public final class FieldCycleController {
                 });
             }catch(Exception ex){
                 failWorker(cid,ex.getMessage(),gas);
-                main.post(()->end("FAILED","فشلت إعادة القياس: "+ex.getMessage(),cid));
+                if(disposed)MeasurementSessionRegistry.endFieldOperation();
+                else main.post(()->end("FAILED","فشلت إعادة القياس: "+ex.getMessage(),cid));
             }
         });
     }
