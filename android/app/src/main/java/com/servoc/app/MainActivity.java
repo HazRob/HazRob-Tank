@@ -86,7 +86,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private volatile JSONObject latestDiag;private volatile int left=0,right=0;private volatile boolean foreground=false;private volatile String flashMode="off";
     private volatile int trackingTarget=-1;private volatile String trackingName="";
     private volatile int lastGasAlertLevel=GasAlertCoordinator.NONE;private volatile long gasAlertSentAt=0;
-    private boolean developerMode=false,entered=false,commsScheduled=false;private FrameLayout page;private TextView globalStatus;private Button[] tabButtons;private int selectedTab=0;private long pendingExperimentId=-1;private String pendingFieldSessionId="";private boolean pendingFieldSessionPicker=false;
+    private boolean developerMode=false,entered=false,commsScheduled=false;private FrameLayout page;private android.widget.HorizontalScrollView mainTabStrip;private TextView globalStatus;private Button[] tabButtons;private int selectedTab=0;private long pendingExperimentId=-1;private String pendingFieldSessionId="";private boolean pendingFieldSessionPicker=false;
     private ControlTab controlTab;private FieldSessionsTab fieldSessionsTab;private MeasurementsTab measurementsTab;private ReportsTab reportsTab;private StatusTab statusTab;private SettingsTab settingsTab;private DeveloperTab developerTab;private View[] tabViews;
 
     @Override public void onCreate(Bundle b){
@@ -200,6 +200,7 @@ public final class MainActivity extends Activity implements HazRobHost {
             tabs.addView(bt,new LinearLayout.LayoutParams(UiKit.dp(this,110),UiKit.dp(this,44)));
         }
         tabsScroll.addView(tabs);
+        mainTabStrip=tabsScroll;
         root.addView(tabsScroll,new LinearLayout.LayoutParams(-1,-2));
         page=new FrameLayout(this);
         root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));
@@ -209,7 +210,13 @@ public final class MainActivity extends Activity implements HazRobHost {
     private void showTab(int index){
         if(!entered||index<0||index>=tabViews.length)return;
         if(selectedTab==0&&index!=0)controlTab.stopCamera();
-        selectedTab=index;page.removeAllViews();page.addView(tabViews[index],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabButtons.length;i++){tabButtons[i].setTextColor(i==index?0xFF90CAF9:Color.DKGRAY);tabButtons[i].setBackgroundColor(i==index?0xFF263238:0xFFE0E0E0);}if(index==6&&!developerTab.isUnlocked())developerTab.requestUnlock();if(index==0&&foreground&&!isOffline())controlTab.startCamera();if(index==2)fieldSessionsTab.refresh();else if(index==3)reportsTab.refresh();else refreshVisibleTab();
+        selectedTab=index;
+        // MainActivity owns the navigation strip; ControlTab must not traverse
+        // parent views or accidentally hide E-STOP/measurement content.
+        boolean fullscreenDrive=index==0&&
+                getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+        if(mainTabStrip!=null)mainTabStrip.setVisibility(fullscreenDrive?View.GONE:View.VISIBLE);
+        page.removeAllViews();page.addView(tabViews[index],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabButtons.length;i++){tabButtons[i].setTextColor(i==index?0xFF90CAF9:Color.DKGRAY);tabButtons[i].setBackgroundColor(i==index?0xFF263238:0xFFE0E0E0);}if(index==6&&!developerTab.isUnlocked())developerTab.requestUnlock();if(index==0&&foreground&&!isOffline())controlTab.startCamera();if(index==2)fieldSessionsTab.refresh();else if(index==3)reportsTab.refresh();else refreshVisibleTab();
     }
 
     private void queueDriveSend(){
