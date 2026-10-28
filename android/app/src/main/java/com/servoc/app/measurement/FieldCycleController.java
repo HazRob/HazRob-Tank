@@ -44,12 +44,19 @@ public final class FieldCycleController {
     /** The controller is per Activity. Never imply an unfinished physical run completed on destruction. */
     public void release(){
         disposed=true;main.removeCallbacks(tick);
-        MeasurementSessionRegistry.endFieldOperation();
         if(!cycleId.isEmpty()&&busy){
             final String id=cycleId,reason="ACTIVITY_DESTROYED_BEFORE_COMPLETION";
             final boolean turnOff=gas;
-            try{host.io().execute(()->failWorker(id,reason,turnOff));}
-            catch(Exception ex){android.util.Log.e("TankFieldCycle","Cannot cancel active cycle",ex);}
+            try{host.io().execute(()->{
+                try{failWorker(id,reason,turnOff);}
+                finally{MeasurementSessionRegistry.endFieldOperation();}
+            });}
+            catch(Exception ex){
+                android.util.Log.e("TankFieldCycle","Cannot cancel active cycle",ex);
+                MeasurementSessionRegistry.requestFieldStop("error");
+            }
+        }else{
+            MeasurementSessionRegistry.endFieldOperation();
         }
     }
     public boolean busy(){return busy;}
@@ -243,11 +250,17 @@ public final class FieldCycleController {
                     if(left==0){
                         // Wait for first real poll and the DB link; a request alone
                         // is not equivalent to a stored measurement.
-                        if(!MeasurementSessionRegistry.fieldCaptureRequested()){
-                            if(!MeasurementSessionRegistry.requestFieldCapture())
-                                throw new IllegalStateException("مسجل القياسات مشغول");
-                        }
                         FieldCycleRepository.Cycle linked=repo.byId(cycleId);
+                        if(linked==null||!FieldCycleRepository.WARMUP.equals(linked.state)||
+                           !deviceId.equals(linked.deviceId))
+                            throw new IllegalStateException("فقد ملكية جلسة القياس أو هوية ESP32");
+                        if(!MeasurementSessionRegistry.fieldCaptureRequested()){
+                            if(!MeasurementSessionRegistry.requestFieldCapture(linked.fieldSessionId))
+                                throw new IllegalStateException("مسجل القياسات مشغول");
+                        }else if(!linked.fieldSessionId.equals(
+                            MeasurementSessionRegistry.fieldCaptureOwnerSessionId())){
+                            throw new IllegalStateException("اختلاف الجلسة المالكة لتسجيل العينات");
+                        }
                         String active=MeasurementSessionRegistry.activeSessionId();
                         if(linked!=null&&!linked.measurementId.isEmpty()&&linked.measurementId.equals(active)){
                             if(!repo.samplingStarted(cycleId,SystemClock.elapsedRealtime()))
