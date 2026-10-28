@@ -1,3 +1,11 @@
+## 2026-10-28 — G2 source-origin provenance fail-closed (CI pending)
+
+- Research-only: source catalog now requires a syntactically valid DOI or HTTP(S) original landing URL; rejects malformed asserted DOI/URL, credentials, malformed ports, control characters, and DOI-resolver pages without a DOI. A valid DOI cannot mask a malformed landing URL.
+- Added a real-byte synthetic regression fixture with positive DOI/URL cases and missing/malformed-origin negatives. Existing positive catalogue fixture now declares a valid landing URL. Evidence: `G2_SOURCE_ORIGIN_PROVENANCE_FAIL_CLOSED_2026-10-28_AR.md`.
+- Pre-change SHA `445a778b5536c6100ac1bf9f5dd0d14a702ca0f0`: 20/20 workflows succeeded; G2 222/222 tests. Recheck CI on new code SHA before claiming PASS. Independent evidence register still `records: []`, 0/80 G2 candidates, 80/80 blocked; 14/14 external sources previously blocked. No ChemCore Stable, APK or firmware edits. Source identity is necessary but not physical provenance or concentration certification.
+
+---
+
 ## 2026-10-28 — G2 DOI resolver alias normalization and URL path identity (222/222 CI)
 
 - Last confirmed pre-change head `be3b16a21ec3c4375b6d082cf959678d63dc323b`: 220/220 G2 software tests and 20/20 final-commit workflows passed. Independent G2 register remains `records: []`, 0/80 G2 pass candidates, 80/80 blocked; external catalog matrix 0/14 ready.

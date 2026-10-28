@@ -12,6 +12,7 @@ import re
 from collections import Counter
 from pathlib import Path, PurePosixPath
 from urllib.parse import unquote, urlsplit
+import unicodedata
 
 PINNED_CATALOG_BLOB = "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f"
 DATASET_CATEGORY = "EXTERNAL_MEASUREMENT_DATASET"
@@ -125,6 +126,49 @@ def _canonical_source_origins(row):
     return origins
 
 
+
+def _source_origin_blockers(row):
+    """Reject absent or malformed original-source identifiers before review.
+
+    A syntactically valid source identifier is necessary, never sufficient,
+    for external provenance or independent physical exposure qualification.
+    A valid DOI must not conceal an invalid asserted landing-page URL.
+    """
+    supplied = [(field, row[field]) for field in ("doi", "primary_url")
+                if field in row and row[field] is not None and row[field] != ""]
+    if not supplied:
+        return ["ORIGINAL_SOURCE_ORIGIN_NOT_DOCUMENTED"]
+    for field, value in supplied:
+        if (not isinstance(value, str) or not value or
+                any(ch.isspace() or unicodedata.category(ch).startswith("C")
+                    for ch in value)):
+            return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
+        try:
+            identity = _canonical_source_origin({field: value})
+            if not identity or any(unicodedata.category(ch).startswith("C")
+                                   for ch in identity):
+                return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
+            if field == "doi":
+                if not identity.startswith("doi:"):
+                    return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
+            else:
+                parsed = urlsplit(value)
+                host = (parsed.hostname or "").lower().rstrip(".")
+                if (parsed.scheme.lower() not in ("http", "https") or
+                        not host or parsed.username is not None or
+                        parsed.password is not None):
+                    return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
+                _ = parsed.port  # Raises ValueError for malformed ports.
+                if (host in {"doi.org", "dx.doi.org", "www.doi.org",
+                             "www.dx.doi.org"} and
+                        not identity.startswith("doi:")):
+                    return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
+        except ValueError:
+            return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
+    return []
+
+
+
 def audit_source_catalog(catalog, expected_total=80, expected_datasets=14, repo_root=Path(".")):
     """Return a source-only review matrix; never G2 technique pass decisions.
 
@@ -173,7 +217,7 @@ def audit_source_catalog(catalog, expected_total=80, expected_datasets=14, repo_
         and HEX64.fullmatch(row["raw_sha256"]))
     results = []
     for row in sorted(datasets, key=lambda entry: entry["id"]):
-        blockers = []
+        blockers = _source_origin_blockers(row)
         # A duplicate DOI/landing page or identical original raw bytes
         # blocks every member pending source-level provenance adjudication.
         # Distinct identifiers never establish independent physical exposure.

@@ -1627,6 +1627,7 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
             "primary_catalog_entries": [
                 {"id": "MQ-EXT-01", "category": "EXTERNAL_MEASUREMENT_DATASET",
                  "title": "synthetic catalogue entry",
+                 "primary_url": "https://example.org/synthetic-source",
                  "measurement_qualification": "claim_not_verified",
                  "experiment_independence": "NOT_AUDITED",
                  "raw_file_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED",
@@ -1979,6 +1980,60 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
             _canonical_source_origin({"doi": "doi:10.9999/Source-A"}),
             _canonical_source_origin({
                 "primary_url": "https://dx.doi.org/10.9999/source-a"}))
+
+    def test_catalogue_source_origin_required_and_validated_with_raw_replay(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        row = catalog["primary_catalog_entries"][0]
+        raw = b"original-byte synthetic source-origin regression"
+        row.update(measurement_qualification=True,
+                   experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                   raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                   physical_reference_traceability=True,
+                   raw_local_path="research/g2/raw/origin-check.bin",
+                   raw_size_bytes=len(raw),
+                   raw_sha256=hashlib.sha256(raw).hexdigest())
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / row["raw_local_path"]
+            path.parent.mkdir(parents=True)
+            path.write_bytes(raw)
+
+            def verdict():
+                return audit_source_catalog(
+                    catalog, expected_total=2, expected_datasets=1,
+                    repo_root=tmp)["datasets"][0]
+
+            self.assertTrue(verdict()["catalog_source_review_ready"])
+            row.pop("primary_url")
+            self.assertIn("ORIGINAL_SOURCE_ORIGIN_NOT_DOCUMENTED",
+                          verdict()["blockers"])
+            row["doi"] = "doi:10.9999/valid-source"
+            self.assertTrue(verdict()["catalog_source_review_ready"])
+
+            invalid = (
+                ("doi", "not-a-doi"),
+                ("doi", "https://example.org/not-a-doi"),
+                ("primary_url", "ftp://example.org/source"),
+                ("primary_url", "https://user:pass@example.org/source"),
+                ("primary_url", "https://example.org:invalid/source"),
+                ("primary_url", "https:///missing-host"),
+                ("primary_url", "https://doi.org/not-a-doi"),
+                ("primary_url", "https://example.org/a\\nb"),
+                ("primary_url", "https://example.org/\u200bhidden"),
+            )
+            for field, value in invalid:
+                with self.subTest(field=field, value=repr(value)):
+                    row.pop("doi", None)
+                    row.pop("primary_url", None)
+                    row[field] = value
+                    self.assertIn("ORIGINAL_SOURCE_ORIGIN_MALFORMED",
+                                  verdict()["blockers"])
+            row["doi"] = "10.9999/valid-source"
+            row["primary_url"] = "https://example.org:invalid/source"
+            self.assertIn("ORIGINAL_SOURCE_ORIGIN_MALFORMED",
+                          verdict()["blockers"])
+            row["primary_url"] = "https://example.org/valid-source"
+            self.assertTrue(verdict()["catalog_source_review_ready"])
 
     def test_pinned_14_source_matrix_is_fail_closed_and_noncertifying(self):
         from g2_reference_catalog_readiness import PINNED_CATALOG_BLOB
