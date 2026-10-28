@@ -148,7 +148,7 @@ public final class FieldCycleRepository {
         try{
             try(Cursor c=w.rawQuery(
                 "SELECT c.measurement_session_id,c.device_id,m.ended_ts,m.operator_role,m.kind,m.analytics,m.payload,"+
-                "(SELECT COUNT(*) FROM telemetry_samples t WHERE t.session_id=c.measurement_session_id) "+
+                "(SELECT COUNT(*) FROM telemetry_samples t WHERE t.session_id=c.measurement_session_id),c.sampling_started_ms "+
                 "FROM field_measurement_cycles c LEFT JOIN measurement_sessions m "+
                 "ON m.session_id=c.measurement_session_id WHERE c.cycle_id=? AND c.state=?",
                 new String[]{cid,SAMPLING})){
@@ -157,7 +157,9 @@ public final class FieldCycleRepository {
                 if(ms.isEmpty()||owner.isEmpty()||!owner.equals(deviceId)||
                     nz(c.getString(2)).isEmpty()||!"USER".equals(c.getString(3))||
                     !nz(c.getString(4)).startsWith("field_")||c.getInt(7)<1||
-                    !FieldSessionApprovalPolicy.completedSuccessfully(nz(c.getString(5)),nz(c.getString(6))))return false;
+                    !FieldSessionApprovalPolicy.completedSuccessfully(nz(c.getString(5)),nz(c.getString(6)))||
+                    c.isNull(8)||c.getLong(8)<=0||
+                    android.os.SystemClock.elapsedRealtime()-c.getLong(8)<60000L)return false;
                 String fingerprint=sha256(ms+"|"+c.getString(5)+"|"+c.getString(6)+"|"+deviceId);
                 ContentValues v=new ContentValues();v.put("state",REVIEW);
                 v.put("evidence_sha256",fingerprint);v.put("completed_ts",utc());v.put("updated_ts",utc());
