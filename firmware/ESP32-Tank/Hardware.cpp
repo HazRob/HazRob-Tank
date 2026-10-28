@@ -297,7 +297,7 @@ void calibrationUpdate(){
  if(calState!=CAL_WARM&&calState!=CAL_SAMPLE)return;
  if(!mqPowerOn){calState=CAL_ERROR;calError="power_off";return;}
  uint32_t now=millis();
- if(calState==CAL_WARM){if(mqPowerMs()>=calWarmMs){calState=CAL_SAMPLE;calAt=now;calLastCycle=mqScanCycle;}return;}
+ if(calState==CAL_WARM){if(now-calAt>=calWarmMs&&mqPowerMs()>=calWarmMs){calState=CAL_SAMPLE;calAt=now;calLastCycle=mqScanCycle;}return;}
  if(now-calAt<calWindowMs&&mqScanCycle!=calLastCycle&&mqIndex==0){
   calLastCycle=mqScanCycle;
   for(uint8_t i=0;i<Cfg::MQ_N;i++){
