@@ -50,8 +50,7 @@ public final class TankMultiSourceResponseModel implements ChemCoreResponseModel
     @Override public ChemCoreDecision.EvidenceTier evidenceTierFor(Estimate prediction){
         if(prediction!=null){
             for(ChemCoreResponseModel source:sources)
-                if(source.modelId().equals(prediction.modelId)&&
-                    source.sourceId().equals(prediction.sourceId))
+                if(source.modelId().equals(prediction.modelId))
                     return source.evidenceTierFor(prediction);
         }
         return conservativeTier; // never infer a higher tier from a missing source mapping
