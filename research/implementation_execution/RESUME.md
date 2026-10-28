@@ -1,3 +1,12 @@
+## 2026-10-28 — G2 catalogue source readiness now requires original-byte replay (216/216 CI)
+
+- Research-only code `g2_reference_catalog_readiness.py` no longer accepts all-true catalogue metadata plus a plausible SHA256 as sufficient for source-review readiness: it requires a present regular archive under `research/g2/raw/`, documented byte size, streamed SHA256 replay, and rejection of symlink/path escape/Git LFS pointer. This is archive integrity, **not** external provenance or physical concentration certification.
+- Existing synthetic positive control now materializes raw bytes; two new regression methods cover absent source, size/digest mismatch, path escape (including a single backslash), symlink and LFS pointer. Final code/test commit `cd2d808c32d677a7df8053edc68fa73d7437afa9` (initial `3de1cdf4` followed by single-backslash correction).
+- **Verified G2 Actions:** [40608458530](https://github.com/HazRob/HazRob-Tank/actions/runs/40608458530), job `122553776925`: **216/216 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. At last CI scan: 20/21 workflow runs on final code SHA succeeded, one batch07 run queued (not a failure or PASS). See `G2_CATALOG_RAW_BYTES_REPLAY_GATE_2026-10-28_AR.md`.
+- Central reference catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` independently rechecked; 0/14 catalogued external datasets source-review ready; independent G2 evidence register still `records: []`. No ChemCore Stable, APK or firmware changes. **Next:** recheck pending CI, obtain original independently referenced physical source exposures and grouped blind holdouts. No G2/G3 approval.
+
+---
+
 ## 2026-10-28 — G2 central catalog strict schema and complete category accounting (214/214 CI)
 
 - Research-only `g2_reference_catalog_readiness.py`: validates exact complete `counts_by_type` against all 80 source entries (not just 14 external datasets); strict integer counts; ASCII canonical IDs/categories; rejects duplicate JSON keys, nonfinite JSON numbers, and float overflow even with matching blob SHA.
