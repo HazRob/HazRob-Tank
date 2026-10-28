@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -29,6 +30,9 @@ import java.util.Locale;
 public final class SettingsTab {
     private static final int DRIVE_FIRMWARE_LIMIT=100;
     private final HazRobHost host;private final ScrollView scroll;
+    private final FrameLayout workspace;
+    private DeveloperR0Tab userCalibration;
+    private LinearLayout calibrationScreen;
     private final EditText robot,camera,warm,measure,micOffset,turnSpeed,pivotSpeed;
 
 
@@ -36,7 +40,9 @@ public final class SettingsTab {
     private final ChemCoreLibraryManager libraryManager;
 
     public SettingsTab(Context c,HazRobHost host){
-        this.host=host;this.libraryManager=new ChemCoreLibraryManager(c);ManualR0Calibration.load(host.preferences());scroll=new ScrollView(c);scroll.setFillViewport(true);
+        this.host=host;this.libraryManager=new ChemCoreLibraryManager(c);ManualR0Calibration.load(host.preferences());
+        workspace=new FrameLayout(c);scroll=new ScrollView(c);scroll.setFillViewport(true);
+        workspace.addView(scroll,new FrameLayout.LayoutParams(-1,-1));
         LinearLayout root=UiKit.vbox(c);root.setPadding(UiKit.dp(c,8),UiKit.dp(c,6),UiKit.dp(c,8),UiKit.dp(c,14));root.setBackgroundColor(0xFFF7F8FA);scroll.addView(root);
 
         LinearLayout net=UiKit.card(c);net.addView(UiKit.title(c,"الشبكة"),UiKit.full(c));
@@ -59,6 +65,18 @@ public final class SettingsTab {
         cfg.addView(directionReverseCheck(c,"الأزرار: عكس التوجيه يمين/يسار",DriveDirectionOption.PREF_REVERSE_BUTTONS),UiKit.full(c));
         cfg.addView(directionReverseCheck(c,"عكس الدوران في المكان (Joystick + عجلة + الأزرار؛ باستثناء المساطر)",DriveDirectionOption.PREF_REVERSE_PIVOT_ALL),UiKit.full(c));
         LinearLayout buttons=UiKit.hbox(c);Button sync=UiKit.button(c,"مزامنة");sync.setOnClickListener(v->sync());buttons.addView(sync,UiKit.weight(1));Button apply=UiKit.button(c,"تطبيق");apply.setOnClickListener(v->apply());buttons.addView(apply,UiKit.weight(1));cfg.addView(buttons,UiKit.full(c));root.addView(cfg,UiKit.full(c));
+
+        LinearLayout cleanAir=UiKit.card(c);
+        cleanAir.addView(UiKit.title(c,"معايرة R0 — للمستخدم"),UiKit.full(c));
+        cleanAir.addView(UiKit.small(c,
+            "معايرة الهواء النظيف على ESP32: 300 ثانية إحماء ثم 60 ثانية قياس. "+
+            "الحفظ الحالي في فيرموير V4 يتم تلقائيًا عند نجاح جميع قنوات MQ الثمانية؛ "+
+            "يجري تطوير اعتماد لاحق صريح في V5، ولا يعني إلغاء الشاشة التراجع عن NVS المحفوظة."),
+            UiKit.full(c));
+        Button openCalibration=UiKit.button(c,"فتح معايرة R0");
+        openCalibration.setOnClickListener(v->openUserCalibration());
+        cleanAir.addView(openCalibration,UiKit.full(c));
+        root.addView(cleanAir,UiKit.full(c));
 
         LinearLayout mic=UiKit.card(c);mic.addView(UiKit.title(c,"معايرة الميكروفون MAX4466"),UiKit.full(c));
         micOffset=field(c,mic,"تعويض الميكروفون (dB)",String.format(Locale.US,"%.1f",MicrophoneDbCalibration.offsetDb(host.preferences())));
@@ -95,7 +113,42 @@ public final class SettingsTab {
         return b;
     }
     private EditText field(Context c,LinearLayout p,String label,String value){TextView l=UiKit.small(c,label);l.setTextColor(0xFF46515E);p.addView(l,UiKit.full(c));EditText e=UiKit.input(c,value);p.addView(e,UiKit.full(c));return e;}
-    public View view(){return scroll;}
+    /**
+     * Reuses the same R0 calibration controller from V4 without requiring
+     * developer PIN. Create it lazily so settings load cannot fail on a
+     * calibration-side constructor error, and give it a full-height page.
+     */
+    private void openUserCalibration(){
+        if(userCalibration==null){
+            try{
+                userCalibration=new DeveloperR0Tab(scroll.getContext(),host);
+                calibrationScreen=UiKit.vbox(scroll.getContext());
+                calibrationScreen.setBackgroundColor(0xFFF7F8FA);
+                Button back=UiKit.button(scroll.getContext(),"← العودة إلى الإعدادات");
+                back.setOnClickListener(v->closeUserCalibration());
+                calibrationScreen.addView(back,UiKit.full(scroll.getContext()));
+                calibrationScreen.addView(userCalibration.view(),
+                    new LinearLayout.LayoutParams(-1,0,1f));
+                workspace.addView(calibrationScreen,new FrameLayout.LayoutParams(-1,-1));
+            }catch(RuntimeException ex){
+                android.util.Log.e("TankSettingsR0","Cannot open user R0 calibration",ex);
+                userCalibration=null;calibrationScreen=null;
+                host.showToast("تعذر فتح معايرة R0. لم تتغير قيم المعايرة.");
+                return;
+            }
+        }
+        scroll.setVisibility(View.GONE);
+        calibrationScreen.setVisibility(View.VISIBLE);
+        userCalibration.refresh();
+    }
+
+    private void closeUserCalibration(){
+        if(calibrationScreen!=null)calibrationScreen.setVisibility(View.GONE);
+        scroll.setVisibility(View.VISIBLE);
+    }
+
+    public void release(){if(userCalibration!=null)userCalibration.release();}
+    public View view(){return workspace;}
 
     public void refresh(){
         refreshMicrophoneCalibration();
