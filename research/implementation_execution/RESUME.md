@@ -1,3 +1,13 @@
+## 2026-10-28 — G2 scheme-specific source URL port identity (228/228 G2 CI)
+
+- Reviewed prior research HEAD `0635db25129159a522b9fa8619ada5ac9ad0a9f7` (20/20 CI successful), central reference-bank Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, and independent G2 evidence register `records: []`.
+- Fixed generic URL identity normalization in `g2_reference_catalog_readiness.py`: only remove HTTPS port 443 or HTTP port 80; preserve scheme-nondefault ports to avoid false source deduplication.
+- Added `test_nondefault_generic_url_ports_preserve_source_identity` using two real-byte synthetic archives and recomputed SHA256, covering distinct authorities and true default-port aliases. Code SHA `f22130d43c739f51948ddb591238a7086ae60f9a`, test SHA `0d22ca41cc412d58ce0040b252d5359b2c8b91de`.
+- [G2 Actions #40663119310](https://github.com/HazRob/HazRob-Tank/actions/runs/40663119310), job `122730799682`: **228/228 tests PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. All **21/21 workflows succeeded** on code/test SHA.
+- Evidence report `G2_SCHEME_SPECIFIC_SOURCE_PORT_IDENTITY_2026-10-28_AR.md`. External catalogue matrix last pinned 0/14 source-review ready; physical independent evidence still absent. No scientific G2/G3 promotion and no Stable, Android or firmware edits.
+- Next: verify final documentation-commit CI; acquire source-qualified independent raw physical exposures, traceable ppm references and blinded grouped holdouts. No synthetic controls may be promoted.
+
+---
 ## 2026-10-28 — G2 DOI resolver authority and port fail-closed (227/227 G2 CI)
 
 - Rechecked prior branch HEAD `76d823109eddb934948510103562584c0de95e23`, 20/20 successful workflows, central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` from `HazRob/build-harness`, and independent evidence register `records: []`.
