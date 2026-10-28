@@ -289,4 +289,57 @@ class LegacyContractTests(unittest.TestCase):
         item.update(id="01.1",source_kind="INDEPENDENT_MEASURED",train_group_ids=["a"],test_group_ids=["b"],hyperparameters_selected_on_test=False,blind_holdout=True,measurement_units="Rs/R0",confidence_interval=[.1,.2],source_raw_data_accessible=True)
         self.assertEqual(audit_record(item)["status"],"G2_BLOCKED")
 
+class CatalogMalformedOriginIsolationTests(unittest.TestCase):
+    """A malformed external URL must block its row, not crash the G2 audit."""
+
+    @staticmethod
+    def fixture():
+        from g2_reference_catalog_readiness import (
+            EXPECTED_SCHEMA_VERSION, EXPECTED_AUTHORITY, EXPECTED_SCOPE,
+            REQUIRED_SAFETY_POLICY)
+        return {
+            "schema_version": EXPECTED_SCHEMA_VERSION,
+            "authority": EXPECTED_AUTHORITY,
+            "scope": EXPECTED_SCOPE,
+            "qualification_policy": {
+                key: True for key in REQUIRED_SAFETY_POLICY},
+            "record_count": 2,
+            "counts_by_type": {"EXTERNAL_MEASUREMENT_DATASET": 2},
+            "primary_catalog_entries": [
+                {"id": "MQ-EXT-01", "category": "EXTERNAL_MEASUREMENT_DATASET",
+                 "primary_url": "https://example.org/one"},
+                {"id": "MQ-EXT-02", "category": "EXTERNAL_MEASUREMENT_DATASET",
+                 "primary_url": "https://example.org/two"},
+            ],
+        }
+
+    def test_invalid_url_parsing_blocks_only_affected_source(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        # urllib.parse.urlsplit raises ValueError for these inputs.
+        for malformed in ("https://[bad", "https://[::1",
+                          "https://exa\uff0fmple.org/path"):
+            for field in ("primary_url", "doi"):
+                with self.subTest(field=field, value=malformed):
+                    catalog = self.fixture()
+                    catalog["primary_catalog_entries"][0][field] = malformed
+                    result = audit_source_catalog(
+                        catalog, expected_total=2, expected_datasets=2)
+                    self.assertEqual(result["source_review_ready"], 0)
+                    first, second = result["datasets"]
+                    self.assertIn("ORIGINAL_SOURCE_ORIGIN_MALFORMED",
+                                  first["blockers"])
+                    self.assertNotIn("ORIGINAL_SOURCE_ORIGIN_MALFORMED",
+                                     second["blockers"])
+
+    def test_valid_origin_is_not_reclassified_as_malformed(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        catalog["primary_catalog_entries"][0]["doi"] = "10.9999/valid-source"
+        result = audit_source_catalog(
+            catalog, expected_total=2, expected_datasets=2)
+        self.assertTrue(all(
+            "ORIGINAL_SOURCE_ORIGIN_MALFORMED" not in row["blockers"]
+            for row in result["datasets"]))
+
+
 if __name__=="__main__": unittest.main()
