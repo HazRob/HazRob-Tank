@@ -47,6 +47,15 @@ public final class TankMultiSourceResponseModel implements ChemCoreResponseModel
     @Override public String evidenceFamilyId(){return "MULTISOURCE_SENSOR_ALTERNATIVES";}
     /** Conservatively do not promote identity using a stronger tier from an unselected alternative. */
     @Override public ChemCoreDecision.EvidenceTier evidenceTier(){return conservativeTier;}
+    @Override public ChemCoreDecision.EvidenceTier evidenceTierFor(Estimate prediction){
+        if(prediction!=null){
+            for(ChemCoreResponseModel source:sources)
+                if(source.modelId().equals(prediction.modelId)&&
+                    source.sourceId().equals(prediction.sourceId))
+                    return source.evidenceTierFor(prediction);
+        }
+        return conservativeTier; // never infer a higher tier from a missing source mapping
+    }
     @Override public double minPpm(){return min;}
     @Override public double maxPpm(){return max;}
     @Override public boolean reportableQuantitative(){return false;}
