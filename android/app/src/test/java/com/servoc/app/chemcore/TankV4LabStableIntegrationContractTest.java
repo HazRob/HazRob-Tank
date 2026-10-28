@@ -44,8 +44,8 @@ public final class TankV4LabStableIntegrationContractTest {
         assertTrue(stableBuilder.contains("\"calibration_count\":0"));
         String prepareV5=read("../tools/prepare_v5_stable_source.py");
         assertTrue(prepareV5.contains("version=\"5.0\""));
-        assertTrue(prepareV5.contains("min_app_version"));
-        assertTrue(prepareV5.contains("max_app_version"));
+        assertTrue(prepareV5.contains("for bound in (\"min\",\"max\")"));
+        assertTrue(prepareV5.contains("_app_version"));
         String host=read("src/main/java/com/servoc/app/MainActivity.java");
         assertTrue(host.contains("ChemCoreEmbeddedStableInstaller.ensureInstalled"));
         assertTrue(host.contains("tank_v4_stable_bootstrap_result"));
