@@ -10,7 +10,7 @@ import json
 import math
 import re
 from collections import Counter
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 PINNED_CATALOG_BLOB = "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f"
 DATASET_CATEGORY = "EXTERNAL_MEASUREMENT_DATASET"
@@ -25,7 +25,52 @@ def git_blob_sha(data):
                         b"\x00" + data).hexdigest()
 
 
-def audit_source_catalog(catalog, expected_total=80, expected_datasets=14):
+
+def _replay_catalog_raw_bytes(row, repo_root):
+    """Verify source archive bytes, not a catalogue's 'verified' assertion.
+
+    This is still only a local byte replay: no authentication of the external
+    publisher, physical standard, or independent exposure groups is implied.
+    """
+    raw_path = row.get("raw_local_path")
+    size = row.get("raw_size_bytes")
+    if (not isinstance(raw_path, str) or not raw_path or
+            "\\\\" in raw_path or raw_path.startswith("/") or
+            any(part in ("", ".", "..") for part in raw_path.split("/")) or
+            PurePosixPath(raw_path).parts[:3] != ("research", "g2", "raw") or
+            len(PurePosixPath(raw_path).parts) < 4):
+        return "ORIGINAL_RAW_LOCAL_PATH_MISSING_OR_UNSAFE"
+    if type(size) is not int or size < 1:
+        return "ORIGINAL_RAW_BYTE_SIZE_NOT_DOCUMENTED"
+    root = Path(repo_root).resolve()
+    raw_root = root / "research" / "g2" / "raw"
+    path = root.joinpath(*PurePosixPath(raw_path).parts)
+    try:
+        resolved = path.resolve(strict=True)
+        resolved.relative_to(raw_root)
+        if resolved != path.absolute() or not resolved.is_file():
+            raise ValueError("non-regular or symlinked archive")
+        if resolved.stat().st_size != size:
+            return "ORIGINAL_RAW_BYTE_SIZE_MISMATCH"
+        digest = hashlib.sha256()
+        bytes_hashed = 0
+        with resolved.open("rb") as stream:
+            if stream.read(64).startswith(b"version https://git-lfs.github.com/spec/v1"):
+                return "ORIGINAL_RAW_LFS_POINTER_NOT_MATERIALIZED"
+            stream.seek(0)
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                bytes_hashed += len(chunk)
+                digest.update(chunk)
+    except (OSError, ValueError):
+        return "ORIGINAL_RAW_BYTES_UNAVAILABLE_OR_UNSAFE"
+    if bytes_hashed != size:
+        return "ORIGINAL_RAW_BYTE_SIZE_MISMATCH"
+    if digest.hexdigest() != row.get("raw_sha256"):
+        return "ORIGINAL_RAW_SHA256_REPLAY_MISMATCH"
+    return None
+
+
+def audit_source_catalog(catalog, expected_total=80, expected_datasets=14, repo_root=Path(".")):
     """Return a source-only review matrix; never G2 technique pass decisions.
 
     Strict booleans are essential: strings such as 'claim_not_verified' are
@@ -77,6 +122,13 @@ def audit_source_catalog(catalog, expected_total=80, expected_datasets=14):
             blockers.append("ORIGINAL_RAW_SHA256_NOT_DOCUMENTED")
         if row.get("physical_reference_traceability") is not True:
             blockers.append("PHYSICAL_REFERENCE_TRACEABILITY_NOT_VERIFIED")
+        # A syntactically valid SHA256 and a self-declared 'verified' flag
+        # must never mark a source ready without replaying the archive bytes.
+        # Avoid needless I/O for already-blocked catalogue entries.
+        if not blockers:
+            replay_issue = _replay_catalog_raw_bytes(row, repo_root)
+            if replay_issue:
+                blockers.append(replay_issue)
         results.append({
             "id": row["id"],
             "title": row.get("title"),

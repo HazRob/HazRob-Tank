@@ -1660,17 +1660,88 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
         from g2_reference_catalog_readiness import audit_source_catalog
         catalog = self.fixture()
         row = catalog["primary_catalog_entries"][0]
+        raw = b"synthetic catalogue source bytes; not a physical experiment"
         row.update(measurement_qualification=True,
                    experiment_independence="PHYSICAL_GROUPS_VERIFIED",
                    raw_file_status="RAW_BYTES_SHA256_VERIFIED",
-                   physical_reference_traceability=True)
-        result = audit_source_catalog(catalog, expected_total=2,
-                                      expected_datasets=1)
+                   physical_reference_traceability=True,
+                   raw_local_path="research/g2/raw/synthetic.bin",
+                   raw_size_bytes=len(raw),
+                   raw_sha256=hashlib.sha256(raw).hexdigest())
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / row["raw_local_path"]
+            source.parent.mkdir(parents=True)
+            source.write_bytes(raw)
+            result = audit_source_catalog(catalog, expected_total=2,
+                                          expected_datasets=1, repo_root=tmp)
         self.assertEqual(result["source_review_ready"], 1)
         self.assertEqual(result["source_review_blocked"], 0)
         self.assertEqual(result["scope"],
                          "SOURCE_CATALOG_ONLY_NOT_TECHNIQUE_APPROVAL")
         self.assertIn("NOT A G2 PASS", result["datasets"][0]["notes"])
+
+    def test_catalogue_claims_without_replayable_raw_bytes_are_blocked(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        row = catalog["primary_catalog_entries"][0]
+        row.update(measurement_qualification=True,
+                   experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                   raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                   physical_reference_traceability=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            def blockers():
+                return audit_source_catalog(catalog, expected_total=2,
+                                            expected_datasets=1,
+                                            repo_root=tmp)["datasets"][0]["blockers"]
+            self.assertIn("ORIGINAL_RAW_LOCAL_PATH_MISSING_OR_UNSAFE", blockers())
+            raw = b"synthetic source only"
+            path = Path(tmp) / "research/g2/raw/synthetic.bin"
+            path.parent.mkdir(parents=True)
+            path.write_bytes(raw)
+            row.update(raw_local_path="research/g2/raw/synthetic.bin",
+                       raw_size_bytes=len(raw) + 1)
+            self.assertIn("ORIGINAL_RAW_BYTE_SIZE_MISMATCH", blockers())
+            row["raw_size_bytes"] = len(raw)
+            self.assertIn("ORIGINAL_RAW_SHA256_REPLAY_MISMATCH", blockers())
+            row["raw_sha256"] = hashlib.sha256(raw).hexdigest()
+            self.assertEqual(blockers(), [])
+
+    def test_catalogue_replay_rejects_path_escape_symlink_and_lfs_pointer(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        row = catalog["primary_catalog_entries"][0]
+        row.update(measurement_qualification=True,
+                   experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                   raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                   physical_reference_traceability=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            path = root / "research/g2/raw/source.bin"
+            path.parent.mkdir(parents=True)
+            path.write_bytes(b"synthetic")
+            row.update(raw_size_bytes=9, raw_sha256=hashlib.sha256(b"synthetic").hexdigest())
+            def blockers():
+                return audit_source_catalog(catalog, expected_total=2,
+                                            expected_datasets=1,
+                                            repo_root=tmp)["datasets"][0]["blockers"]
+            for unsafe in ("../outside", "/tmp/outside", "research/g2/raw/../outside",
+                           "research\\\\g2\\\\raw\\\\source.bin"):
+                with self.subTest(path=unsafe):
+                    row["raw_local_path"] = unsafe
+                    self.assertIn("ORIGINAL_RAW_LOCAL_PATH_MISSING_OR_UNSAFE", blockers())
+            row["raw_local_path"] = "research/g2/raw/source.bin"
+            self.assertEqual(blockers(), [])
+            path.unlink()
+            outside = root / "outside.bin"
+            outside.write_bytes(b"synthetic")
+            path.symlink_to(outside)
+            self.assertIn("ORIGINAL_RAW_BYTES_UNAVAILABLE_OR_UNSAFE", blockers())
+            path.unlink()
+            pointer = b"version https://git-lfs.github.com/spec/v1\\noid sha256:abc\\n"
+            path.write_bytes(pointer)
+            row["raw_size_bytes"] = len(pointer)
+            row["raw_sha256"] = hashlib.sha256(pointer).hexdigest()
+            self.assertIn("ORIGINAL_RAW_LFS_POINTER_NOT_MATERIALIZED", blockers())
 
     def test_pinned_14_source_matrix_is_fail_closed_and_noncertifying(self):
         from g2_reference_catalog_readiness import PINNED_CATALOG_BLOB
