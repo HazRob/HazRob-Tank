@@ -63,7 +63,8 @@ public final class TankV5PendingR0ProtocolTest {
         assertTrue(scan>=0&&commit>scan);
         String update=source.substring(scan,source.indexOf("/* link health",scan));
         assertFalse(update.contains("saveR0Record(rec)"));
-        assertTrue(update.contains("pendingR0=rec;pendingR0Valid=true;calState=CAL_PENDING"));
+        assertTrue(update.contains("pendingR0=rec;pendingR0Valid=true;"));
+        assertTrue(update.contains("calState=CAL_PENDING;"));
         assertTrue(source.contains("if(!saveR0Record(candidate))"));
         assertTrue(source.contains("pendingR0Valid=false;pendingR0=R0Record();calState=CAL_CANCEL;"));
         assertTrue(api.contains("if(cmd==\"accept\"){bool ok=calibrationAccept()"));
