@@ -76,10 +76,10 @@ public final class DeveloperR0Tab {
         LinearLayout automatic=UiKit.card(c);
         automatic.addView(UiKit.title(c,"معايرة R0 في ESP32 • تسخين 300 ثانية ثم قياس 60 ثانية"),UiKit.full(c));
         automatic.addView(UiKit.small(c,
-            "ينفذ فيرموير V4 المعايرة على ESP32 نفسه: تشغيل حساسات MQ الثمانية، "+
+            "فيرموير V5 يحسب قيم R0 على ESP32 قبل الاعتماد: تشغيل حساسات MQ الثمانية، "+
             "تسخين 300 ثانية ثم جمع جميع الدورات الصالحة خلال 60 ثانية، "+
-            "بحد أدنى 10 قراءات لكل حساس. لا تُنقل قيم R0 إلى التطبيق إلا بعد حفظها "+
-            "والتحقق منها في ذاكرة الروبوت. استرجاع القيم متاح بعد إعادة فتح التطبيق. "+
+            "بحد أدنى 10 قراءات لكل حساس. النتيجة مبدئيًا في RAM ولا تُحفظ في NVS إلا بعد زر الاعتماد. "+
+            "يمكن إلغاء نتيجة RAM دون تغيير المعايرة السابقة، واستيراد القيم المعتمدة بعد إعادة فتح التطبيق. "+
             "يجب استخدام هواء نظيف فعلاً؛ لا توفر هذه المعايرة شهادة دقة PPM."),UiKit.full(c));
         autoProgress=UiKit.small(c,"جاهز • ضع الروبوت في هواء نظيف ثم ابدأ");
         automatic.addView(autoProgress,UiKit.full(c));
@@ -399,30 +399,38 @@ public final class DeveloperR0Tab {
 
     private void cancelAutomatic(){
         if(disposed)return;
-        if(pendingFirmwareResult!=null){
-            // Cancellation here discards the PHONE import, NOT firmware NVS.
-            pendingFirmwareResult=null;
-            autoApprove.setEnabled(false);autoRetry.setEnabled(false);
-            finishAutomatic("أُلغي اعتماد الهاتف لهذه القراءة. لا يمكن لهذا الزر إلغاء R0 "+
-                "المحفوظة بالفعل في ESP32؛ يمكن استيرادها لاحقاً أو إعادة المعايرة.");
-            return;
-        }
-        if(!automaticActive)return;
+        final JSONObject candidate=pendingFirmwareResult;
+        if(candidate!=null){
+            if(automaticActive)return;
+            if(!"pending".equals(candidate.optString("state",""))){
+                pendingFirmwareResult=null;
+                autoApprove.setEnabled(false);autoRetry.setEnabled(false);
+                finishAutomatic("أُلغي استيراد الهاتف؛ NVS المعتمدة مسبقاً لم تتغير.");
+                return;
+            }
+            automaticActive=true;
+        }else if(!automaticActive)return;
         autoCancel.setEnabled(false);
-        autoProgress.setText("جارٍ إرسال إلغاء المعايرة إلى ESP32...");
+        autoProgress.setText("جارٍ إرسال إلغاء R0 إلى ESP32 والتحقق...");
         host.io().execute(()->{
             try{
-                JSONObject result=host.robotApi().calibrationCancel();
-                FirmwareR0Contract.Progress p=FirmwareR0Contract.progress(result);
+                JSONObject response=host.robotApi().calibrationCancel();
+                FirmwareR0Contract.Progress p=FirmwareR0Contract.progress(response);
+                if(!"cancelled".equals(p.state)||p.pending||p.committed)
+                    throw new IllegalStateException("ESP32 did not acknowledge cancellation");
                 scroll.post(()->{
                     if(disposed)return;
-                    finishAutomatic("أُرسِل أمر الإلغاء؛ حالة الروبوت: "+p.state);
+                    pendingFirmwareResult=null;
+                    autoApprove.setEnabled(false);autoRetry.setEnabled(false);
+                    finishAutomatic("ألغيت القيم المعلقة في ESP32؛ لم يتغير سجل R0 السابق في NVS.");
                 });
             }catch(Exception ex){
                 scroll.post(()->{
                     if(disposed)return;
-                    autoProgress.setText("لم يتأكد إلغاء المعايرة: "+ex.getMessage());
-                    autoCancel.setEnabled(true);clock.postDelayed(autoTick,1500);
+                    if(candidate!=null)automaticActive=false;
+                    autoProgress.setText("لم يتأكد إلغاء R0: "+ex.getMessage());
+                    autoCancel.setEnabled(true);
+                    if(candidate==null)clock.postDelayed(autoTick,1500);
                 });
             }
         });
