@@ -35,12 +35,14 @@ public final class SiteSummaryReportExporter {
         public final FieldCycleRepository.Cycle cycle;
         public final String outcome,topCandidate,evidenceTier;
         public final boolean hasAnalysis,ppmReportable;
+        public final JSONObject analysis;
         public final double ppm,estimatedPpm;
         CycleSummary(FieldCycleRepository.Cycle cycle,JSONObject analysis){
             this.cycle=cycle;
             // Rejected, cancelled and deleted attempts never contribute to
             // site-level scientific recurrence or occupational conclusions.
             hasAnalysis=cycle.approved()&&analysis!=null;
+            this.analysis=hasAnalysis?analysis:null;
             outcome=hasAnalysis?analysis.optString("outcome","—"):"—";
             topCandidate=hasAnalysis?analysis.optString("chemical","—"):"—";
             evidenceTier=hasAnalysis?analysis.optString("evidence_tier","—"):"—";
