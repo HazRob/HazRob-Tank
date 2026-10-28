@@ -55,6 +55,8 @@ class G2CiRunBindingTests(unittest.TestCase):
 
     def test_record_cannot_claim_different_run_or_commit(self):
         for field, value in (("ci_run_id", 987654321),
+                             ("ci_run_id", 123456789.0),
+                             ("ci_run_id", True),
                              ("ci_head_sha", "b" * 40)):
             with self.subTest(field=field), tempfile.TemporaryDirectory() as temp:
                 record, _ = synthetic_bundle(temp)
