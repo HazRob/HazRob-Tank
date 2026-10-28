@@ -41,6 +41,20 @@ public final class TankV5PendingR0ProtocolTest {
         try{FirmwareR0Contract.pendingValues(accepted);fail("not pending");}
         catch(IllegalStateException expected){}
     }
+    @Test public void dualSlotNvsPreservesPriorR0OnPowerLoss()throws Exception{
+        String fw=Files.readString(Paths.get("../firmware/ESP32-Tank/Hardware.cpp"),
+                                   StandardCharsets.UTF_8);
+        assertTrue(fw.contains("r0_v5_a"));
+        assertTrue(fw.contains("r0_v5_b"));
+        assertTrue(fw.contains("R0_SLOT_MAGIC"));
+        assertTrue(fw.contains("r0SlotChecksum(const R0Slot& slot)"));
+        assertTrue(fw.contains("newerR0Generation(uint32_t a,uint32_t b)"));
+        assertTrue(fw.contains("const char* target=latestA?\"r0_v5_b\":\"r0_v5_a\";"));
+        assertTrue(fw.contains("loadR0Slot(target,check)"));
+        assertTrue(fw.contains("nv.getBytesLength(\"r0_v4\")"));
+        assertFalse(fw.contains("nv.putBytes(\"r0_v4\""));
+    }
+
     @Test public void firmwareNeverWritesBeforeExplicitAccept()throws Exception{
         String source=Files.readString(Paths.get("../firmware/ESP32-Tank/Hardware.cpp"),StandardCharsets.UTF_8);
         String api=Files.readString(Paths.get("../firmware/ESP32-Tank/ESP32-Tank.ino"),StandardCharsets.UTF_8);
