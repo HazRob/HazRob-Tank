@@ -1,3 +1,14 @@
+## 2026-10-28 — G2 malformed source URL parser isolation (226/226 G2 CI)
+
+- Reviewed preceding `c6cc7c3fc2729a3d023c3c486c4cfadd2682008b` checkpoint, the central source catalog policy and independent G2 evidence register (`records: []`).
+- Fixed `g2_reference_catalog_readiness.py` to catch `urlsplit` / hostname `ValueError` for malformed IPv6 brackets or NFKC-ambiguous URL hosts **before** the cross-source identity count. The malformed source receives `ORIGINAL_SOURCE_ORIGIN_MALFORMED` rather than crashing the entire catalogue audit.
+- Added two regression tests in `test_g2_evidence_audit.py`: six malformed DOI/URL cases with isolation of the adjacent valid source, plus a valid DOI/URL control. Code SHA `b8f96d0e8345d3838f68354e5a16842c913f9665`; test SHA `f86734d9fc1faa3e70866cbeab56fd39fa5da6b4`.
+- Verified [G2 CI #40650146981](https://github.com/HazRob/HazRob-Tank/actions/runs/40650146981), job `122688075186`: **226/226 tests PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. At initial post-test scan, **17/21 CI workflow runs succeeded**, four batch07/08 runs still pending (not failures); recheck after completion and after this documentation commit.
+- Evidence document `G2_MALFORMED_ORIGIN_URL_PARSER_ISOLATION_2026-10-28_AR.md`. Initial two-commit diff vs preceding checkpoint: only `g2_reference_catalog_readiness.py` and `test_g2_evidence_audit.py` inside research implementation. 14/14 external catalogue sources previously blocked; no new independent physical exposures, no G2/G3 promotion and no ChemCore Stable, APK or firmware edits.
+- Next: verify CI on latest documentation checkpoint, then continue acquisition of source-qualified independent physical measurements with traceable concentration, device/session/exposure identity, and blind grouped holdout.
+
+---
+
 ## 2026-10-28 — G2 central catalogue authority and safety policy lock (224/224 G2 CI)
 
 - Research-only `g2_reference_catalog_readiness.py` now requires the pinned reference-bank `schema_version`, `authority`, `scope` and five strict `True` non-certification policy flags. Prevents silently replacing the central source catalogue's declared authority or weakening the rule that raw data and gas labels do not certify Tank calibration, ppm or G3 when a new Git blob is re-pinned.
