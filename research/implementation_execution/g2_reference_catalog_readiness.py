@@ -109,6 +109,17 @@ def _canonical_source_origin(row):
         except ValueError:
             return None
         if host in {"doi.org", "dx.doi.org", "www.doi.org", "www.dx.doi.org"}:
+            # A resolver URI with userinfo or a non-default port is not the
+            # canonical public DOI endpoint. Do not let a misleading DOI
+            # field bypass the stricter primary_url origin validation.
+            try:
+                port = parsed.port
+            except ValueError:
+                return None
+            default_port = 443 if parsed.scheme.lower() == "https" else 80
+            if (parsed.username is not None or parsed.password is not None or
+                    (port is not None and port != default_port)):
+                return None
             candidate = unquote(parsed.path).strip("/ ")
             if re.fullmatch(r"10\.\d{4,9}/\S+", candidate, re.I):
                 return "doi:" + candidate.lower()

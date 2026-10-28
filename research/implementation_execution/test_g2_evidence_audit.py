@@ -331,6 +331,61 @@ class CatalogMalformedOriginIsolationTests(unittest.TestCase):
                     self.assertNotIn("ORIGINAL_SOURCE_ORIGIN_MALFORMED",
                                      second["blockers"])
 
+    def test_doi_resolver_credentials_and_nondefault_ports_fail_closed(self):
+        """Synthetic raw bytes: DOI resolver authority must be unambiguous."""
+        import hashlib
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        row = catalog["primary_catalog_entries"][0]
+        raw = b"synthetic DOI authority control, not a measured exposure"
+        row.update(measurement_qualification=True,
+                   experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                   raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                   physical_reference_traceability=True,
+                   raw_local_path="research/g2/raw/doi-authority.bin",
+                   raw_size_bytes=len(raw),
+                   raw_sha256=hashlib.sha256(raw).hexdigest())
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / row["raw_local_path"]
+            path.parent.mkdir(parents=True)
+            path.write_bytes(raw)
+
+            def verdict():
+                return audit_source_catalog(
+                    catalog, expected_total=2, expected_datasets=2,
+                    repo_root=temp)["datasets"]
+
+            for field in ("doi", "primary_url"):
+                for bad in (
+                    "https://user:pass@doi.org/10.9999/source",
+                    "https://user@dx.doi.org/10.9999/source",
+                    "https://doi.org:8443/10.9999/source",
+                    "http://doi.org:443/10.9999/source",
+                    "https://doi.org:80/10.9999/source",
+                ):
+                    with self.subTest(field=field, bad=bad):
+                        row.pop("doi", None)
+                        row["primary_url"] = "https://example.org/one"
+                        row[field] = bad
+                        first, second = verdict()
+                        self.assertIn("ORIGINAL_SOURCE_ORIGIN_MALFORMED",
+                                      first["blockers"])
+                        self.assertNotIn("ORIGINAL_SOURCE_ORIGIN_MALFORMED",
+                                         second["blockers"])
+            row.pop("primary_url", None)
+            row["doi"] = "doi:https://user@doi.org/10.9999/source"
+            self.assertIn("ORIGINAL_SOURCE_ORIGIN_MALFORMED",
+                          verdict()[0]["blockers"])
+
+            for valid in ("https://doi.org:443/10.9999/source?utm=mirror",
+                          "http://dx.doi.org:80/10.9999/source"):
+                with self.subTest(valid=valid):
+                    row["doi"] = "10.9999/source"
+                    row["primary_url"] = valid
+                    first, second = verdict()
+                    self.assertTrue(first["catalog_source_review_ready"])
+                    self.assertFalse(second["catalog_source_review_ready"])
+
     def test_valid_origin_is_not_reclassified_as_malformed(self):
         from g2_reference_catalog_readiness import audit_source_catalog
         catalog = self.fixture()
