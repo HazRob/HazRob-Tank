@@ -42,8 +42,9 @@ public final class TankV4FieldReportPipelineContractTest {
         assertTrue(recorder.contains("MeasurementSessionRegistry.started(sessionId)"));
         String repo=read("field/FieldSessionRepository.java");
         assertTrue(repo.contains("FieldSessionPolicy.mayAttachMeasurement(kind,role)"));
-        assertTrue(repo.contains("SELECT 1 FROM field_session_measurements WHERE field_session_id=? LIMIT 1"));
-        assertTrue(repo.contains("field_session_measurements\",\"measurement_sessions\",\"telemetry_samples"));
+        assertTrue(repo.contains("AND measurement_session_id IS NULL AND state IN (\'ARMED\',\'WARMUP\',\'SAMPLING\')"));
+        assertTrue(repo.contains("approved cycles only") || repo.contains("Reports consume approved cycles only"));
+        assertTrue(repo.contains("field_session_measurements\",\"field_measurement_cycles\",\"measurement_sessions\",\"telemetry_samples"));
     }
 
     @Test public void originalSessionReportsStayOutsideDeveloperScientificLibrary()throws Exception{
