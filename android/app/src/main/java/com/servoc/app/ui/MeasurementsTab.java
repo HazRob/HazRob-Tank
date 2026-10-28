@@ -202,12 +202,12 @@ public final class MeasurementsTab {
                 scroll.post(()->{
                     new AlertDialog.Builder(c).setTitle(label)
                         .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+
-                            "\\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+
-                            "\\nالاسم: "+chemical.name+
-                            "\\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+
-                            "\\nالمصدر: "+(chemical.source==null?"—":chemical.source)+
-                            "\\n\\nالإمكانات المتاحة ومصدرها:\\n"+description+
-                            "\\n\\nالتتبع: "+(legacyId>=0?"متاح":"غير متاح لهذه المادة"))
+                            "\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+
+                            "\nالاسم: "+chemical.name+
+                            "\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+
+                            "\nالمصدر: "+(chemical.source==null?"—":chemical.source)+
+                            "\n\nالإمكانات المتاحة ومصدرها:\n"+description+
+                            "\n\nالتتبع: "+(legacyId>=0?"متاح":"غير متاح لهذه المادة"))
                         .setPositiveButton(legacyId>=0?"تتبع المادة":"إغلاق",
                             (d,w)->{if(legacyId>=0){
                                 chosenChemical=label;host.setTrackingTarget(legacyId,label);
