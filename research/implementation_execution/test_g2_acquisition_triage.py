@@ -156,7 +156,7 @@ class AcquisitionTriageTests(unittest.TestCase):
             })
             self.assertEqual(first["g2_blocked"], 80)
             self.assertEqual(first["g2_pass_candidates_requiring_review"], 0)
-            audit_path.write_text(audit_path.read_text(encoding="utf-8") + "\\n",
+            audit_path.write_text(audit_path.read_text(encoding="utf-8") + "\n",
                                   encoding="utf-8")
             second = build_triage(audit_path, PINNED_MATRIX)
             self.assertNotEqual(first["input_sha256"]["audit"],
