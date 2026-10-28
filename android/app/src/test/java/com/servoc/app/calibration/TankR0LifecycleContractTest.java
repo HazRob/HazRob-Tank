@@ -13,7 +13,7 @@ public final class TankR0LifecycleContractTest {
     }
     @Test public void hostDestroyDisposesDeveloperAutomaticR0()throws Exception{
         assertTrue(src("MainActivity.java").contains("if(developerTab!=null)developerTab.release()"));
-        assertTrue(src("ui/DeveloperTab.java").contains("if(r0!=null)r0.release()"));
+        assertTrue(src("ui/SettingsTab.java").contains("if(userCalibration!=null)userCalibration.release()"));
     }
     @Test public void cancellationAndActivityDestroyCannotAccidentallyApplyLateR0()throws Exception{
         String s=src("ui/DeveloperR0Tab.java");
