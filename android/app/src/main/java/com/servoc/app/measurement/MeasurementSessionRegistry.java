@@ -17,6 +17,7 @@ public final class MeasurementSessionRegistry {
     private static final AtomicReference<String> CHEMCORE_STOP_REASON = new AtomicReference<>("");
     // V5: a user's documented 60 s capture is distinct from scientific ChemCore.
     private static final AtomicBoolean FIELD_CAPTURE = new AtomicBoolean(false);
+    private static final AtomicBoolean FIELD_OPERATION = new AtomicBoolean(false);
     private static final AtomicReference<String> FIELD_STOP_REASON = new AtomicReference<>("");
 
 
@@ -45,11 +46,20 @@ public final class MeasurementSessionRegistry {
 
     /** Requests continuous local telemetry capture even while the legacy ESP32 measurement state is idle. */
     public static synchronized boolean requestChemCoreCapture(boolean developer) {
-        if (!ACTIVE.get().isEmpty() || FIELD_CAPTURE.get()) return false;
+        if (!ACTIVE.get().isEmpty() || FIELD_CAPTURE.get() || FIELD_OPERATION.get()) return false;
         CHEMCORE_DEVELOPER.set(developer);
         CHEMCORE_STOP_REASON.set("");
         return CHEMCORE_CAPTURE.compareAndSet(false, true);
     }
+
+    /** Blocks R0 edits, Stable updates and developer captures for the full 60+60 run. */
+    public static synchronized boolean reserveFieldOperation(){
+        if(FIELD_OPERATION.get()||CHEMCORE_CAPTURE.get()||
+            !ACTIVE.get().isEmpty())return false;
+        return FIELD_OPERATION.compareAndSet(false,true);
+    }
+    public static boolean fieldOperationActive(){return FIELD_OPERATION.get();}
+    public static void endFieldOperation(){FIELD_OPERATION.set(false);}
 
     /** Explicit, operator-owned documented capture. Never a developer experiment. */
     public static synchronized boolean requestFieldCapture(){
