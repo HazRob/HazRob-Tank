@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 exact-input SHA256 provenance for acquisition triage (285/285 CI)
+
+- Continued from research HEAD `21392e3e654203815453d569d47c6b6e28598fe9`. Rechecked central `HazRob/build-harness` catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries/14 external datasets), pinned source matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (0/14 review-ready), and independent evidence `records: []`.
+- `g2_acquisition_triage.py` now emits SHA256 digests of the exact audit, source matrix, ledger, independent evidence and canonical registry input bytes; rejects inputs modified during replay. Added two regression tests (byte-preserving JSON semantics vs byte digest; mutation during replay).
+- Code/test SHA `f0bf6f3b1fcc9f161879cb4527bbb48746ab5015`: [G2 Actions #40786907512](https://github.com/HazRob/HazRob-Tank/actions/runs/40786907512), job `123162275605`: **285/285 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact `12859467844` (SHA256 `a3831c2620851211b51b197108b8920045f7c9d2ea3d799611e6cb55c220526c`). Compare against prior HEAD: only two research implementation Python files changed.
+- Documentation: `G2_TRIAGE_INPUT_BYTES_SHA256_LINEAGE_2026-10-29_AR.md`. No Stable/Android/firmware modifications; no G2/G3 promotion. Input hashes establish byte identity, not external physical authenticity.
+- Next: recheck documentation checkpoint CI; original independently measured exposures, traceable ppm references, device/session/exposure IDs and locked grouped blind holdouts are still missing.
+
+---
+
 ## 2026-10-29 — G2 audit replay binding for acquisition triage (283/283 CI)
 
 - Continued from research HEAD `8709968e96b2928901ea5bc9caf8c48970ef50d0` (20/20 prior CI successful). Rechecked central `HazRob/build-harness` catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries; 14 external datasets); pinned matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` remains 0/14 review-ready; independent evidence `records: []`.
