@@ -1773,9 +1773,10 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
             first, second = catalog["primary_catalog_entries"]
             second["doi"] = first["doi"]
             result = audit()
-            self.assertEqual(result["source_review_ready"], 1)
-            self.assertIn("DUPLICATE_ORIGINAL_DATASET_ORIGIN",
-                          result["datasets"][1]["blockers"])
+            self.assertEqual(result["source_review_ready"], 0)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in row["blockers"]
+                for row in result["datasets"]))
             # A different DOI does not make byte-identical mirrors independent.
             second["doi"] = "10.9999/different-doi"
             same_bytes = (root / first["raw_local_path"]).read_bytes()
@@ -1783,9 +1784,69 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
             second["raw_size_bytes"] = len(same_bytes)
             second["raw_sha256"] = first["raw_sha256"]
             result = audit()
-            self.assertEqual(result["source_review_ready"], 1)
-            self.assertIn("DUPLICATE_ORIGINAL_RAW_BYTES",
-                          result["datasets"][1]["blockers"])
+            self.assertEqual(result["source_review_ready"], 0)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_RAW_BYTES" in row["blockers"]
+                for row in result["datasets"]))
+
+
+    def test_duplicate_groups_block_all_members_independent_of_row_order(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        catalog["primary_catalog_entries"] = [
+            {"id": "MQ-EXT-0" + str(idx),
+             "category": "EXTERNAL_MEASUREMENT_DATASET"}
+            for idx in (1, 2, 3)]
+        catalog["record_count"] = 3
+        catalog["counts_by_type"] = {"EXTERNAL_MEASUREMENT_DATASET": 3}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for idx, row in enumerate(catalog["primary_catalog_entries"]):
+                raw = ("synthetic original source " + str(idx)).encode()
+                rel = "research/g2/raw/source-" + str(idx) + ".bin"
+                path = root / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+                row.update(
+                    doi="10.9999/group-a" if idx < 2 else "10.9999/group-b",
+                    measurement_qualification=True,
+                    experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                    raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                    physical_reference_traceability=True,
+                    raw_local_path=rel, raw_size_bytes=len(raw),
+                    raw_sha256=hashlib.sha256(raw).hexdigest())
+
+            def snapshot():
+                matrix = audit_source_catalog(
+                    catalog, expected_total=3, expected_datasets=3,
+                    repo_root=root)
+                return {row["id"]: (row["catalog_source_review_ready"],
+                                    set(row["blockers"]))
+                        for row in matrix["datasets"]}
+
+            before = snapshot()
+            self.assertEqual(sum(ready for ready, _ in before.values()), 1)
+            for identifier in ("MQ-EXT-01", "MQ-EXT-02"):
+                self.assertFalse(before[identifier][0])
+                self.assertIn("DUPLICATE_ORIGINAL_DATASET_ORIGIN",
+                              before[identifier][1])
+            self.assertTrue(before["MQ-EXT-03"][0])
+            catalog["primary_catalog_entries"].reverse()
+            self.assertEqual(snapshot(), before)
+
+            first = next(row for row in catalog["primary_catalog_entries"]
+                         if row["id"] == "MQ-EXT-01")
+            third = next(row for row in catalog["primary_catalog_entries"]
+                         if row["id"] == "MQ-EXT-03")
+            payload = (root / first["raw_local_path"]).read_bytes()
+            (root / third["raw_local_path"]).write_bytes(payload)
+            third["raw_size_bytes"] = len(payload)
+            third["raw_sha256"] = hashlib.sha256(payload).hexdigest()
+            after = snapshot()
+            self.assertEqual(sum(ready for ready, _ in after.values()), 0)
+            for identifier in ("MQ-EXT-01", "MQ-EXT-03"):
+                self.assertIn("DUPLICATE_ORIGINAL_RAW_BYTES",
+                              after[identifier][1])
 
     def test_catalogue_origin_normalizes_doi_aliases_and_url_fallback(self):
         from g2_reference_catalog_readiness import _canonical_source_origin
