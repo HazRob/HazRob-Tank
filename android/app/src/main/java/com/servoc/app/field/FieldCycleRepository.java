@@ -189,7 +189,7 @@ public final class FieldCycleRepository {
                     android.os.SystemClock.elapsedRealtime()-c.getLong(8)<60000L ||
                     !hasMeasuredEvidence(w,ms,c.getInt(9)!=0,c.getInt(10)!=0,c.getInt(11)!=0))
                     return false;
-                String fingerprint=sha256(ms+"|"+c.getString(5)+"|"+c.getString(6)+"|"+deviceId);
+                String fingerprint=evidenceDigest(w,ms,deviceId,c.getString(5),c.getString(6));
                 ContentValues v=new ContentValues();v.put("state",REVIEW);
                 v.put("evidence_sha256",fingerprint);v.put("completed_ts",utc());v.put("updated_ts",utc());
                 int updated=w.update("field_measurement_cycles",v,"cycle_id=? AND state=?",
@@ -314,6 +314,37 @@ public final class FieldCycleRepository {
     private static String required(String id){if(id==null||id.trim().isEmpty())throw new IllegalArgumentException("ID required");return id.trim();}
     private static String nz(String x){return x==null?"":x;}
     private static String utc(){SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",Locale.US);f.setTimeZone(TimeZone.getTimeZone("UTC"));return f.format(new Date());}
+    /**
+     * Bind review evidence to the actual stored telemetry rows, not just the
+     * final instantaneous snapshot. Stable canonical ordering is by t_ms/id.
+     */
+    private static String evidenceDigest(SQLiteDatabase w,String measurementId,
+                                         String deviceId,String analytics,String payload){
+        try{
+            MessageDigest d=MessageDigest.getInstance("SHA-256");
+            add(d,measurementId);add(d,deviceId);add(d,analytics);add(d,payload);
+            try(Cursor c=w.rawQuery(
+                "SELECT t_ms,env_payload,mq_payload,motion_payload FROM telemetry_samples "+
+                "WHERE session_id=? ORDER BY t_ms,id",new String[]{measurementId})){
+                while(c.moveToNext()){
+                    add(d,Long.toString(c.getLong(0)));
+                    for(int i=1;i<4;i++)add(d,nz(c.getString(i)));
+                }
+            }
+            StringBuilder out=new StringBuilder();
+            for(byte b:d.digest())out.append(String.format(Locale.US,"%02x",b&255));
+            return out.toString();
+        }catch(Exception ex){throw new IllegalStateException("Cannot hash field evidence",ex);}
+    }
+    private static void add(MessageDigest d,String value){
+        byte[] b=(value==null?"":value).getBytes(StandardCharsets.UTF_8);
+        d.update((byte)((b.length>>>24)&255));
+        d.update((byte)((b.length>>>16)&255));
+        d.update((byte)((b.length>>>8)&255));
+        d.update((byte)(b.length&255));
+        d.update(b);
+    }
+
     private static String sha256(String data){
         try{
             byte[] bytes=MessageDigest.getInstance("SHA-256").digest(data.getBytes(StandardCharsets.UTF_8));
