@@ -127,7 +127,11 @@ def _canonical_source_origin(row):
             port = parsed.port
         except ValueError:
             return "url:" + value
-        netloc = host + (":" + str(port) if port not in (None, 80, 443) else "")
+        # Port defaults are scheme-specific. HTTPS:80 and HTTP:443 are
+        # non-default authorities, not aliases of the standard endpoint.
+        # Dropping either port could falsely merge distinct source records.
+        default_port = 443 if parsed.scheme.lower() == "https" else 80
+        netloc = host + (":" + str(port) if port not in (None, default_port) else "")
         path = parsed.path.rstrip("/") or "/"
         return "url:" + netloc + path + ("?" + parsed.query if parsed.query else "")
     candidate = unquote(value).rstrip("/")
