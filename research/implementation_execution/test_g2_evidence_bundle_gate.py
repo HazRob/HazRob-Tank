@@ -2013,6 +2013,8 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
         identity = _canonical_source_origin({
             "primary_url": "https://example.org/Data/A"})
         self.assertEqual(identity, _canonical_source_origin({
+            "primary_url": "HTTPS://EXAMPLE.ORG:443/Data/A/"}))
+        self.assertNotEqual(identity, _canonical_source_origin({
             "primary_url": "HTTP://EXAMPLE.ORG:80/Data/A/"}))
         self.assertNotEqual(identity, _canonical_source_origin({
             "primary_url": "https://example.org/data/a"}))
