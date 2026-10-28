@@ -100,3 +100,16 @@
 - `18/18 SOURCE_MARKERS PASS`، `18/18 JAVA_LEXICAL PASS`، مصادر 43+6 منحنيات مرجعية موثقة، اختبار JUnit/Gradle/Android/ESP32 **NOT_RUN**.
 - **التالي:** إغلاق أخطاء تكامل Android/Stable offline والـR0 المرحلي بعد استكمال بقية المتطلبات، ثم الاختبارات التشغيلية قبل السماح بالبناء.
 - **تعليمات المالك ملزمة:** `APK=NOT_BUILT` ولا Gradle أو GitHub Actions build دون إذن.
+
+
+## نقطة الاستئناف الأحدث — الدفعة E (28 أكتوبر 2026)
+
+**HEAD قبل التدوين:** `b6281363283f09b8b7211a2e2ddc35baba0983c4`  
+**تدقيق واجب القراءة:** [V5-FIELD-SCIENCE-INTEGRATION-AUDIT-2026-10-28.md](V5-FIELD-SCIENCE-INTEGRATION-AUDIT-2026-10-28.md).
+
+1. أُصلح ربط `selected field_session_id` مع `TelemetryRecorder`: لا ربط بأحدث جلسة نشطة بالصدفة.
+2. يعتمد ChemCore للقياس الميداني `60S_MEDIAN_DISTINCT_HARDWARE_SCAN_CYCLE` من سجلات SQLite؛ لا يستبدل دقيقة القياس بآخر Snapshot، ولا يعيد حساب تاريخ R0 بمعايرة جديدة.
+3. تُدرج البصمة البحثية والـPPM التقديري وحدود التعرض والتحذيرات لكل مرشح في `ChemCoreDecisionRepository`، فيصبح لها مسار إلى تقارير الجلسة والموقع.
+4. أُصلح ترتيب إغلاق Activity كي لا تسبق `shutdownNow` أعمال إيقاف ريلاي MQ وتوثيق الفشل؛ مهلة 5 ثوانٍ ليست بديلاً عن مراقبة انقطاع التشغيل بالفيرموير.
+5. `INTEGRATION_STATIC=25/25_PASS`؛ `NUMERICAL_FIXTURE=PASS`؛ `JUNIT=NOT_RUN`؛ `GRADLE=NOT_RUN`؛ `APK=NOT_BUILT`؛ `DEVICE/ROBOT=NOT_TESTED`.
+6. **التالي:** اختبار/تدقيق شيفرة R0 المرحلية والتحديثات الفعلية للمكتبة ومكونات المطور الأربعة، ثم اختبارات Android على قاعدة حقيقية وقراءات ESP32 قبل إعلان الجاهزية. لا يُبنى APK إلا بأمر صريح.
