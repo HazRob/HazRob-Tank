@@ -169,6 +169,11 @@ public final class RobotApi {
         if(r!=null)throw new UnsupportedOperationException("Firmware R0 remote command not implemented");
         return getJson("/r0?cmd=start&warm="+warmupSeconds+"&duration="+captureSeconds,2000);
     }
+    public JSONObject calibrationAccept()throws Exception{
+        RemoteConnection r=remote();
+        if(r!=null)throw new UnsupportedOperationException("Firmware R0 remote command not implemented");
+        return getJson("/r0?cmd=accept",2000);
+    }
     public JSONObject calibrationCancel()throws Exception{
         RemoteConnection r=remote();
         if(r!=null)throw new UnsupportedOperationException("Firmware R0 remote command not implemented");
