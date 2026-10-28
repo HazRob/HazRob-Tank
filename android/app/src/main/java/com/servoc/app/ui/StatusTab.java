@@ -45,6 +45,117 @@ public final class StatusTab {
         updateButton=UiKit.button(c,initialUpdateLabel());updateButton.setOnClickListener(v->runUnifiedUpdate());root.addView(updateButton,UiKit.full(c));
         TextView updateNote=UiKit.small(c,"زر التحديث متاح لجميع المستخدمين ويبحث عن تحديثات التطبيق ومكتبة ChemCore المستقرة. إدارة المكتبة وتطويرها ومصدر التحديث والرجوع للإصدارات السابقة تبقى داخل تبويب المطور فقط.");updateNote.setTextColor(0xFF46515E);root.addView(updateNote,UiKit.full(c));
         master=card(c,root);network=card(c,root);hardware=card(c,root);sensors=card(c,root);science=card(c,root);camera=card(c,root);
+        science.setText("Scientific   MQ "+HazRobHardwareProfile.MQ.length+"/8   •   Curves "+GasEngine.curveCount()+"+"+ResearchCurveRegistry.count()+"   •   Models "+ModelRuntimeRegistry.nativeCount()+"/"+MqDataScience76Catalog.COUNT+" Native");
+    }
+    public View view(){return scroll;}
+    private static TextView card(Context c,LinearLayout root){TextView t=UiKit.text(c,"—");t.setTextSize(14);t.setBackgroundColor(0xFFFFFFFF);t.setTextColor(0xFF15202B);root.addView(t,UiKit.full(c));return t;}
+    private boolean remoteMode(){return "remote".equalsIgnoreCase(host.preferences().getString("connection_mode","direct"));}
+
+    private String initialUpdateLabel(){
+        String completed=appUpdater.recentCompletionLabel();
+        if(!completed.isEmpty())return completed;
+        ChemCoreLibraryManager.Status lib=libraryUpdater.status();
+        return "فحص ChemCore "+(lib.version.isEmpty()?"—":lib.version)+" • توقيع تحديث APK "+ReleaseAudit.VERSION+" غير معتمد بعد";
+    }
+
+    private void runUnifiedUpdate(){
+        if(updateBusy)return;
+        if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())){
+            updateButton.setText("أوقف القياس/التحليل قبل التحديث");
+            scroll.postDelayed(()->{if(!updateBusy)updateButton.setText(initialUpdateLabel());},3000);
+            return;
+        }
+        updateBusy=true;updateButton.setEnabled(false);updateButton.setText("جار البحث عن تحديث...");
+        host.io().execute(this::performUnifiedUpdate);
+    }
+
+    private void performUnifiedUpdate(){
+        boolean libraryUpdated=false;String libraryVersion="";String libraryIssue="";
+        try{
+            scroll.post(()->updateButton.setText("جار فحص مكتبة ChemCore..."));
+            ChemCoreLibraryManager.CheckSummary checked=libraryUpdater.check(ReleaseAudit.VERSION);
+            java.text.SimpleDateFormat timestamp=new java.text.SimpleDateFormat(
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",java.util.Locale.US);
+            timestamp.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+            host.database().putMeta("tank_v5_library_last_checked_utc",timestamp.format(new java.util.Date()));
+            host.database().putMeta("tank_v5_library_last_check_status",
+                checked.updateAvailable?"UPDATE_AVAILABLE":"UP_TO_DATE");
+            if(checked.updateAvailable){
+                scroll.post(()->updateButton.setText("جار تحديث مكتبة ChemCore..."));
+                ChemCoreLibraryStore.InstallResult r=libraryUpdater.install(checked,ReleaseAudit.VERSION,
+                        ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()));
+                if(r.installed){
+                    libraryUpdated=true;libraryVersion=r.version;
+                    host.database().putMeta("tank_v5_library_last_check_status","INSTALLED");
+                    ChemCoreMolecularSeedImporter.Result applied=ChemCoreMolecularSeedImporter.importVerifiedPayload(libraryUpdater.activePayload(),host.database());
+                    if(!applied.available)libraryIssue="ثبتت المكتبة لكن لم توجد طبقة جزيئية قابلة للتطبيق: "+applied.message;
+                    try{
+                        ChemCoreQsprRuntimeRegistry.Status models=ChemCoreQsprRuntimeRegistry.rebuild(host.database());
+                        host.database().putMeta("tank_v3_chemcore_qspr_status",models.summary());
+                        host.database().putMeta("tank_v3_chemcore_bootstrap",applied.available?"READY":"PARTIAL_NO_MOLECULAR_SEED");
+                    }catch(Exception seedError){
+                        host.database().putMeta("tank_v3_chemcore_bootstrap","ERROR");
+                        libraryIssue="ثبتت المكتبة لكن تعذرت إعادة بناء QSPR: "+seedError.getClass().getSimpleName();
+                    }
+                }else libraryIssue=r.reason;
+            }
+        }catch(Exception e){
+            libraryIssue=safe(e);
+            try{host.database().putMeta("tank_v5_library_last_check_status","FAILED: "+libraryIssue);}
+            catch(Exception ignored){}
+        }
+        final boolean libUpdated=libraryUpdated;final String libVersion=libraryVersion;final String libIssue=libraryIssue;
+        // No V3 upgrade-safe APK signer/manifest is yet configured. Keep library updates
+        // usable, but never invoke the legacy updater with an empty manifest/foreign signer.
+        if(BuildConfig.APP_UPDATE_MANIFEST_URL==null||BuildConfig.APP_UPDATE_MANIFEST_URL.trim().isEmpty()){
+            scroll.post(()->{
+                updateBusy=false;updateButton.setEnabled(true);
+                String prefix=libUpdated?"تم تحديث ChemCore "+libVersion:
+                    !libIssue.isEmpty()?"ChemCore: "+libIssue:"اكتمل فحص ChemCore";
+                updateButton.setText(prefix+" • تحديث APK ينتظر إعداد إصدار Tank الموقّع");
+            });
+            return;
+        }
+        appUpdater.updateNow(s->scroll.post(()->renderUnifiedUpdateState(s,libUpdated,libVersion,libIssue)));
+    }
+
+    private void renderUnifiedUpdateState(AppUpdateManager.State s,boolean libraryUpdated,String libraryVersion,String libraryIssue){
+        if(s==null)return;
+        String message=s.message;
+        if(s.phase==AppUpdateManager.Phase.UP_TO_DATE){
+            if(libraryUpdated&&libraryIssue.isEmpty())message="تم التحديث • ChemCore "+libraryVersion;
+            else if(libraryUpdated)message="تم تحديث ChemCore "+libraryVersion+" • تحذير تطبيق المعرفة";
+            else if(!libraryIssue.isEmpty())message="لا يوجد تحديث للتطبيق • تعذر فحص/تحديث المكتبة";
+            else message="لا يوجد تحديث جديد";
+        }else if(s.phase==AppUpdateManager.Phase.ERROR){
+            if(libraryUpdated)message="تم تحديث ChemCore • تعذر فحص/تحديث التطبيق";
+            else if(!libraryIssue.isEmpty())message="تعذر التحديث";
+        }
+        updateButton.setText(message);
+        switch(s.phase){
+            case CHECKING:
+            case UPDATE_AVAILABLE:
+            case DOWNLOADING:
+            case READY_TO_INSTALL:
+                updateButton.setEnabled(false);break;
+            case INSTALLER_OPENED:
+            case INSTALL_PERMISSION_REQUIRED:
+            case UP_TO_DATE:
+            case COMPLETED:
+            case ERROR:
+            default:
+                updateBusy=false;updateButton.setEnabled(true);break;
+        }
+    }
+
+    public void refresh(){
+        if(!updateBusy){String completed=appUpdater.recentCompletionLabel();if(!completed.isEmpty())updateButton.setText(completed);}
+        int warm=Math.max(0,host.preferences().getInt("warm",60)),analysis=Math.max(0,host.preferences().getInt("measure",30));
+        ChemCoreLibraryManager.Status lib=libraryUpdater.status();
+        ChemCoreQsprRuntimeRegistry.Status qspr=ChemCoreQsprRuntimeRegistry.status();
+        String boot=host.database().getMeta("tank_v3_chemcore_bootstrap","NOT_STARTED");
+        String seedOrigin=host.database().getMeta("tank_v3_chemcore_seed_origin","—");
+        boolean activeStable=libraryUpdater.activePayload()!=null;
         String endpoint=libraryUpdater.manifestUrl();
         boolean githubConfigured=endpoint!=null&&!endpoint.trim().isEmpty();
         science.setText("Scientific   MQ "+HazRobHardwareProfile.MQ.length+"/8"+
