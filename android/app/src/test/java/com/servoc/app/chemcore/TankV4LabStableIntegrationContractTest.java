@@ -41,9 +41,11 @@ public final class TankV4LabStableIntegrationContractTest {
         assertTrue(config.contains("assets.srcDir generatedHazrobAssets"));
         assertTrue(config.contains("prepareHr069EmbeddedStable"));
         String stableBuilder=read("../tools/build_hr069_embedded_stable.py");
-        assertTrue(stableBuilder.contains("\"min_app_version\":\"5.0\""));
-        assertTrue(stableBuilder.contains("\"max_app_version\":\"5.0\""));
         assertTrue(stableBuilder.contains("\"calibration_count\":0"));
+        String prepareV5=read("../tools/prepare_v5_stable_source.py");
+        assertTrue(prepareV5.contains("version=\"5.0\""));
+        assertTrue(prepareV5.contains("min_app_version"));
+        assertTrue(prepareV5.contains("max_app_version"));
         String host=read("src/main/java/com/servoc/app/MainActivity.java");
         assertTrue(host.contains("ChemCoreEmbeddedStableInstaller.ensureInstalled"));
         assertTrue(host.contains("tank_v4_stable_bootstrap_result"));
