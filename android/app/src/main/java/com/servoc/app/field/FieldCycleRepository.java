@@ -126,20 +126,35 @@ public final class FieldCycleRepository {
     /** Non-gas operation needs no MQ relay; its timing is still documented. */
     public boolean startedWithoutGas(String cycleId,long monotonicMs,String deviceId){
         if(monotonicMs<=0||deviceId==null||deviceId.trim().isEmpty())return false;
-        ContentValues v=new ContentValues();v.put("state",SAMPLING);
-        v.put("sampling_started_ms",monotonicMs);v.put("device_id",deviceId.trim());v.put("updated_ts",utc());
+        ContentValues v=new ContentValues();v.put("state",WARMUP);
+        v.put("warmup_started_ms",monotonicMs);v.put("device_id",deviceId.trim());v.put("updated_ts",utc());
         return db.getWritableDatabase().update("field_measurement_cycles",v,
                 "cycle_id=? AND state=? AND include_gas=0",
                 new String[]{required(cycleId),ARMED})==1;
     }
     public boolean samplingStarted(String cycleId,long monotonicMs){
         Cycle cycle=byId(cycleId);
-        if(cycle==null||!WARMUP.equals(cycle.state)||!cycle.modes.gas)return false;
+        if(cycle==null||!WARMUP.equals(cycle.state))return false;
         ContentValues v=new ContentValues();v.put("state",SAMPLING);
         v.put("sampling_started_ms",monotonicMs);v.put("updated_ts",utc());
         return db.getWritableDatabase().update("field_measurement_cycles",v,
                 "cycle_id=? AND state=? AND warmup_started_ms>0 AND ?-warmup_started_ms>=60000",
                 new String[]{required(cycleId),WARMUP,Long.toString(monotonicMs)})==1;
+    }
+
+    public static final class Timing {
+        public final String state;public final long warmupStart,sampleStart;
+        Timing(String state,long warmupStart,long sampleStart){
+            this.state=state;this.warmupStart=warmupStart;this.sampleStart=sampleStart;
+        }
+    }
+    public Timing timing(String id){
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+                "SELECT state,warmup_started_ms,sampling_started_ms FROM field_measurement_cycles "+
+                "WHERE cycle_id=?",new String[]{required(id)})){
+            return c.moveToFirst()?new Timing(c.getString(0),c.isNull(1)?0:c.getLong(1),
+                    c.isNull(2)?0:c.getLong(2)):null;
+        }
     }
 
     /** Finalized telemetry must be a REAL, fresh, successful user acquisition. */
