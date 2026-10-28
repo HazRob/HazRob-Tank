@@ -158,7 +158,11 @@ public final class ChemCoreAnalysisTab {
             // Only tag the analyzed result with Stable provenance when the
             // verified response-source actually entered this inference.
             lastResult=lastResult.withLibraryProvenance(lib.version,lib.sha256,lib.sourceCommit);
-            ChemCoreLabQuality lab=ChemCoreLabQuality.evaluate(host.latestDiagnostics(),host.driveLeft(),host.driveRight(),host.database());lastResult=lastResult.withLabQuality(lab.toJson());
+            ChemCoreLabQuality lab=ChemCoreLabQuality.evaluate(host.latestDiagnostics(),host.driveLeft(),host.driveRight(),host.database());
+            org.json.JSONObject labEvidence=lab.toJson();
+            labEvidence.put(com.servoc.app.chemcore.TankFingerprintScreening.KEY,
+                com.servoc.app.chemcore.TankFingerprintScreening.evaluate(steadyRatios(x.features)));
+            lastResult=lastResult.withLabQuality(labEvidence);
             ChemCoreDecisionRepository decisionRepo=new ChemCoreDecisionRepository(host.database());decisionRepo.save(Math.max(0,Math.round(x.durationSeconds*1000.0)),lastResult);ChemCoreP10SessionFinalizer.finalizeAndAttach(host.database(),attachedSessionId,lastResult,libraries.activePayload(),runtime.profile());persistAnalyticalExperiment(lastResult,lab);
             runtime.finish(lastResult);if(runtime.snapshot().state==ChemCoreSessionController.State.REPORT)runtime.advance(ChemCoreSessionController.Event.REPORT_SAVED,true,"{\"saved\":true}");primaryAnalysisElapsedMs=Math.max(0,SystemClock.elapsedRealtime()-computeStarted);
             awaitingRecoveryRemoval=true;recoveryConfirmed=false;stability.reset();renderResult(x,lastResult);safetyPanel.refreshNow();status.setText(lastResult.outcome==ChemCoreDecision.Outcome.UNKNOWN?"رفض Open-Set الهوية؛ القرار الأولي محفوظ. أزل العينة وابدأ Recovery لإكمال نتيجة الجلسة.":"تم حفظ القرار الأولي. أزل العينة ثم ابدأ Recovery لإكمال نتيجة الجلسة العميقة.");
