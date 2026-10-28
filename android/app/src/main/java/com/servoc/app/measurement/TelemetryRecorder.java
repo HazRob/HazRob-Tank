@@ -1,6 +1,7 @@
 package com.servoc.app.measurement;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.os.SystemClock;
 import com.servoc.app.chemcore.ChemCoreSchema;
 import com.servoc.app.chemcore.CompletedSessionChemCoreAnalyzer;
@@ -15,8 +16,15 @@ import java.util.TimeZone;
 
 /** Automatically records normalized telemetry across ESP32 MQ cycles and controlled ChemCore captures. */
 public final class TelemetryRecorder {
-    private final ExperimentsDb db;private final FieldSessionRepository fieldSessions;private String sessionId,lastCompletedSessionId="";private long startedElapsed,startedUtcMs,lastSampleElapsed,sampleSeq;private boolean chemCoreCaptureSession=false,fieldCaptureSession=false;
-    public TelemetryRecorder(ExperimentsDb db){this.db=db;this.fieldSessions=new FieldSessionRepository(db);ChemCoreSchema.ensure(db.getWritableDatabase());lastCompletedSessionId=db.getMeta("last_measurement_session_id","");}
+    private final ExperimentsDb db;private final Context appContext;private final FieldSessionRepository fieldSessions;private String sessionId,lastCompletedSessionId="";private long startedElapsed,startedUtcMs,lastSampleElapsed,sampleSeq;private boolean chemCoreCaptureSession=false,fieldCaptureSession=false;
+    public TelemetryRecorder(ExperimentsDb db){this(null,db);}
+    public TelemetryRecorder(Context context,ExperimentsDb db){
+        if(db==null)throw new IllegalArgumentException("database required");
+        this.appContext=context==null?null:context.getApplicationContext();
+        this.db=db;this.fieldSessions=new FieldSessionRepository(db);
+        ChemCoreSchema.ensure(db.getWritableDatabase());
+        lastCompletedSessionId=db.getMeta("last_measurement_session_id","");
+    }
 
     public synchronized void accept(JSONObject snapshot,int left,int right,boolean developer){
         if(snapshot==null)return;JSONObject m=snapshot.optJSONObject("measurement");String state=m==null?"idle":m.optString("state","idle");long now=SystemClock.elapsedRealtime();
@@ -129,7 +137,7 @@ public final class TelemetryRecorder {
         if(!wasChemCore&&"ready".equalsIgnoreCase(state)){
             try{
                 long duration=Math.max(0,endedMonotonic-startedElapsed);
-                CompletedSessionChemCoreAnalyzer.Outcome analysis=CompletedSessionChemCoreAnalyzer.analyzeAndPersist(db,completed,snapshot,duration);
+                CompletedSessionChemCoreAnalyzer.Outcome analysis=CompletedSessionChemCoreAnalyzer.analyzeAndPersist(appContext,db,completed,snapshot,duration);
                 db.putMeta("last_chemcore_screening_session_id",completed);
                 db.putMeta("last_chemcore_screening_candidate_count",Integer.toString(analysis.candidateCount));
                 db.putMeta("last_chemcore_screening_observed_channels",Integer.toString(analysis.observedChannels));
