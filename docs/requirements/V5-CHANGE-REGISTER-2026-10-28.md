@@ -127,3 +127,14 @@
 | جميع V5 | `BUILD_CONDITIONAL_NOT_AUTHORIZED_NOW`: إذن المالك منوط بإتمام الخطة واختبارات التشغيل والتوثيق، وليس طلب assemble فورًا |
 
 مرجع البوابة: [V5-R0-STAGED-INTEGRATION-2026-10-28.md](../implementation/V5-R0-STAGED-INTEGRATION-2026-10-28.md).
+
+
+## تحديث الدفعة G
+
+| المطلب | التقدم |
+| --- | --- |
+| V5-001 | `SOURCE_ENHANCED` — حفظ حقيقي لبيانات PM المتوفرة، وضم قرار ChemCore إلى SHA دورة القياس والتحقق منه عند تصدير تقارير الجلسة والموقع |
+| V5-007 | `SOURCE_ENHANCED` — تخزين R0 المعتمدة في سجلَّي NVS مع توافق قراءة V4 القديمة، وتجربة انقطاع الطاقة على ESP32 معلق |
+| V5 | `APK_GATE_BLOCKED` — 22/22 source checks فقط، JUnit/Android/ESP32 لم تُنفذ، تصريح البناء المشروط لم تتحقق شروطه بعد |
+
+[سجل الدليل الفني](../implementation/V5-NVS-REPORT-CHAIN-REVIEW-2026-10-28.md).
