@@ -29,7 +29,9 @@ public final class TankV5OperatorR0ContractTest {
         assertTrue(s.contains("pendingFirmwareResult=new JSONObject(response.toString())"));
         assertTrue(s.contains("private void acceptFirmwareResult()"));
         assertTrue(s.contains("if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()))"));
-        assertTrue(s.contains("ManualR0Calibration.saveFirmware(host.preferences(),values,deviceId,progress.counts)"));
+        assertTrue(s.contains("host.robotApi().calibrationAccept()"));
+        assertTrue(s.contains("FirmwareR0Contract.pendingValues(response)"));
+        assertTrue(s.contains("ManualR0Calibration.saveFirmware(host.preferences(),actual,deviceId,actualProgress.counts)"));
         assertTrue(s.contains("المتبقي"));
         assertTrue(s.contains("إلغاء R0"));
         assertFalse(s.contains("ManualR0Calibration.saveFirmware(host.preferences(),values,deviceId,p.counts)"));
