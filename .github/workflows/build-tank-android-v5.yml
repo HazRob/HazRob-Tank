@@ -153,6 +153,18 @@ jobs:
           HAZROB_TANK_UPDATE_KEY_ALIAS: ${{ secrets.HAZROB_TANK_V4_KEY_ALIAS }}
         run: gradle --no-daemon :app:assembleDebug
 
+      - name: Verify BUILT APK signer matches verified V4 certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=source/app/build/outputs/apk/debug/app-debug.apk
+          test -f "$apk"
+          signer=$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$apk" |
+            grep -i "Signer #1 certificate SHA-256 digest:" | head -1 |
+            awk '{print toupper($NF)}')
+          test "$signer" = 799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6 ||
+            { echo "::error::Built APK signature is not update-compatible with V4"; exit 1; }
+
       - name: Check APK scientific content and release identity
         shell: bash
         run: |
