@@ -21,3 +21,6 @@ Diagnostic debug-key APK is permitted if the persistent V4 upgrade certificate i
 
 ## Retry 3
 Android app compilation passed after context fix; JUnit source compilation found Java 11 Files.readString in a Java 8 Android test. Updated to Files.readAllBytes. A diagnostic APK is now explicitly allowed to compile even if unrelated legacy unit-test assertions fail, with an unrested NOT_RELEASE warning; report failures transparently.
+
+## Retry 4 — complete 763-case JUnit regression matrix
+On the previous diagnostic build, Java compilation and assembleDebug succeeded, but 16/763 source contracts failed. Updated the original legacy contracts for V5 multi-cycle DB, unified lab, new R0, twelve-sheet workbook and source-backed MQ7/MQ9 as well as copied the V5 build preparer to Gradle fixture location. Re-run tests and diagnostic compilation. Never represent a failed test suite as an accepted release.
