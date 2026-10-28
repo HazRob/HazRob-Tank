@@ -30,7 +30,8 @@ public final class FieldCycleController {
     private final Observer observer;
     private volatile boolean disposed=false;
     private String cycleId="",deviceId="";
-    private boolean gas=false,busy=false,stopping=false;
+    private boolean gas=false,busy=false;private volatile boolean stopping=false;
+    private long finalizeRequestedMs=0;
     private long lastFreshMs=0;
     private JSONObject lastSnapshot;
     private final Runnable tick=new Runnable(){public void run(){onTick();}};
@@ -190,20 +191,46 @@ public final class FieldCycleController {
                     long left=Math.max(0,WARMUP_MS-(at-timing.warmupStart));
                     main.post(()->message("WARMUP","الإحماء • المتبقي "+seconds(left)+" ثانية",cycleId));
                     if(left==0){
-                        // Do not enter SAMPLING until TelemetryRecorder has actually
-                        // opened and linked the field-only measurement session.
-                        if(!MeasurementSessionRegistry.requestFieldCapture())
-                            throw new IllegalStateException("مسجل القياسات مشغول");
-                        main.post(()->message("SAMPLING_WAIT","جارٍ بدء تسجيل العينات الفعلية",cycleId));
+                        // Wait for first real poll and the DB link; a request alone
+                        // is not equivalent to a stored measurement.
+                        if(!MeasurementSessionRegistry.fieldCaptureRequested()){
+                            if(!MeasurementSessionRegistry.requestFieldCapture())
+                                throw new IllegalStateException("مسجل القياسات مشغول");
+                        }
+                        FieldCycleRepository.Cycle linked=repo.byId(cycleId);
+                        String active=MeasurementSessionRegistry.activeSessionId();
+                        if(linked!=null&&!linked.measurementId.isEmpty()&&linked.measurementId.equals(active)){
+                            if(!repo.samplingStarted(cycleId,SystemClock.elapsedRealtime()))
+                                throw new IllegalStateException("فشل توثيق بدء أخذ العينات");
+                        }else if(at-timing.warmupStart>WARMUP_MS+12000L){
+                            throw new IllegalStateException("لم يبدأ التسجيل الفعلي خلال 12 ثانية");
+                        }
+                        main.post(()->message("SAMPLING_WAIT",
+                            "بانتظار أول عينة فعلية وربط التسجيل بالجلسة",cycleId));
                     }
                 }else if(FieldCycleRepository.SAMPLING.equals(timing.state)){
                     long left=Math.max(0,SAMPLING_MS-(at-timing.sampleStart));
                     main.post(()->message("SAMPLING","قياس • المتبقي "+seconds(left)+" ثانية",cycleId));
                     if(left==0&&!stopping){
-                        stopping=true;
+                        stopping=true;finalizeRequestedMs=at;
                         if(!MeasurementSessionRegistry.requestFieldStop("ready"))
                             throw new IllegalStateException("تعذر إنهاء مسجل القياسات");
                         main.post(()->message("FINALIZING","يُحفظ سجل العينات ويُفحص",cycleId));
+                    }
+                    if(stopping){
+                        // Stop is completed by the telemetry poll, not by this timer.
+                        if(!MeasurementSessionRegistry.fieldCaptureRequested()){
+                            if(repo.complete(cycleId,deviceId)){
+                                if(gas)try{host.robotApi().mqPower(false);}
+                                    catch(Exception ignored){}
+                                main.post(()->end("REVIEW_READY",
+                                    "اكتملت الدورة؛ اختر اعتماد القياس أو إعادته",cycleId));
+                                return;
+                            }
+                            throw new IllegalStateException("البيانات الفعلية لا تحقق شروط الاعتماد");
+                        }
+                        if(at-finalizeRequestedMs>12000L)
+                            throw new IllegalStateException("تعذر إنهاء حفظ العينات خلال 12 ثانية");
                     }
                 }else if(FieldCycleRepository.REVIEW.equals(timing.state)){
                     main.post(()->end("REVIEW_READY","اكتملت الدورة؛ اختر اعتماد أو إعادة القياس",cycleId));
