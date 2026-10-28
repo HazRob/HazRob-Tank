@@ -178,21 +178,48 @@ public final class FieldCycleRepository {
             new String[]{id,REVIEW})==1;
     }
 
-    /** New attempt with a NEW sequence; a pending or failed predecessor remains auditable. */
+    /**
+     * Retry and supersession are a single transaction. Never leave a closed
+     * attempt superseded if the replacement cannot be inserted.
+     */
     public Cycle retry(String cycleId){
         Cycle old=byId(cycleId);
         if(old==null||!(REVIEW.equals(old.state)||FAILED.equals(old.state)||CANCELLED.equals(old.state)))
-            throw new IllegalStateException("Only completed/rejected attempts can be retried");
-        SQLiteDatabase w=db.getWritableDatabase();
-        ContentValues v=new ContentValues();v.put("state",SUPERSEDED);v.put("updated_ts",utc());
-        if(w.update("field_measurement_cycles",v,"cycle_id=? AND state=?",
-                new String[]{old.id,old.state})!=1)throw new IllegalStateException("Cannot supersede stale attempt");
-        try{return beginInternal(old.fieldSessionId,old.modes,old);}
-        catch(RuntimeException ex){
-            ContentValues undo=new ContentValues();undo.put("state",old.state);
-            w.update("field_measurement_cycles",undo,"cycle_id=? AND state=?",new String[]{old.id,SUPERSEDED});
-            throw ex;
-        }
+            throw new IllegalStateException("Only review/failed/cancelled attempts may be retried");
+        SQLiteDatabase w=db.getWritableDatabase();w.beginTransaction();
+        String nextId="FC-"+UUID.randomUUID().toString();
+        try{
+            try(Cursor c=w.rawQuery("SELECT status FROM field_sessions WHERE field_session_id=?",
+                    new String[]{old.fieldSessionId})){
+                if(!c.moveToFirst()||!FieldSessionRepository.STATUS_ACTIVE.equals(c.getString(0)))
+                    throw new IllegalStateException("Field session must be active for retry");
+            }
+            try(Cursor c=w.rawQuery("SELECT 1 FROM field_measurement_cycles "+
+                    "WHERE state IN ('ARMED','WARMUP','SAMPLING') LIMIT 1",null)){
+                if(c.moveToFirst())throw new IllegalStateException("Physical acquisition already reserved");
+            }
+            int next;
+            try(Cursor c=w.rawQuery("SELECT COALESCE(MAX(sequence_no),0)+1 FROM field_measurement_cycles "+
+                    "WHERE field_session_id=?",new String[]{old.fieldSessionId})){
+                if(!c.moveToFirst())throw new IllegalStateException("Sequence allocation failed");
+                next=c.getInt(0);
+            }
+            ContentValues replacement=new ContentValues();String now=utc();
+            replacement.put("cycle_id",nextId);replacement.put("field_session_id",old.fieldSessionId);
+            replacement.put("sequence_no",next);replacement.put("attempt_no",old.attempt+1);
+            replacement.put("supersedes_cycle_id",old.id);replacement.put("include_gas",old.modes.gas?1:0);
+            replacement.put("include_particles",old.modes.particles?1:0);
+            replacement.put("include_physical",old.modes.physical?1:0);
+            replacement.put("state",ARMED);replacement.put("started_ts",now);replacement.put("updated_ts",now);
+            w.insertOrThrow("field_measurement_cycles",null,replacement);
+            ContentValues predecessor=new ContentValues();predecessor.put("state",SUPERSEDED);
+            predecessor.put("updated_ts",now);
+            if(w.update("field_measurement_cycles",predecessor,"cycle_id=? AND state=?",
+                    new String[]{old.id,old.state})!=1)
+                throw new IllegalStateException("Concurrent change to the predecessor attempt");
+            w.setTransactionSuccessful();
+        }finally{w.endTransaction();}
+        return byId(nextId);
     }
     public boolean fail(String cycleId,String reason){
         String cid=required(cycleId);String message=reason==null?"FAILED":reason.trim();
