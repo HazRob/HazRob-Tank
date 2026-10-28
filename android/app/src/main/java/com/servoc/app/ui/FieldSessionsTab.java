@@ -43,7 +43,7 @@ public final class FieldSessionsTab {
     private final List<String> boundSiteIds=new ArrayList<>(),boundSessionIds=new ArrayList<>(),boundSiteLabels=new ArrayList<>(),boundSessionLabels=new ArrayList<>();
     private final TextView state,selectedSiteSummary;
     private final Button siteReportPdf,siteReportXlsx,deleteSite;
-    private final Button beginMeasurement,retryMeasurement,approveMeasurement;
+    private final Button beginMeasurement,retryMeasurement,approveMeasurement,deleteMeasurement;
     private final CheckBox gasCheck,particleCheck,physicalCheck;
     private final TextView cycleStatus;
     private String latestCycleId="";
@@ -191,6 +191,22 @@ public final class FieldSessionsTab {
         });
         cycleActions.addView(approveMeasurement,UiKit.weight(1));
         cycleCard.addView(cycleActions,UiKit.full(c));
+        deleteMeasurement=UiKit.button(c,"حذف المحاولة غير المعتمدة");
+        deleteMeasurement.setEnabled(false);
+        deleteMeasurement.setOnClickListener(v->{
+            if(latestCycleId.isEmpty())return;
+            final String id=latestCycleId;
+            new AlertDialog.Builder(c).setTitle("حذف قياس غير معتمد")
+                .setMessage("سيُحذف محتوى القياس وعيناته ونتائجه غير المعتمدة، "+
+                    "مع الإبقاء على رقم المحاولة وسجل الحذف للتتبع. "+
+                    "لا يمكن حذف قياس معتمد أو مستخدم كمرجع علمي.")
+                .setNegativeButton("إلغاء",null)
+                .setPositiveButton("حذف القياس",(d,w)->{
+                    cycleDriver.delete(id);
+                    if(cycleDriver.busy())renderCycleButtons("DELETING");
+                }).show();
+        });
+        cycleCard.addView(deleteMeasurement,UiKit.full(c));
         managePane.addView(cycleCard,UiKit.full(c));
 
         sessions=UiKit.vbox(c);managePane.addView(sessions,UiKit.full(c));
@@ -294,7 +310,7 @@ public final class FieldSessionsTab {
         reportScope.setText("تقارير الجلسات غير متاحة حتى إصلاح قاعدة البيانات");
         siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);
         deleteSite.setEnabled(false);siteDropdown.setEnabled(false);sessionDropdown.setEnabled(false);
-        beginMeasurement.setEnabled(false);retryMeasurement.setEnabled(false);approveMeasurement.setEnabled(false);
+        beginMeasurement.setEnabled(false);retryMeasurement.setEnabled(false);approveMeasurement.setEnabled(false);deleteMeasurement.setEnabled(false);
     }
     private void renderSessionUi(SessionData data){
         FieldSessionRepository.FieldSession active=data.active;
@@ -390,6 +406,10 @@ public final class FieldSessionsTab {
         beginMeasurement.setEnabled(active&&!cycleDriver.busy());
         boolean review=mostRecent!=null&&mostRecent.reviewReady()&&!cycleDriver.busy();
         approveMeasurement.setEnabled(review);
+        deleteMeasurement.setEnabled(!cycleDriver.busy()&&mostRecent!=null&&
+            (mostRecent.reviewReady()||FieldCycleRepository.FAILED.equals(mostRecent.state)||
+             FieldCycleRepository.CANCELLED.equals(mostRecent.state)||
+             FieldCycleRepository.SUPERSEDED.equals(mostRecent.state)));
         retryMeasurement.setEnabled(!cycleDriver.busy()&&active&&mostRecent!=null&&
             (mostRecent.reviewReady()||FieldCycleRepository.FAILED.equals(mostRecent.state)||
              FieldCycleRepository.CANCELLED.equals(mostRecent.state)));
@@ -403,6 +423,7 @@ public final class FieldSessionsTab {
         beginMeasurement.setEnabled(!locked&&!selectedSessionId.isEmpty());
         retryMeasurement.setEnabled(!locked&&"REVIEW_READY".equals(stage));
         approveMeasurement.setEnabled(!locked&&"REVIEW_READY".equals(stage));
+        deleteMeasurement.setEnabled(!locked&&"REVIEW_READY".equals(stage));
         gasCheck.setEnabled(!locked);particleCheck.setEnabled(!locked);
         physicalCheck.setEnabled(!locked);
     }
