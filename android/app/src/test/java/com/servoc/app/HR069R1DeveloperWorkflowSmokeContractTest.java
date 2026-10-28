@@ -16,18 +16,21 @@ public final class HR069R1DeveloperWorkflowSmokeContractTest {
         return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/"+path)),StandardCharsets.UTF_8);
     }
 
-    @Test public void allFiveDeveloperPagesExistAndOnlyUnlockAfterCorrectPin()throws Exception{
+    @Test public void unifiedDeveloperLabPreservesAllFunctionsBehindCorrectPin()throws Exception{
         String s=source("ui/DeveloperTab.java");
+        String lab=source("ui/AnalyticalLabTab.java");
+        String settings=source("ui/SettingsTab.java");
         assertTrue(s.contains("RoleGate.DEVELOPER_PIN.equals(pin.getText().toString().trim())"));
-        assertTrue(s.contains("experiments=new DeveloperExperimentsTab("));
+        assertTrue(s.contains("views=new View[3]"));
         assertTrue(s.contains("chemCore=new AnalyticalLabTab("));
-        assertTrue(s.contains("r0=new DeveloperR0Tab("));
         assertTrue(s.contains("connectionSetup=new DeveloperConnectionDiagnosticsTab("));
         assertTrue(s.contains("library=new CentralLibraryDashboardTab("));
-        assertTrue(s.contains("\"التجارب\",\"المختبر\",\"معايرة R0\",\"الاتصال\",\"المكتبة\""));
+        assertTrue(s.contains("\"المختبر\",\"الاتصال\",\"المكتبة\""));
         assertTrue(s.contains("if(!unlocked||views==null)return"));
-        assertTrue(s.contains("if(selected==0&&experiments!=null)"));
-        assertTrue(s.contains("else if(selected==4&&library!=null)"));
+        assertTrue(lab.contains("new DeveloperExperimentsTab(context,host)"));
+        assertTrue(lab.contains("experimentsButton=UiKit.button(c,\"التجارب المرجعية\")"));
+        assertTrue(settings.contains("new DeveloperR0Tab(scroll.getContext(),host)"));
+        assertFalse(s.contains("r0=new DeveloperR0Tab("));
     }
 
     @Test public void experimentsCannotPromoteUnreviewedOrUserLocalData()throws Exception{
