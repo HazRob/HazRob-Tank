@@ -55,6 +55,7 @@ public final class FieldSessionsTab {
         this.cycleDriver=new FieldCycleController(host,new FieldCycleController.Observer(){
             public void changed(String state,String message,String id){
                 main.post(()->{if(disposed)return;
+                    if("REVIEW_READY".equals(state)&&id!=null&&!id.isEmpty())latestCycleId=id;
                     cycleStatus.setText(message);renderCycleButtons(state);
                 });
             }
@@ -194,6 +195,7 @@ public final class FieldSessionsTab {
         sessions=UiKit.vbox(c);managePane.addView(sessions,UiKit.full(c));
         reportPane.addView(UiKit.title(c,"تقارير الجلسات المعتمدة"),UiKit.full(c));
         reportPane.addView(reportSessionList,UiKit.full(c));
+        cycleDriver.recoverInterrupted();
     }
 
     public View view(){return scroll;}
