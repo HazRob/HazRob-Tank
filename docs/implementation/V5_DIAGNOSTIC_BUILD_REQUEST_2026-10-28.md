@@ -24,3 +24,6 @@ Android app compilation passed after context fix; JUnit source compilation found
 
 ## Retry 4 — complete 763-case JUnit regression matrix
 On the previous diagnostic build, Java compilation and assembleDebug succeeded, but 16/763 source contracts failed. Updated the original legacy contracts for V5 multi-cycle DB, unified lab, new R0, twelve-sheet workbook and source-backed MQ7/MQ9 as well as copied the V5 build preparer to Gradle fixture location. Re-run tests and diagnostic compilation. Never represent a failed test suite as an accepted release.
+
+## Retry 5 — final 763-case JUnit verification
+The previous run completed 763 unit tests with only one remaining stale expectation for literal min_app_version in a dynamic V5 generator; fixed to check the bound-template loop. Re-run to confirm all actual scientific/source contracts before presenting diagnostic APK as test-pass (still not real-hardware validated).
