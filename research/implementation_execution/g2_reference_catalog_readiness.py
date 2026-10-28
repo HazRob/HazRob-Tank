@@ -83,6 +83,22 @@ def _replay_catalog_raw_bytes(row, repo_root):
     return None
 
 
+
+# RFC 3986 section 2.3: percent-encoded unreserved octets are equivalent to
+# their literal ASCII characters. Reserved escapes MUST remain escaped:
+# decoding %2F or %3F could change path/query structure and merge sources.
+_UNRESERVED_ASCII = frozenset(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
+
+
+def _normalize_url_percent_encoding(component):
+    """Decode unreserved escapes; uppercase hex in all other valid escapes."""
+    def replace(match):
+        char = chr(int(match.group(1), 16))
+        return char if char in _UNRESERVED_ASCII else "%" + match.group(1).upper()
+    return re.sub(r"%([0-9a-fA-F]{2})", replace, component)
+
+
 def _canonical_source_origin(row):
     """Conservatively identify a DOI or an HTTP(S) landing page.
 
@@ -142,8 +158,9 @@ def _canonical_source_origin(row):
         host_authority = "[" + IPv6Address(host).compressed + "]" if ":" in host else host
         netloc = host_authority + (
             ":" + str(port) if port not in (None, default_port) else "")
-        path = parsed.path.rstrip("/") or "/"
-        return "url:" + parsed.scheme.lower() + "://" + netloc + path + ("?" + parsed.query if parsed.query else "")
+        path = _normalize_url_percent_encoding(parsed.path).rstrip("/") or "/"
+        query = _normalize_url_percent_encoding(parsed.query)
+        return "url:" + parsed.scheme.lower() + "://" + netloc + path + ("?" + query if query else "")
     candidate = unquote(value).rstrip("/")
     if re.fullmatch(r"10\.\d{4,9}/\S+", candidate, re.I):
         return "doi:" + candidate.lower()
