@@ -37,6 +37,7 @@ import com.servoc.app.calibration.FieldR0Baseline;
 import com.servoc.app.calibration.SqliteCalibrationProvider;
 import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.chemical.TankChemicalEvidence;
+import com.servoc.app.chemical.TankChemicalCapabilityReport;
 import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
 import com.servoc.app.chemcore.TankPpmEstimate;
 import com.servoc.app.chemcore.TankExposureReferenceCatalog;
@@ -184,14 +185,36 @@ public final class MeasurementsTab {
         chemicalRows.setAdapter(chemicalAdapter);
         chemicalRows.setOnItemClickListener((parent,view,position,id)->{
             if(position<0||position>=visibleChemicals.size())return;
-            ChemicalRepository.Chemical chemical=visibleChemicals.get(position);
-            String label=(chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name);
-            TankChemicalEvidence.Flags evidence=TankChemicalEvidence.inspect(host.database(),chemical);
-            int legacyId=chemical.legacyId==null?-1:chemical.legacyId.intValue();
-            new AlertDialog.Builder(c).setTitle(label)
-                .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+"\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+"\nالاسم: "+chemical.name+"\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+"\nالمصدر: "+(chemical.source==null?"—":chemical.source)+"\n\nإمكانات الأدلة المتحققة:\n"+evidence.describe()+"\n\nالتتبع: "+(legacyId>=0?"متاح":"غير متاح لهذه المادة"))
-                .setPositiveButton(legacyId>=0?"تتبع المادة":"إغلاق",(d,w)->{if(legacyId>=0){chosenChemical=label;host.setTrackingTarget(legacyId,label);}})
-                .show();
+            final ChemicalRepository.Chemical chemical=visibleChemicals.get(position);
+            final String label=(chemical.arabicName!=null&&!chemical.arabicName.isEmpty()
+                ?chemical.arabicName:chemical.name);
+            final int legacyId=chemical.legacyId==null?-1:chemical.legacyId.intValue();
+            // The verified Stable snapshot is read from a file: never block UI.
+            host.io().execute(()->{
+                final String description;
+                try{description=TankChemicalCapabilityReport.describe(c,host.database(),chemical);}
+                catch(Exception ex){
+                    android.util.Log.e("TankChemicalCapabilities",
+                        "Cannot resolve active capabilities for chemical "+chemical.uid,ex);
+                    scroll.post(()->host.showToast("تعذر فحص الأدلة؛ لم تتغير المكتبة"));
+                    return;
+                }
+                scroll.post(()->{
+                    new AlertDialog.Builder(c).setTitle(label)
+                        .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+
+                            "\\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+
+                            "\\nالاسم: "+chemical.name+
+                            "\\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+
+                            "\\nالمصدر: "+(chemical.source==null?"—":chemical.source)+
+                            "\\n\\nالإمكانات المتاحة ومصدرها:\\n"+description+
+                            "\\n\\nالتتبع: "+(legacyId>=0?"متاح":"غير متاح لهذه المادة"))
+                        .setPositiveButton(legacyId>=0?"تتبع المادة":"إغلاق",
+                            (d,w)->{if(legacyId>=0){
+                                chosenChemical=label;host.setTrackingTarget(legacyId,label);
+                            }})
+                        .show();
+                });
+            });
         });
         chemicalSearch.addTextChangedListener(new TextWatcher(){
             public void beforeTextChanged(CharSequence x,int st,int count,int after){}
