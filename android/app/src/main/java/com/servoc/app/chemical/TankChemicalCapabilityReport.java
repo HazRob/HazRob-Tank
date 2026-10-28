@@ -5,9 +5,9 @@ import android.content.Context;
 import com.servoc.app.chemcore.ChemCoreResponseModel;
 import com.servoc.app.chemcore.InverseMolecularSolver;
 import com.servoc.app.chemcore.TankStableScreeningModelRegistry;
+import com.servoc.app.chemcore.TankStableRuntimeCatalog;
 import com.servoc.app.data.ExperimentsDb;
 
-import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -26,40 +26,53 @@ public final class TankChemicalCapabilityReport {
             throw new IllegalArgumentException("Context, database and chemical required");
         TankChemicalEvidence.Flags local=TankChemicalEvidence.inspect(db,chemical);
         TankStableScreeningModelRegistry.LoadResult stable=
-            TankStableScreeningModelRegistry.load(context.getApplicationContext(),db,Collections.emptyList());
+            TankStableRuntimeCatalog.responseModels(context.getApplicationContext(),db);
         StringBuilder out=new StringBuilder();
         out.append("أدلة هذا الجهاز (SQLite):\n").append(local.describe());
         out.append("\n\nمكتبة ChemCore Stable النشطة:");
         out.append("\nالحالة: ").append(stable.status);
         out.append("\nالإصدار: ").append(stable.version.isEmpty()?"غير متاح":stable.version);
         out.append("\nSHA-256: ").append(shortHash(stable.sha256));
-        if(!stable.status.startsWith("ACTIVE_STABLE")){
-            out.append("\nتعذر التحقق من نماذج Stable النشطة. لا يعني ذلك خلو المادة من النماذج في المصادر الأخرى.");
-            return out.toString();
-        }
-        int count=0;
+        boolean verifiedStable=stable.status.startsWith("ACTIVE_STABLE");
+        if(!verifiedStable)
+            out.append("\nStable غير مثبتة/غير متحققة؛ سيستخدم المحرك المنحنيات "+
+                       "المصدرية الموجودة دون ادعاء أن Stable نشطة.");
+        out.append("\n\nالقدرات الحسابية الفعلية المتوفرة لهذه المادة:");
+        int stableCount=0,otherCount=0,listed=0;
         for(InverseMolecularSolver.Candidate candidate:stable.candidates){
             if(candidate==null||candidate.chemicalUid!=chemical.uid)continue;
             for(ChemCoreResponseModel model:candidate.models){
                 if(model==null)continue;
-                if(count++==0)out.append("\nنماذج المصدر القابلة للحساب (ليست معايرة جهاز):");
-                if(count<=24){
+                boolean fromStable=verifiedStable&&
+                    model.version().startsWith("tank-stable-reference/1:");
+                if(fromStable)stableCount++;else otherCount++;
+                if(++listed<=32){
                     out.append("\n• ").append(model.sensorKey().toUpperCase(Locale.US))
+                       .append(fromStable?" • Stable LOG10":" • نموذج مصدري/QSPR")
                        .append(" • ").append(model.evidenceTier())
                        .append(" • ").append(model.sourceId())
                        .append(" • ").append(model.version())
-                       .append(" • ").append(rounded(model.minPpm())).append("–")
-                       .append(rounded(model.maxPpm())).append(" ppm");
+                       .append(" • ").append(rounded(model.minPpm()))
+                       .append("–").append(rounded(model.maxPpm())).append(" ppm");
                 }
             }
         }
-        if(count==0){
-            out.append("\nلا يوجد منحنى استجابة نشط لهذه المادة في Stable المحمّلة؛ "+
-                "قد تبقى طرق أخرى في ChemCore متاحة للاستدلال.");
-        }else{
-            out.append("\nالإجمالي: ").append(count).append(" نموذجًا • "+
-                "النطاقات المبيّنة هي حدود رياضية للنموذج، لا شهادة دقة أو تحقق PPM.");
-        }
+        if(listed==0)
+            out.append("\nلا يوجد نموذج استجابة مؤهل للاستخدام الحسابي لهذه المادة في "+
+                "المصادر الفعالة الحالية. وجود اسم المادة في قائمة 652 لا يثبت وجود بصمة قابلة للقياس.");
+        else
+            out.append("\nالنماذج: Stable ").append(stableCount)
+                .append(" • مصدرية/QSPR ").append(otherCount)
+                .append(" • الإجمالي ").append(listed)
+                .append("\nالمنحنيات اللوغاريتمية تستخدم المجالات الموثقة لكل نموذج "+
+                    "ولا تُعد معايرة PPM على هذا الجهاز.");
+        out.append("\n\nالبصمات والإشارات:");
+        out.append("\nبصمات SQLite: ").append(local.localFingerprint?"موجودة":"لا توجد بصمة محلية");
+        out.append("\nنماذج المصدر: ").append(otherCount>0?"قابلة للفحص":"لا تتوفر مساهمات مؤهلة");
+        out.append("\nالتعريف الجزيئي: ").append(local.molecularIdentifier?
+            "موجود (قرينة وصفية وليست بصمة استجابة غاز)":"غير متاح");
+        out.append("\nهذه القائمة جرد للطرق المتاحة؛ لا تعني أن كل طريقة قادرة على "+
+            "تمييز مادة واحدة من خليط أو أن النتيجة معتمدة مهنيًا.");
         return out.toString();
     }
 
