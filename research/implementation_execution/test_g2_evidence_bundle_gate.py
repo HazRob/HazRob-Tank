@@ -1920,6 +1920,66 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
             _canonical_source_origin({"primary_url": "https://example.org/data"}))
         self.assertIsNone(_canonical_source_origin({}))
 
+    def test_doi_resolver_mirrors_are_blocked_even_with_distinct_raw_bytes(self):
+        from g2_reference_catalog_readiness import audit_source_catalog
+        catalog = self.fixture()
+        catalog["primary_catalog_entries"][1] = {
+            "id": "MQ-EXT-02", "category": "EXTERNAL_MEASUREMENT_DATASET"}
+        catalog["counts_by_type"] = {"EXTERNAL_MEASUREMENT_DATASET": 2}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            first, second = catalog["primary_catalog_entries"]
+            for index, row in enumerate((first, second)):
+                raw = ("distinct synthetic archive " + str(index)).encode()
+                rel = "research/g2/raw/doi-alias-" + str(index) + ".bin"
+                path = root / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+                row.update(
+                    doi="10.9999/source-" + ("a" if index == 0 else "b"),
+                    primary_url="https://example.org/landing-" + str(index),
+                    measurement_qualification=True,
+                    experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                    raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                    physical_reference_traceability=True,
+                    raw_local_path=rel, raw_size_bytes=len(raw),
+                    raw_sha256=hashlib.sha256(raw).hexdigest())
+
+            def matrix():
+                return audit_source_catalog(
+                    catalog, expected_total=2, expected_datasets=2,
+                    repo_root=root)
+
+            self.assertEqual(matrix()["source_review_ready"], 2)
+            for alias in (
+                    "https://dx.doi.org/10.9999/SOURCE-A?utm_source=mirror",
+                    "http://www.doi.org/10.9999/source-a/",
+                    "https://doi.org/10.9999%2Fsource-a"):
+                with self.subTest(alias=alias):
+                    second["primary_url"] = alias
+                    result = matrix()
+                    self.assertEqual(result["source_review_ready"], 0)
+                    self.assertTrue(all(
+                        "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in item["blockers"]
+                        for item in result["datasets"]))
+            second["primary_url"] = "https://example.org/landing-1"
+            self.assertEqual(matrix()["source_review_ready"], 2)
+
+    def test_url_host_alias_normalization_preserves_case_sensitive_paths(self):
+        from g2_reference_catalog_readiness import _canonical_source_origin
+        identity = _canonical_source_origin({
+            "primary_url": "https://example.org/Data/A"})
+        self.assertEqual(identity, _canonical_source_origin({
+            "primary_url": "HTTP://EXAMPLE.ORG:80/Data/A/"}))
+        self.assertNotEqual(identity, _canonical_source_origin({
+            "primary_url": "https://example.org/data/a"}))
+        self.assertNotEqual(identity, _canonical_source_origin({
+            "primary_url": "https://example.org/Data/A?download=1"}))
+        self.assertEqual(
+            _canonical_source_origin({"doi": "doi:10.9999/Source-A"}),
+            _canonical_source_origin({
+                "primary_url": "https://dx.doi.org/10.9999/source-a"}))
+
     def test_pinned_14_source_matrix_is_fail_closed_and_noncertifying(self):
         from g2_reference_catalog_readiness import PINNED_CATALOG_BLOB
         path = Path(__file__).parent / "G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json"
