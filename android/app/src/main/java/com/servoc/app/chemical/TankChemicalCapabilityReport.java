@@ -6,6 +6,7 @@ import com.servoc.app.chemcore.ChemCoreResponseModel;
 import com.servoc.app.chemcore.InverseMolecularSolver;
 import com.servoc.app.chemcore.TankStableScreeningModelRegistry;
 import com.servoc.app.chemcore.TankStableRuntimeCatalog;
+import com.servoc.app.chemcore.TankMultiSourceResponseModel;
 import com.servoc.app.data.ExperimentsDb;
 
 import java.util.Locale;
@@ -41,12 +42,17 @@ public final class TankChemicalCapabilityReport {
         int stableCount=0,otherCount=0,listed=0;
         for(InverseMolecularSolver.Candidate candidate:stable.candidates){
             if(candidate==null||candidate.chemicalUid!=chemical.uid)continue;
-            for(ChemCoreResponseModel model:candidate.models){
-                if(model==null)continue;
-                boolean fromStable=verifiedStable&&
-                    model.version().startsWith("tank-stable-reference/1:");
-                if(fromStable)stableCount++;else otherCount++;
-                if(++listed<=32){
+            for(ChemCoreResponseModel merged:candidate.models){
+                if(merged==null)continue;
+                java.util.List<ChemCoreResponseModel> alternatives=
+                    merged instanceof TankMultiSourceResponseModel?
+                    ((TankMultiSourceResponseModel)merged).sources():
+                    java.util.Collections.singletonList(merged);
+                for(ChemCoreResponseModel model:alternatives){
+                    boolean fromStable=verifiedStable&&
+                        model.version().startsWith("tank-stable-reference/1:");
+                    if(fromStable)stableCount++;else otherCount++;
+                    listed++;
                     out.append("\n• ").append(model.sensorKey().toUpperCase(Locale.US))
                        .append(fromStable?" • Stable LOG10":" • نموذج مصدري/QSPR")
                        .append(" • ").append(model.evidenceTier())
