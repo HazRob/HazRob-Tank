@@ -135,9 +135,29 @@ public final class ChemCoreAnalysisTab {
             if(runtime.snapshot().state==ChemCoreSessionController.State.REPORT)lastResult=new ChemCoreResultEnvelope(attachedSessionId,ChemCoreDecision.Outcome.INSUFFICIENT_EVIDENCE,ChemCoreDecision.EvidenceTier.M0_CATALOG_ONLY,null,"",Double.NaN,Double.NaN,Double.NaN,Double.NaN,Double.NaN,Double.NaN,runtime.profile().profileId,ChemCoreFeaturePipeline.SCHEMA_VERSION,"","response stability gate failed",java.util.Collections.emptyList());
             else if(!x.usable()){runtime.advance(ChemCoreSessionController.Event.EVIDENCE_INSUFFICIENT,true,"{\"reason\":\"feature_extraction_unusable\"}");lastResult=new ChemCoreResultEnvelope(attachedSessionId,ChemCoreDecision.Outcome.INVALID_MEASUREMENT,ChemCoreDecision.EvidenceTier.M0_CATALOG_ONLY,null,"",Double.NaN,Double.NaN,Double.NaN,Double.NaN,Double.NaN,Double.NaN,runtime.profile().profileId,ChemCoreFeaturePipeline.SCHEMA_VERSION,"","canonical feature extraction unusable",java.util.Collections.emptyList());}
             else{
-                runtime.advance(ChemCoreSessionController.Event.FEATURES_READY,true,"{\"feature_sha256\":\""+x.featurePayloadSha256+"\"}");Map<String,Double> ratios=steadyRatios(x.features);ChemCoreLibraryManager.Status libStatus=libraries.status();List<InverseMolecularSolver.Candidate> stableCandidates=ChemCoreStableKnowledgeReader.candidates(libraries.activePayload(),runtime.profile());ChemCoreStableKnowledgeReader.OpenSetArtifact openArtifact=stableCandidates.isEmpty()?null:ChemCoreStableKnowledgeReader.openSetArtifact(libraries.activePayload(),runtime.profile().profileId);ChemCoreOpenSetGate.Result openResult=openArtifact==null?null:openArtifact.gate.evaluate(x.features.vector);String modelVersion=stableCandidates.isEmpty()?"legacy-manufacturer-priors":"chemcore-stable:"+libStatus.version;if(openArtifact!=null)modelVersion+="+"+openArtifact.modelVersion;ChemCoreInferenceEngine.Context ctx=new ChemCoreInferenceEngine.Context(attachedSessionId,runtime.profile().profileId,modelVersion,x.meanTemperatureC,x.meanRh,openResult);lastResult=stableCandidates.isEmpty()?ChemCoreInferenceEngine.analyzeLegacyManufacturerPriors(ratios,runtime.profile(),ctx):ChemCoreInferenceEngine.analyze(ratios,stableCandidates,runtime.profile(),ctx);advanceEvidenceState(lastResult,openArtifact,openResult);
+                runtime.advance(ChemCoreSessionController.Event.FEATURES_READY,true,
+                    "{\"feature_sha256\":\""+x.featurePayloadSha256+"\"}");
+                Map<String,Double> ratios=steadyRatios(x.features);
+                com.servoc.app.chemcore.TankStableScreeningModelRegistry.LoadResult models=
+                    com.servoc.app.chemcore.TankStableRuntimeCatalog.responseModels(context,host.database());
+                ChemCoreStableKnowledgeReader.OpenSetArtifact openArtifact=
+                    com.servoc.app.chemcore.TankStableRuntimeCatalog.validatedOpenSet(context,runtime.profile());
+                ChemCoreOpenSetGate.Result openResult=openArtifact==null?
+                    null:openArtifact.gate.evaluate(x.features.vector);
+                String modelVersion=models.status.startsWith("ACTIVE_STABLE")?
+                    "tank-v5-stable:"+models.version:"tank-v5-source-backed-fallback";
+                if(openArtifact!=null)modelVersion+="+"+openArtifact.modelVersion;
+                ChemCoreInferenceEngine.Context ctx=new ChemCoreInferenceEngine.Context(
+                    attachedSessionId,runtime.profile().profileId,modelVersion,
+                    x.meanTemperatureC,x.meanRh,openResult);
+                lastResult=ChemCoreInferenceEngine.analyze(
+                    ratios,models.candidates,runtime.profile(),ctx);
+                advanceEvidenceState(lastResult,openArtifact,openResult);
             }
-            ChemCoreLibraryManager.Status lib=libraries.status();lastResult=lastResult.withLibraryProvenance(lib.version,lib.sha256,lib.sourceCommit);
+            ChemCoreLibraryManager.Status lib=libraries.status();
+            // Only tag the analyzed result with Stable provenance when the
+            // verified response-source actually entered this inference.
+            lastResult=lastResult.withLibraryProvenance(lib.version,lib.sha256,lib.sourceCommit);
             ChemCoreLabQuality lab=ChemCoreLabQuality.evaluate(host.latestDiagnostics(),host.driveLeft(),host.driveRight(),host.database());lastResult=lastResult.withLabQuality(lab.toJson());
             ChemCoreDecisionRepository decisionRepo=new ChemCoreDecisionRepository(host.database());decisionRepo.save(Math.max(0,Math.round(x.durationSeconds*1000.0)),lastResult);ChemCoreP10SessionFinalizer.finalizeAndAttach(host.database(),attachedSessionId,lastResult,libraries.activePayload(),runtime.profile());persistAnalyticalExperiment(lastResult,lab);
             runtime.finish(lastResult);if(runtime.snapshot().state==ChemCoreSessionController.State.REPORT)runtime.advance(ChemCoreSessionController.Event.REPORT_SAVED,true,"{\"saved\":true}");primaryAnalysisElapsedMs=Math.max(0,SystemClock.elapsedRealtime()-computeStarted);
