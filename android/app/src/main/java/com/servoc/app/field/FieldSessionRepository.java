@@ -89,6 +89,10 @@ public final class FieldSessionRepository {
             try(Cursor c=w.rawQuery("SELECT 1 FROM field_sessions WHERE field_session_id=? AND status=? LIMIT 1",new String[]{id,STATUS_ACTIVE})){if(!c.moveToFirst())return false;}
             String openSql="SELECT 1 FROM field_session_measurements fsm JOIN measurement_sessions ms ON ms.session_id=fsm.measurement_session_id WHERE fsm.field_session_id=? AND (ms.ended_ts IS NULL OR TRIM(ms.ended_ts)='') LIMIT 1";
             try(Cursor c=w.rawQuery(openSql,new String[]{id})){if(c.moveToFirst())return false;}
+            // A closed Field Session cannot contain an unreviewed V5 measurement.
+            try(Cursor c=w.rawQuery("SELECT 1 FROM field_measurement_cycles "+
+                    "WHERE field_session_id=? AND state IN ('ARMED','WARMUP','SAMPLING','REVIEW_READY') LIMIT 1",
+                    new String[]{id})){if(c.moveToFirst())return false;}
             ContentValues v=new ContentValues();String now=isoNow();v.put("ended_ts",now);v.put("status",STATUS_CLOSED);v.put("updated_ts",now);
             int n=w.update("field_sessions",v,"field_session_id=? AND status=?",new String[]{id,STATUS_ACTIVE});w.setTransactionSuccessful();return n==1;
         }finally{w.endTransaction();}
@@ -112,12 +116,28 @@ public final class FieldSessionRepository {
                     String sid=c.getString(0),ended=nz(c.getString(1)),role=nz(c.getString(2)),kind=nz(c.getString(3));
                     if(!"USER".equals(role)||!kind.startsWith("field_")||ended.trim().isEmpty())return false;
                     if(!FieldSessionApprovalPolicy.completedSuccessfully(nz(c.getString(4)),nz(c.getString(5))))return false;
+                    String cycleState="";
+                    try(Cursor matching=w.rawQuery(
+                            "SELECT state FROM field_measurement_cycles WHERE field_session_id=? AND measurement_session_id=?",
+                            new String[]{id,sid})){
+                        if(!matching.moveToFirst())return false;
+                        cycleState=nz(matching.getString(0));
+                    }
+                    if("LEGACY_IMPORTED".equals(cycleState)){
+                        // Historical V9 records were complete and have the old approval
+                        // evidence. Preserve their old semantics without promoting V5 drafts.
+                        ContentValues imported=new ContentValues();imported.put("state","LEGACY_APPROVED");imported.put("approved_ts",isoNow());
+                        if(w.update("field_measurement_cycles",imported,
+                                "field_session_id=? AND measurement_session_id=? AND state='LEGACY_IMPORTED'",
+                                new String[]{id,sid})!=1)return false;
+                    }else if(!FieldCycleRepository.APPROVED.equals(cycleState)&&!"LEGACY_APPROVED".equals(cycleState))
+                        return false;
                     try(Cursor samples=w.rawQuery("SELECT 1 FROM telemetry_samples WHERE session_id=? LIMIT 1",new String[]{sid})){
                         if(!samples.moveToFirst())return false;
                     }
                 }
             }
-            if(complete!=1)return false;
+            if(complete<1)return false;
             ContentValues values=new ContentValues();values.put("status",STATUS_APPROVED);values.put("updated_ts",isoNow());
             int n=w.update("field_sessions",values,"field_session_id=? AND status=?",new String[]{id,STATUS_CLOSED});
             if(n==1)w.setTransactionSuccessful();
@@ -176,10 +196,22 @@ public final class FieldSessionRepository {
                 String kind=nz(c.getString(0)),role=nz(c.getString(1));
                 if(!FieldSessionPolicy.mayAttachMeasurement(kind,role))return false;
             }
-            try(Cursor existing=w.rawQuery("SELECT 1 FROM field_session_measurements WHERE field_session_id=? LIMIT 1",new String[]{fs})){if(existing.moveToFirst())return false;}
+            // V5 forbids implicit field capture: only a user-armed cycle can own it.
+            String cycleId="";
+            try(Cursor reserved=w.rawQuery(
+                    "SELECT cycle_id FROM field_measurement_cycles WHERE field_session_id=? "+
+                    "AND measurement_session_id IS NULL AND state IN ('ARMED','WARMUP','SAMPLING') "+
+                    "ORDER BY sequence_no DESC LIMIT 1",new String[]{fs})){
+                if(!reserved.moveToFirst())return false;
+                cycleId=reserved.getString(0);
+            }
             ContentValues v=new ContentValues();v.put("field_session_id",fs);v.put("measurement_session_id",ms);v.put("linked_ts",isoNow());
             long row=w.insertWithOnConflict("field_session_measurements",null,v,SQLiteDatabase.CONFLICT_IGNORE);
-            w.setTransactionSuccessful();return row!=-1;
+            if(row<0)return false;
+            ContentValues owned=new ContentValues();owned.put("measurement_session_id",ms);owned.put("updated_ts",isoNow());
+            if(w.update("field_measurement_cycles",owned,
+                    "cycle_id=? AND measurement_session_id IS NULL",new String[]{cycleId})!=1)return false;
+            w.setTransactionSuccessful();return true;
         }finally{w.endTransaction();}
     }
 
@@ -198,10 +230,10 @@ public final class FieldSessionRepository {
 
     /** Gives a readable error if a historical or damaged DB lacks the required v9 tables. */
     public void verifySessionSchema(){
-        String[] required={"sites","field_sessions","field_session_measurements","measurement_sessions","telemetry_samples"};
+        String[] required={"sites","field_sessions","field_session_measurements","field_measurement_cycles","measurement_sessions","telemetry_samples"};
         java.util.HashSet<String> found=new java.util.HashSet<>();
         try(Cursor c=db.getReadableDatabase().rawQuery(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('sites','field_sessions','field_session_measurements','measurement_sessions','telemetry_samples')",null)){
+            "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('sites','field_sessions','field_session_measurements','field_measurement_cycles','measurement_sessions','telemetry_samples')",null)){
             while(c.moveToNext())found.add(c.getString(0));
         }
         for(String table:required)if(!found.contains(table))
@@ -253,6 +285,8 @@ public final class FieldSessionRepository {
                     if(c.moveToFirst())throw new IllegalStateException("Refusing deletion: scientific capture uses this identity");
                 }
             }
+            // Delete V5 cycle references first (including unbound/rejected attempts).
+            w.delete("field_measurement_cycles","field_session_id=?",new String[]{id});
             w.delete("field_session_measurements","field_session_id=?",new String[]{id});
             for(String ms:ids){
                 String[] arg={ms};
