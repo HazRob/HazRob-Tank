@@ -45,15 +45,16 @@ public final class TelemetryRecorder {
 
     private void start(boolean developer,long now,boolean chemCore,boolean fieldControlled){
         long utc=System.currentTimeMillis();chemCoreCaptureSession=chemCore;fieldCaptureSession=fieldControlled;sessionId=(developer?"DEV":"FIELD")+(fieldControlled?"-CYCLE-":chemCore?"-CHEMCORE-":"-")+utc+"-"+java.util.UUID.randomUUID().toString().substring(0,8);startedElapsed=lastSampleElapsed=now;startedUtcMs=utc;sampleSeq=0;
-        ContentValues v=new ContentValues();v.put("session_id",sessionId);v.put("started_ts",isoUtc(utc));v.put("kind",fieldControlled?"field_60s_cycle":chemCore?"developer_chemcore_controlled_capture":(developer?"developer_mq_cycle":"field_mq_cycle"));v.put("operator_role",developer?"DEVELOPER":"USER");
+        ContentValues v=new ContentValues();v.put("session_id",sessionId);v.put("started_ts",isoUtc(utc));v.put("kind",fieldControlled?"field_60s_cycle":chemCore?"developer_chemcore_controlled_capture":(developer?"developer_mq_cycle":"instant_mq_cycle"));v.put("operator_role",developer?"DEVELOPER":"USER");
         try{JSONObject meta=new JSONObject();meta.put("chemcore_controlled_capture",chemCore);meta.put("field_60s_capture",fieldControlled);meta.put("sample_period_ms",(chemCore||fieldControlled)?200:250);meta.put("mq_scan_timing_capture",chemCore);meta.put("measurement_schema",CanonicalMeasurementNormalizer.SCHEMA);meta.put("started_utc_ms",utc);meta.put("started_monotonic_ms",now);meta.put("clock_contract","UTC_EPOCH_MS_PLUS_ANDROID_ELAPSED_REALTIME");v.put("analytics",meta.toString());}catch(Exception ignored){}
         // The session insert and its user-field link form one semantic operation.
         // Never silently produce an orphan record while the operator assumes the active
         // site's report will include the acquisition.
         try{
             db.getWritableDatabase().insertOrThrow("measurement_sessions",null,v);
-            // Developer/ChemCore references remain outside user field-session scope.
-            if(!developer&&!chemCore){
+            // Only explicitly armed FIELD cycles may link to a user session; instant
+            // and scientific experiments are never linked automatically.
+            if(fieldControlled){
                 FieldSessionRepository.FieldSession active=fieldSessions.activeFieldSession();
                 if(active!=null&&!fieldSessions.linkMeasurement(active.id,sessionId))
                     throw new IllegalStateException("active field session cannot accept another measurement");
