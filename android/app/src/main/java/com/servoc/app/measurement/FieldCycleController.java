@@ -44,6 +44,7 @@ public final class FieldCycleController {
     /** The controller is per Activity. Never imply an unfinished physical run completed on destruction. */
     public void release(){
         disposed=true;main.removeCallbacks(tick);
+        MeasurementSessionRegistry.endFieldOperation();
         if(!cycleId.isEmpty()&&busy){
             final String id=cycleId,reason="ACTIVITY_DESTROYED_BEFORE_COMPLETION";
             final boolean turnOff=gas;
@@ -57,6 +58,10 @@ public final class FieldCycleController {
     public void begin(String sessionId,FieldCycleRepository.Options modes){
         if(disposed||busy)return;
         if(modes==null)throw new IllegalArgumentException("measurement modes required");
+        if(!MeasurementSessionRegistry.reserveFieldOperation()){
+            message("BLOCKED","هناك قياس أو تحليل نشط؛ أكمله أولاً","");
+            return;
+        }
         busy=true;stopping=false;gas=modes.gas;
         message("ARMING","جارٍ تجهيز دورة قياس مستقلة...",cycleId);
         host.io().execute(()->{
@@ -118,6 +123,10 @@ public final class FieldCycleController {
     /** The predecessor remains immutable; retry always creates a new numbered attempt. */
     public void retry(String predecessor){
         if(disposed||busy)return;
+        if(!MeasurementSessionRegistry.reserveFieldOperation()){
+            message("BLOCKED","هناك قياس أو تحليل نشط؛ أكمله أولاً",predecessor);
+            return;
+        }
         busy=true;
         host.io().execute(()->{
             FieldCycleRepository.Cycle row=null;
@@ -291,6 +300,7 @@ public final class FieldCycleController {
     private void end(String state,String text,String id){
         if(disposed)return;
         busy=false;stopping=false;cycleId="";lastSnapshot=null;lastFreshMs=0;
+        MeasurementSessionRegistry.endFieldOperation();
         main.removeCallbacks(tick);
         message(state,text,id);observer.refreshed();
     }
