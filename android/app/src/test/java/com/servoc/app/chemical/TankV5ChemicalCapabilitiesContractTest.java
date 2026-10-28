@@ -21,7 +21,7 @@ public final class TankV5ChemicalCapabilitiesContractTest {
         assertTrue(model.contains("model.minPpm()"));
         assertTrue(model.contains("model.maxPpm()"));
         assertTrue(model.contains("model.sourceId()"));
-        assertTrue(model.contains("ليست معايرة جهاز"));
+        assertTrue(model.contains("لا تُعد معايرة PPM على هذا الجهاز"));
         assertTrue(loader.contains("STABLE_SHA256_MISMATCH_USE_BUILTIN"));
         assertTrue(loader.contains("canonicalUidMap(db)"));
     }
