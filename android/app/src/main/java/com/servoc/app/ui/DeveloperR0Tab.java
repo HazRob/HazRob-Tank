@@ -141,7 +141,7 @@ public final class DeveloperR0Tab {
         }catch(Exception e){return Double.NaN;}
     }
     private boolean calibrationChangeBlocked(){
-        if(automaticActive){host.showToast("أكمل أو ألغِ المعايرة التلقائية أولاً");return true;}
+        if(automaticActive||pendingFirmwareResult!=null){host.showToast("اعتمد أو أعد أو ألغِ نتيجة R0 المعلقة أولاً");return true;}
         if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())){
             host.showToast("لا يمكن تغيير R0 أثناء القياس أو التحليل؛ أنهِ الجلسة أولًا");
             return true;
@@ -268,7 +268,7 @@ public final class DeveloperR0Tab {
 
     /** Explicit recovery action after Activity destruction, reconnect or phone-side save failure. */
     private void syncFirmwareCalibration(){
-        if(disposed||automaticActive||calibrationChangeBlocked())return;
+        if(disposed||automaticActive||pendingFirmwareResult!=null||calibrationChangeBlocked())return;
         Runnable importNow=()->{
             if(disposed||automaticActive||calibrationChangeBlocked())return;
             automaticActive=true;autoStart.setEnabled(false);autoCancel.setEnabled(true);
@@ -323,7 +323,7 @@ public final class DeveloperR0Tab {
         }
         String stage="warmup".equals(p.state)?"تسخين":"جمع قراءات";
         long total="warmup".equals(p.state)?p.warmupMs:p.durationMs;
-        autoProgress.setText(stage+" • "+(p.elapsedMs/1000)+" / "+(total/1000)+" ثانية\n"+
+        autoProgress.setText(stage+" • المتبقي "+Math.max(0,(total-p.elapsedMs+999)/1000)+" ثانية من "+(total/1000)+"\n"+
             "القراءات الصالحة: "+counts);
         clock.postDelayed(autoTick,1000);
     }
