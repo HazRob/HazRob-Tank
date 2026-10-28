@@ -72,6 +72,9 @@ public final class TankInstantAnalyzer {
         stableEvidence.put("reference_curve_is_device_calibration",false);
         stableEvidence.put("tank_specific_initial_burn_in_48h_provenance","DEVICE_VERIFICATION_PENDING");
         output.put("active_stable_reference_models",stableEvidence);
+        // Independently evaluate ALL available research fingerprint references.
+        // No M4 or open-set approval is required to display a hypothesis.
+        output.put(TankFingerprintScreening.KEY,TankFingerprintScreening.evaluate(ratios));
         // This existing independent fingerprint/curve evidence path is retained.
         JSONObject legacy=new JSONObject(AnalyticsSnapshot.toJson(frozen,
             new ChemicalRepository(db),new SqliteCalibrationProvider(db),false));
