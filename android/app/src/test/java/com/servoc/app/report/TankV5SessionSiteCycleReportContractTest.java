@@ -17,7 +17,7 @@ public final class TankV5SessionSiteCycleReportContractTest {
         String source=src("field/FieldSessionRepository.java");
         String bundle=src("report/FieldSessionReportExporter.java");
         assertTrue(source.contains("AND c.state IN ('APPROVED','LEGACY_APPROVED') ORDER BY c.sequence_no"));
-        assertTrue(bundle.contains("new FieldCycleRepository(db).forSession(fs)"));
+        assertTrue(bundle.contains("List<FieldCycleRepository.Cycle> cycleLedger=cycles.forSession(fs)"));
         assertTrue(bundle.contains("if(!cycle.approved())continue"));
         assertTrue(bundle.contains("approvedIds.equals(new HashSet<>(sessions))"));
         assertTrue(bundle.contains("Report integrity: approved cycles do not match session measurements"));
