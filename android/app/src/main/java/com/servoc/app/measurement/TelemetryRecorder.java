@@ -93,6 +93,8 @@ public final class TelemetryRecorder {
                 state.put("failsafe",d.optBoolean("failsafe",false));state.put("retrace",d.optBoolean("retrace",false));state.put("hold",d.optBoolean("hold",false));
                 state.put("safety_auto_stop",d.optBoolean("safety_auto_stop",false));state.put("forward_hazard",d.optBoolean("forward_hazard",false));state.put("forward_blocked",d.optBoolean("forward_blocked",false));state.put("forward_block_reason",d.optString("forward_block_reason",""));
             }
+            JSONObject particles=snapshot.optJSONObject("particles");
+            if(particles!=null)state.put("particles",new JSONObject(particles.toString()));
             JSONObject sound=snapshot.optJSONObject("sound");if(sound!=null)state.put("sound",sound);
             JSONObject ir=snapshot.optJSONObject("ir");if(ir!=null)state.put("ir",ir);
             JSONObject ldr=snapshot.optJSONObject("ldr");if(ldr!=null&&ldr.optBoolean("installed",false))state.put("ldr",ldr);
