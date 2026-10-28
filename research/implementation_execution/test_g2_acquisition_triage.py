@@ -5,9 +5,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from g2_acquisition_triage import (CANONICAL_REGISTRY, PINNED_MATRIX,
+from g2_acquisition_triage import (CANONICAL_REGISTRY, DEFAULT_EVIDENCE,
+                                   DEFAULT_LEDGER, PINNED_MATRIX,
                                    build_triage, make_triage, read_json)
-from g2_evidence_audit import load_canonical_technique_ids
+from g2_catalog_link_gate import (load_pinned_source_matrix,
+                                  reconcile_catalog_source_evidence)
+from g2_evidence_audit import (audit_all, load_canonical_technique_ids,
+                               load_g2_inputs)
 
 
 def fixture():
@@ -86,6 +90,39 @@ class AcquisitionTriageTests(unittest.TestCase):
             matrix_path.write_text(json.dumps(matrix), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "G2_SOURCE_MATRIX_GIT_BLOB_MISMATCH"):
                 build_triage(audit_path, matrix_path)
+
+    def test_cli_replays_controlling_evidence_and_rejects_forged_audit(self):
+        ledger, evidence = load_g2_inputs(DEFAULT_LEDGER, DEFAULT_EVIDENCE)
+        ids = [item["id"] for item in ledger["work_items"]]
+        rows = reconcile_catalog_source_evidence(
+            audit_all(ids, evidence["records"]), evidence["records"],
+            load_pinned_source_matrix(PINNED_MATRIX))
+        authentic = {
+            "schema": "hazrob.g2.audit.v1",
+            "scope": "new V4 independent source qualification",
+            "g2_blocked": sum(row["status"] == "G2_BLOCKED" for row in rows),
+            "g2_pass_candidates": sum(row["status"].startswith("G2_PASS") for row in rows),
+            "records": rows,
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "audit.json"
+            path.write_text(json.dumps(authentic), encoding="utf-8")
+            triage = build_triage(path, PINNED_MATRIX)
+            self.assertEqual(triage["g2_blocked"], 80)
+            self.assertEqual(triage["g2_pass_candidates_requiring_review"], 0)
+            for mode in ("fabricated_issue", "fabricated_candidate"):
+                with self.subTest(mode=mode):
+                    forged = copy.deepcopy(authentic)
+                    if mode == "fabricated_issue":
+                        forged["records"][0]["issues"] = ["FABRICATED_ISSUE"]
+                    else:
+                        forged["records"][0]["issues"] = []
+                        forged["records"][0]["status"] = "G2_PASS_CANDIDATE_REQUIRES_REVIEW"
+                        forged["g2_blocked"] -= 1
+                        forged["g2_pass_candidates"] += 1
+                    path.write_text(json.dumps(forged), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, "G2_TRIAGE_AUDIT_REPLAY_MISMATCH"):
+                        build_triage(path, PINNED_MATRIX)
 
     def test_nonfinite_or_overflow_json_numbers_are_rejected(self):
         with tempfile.TemporaryDirectory() as temp:

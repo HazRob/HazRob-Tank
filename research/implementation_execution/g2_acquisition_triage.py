@@ -9,12 +9,15 @@ import json
 import math
 from pathlib import Path
 
-from g2_catalog_link_gate import load_pinned_source_matrix
-from g2_evidence_audit import load_canonical_technique_ids
+from g2_catalog_link_gate import load_pinned_source_matrix, reconcile_catalog_source_evidence
+from g2_evidence_audit import (audit_all, load_canonical_technique_ids,
+                               load_g2_inputs, validate_ledger_scope)
 
 HERE = Path(__file__).resolve().parent
 CANONICAL_REGISTRY = HERE.parent / "PROGRESS_80.json"
 PINNED_MATRIX = HERE / "G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json"
+DEFAULT_LEDGER = HERE / "EXECUTION_LEDGER_2026-10-21.json"
+DEFAULT_EVIDENCE = HERE / "G2_INDEPENDENT_EVIDENCE.json"
 
 
 SOURCE_ACTIONS = {
@@ -64,10 +67,32 @@ def read_json(path):
                       parse_int=_finite_integer)
 
 
-def build_triage(audit_path, source_matrix_path):
-    """Require the exact pinned source bytes, not a substituted 14-row matrix."""
-    load_pinned_source_matrix(source_matrix_path)
-    return make_triage(read_json(audit_path), read_json(source_matrix_path))
+def build_triage(audit_path, source_matrix_path,
+                 ledger_path=DEFAULT_LEDGER, evidence_path=DEFAULT_EVIDENCE):
+    """Recompute the 80-technique gate from controlling evidence before triage.
+
+    A valid JSON audit with plausible IDs and totals is not sufficient: the
+    report must match a fresh replay of the execution ledger and independent
+    evidence register, including the pinned 14-source reconciliation.
+    """
+    source_matrix = load_pinned_source_matrix(source_matrix_path)
+    audit = read_json(audit_path)
+    ledger, evidence = load_g2_inputs(ledger_path, evidence_path)
+    ids = [row["id"] for row in ledger["work_items"]]
+    validate_ledger_scope(ids, evidence["records"],
+                          canonical_ids=load_canonical_technique_ids(CANONICAL_REGISTRY))
+    replayed = reconcile_catalog_source_evidence(
+        audit_all(ids, evidence["records"]), evidence["records"], source_matrix)
+    expected = {
+        "schema": "hazrob.g2.audit.v1",
+        "scope": "new V4 independent source qualification",
+        "g2_pass_candidates": sum(row["status"].startswith("G2_PASS") for row in replayed),
+        "g2_blocked": sum(row["status"] == "G2_BLOCKED" for row in replayed),
+        "records": replayed,
+    }
+    if audit != expected:
+        raise ValueError("G2_TRIAGE_AUDIT_REPLAY_MISMATCH")
+    return make_triage(audit, read_json(source_matrix_path))
 
 
 def make_triage(audit, matrix):
@@ -157,9 +182,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--audit", required=True, type=Path)
     parser.add_argument("--source-matrix", required=True, type=Path)
+    parser.add_argument("--ledger", default=DEFAULT_LEDGER, type=Path)
+    parser.add_argument("--evidence", default=DEFAULT_EVIDENCE, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
-    result = build_triage(args.audit, args.source_matrix)
+    result = build_triage(args.audit, args.source_matrix, args.ledger, args.evidence)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
                            encoding="utf-8")
     print("g2_blocked={g2_blocked} source_blocked={external_sources_blocked}".format(**result))
