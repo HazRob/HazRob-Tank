@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 canonical 80-ID and pinned 14-source triage gate (282/282 CI)
+
+- Resumed from research HEAD `a0e52bcce8f34d4c34d3136557b481d254d2decf`; verified 20/20 prior CI success. Re-read central `HazRob/build-harness` catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries; 14 external sources); pinned derived matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f`, 0/14 source-review ready; independent evidence `records: []`.
+- Closed a triage integrity gap: a fabricated 80-by-14 input could substitute canonical technique/source identities or source blockers while retaining plausible counts. `g2_acquisition_triage.py` now binds to `research/PROGRESS_80.json`, the byte-pinned source matrix, status/blocker consistency, known acquisition actions and finite JSON numbers. CLI verifies the source-matrix Git blob before producing output. Added four regression tests with synthetic negative controls.
+- Code/test SHA `244494f5d06399d92f3a7a8ac82c71be59f411de`: [G2 Actions #40771722696](https://github.com/HazRob/HazRob-Tank/actions/runs/40771722696), job `123110371111`: **282/282 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact `12852078288`. All **21/21** workflow runs on the code SHA succeeded.
+- Documentation: `G2_TRIAGE_CANONICAL_SCOPE_PINNED_SOURCE_GATE_2026-10-29_AR.md`. Code/test changes confined to two files in `research/implementation_execution/` on research branch; no Stable, Android or firmware modifications. No G2/G3 promotion.
+- Next: recheck CI for documentation checkpoint. Original independent physical exposures, traceable ppm references and locked grouped blind holdouts remain unavailable.
+
+---
+
 ## 2026-10-28 — G2 deterministic acquisition triage (278/278 CI)
 
 - Resumed from research HEAD `34b89d16163f4c8e58b6afece28b6d2a2482a470`; directly verified central `HazRob/build-harness` catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets). Independent evidence remains `records: []`; source review readiness 0/14.
