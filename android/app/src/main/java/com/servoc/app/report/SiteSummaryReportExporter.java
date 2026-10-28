@@ -66,7 +66,7 @@ public final class SiteSummaryReportExporter {
             bundle=b;JSONObject q=b.primaryDecision;
             outcome=q==null?"—":q.optString("outcome","—");chemical=q==null?"—":q.optString("chemical","—");evidenceTier=q==null?"—":q.optString("evidence_tier","—");posterior=q==null?Double.NaN:q.optDouble("top_posterior",Double.NaN);analyticalConfidencePct=q==null?Double.NaN:q.optDouble("analytical_confidence_pct",Double.NaN);ppmReportable=q!=null&&q.optBoolean("ppm_reportable",false);ppm=q==null?Double.NaN:q.optDouble("ppm",Double.NaN);
             JSONObject panel=q==null?null:q.optJSONObject("screening_144");panelSupportedCount=panel==null?0:panel.optInt("session_candidate_supported_count",0);panelAcceptedCount=panel==null?0:panel.optInt("accepted_identity_count",0);
-            JSONObject g=q==null?null:q.optJSONObject("gas_exposure_ppm");safetyGate=g!=null&&g.optBoolean("input_gate_passed",false);hazardPriority=g==null?Double.NaN:g.optDouble("hazard_priority_percent",Double.NaN);percentLfl=g==null?Double.NaN:g.optDouble("percent_lfl",Double.NaN);candidateHazards=CandidateHazardContext.evaluate(db,q);
+            JSONObject g=q==null?null:q.optJSONObject("gas_exposure_ppm");candidateHazards=CandidateHazardContext.evaluate(db,q);
             List<CycleSummary> temp=new ArrayList<>();
             ChemCoreDecisionRepository decisions=new ChemCoreDecisionRepository(db);
             for(FieldCycleRepository.Cycle cycle:b.cycleLedger){
@@ -75,6 +75,19 @@ public final class SiteSummaryReportExporter {
                 temp.add(new CycleSummary(db,cycle,result));
             }
             cycles=Collections.unmodifiableList(temp);
+            boolean anyGate=g!=null&&g.optBoolean("input_gate_passed",false);
+            double maxHazard=anyGate?g.optDouble("hazard_priority_percent",Double.NaN):Double.NaN;
+            double maxLfl=anyGate?g.optDouble("percent_lfl",Double.NaN):Double.NaN;
+            for(CycleSummary cycle:cycles){
+                JSONObject cx=cycle.analysis==null?null:cycle.analysis.optJSONObject("gas_exposure_ppm");
+                if(cx==null||!cx.optBoolean("input_gate_passed",false))continue;
+                anyGate=true;
+                double h=cx.optDouble("hazard_priority_percent",Double.NaN);
+                double l=cx.optDouble("percent_lfl",Double.NaN);
+                if(Double.isFinite(h)&&(!Double.isFinite(maxHazard)||h>maxHazard))maxHazard=h;
+                if(Double.isFinite(l)&&(!Double.isFinite(maxLfl)||l>maxLfl))maxLfl=l;
+            }
+            safetyGate=anyGate;hazardPriority=maxHazard;percentLfl=maxLfl;
         }
         boolean critical(){
             if(safetyGate&&((Double.isFinite(hazardPriority)&&hazardPriority>=100)||
