@@ -94,7 +94,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         db.execSQL("INSERT OR IGNORE INTO field_measurement_cycles("+
             "cycle_id,field_session_id,sequence_no,attempt_no,measurement_session_id,"+
             "include_gas,include_particles,include_physical,state,started_ts,updated_ts,completed_ts,approved_ts) "+
-            "SELECT 'LEGACY-'+m.measurement_session_id,m.field_session_id,"+
+            "SELECT 'LEGACY-'||m.measurement_session_id,m.field_session_id,"+
             "(SELECT COUNT(*) FROM field_session_measurements x WHERE x.field_session_id=m.field_session_id "+
             "AND (x.linked_ts<m.linked_ts OR (x.linked_ts=m.linked_ts AND x.measurement_session_id<=m.measurement_session_id))),"+
             "1,m.measurement_session_id,1,0,1,"+
