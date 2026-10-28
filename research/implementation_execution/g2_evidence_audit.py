@@ -13,6 +13,7 @@ from g2_evidence_bundle_gate import audit_evidence_bundle
 from g2_cross_artifact_gate import audit_cross_artifact
 from g2_raw_source_gate import audit_raw_source_bytes
 from g2_r0_source_gate import audit_r0_source_bytes
+from g2_catalog_link_gate import load_pinned_source_matrix, reconcile_catalog_source_evidence
 
 def _read_strict_input_json(path):
     """Reject ambiguous JSON in the top-level G2 ledger and evidence register.
@@ -266,6 +267,7 @@ def main():
     ap.add_argument("--ledger", default="research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json")
     ap.add_argument("--evidence", default="research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json")
     ap.add_argument("--output", default="research/implementation_execution/G2_AUDIT_RESULTS.json")
+    ap.add_argument("--source-matrix", default="research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json")
     args = ap.parse_args()
     ledger, evidence = load_g2_inputs(args.ledger, args.evidence)
     ids = [x["id"] for x in ledger["work_items"]]
@@ -273,6 +275,10 @@ def main():
     canonical_ids = load_canonical_technique_ids("research/PROGRESS_80.json")
     validate_ledger_scope(ids, records, canonical_ids=canonical_ids)
     results = audit_all(ids, records)
+    # A verified bundle referencing a centrally listed dataset cannot outrun
+    # that dataset's independently pinned source-readiness blockers.
+    source_matrix = load_pinned_source_matrix(args.source_matrix)
+    results = reconcile_catalog_source_evidence(results, records, source_matrix)
     output = {"schema": "hazrob.g2.audit.v1", "scope": "new V4 independent source qualification",
               "g2_pass_candidates": sum(x["status"].startswith("G2_PASS") for x in results),
               "g2_blocked": sum(x["status"] == "G2_BLOCKED" for x in results),

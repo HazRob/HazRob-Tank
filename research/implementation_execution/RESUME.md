@@ -1,3 +1,11 @@
+## 2026-10-28 — G2 central-source binding to technique review candidates (CI pending)
+
+- Resumed at research HEAD `473a043874f1a7e1b5b1cedd312461dd4af72c08` (prior CI successful); pinned central catalogue `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` and public derived matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (80 entries, 14 external datasets, 0/14 source-review ready); independent evidence register `records: []`.
+- Added research-only `g2_catalog_link_gate.py`, nine negative-control tests, and main G2 audit reconciliation. A known central source cannot produce a technique review candidate while its source-readiness record is blocked; no source or technique can be promoted by this gate. Private central reference content was not copied to the public Tank repository.
+- Documentation: `G2_CATALOG_SOURCE_TO_TECHNIQUE_BINDING_2026-10-28_AR.md`. Check Actions on the new commit; no ChemCore Stable, app or firmware changes. Physical independent exposures and traceable ppm standards are still unavailable.
+
+---
+
 ## 2026-10-28 — G2 DOI/resolver cross-field consistency (261/261 CI)
 
 - Continued from research HEAD `91e1ee0ab3c7f440202b9489e00f6e8d6141f8b4` (20/20 latest workflows succeeded); central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` remains 80 entries/14 external sources. Independent evidence register `records: []`; source matrix 0/14 review-ready.
