@@ -201,6 +201,11 @@ def _source_origin_blockers(row):
                 any(ch.isspace() or unicodedata.category(ch).startswith("C")
                     for ch in value)):
             return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
+        # A malformed percent triplet is not a stable RFC 3986 identifier.
+        # Also reject percent-encoded URL authorities: exa%6Dple.org and
+        # example.org must not masquerade as independent dataset origins.
+        if re.search(r"%(?![0-9A-Fa-f]{2})", value):
+            return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
         try:
             identity = _canonical_source_origin({field: value})
             if not identity or any(unicodedata.category(ch).startswith("C")
@@ -212,6 +217,8 @@ def _source_origin_blockers(row):
             else:
                 parsed = urlsplit(value)
                 host = (parsed.hostname or "").lower().rstrip(".")
+                if "%" in parsed.netloc:
+                    return ["ORIGINAL_SOURCE_ORIGIN_MALFORMED"]
                 if (parsed.scheme.lower() not in ("http", "https") or
                         not host or parsed.username is not None or
                         parsed.password is not None):
