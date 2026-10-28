@@ -18,7 +18,7 @@ public final class TankV5OperatorR0ContractTest {
         assertTrue(s.contains("new DeveloperR0Tab(scroll.getContext(),host)"));
         assertTrue(s.contains("calibrationScreen.addView(userCalibration.view()"));
         assertFalse(d.contains("new DeveloperR0Tab(context,host)"));
-        assertTrue(d.contains("views=new View[4]"));
+        assertTrue(d.contains("views=new View[3]"));
         assertTrue(host.contains("if(settingsTab!=null)settingsTab.release()"));
     }
     @Test public void explicitApprovalDoesNotClaimToRollbackFirmwareNvs()throws Exception{
