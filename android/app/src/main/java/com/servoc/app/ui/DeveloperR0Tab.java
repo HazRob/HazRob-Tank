@@ -330,34 +330,59 @@ public final class DeveloperR0Tab {
         clock.postDelayed(autoTick,1000);
     }
 
-    /** Explicit phone-side acceptance; V4 firmware already committed NVS at READY. */
+    /** Commit staged R0 to ESP32 NVS only on explicit user approval. */
     private void acceptFirmwareResult(){
         if(disposed||automaticActive||pendingFirmwareResult==null)return;
         if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())){
-            host.showToast("لا يمكن تغيير R0 أثناء قياس أو تحليل نشط");
-            return;
+            host.showToast("لا يمكن تغيير R0 أثناء قياس أو تحليل نشط");return;
         }
-        try{
-            JSONObject result=pendingFirmwareResult;
-            FirmwareR0Contract.Progress progress=FirmwareR0Contract.progress(result);
-            Map<String,Double> values=FirmwareR0Contract.committedValues(result);
-            String deviceId=result.optString("device_id","").trim();
-            if(deviceId.isEmpty())throw new IllegalStateException("Missing device identity");
-            if(!ManualR0Calibration.saveFirmware(host.preferences(),values,deviceId,progress.counts))
-                throw new IllegalStateException("Cannot durably save phone calibration");
-            pendingFirmwareResult=null;
-            autoApprove.setEnabled(false);autoRetry.setEnabled(false);autoCancel.setEnabled(false);
-            finishAutomatic("تم اعتماد واستيراد 8 قيم R0 في التطبيق • الجهاز: "+deviceId+
-                " • نسخة ESP32 كانت محفوظة مسبقًا");
-            reloadFields();host.refreshAllTabs();
-        }catch(Exception ex){
-            autoProgress.setText("تعذر اعتماد R0 على الهاتف: "+ex.getMessage()+
-                " • بقيت النتائج متاحة للمراجعة أو الإعادة.");
-        }
+        final JSONObject proposed=pendingFirmwareResult;
+        final String expected=proposed.optString("device_id","").trim();
+        if(expected.isEmpty()){autoProgress.setText("تعذر اعتماد معايرة بدون هوية ESP32");return;}
+        automaticActive=true;autoApprove.setEnabled(false);autoRetry.setEnabled(false);autoCancel.setEnabled(false);
+        autoProgress.setText("جارٍ حفظ R0 على ESP32 ثم قراءة NVS للتحقق...");
+        host.io().execute(()->{
+            try{
+                FirmwareR0Contract.Progress proposal=FirmwareR0Contract.progress(proposed);
+                Map<String,Double> requested="pending".equals(proposal.state)?
+                    FirmwareR0Contract.pendingValues(proposed):
+                    FirmwareR0Contract.committedValues(proposed);
+                JSONObject committed="pending".equals(proposal.state)?
+                    host.robotApi().calibrationAccept():host.robotApi().calibrationStatus();
+                // The V5 firmware only reports COMMITTED after NVS read-back.
+                FirmwareR0Contract.Progress actualProgress=FirmwareR0Contract.progress(committed);
+                Map<String,Double> actual=FirmwareR0Contract.committedValues(committed);
+                String deviceId=committed.optString("device_id","").trim();
+                if(!expected.equals(deviceId))
+                    throw new IllegalStateException("ESP32 identity changed during acceptance");
+                for(String sensor:keys)
+                    if(Math.abs(requested.get(sensor)-actual.get(sensor))>
+                        Math.max(0.00001,requested.get(sensor)*0.00001))
+                        throw new IllegalStateException("NVS R0 readback mismatch: "+sensor);
+                if(!ManualR0Calibration.saveFirmware(host.preferences(),actual,deviceId,actualProgress.counts))
+                    throw new IllegalStateException("Cannot durably save phone R0");
+                scroll.post(()->{
+                    if(disposed)return;
+                    pendingFirmwareResult=null;automaticActive=false;
+                    autoApprove.setEnabled(false);autoRetry.setEnabled(false);autoCancel.setEnabled(false);
+                    finishAutomatic("تم اعتماد 8 قيم R0 على ESP32 وNVS والهاتف • "+deviceId);
+                    reloadFields();host.refreshAllTabs();
+                });
+            }catch(Exception ex){
+                scroll.post(()->{
+                    if(disposed)return;
+                    automaticActive=false;
+                    autoApprove.setEnabled(true);autoRetry.setEnabled(true);autoCancel.setEnabled(true);
+                    autoProgress.setText("تعذر إتمام اعتماد R0: "+ex.getMessage()+
+                        " • تحقق من حالة ESP32 قبل إعادة المحاولة.");
+                });
+            }
+        });
     }
 
     private void retryAutomatic(){
         if(disposed||automaticActive||pendingFirmwareResult==null)return;
+        // V5 firmware start replaces pending RAM candidate; does not change NVS.
         pendingFirmwareResult=null;
         autoApprove.setEnabled(false);autoRetry.setEnabled(false);autoCancel.setEnabled(false);
         autoStart.setEnabled(true);
