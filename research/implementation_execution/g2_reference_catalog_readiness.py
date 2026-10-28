@@ -11,6 +11,7 @@ import math
 import re
 from collections import Counter
 from pathlib import Path, PurePosixPath
+from ipaddress import IPv6Address
 from urllib.parse import unquote, urlsplit
 import unicodedata
 
@@ -134,7 +135,11 @@ def _canonical_source_origin(row):
         # IPv6 literals require brackets. Without them, [::1]:8080 and
         # [::1:8080] collapse to the same serialized authority, even though
         # the former is an address plus port and the latter is another address.
-        host_authority = "[" + host + "]" if ":" in host else host
+        # A single IPv6 endpoint has many legal textual spellings.
+        # Canonicalize the literal address before counting independent
+        # origins, but retain brackets and any non-default port so a
+        # distinct IPv6 address never collides with an address+port.
+        host_authority = "[" + IPv6Address(host).compressed + "]" if ":" in host else host
         netloc = host_authority + (
             ":" + str(port) if port not in (None, default_port) else "")
         path = parsed.path.rstrip("/") or "/"
