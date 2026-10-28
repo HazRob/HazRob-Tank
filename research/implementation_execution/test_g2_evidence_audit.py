@@ -705,4 +705,28 @@ class CatalogMalformedOriginIsolationTests(unittest.TestCase):
             for row in result["datasets"]))
 
 
+class G2WorkflowTriggerCoverageTests(unittest.TestCase):
+    """The main G2 gate must run when the physical evidence bytes change."""
+
+    def test_raw_archive_registry_and_pinned_source_matrix_trigger_g2_ci(self):
+        workflow = (Path(__file__).resolve().parents[2] / ".github" /
+                    "workflows" / "g2-signal-lineage-v4.yml")
+        source = workflow.read_text(encoding="utf-8")
+        self.assertIn("  push:\n", source)
+        self.assertIn("  pull_request:\n", source)
+        push = source.split("  push:\n", 1)[1].split("  pull_request:\n", 1)[0]
+        pull = source.split("  pull_request:\n", 1)[1].split("  workflow_dispatch:", 1)[0]
+        required = (
+            "research/g2/raw/**",
+            "research/g2/evidence/**",
+            "research/PROGRESS_80.json",
+            "research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json",
+        )
+        for path in required:
+            with self.subTest(path=path):
+                trigger = "      - '" + path + "'"
+                self.assertIn(trigger, push)
+                self.assertIn(trigger, pull)
+
+
 if __name__=="__main__": unittest.main()
