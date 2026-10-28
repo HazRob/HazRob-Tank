@@ -352,7 +352,7 @@ String dataJson(){String j="{\"env\":"+envJson()+",\"device\":"+healthJson()+",\
 String diagJson(){String j="{\"device_id\":\""+WiFi.softAPmacAddress()+"\",\"fw\":\""+String(Cfg::FW)+"\",\"build_revision\":\""+String(Cfg::ENGINEERING_REVISION)+"\",\"api\":"+String(Cfg::API)+",\"hardware_profile\":\""+String(Cfg::HW_PROFILE)+"\",\"heap\":"+String(ESP.getFreeHeap())+",\"clients\":"+String(WiFi.softAPgetStationNum())+",\"device\":"+healthJson()+",\"drive\":"+driveJson()+",\"relay\":{\"mask\":"+String(mqPowerOn?1:0)+",\"on\":"+String(bj(mqPowerOn))+",\"gpio\":"+String(Cfg::RELAY_MQ)+",\"power_ms\":"+String(mqPowerMs())+",\"channels\":1},\"adc\":{\"ads1\":"+String(bj(ads1ok))+",\"ads2\":"+String(bj(ads2ok))+",\"acquisition\":"+acquisitionJson()+"},\"link\":{\"armed\":"+String(bj(linkArmed))+",\"heartbeat_age_ms\":"+String(linkArmed?millis()-linkAt:0)+"},\"env\":"+envJson()+",\"envType\":"+String(envType)+",\"envAddr\":"+String(envAddr)+",\"envId\":"+String(envId)+",\"envStatus\":\""+String(envStatus)+"\",\"envAck76\":"+String(bj(envAck76))+",\"envAck77\":"+String(bj(envAck77))+",\"envReadFailures\":"+String(envReadFails)+",\"ldr\":"+lightJson()+",\"alert\":"+Alerts::json()+",\"mqPowerManual\":true,\"warmupManual\":true}";return j;}
 
 bool calibrationStart(uint16_t warmSeconds,uint16_t sampleSeconds){
- if(calState==CAL_WARM||calState==CAL_SAMPLE||stage==MEASURE||!mqPowerOn||sampleSeconds<1||sampleSeconds>3600||warmSeconds>3600)return false;
+ if(calState==CAL_WARM||calState==CAL_SAMPLE||stage==MEASURE||!mqPowerOn||warmSeconds!=300||sampleSeconds!=60)return false;
  if(!ads1ok||!ads2ok)return false;
  calWarmMs=(uint32_t)warmSeconds*1000UL;calWindowMs=(uint32_t)sampleSeconds*1000UL;
  memset(calSum,0,sizeof(calSum));memset(calCount,0,sizeof(calCount));
