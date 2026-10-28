@@ -30,8 +30,9 @@ import java.util.Set;
  * reportable occupational ppm, or permission to change the regulatory compliance gate.
  *
  * Reconcile legacy_id against CURRENT SQLite uid (never assume uid=legacy_id+1).
- * Prevent duplicate contributions by replacing older built-in models for stable sensors.
- * Two stable priors for one sensor are permitted only with DISJOINT ppm domains.
+ * Retain all valid reference models even when two sources cover the SAME MQ
+ * channel and overlapping PPM domains. TankMultiSourceResponseModel evaluates
+ * each source but uses ONLY ONE contribution per physical sensor at a time.
  * A corrupt/unsupported/unavailable library falls back to existing source-backed models,
  * with an explicit provenance status in the resulting instant analysis.
  */
@@ -129,7 +130,6 @@ public final class TankStableScreeningModelRegistry {
 
             Map<Integer,Long> byLegacy=canonicalUidMap(db);
             Map<Long,List<ChemCoreResponseModel>> stableModels=new LinkedHashMap<>();
-            Map<Long,Set<String>> stableSensorKeys=new HashMap<>();
             Map<Long,String> labels=new HashMap<>();
             Map<Long,Integer> minimums=new HashMap<>();
             int accepted=0,rejected=0;
@@ -141,12 +141,9 @@ public final class TankStableScreeningModelRegistry {
                 StableModel model=new StableModel(rec);
                 if(uid==null||!model.valid(rec)){rejected++;continue;}
                 List<ChemCoreResponseModel> items=stableModels.computeIfAbsent(uid,k->new ArrayList<>());
-                boolean overlap=false;
-                for(ChemCoreResponseModel prior:items)if(prior.sensorKey().equals(model.sensor)&&
-                    model.minPpm()<prior.maxPpm()&&prior.minPpm()<model.maxPpm()){overlap=true;break;}
-                if(overlap){rejected++;continue;}
+                // Keep even overlapping literature/manufacturer/research curves.
+                // One sensor remains one observation through the source selector.
                 items.add(model);
-                stableSensorKeys.computeIfAbsent(uid,k->new HashSet<>()).add(model.sensor);
                 labels.putIfAbsent(uid,rec.optString("label",""));
                 minimums.put(uid,Math.max(minimums.getOrDefault(uid,1),Math.max(1,rec.optInt("minimum_contributors",1))));
                 accepted++;
@@ -157,13 +154,20 @@ public final class TankStableScreeningModelRegistry {
             for(Map.Entry<Long,List<ChemCoreResponseModel>> item:stableModels.entrySet()){
                 long uid=item.getKey();
                 InverseMolecularSolver.Candidate old=merged.get(uid);
-                Set<String> replacement=stableSensorKeys.get(uid);
-                List<ChemCoreResponseModel> models=new ArrayList<>();
+                Map<String,List<ChemCoreResponseModel>> alternatives=new LinkedHashMap<>();
                 if(old!=null)for(ChemCoreResponseModel model:old.models)
-                    if(model!=null&&!replacement.contains(model.sensorKey()))models.add(model);
-                models.addAll(item.getValue());
+                    if(model!=null)alternatives.computeIfAbsent(model.sensorKey(),k->new ArrayList<>()).add(model);
+                for(ChemCoreResponseModel model:item.getValue())
+                    alternatives.computeIfAbsent(model.sensorKey(),k->new ArrayList<>()).add(model);
+                List<ChemCoreResponseModel> models=new ArrayList<>();
+                for(Map.Entry<String,List<ChemCoreResponseModel>> group:alternatives.entrySet()){
+                    List<ChemCoreResponseModel> sources=group.getValue();
+                    models.add(sources.size()==1?sources.get(0):
+                        new TankMultiSourceResponseModel(group.getKey(),sources));
+                }
                 String name=old!=null?old.label:labels.getOrDefault(uid,"");
-                int minimum=Math.max(old==null?1:old.minimumContributors,minimums.getOrDefault(uid,1));
+                int minimum=1; // V5: a single valid source curve may yield a provisional fit;
+                // identity acceptance still independently requires corroboration.
                 merged.put(uid,new InverseMolecularSolver.Candidate(uid,name,models,
                     old==null?-0.5:old.priorLogWeight,minimum));
             }
