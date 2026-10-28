@@ -68,7 +68,7 @@ class G2CiRunBindingTests(unittest.TestCase):
             raw = b'["not a CI run"]\n'
             (base / "ci_run.json").write_bytes(raw)
             record["evidence_files"]["ci_run.json"] = hashlib.sha256(raw).hexdigest()
-            self.assertIn("CROSS_ARTIFACT_JSON_SCHEMA_INVALID",
+            self.assertIn("INVALID_EVIDENCE_FILE_CONTENT:ci_run.json",
                           audit_record(record, temp)["issues"])
 
 
