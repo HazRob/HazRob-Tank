@@ -1,8 +1,8 @@
-## 2026-10-28 — G2 source-origin provenance fail-closed (CI pending)
+## 2026-10-28 — G2 source-origin provenance fail-closed (223/223 G2 CI)
 
 - Research-only: source catalog now requires a syntactically valid DOI or HTTP(S) original landing URL; rejects malformed asserted DOI/URL, credentials, malformed ports, control characters, and DOI-resolver pages without a DOI. A valid DOI cannot mask a malformed landing URL.
 - Added a real-byte synthetic regression fixture with positive DOI/URL cases and missing/malformed-origin negatives. Existing positive catalogue fixture now declares a valid landing URL. Evidence: `G2_SOURCE_ORIGIN_PROVENANCE_FAIL_CLOSED_2026-10-28_AR.md`.
-- Pre-change SHA `445a778b5536c6100ac1bf9f5dd0d14a702ca0f0`: 20/20 workflows succeeded; G2 222/222 tests. Recheck CI on new code SHA before claiming PASS. Independent evidence register still `records: []`, 0/80 G2 candidates, 80/80 blocked; 14/14 external sources previously blocked. No ChemCore Stable, APK or firmware edits. Source identity is necessary but not physical provenance or concentration certification.
+- Initial code commit `a7f3ea113196b068db8107d48184c14b303e8414` failed G2 because the newline negative fixture used a literal backslash-n; corrected in `fefab773ff6ce6c21c25f5c869f5836e57be5d24`. Verified [G2 Actions 40638117397](https://github.com/HazRob/HazRob-Tank/actions/runs/40638117397), job `122649708083`: **223/223 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`; **21/21 CI workflows on code SHA succeeded**. Compared to prior `445a778b`, four changed files all in `research/implementation_execution/`. Independent evidence register remains `records: []`, 14/14 external sources previously blocked. No ChemCore Stable, APK or firmware edits. Source identity is necessary but not physical provenance or concentration certification.
 
 ---
 
