@@ -25,5 +25,14 @@ public final class TankV5GithubManifestPolicyContractTest {
         assertTrue(s.contains("ChemCoreLibraryVerifier.verifyManifestOnly("));
         assertTrue(s.contains("store.installVerifiedSnapshot("));
         assertTrue(s.contains("MeasurementSessionRegistry.fieldOperationActive()"));
+        String client=new String(Files.readAllBytes(Paths.get(
+            "src/main/java/com/servoc/app/chemcore/library/ChemCoreLibraryUpdateClient.java")),
+            StandardCharsets.UTF_8);
+        assertTrue(client.contains("requireSameApprovedGithubDirectory(manifestUrl,payload)"));
+        assertTrue(client.contains("requireSameApprovedGithubDirectory(check.manifestUrl,check.payloadUrl)"));
+        assertTrue(client.contains("ChemCoreLibraryManager.validateGitHubManifestUrl(manifestUrl)"));
+        assertTrue(client.contains("payload.substring(parent.length()).contains(\"/\")"));
+        assertTrue(client.contains("payload.contains(\"%\")"));
+        assertTrue(s.contains("u.getQuery()!=null"));
     }
 }
