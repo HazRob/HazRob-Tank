@@ -56,7 +56,7 @@ public final class TelemetryRecorder {
             // and scientific experiments are never linked automatically.
             if(fieldControlled){
                 FieldSessionRepository.FieldSession active=fieldSessions.activeFieldSession();
-                if(active!=null&&!fieldSessions.linkMeasurement(active.id,sessionId))
+                if(active==null||!fieldSessions.linkMeasurement(active.id,sessionId))
                     throw new IllegalStateException("active field session cannot accept another measurement");
             }
         }catch(RuntimeException failure){
