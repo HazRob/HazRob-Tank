@@ -55,5 +55,13 @@ public final class TankV5IntegrationOwnerAndEvidenceContractTest {
         assertTrue(c.contains("ACTIVITY_DESTROYED_DURING_RETRY_ARMING"));
         assertTrue(c.contains("MeasurementSessionRegistry.endFieldOperation()"));
         assertTrue(c.contains("failWorker(cid"));
+        String recorder=src("measurement/TelemetryRecorder.java");
+        String main=src("MainActivity.java");
+        assertTrue(recorder.contains("abortInterruptedFieldCapture(String reason)"));
+        assertTrue(recorder.contains("metadata.put(\"terminal_state\",\"error\")"));
+        assertTrue(recorder.contains("MeasurementSessionRegistry.resetActive(interrupted)"));
+        assertTrue(main.contains("telemetryRecorder.abortInterruptedFieldCapture(\"ACTIVITY_DESTROYED\")"));
+        assertTrue(main.indexOf("workers.awaitTermination(5000,TimeUnit.MILLISECONDS)")<
+                   main.indexOf("telemetryRecorder.abortInterruptedFieldCapture"));
     }
 }
