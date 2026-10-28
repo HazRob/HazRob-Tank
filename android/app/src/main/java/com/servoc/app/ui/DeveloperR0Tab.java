@@ -290,24 +290,26 @@ public final class DeveloperR0Tab {
 
     private void displayCalibration(FirmwareR0Contract.Progress p,JSONObject response){
         if(disposed||!automaticActive)return;
-        if("ready".equals(p.state)){
+        if("pending".equals(p.state)||"ready".equals(p.state)){
             try{
-                // Validate every channel before presenting the operator decision.
-                FirmwareR0Contract.committedValues(response);
-                String deviceId=response.optString("device_id","");
-                if(deviceId.trim().isEmpty())throw new IllegalStateException("Missing ESP32 device identity");
+                boolean staged="pending".equals(p.state);
+                if(staged)FirmwareR0Contract.pendingValues(response);
+                else FirmwareR0Contract.committedValues(response);
+                String deviceId=response.optString("device_id","").trim();
+                if(deviceId.isEmpty())throw new IllegalStateException("Missing ESP32 device identity");
                 pendingFirmwareResult=new JSONObject(response.toString());
                 automaticActive=false;clock.removeCallbacks(autoTick);
                 scroll.setKeepScreenOn(false);
                 autoStart.setEnabled(false);autoApprove.setEnabled(true);
                 autoRetry.setEnabled(true);autoCancel.setEnabled(true);
-                autoProgress.setText(
-                    "اكتمل قياس R0 على ESP32، وثبتت القيم في ذاكرته حسب بروتوكول V4. "+
-                    "لم تُستورد إلى الهاتف بعد. اضغط «اعتماد R0 في التطبيق» لاستيرادها، "+
-                    "أو «إعادة المعايرة» لمحاولة جديدة. «إلغاء» لا يتراجع عن سجل NVS في ESP32.");
+                autoProgress.setText(staged?
+                    "اكتملت معايرة 8 حساسات • القيم معلقة في RAM فقط ولم تتغير NVS. "+
+                    "اعتماد يحفظ على ESP32 والهاتف؛ إلغاء يترك R0 السابقة دون تغيير.":
+                    "آخر R0 محفوظة ومتحقق منها على ESP32. يمكن استيرادها للهاتف دون إعادة "+
+                    "كتابة NVS؛ إلغاء الاستيراد لا يغير معايرة الروبوت.");
             }catch(Exception ex){
                 pendingFirmwareResult=null;
-                finishAutomatic("البيانات النهائية لا تستوفي شروط اعتماد الهاتف: "+ex.getMessage());
+                finishAutomatic("لا تتوافر ثماني قيم صالحة للمراجعة: "+ex.getMessage());
             }
             return;
         }
