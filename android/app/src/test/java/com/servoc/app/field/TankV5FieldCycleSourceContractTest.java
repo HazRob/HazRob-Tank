@@ -58,7 +58,7 @@ public final class TankV5FieldCycleSourceContractTest {
         assertTrue(cycles.contains("w.beginTransaction()"));
         assertTrue(cycles.contains("replacement.put(\"supersedes_cycle_id\",old.id)"));
         assertTrue(cycles.contains("w.setTransactionSuccessful()"));
-        assertTrue(recorder.contains("fieldSessions.linkMeasurement(active.id,sessionId)"));
+        assertTrue(recorder.contains("fieldSessions.linkMeasurement(owner,sessionId)"));
         assertFalse(cycles.contains("developer_chemcore"));
     }
 }
