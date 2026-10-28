@@ -1,8 +1,8 @@
-## 2026-10-28 — G2 DOI/resolver cross-field consistency (CI verification pending)
+## 2026-10-28 — G2 DOI/resolver cross-field consistency (261/261 CI)
 
 - Continued from research HEAD `91e1ee0ab3c7f440202b9489e00f6e8d6141f8b4` (20/20 latest workflows succeeded); central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` remains 80 entries/14 external sources. Independent evidence register `records: []`; source matrix 0/14 review-ready.
 - Added fail-closed `ORIGINAL_SOURCE_DOI_RESOLVER_CONFLICT` for contradictory DOI field versus DOI-resolver landing URL; regular publisher URLs are unaffected. Added three real-byte synthetic regression controls in `test_g2_origin_percent_authority.py`.
-- Documentation: `G2_CROSS_FIELD_DOI_RESOLVER_CONSISTENCY_2026-10-28_AR.md`. Only research implementation files changed; no Stable, app or firmware edits, no G2/G3 promotion. Check Actions for this commit; original independent physical exposure data, traceable reference ppm and locked grouped holdouts remain unavailable.
+- Documentation: `G2_CROSS_FIELD_DOI_RESOLVER_CONSISTENCY_2026-10-28_AR.md`. Code/documentation SHA `e6172f851baf980d9afc96891fccd6027731efb0`: [G2 Actions #40735621847](https://github.com/HazRob/HazRob-Tank/actions/runs/40735621847), job `122983228312`: **261/261 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`; all **21/21** workflow runs succeeded. Only research implementation files changed; no Stable, app or firmware edits, no G2/G3 promotion. Recheck documentation-only commit CI; original independent physical exposure data, traceable reference ppm and locked grouped holdouts remain unavailable.
 
 ---
 
