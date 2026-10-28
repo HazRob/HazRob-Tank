@@ -1,9 +1,9 @@
-## 2026-10-28 — G2 DOI resolver alias normalization and URL path identity (CI pending)
+## 2026-10-28 — G2 DOI resolver alias normalization and URL path identity (222/222 CI)
 
 - Last confirmed pre-change head `be3b16a21ec3c4375b6d082cf959678d63dc323b`: 220/220 G2 software tests and 20/20 final-commit workflows passed. Independent G2 register remains `records: []`, 0/80 G2 pass candidates, 80/80 blocked; external catalog matrix 0/14 ready.
 - Research-only `g2_reference_catalog_readiness.py` now treats `doi.org`, `dx.doi.org`, `www.doi.org` DOI resolver aliases and percent-encoded DOI paths as the same source identity; preserves case-sensitive ordinary URL paths and query selectors while canonicalizing host/default port. Distinct source names still do not establish independent physical exposures.
-- Two synthetic original-byte regression tests appended to `test_g2_evidence_bundle_gate.py`. Code/test SHA `75ff66a609b957d1bdc4d5e61aaa8c8717c852e3`; [G2 workflow #40631786246](https://github.com/HazRob/HazRob-Tank/actions/runs/40631786246) **queued when inspected; do not claim CI pass yet**. Evidence document: `G2_DOI_RESOLVER_ALIAS_SOURCE_IDENTITY_2026-10-28_AR.md`.
-- Next: inspect workflow jobs and conclusions for code and documentation commits; fix any failures; record exact test totals. No ChemCore Stable, Tank APK, ESP32 or firmware edits; no G2/G3 scientific promotion without independently referenced physical measurements.
+- Two synthetic original-byte regression tests appended to `test_g2_evidence_bundle_gate.py`. Code/test SHA `75ff66a609b957d1bdc4d5e61aaa8c8717c852e3`; [G2 workflow #40631786246](https://github.com/HazRob/HazRob-Tank/actions/runs/40631786246) **222/222 PASS, 0 G2 candidates / 80 blocked; all 21/21 CI workflows on code SHA succeeded**. Evidence document: `G2_DOI_RESOLVER_ALIAS_SOURCE_IDENTITY_2026-10-28_AR.md`.
+- Next: inspect workflow conclusions for the final documentation commit; investigate source-independent physical exposures and traceable reference concentrations; preserve the negative G2 gate. No ChemCore Stable, Tank APK, ESP32 or firmware edits; no G2/G3 scientific promotion without independently referenced physical measurements.
 
 ---
 
