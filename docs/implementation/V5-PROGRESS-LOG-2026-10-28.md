@@ -172,3 +172,17 @@ HEAD قبل تدوين هذا الملحق: `b6281363283f09b8b7211a2e2ddc35baba0
 - توسعة بصمة `FieldCycleRepository.evidenceDigest` لتشمل قرار ChemCore المخزن؛ رفض التصدير عند تغير القرار أو البيانات الخام بعد الاعتماد عبر `verifyApprovedEvidence` و`FieldSessionReportExporter.resolve` المشتركة للجلسة/الموقع وPDF/XLSX.
 - تحديث مسارات fixtures في الاختبارات، وإضافة نسخ ملفات ESP32 إلى workflow مستقبلًا، وتصحيح افتراضات JUnit القديمة.
 - **المحقق بالفعل:** `22/22 STATIC SOURCE CHECKS`. **غير منفذ:** `JUNIT/GRADLE/ANDROID/ESP32`. **البناء:** `APK_NOT_BUILT`.
+
+
+## الدفعة H — محاولة الإغلاق الكاملة وفق طلب المالك
+
+**HEAD قبل هذا الملحق:** `7bccd27ebac52efacda8d88a991fe3e464b46601`.  
+**تقرير الحقيقة:** [V5-ONE-PASS-RELEASE-CLOSEOUT-AUDIT-2026-10-28.md](V5-ONE-PASS-RELEASE-CLOSEOUT-AUDIT-2026-10-28.md).
+
+- **تحديث Stable:** حماية عنوان manifest والحمولة المباشرة من تغيير المضيف/مسار GitHub، مع اختبارات pure-JVM مكتوبة `TankV5GithubSourceBoundaryTest`، غير مشغلة.
+- **الفيرموير:** R0 لا تُقبل إلا بإحماء كامل 300 ثانية منذ الطلب وجمع كامل 60 ثانية؛ لا يمكن تشغيل `/measure` خلال `CAL_PENDING` أو قبول R0 أثناء قياس فعلي.
+- **الترابط التقني:** استبدال `List.copyOf` في V5 لملاءمة Android API26، وتصحيح اختبار Stable 4.0 إلى `ReleaseAudit.VERSION`، وإظهار research `~ppm` مقابل M4 في تقرير الموقع PDF.
+- **اختبار بيانات فعلي مستقل:** قراءة Stable من APK V4 المرفق، مطابقة SHA-256، `49/49` تحقق inverse-LOG10 على 8 MQ/13 مادة/8 نماذج Ethanol؛ payload 1,744,726 بايت، M4=0. V4 مصدر خط أساس، **ليس تشغيل APK V5**.
+- **SQLite fixture منفذ:** أربع روابط تاريخية و3 موافقات، idempotence، 4 دورات لجلسة واحدة، رفض duplications/empty modes؛ ليس `ExperimentsDb.onUpgrade` على Android.
+- **فحوص تغيرات الدفعة الأخيرة:** `11/11` static source/lexical PASS؛ **JUnit/Gradle/Android/ESP32 = NOT_RUN**.
+- **إذن المالك مشروط:** شروط الخطة كلها لم تكتمل، ولا APK. لم يُنشأ ملف Release Gate مزيف.
