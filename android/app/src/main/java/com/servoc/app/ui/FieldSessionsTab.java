@@ -57,6 +57,7 @@ public final class FieldSessionsTab {
                 main.post(()->{if(disposed)return;
                     if("REVIEW_READY".equals(state)&&id!=null&&!id.isEmpty())latestCycleId=id;
                     cycleStatus.setText(message);renderCycleButtons(state);
+                    if("BLOCKED".equals(state))refresh();
                 });
             }
             public void refreshed(){main.post(()->{if(!disposed)refresh();});}
@@ -173,20 +174,20 @@ public final class FieldSessionsTab {
                 FieldCycleRepository.Options opts=new FieldCycleRepository.Options(
                     gasCheck.isChecked(),particleCheck.isChecked(),physicalCheck.isChecked());
                 cycleDriver.begin(id,opts);
-                renderCycleButtons("ARMING");
+                if(cycleDriver.busy())renderCycleButtons("ARMING");
             }catch(IllegalArgumentException ex){host.showToast("اختر نوع قياس واحدًا على الأقل");}
         });
         cycleActions.addView(beginMeasurement,UiKit.weight(1.1f));
         retryMeasurement=UiKit.button(c,"↻ إعادة القياس");retryMeasurement.setEnabled(false);
         retryMeasurement.setOnClickListener(v->{
             if(latestCycleId.isEmpty())return;
-            cycleDriver.retry(latestCycleId);renderCycleButtons("ARMING");
+            cycleDriver.retry(latestCycleId);if(cycleDriver.busy())renderCycleButtons("ARMING");
         });
         cycleActions.addView(retryMeasurement,UiKit.weight(1));
         approveMeasurement=UiKit.button(c,"✓ اعتماد القياس");approveMeasurement.setEnabled(false);
         approveMeasurement.setOnClickListener(v->{
             if(latestCycleId.isEmpty())return;
-            cycleDriver.approve(latestCycleId);renderCycleButtons("ARMING");
+            cycleDriver.approve(latestCycleId);if(cycleDriver.busy())renderCycleButtons("ARMING");
         });
         cycleActions.addView(approveMeasurement,UiKit.weight(1));
         cycleCard.addView(cycleActions,UiKit.full(c));
