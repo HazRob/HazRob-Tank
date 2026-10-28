@@ -16,6 +16,16 @@ import unicodedata
 
 PINNED_CATALOG_BLOB = "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f"
 DATASET_CATEGORY = "EXTERNAL_MEASUREMENT_DATASET"
+EXPECTED_SCHEMA_VERSION = "hazrob-unified-reference-bank-1.0"
+EXPECTED_AUTHORITY = "HazRob/build-harness/library/reference-bank/external-research/master_catalog.json"
+EXPECTED_SCOPE = "SHARED_BIBLIOGRAPHY_AND_RESEARCH_DATA_DISCOVERY_FOR_ALL_HAZROB_PROJECTS"
+REQUIRED_SAFETY_POLICY = (
+    "raw_data_is_not_sensor_calibration",
+    "library_inclusion_does_not_promote_to_Tank_G3_or_HR069_M4",
+    "gas_label_not_equal_ppm_reference",
+    "raw_timeseries_not_independent_exposures",
+    "source_status_must_be_preserved",
+)
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 CANONICAL_ID = re.compile(r"^[A-Z0-9]+(?:-[A-Z0-9]+)*$")
 CANONICAL_CATEGORY = re.compile(r"^[A-Z][A-Z0-9_]*$")
@@ -179,6 +189,16 @@ def audit_source_catalog(catalog, expected_total=80, expected_datasets=14, repo_
             not isinstance(catalog.get("primary_catalog_entries"), list) or
             not isinstance(catalog.get("counts_by_type"), dict)):
         raise ValueError("CENTRAL_CATALOG_SCHEMA_INVALID")
+    # Re-pinning a catalogue's blob must never silently replace the
+    # authority, bibliography-only scope, or non-certification policy.
+    # These fields are not physical evidence; they constrain interpretation.
+    policy = catalog.get("qualification_policy")
+    if (catalog.get("schema_version") != EXPECTED_SCHEMA_VERSION or
+            catalog.get("authority") != EXPECTED_AUTHORITY or
+            catalog.get("scope") != EXPECTED_SCOPE or
+            not isinstance(policy, dict) or
+            any(policy.get(key) is not True for key in REQUIRED_SAFETY_POLICY)):
+        raise ValueError("CENTRAL_CATALOG_AUTHORITY_OR_SAFETY_POLICY_MISMATCH")
     entries = catalog["primary_catalog_entries"]
     if (len(entries) != expected_total or
             type(catalog.get("record_count")) is not int or
