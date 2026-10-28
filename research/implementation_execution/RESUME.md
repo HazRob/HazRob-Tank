@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 audit replay binding for acquisition triage (283/283 CI)
+
+- Continued from research HEAD `8709968e96b2928901ea5bc9caf8c48970ef50d0` (20/20 prior CI successful). Rechecked central `HazRob/build-harness` catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries; 14 external datasets); pinned matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` remains 0/14 review-ready; independent evidence `records: []`.
+- Fixed a reproducibility gap: triage previously accepted a forged, self-consistent audit with invented blockers or review candidates. `build_triage` now replays the canonical 80-technique evidence audit from the ledger and independent evidence register, reconciles the pinned source matrix, and requires exact equality before emitting triage. Added a positive control and two negative scenarios in one regression test.
+- Code/test SHA `4618ffe49d04ed711746c207ca9a3e0f232ca894`: [G2 Actions #40779896071](https://github.com/HazRob/HazRob-Tank/actions/runs/40779896071), job `123138599806`, **283/283 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact `12856631682`. **21/21** workflows succeeded on code SHA.
+- Documentation: `G2_TRIAGE_REPLAY_FROM_CONTROLLING_EVIDENCE_2026-10-29_AR.md`. Research branch only; no ChemCore Stable, Android or firmware edits; no G2/G3 scientific promotion.
+- Next: recheck documentation-only checkpoint CI. Physically independent original gas exposures, traceable concentration references, device/session/exposure IDs and locked grouped blind holdouts remain absent.
+
+---
+
 ## 2026-10-29 — G2 canonical 80-ID and pinned 14-source triage gate (282/282 CI)
 
 - Resumed from research HEAD `a0e52bcce8f34d4c34d3136557b481d254d2decf`; verified 20/20 prior CI success. Re-read central `HazRob/build-harness` catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries; 14 external sources); pinned derived matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f`, 0/14 source-review ready; independent evidence `records: []`.
