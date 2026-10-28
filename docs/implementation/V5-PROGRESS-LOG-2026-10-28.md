@@ -102,3 +102,17 @@
 **بوابات معلقة:** Android Gradle/JVM والـInstrumentation/Device، PDF rendering وExcel parsing وSAF، ترحيل V4 حقيقي، 60+60 والريلاي والـPM على ESP32، ودقة ChemCore/PPM. **قرار عدم بناء APK ما زال ساريًا**.
 
 `CHECKPOINT: REPORT_SOURCE_LINKED / SOURCE_AUDIT_PASS / SQLITE_FIXTURE_PASS / DEVICE_AND_RELEASE_BLOCKED`.
+
+
+## الدفعة C — ChemCore/المختبر وتوافق Stable (28 أكتوبر 2026)
+
+**مرجع توثيقي كامل:** [V5-ANALYSIS-LAB-INTEGRATION-2026-10-28.md](V5-ANALYSIS-LAB-INTEGRATION-2026-10-28.md).
+
+- **V5-002:** شاشة التحليل أصبحت وجهتين فقط: القياس الآني، و`ChemCore والمرشحون`. المخططات داخل شاشة النتائج نفسها دون بطاقات KPI مكررة أو نسخ نتائج منفصلة. بقي مصدر `currentOperation.analysis` واحدًا. أضيفت علامة `☠` لمقارنة تعرض مشروطة و`🔥` فقط عند LFL المقدّر 100%، وعند 10% LFL يظهر `⚠`، مع تطابق UID ومنع خلط التحذيرات بين المرشحين. `SCREENING_ONLY` وليس إثبات سلامة/امتثال.
+- **V5-008:** شاشة المطور تحتوي الآن `المختبر/الاتصال/المكتبة`، وداخل المختبر `جلسة مضبوطة/نتائج وتشخيص/تجارب مرجعية` مع إعادة استخدام الوظائف الأصلية وعدم تكرار منشئ التجارب أو صلاحيات المرجع. R0 بقي في الإعدادات.
+- **V5-006:** أُنشئ مُحضّر `tools/prepare_v5_stable_source.py` لضبط manifest V5 قبل **بناء لاحق مصرّح به فقط** دون تغيير محتوى Stable المصدر أو إصدار M4 غير متحقق منه. مستودع Tank الحالي لا يتضمن manifest صالحًا منشورًا لقناة GitHub؛ التحديث الحي غير مثبت.
+- **V5-010:** إضافة نسخة التطبيق الفعلية مع نسخة المكتبة إلى لوحة المطور؛ إصلاح `rollback` ليعمل خارج واجهة Android؛ وتحديث رسالة مسار R0.
+- **الأدلة:** `25/25` فحص source-marker ناجح و`15/15` فحص Java lexical ناجح؛ أضيفت/حدثت اختبارات JUnit دون تشغيلها. `GRADLE=NOT_RUN`, `APK=NOT_BUILT`, `DEVICE=NOT_TESTED`.
+- **التالي:** متابعة متطلبات التحديثات ومكتبة MQ، ثم اختبارات Android الفعلية لدورات الجلسات والتقارير والتحليل؛ لا بناء حتى إذن المالك.
+
+`CHECKPOINT_C: CHEMCORE_UI_AND_DEVELOPER_LAB_SOURCE_COMMITTED / NO_APK`.
