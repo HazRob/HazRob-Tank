@@ -296,12 +296,16 @@ public final class MainActivity extends Activity implements HazRobHost {
         final android.content.Context closingContext=getApplicationContext();
         new Thread(()->{
             try{
-                if(!workers.awaitTermination(5000,TimeUnit.MILLISECONDS))
+                if(!workers.awaitTermination(5000,TimeUnit.MILLISECONDS)){
                     workers.shutdownNow();
+                    workers.awaitTermination(500,TimeUnit.MILLISECONDS);
+                }
             }catch(InterruptedException interrupted){
                 workers.shutdownNow();
                 Thread.currentThread().interrupt();
             }finally{
+                if(telemetryRecorder!=null)
+                    telemetryRecorder.abortInterruptedFieldCapture("ACTIVITY_DESTROYED");
                 WifiRoute.unbind(closingContext);
                 if(closingDb!=null)try{closingDb.close();}catch(Exception ignored){}
             }
