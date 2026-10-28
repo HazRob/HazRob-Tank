@@ -71,3 +71,12 @@
 
 **نقطة الاستئناف:** `SOURCE_ONLY_CHEMCORE_AND_LAB_MERGE_SAVED; NO_APK; NO_GRADLE; NO_DEVICE_PASS`.  
 **التالي:** تدقيق شامل لبوابة التحديثات الأربع على GitHub + محرك النماذج PPM، ثم اختبار الحالات المتقاطعة حين تتوفر بيئة Android دون إصدار APK إلا بأمر صريح.
+
+
+## 7. استكمال تأمين قناة تحديث GitHub
+
+بعد توثيق دفعة التحليل، أُضيف إلى `ChemCoreLibraryManager` تحقق `validateGitHubManifestUrl` في كل من الإعداد اليدوي وقبل عملية `check`. يرفض المصدر الآن مضيف HTTPS خارج `github.com` أو `raw.githubusercontent.com` أو `api.github.com`، والرابط الذي لا يقع تحت منظمة `HazRob` أو الذي يتضمن اسم مستخدم أو منفذًا مخصصًا أو Fragment أو مسار تجاوز. يظل التحقق من `SHA256` ونطاق الإصدار وSampling profile إلزاميًا عند التنزيل والتثبيت. وأضيف اختبار مصدر `TankV5GithubManifestPolicyContractTest.java` **ولم يُشغل JUnit**.
+
+**لا يعني ذلك أن التحديث الحي جاهز:** يلزم نشر Manifest موقّع/موثق وقابل للقراءة ومحتوى Stable حقيقي على GitHub، ثم اختبارات online/offline/partial/tampered/rollback على Android. لا تملأ URL افتراضيًا ولا تُعلن نجاحًا تجريبيًا دون مصدر نشر حقيقي.
+
+**HEAD بعد التغيير الأمني وقبل تحديث الوثيقة:** `415ee12b499e1e836a5dc9a3dc7762458f975006`. لا build.
