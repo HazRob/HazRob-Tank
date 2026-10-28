@@ -35,7 +35,7 @@ public final class TankMultiSourceResponseModel implements ChemCoreResponseModel
                 minTier=m.evidenceTier();
         }
         if(valid.isEmpty())throw new IllegalArgumentException("No usable models");
-        sources=List.copyOf(valid);
+        sources=java.util.Collections.unmodifiableList(new ArrayList<>(valid));
         min=lo;max=hi;conservativeTier=minTier;
     }
 
