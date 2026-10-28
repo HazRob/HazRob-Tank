@@ -18,3 +18,6 @@ RELEASE_GATE=NOT_YET_MET
 Initial GitHub compilation exposed two undefined `context` references in `ChemCoreAnalysisTab`.
 Fixed in commit c2d546f3730630eec37f80d367f8e4b981e40372. Explicit user request remains in effect.
 Diagnostic debug-key APK is permitted if the persistent V4 upgrade certificate is unavailable; not an in-place update or certified release.
+
+## Retry 3
+Android app compilation passed after context fix; JUnit source compilation found Java 11 Files.readString in a Java 8 Android test. Updated to Files.readAllBytes. A diagnostic APK is now explicitly allowed to compile even if unrelated legacy unit-test assertions fail, with an unrested NOT_RELEASE warning; report failures transparently.
