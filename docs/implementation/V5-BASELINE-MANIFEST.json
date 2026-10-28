@@ -1,0 +1,71 @@
+{
+  "schema": "hazrob-tank-v5-baseline/1",
+  "created_local_date": "2026-10-28",
+  "project": "HazRob/HazRob-Tank",
+  "branch": "feature/tank-v5-implementation",
+  "base_commit": "acf490c0ebda413c79ba59b5db085828177690a9",
+  "original_android_baseline": {
+    "repository": "sohpany/SERVOC-Android",
+    "commit": "6281d3eb7c1c961ce63b0b5e4ae0792874626720",
+    "path": "app/src/main/java",
+    "overlay_path": "android/app/src/main/java",
+    "read_only": true
+  },
+  "last_verified_v4": {
+    "diagnostic_actions_run": 40552448040,
+    "build_sha": "1f1ea7d84b30c26b5825299e39ab53ad9c90a836",
+    "version_name": "4.0",
+    "release_candidate": false
+  },
+  "v5": {
+    "version_label_in_source": "5.0",
+    "release_state": "NOT_BUILT",
+    "schema_from": 9,
+    "schema_to": 10,
+    "android_application_id": "com.hazrob.tank",
+    "version_code": "TO_BE_SET_IN_V5_BUILDER",
+    "build_or_gradle_authorized": false
+  },
+  "database": {
+    "file": "servoc.db",
+    "version_from": 9,
+    "version_to": 10,
+    "legacy_tables": [
+      "sites",
+      "field_sessions",
+      "field_session_measurements",
+      "measurement_sessions",
+      "telemetry_samples",
+      "experiments",
+      "captures",
+      "reference_artifacts"
+    ],
+    "new_table": "field_measurement_cycles",
+    "migration_mode": "additive + idempotent legacy field-link backfill",
+    "data_wipe_permitted": false
+  },
+  "active_firmware": {
+    "source_branch": "feature/tank-v4-implementation",
+    "api_major": 4,
+    "lecd_compat_2_3": true,
+    "unchanged_in_v5_so_far": true
+  },
+  "known_blockers": [
+    "Session measurement capture UI and 60+60 physical timing not yet connected",
+    "Firmware/current remote measurement duration != guaranteed 60 seconds",
+    "V5 field-report exporters not yet updated to enumerate all approved cycles",
+    "R0 user approval remains firmware NVS auto-commit; two-phase handshake pending",
+    "Ethanol active Stable capability provenance pending on-device inspection",
+    "V5 signing certificate and update path not verified",
+    "V5 database upgrade on real V4 data not yet device-tested"
+  ],
+  "evidence": {
+    "source_static_checks": "17/17 targeted markers matched from live GitHub source; no Java compile",
+    "sql_mirror_test": "PASS after correcting SQLite || concatenation; test is schema model, not production migration through ExperimentsDb",
+    "junit": "SOURCE_PRESENT_NOT_RUN",
+    "gradle": "NOT_RUN_BY_OWNER_ORDER",
+    "apk": "NOT_BUILT",
+    "device": "NOT_TESTED",
+    "hardware": "NOT_TESTED"
+  }
+}
