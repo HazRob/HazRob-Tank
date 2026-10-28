@@ -228,6 +228,7 @@ public final class FieldCycleController {
         }
         JSONObject m=current==null?null:current.optJSONObject("measurement");
         if(m!=null&&("error".equals(m.optString("state",""))||
+            "warmup".equals(m.optString("state",""))||
             "measuring".equals(m.optString("state","")))){
             stopWithFailure("قياس فيرموير آخر نشط أو فاشل");return;
         }
