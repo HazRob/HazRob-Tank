@@ -16,7 +16,7 @@ public final class TankV5ChemicalCapabilitiesContractTest {
         String model=read("chemical/TankChemicalCapabilityReport.java");
         String loader=read("chemcore/TankStableScreeningModelRegistry.java");
         assertTrue(model.contains("TankChemicalEvidence.inspect(db,chemical)"));
-        assertTrue(model.contains("TankStableScreeningModelRegistry.load(context.getApplicationContext(),db,Collections.emptyList())"));
+        assertTrue(model.contains("TankStableRuntimeCatalog.responseModels(context.getApplicationContext(),db)"));
         assertTrue(model.contains("candidate.chemicalUid!=chemical.uid"));
         assertTrue(model.contains("model.minPpm()"));
         assertTrue(model.contains("model.maxPpm()"));
