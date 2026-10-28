@@ -161,3 +161,14 @@ HEAD قبل تدوين هذا الملحق: `b6281363283f09b8b7211a2e2ddc35baba0
 - أنشئ اختبار `TankV5PendingR0ProtocolTest` وحدّثت اختبارات R0 الموروثة. التحقق المنفذ: `18/18` مصدر + `9/9` C++/Java lexical؛ لا JUnit أو C++ compilation ولا اختبار جهاز.
 - أنشئ Workflow `build-tank-android-v5.yml` **manual-only**، مع بوابة `V5_RELEASE_GATE_APPROVED.md` غير موجودة حتى الآن، واختبارات Gradle قبل `assembleDebug`. لم يُشغّل.
 - **المالك أعطى إذناً شرطياً فقط:** يبدأ APK V5 بعد استكمال الخطة كلها ونجاح اختبارات الأجهزة/التقارير/التحديث والتوقيع. `APK_NOT_BUILT`.
+
+
+## الدفعة G — ترابط NVS/الجزيئات/القرار العلمي مع تقارير الجلسة والموقع
+
+[تقرير المصدر والتحقق](V5-NVS-REPORT-CHAIN-REVIEW-2026-10-28.md). **HEAD قبل التحديث:** `5a05ee84bc599f6c92f524700637b04160aa3788`.
+
+- حماية معايرة R0 بعد اعتماد المستخدم بفتحتين NVS متناوبتين `r0_v5_a/b` مع generation/SHA-style checksum، واسترداد `r0_v4` للقراءة فقط. لا كتابة R0 من `CAL_PENDING`.
+- حفظ `particles` الفعلي في سجل القياس عندما يكون PM مثبتًا ويعمل؛ التحقق من التوفر قبل البدء وعدم اختلاق قيمة.
+- توسعة بصمة `FieldCycleRepository.evidenceDigest` لتشمل قرار ChemCore المخزن؛ رفض التصدير عند تغير القرار أو البيانات الخام بعد الاعتماد عبر `verifyApprovedEvidence` و`FieldSessionReportExporter.resolve` المشتركة للجلسة/الموقع وPDF/XLSX.
+- تحديث مسارات fixtures في الاختبارات، وإضافة نسخ ملفات ESP32 إلى workflow مستقبلًا، وتصحيح افتراضات JUnit القديمة.
+- **المحقق بالفعل:** `22/22 STATIC SOURCE CHECKS`. **غير منفذ:** `JUNIT/GRADLE/ANDROID/ESP32`. **البناء:** `APK_NOT_BUILT`.
