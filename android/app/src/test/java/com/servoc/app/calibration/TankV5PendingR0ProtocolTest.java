@@ -42,7 +42,7 @@ public final class TankV5PendingR0ProtocolTest {
         catch(IllegalStateException expected){}
     }
     @Test public void dualSlotNvsPreservesPriorR0OnPowerLoss()throws Exception{
-        String fw=Files.readString(Paths.get("../firmware/ESP32-Tank/Hardware.cpp"),
+        String fw=new String(Files.readAllBytes(Paths.get("../firmware/ESP32-Tank/Hardware.cpp")),
                                    StandardCharsets.UTF_8);
         assertTrue(fw.contains("r0_v5_a"));
         assertTrue(fw.contains("r0_v5_b"));
@@ -56,8 +56,8 @@ public final class TankV5PendingR0ProtocolTest {
     }
 
     @Test public void firmwareNeverWritesBeforeExplicitAccept()throws Exception{
-        String source=Files.readString(Paths.get("../firmware/ESP32-Tank/Hardware.cpp"),StandardCharsets.UTF_8);
-        String api=Files.readString(Paths.get("../firmware/ESP32-Tank/ESP32-Tank.ino"),StandardCharsets.UTF_8);
+        String source=new String(Files.readAllBytes(Paths.get("../firmware/ESP32-Tank/Hardware.cpp")),StandardCharsets.UTF_8);
+        String api=new String(Files.readAllBytes(Paths.get("../firmware/ESP32-Tank/ESP32-Tank.ino")),StandardCharsets.UTF_8);
         int scan=source.indexOf("void calibrationUpdate(){");
         int commit=source.indexOf("bool calibrationAccept(){");
         assertTrue(scan>=0&&commit>scan);
