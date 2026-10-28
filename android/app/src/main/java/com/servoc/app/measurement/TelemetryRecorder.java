@@ -15,31 +15,38 @@ import java.util.TimeZone;
 
 /** Automatically records normalized telemetry across ESP32 MQ cycles and controlled ChemCore captures. */
 public final class TelemetryRecorder {
-    private final ExperimentsDb db;private final FieldSessionRepository fieldSessions;private String sessionId,lastCompletedSessionId="";private long startedElapsed,startedUtcMs,lastSampleElapsed,sampleSeq;private boolean chemCoreCaptureSession=false;
+    private final ExperimentsDb db;private final FieldSessionRepository fieldSessions;private String sessionId,lastCompletedSessionId="";private long startedElapsed,startedUtcMs,lastSampleElapsed,sampleSeq;private boolean chemCoreCaptureSession=false,fieldCaptureSession=false;
     public TelemetryRecorder(ExperimentsDb db){this.db=db;this.fieldSessions=new FieldSessionRepository(db);ChemCoreSchema.ensure(db.getWritableDatabase());lastCompletedSessionId=db.getMeta("last_measurement_session_id","");}
 
     public synchronized void accept(JSONObject snapshot,int left,int right,boolean developer){
         if(snapshot==null)return;JSONObject m=snapshot.optJSONObject("measurement");String state=m==null?"idle":m.optString("state","idle");long now=SystemClock.elapsedRealtime();
         boolean firmwareActive="warmup".equals(state)||"measuring".equals(state);boolean forced=MeasurementSessionRegistry.chemCoreCaptureRequested();
-        boolean activeState=firmwareActive||forced;
-        if(sessionId==null&&activeState){boolean fromDeveloper=MeasurementSessionRegistry.consumeDeveloperMqCycle();start(forced?MeasurementSessionRegistry.chemCoreDeveloper():(fromDeveloper||developer),now,forced);}
+        boolean fieldForced=MeasurementSessionRegistry.fieldCaptureRequested();
+        boolean activeState=firmwareActive||forced||fieldForced;
+        if(sessionId==null&&activeState){
+            boolean fromDeveloper=MeasurementSessionRegistry.consumeDeveloperMqCycle();
+            start(fieldForced?false:forced?MeasurementSessionRegistry.chemCoreDeveloper():(fromDeveloper||developer),
+                now,forced,fieldForced);
+        }
 
         boolean terminalFirmware="ready".equals(state)||"error".equals(state)||"idle".equals(state);
-        long samplePeriod=chemCoreCaptureSession?200:250;
-        if(sessionId!=null&&(now-lastSampleElapsed>=samplePeriod||(!chemCoreCaptureSession&&terminalFirmware))){sample(snapshot,left,right,now);lastSampleElapsed=now;}
+        long samplePeriod=(chemCoreCaptureSession||fieldCaptureSession)?200:250;
+        if(sessionId!=null&&(now-lastSampleElapsed>=samplePeriod||(!chemCoreCaptureSession&&!fieldCaptureSession&&terminalFirmware))){sample(snapshot,left,right,now);lastSampleElapsed=now;}
 
         String forcedStop=MeasurementSessionRegistry.chemCoreStopReason();
-        if(sessionId!=null&&chemCoreCaptureSession&&!forcedStop.isEmpty())finish(snapshot,forcedStop);
-        else if(sessionId!=null&&!chemCoreCaptureSession&&terminalFirmware)finish(snapshot,state);
+        String fieldStop=MeasurementSessionRegistry.fieldStopReason();
+        if(sessionId!=null&&fieldCaptureSession&&!fieldStop.isEmpty())finish(snapshot,fieldStop);
+        else if(sessionId!=null&&chemCoreCaptureSession&&!forcedStop.isEmpty())finish(snapshot,forcedStop);
+        else if(sessionId!=null&&!chemCoreCaptureSession&&!fieldCaptureSession&&terminalFirmware)finish(snapshot,state);
     }
 
     public synchronized String activeSessionId(){return sessionId==null?"":sessionId;}
     public synchronized String lastCompletedSessionId(){return lastCompletedSessionId==null?"":lastCompletedSessionId;}
 
-    private void start(boolean developer,long now,boolean chemCore){
-        long utc=System.currentTimeMillis();chemCoreCaptureSession=chemCore;sessionId=(developer?"DEV":"FIELD")+(chemCore?"-CHEMCORE-":"-")+utc;startedElapsed=lastSampleElapsed=now;startedUtcMs=utc;sampleSeq=0;
-        ContentValues v=new ContentValues();v.put("session_id",sessionId);v.put("started_ts",isoUtc(utc));v.put("kind",chemCore?"developer_chemcore_controlled_capture":(developer?"developer_mq_cycle":"field_mq_cycle"));v.put("operator_role",developer?"DEVELOPER":"USER");
-        try{JSONObject meta=new JSONObject();meta.put("chemcore_controlled_capture",chemCore);meta.put("sample_period_ms",chemCore?200:250);meta.put("mq_scan_timing_capture",chemCore);meta.put("measurement_schema",CanonicalMeasurementNormalizer.SCHEMA);meta.put("started_utc_ms",utc);meta.put("started_monotonic_ms",now);meta.put("clock_contract","UTC_EPOCH_MS_PLUS_ANDROID_ELAPSED_REALTIME");v.put("analytics",meta.toString());}catch(Exception ignored){}
+    private void start(boolean developer,long now,boolean chemCore,boolean fieldControlled){
+        long utc=System.currentTimeMillis();chemCoreCaptureSession=chemCore;fieldCaptureSession=fieldControlled;sessionId=(developer?"DEV":"FIELD")+(fieldControlled?"-CYCLE-":chemCore?"-CHEMCORE-":"-")+utc+"-"+java.util.UUID.randomUUID().toString().substring(0,8);startedElapsed=lastSampleElapsed=now;startedUtcMs=utc;sampleSeq=0;
+        ContentValues v=new ContentValues();v.put("session_id",sessionId);v.put("started_ts",isoUtc(utc));v.put("kind",fieldControlled?"field_60s_cycle":chemCore?"developer_chemcore_controlled_capture":(developer?"developer_mq_cycle":"field_mq_cycle"));v.put("operator_role",developer?"DEVELOPER":"USER");
+        try{JSONObject meta=new JSONObject();meta.put("chemcore_controlled_capture",chemCore);meta.put("field_60s_capture",fieldControlled);meta.put("sample_period_ms",(chemCore||fieldControlled)?200:250);meta.put("mq_scan_timing_capture",chemCore);meta.put("measurement_schema",CanonicalMeasurementNormalizer.SCHEMA);meta.put("started_utc_ms",utc);meta.put("started_monotonic_ms",now);meta.put("clock_contract","UTC_EPOCH_MS_PLUS_ANDROID_ELAPSED_REALTIME");v.put("analytics",meta.toString());}catch(Exception ignored){}
         // The session insert and its user-field link form one semantic operation.
         // Never silently produce an orphan record while the operator assumes the active
         // site's report will include the acquisition.
@@ -55,7 +62,8 @@ public final class TelemetryRecorder {
             try{db.getWritableDatabase().delete("measurement_sessions","session_id=?",
                     new String[]{sessionId});}catch(Exception ignored){}
             sessionId=null;startedElapsed=startedUtcMs=lastSampleElapsed=sampleSeq=0;
-            chemCoreCaptureSession=false;
+            chemCoreCaptureSession=false;fieldCaptureSession=false;
+            if(fieldControlled)MeasurementSessionRegistry.clearFieldCapture();
             throw failure;
         }
         MeasurementSessionRegistry.started(sessionId);
@@ -105,10 +113,10 @@ public final class TelemetryRecorder {
     private void finish(JSONObject snapshot,String state){
         final String completed=sessionId;final boolean wasChemCore=chemCoreCaptureSession;final long endedMonotonic=SystemClock.elapsedRealtime(),endedUtcMs=System.currentTimeMillis();ContentValues v=new ContentValues();v.put("ended_ts",isoUtc(endedUtcMs));v.put("payload",snapshot.toString());
         try{
-            JSONObject meta=new JSONObject();meta.put("terminal_state",state);meta.put("contains_aux_sensors",true);meta.put("chemcore_controlled_capture",wasChemCore);
+            JSONObject meta=new JSONObject();meta.put("terminal_state",state);meta.put("contains_aux_sensors",true);meta.put("chemcore_controlled_capture",wasChemCore);meta.put("field_60s_capture",fieldCaptureSession);
             meta.put("hardware_profile",HazRobHardwareProfile.ID);meta.put("measurement_schema",CanonicalMeasurementNormalizer.SCHEMA);meta.put("sample_count",sampleSeq);
             meta.put("started_utc_ms",startedUtcMs);meta.put("ended_utc_ms",endedUtcMs);meta.put("started_monotonic_ms",startedElapsed);meta.put("ended_monotonic_ms",endedMonotonic);meta.put("duration_monotonic_ms",Math.max(0,endedMonotonic-startedElapsed));meta.put("clock_contract","UTC_EPOCH_MS_PLUS_ANDROID_ELAPSED_REALTIME");
-            meta.put("mq_power_architecture","single_relay_8_sensors");meta.put("installed_relays","R1");meta.put("relay_gpio",25);meta.put("mq_sensor_count",8);meta.put("manual_warmup",true);meta.put("sample_period_ms",wasChemCore?200:250);meta.put("mq_scan_timing_capture",wasChemCore);
+            meta.put("mq_power_architecture","single_relay_8_sensors");meta.put("installed_relays","R1");meta.put("relay_gpio",25);meta.put("mq_sensor_count",8);meta.put("manual_warmup",true);meta.put("sample_period_ms",(wasChemCore||fieldCaptureSession)?200:250);meta.put("mq_scan_timing_capture",wasChemCore);
             JSONObject transport=snapshot.optJSONObject("_transport");if(transport!=null)meta.put("terminal_transport",transport.optString("mode","UNKNOWN"));
             JSONObject adc=snapshot.optJSONObject("adc");if(adc!=null&&adc.optJSONObject("acquisition")!=null)meta.put("adc_acquisition",adc.optJSONObject("acquisition"));
             v.put("analytics",meta.toString());
@@ -128,7 +136,7 @@ public final class TelemetryRecorder {
         }
 
         lastCompletedSessionId=completed;db.putMeta("last_measurement_session_id",completed);db.putMeta("last_measurement_session_terminal_state",state);
-        MeasurementSessionRegistry.completed(completed);if(wasChemCore)MeasurementSessionRegistry.clearChemCoreCapture();sessionId=null;startedElapsed=startedUtcMs=lastSampleElapsed=sampleSeq=0;chemCoreCaptureSession=false;
+        MeasurementSessionRegistry.completed(completed);if(wasChemCore)MeasurementSessionRegistry.clearChemCoreCapture();if(fieldCaptureSession)MeasurementSessionRegistry.clearFieldCapture();sessionId=null;startedElapsed=startedUtcMs=lastSampleElapsed=sampleSeq=0;chemCoreCaptureSession=false;fieldCaptureSession=false;
     }
 
     private static String isoUtc(long utcMs){SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",Locale.US);f.setTimeZone(TimeZone.getTimeZone("UTC"));return f.format(new Date(utcMs));}
