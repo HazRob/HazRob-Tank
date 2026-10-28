@@ -386,6 +386,64 @@ class CatalogMalformedOriginIsolationTests(unittest.TestCase):
                     self.assertTrue(first["catalog_source_review_ready"])
                     self.assertFalse(second["catalog_source_review_ready"])
 
+    def test_nondefault_generic_url_ports_preserve_source_identity(self):
+        """Real-byte synthetic control; origin identity is not physical proof."""
+        import hashlib
+        from g2_reference_catalog_readiness import (
+            _canonical_source_origin, audit_source_catalog)
+
+        def canonical(url):
+            return _canonical_source_origin({"primary_url": url})
+
+        self.assertEqual(canonical("https://example.org:443/data"),
+                         canonical("https://example.org/data"))
+        self.assertEqual(canonical("http://example.org:80/data"),
+                         canonical("http://example.org/data"))
+        self.assertNotEqual(canonical("https://example.org:80/data"),
+                            canonical("https://example.org/data"))
+        self.assertNotEqual(canonical("http://example.org:443/data"),
+                            canonical("http://example.org/data"))
+
+        catalog = self.fixture()
+        with tempfile.TemporaryDirectory() as temp:
+            for index, row in enumerate(catalog["primary_catalog_entries"]):
+                raw = ("synthetic origin-port control " + str(index)).encode()
+                relative = "research/g2/raw/origin-port-" + str(index) + ".bin"
+                path = Path(temp) / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+                row.update(
+                    primary_url=("https://example.org/data" if index == 0
+                                 else "https://example.org:80/data"),
+                    measurement_qualification=True,
+                    experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                    raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                    physical_reference_traceability=True,
+                    raw_local_path=relative, raw_size_bytes=len(raw),
+                    raw_sha256=hashlib.sha256(raw).hexdigest())
+
+            def verdict():
+                return audit_source_catalog(
+                    catalog, expected_total=2, expected_datasets=2,
+                    repo_root=temp)
+
+            # Different authorities must not be flagged as byte/origin
+            # duplicates merely because the nondefault port was discarded.
+            result = verdict()
+            self.assertEqual(result["source_review_ready"], 2)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" not in item["blockers"]
+                for item in result["datasets"]))
+
+            # Genuine default-port aliases still form one duplicate class.
+            catalog["primary_catalog_entries"][1]["primary_url"] = (
+                "https://example.org:443/data")
+            result = verdict()
+            self.assertEqual(result["source_review_ready"], 0)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in item["blockers"]
+                for item in result["datasets"]))
+
     def test_valid_origin_is_not_reclassified_as_malformed(self):
         from g2_reference_catalog_readiness import audit_source_catalog
         catalog = self.fixture()
