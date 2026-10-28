@@ -22,8 +22,9 @@ import java.util.Locale;
 /** Developer analytical laboratory: controlled session plus concise results/diagnostics. */
 public final class AnalyticalLabTab {
     private final Context context;private final HazRobHost host;private final ChemCoreAnalysisTab session;
+    private DeveloperExperimentsTab experiments;
     private final LinearLayout root,bar;private final FrameLayout page;private final View sessionView,dashboardView;
-    private final Button sessionButton,dashboardButton;
+    private final Button sessionButton,dashboardButton,experimentsButton;
     private final TextView readiness,calibration,environment,result,candidates,math;
     private final ChemCoreDecisionRepository decisions;
     private int selected=0;private String lastBoundSession="";
@@ -32,12 +33,12 @@ public final class AnalyticalLabTab {
         context=c;this.host=host;this.session=new ChemCoreAnalysisTab(c,host);this.decisions=new ChemCoreDecisionRepository(host.database());
         root=UiKit.vbox(c);root.setBackgroundColor(0xFFF7F8FA);root.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,8));
         root.addView(UiKit.title(c,"المختبر الكيميائي التحليلي الموسع • HazRob "+ReleaseAudit.VERSION),UiKit.full(c));
-        bar=UiKit.hbox(c);sessionButton=UiKit.button(c,"الجلسة المضبوطة");dashboardButton=UiKit.button(c,"النتائج والتشخيص");bar.addView(sessionButton,UiKit.weight(1));bar.addView(dashboardButton,UiKit.weight(1));root.addView(bar,UiKit.full(c));
+        bar=UiKit.hbox(c);sessionButton=UiKit.button(c,"الجلسة المضبوطة");dashboardButton=UiKit.button(c,"النتائج والتشخيص");experimentsButton=UiKit.button(c,"التجارب المرجعية");bar.addView(sessionButton,UiKit.weight(1));bar.addView(dashboardButton,UiKit.weight(1));bar.addView(experimentsButton,UiKit.weight(1));root.addView(bar,UiKit.full(c));
         page=new FrameLayout(c);root.addView(page,new LinearLayout.LayoutParams(-1,0,1f));sessionView=session.view();
 
         ScrollView scroll=new ScrollView(c);scroll.setFillViewport(true);LinearLayout dash=UiKit.vbox(c);dash.setPadding(UiKit.dp(c,8),UiKit.dp(c,6),UiKit.dp(c,8),UiKit.dp(c,14));scroll.addView(dash);dashboardView=scroll;
         dash.addView(UiKit.title(c,"نتائج وتشخيص ChemCore • HazRob "+ReleaseAudit.VERSION),UiKit.full(c));
-        TextView scope=UiKit.small(c,"Screening متاح للجلسات الصالحة. PPM المهني لا يظهر كتفسير كمي إلا عندما تجتاز المادة بوابة M4 المستقلة.");scope.setTextColor(0xFF167443);scope.setBackgroundColor(0xFFE8F5E9);dash.addView(scope,UiKit.full(c));
+        TextView scope=UiKit.small(c,"يُعرض PPM التقديري من منحنيات النماذج الصالحة في نطاقها دون اشتراط M4، لكن لا يُعد قياس تعرض مهنيًا أو إثبات امتثال دون تحقق مرجعي مستقل.");scope.setTextColor(0xFF167443);scope.setBackgroundColor(0xFFE8F5E9);dash.addView(scope,UiKit.full(c));
 
         LinearLayout readyCard=UiKit.card(c);readyCard.addView(UiKit.title(c,"الحالة التشغيلية"),UiKit.full(c));readiness=box(c);readyCard.addView(readiness,UiKit.full(c));dash.addView(readyCard,UiKit.full(c));
         LinearLayout calCard=UiKit.card(c);calCard.addView(UiKit.title(c,"المعايرة والكمية"),UiKit.full(c));calibration=box(c);calCard.addView(calibration,UiKit.full(c));dash.addView(calCard,UiKit.full(c));
@@ -45,15 +46,51 @@ public final class AnalyticalLabTab {
         LinearLayout resultCard=UiKit.card(c);resultCard.addView(UiKit.title(c,"قرار ChemCore الأخير"),UiKit.full(c));result=box(c);result.setTextIsSelectable(true);resultCard.addView(result,UiKit.full(c));candidates=box(c);candidates.setTextIsSelectable(true);resultCard.addView(candidates,UiKit.full(c));dash.addView(resultCard,UiKit.full(c));
         LinearLayout mathCard=UiKit.card(c);mathCard.addView(UiKit.title(c,"التفسير الرياضي والبواقي"),UiKit.full(c));math=box(c);math.setTextIsSelectable(true);mathCard.addView(math,UiKit.full(c));dash.addView(mathCard,UiKit.full(c));
 
-        sessionButton.setOnClickListener(v->show(0));dashboardButton.setOnClickListener(v->show(1));show(0);
+        sessionButton.setOnClickListener(v->show(0));dashboardButton.setOnClickListener(v->show(1));experimentsButton.setOnClickListener(v->show(2));show(0);
     }
 
     private static TextView box(Context c){TextView v=UiKit.text(c,"—");v.setBackground(UiKit.outline(c,0xFFF8FAFC,0xFF8994A3));v.setTextColor(Color.BLACK);return v;}
     public View view(){return root;}
 
-    public void refresh(){session.refresh();JSONObject d=host.latestDiagnostics();ChemCoreLabQuality q=ChemCoreLabQuality.evaluate(d,host.driveLeft(),host.driveRight(),host.database());renderQuality(q);bindCompletedSession(q);renderDecision();}
+    public void refresh(){
+        if(selected==2){
+            if(experiments!=null)experiments.refresh();
+            return;
+        }
+        session.refresh();
+        JSONObject d=host.latestDiagnostics();
+        ChemCoreLabQuality q=ChemCoreLabQuality.evaluate(d,host.driveLeft(),host.driveRight(),host.database());
+        renderQuality(q);bindCompletedSession(q);renderDecision();
+    }
 
-    private void show(int index){selected=index==1?1:0;page.removeAllViews();page.addView(selected==0?sessionView:dashboardView,new FrameLayout.LayoutParams(-1,-1));sessionButton.setTextColor(Color.BLACK);dashboardButton.setTextColor(Color.BLACK);sessionButton.setBackground(UiKit.outline(context,selected==0?0xFFF6B83D:0xFFF1F3F6,0xFF8994A3));dashboardButton.setBackground(UiKit.outline(context,selected==1?0xFFF6B83D:0xFFF1F3F6,0xFF8994A3));refresh();}
+    /** The single developer lab hosts each prior operation exactly once. */
+    private void show(int index){
+        selected=Math.max(0,Math.min(2,index));
+        View target;
+        try{
+            if(selected==2){
+                if(experiments==null)experiments=new DeveloperExperimentsTab(context,host);
+                target=experiments.view();
+            }else target=selected==0?sessionView:dashboardView;
+        }catch(RuntimeException ex){
+            android.util.Log.e("TankV5UnifiedLab","Cannot open laboratory subsection",ex);
+            TextView unavailable=UiKit.small(context,
+                "تعذر فتح القسم المطلوب. بيانات التجارب والمكتبة محفوظة؛ تحقق من السجل ثم أعد المحاولة.");
+            unavailable.setTextColor(0xFFB42318);
+            target=unavailable;
+        }
+        if(target.getParent() instanceof android.view.ViewGroup)
+            ((android.view.ViewGroup)target.getParent()).removeView(target);
+        page.removeAllViews();
+        page.addView(target,new FrameLayout.LayoutParams(-1,-1));
+        sessionButton.setTextColor(Color.BLACK);
+        dashboardButton.setTextColor(Color.BLACK);
+        experimentsButton.setTextColor(Color.BLACK);
+        sessionButton.setBackground(UiKit.outline(context,selected==0?0xFFF6B83D:0xFFF1F3F6,0xFF8994A3));
+        dashboardButton.setBackground(UiKit.outline(context,selected==1?0xFFF6B83D:0xFFF1F3F6,0xFF8994A3));
+        experimentsButton.setBackground(UiKit.outline(context,selected==2?0xFFF6B83D:0xFFF1F3F6,0xFF8994A3));
+        refresh();
+    }
 
     private void renderQuality(ChemCoreLabQuality q){
         String state=!q.connected?"غير متصل":q.configurationReady?"جاهز لجلسة ChemCore مدعومة بمعايرة R0 (بحثية)":q.exploratoryScreeningReady()?"فحص بحثي متاح قبل R0":"يتطلب انتباه";
