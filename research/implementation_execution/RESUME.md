@@ -1,3 +1,13 @@
+## 2026-10-28 — G2 fail-closed for every duplicate source group member (219/219 G2 CI)
+
+- Reviewed previous research checkpoint and central reference catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`; independent G2 evidence register remains `records: []`.
+- Research-only `g2_reference_catalog_readiness.py` now blocks **all** members of repeated normalized DOI/source-URL or raw SHA256 groups. Earlier implementation blocked only the lexically later entry, spuriously treating the first as source-review ready.
+- Code/test commit `ad06177733a642ebd7bcf14e800cb16856ece3c5`; existing duplicate controls corrected, plus one 3-source regression checking all-member blocking, row-order invariance, and a rehashed raw mirror. G2 Actions [40620875383](https://github.com/HazRob/HazRob-Tank/actions/runs/40620875383), job `122594306304`: **219/219 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. At documentation time 20/21 workflow runs on code SHA passed; one batch07 running. Recheck final documentation commit CI.
+- Evidence document: `G2_ALL_DUPLICATE_SOURCE_MEMBERS_FAIL_CLOSED_2026-10-28_AR.md`. Pinned 14-source matrix still 0/14 ready. No independent physical G2 measurements, no G2/G3 scientific approval, no ChemCore Stable changes.
+- Next: check CI on final commit; obtain original independent physical exposures, reference concentration traceability, device/session identifiers, and locked blind grouped holdout. DOI/raw-byte duplicates require source adjudication; distinct hashes are not proof of independence.
+
+---
+
 ## 2026-10-28 — G2 original-dataset and raw-byte mirror deduplication (218/218 CI)
 
 - Research-only source readiness now blocks duplicate external dataset origins (normalized DOI or source landing URL) and identical raw SHA256 archives across different catalogue IDs: `DUPLICATE_ORIGINAL_DATASET_ORIGIN`, `DUPLICATE_ORIGINAL_RAW_BYTES`. This prevents treating an archive mirror as a second independent physical experiment; distinct DOI/digest **does not prove** independent exposure.
