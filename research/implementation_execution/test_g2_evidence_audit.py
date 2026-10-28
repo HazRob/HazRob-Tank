@@ -628,6 +628,72 @@ class CatalogMalformedOriginIsolationTests(unittest.TestCase):
                 "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in item["blockers"]
                 for item in duplicates["datasets"]))
 
+    def test_rfc3986_unreserved_percent_escapes_deduplicate_sources(self):
+        """Real-byte synthetic controls: decode only RFC3986 unreserved escapes.
+
+        The source-review gate must reject aliases for the same landing URL
+        without merging path separators or query delimiters. These files are
+        synthetic and are never independent G2 physical evidence.
+        """
+        import hashlib
+        from g2_reference_catalog_readiness import (
+            _canonical_source_origin, audit_source_catalog)
+
+        def canonical(url):
+            return _canonical_source_origin({"primary_url": url})
+
+        self.assertEqual(
+            canonical("https://EXAMPLE.org/%7eData?run=%41%7e"),
+            canonical("https://example.org/~Data?run=A~"))
+        self.assertEqual(
+            canonical("https://example.org/a%2fB?run=%3f"),
+            canonical("https://example.org/a%2FB?run=%3F"))
+        self.assertNotEqual(
+            canonical("https://example.org/a%2FB"),
+            canonical("https://example.org/a/B"))
+        self.assertNotEqual(
+            canonical("https://example.org/path?run=%26"),
+            canonical("https://example.org/path?run=&"))
+
+        catalog = self.fixture()
+        with tempfile.TemporaryDirectory() as temp:
+            for index, row in enumerate(catalog["primary_catalog_entries"]):
+                raw = ("synthetic RFC3986 control " + str(index)).encode("ascii")
+                relative = "research/g2/raw/percent-encoding-" + str(index) + ".bin"
+                path = Path(temp) / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+                row.update(
+                    primary_url=("https://example.org/%7eData?run=%41"
+                                 if index == 0 else
+                                 "https://example.org/~Data?run=A"),
+                    measurement_qualification=True,
+                    experiment_independence="PHYSICAL_GROUPS_VERIFIED",
+                    raw_file_status="RAW_BYTES_SHA256_VERIFIED",
+                    physical_reference_traceability=True,
+                    raw_local_path=relative,
+                    raw_size_bytes=len(raw),
+                    raw_sha256=hashlib.sha256(raw).hexdigest())
+
+            def verdict():
+                return audit_source_catalog(
+                    catalog, expected_total=2, expected_datasets=2,
+                    repo_root=temp)
+
+            duplicate = verdict()
+            self.assertEqual(duplicate["source_review_ready"], 0)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" in row["blockers"]
+                for row in duplicate["datasets"]))
+
+            catalog["primary_catalog_entries"][1]["primary_url"] = (
+                "https://example.org/%2FData?run=A")
+            distinct = verdict()
+            self.assertEqual(distinct["source_review_ready"], 2)
+            self.assertTrue(all(
+                "DUPLICATE_ORIGINAL_DATASET_ORIGIN" not in row["blockers"]
+                for row in distinct["datasets"]))
+
     def test_valid_origin_is_not_reclassified_as_malformed(self):
         from g2_reference_catalog_readiness import audit_source_catalog
         catalog = self.fixture()
