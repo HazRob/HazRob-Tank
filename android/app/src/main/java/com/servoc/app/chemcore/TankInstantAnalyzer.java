@@ -51,9 +51,9 @@ public final class TankInstantAnalyzer {
             double rh=env==null?Double.NaN:env.optDouble("humidity",Double.NaN);
             SamplingProfile profile=SamplingProfile.hazRobStandardChamberV2();
             ChemCoreInferenceEngine.Context context=new ChemCoreInferenceEngine.Context(
-                id,profile.profileId,"tank-v4-instant-screening/1",temp,rh,null,false);
-            List<InverseMolecularSolver.Candidate> sourceBacked=ChemCoreLegacyCandidateRegistry.acceptedReferenceCandidates();
-            activeStable=TankStableScreeningModelRegistry.load(androidContext,db,sourceBacked);
+                id,profile.profileId,"tank-v5-instant-screening/2",temp,rh,null,false);
+            // Unified V5 path merges accepted reference fingerprints, source curves and verified Stable priors.
+            activeStable=TankStableRuntimeCatalog.responseModels(androidContext,db);
             ChemCoreResultEnvelope inferred=ChemCoreInferenceEngine.analyze(ratios,activeStable.candidates,profile,context);
             output=inferred==null?new JSONObject():inferred.toJson();
         }catch(Exception ex){
