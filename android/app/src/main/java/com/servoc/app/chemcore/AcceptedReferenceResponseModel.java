@@ -40,6 +40,12 @@ public final class AcceptedReferenceResponseModel implements ChemCoreResponseMod
     @Override public String modelId(){return VERSION+":"+sensorKey+":chem-"+chemical;}
     @Override public String evidenceFamilyId(){return "ACCEPTED_REFERENCE_RESPONSE";}
     @Override public boolean reportableQuantitative(){return false;}
+    @Override public ChemCoreDecision.EvidenceTier evidenceTierFor(Estimate prediction){
+        return prediction!=null&&
+            prediction.evidenceType==ChemCoreEvidenceObservation.Type.RESEARCH_CURVE?
+            ChemCoreDecision.EvidenceTier.M1_MOLECULARLY_INFERRED:
+            ChemCoreDecision.EvidenceTier.M2_LITERATURE_OR_MANUFACTURER_SUPPORTED;
+    }
 
     @Override public Estimate predict(double ppm,double temperatureC,double rh,SamplingProfile samplingProfile){
         if(!Double.isFinite(ppm)||ppm<=0)return unavailable("non-positive concentration");
