@@ -113,3 +113,14 @@
 4. أُصلح ترتيب إغلاق Activity كي لا تسبق `shutdownNow` أعمال إيقاف ريلاي MQ وتوثيق الفشل؛ مهلة 5 ثوانٍ ليست بديلاً عن مراقبة انقطاع التشغيل بالفيرموير.
 5. `INTEGRATION_STATIC=25/25_PASS`؛ `NUMERICAL_FIXTURE=PASS`؛ `JUNIT=NOT_RUN`؛ `GRADLE=NOT_RUN`؛ `APK=NOT_BUILT`؛ `DEVICE/ROBOT=NOT_TESTED`.
 6. **التالي:** اختبار/تدقيق شيفرة R0 المرحلية والتحديثات الفعلية للمكتبة ومكونات المطور الأربعة، ثم اختبارات Android على قاعدة حقيقية وقراءات ESP32 قبل إعلان الجاهزية. لا يُبنى APK إلا بأمر صريح.
+
+
+## استكمال نقطة E — معالجة بقايا التسجيل عند إغلاق التطبيق
+
+**HEAD قبل الملحق:** `62f0b6fe82ccd8d222c8df845f74b4cfec4b7454`.
+
+- `MainActivity.onDestroy`: ينتظر صف workers في thread منفصل بحد 5 ثوانٍ، ثم `TelemetryRecorder.abortInterruptedFieldCapture("ACTIVITY_DESTROYED")` قبل إغلاق SQLite/فك الشبكة.
+- `TelemetryRecorder`: يوثق terminal `error` وليس `ready` إذا بقي التقاط ميداني أثناء الإغلاق، ويحرر `MeasurementSessionRegistry.ACTIVE/FIELD_CAPTURE`.
+- `POST_SHUTDOWN_SOURCE_CHECKS=10/10 PASS`، `JAVA_LEXICAL=9/9 PASS`، `ANDROID_RUNTIME_NOT_RUN`، `NO_APK`.
+- *لا تعتبر مراجعة دورة الحياة ضمانًا لإطفاء MQ عند إيقاف العملية بالقوة أو فقد الاتصال؛ اختبار فيرموير/watchdog مطلوب لاحقًا.*
+- الترتيب القادم: تدقيق بوابة R0 المرحلية والـStable manifest وإتمام اختبارات تبويبات المطور؛ لم يصدر إذن بناء.
