@@ -65,10 +65,23 @@ public final class FieldCycleRepository {
     public int recoverAbandoned(){
         if(com.servoc.app.measurement.MeasurementSessionRegistry.fieldCaptureRequested()||
             !com.servoc.app.measurement.MeasurementSessionRegistry.activeSessionId().isEmpty())return 0;
-        ContentValues v=new ContentValues();v.put("state",FAILED);
-        v.put("fail_reason","PROCESS_INTERRUPTED_BEFORE_APPROVAL");v.put("updated_ts",utc());
-        return db.getWritableDatabase().update("field_measurement_cycles",v,
-                "state IN ('ARMED','WARMUP','SAMPLING')",null);
+        SQLiteDatabase w=db.getWritableDatabase();w.beginTransaction();
+        try{
+            String ts=utc();
+            // Do not leave a permanently open technical measurement when Android
+            // was killed. End it as interrupted; never call it successful.
+            ContentValues ended=new ContentValues();ended.put("ended_ts",ts);
+            w.update("measurement_sessions",ended,
+                "session_id IN (SELECT measurement_session_id FROM field_measurement_cycles "+
+                "WHERE state IN ('ARMED','WARMUP','SAMPLING') AND measurement_session_id IS NOT NULL) "+
+                "AND (ended_ts IS NULL OR TRIM(ended_ts)='')",null);
+            ContentValues v=new ContentValues();v.put("state",FAILED);
+            v.put("fail_reason","PROCESS_INTERRUPTED_BEFORE_APPROVAL");v.put("updated_ts",ts);
+            int n=w.update("field_measurement_cycles",v,
+                    "state IN ('ARMED','WARMUP','SAMPLING')",null);
+            w.setTransactionSuccessful();
+            return n;
+        }finally{w.endTransaction();}
     }
 
     public Cycle byId(String cycleId){
