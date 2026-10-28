@@ -157,6 +157,7 @@ public final class ChemCoreLibraryManager {
         // Never swap the stable reference snapshot during any active local recording/capture.
         if (MeasurementSessionRegistry.chemCoreCaptureRequested()
                 || MeasurementSessionRegistry.fieldOperationActive()
+                || MeasurementSessionRegistry.fieldCaptureRequested()
                 || !MeasurementSessionRegistry.activeSessionId().isEmpty()) return true;
         if (snapshot == null) return false;
         JSONObject m = snapshot.optJSONObject("measurement");
