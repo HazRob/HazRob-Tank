@@ -1725,7 +1725,7 @@ class CentralReferenceCatalogReadinessTests(unittest.TestCase):
                                             expected_datasets=1,
                                             repo_root=tmp)["datasets"][0]["blockers"]
             for unsafe in ("../outside", "/tmp/outside", "research/g2/raw/../outside",
-                           "research\\\\g2\\\\raw\\\\source.bin"):
+                           "research\\g2\\raw\\source.bin"):
                 with self.subTest(path=unsafe):
                     row["raw_local_path"] = unsafe
                     self.assertIn("ORIGINAL_RAW_LOCAL_PATH_MISSING_OR_UNSAFE", blockers())

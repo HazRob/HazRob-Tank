@@ -35,7 +35,7 @@ def _replay_catalog_raw_bytes(row, repo_root):
     raw_path = row.get("raw_local_path")
     size = row.get("raw_size_bytes")
     if (not isinstance(raw_path, str) or not raw_path or
-            "\\\\" in raw_path or raw_path.startswith("/") or
+            "\\" in raw_path or raw_path.startswith("/") or
             any(part in ("", ".", "..") for part in raw_path.split("/")) or
             PurePosixPath(raw_path).parts[:3] != ("research", "g2", "raw") or
             len(PurePosixPath(raw_path).parts) < 4):
