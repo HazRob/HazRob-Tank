@@ -34,10 +34,20 @@ public final class TankStableRuntimeCatalog {
         if(context==null||profile==null)return null;
         ChemCoreLibraryStore store=new ChemCoreLibraryStore(context.getApplicationContext());
         // No model artifact may be used without an active verified library pointer.
-        if(store.activePayload()==null||store.activeVersion().isEmpty()||
-           store.activeSha256().length()!=64)return null;
-        // The shared response loader independently checks SHA-256 before using
-        // a prior. Open-set reader performs its own validation and feature gates.
+        java.io.File file=store.activePayload();
+        if(file==null||store.activeVersion().isEmpty()||
+           store.activeSha256().length()!=64||file.length()<1||file.length()>16*1024*1024)
+            return null;
+        try(java.io.FileInputStream in=new java.io.FileInputStream(file)){
+            java.security.MessageDigest digest=java.security.MessageDigest.getInstance("SHA-256");
+            byte[] buf=new byte[8192];int n;
+            while((n=in.read(buf))!=-1)if(n>0)digest.update(buf,0,n);
+            StringBuilder hash=new StringBuilder();
+            for(byte v:digest.digest())hash.append(String.format(java.util.Locale.US,"%02x",v&255));
+            if(!store.activeSha256().equalsIgnoreCase(hash.toString()))return null;
+        }catch(Exception ex){return null;}
+        // Open-set digest is checked above independently of response priors.
+        // The reader further validates feature dimensions, thresholds and protocols.
         return ChemCoreStableKnowledgeReader.openSetArtifact(
             store.activePayload(),profile.profileId);
     }
