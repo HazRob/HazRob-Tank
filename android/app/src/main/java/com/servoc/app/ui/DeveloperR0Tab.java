@@ -331,6 +331,10 @@ public final class DeveloperR0Tab {
     /** Explicit phone-side acceptance; V4 firmware already committed NVS at READY. */
     private void acceptFirmwareResult(){
         if(disposed||automaticActive||pendingFirmwareResult==null)return;
+        if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())){
+            host.showToast("لا يمكن تغيير R0 أثناء قياس أو تحليل نشط");
+            return;
+        }
         try{
             JSONObject result=pendingFirmwareResult;
             FirmwareR0Contract.Progress progress=FirmwareR0Contract.progress(result);
