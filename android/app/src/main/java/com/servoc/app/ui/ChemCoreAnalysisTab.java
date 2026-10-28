@@ -139,9 +139,9 @@ public final class ChemCoreAnalysisTab {
                     "{\"feature_sha256\":\""+x.featurePayloadSha256+"\"}");
                 Map<String,Double> ratios=steadyRatios(x.features);
                 com.servoc.app.chemcore.TankStableScreeningModelRegistry.LoadResult models=
-                    com.servoc.app.chemcore.TankStableRuntimeCatalog.responseModels(context,host.database());
+                    com.servoc.app.chemcore.TankStableRuntimeCatalog.responseModels(scroll.getContext(),host.database());
                 ChemCoreStableKnowledgeReader.OpenSetArtifact openArtifact=
-                    com.servoc.app.chemcore.TankStableRuntimeCatalog.validatedOpenSet(context,runtime.profile());
+                    com.servoc.app.chemcore.TankStableRuntimeCatalog.validatedOpenSet(scroll.getContext(),runtime.profile());
                 ChemCoreOpenSetGate.Result openResult=openArtifact==null?
                     null:openArtifact.gate.evaluate(x.features.vector);
                 String modelVersion=models.status.startsWith("ACTIVE_STABLE")?
