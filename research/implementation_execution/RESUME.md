@@ -1,3 +1,12 @@
+## 2026-10-28 — G2 CI run metadata binding and replay (275/275 CI)
+
+- Continued from research HEAD `6d456c74e75d02d6735bd572eee753b937ea1111` and verified central `HazRob/build-harness` catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records; 14 external datasets). Source readiness remains 0/14 and independent evidence register remains `records: []`.
+- Fixed a reproducibility gap: the required, SHA256-verified `ci_run.json` was never semantically inspected. The cross-artifact gate now binds repository, run ID, head SHA, canonical run URL, G2 workflow path, event and successful conclusion to the technique record. Integer/boolean/float ID confusion is rejected. This is **offline consistency**, not authenticated GitHub provenance or physical scientific evidence.
+- Added five regression tests (including rehashed forged run metadata and malformed JSON), updated the synthetic fixture, and corrected an initial test expectation to reflect the earlier JSON content gate. [G2 Actions #40754743557](https://github.com/HazRob/HazRob-Tank/actions/runs/40754743557), job `123050552473`: **275/275 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. All **21/21** associated CI runs succeeded on code/test SHA `5e6d5d0aae3cf7095821d01babe6f2e3683b4f8c`.
+- Evidence document: `G2_CI_RUN_METADATA_BINDING_2026-10-28_AR.md`. Changes limited to research implementation files on research branch; no ChemCore Stable, Android or firmware changes. No G2/G3 scientific promotion. Recheck documentation checkpoint CI on next run. Physical independent raw exposures, traceable ppm references and locked grouped blind holdouts are still absent.
+
+---
+
 ## 2026-10-28 — G2 central-source binding to technique review candidates (270/270 CI)
 
 - Resumed at research HEAD `473a043874f1a7e1b5b1cedd312461dd4af72c08` (prior CI successful); pinned central catalogue `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` and public derived matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (80 entries, 14 external datasets, 0/14 source-review ready); independent evidence register `records: []`.
