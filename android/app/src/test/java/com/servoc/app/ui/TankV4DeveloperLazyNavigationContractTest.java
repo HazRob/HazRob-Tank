@@ -13,17 +13,17 @@ public final class TankV4DeveloperLazyNavigationContractTest {
                 "src/main/java/com/servoc/app/ui/DeveloperTab.java")),StandardCharsets.UTF_8);
     }
 
-    @Test public void fiveDestinationsStayPinProtectedAndLoadOnDemand()throws Exception{
+    @Test public void fourDestinationsStayPinProtectedAndLoadOnDemand()throws Exception{
         String s=source();
         assertTrue(s.contains("RoleGate.DEVELOPER_PIN.equals("));
-        assertTrue(s.contains("views=new View[5]"));
-        assertTrue(s.contains("String[] names={\"التجارب\",\"المختبر\",\"معايرة R0\",\"الاتصال\",\"المكتبة\"}"));
+        assertTrue(s.contains("views=new View[4]"));
+        assertTrue(s.contains("String[] names={\"التجارب\",\"المختبر\",\"الاتصال\",\"المكتبة\"}"));
         assertTrue(s.contains("View screen=obtainView(selected)"));
         assertTrue(s.contains("case 0:"));
         assertTrue(s.contains("case 1:"));
         assertTrue(s.contains("case 2:"));
         assertTrue(s.contains("case 3:"));
-        assertTrue(s.contains("case 4:"));
+        assertFalse(s.contains("case 4:"));
         assertTrue(s.contains("private View obtainView(int index)"));
         assertTrue(s.contains("if(views[index]!=null)return views[index]"));
     }
@@ -36,6 +36,9 @@ public final class TankV4DeveloperLazyNavigationContractTest {
         assertTrue(s.contains("TextView warning=UiKit.small"));
         assertTrue(s.contains("Cannot open developer tab "));
         assertTrue(s.contains("Developer refresh failure tab="));
-        assertTrue(s.contains("if(r0!=null)r0.release()"));
+        assertFalse(s.contains("new DeveloperR0Tab(context,host)"));
+        String operatorSettings=new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/ui/SettingsTab.java")),StandardCharsets.UTF_8);
+        assertTrue(operatorSettings.contains("new DeveloperR0Tab(scroll.getContext(),host)"));
+        assertTrue(operatorSettings.contains("if(userCalibration!=null)userCalibration.release()"));
     }
 }
