@@ -117,9 +117,9 @@ public final class ChemCoreLibraryManager {
      * The downloaded payload is still independently validated by SHA-256 and
      * the compatibility manifest before atomic activation.
      */
-    private static void validateGitHubManifestUrl(URL u){
+    static void validateGitHubManifestUrl(URL u){
         if(u==null||!"https".equalsIgnoreCase(u.getProtocol())||
-                u.getUserInfo()!=null||u.getPort()!=-1||u.getRef()!=null)
+                u.getUserInfo()!=null||u.getPort()!=-1||u.getRef()!=null||u.getQuery()!=null)
             throw new IllegalArgumentException("ChemCore manifest requires plain GitHub HTTPS");
         String host=u.getHost()==null?"":u.getHost().toLowerCase(java.util.Locale.US);
         String path=u.getPath()==null?"":u.getPath();
@@ -129,7 +129,7 @@ public final class ChemCoreLibraryManager {
         else if("api.github.com".equals(host))
             permitted=path.startsWith("/repos/HazRob/")&&path.length()>"/repos/HazRob/".length();
         else permitted=false;
-        if(!permitted||path.contains("/../")||path.contains("/./")||
+        if(!permitted||path.contains("/../")||path.contains("/./")||path.contains("%")||path.contains("//")||
                 !path.toLowerCase(java.util.Locale.US).endsWith(".json"))
             throw new IllegalArgumentException(
                 "ChemCore update manifest must be a JSON file in the HazRob GitHub organization");
