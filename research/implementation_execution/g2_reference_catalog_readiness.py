@@ -11,6 +11,7 @@ import math
 import re
 from collections import Counter
 from pathlib import Path, PurePosixPath
+from urllib.parse import unquote, urlsplit
 
 PINNED_CATALOG_BLOB = "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f"
 DATASET_CATEGORY = "EXTERNAL_MEASUREMENT_DATASET"
@@ -71,25 +72,40 @@ def _replay_catalog_raw_bytes(row, repo_root):
 
 
 def _canonical_source_origin(row):
-    """Conservative DOI/landing-page identity for duplicate-source triage.
+    """Conservatively identify a DOI or an HTTP(S) landing page.
 
-    Matching source identifiers do not prove independent physical exposures;
-    a different identifier also does not establish independence.
+    DOI resolver aliases and percent-encoded DOI paths must not split one
+    dataset into artificial independent sources. For ordinary URLs, preserve
+    case-sensitive paths and meaningful query parameters: only the host,
+    default port, scheme, and trailing slash are normalized. This remains a
+    source-review heuristic, not proof of shared physical exposures.
     """
     doi = row.get("doi")
     url = row.get("primary_url")
     value = doi if isinstance(doi, str) and doi.strip() else url
     if not isinstance(value, str) or not value.strip():
         return None
-    value = value.strip().lower().rstrip("/")
-    for prefix in ("https://doi.org/", "http://doi.org/", "doi:"):
-        if value.startswith(prefix):
-            value = value[len(prefix):]
-            break
-    if value.startswith("10.") and "/" in value:
-        return "doi:" + value
-    return "url:" + value
-
+    value = value.strip()
+    if value.lower().startswith("doi:"):
+        value = value[4:].strip()
+    if value.lower().startswith(("https://", "http://")):
+        parsed = urlsplit(value)
+        host = (parsed.hostname or "").lower().rstrip(".")
+        if host in {"doi.org", "dx.doi.org", "www.doi.org", "www.dx.doi.org"}:
+            candidate = unquote(parsed.path).strip("/ ")
+            if re.fullmatch(r"10\\.\\d{4,9}/\\S+", candidate, re.I):
+                return "doi:" + candidate.lower()
+        try:
+            port = parsed.port
+        except ValueError:
+            return "url:" + value
+        netloc = host + (":" + str(port) if port not in (None, 80, 443) else "")
+        path = parsed.path.rstrip("/") or "/"
+        return "url:" + netloc + path + ("?" + parsed.query if parsed.query else "")
+    candidate = unquote(value).rstrip("/")
+    if re.fullmatch(r"10\\.\\d{4,9}/\\S+", candidate, re.I):
+        return "doi:" + candidate.lower()
+    return "url:" + value.lower().rstrip("/")
 
 
 def _canonical_source_origins(row):
