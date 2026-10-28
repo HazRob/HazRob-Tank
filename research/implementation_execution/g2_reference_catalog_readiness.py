@@ -70,6 +70,27 @@ def _replay_catalog_raw_bytes(row, repo_root):
     return None
 
 
+def _canonical_source_origin(row):
+    """Conservative DOI/landing-page identity for duplicate-source triage.
+
+    Matching source identifiers do not prove independent physical exposures;
+    a different identifier also does not establish independence.
+    """
+    doi = row.get("doi")
+    url = row.get("primary_url")
+    value = doi if isinstance(doi, str) and doi.strip() else url
+    if not isinstance(value, str) or not value.strip():
+        return None
+    value = value.strip().lower().rstrip("/")
+    for prefix in ("https://doi.org/", "http://doi.org/", "doi:"):
+        if value.startswith(prefix):
+            value = value[len(prefix):]
+            break
+    if value.startswith("10.") and "/" in value:
+        return "doi:" + value
+    return "url:" + value
+
+
 def audit_source_catalog(catalog, expected_total=80, expected_datasets=14, repo_root=Path(".")):
     """Return a source-only review matrix; never G2 technique pass decisions.
 
@@ -108,8 +129,25 @@ def audit_source_catalog(catalog, expected_total=80, expected_datasets=14, repo_
             catalog["counts_by_type"].get(DATASET_CATEGORY) != expected_datasets):
         raise ValueError("CENTRAL_CATALOG_DATASET_COUNT_MISMATCH")
     results = []
+    seen_origins = {}
+    seen_raw_hashes = {}
     for row in sorted(datasets, key=lambda entry: entry["id"]):
         blockers = []
+        # Two catalogue IDs, a publisher mirror and an original archive must
+        # not be counted as independent measured datasets. Even matching raw
+        # bytes under different DOIs are one source, not two experiments.
+        origin = _canonical_source_origin(row)
+        if origin is not None:
+            if origin in seen_origins:
+                blockers.append("DUPLICATE_ORIGINAL_DATASET_ORIGIN")
+            else:
+                seen_origins[origin] = row["id"]
+        raw_digest = row.get("raw_sha256")
+        if isinstance(raw_digest, str) and HEX64.fullmatch(raw_digest):
+            if raw_digest in seen_raw_hashes:
+                blockers.append("DUPLICATE_ORIGINAL_RAW_BYTES")
+            else:
+                seen_raw_hashes[raw_digest] = row["id"]
         if row.get("measurement_qualification") is not True:
             blockers.append("MEASUREMENT_QUALIFICATION_NOT_VERIFIED")
         if row.get("experiment_independence") != "PHYSICAL_GROUPS_VERIFIED":
