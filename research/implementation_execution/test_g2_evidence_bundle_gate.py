@@ -22,6 +22,7 @@ from test_g2_evidence_audit import eligible_fixture
 def synthetic_bundle(root):
     record = eligible_fixture()
     record.update(dataset_id="synthetic-dataset", run_id="synthetic-run")
+    record.update(ci_run_id=123456789, ci_head_sha="a" * 40)
     # Original source bytes are mandatory even for a synthetic control.
     raw_bytes = b"synthetic raw source: not a physical gas measurement\\n"
     raw_file = Path(root) / "research/g2/raw/synthetic_source.bin"
@@ -76,6 +77,16 @@ def synthetic_bundle(root):
             ("metric_name", "metric_value", "baseline_metric_value")
         },
         "uncertainty_grouped.json": record["confidence_interval"],
+        "ci_run.json": {
+            "repository": "HazRob/HazRob-Tank",
+            "run_id": record["ci_run_id"],
+            "head_sha": record["ci_head_sha"],
+            "html_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/123456789",
+            "workflow_path": ".github/workflows/g2-signal-lineage-v4.yml",
+            "event": "push",
+            "conclusion": "success",
+            "note": "SYNTHETIC_METADATA_NOT_AN_AUTHENTICATED_CI_RUN",
+        },
     }
     csv_payloads = {
         "group_manifest.csv": "exposure_id,group_id,gas_reference_id,device_id,session_id\ntr,d1-s1,GAS_A,d1,s1\nca,d1-s2,GAS_B,d1,s2\nte1,d2-s1,GAS_A,d2,s1\nte2,d2-s2,GAS_B,d2,s2\n",
