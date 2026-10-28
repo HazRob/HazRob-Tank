@@ -427,6 +427,19 @@ public final class FieldCycleRepository {
                     for(int i=1;i<4;i++)add(d,nz(c.getString(i)));
                 }
             }
+            // The associated ChemCore decision is part of the scientific
+            // evidence consumed by session and site reports. Freeze it together
+            // with archived telemetry so later edits fail the approval hash.
+            try(Cursor decisions=w.rawQuery(
+                    "SELECT id,t_ms,payload FROM chemcore_decisions "+
+                    "WHERE session_id=? ORDER BY t_ms,id",
+                    new String[]{measurementId})){
+                while(decisions.moveToNext()){
+                    add(d,Long.toString(decisions.getLong(0)));
+                    add(d,Long.toString(decisions.getLong(1)));
+                    add(d,nz(decisions.getString(2)));
+                }
+            }
             StringBuilder out=new StringBuilder();
             for(byte b:d.digest())out.append(String.format(Locale.US,"%02x",b&255));
             return out.toString();
