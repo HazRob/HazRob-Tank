@@ -19,7 +19,7 @@ import java.util.List;
 /** Stable Field Session report facade. PDF is compact; XLSX remains the detailed auditable workbook. */
 public final class FieldSessionReportExporter {
     private FieldSessionReportExporter(){}
-    public static final int PAGE_WIDTH=842,PAGE_HEIGHT=595,MIN_PAGES=4,MAX_PAGES=5;
+    public static final int PAGE_WIDTH=842,PAGE_HEIGHT=595,MIN_PAGES=4,MAX_PAGES=5; // Analytical core only; V5 cycle appendices increase actual PDF pages.
 
     public static final class Bundle {
         public final String fieldSessionId;
