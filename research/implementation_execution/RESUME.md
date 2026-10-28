@@ -1,3 +1,13 @@
+## 2026-10-28 — G2 RFC3986 unreserved percent-encoded URL source aliases (232/232 CI)
+
+- Resumed from research HEAD `5efbe572c6f091b37939b021e50d7a6b2416a3f1` (20/20 CI success), pinned central reference catalog Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries; 14 external datasets), independent evidence `records: []`, and pinned source matrix 0/14 review-ready.
+- Fixed `g2_reference_catalog_readiness.py`: normalize percent-encoded RFC3986 ASCII unreserved characters in generic HTTP(S) URL path and query while preserving reserved escape semantics. Prevents a duplicate source from bypassing the all-members source-identity blocker via `%7E` versus `~` or `%41` versus `A`; retains `%2F` versus `/` distinctions.
+- Added `test_rfc3986_unreserved_percent_escapes_deduplicate_sources` with two real-byte synthetic files and recalculated SHA256, duplicate-class blocker and distinct-source controls. Code SHA `b63a3c78423167478415863680f3a0b220805b2c`, test SHA `010ecee8b5ab163d0fd96a3ba7262a7d2887cfe7`.
+- [G2 Actions #40695601169](https://github.com/HazRob/HazRob-Tank/actions/runs/40695601169), job `122841409206`: **232/232 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. Comparison with baseline: two Python files changed, both under `research/implementation_execution/`. CI for other workflows and documentation commit should be rechecked.
+- Documentation: `G2_RFC3986_UNRESERVED_PERCENT_ORIGIN_DEDUP_2026-10-28_AR.md`. No ChemCore Stable, Android or firmware edits; no G2/G3 scientific promotion. Synthetic fixtures are not physical measurements. Next: verify all CI, then obtain source-qualified independent physical raw exposures, traceable ppm reference, device/session/exposure identifiers, and locked blinded grouped holdouts.
+
+---
+
 ## 2026-10-28 — G2 equivalent IPv6 textual source aliases (231/231 CI)
 
 - Reviewed preceding research HEAD `ad4dbaa00d58ae965c1e6370f5a877bdfa5a07d7` (20/20 CI success), central reference catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records, 14 external datasets), independent G2 evidence `records: []`, and pinned external source matrix 0/14 review-ready.
