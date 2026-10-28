@@ -1,8 +1,8 @@
-## 2026-10-28 — G2 cross-field DOI/landing URL source deduplication (CI pending)
+## 2026-10-28 — G2 cross-field DOI/landing URL source deduplication (220/220 CI)
 
 - Research-only source-catalog audit now checks **both** DOI and landing-page identities per record; distinct DOIs sharing a landing page, or a DOI in one record repeated as resolver URL in another, block **all** source records. A DOI and its own URL in the same record are counted only once.
 - Synthetic original-byte controls in `test_catalogue_doi_does_not_mask_duplicate_landing_url` verify positive distinct sources, two cross-field duplicate modes, order invariance, and no within-record self-duplication. Document: `G2_CROSS_FIELD_DOI_URL_SOURCE_DEDUP_2026-10-28_AR.md`.
-- Central source catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` verified (80 entries, 14 datasets); independent G2 evidence register `records: []`; source matrix 0/14 review-ready. **CI pending on new commit**, do not report PASS yet. No G2/G3 scientific promotion or ChemCore Stable edits.
+- **Verified CI:** [G2 Actions 40626584311](https://github.com/HazRob/HazRob-Tank/actions/runs/40626584311), job `122612835706`: **220/220 tests PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. All **21/21** workflows completed successfully on code SHA `8e1aee3d021a213b0be724a0d585052a7c7f29d0`. Central source catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` verified (80 entries, 14 datasets); independent G2 evidence register `records: []`; source matrix 0/14 review-ready. No G2/G3 scientific promotion or ChemCore Stable edits. Recheck CI after documentation commit.
 
 ---
 
