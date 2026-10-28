@@ -13,18 +13,20 @@ public final class TankV4DeveloperLazyNavigationContractTest {
                 "src/main/java/com/servoc/app/ui/DeveloperTab.java")),StandardCharsets.UTF_8);
     }
 
-    @Test public void fourDestinationsStayPinProtectedAndLoadOnDemand()throws Exception{
+    @Test public void threeDestinationsStayPinProtectedAndLabContainsExperiments()throws Exception{
         String s=source();
         assertTrue(s.contains("RoleGate.DEVELOPER_PIN.equals("));
-        assertTrue(s.contains("views=new View[4]"));
-        assertTrue(s.contains("String[] names={\"التجارب\",\"المختبر\",\"الاتصال\",\"المكتبة\"}"));
+        assertTrue(s.contains("views=new View[3]"));
+        assertTrue(s.contains("String[] names={\"المختبر\",\"الاتصال\",\"المكتبة\"}"));
         assertTrue(s.contains("View screen=obtainView(selected)"));
         assertTrue(s.contains("case 0:"));
         assertTrue(s.contains("case 1:"));
         assertTrue(s.contains("case 2:"));
-        assertTrue(s.contains("case 3:"));
+        assertFalse(s.contains("case 3:"));
         assertFalse(s.contains("case 4:"));
         assertTrue(s.contains("private View obtainView(int index)"));
+        String lab=new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/ui/AnalyticalLabTab.java")),StandardCharsets.UTF_8);
+        assertTrue(lab.contains("new DeveloperExperimentsTab(context,host)"));
         assertTrue(s.contains("if(views[index]!=null)return views[index]"));
     }
 
