@@ -27,6 +27,7 @@ public final class TankAutoR0SampleProvenanceTest {
         String contract=read("calibration/FirmwareR0Contract.java");
         assertTrue(contract.contains("p.counts.get(key)<10"));
         assertTrue(contract.contains("!p.committed"));
-        assertTrue(contract.contains("SCHEMA=\"tank-r0-fw-v4/1\""));
+        assertTrue(contract.contains("SCHEMA=\"tank-r0-fw-v5/2\""));
+        assertTrue(contract.contains("pendingValues(JSONObject response)"));
     }
 }
