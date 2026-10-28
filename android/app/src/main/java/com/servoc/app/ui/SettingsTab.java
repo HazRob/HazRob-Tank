@@ -78,7 +78,22 @@ public final class SettingsTab {
         refreshMicrophoneCalibration();
     }
 
-    private CheckBox directionReverseCheck(Context c,String label,String key){CheckBox b=new CheckBox(c);b.setText(label);b.setTextColor(0xFF15202B);b.setChecked(host.preferences().getBoolean(key,false));b.setOnCheckedChangeListener((buttonView,checked)->{host.setDriveCommand(0,0);host.preferences().edit().putBoolean(key,checked).apply();host.refreshAllTabs();host.showToast(label+" • "+(checked?"معكوس":"طبيعي"));});return b;}
+    private CheckBox directionReverseCheck(Context c,String label,String key){
+        CheckBox b=new CheckBox(c);
+        b.setText(label);b.setTextColor(0xFF15202B);
+        b.setButtonTintList(android.content.res.ColorStateList.valueOf(0xFF145C7A));
+        b.setBackground(UiKit.outline(c,0xFFF7F8FA,0xFF60758C));
+        b.setPadding(UiKit.dp(c,12),UiKit.dp(c,8),UiKit.dp(c,12),UiKit.dp(c,8));
+        b.setMinHeight(UiKit.dp(c,48));
+        b.setChecked(host.preferences().getBoolean(key,false));
+        b.setOnCheckedChangeListener((buttonView,checked)->{
+            host.setDriveCommand(0,0);
+            host.preferences().edit().putBoolean(key,checked).apply();
+            host.refreshAllTabs();
+            host.showToast(label+" • "+(checked?"معكوس":"طبيعي"));
+        });
+        return b;
+    }
     private EditText field(Context c,LinearLayout p,String label,String value){TextView l=UiKit.small(c,label);l.setTextColor(0xFF46515E);p.addView(l,UiKit.full(c));EditText e=UiKit.input(c,value);p.addView(e,UiKit.full(c));return e;}
     public View view(){return scroll;}
 
