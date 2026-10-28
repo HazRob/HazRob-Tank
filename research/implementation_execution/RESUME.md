@@ -1,3 +1,11 @@
+## 2026-10-28 — G2 central catalogue authority and safety policy lock (CI pending)
+
+- Research-only `g2_reference_catalog_readiness.py` now requires the pinned reference-bank `schema_version`, `authority`, `scope` and five strict `True` non-certification policy flags. Prevents silently replacing the central source catalogue's declared authority or weakening the rule that raw data and gas labels do not certify Tank calibration, ppm or G3 when a new Git blob is re-pinned.
+- Updated synthetic catalogue fixture and added regression `test_central_catalog_authority_and_noncertification_policy_are_locked` (positive case, altered/missing authority and scope, boolean type-confusion and missing policy negatives). Code/test SHA `a51ffe51b9b9e8fc96a7c8abc10e2cf37b80ebb3`; report `G2_CENTRAL_CATALOG_AUTHORITY_SAFETY_POLICY_LOCK_2026-10-28_AR.md`. **Recheck CI on final documentation SHA before claiming PASS**.
+- Central catalogue original Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` independently read from `HazRob/build-harness`. Independent G2 evidence register `records: []`; 0/14 external sources review-ready; no G2/G3 promotion. No ChemCore Stable, APK or firmware edits. Next: inspect G2 CI, repair failures, audit final branch-only diff, then continue independent physical evidence acquisition.
+
+---
+
 ## 2026-10-28 — G2 source-origin provenance fail-closed (223/223 G2 CI)
 
 - Research-only: source catalog now requires a syntactically valid DOI or HTTP(S) original landing URL; rejects malformed asserted DOI/URL, credentials, malformed ports, control characters, and DOI-resolver pages without a DOI. A valid DOI cannot mask a malformed landing URL.
