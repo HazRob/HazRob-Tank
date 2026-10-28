@@ -814,7 +814,16 @@ public final class MeasurementsTab {
             referenceInventory.setText(TankExposureReferenceCatalog.summary(p,5,10));
             screeningWarnings.setText(TankScreeningExposureWarning.summary(p,8));styleScreeningWarning(screeningWarnings,p);
             if(ppmOk&&Double.isFinite(ppm)&&exposureExceeded(g))exposureStyle(decisionCard,true);
-            renderCandidates(p);if(showAll144)renderScreening(s,p);technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,8));
+            renderCandidates(p);if(showAll144)renderScreening(s,p);
+            JSONObject fingerprint=p.optJSONObject(com.servoc.app.chemcore.TankFingerprintScreening.KEY);
+            String fpNote=fingerprint==null?"":("\n\n🧬 البصمة البحثية: "+
+                (fingerprint.optBoolean("fingerprint_available",false)?
+                    fingerprint.optString("label","—")+" • channels "+
+                        fingerprint.optInt("contributors",0)+" • distance "+
+                        fmt(fingerprint.optDouble("distance",Double.NaN)):
+                    "لا توجد مطابقة حسابية")+
+                " • مسار مستقل لا يشترط M4 أو Open-Set للحساب");
+            technical.setText(ChemCoreAnalysisPresenter.equationsAndResiduals(p,8)+fpNote);
         }
         private void showSelectedExposureReferences(){
             if(selectedCandidateId<0){
