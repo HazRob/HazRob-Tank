@@ -116,3 +116,11 @@
 - **التالي:** متابعة متطلبات التحديثات ومكتبة MQ، ثم اختبارات Android الفعلية لدورات الجلسات والتقارير والتحليل؛ لا بناء حتى إذن المالك.
 
 `CHECKPOINT_C: CHEMCORE_UI_AND_DEVELOPER_LAB_SOURCE_COMMITTED / NO_APK`.
+
+
+### الملحق C1 — تأمين تحديثات GitHub
+
+- `ChemCoreLibraryManager.validateGitHubManifestUrl` أصبح يتحقق من بروتوكول HTTPS ومضيف GitHub الأصلي ومنظمة HazRob، ويرفض credentials/ports/fragment/path traversal وملفات ليست JSON.
+- فحص مصدر `13/13 PASS` على التحقق الأمني ومسار التحليل والمختبر. وُضع `TankV5GithubManifestPolicyContractTest.java` للفحص عند تشغيل JUnit لاحقًا؛ `NOT_RUN`.
+- لا يُعرف manifest عام صالـح حاليًا في فرع Tank؛ لا يجوز إعلان أن تنزيل/تثبيت Stable الجديد قد اختبر أو نجح.
+- **HEAD عند الحفظ قبل التوثيق:** `f110b2d1e171a2dd67fa8c6eaec41ca4c3a9c2ee`; `APK=NOT_BUILT`.
