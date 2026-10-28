@@ -59,10 +59,18 @@ jobs:
           print("G2 review-only candidates:", x["g2_pass_candidates"],
                 "blocked:", x["g2_blocked"])
           PY
+      - name: "Generate deterministic G2 acquisition triage (not qualification)"
+        run: |
+          python research/implementation_execution/g2_acquisition_triage.py \
+            --audit "$RUNNER_TEMP/g2_audit_results.json" \
+            --source-matrix research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json \
+            --output "$RUNNER_TEMP/g2_acquisition_triage.json"
       - name: "Upload reproducible G2 gate output"
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: tank-v4-g2-signal-r0-gate
-          path: ${{ runner.temp }}/g2_audit_results.json
+          path: |
+            ${{ runner.temp }}/g2_audit_results.json
+            ${{ runner.temp }}/g2_acquisition_triage.json
           if-no-files-found: ignore
