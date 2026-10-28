@@ -42,7 +42,15 @@ public final class FieldCycleController {
     }
 
     /** The controller is per Activity. Never imply an unfinished physical run completed on destruction. */
-    public void release(){disposed=true;main.removeCallbacks(tick);}
+    public void release(){
+        disposed=true;main.removeCallbacks(tick);
+        if(!cycleId.isEmpty()&&busy){
+            final String id=cycleId,reason="ACTIVITY_DESTROYED_BEFORE_COMPLETION";
+            final boolean turnOff=gas;
+            try{host.io().execute(()->failWorker(id,reason,turnOff));}
+            catch(Exception ex){android.util.Log.e("TankFieldCycle","Cannot cancel active cycle",ex);}
+        }
+    }
     public boolean busy(){return busy;}
     public String currentCycleId(){return cycleId;}
 
@@ -86,6 +94,23 @@ public final class FieldCycleController {
                 String failedId=row==null?"":row.id;
                 failWorker(failedId,ex.getMessage(),modes.gas);
                 main.post(()->end("FAILED","تعذر بدء القياس: "+ex.getMessage(),failedId));
+            }
+        });
+    }
+
+    /** Recover abandoned reservations following an OS process restart. */
+    public void recoverInterrupted(){
+        if(disposed||busy)return;
+        host.io().execute(()->{
+            try{
+                int n=repo.recoverAbandoned();
+                if(n>0)main.post(()->{
+                    if(!disposed){
+                        message("RECOVERED","تم وسم "+n+" دورة منقطعة بأنها غير صالحة للاعتماد","");observer.refreshed();
+                    }
+                });
+            }catch(Exception e){
+                android.util.Log.e("TankFieldCycle","Recovery failed",e);
             }
         });
     }
