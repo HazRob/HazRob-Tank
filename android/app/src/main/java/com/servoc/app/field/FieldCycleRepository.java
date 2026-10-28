@@ -27,7 +27,7 @@ import java.util.UUID;
 public final class FieldCycleRepository {
     public static final String ARMED="ARMED",WARMUP="WARMUP",SAMPLING="SAMPLING";
     public static final String REVIEW="REVIEW_READY",APPROVED="APPROVED";
-    public static final String FAILED="FAILED",CANCELLED="CANCELLED",SUPERSEDED="SUPERSEDED";
+    public static final String FAILED="FAILED",CANCELLED="CANCELLED",SUPERSEDED="SUPERSEDED",DELETED="DELETED";
 
     public static final class Options {
         public final boolean gas,particles,physical;
@@ -270,6 +270,58 @@ public final class FieldCycleRepository {
         }finally{w.endTransaction();}
         return byId(nextId);
     }
+    /**
+     * User delete of an unapproved, terminal attempt. Preserve its sequence and
+     * supersession tombstone, while purging only the attached USER telemetry.
+     * An approved cycle and any scientific/reference capture are untouchable.
+     */
+    public boolean deleteUnapproved(String cycleId){
+        String id=required(cycleId);SQLiteDatabase w=db.getWritableDatabase();w.beginTransaction();
+        try{
+            String ms,kind="",role="";
+            try(Cursor c=w.rawQuery(
+                "SELECT c.measurement_session_id,m.kind,m.operator_role "+
+                "FROM field_measurement_cycles c LEFT JOIN measurement_sessions m "+
+                "ON m.session_id=c.measurement_session_id "+
+                "WHERE c.cycle_id=? AND c.state IN ('FAILED','CANCELLED','SUPERSEDED','REVIEW_READY')",
+                new String[]{id})){
+                if(!c.moveToFirst())return false;
+                ms=nz(c.getString(0));kind=nz(c.getString(1));role=nz(c.getString(2));
+            }
+            if(!ms.isEmpty()){
+                if(!"USER".equals(role)||!kind.startsWith("field_"))
+                    throw new IllegalStateException("Refusing non-user measurement deletion");
+                try(Cursor c=w.rawQuery(
+                    "SELECT 1 FROM experiments e LEFT JOIN reference_queue q ON q.experiment_id=e.id "+
+                    "WHERE e.session_id=? AND (e.approved<>0 OR e.approved_ts IS NOT NULL OR "+
+                    "e.reference_kind IS NOT NULL OR q.experiment_id IS NOT NULL) LIMIT 1",
+                    new String[]{ms})){if(c.moveToFirst())
+                        throw new IllegalStateException("Scientific reference exists");}
+                try(Cursor c=w.rawQuery("SELECT 1 FROM captures WHERE session_id=? LIMIT 1",
+                    new String[]{ms})){if(c.moveToFirst())
+                        throw new IllegalStateException("Scientific capture exists");}
+                w.delete("field_session_measurements","measurement_session_id=?",new String[]{ms});
+                for(String table:new String[]{"telemetry_samples","events","chemcore_decisions",
+                                             "media_assets","chemcore_channel_timing"}){
+                    w.delete(table,"session_id=?",new String[]{ms});
+                }
+                w.delete("experiments","session_id=?",new String[]{ms});
+                w.delete("measurement_sessions","session_id=?",new String[]{ms});
+            }
+            ContentValues tomb=new ContentValues();
+            tomb.put("state",DELETED);
+            tomb.putNull("measurement_session_id");
+            tomb.putNull("evidence_sha256");
+            tomb.put("fail_reason","DELETED_BY_USER_AT_"+utc());
+            tomb.put("updated_ts",utc());
+            int count=w.update("field_measurement_cycles",tomb,
+                "cycle_id=? AND state IN ('FAILED','CANCELLED','SUPERSEDED','REVIEW_READY')",
+                new String[]{id});
+            if(count==1)w.setTransactionSuccessful();
+            return count==1;
+        }finally{w.endTransaction();}
+    }
+
     public boolean fail(String cycleId,String reason){
         String cid=required(cycleId);String message=reason==null?"FAILED":reason.trim();
         ContentValues v=new ContentValues();v.put("state",FAILED);v.put("fail_reason",message);
