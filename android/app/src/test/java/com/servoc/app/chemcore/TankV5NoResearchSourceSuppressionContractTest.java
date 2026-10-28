@@ -35,8 +35,8 @@ public final class TankV5NoResearchSourceSuppressionContractTest {
     @Test public void allOperationalPathsUseSameStableModelRegistry()throws Exception{
         assertTrue(s("chemcore/TankInstantAnalyzer.java").contains("TankStableRuntimeCatalog.responseModels(androidContext,db)"));
         assertTrue(s("chemcore/CompletedSessionChemCoreAnalyzer.java").contains("TankStableRuntimeCatalog.responseModels(appContext,db)"));
-        assertTrue(s("ui/ChemCoreAnalysisTab.java").contains("TankStableRuntimeCatalog.responseModels(context,host.database())"));
-        assertTrue(s("measurement/TelemetryRecorder.java").contains("analyzeAndPersist(appContext,db,completed,snapshot,duration)"));
+        assertTrue(s("ui/ChemCoreAnalysisTab.java").contains("TankStableRuntimeCatalog.responseModels(scroll.getContext(),host.database())"));
+        assertTrue(s("measurement/TelemetryRecorder.java").contains("analyzeAndPersist(appContext,db,completed,snapshot,duration,fieldCaptureSession)"));
         assertTrue(s("chemical/TankChemicalCapabilityReport.java").contains("TankStableRuntimeCatalog.responseModels(context.getApplicationContext(),db)"));
     }
     @Test public void researchFingerprintIsComputedWithoutIdentityApproval()throws Exception{
