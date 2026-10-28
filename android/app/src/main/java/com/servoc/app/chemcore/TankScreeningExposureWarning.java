@@ -146,10 +146,12 @@ public final class TankScreeningExposureWarning {
                 .append(number(r)).append(" ").append(w.optString("reference_unit",""));
             if("TWA".equals(role)||"STEL".equals(role)){
                 double mins=w.optDouble("reference_duration_min",Double.NaN);
-                text.append("\nلو استمر هذا التركيز نحو ").append(number(mins))
+                text.append("\n☠ مقارنة تقديرية افتراضية — لو استمر هذا التركيز نحو ").append(number(mins))
                     .append(" دقيقة فقد يتجاوز متوسط التعرض الحد المرجعي؛ لا يوجد متوسط زمني مقاس.");
             }else if("LFL".equals(role)){
-                text.append("\n🔥 ").append(number(w.optDouble("percent_lfl",Double.NaN)))
+                boolean atLfl=w.optDouble("ratio_to_reference",0)>=1.0;
+                text.append(atLfl?"\n🔥 LFL تقديري — ":"\n⚠ اقتراب من LFL — ")
+                    .append(number(w.optDouble("percent_lfl",Double.NaN)))
                     .append("% من LFL المقدّر • مقارنة فورية لا تنتظر مدة تعرض.")
                     .append(" الخليط وعدم اليقين قد يغيران الحد الفعلي.");
             }else{
