@@ -80,7 +80,7 @@ public final class CentralLibraryDashboardTab {
         String bootstrap=host.database().getMeta("tank_v4_stable_bootstrap_result","not_attempted");
         String bootstrapVersion=host.database().getMeta("tank_v4_stable_bootstrap_version","");
         String bootstrapActive=host.database().getMeta("tank_v4_stable_bootstrap_active","false");
-        versionText.setText("الإصدار الفعال: "+blank(s.version)+"\\nالمصدر: "+blank(s.sourceLabel)+
+        versionText.setText("تطبيق HazRob Tank: "+ReleaseAudit.VERSION+" • التحديث التشخيصي غير معتمد بعد\\nإصدار المكتبة الفعال: "+blank(s.version)+"\\nالمصدر: "+blank(s.sourceLabel)+
                 "\\nSource commit: "+shortId(s.sourceCommit)+"\\nData revision: "+shortId(s.dataRevision)+
                 "\\nEvidence revision: "+shortId(s.evidenceRevision)+"\\nSHA-256: "+shortId(s.sha256)+
                 "\\nفحص Stable المضمنة: "+bootstrap+
@@ -122,7 +122,29 @@ public final class CentralLibraryDashboardTab {
 
     private void checkDistribution(){operationText.setText("جارٍ فحص قناة GitHub...");String endpoint=manager.manifestUrl();if(endpoint==null||endpoint.trim().isEmpty()){operationText.setText("قناة القراءة العامة على GitHub لم تُنشر بعد؛ التحديث Fail-closed ولا يوجد fallback إلى Render.");return;}host.io().execute(()->{try{ChemCoreLibraryManager.CheckSummary c=manager.check(ReleaseAudit.VERSION);ChemCoreLibraryManifest m=c.remote.manifest;main.post(()->{operationText.setText("GitHub OK • "+m.libraryVersion+" • chemicals "+m.chemicalCount+" • models "+m.modelCount+" • calibrations "+m.calibrationCount+(c.updateAvailable?" • تحديث متاح":" • النسخة الحالية محدثة"));refresh();});}catch(Exception e){main.post(()->operationText.setText("تعذر فحص قناة GitHub: "+safe(e)));}});}
 
-    private void rollback(){boolean active=ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics());ChemCoreLibraryStore.InstallResult r=manager.rollback(active,ReleaseAudit.VERSION);if(r.installed)ChemCoreMolecularSeedImporter.importBestAvailable(context,host.database());operationText.setText(r.installed?"تم الرجوع إلى "+r.version:"تعذر الرجوع: "+r.reason);if(r.installed)host.showToast("تم استرجاع مكتبة ChemCore السابقة");refresh();}
+    private void rollback(){
+        operationText.setText("جارٍ التحقق والرجوع للمكتبة السابقة...");
+        host.io().execute(()->{
+            String summary;
+            boolean installed=false;
+            try{
+                boolean active=ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics());
+                ChemCoreLibraryStore.InstallResult r=manager.rollback(active,ReleaseAudit.VERSION);
+                installed=r.installed;
+                if(installed)ChemCoreMolecularSeedImporter.importBestAvailable(context,host.database());
+                summary=installed?"تم الرجوع إلى "+r.version:"تعذر الرجوع: "+r.reason;
+            }catch(Exception ex){
+                summary="فشل الاسترجاع دون تغيير المكتبة الحالية: "+safe(ex);
+            }
+            final String result=summary;
+            final boolean success=installed;
+            main.post(()->{
+                operationText.setText(result);
+                if(success)host.showToast("تم استرجاع مكتبة ChemCore السابقة");
+                refresh();
+            });
+        });
+    }
 
     private static String formatUpdateTelemetry(String raw){try{JSONObject j=new JSONObject(raw);return "إحصاءات التحديثات\nChecks: "+j.optInt("checks",0)+" • Downloads: "+j.optInt("downloads",0)+"\nInstall success: "+j.optInt("install_success",0)+" • Fail: "+j.optInt("install_fail",0)+" • Rollback: "+j.optInt("rollback",0)+"\nActive installations: "+j.optInt("active_installations",0)+"\nWindow: "+j.optString("window","—");}catch(Exception e){return "إحصاءات التحديثات: غير متاحة بعد. سيتم ملؤها من telemetry مجهولة الهوية بعد تفعيل قناة التوزيع العامة.";}}
     private static String formatPlatforms(String raw){try{JSONObject j=new JSONObject(raw);JSONArray a=j.optJSONArray("services");if(a==null||a.length()==0)throw new IllegalArgumentException();StringBuilder s=new StringBuilder();for(int i=0;i<a.length();i++){JSONObject q=a.optJSONObject(i);if(q==null)continue;if(s.length()>0)s.append('\n');s.append(q.optString("name","Service")).append(": ").append(q.optString("status","—"));String used=q.optString("used","");String limit=q.optString("limit","");String remaining=q.optString("remaining","");if(!used.isEmpty()||!limit.isEmpty())s.append(" • ").append(used).append(" / ").append(limit);if(!remaining.isEmpty())s.append(" • متبقٍ ").append(remaining);String reset=q.optString("reset_at","");if(!reset.isEmpty())s.append(" • reset ").append(reset);}return s.toString();}catch(Exception e){return "Railway: —\nGitHub: —\nMQTT: —\nCloudflare: —\nRender: —\nلم تتم مزامنة أرصدة المنصات بعد.";}}
