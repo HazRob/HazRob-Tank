@@ -83,6 +83,7 @@ jobs:
           # Source-contract JUnit tests inspect Tank ESP32 staged-R0 files.
           mkdir -p source/firmware
           cp -a tank/firmware/ESP32-Tank source/firmware/ESP32-Tank
+          cp -a tank/tools/prepare_v5_stable_source.py source/tools/prepare_v5_stable_source.py
           python3 - <<'PY'
           from pathlib import Path
           import re
