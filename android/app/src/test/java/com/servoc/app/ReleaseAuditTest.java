@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 
 public class ReleaseAuditTest {
     @Test public void v0102KeepsCriticalCameraEvidenceAndSafetyContracts(){
-        assertEquals("4.0",ReleaseAudit.VERSION);
-        assertEquals("TANK-V4-UNRELEASED",ReleaseAudit.ENGINEERING_REVISION);
+        assertEquals("5.0",ReleaseAudit.VERSION);
+        assertEquals("TANK-V5-IN-DEVELOPMENT",ReleaseAudit.ENGINEERING_REVISION);
         assertEquals("شهاب الصهباني، مجدي ذيبان",ReleaseAudit.PROJECT_PREPARERS);
-        assertEquals(9,ReleaseAudit.DATABASE_SCHEMA);
+        assertEquals(10,ReleaseAudit.DATABASE_SCHEMA);
         assertTrue(ReleaseAudit.VIDEO_RECORDING);
         assertTrue(ReleaseAudit.DIRECT_ESP_CAM_MJPEG);
         assertTrue(ReleaseAudit.CAMERA_ENDPOINT_FALLBACK);
