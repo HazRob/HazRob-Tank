@@ -1,9 +1,9 @@
-## 2026-10-28 — G2 generic source URL scheme identity (CI recheck pending after test expectation correction)
+## 2026-10-28 — G2 generic source URL scheme identity (229/229 G2 CI)
 
 - Rechecked research HEAD `d1df93de574036581fa8b9ab22b7277735f27a87` (20/20 CI successful), pinned central source catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, independent evidence register `records: []`, and last pinned source matrix 0/14 review-ready.
 - Fixed generic URL canonicalization to preserve `http://` versus `https://` as distinct origins while retaining scheme-specific default-port aliases and DOI resolver canonicalization.
 - Added `test_generic_url_scheme_is_preserved_for_source_identity` with two real-byte synthetic archives and recomputed SHA256, covering source review and duplicate-group blocking. Documentation: `G2_HTTP_HTTPS_SOURCE_SCHEME_IDENTITY_2026-10-28_AR.md`.
-- First G2 CI on `e918f9b796503252c1f1e6542ad394da1285fdfa` failed one of 229 tests because an older positive alias test assumed HTTP and HTTPS were equivalent. Updated that legacy test to assert the correct same-scheme default-port alias and distinct cross-scheme origins. Pending: rerun GitHub Actions G2 tests and all workflows on the correction commit. No scientific promotion, no Stable/Android/firmware changes. Physical independent evidence and traceable ppm reference still absent.
+- First G2 CI on `e918f9b796503252c1f1e6542ad394da1285fdfa` failed one of 229 tests because an older positive alias test assumed HTTP and HTTPS were equivalent. Corrected the legacy test in `93d97133cabafaa31ecbf31256c6f039f5a6d0c5`. Verified [G2 Actions #40671526473](https://github.com/HazRob/HazRob-Tank/actions/runs/40671526473), job `122759217384`: **229/229 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. All **21/21 workflow runs succeeded** on correction SHA. Compared to prior `d1df93de`, only five files in `research/implementation_execution/` changed. Recheck final documentation-commit CI next. No scientific promotion, no Stable/Android/firmware changes. Physical independent evidence and traceable ppm reference still absent.
 
 ---
 
