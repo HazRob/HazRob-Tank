@@ -272,7 +272,8 @@ public final class FieldCycleRepository {
      */
     private static boolean hasMeasuredEvidence(SQLiteDatabase w,String measurementId,
                                                boolean gas,boolean physical,boolean particles){
-        int gasN=0,physicalN=0,particleN=0;
+        int physicalN=0,particleN=0;
+        java.util.Set<Long> gasScanCycles=new java.util.HashSet<>();
         try(Cursor c=w.rawQuery("SELECT mq_payload,env_payload,motion_payload,t_ms "+
                 "FROM telemetry_samples WHERE session_id=? ORDER BY t_ms",
                 new String[]{measurementId})){
@@ -286,13 +287,17 @@ public final class FieldCycleRepository {
                             if(v!=null&&v.optBoolean("ok",false)&&
                                 v.optBoolean("powered",false)&&
                                 Double.isFinite(v.optDouble("rs",Double.NaN))&&
-                                v.optDouble("rs",0)>0){gasN++;break;}
+                                v.optDouble("rs",0)>0&&v.has("scan_cycle")&&
+                                v.optLong("scan_cycle",-1)>=0){
+                                gasScanCycles.add(v.optLong("scan_cycle",-1));break;
+                            }
                         }
                     }
                     if(physical){
                         JSONObject env=new JSONObject(nz(c.getString(1)));
                         if(env.optBoolean("ok",false)&&
-                            Double.isFinite(env.optDouble("temperature",Double.NaN)))physicalN++;
+                            Double.isFinite(env.optDouble("temperature",Double.NaN))&&
+                            env.optLong("last_ok_age_ms",Long.MAX_VALUE)<=5000L)physicalN++;
                     }
                     if(particles){
                         JSONObject aux=new JSONObject(nz(c.getString(2)));
@@ -302,7 +307,7 @@ public final class FieldCycleRepository {
                 }catch(Exception ignored){/* malformed samples count as invalid */ }
             }
         }
-        return (!gas||gasN>=10)&&(!physical||physicalN>=10)&&
+        return (!gas||gasScanCycles.size()>=10)&&(!physical||physicalN>=10)&&
                (!particles||particleN>=10);
     }
 
