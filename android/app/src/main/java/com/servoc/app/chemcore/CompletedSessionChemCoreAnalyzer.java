@@ -85,6 +85,7 @@ public final class CompletedSessionChemCoreAnalyzer {
             quality.put("valid_mq_channels",ratios.size());quality.put("r0_normalized_channels",ratios.size());
             quality.put("reference_validated_channels",0);quality.put("m4_quantitative_gate",false);
             quality.put("candidate_ranking_permitted",true);quality.put("named_identity_requires_open_set_acceptance",true);
+            quality.put(TankFingerprintScreening.KEY,TankFingerprintScreening.evaluate(ratios));
             quality.put("active_stable_status",loaded.status);
             quality.put("stable_imported_response_models",loaded.importedModels);
             quality.put("stable_rejected_response_models",loaded.rejectedModels);
