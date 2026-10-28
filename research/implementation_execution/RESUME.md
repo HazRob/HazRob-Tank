@@ -1,3 +1,12 @@
+## 2026-10-28 — G2 original-dataset and raw-byte mirror deduplication (218/218 CI)
+
+- Research-only source readiness now blocks duplicate external dataset origins (normalized DOI or source landing URL) and identical raw SHA256 archives across different catalogue IDs: `DUPLICATE_ORIGINAL_DATASET_ORIGIN`, `DUPLICATE_ORIGINAL_RAW_BYTES`. This prevents treating an archive mirror as a second independent physical experiment; distinct DOI/digest **does not prove** independent exposure.
+- Code commit `85c961981783f30c32d09f2e7c06c689f10329d1`; two synthetic regression methods commit `c44b63c3fbb766bd4aa6c6611da2979bcb639b4a`. G2 Actions [40615130323](https://github.com/HazRob/HazRob-Tank/actions/runs/40615130323), job `122575715672`: **218/218 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`. Verify other workflows on final documentation commit separately.
+- Documentation: `G2_CATALOG_ORIGIN_AND_RAW_MIRROR_DEDUP_2026-10-28_AR.md`. Pinned central reference Git blob remains `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, 14 external datasets with 0 source-review ready; G2 evidence register still `records: []`. No ChemCore Stable, APK or firmware changes, no G2/G3 scientific approval.
+- Next: check pending CI, obtain independently referenced original physical exposure records, verify device/session IDs and blind grouped holdout; do not count mirrors or synthetic fixtures as physical experiments.
+
+---
+
 ## 2026-10-28 — G2 catalogue source readiness now requires original-byte replay (216/216 CI)
 
 - Research-only code `g2_reference_catalog_readiness.py` no longer accepts all-true catalogue metadata plus a plausible SHA256 as sufficient for source-review readiness: it requires a present regular archive under `research/g2/raw/`, documented byte size, streamed SHA256 replay, and rejection of symlink/path escape/Git LFS pointer. This is archive integrity, **not** external provenance or physical concentration certification.
