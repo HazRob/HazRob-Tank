@@ -195,6 +195,21 @@ public final class FieldCycleController {
         });
     }
 
+    /** Deletes only unapproved terminal attempts. Approved evidence is immutable. */
+    public void delete(String cycleId){
+        if(disposed||busy)return;
+        busy=true;
+        host.io().execute(()->{
+            boolean deleted=false;
+            try{deleted=repo.deleteUnapproved(cycleId);}
+            catch(Exception ex){android.util.Log.e("TankFieldCycle","Deletion refused",ex);}
+            final boolean success=deleted;
+            main.post(()->end(success?"DELETED":"DELETE_REFUSED",
+                success?"حُذفت بيانات المحاولة غير المعتمدة مع بقاء رقمها في السجل":
+                    "لا يُسمح بحذف قياس معتمد أو مرتبط بمصدر علمي",cycleId));
+        });
+    }
+
     private void onTick(){
         if(disposed||!busy||cycleId.isEmpty())return;
         JSONObject current=host.latestDiagnostics();
