@@ -25,16 +25,16 @@ public final class HR069EmbeddedStableContractTest {
         assertEquals("chemcore-stable-snapshot-v1",manifest.payloadSchema);
         assertEquals(652,manifest.chemicalCount);
         assertEquals(0,manifest.calibrationCount);
-        assertTrue(ChemCoreLibraryVerifier.verifyManifestOnly(manifest,"4.0",
+        assertTrue(ChemCoreLibraryVerifier.verifyManifestOnly(manifest,com.servoc.app.ReleaseAudit.VERSION,
                 ChemCoreLibraryManager.REQUIRED_SAMPLING_PROFILE).accepted);
-        ChemCoreLibraryVerifier.VerificationResult valid=ChemCoreLibraryVerifier.verifyPayload(payload,manifest,"4.0");
+        ChemCoreLibraryVerifier.VerificationResult valid=ChemCoreLibraryVerifier.verifyPayload(payload,manifest,com.servoc.app.ReleaseAudit.VERSION);
         assertTrue(valid.reason,valid.accepted);
         byte[] tampered=Files.readAllBytes(payload.toPath());
         tampered[tampered.length/2]^=1;
         File bad=File.createTempFile("stable-tampered",".json");
         try{
             Files.write(bad.toPath(),tampered);
-            assertFalse(ChemCoreLibraryVerifier.verifyPayload(bad,manifest,"4.0").accepted);
+            assertFalse(ChemCoreLibraryVerifier.verifyPayload(bad,manifest,com.servoc.app.ReleaseAudit.VERSION).accepted);
         }finally{bad.delete();}
     }
 
