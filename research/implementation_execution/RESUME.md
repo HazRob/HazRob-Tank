@@ -1,3 +1,12 @@
+## 2026-10-28 — G2 deterministic acquisition triage (278/278 CI)
+
+- Resumed from research HEAD `34b89d16163f4c8e58b6afece28b6d2a2482a470`; directly verified central `HazRob/build-harness` catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets). Independent evidence remains `records: []`; source review readiness 0/14.
+- Added `g2_acquisition_triage.py` and `test_g2_acquisition_triage.py` to deterministically summarize the **actual** 80-technique audit and 14-source blocker matrix, including acquisition actions, while failing closed on forged counts, duplicate IDs, conflicting readiness, and duplicate JSON keys. Research G2 workflow now uploads `g2_acquisition_triage.json` alongside the existing audit artifact. This does not manufacture raw exposures or promote a technique.
+- Code/workflow SHA `7449c25144d8298d3cd9a335dfa960073bedca0e`: [G2 Actions #40762104679](https://github.com/HazRob/HazRob-Tank/actions/runs/40762104679), job `123076456908`: **278/278 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact ID `12847724274` successfully uploaded. Other CI runs on this commit were successful or queued at initial review; recheck all runs on the final documentation SHA next time.
+- Documentation: `G2_DETERMINISTIC_ACQUISITION_TRIAGE_2026-10-28_AR.md`. Research branch only; no Stable, Android or firmware changes. Physical independent gas exposures, traceable reference concentrations and locked grouped blind holdouts are still absent. No G2/G3 approval.
+
+---
+
 ## 2026-10-28 — G2 CI run metadata binding and replay (275/275 CI)
 
 - Continued from research HEAD `6d456c74e75d02d6735bd572eee753b937ea1111` and verified central `HazRob/build-harness` catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records; 14 external datasets). Source readiness remains 0/14 and independent evidence register remains `records: []`.
