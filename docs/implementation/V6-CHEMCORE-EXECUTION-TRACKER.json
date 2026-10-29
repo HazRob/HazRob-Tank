@@ -31,7 +31,7 @@
     "library_reference_records": 80,
     "independent_Tank_G3_validated_techniques": 0
   },
-  "disclaimer": "Research data and candidate calculations use all numerically valid evidence; caveats are advisory only. No model has physically verified Tank calibration, and core V5 app production inference remains unchanged.",
+  "disclaimer": "57+1 Python tests and Java 598 assertions are software checks; V6 instant overlay compiles in Android merged application but runtime on phone not tested, session/report consumers pending; Tank G3 remains zero.",
   "stage_count": 12,
   "stages": [
     {
@@ -121,16 +121,15 @@
         "database_migration_plan.md"
       ],
       "gate": "REPLAY_AND_MIGRATION_TESTS_DEFINED",
-      "status": "IN_PROGRESS_JAVA_R0_GATE_AND_CONSENSUS_KERNEL_COMPILED_NOT_WIRED",
-      "actual_commit": "0eb56670339d93057c27ec3a96f1e8affe39c76c",
-      "ci_run": 40912404109,
+      "status": "ANDROID_ONE_SHOT_RESEARCH_JSON_ADAPTER_COMPILED_OTHER_CONSUMERS_PENDING",
+      "actual_commit": "79132d0eb7bc6df61ba0c4218157ce3a501a915a",
+      "ci_run": "40924139634",
       "verified_on": "2026-10-29",
       "blockers": [
-        "Java source gate not connected to current ChemCore inference path",
-        "Actual V5 session replay and Android Gradle compilation not yet run",
-        "G3 registry not implemented; M4 request always denied"
+        "No live Android 12 device test or visual UI verification",
+        "Approved session/report database adapter still pending"
       ],
-      "next_action": "Map typed ChemCoreEvidenceObservation provenance to V6 evidence; integration tests must precede enabling ranking"
+      "next_action": "Extend research JSON presentation to lab UI, then sessions and reports without changing accepted V5 outputs"
     },
     {
       "id": "P04",
@@ -206,15 +205,15 @@
         "source_R0_compatibility_gates.json"
       ],
       "gate": "DOMAIN_AND_R0_GATES_AND_COMPARATIVE_RESULTS",
-      "status": "RESEARCH_CURVE_REGISTRY_43_OF_43_JDK_PASS_NOT_ANDROID_RUNTIME_WIRED",
-      "actual_commit": "e5e576b93b9bbde6c24bdbe6dc31d619c2c7db52",
-      "ci_run": "40923146562",
+      "status": "ALL_43_SOURCE_CURVES_INCLUDED_ANDROID_OVERLAY_COMPILE_PASS",
+      "actual_commit": "0db9470329466490653cd1c1ab13f2fbbf8da038",
+      "ci_run": "40924315634",
       "verified_on": null,
       "blockers": [
-        "No active Android inference wiring; registry and source math tested on JVM only",
-        "Per-source physical validation not yet established, but no longer blocks research calculations"
+        "Additional manufacturer and Stable source variants not yet imported into V6 registry",
+        "No real-device gas benchmark or cross-source field calibration"
       ],
-      "next_action": "Connect research-only 43-curve registry to V6 chemCore diagnostics with nonblocking source caveats, compare with V5"
+      "next_action": "Extend inclusive source registry beyond 43 to Stable 49, manufacturer/legacy curves and fingerprint sources, preserve alternative source roots"
     },
     {
       "id": "P07",
@@ -280,12 +279,15 @@
         "historical_prior_source_display_tests.json"
       ],
       "gate": "CI_GRADLE_AND_ANDROID_DEVICE_ACCEPTANCE",
-      "status": "NOT_STARTED",
-      "actual_commit": null,
-      "ci_run": null,
+      "status": "PARTIAL_ANDROID_COMPILE_PASS_INSTANT_RESEARCH_SHADOW_ONLY",
+      "actual_commit": "79132d0eb7bc6df61ba0c4218157ce3a501a915a",
+      "ci_run": "40924139634",
       "verified_on": null,
-      "blockers": [],
-      "next_action": null
+      "blockers": [
+        "Only compileDebugJavaWithJavac passed; Gradle JUnit/device/field reports not fully tested",
+        "No V6 APK produced or signed"
+      ],
+      "next_action": "Check Android 12 UI, instantaneous report, approved field sessions, PDF/Excel outputs, R0 and all command/control regressions; later APK"
     },
     {
       "id": "P10",
@@ -344,7 +346,7 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "P06_43_CURVES_RESEARCH_OPEN_P08_ALL_FINITE_CANDIDATES_RANKED_CI_PASS_NO_ANDROID_RUNTIME",
+  "state": "P06_RESEARCH_ALL_43_P03_ANDROID_ONE_SHOT_WIRED_GRADLE_COMPILE_PASS_P09_PARTIAL",
   "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
   "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
   "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
@@ -437,6 +439,30 @@
       "physical_Tank_G3": 0,
       "APK_v6": "NOT_BUILT",
       "artifact_id": 12919626294
+    },
+    {
+      "run_id": 40924315634,
+      "status": "COMPLETED_SUCCESS",
+      "python_unit_tests": 58,
+      "java_assertions_total": 598,
+      "jdk_breakdown": {
+        "R0": 31,
+        "consensus": 40,
+        "curve_math": 15,
+        "curve_registry": 328,
+        "instant_overlay": 184
+      },
+      "artifact_id": 12919122845,
+      "notes": "Includes source-to-Java numeric coefficient parity all 43"
+    },
+    {
+      "run_id": 40924139634,
+      "status": "COMPLETED_SUCCESS",
+      "scope": "ANDROID_APP_JAVA_COMPILATION_ONLY",
+      "head_sha": "5edb3d4c6e9bea46935bc128377e884855761740",
+      "source_baseline": "6281d3eb7c1c961ce63b0b5e4ae0792874626720",
+      "APK": "NOT_BUILT",
+      "Tank_G3": 0
     }
   ],
   "external_real_pilots": [
@@ -464,7 +490,7 @@
     }
   ],
   "scientific_checkpoint": "docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md",
-  "current_phase": "P01_P03_P04_P05_AND_P08_PROTOTYPE_ACTIVE",
+  "current_phase": "P03_P05_P06_P08_P09_IN_PROGRESS_RESEARCH_ONLY",
   "scientific_checkpoint_02": "docs/implementation/V6-CHEMCORE-CHECKPOINT-02-2026-10-29_AR.md",
   "scientific_checkpoint_03": "docs/implementation/V6-CHEMCORE-CHECKPOINT-03-2026-10-29_AR.md",
   "deferred_extensions": [
@@ -505,5 +531,17 @@
     "source_dataset_roots": 1,
     "heuristic_candidate_thresholds_used_for_exclusion": false,
     "only_nonfinite_or_undefined_math_excluded": true
+  },
+  "checkpoint_04": "docs/implementation/V6-CHEMCORE-CHECKPOINT-04-2026-10-29_AR.md",
+  "research_one_shot_overlay": {
+    "key": "v6_all_reference_curves_research",
+    "entry_point": "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java",
+    "source_curves": 43,
+    "consumer": "ONE_SHOT_JSON_INSTANT",
+    "replaces_V5_candidates": false,
+    "modifies_firmware": false,
+    "status": "ANDROID_GRADLE_COMPILE_PASS_DEVICE_TEST_PENDING",
+    "scientific_CI_run_id": 40924315634,
+    "Android_compile_run_id": 40924139634
   }
 }
