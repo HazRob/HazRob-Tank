@@ -114,3 +114,18 @@
 - **CI:** `40923146562`, head `1417beecfbcd9ec9a08b2b884f06ab22791d34f4`, **success** with **57 Python unit cases and 414 JVM assertions** (R0=31, consensus=40, math=15, registry=328). Artifact `12919626294`.
 - **Scientific classification:** numeric estimates remain research estimates; physical G3=0/80, V6 APK not built, V5 production active inference unchanged.
 - **Resumption:** `docs/research/V6-002-INCLUSIVE-ANALYTICS-POLICY-2026-10-29_AR.md` and machine tracker, then P03/P06 Android research integration and source data experiments.
+
+## 2026-10-29 — Clean-slate architecture approved: new ChemCore Tank V6, not an extension
+
+- **Owner correction:** ChemCore Tank on app V6 is a completely **new** analytical engine. Previous engine logic, source code, decisions or result-envelope semantics are no longer the architecture baseline. Scientific curves and experimental research datasets are still available as independent literature evidence.
+- **Reverted experimental attachment in existing Android analyzer:** `TankInstantAnalyzer.java` restored exactly to pre-experiment Git blob `a24b8e7e433e24565adb400cc3f605cfd02ac3df`, code commit `8ed61a4bec10b543208185e743e964be8fd1de08`.
+- **New package / independent inference:** `com.hazrob.tank.chemcore.v6`.
+  - `SourceCatalog.java` commit `aa74ce279b1fd5e4d77cdfc73ec039ae9cc3eaa1`, all 43 MQ curve coefficients pinned to source blob `bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1`.
+  - `Engine.java` commit `45262cb04d3ebecd6595027befc66a707adca17e`, then raw Rs preservation `4d242cd5004167959c823d367e2d351fba921d80` (absent R0 no longer drops valid raw Rs).
+  - New regression tests `NewChemCoreTankV6EngineTest.java` and `test_independent_v6_catalog_parity.py`; no source imports from earlier ChemCore packages, no Android dependency for the pure kernel.
+- **Engine semantics:** converts eligible Rs and R0 into source-specific log-ratio, computes all mathematically valid source inversions and multi-sensor least-squares candidates. All output rankings/fit PPM are **research estimates**. Missing R0 results in retained raw observation, no fabricated ppm. No arbitrary source/heater/threshold exclusions. Synthetic CO example at 200 ppm is algebraic fixture, not real gas calibration.
+- **JDK CI:** [run 40925694019](https://github.com/HazRob/HazRob-Tank/actions/runs/40925694019) **success**, 59 Java assertions and 3 Python parity/independence tests.
+- **Android full Java compilation:** [run 40925657334](https://github.com/HazRob/HazRob-Tank/actions/runs/40925657334) **success**, source-compatible with frozen Tank Android overlay. This is not full UI/app/physical test and did not create an APK.
+- **Architecture ADR authoritative:** `docs/architecture/CHEMCORE-TANK-V6-CLEAN-SLATE-ADR-2026-10-29_AR.md` (commit `ac772ef040ebfc823a738c4cd87a47001edf56db`), the master plan has been amended to supersede earlier attempts to attach V6 as a supplementary output.
+- **Resumption:** `docs/implementation/V6-CHEMCORE-EXECUTION-TRACKER.json` contains V6-N01..N07 independent milestones. Proceed with V6-N02 literature/fingerprint/baseline sources and V6-N03 analytical technique adapters; no automatic re-activation of startup-heater technique; no previous inference engine coupling.
+- **Remaining:** new V6 Android input adapter, view/reports/session integration, cross-source validation and actual Tank G3 exposures. `APK_NOT_BUILT; G3=0/80`.
