@@ -17,14 +17,14 @@ import java.util.Set;
  * Evidence from the same physical sensor is counted once per candidate; distinct source
  * curves sharing a sensor may introduce a conflict, but never an extra measurement.
  * Source lineage groups and sensor breadth are separately reported. This class never
- * asserts a gas identity or creates reportable ppm. Current acceptance thresholds
- * are conservative engineering screens, NOT validated sensitivity.
+ * asserts a gas identity or creates reportable ppm. V6 inclusive policy retains
+ * every mathematically valid observation, even with incomplete source metadata,
+ * low match, one sensor, out-of-domain source, or conflicting research curves.
  */
 public final class TankV6EvidenceConsensus {
-    public static final String SCHEMA="tank-v6-evidence-consensus/1";
+    public static final String SCHEMA="tank-v6-evidence-consensus/2";
     public static final String SCORE_SEMANTICS="relative_pattern_match_index_not_probability";
-    public static final double MIN_MATCH=0.55, MIN_MARGIN=0.10, SOURCE_CONFLICT_DELTA=0.35;
-    public static final int MIN_SENSOR_BREADTH=2;
+    public static final double SOURCE_CONFLICT_DELTA=0.35; // advisory only
     private TankV6EvidenceConsensus(){}
 
     public enum Outcome { INSUFFICIENT_EVIDENCE, SOURCE_CONFLICT, AMBIGUOUS,
@@ -42,10 +42,18 @@ public final class TankV6EvidenceConsensus {
             inSourceDomain=inDomain;
         }
         private boolean eligible() {
-            return candidateUid>0 && !sensorInstance.isEmpty() && !originRootId.isEmpty()
-                && !modelId.isEmpty() && inSourceDomain
-                && Double.isFinite(matchIndex) && matchIndex>=0 && matchIndex<=1
-                && Double.isFinite(qualityWeight) && qualityWeight>0 && qualityWeight<=1;
+            // Only corrupt or mathematically undefined normalized numeric fields
+            // are dropped. Missing source labels and out-of-domain evidence remain.
+            return candidateUid>0 &&
+                Double.isFinite(matchIndex) && matchIndex>=0 && matchIndex<=1 &&
+                Double.isFinite(qualityWeight) && qualityWeight>0 && qualityWeight<=1;
+        }
+        private Evidence normalized() {
+            return new Evidence(candidateUid,
+                sensorInstance.isEmpty()?"sensor_unattributed":sensorInstance,
+                originRootId.isEmpty()?"source_unattributed":originRootId,
+                modelId.isEmpty()?"model_unattributed":modelId,
+                matchIndex,qualityWeight,inSourceDomain);
         }
     }
 
@@ -53,12 +61,14 @@ public final class TankV6EvidenceConsensus {
         public final long candidateUid;
         public final double matchIndex;
         public final int physicalSensorBreadth, independentSourceRoots;
-        public final boolean conflictingSourceModels;
+        public final boolean conflictingSourceModels, hasOutsideSourceDomain, missingProvenance;
         public final List<String> sourceRoots, physicalSensors;
         private CandidateResult(long uid,double match,int sensors,int roots,boolean conflict,
+                                boolean outside,boolean unattributed,
                                 Set<String> lineage,Set<String> sensorIds){
             candidateUid=uid;matchIndex=match;physicalSensorBreadth=sensors;
             independentSourceRoots=roots;conflictingSourceModels=conflict;
+            hasOutsideSourceDomain=outside;missingProvenance=unattributed;
             sourceRoots=Collections.unmodifiableList(new ArrayList<>(lineage));
             physicalSensors=Collections.unmodifiableList(new ArrayList<>(sensorIds));
         }
@@ -93,8 +103,9 @@ public final class TankV6EvidenceConsensus {
 
     /**
      * Deduplicate (candidate, physical sensor, scientific root) model variants,
-     * then aggregate at most one term per physical sensor. Source disagreements
-     * force abstention of the top candidate. Score is NOT a calibrated probability.
+     * then aggregate at most one term per physical sensor. Source disagreements,
+     * absent source identifiers, single-channel evidence and low scores are visible
+     * diagnostics, never exclusion rules. Score is not a calibrated probability.
      */
     public static Decision fuse(List<Evidence> observations){
         Map<Long,Map<String,Map<String,Evidence>>> byCandidate=new LinkedHashMap<>();
@@ -102,21 +113,26 @@ public final class TankV6EvidenceConsensus {
         if(observations!=null)for(Evidence e:observations){
             if(e==null || !e.eligible()){rejected++;continue;}
             accepted++;
-            Map<String,Map<String,Evidence>> sensors=byCandidate.computeIfAbsent(e.candidateUid,k->new LinkedHashMap<>());
-            Map<String,Evidence> roots=sensors.computeIfAbsent(e.sensorInstance,k->new LinkedHashMap<>());
-            Evidence prior=roots.get(e.originRootId);
-            if(prior==null||preferred(e,prior))roots.put(e.originRootId,e);
+            Evidence observed=e.normalized();
+            Map<String,Map<String,Evidence>> sensors=byCandidate.computeIfAbsent(observed.candidateUid,k->new LinkedHashMap<>());
+            Map<String,Evidence> roots=sensors.computeIfAbsent(observed.sensorInstance,k->new LinkedHashMap<>());
+            Evidence prior=roots.get(observed.originRootId);
+            if(prior==null||preferred(observed,prior))roots.put(observed.originRootId,observed);
         }
         List<CandidateResult> candidates=new ArrayList<>();
         for(Map.Entry<Long,Map<String,Map<String,Evidence>>> candidate:byCandidate.entrySet()){
             double weightedSum=0,totalWeight=0;
             Set<String> lineage=new LinkedHashSet<>(),sensors=new LinkedHashSet<>();
-            boolean conflict=false;
+            boolean conflict=false,outside=false,unattributed=false;
             for(Map.Entry<String,Map<String,Evidence>> channel:candidate.getValue().entrySet()){
                 Evidence winner=null;double min=Double.POSITIVE_INFINITY,max=Double.NEGATIVE_INFINITY;
                 for(Evidence option:channel.getValue().values()){
                     if(winner==null||preferred(option,winner))winner=option;
                     min=Math.min(min,option.matchIndex);max=Math.max(max,option.matchIndex);
+                    if(!option.inSourceDomain)outside=true;
+                    if("source_unattributed".equals(option.originRootId)||
+                       "sensor_unattributed".equals(option.sensorInstance)||
+                       "model_unattributed".equals(option.modelId))unattributed=true;
                 }
                 if(winner==null)continue;
                 if(channel.getValue().size()>1 && max-min>SOURCE_CONFLICT_DELTA)conflict=true;
@@ -125,22 +141,17 @@ public final class TankV6EvidenceConsensus {
                 totalWeight+=winner.qualityWeight;
             }
             if(totalWeight>0)candidates.add(new CandidateResult(candidate.getKey(),
-                    weightedSum/totalWeight,sensors.size(),lineage.size(),conflict,lineage,sensors));
+                    weightedSum/totalWeight,sensors.size(),lineage.size(),
+                    conflict,outside,unattributed,lineage,sensors));
         }
         candidates.sort(Comparator.comparingDouble((CandidateResult c)->c.matchIndex).reversed()
                 .thenComparingLong(c->c.candidateUid));
         if(candidates.isEmpty())return new Decision(Outcome.INSUFFICIENT_EVIDENCE,
                 "NO_SOURCE_QUALIFIED_EVIDENCE",candidates,rejected,accepted);
-        CandidateResult top=candidates.get(0);
-        if(top.physicalSensorBreadth<MIN_SENSOR_BREADTH)
-            return new Decision(Outcome.INSUFFICIENT_EVIDENCE,"LESS_THAN_TWO_PHYSICAL_SENSORS",candidates,rejected,accepted);
-        if(top.conflictingSourceModels)
-            return new Decision(Outcome.SOURCE_CONFLICT,"CONTRADICTORY_SOURCE_CURVES",candidates,rejected,accepted);
-        if(top.matchIndex<MIN_MATCH)
-            return new Decision(Outcome.UNKNOWN_OR_OUTSIDE_RESEARCH_DOMAIN,
-                "ALL_CANDIDATES_BELOW_RESEARCH_MATCH_SCREEN",candidates,rejected,accepted);
-        if(candidates.size()>1 && top.matchIndex-candidates.get(1).matchIndex<MIN_MARGIN)
-            return new Decision(Outcome.AMBIGUOUS,"LOW_MARGIN_BETWEEN_TOP_CANDIDATES",candidates,rejected,accepted);
-        return new Decision(Outcome.RESEARCH_SCREENING,"RESEARCH_ONLY_NOT_CALIBRATED_IDENTITY",candidates,rejected,accepted);
+        // Do not suppress findings because of a research policy threshold.
+        // Every finite normalized observation remains visible in candidate ranking.
+        return new Decision(Outcome.RESEARCH_SCREENING,
+            "ALL_NUMERICALLY_VALID_EVIDENCE_INCLUDED_WITH_ADVISORIES_NOT_CALIBRATED_IDENTITY",
+            candidates,rejected,accepted);
     }
 }
