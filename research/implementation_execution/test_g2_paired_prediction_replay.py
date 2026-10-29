@@ -1,4 +1,5 @@
 """Synthetic post-blind pairing controls; NOT original physical measurements."""
+import csv
 import hashlib
 import json
 import tempfile
@@ -185,6 +186,82 @@ class PairedPredictionReplayTests(unittest.TestCase):
                          [2, -2])
         self.assertEqual(result["paired_model_only_correct"], 2)
         self.assertEqual(result["paired_baseline_only_correct"], 2)
+
+    def test_full_semantic_digest_tracks_optional_source_provenance(self):
+        pred_header = PRED_HEADER.rstrip("\n") + ",session_id\n"
+        metrics_header = METRIC_HEADER.rstrip("\n") + ",reference_trace_id\n"
+        pred = "".join(line.rstrip("\n") + ",session-A\n"
+                       for line in PRED_ROWS.splitlines(keepends=True))
+        metrics = "".join(line.rstrip("\n") + ",ref-A\n"
+                          for line in METRIC_ROWS.splitlines(keepends=True))
+        self.write(pred=pred, metrics=metrics, pred_header=pred_header,
+                   metrics_header=metrics_header)
+        original = self.replay()
+        self.pred.write_text(
+            self.pred.read_text(encoding="utf-8").replace(
+                "session-A", "session-B", 1), encoding="utf-8")
+        altered_prediction = self.replay()
+        self.assertEqual(original["prediction_rows_semantic_sha256"],
+                         altered_prediction["prediction_rows_semantic_sha256"])
+        self.assertNotEqual(original["prediction_full_rows_semantic_sha256"],
+                            altered_prediction["prediction_full_rows_semantic_sha256"])
+        self.assertEqual(original["metrics_full_rows_semantic_sha256"],
+                         altered_prediction["metrics_full_rows_semantic_sha256"])
+        self.metrics.write_text(
+            self.metrics.read_text(encoding="utf-8").replace(
+                "ref-A", "ref-B", 1), encoding="utf-8")
+        altered_metric = self.replay()
+        self.assertNotEqual(altered_prediction["metrics_full_rows_semantic_sha256"],
+                            altered_metric["metrics_full_rows_semantic_sha256"])
+        self.assertIn("NOT_AUTHENTICATION", original["full_row_digest_scope"])
+
+    def test_full_semantic_digest_is_row_and_column_order_invariant(self):
+        original = self.replay()
+        for path in (self.pred, self.metrics):
+            with path.open("r", newline="", encoding="utf-8") as handle:
+                reader = csv.DictReader(handle)
+                fields = list(reader.fieldnames)
+                rows = list(reader)
+            with path.open("w", newline="", encoding="utf-8") as handle:
+                writer = csv.DictWriter(handle, fieldnames=list(reversed(fields)))
+                writer.writeheader()
+                writer.writerows(reversed(rows))
+        reordered = self.replay()
+        for field in ("prediction_full_rows_semantic_sha256",
+                      "metrics_full_rows_semantic_sha256",
+                      "prediction_rows_semantic_sha256",
+                      "observed_delta"):
+            self.assertEqual(original[field], reordered[field])
+        self.assertNotEqual(original["predictions_csv_sha256"],
+                            reordered["predictions_csv_sha256"])
+
+    def test_full_semantic_digest_catches_optional_blank_to_value(self):
+        pred_header = PRED_HEADER.rstrip("\n") + ",device_id\n"
+        pred = "".join(line.rstrip("\n") + ",\n"
+                       for line in PRED_ROWS.splitlines(keepends=True))
+        self.write(pred=pred, pred_header=pred_header)
+        original = self.replay()
+        self.pred.write_text(
+            self.pred.read_text(encoding="utf-8").replace(
+                "e1,a,A,A,B,\n", "e1,a,A,A,B,device-1\n"),
+            encoding="utf-8")
+        changed = self.replay()
+        self.assertEqual(original["prediction_rows_semantic_sha256"],
+                         changed["prediction_rows_semantic_sha256"])
+        self.assertNotEqual(original["prediction_full_rows_semantic_sha256"],
+                            changed["prediction_full_rows_semantic_sha256"])
+
+    def test_full_semantic_digest_tracks_added_metadata_column(self):
+        original = self.replay()
+        self.write(
+            pred_header=PRED_HEADER.rstrip("\n") + ",source_sha256\n",
+            pred="".join(line.rstrip("\n") + ",unverified\n"
+                         for line in PRED_ROWS.splitlines(keepends=True)))
+        altered = self.replay()
+        self.assertEqual(original["prediction_rows_semantic_sha256"],
+                         altered["prediction_rows_semantic_sha256"])
+        self.assertNotEqual(original["prediction_full_rows_semantic_sha256"],
+                            altered["prediction_full_rows_semantic_sha256"])
 
     def test_invalid_protocol_rejected_by_shared_cluster_kernel(self):
         with self.assertRaisesRegex(ValueError, "PROTOCOL_INVALID"):
