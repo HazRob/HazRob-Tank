@@ -31,7 +31,7 @@
     "library_reference_records": 80,
     "independent_Tank_G3_validated_techniques": 0
   },
-  "disclaimer": "50 Python test cases and 64 JDK assertions are software verification; neither UCI historical report audit nor 8 synthetic SIM-B establishes device gas detection/ppm/M4. Android V6 production inference unchanged.",
+  "disclaimer": "50 Python/79 Java assertions prove software checks. P06 Java math is a detached research-only kernel: original source definitions, Android integration and device calibration remain unverified.",
   "stage_count": 12,
   "stages": [
     {
@@ -206,12 +206,17 @@
         "source_R0_compatibility_gates.json"
       ],
       "gate": "DOMAIN_AND_R0_GATES_AND_COMPARATIVE_RESULTS",
-      "status": "NOT_STARTED",
-      "actual_commit": null,
-      "ci_run": null,
+      "status": "SOURCE_CURVE_JAVA_MATH_JDK_TESTED_NOT_STABLE_INTEGRATED",
+      "actual_commit": "85ee3934b620dc58a737a485316d3ae17d74699d",
+      "ci_run": "40917593589",
       "verified_on": null,
-      "blockers": [],
-      "next_action": null
+      "blockers": [
+        "Original source R0 definition/ratio_direction not verified per individual curve on actual Tank",
+        "Source curve lineage dedup across MQDataScience, manufacturer and Stable still pending",
+        "No device RL/Vc/heater measurements",
+        "Not yet connected to TankInstantAnalyzer or field sessions"
+      ],
+      "next_action": "Build curated SourceCurveRegistryV6 with source and R0 definition provenance; test real Stable import parity before activating Android runtime"
     },
     {
       "id": "P07",
@@ -342,7 +347,7 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "SECOND_IMPLEMENTATION_BATCH_VERIFIED_JDK_CONSENSUS_G2_ARCHIVAL_SIM_B_NO_ANDROID_ACTIVE_FUSION",
+  "state": "CHECKPOINT03_P06_JAVA_NUMERICAL_KERNEL_PASS_NO_ANDROID_ACTIVE_ENGINE_OR_G3",
   "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
   "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
   "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
@@ -400,6 +405,23 @@
       "original_archive_raw_reexecution_for_270_308_309": false,
       "artifact_id": 12915184303,
       "G3_Tank_validations": 0
+    },
+    {
+      "run_id": 40917593589,
+      "head_sha": "1e52e2f7605b2ef7de5555ffea78ca402ed101cc",
+      "status": "COMPLETED_SUCCESS",
+      "python_tests_passed": 50,
+      "jdk_contract_assertions": 31,
+      "jdk_consensus_assertions": 33,
+      "jdk_curve_kernel_assertions": 15,
+      "java_assertions_total": 79,
+      "source_curve_roundtrips": 387,
+      "synthetic_R0_cases": 172,
+      "synthetic_simB": 8,
+      "artifact_id": 12916292465,
+      "Android_Gradle_tests": "NOT_RUN",
+      "APK": "NOT_BUILT",
+      "Tank_G3": 0
     }
   ],
   "external_real_pilots": [
@@ -428,5 +450,6 @@
   ],
   "scientific_checkpoint": "docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md",
   "current_phase": "P01_P03_P04_P05_AND_P08_PROTOTYPE_ACTIVE",
-  "scientific_checkpoint_02": "docs/implementation/V6-CHEMCORE-CHECKPOINT-02-2026-10-29_AR.md"
+  "scientific_checkpoint_02": "docs/implementation/V6-CHEMCORE-CHECKPOINT-02-2026-10-29_AR.md",
+  "scientific_checkpoint_03": "docs/implementation/V6-CHEMCORE-CHECKPOINT-03-2026-10-29_AR.md"
 }
