@@ -4,8 +4,8 @@
   "scoping": "NEW independent com.hazrob.tank.chemcore.v6 package; food freshness and prior inference code excluded",
   "counts": {
     "total": 80,
-    "partial": 54,
-    "not_yet_ported": 26,
+    "partial": 64,
+    "not_yet_ported": 16,
     "fully_implemented_and_device_validated": 0
   },
   "available_numerical_references": {
@@ -710,10 +710,12 @@
       "id": "08.5",
       "name": "Temporal ensemble",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Weighted source-window class-score average. Temporal windows may be correlated; does not calibrate class posterior or independent evidence. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "08.6",
@@ -730,10 +732,12 @@
       "id": "08.7",
       "name": "Sim-to-real",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Source-paired simulated-vs-measured difference, signed bias and per-feature RMSE. Caller must supply genuine paired measurements; no simulation-to-Tank transfer demonstrated. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "08.8",
@@ -750,19 +754,23 @@
       "id": "08.9",
       "name": "Unmixing",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Nonnegative coordinate descent on arbitrary source prototype matrix with residual. Multiplicity and coefficients do not establish a chemical mixture. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "08.10",
       "name": "Multi-analyte regression",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Training-only feature-selected single-predictor ridge regressions for several source response targets; not full multivariate or calibrated mixture quantification. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "08.11",
@@ -779,55 +787,67 @@
       "id": "08.12",
       "name": "Complex products",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Linear source-profile additive expectation and measured residuals under caller-supplied coefficients; not complex-product chemical recognition. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "09.1",
       "name": "Robotic olfaction",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Time-ordered immutable raw pose/response trace with source measurement IDs. No device localization validation or drive actuation. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "09.2",
       "name": "Gas mapping",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Inverse-distance-weighted interpolation of source sensor RESPONSE with defined radius and exponent; not a ppm field map. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "09.3",
       "name": "Source localization",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Positive-response weighted centroid and recorded peak ID; not proven physical gas source position. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "09.4",
       "name": "Active sampling",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Geometric farthest-point sampling proposal across supplied site candidates; never dispatches navigation or robot drive commands. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "09.5",
       "name": "Spatiotemporal fusion",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalSpatialResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "V6-N03-E research-only source mathematics. Gaussian spatiotemporal kernel weighting of original pose/time source responses; no physical dispersion model or ppm. Original numeric/synthetic JDK regression cases; 47 assertions across ten operations, independent CI 40954841693 SUCCESS. Android compile-only CI 40954696816 PASS, food/gas separation CI 40954696500 PASS. No Tank physical G3, device field study, ppm or UI deployment."
     },
     {
       "id": "09.6",
@@ -973,5 +993,5 @@
       "Source datasets and sensor feature spaces remain distinct"
     ]
   },
-  "last_checkpoint": "N05 original UCI1081 Java benchmark CI 40952186046 success, 24 folds/720 source predictions; N03-D ten PARTIAL research methods: independent JDK CI 40952792580 success, 44 assertions new, 1968 total; Android compile-only success 40952676989; Tank G3 0/80, no APK."
+  "last_checkpoint": "V6 Checkpoint10 N03-E source-only temporal/spatial 10 partial implementations + 47 JDK assertions; 2015 total JDK CI SUCCESS 40954841693; Android compilation PASS 40954696816; gas/food isolation PASS 40954696500; 64 partial /16 unported / G3 0/80 / no APK."
 }
