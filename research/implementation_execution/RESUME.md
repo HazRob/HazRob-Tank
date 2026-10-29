@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 nonfinite exponent fail-closed publication (313/313 CI)
+
+- Resumed from research HEAD `a327c32bcb8371392e82eb43cf6703bd79807db0`; central catalogue pinned blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries, 14 datasets), source matrix blob `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (0/14 review-ready), independent evidence `records: []`.
+- Fixed Python JSON overflow gap at publication boundary: `parse_constant` rejected NaN/Infinity but not `1e999` parsed as infinite float. Added finite-number parse hook and two regression tests covering invalid exponents/constants and a valid scientific-notation control.
+- Code SHA `d8546fe733071c5c41401fe32ce71aa1c5489f27`; test SHA `60a92b7a2e93b305312e5d814578a161bf876373`. [G2 Actions #40823133117](https://github.com/HazRob/HazRob-Tank/actions/runs/40823133117), job `123279939990`: **313/313 PASS**, publication replay PASS, artifact `12875681362` (ZIP SHA256 `ddc9ca0edbc95c058e136cb4386bf6670b03818d2ca2a25512b0a3e9be03ee97`). Audit `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Research-only Python guard/tests and documentation; no Stable, Android or firmware changes. No scientific G2/G3 promotion. See `G2_PUBLICATION_NONFINITE_EXPONENT_FAIL_CLOSED_2026-10-29_AR.md`.
+- Next: verify final documentation checkpoint CI. Acquire original independently measured physical exposures, traceable ppm references, device/session/exposure IDs and preregistered grouped blind holdouts.
+
+---
+
 ## 2026-10-29 — G2 independent controlling-input publication replay (311/311 CI)
 
 - Resumed from research HEAD `8edc69702a72d09742fb0c1dfb752085d93b7d81` (20/20 previous CI successes); verified central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references/14 datasets), pinned source matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (0/14 ready), independent evidence `records: []`.
