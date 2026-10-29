@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 NFKC compatibility aliases for physical holdout IDs (319/319 CI)
+
+- Resumed from `6af9fe99f45a0091f07cb71a80efc8d3bb3f17da`; previous G2 CI succeeded. Re-read central catalog `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json`, blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries, 14 external datasets). Independent evidence remains `records=[]`; source readiness 0/14.
+- Found a holdout identity ambiguity: NFC-only validation accepted Unicode compatibility aliases (fullwidth Latin, circled/superscript digits, ligatures). `g2_evidence_audit.py` now requires NFKC-stable IDs for train/calibration/test partitions, failing closed with `NONCANONICAL_PHYSICAL_GROUP_ID`. Canonical ASCII, NFC Arabic and accented Latin controls remain accepted.
+- Code SHA `2ec69c5cb3f5245d614c907bd4d5e66d86d54234`; tests SHA `cff33c767f4d8d534ceead8c52a720c4f0fa57ac`. [G2 CI #40834996094](https://github.com/HazRob/HazRob-Tank/actions/runs/40834996094), job `123317591771`: **319/319 PASS**, 80-technique audit 0 candidates / 80 blocked, double replay and publication guard PASS, artifact `12879788085`.
+- Documentation: `G2_NFKC_PHYSICAL_GROUP_ALIAS_FAIL_CLOSED_2026-10-29_AR.md`. Research branch only; no ChemCore Stable, Android or firmware changes. No G2/G3 scientific promotion. The controls are synthetic, not independent gas measurements.
+- Next: check final documentation checkpoint CI; obtain original independently measured raw exposures, traceable concentration references, device/session/exposure IDs and preregistered grouped blind holdouts.
+
+---
+
 ## 2026-10-29 — G2 canonical physical group IDs at evidence-register entry (317/317 CI)
 
 - Resumed from `775285129d00399f48dc7b81e85ccd6c09d602cb`; confirmed all 20 previous CI runs successful. Central catalogue current blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries, 14 external measurement datasets); independent evidence `records: []`; pinned source readiness 0/14.
