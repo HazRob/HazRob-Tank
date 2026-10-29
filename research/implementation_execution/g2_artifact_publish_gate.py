@@ -3,7 +3,9 @@ import argparse
 from collections import Counter
 import hashlib
 import json
+import re
 from pathlib import Path
+from g2_acquisition_triage import SOURCE_ACTIONS, CAVEAT
 
 def _strict(path):
     def unique(pairs):
@@ -105,6 +107,31 @@ def verify_publication(audit_path, triage_path, manifest_path):
     if (triage.get("technique_blocker_counts") != dict(technique_counts)
             or triage.get("source_blocker_counts") != dict(source_counts)):
         raise ValueError("G2_PUBLISH_BLOCKER_FREQUENCY_MISMATCH")
+    # Acquisition instructions are operational evidence-collection guidance.
+    # A rehashed report must not silently change or omit them while preserving
+    # its source blocker totals. Reject unknown source blocker labels as well.
+    if set(source_counts) - set(SOURCE_ACTIONS):
+        raise ValueError("G2_PUBLISH_UNKNOWN_SOURCE_BLOCKER")
+    expected_actions = [
+        {"blocker": key, "affected_sources": source_counts[key],
+         "action": SOURCE_ACTIONS[key]}
+        for key in SOURCE_ACTIONS if source_counts[key]
+    ]
+    if triage.get("acquisition_actions") != expected_actions:
+        raise ValueError("G2_PUBLISH_ACQUISITION_ACTION_MISMATCH")
+    if triage.get("caveat") != CAVEAT:
+        raise ValueError("G2_PUBLISH_SCIENTIFIC_CAVEAT_MISMATCH")
+    # The manifest hashes the output files; these five digests identify the
+    # controlling input bytes. This boundary validates shape and audit binding,
+    # not the physical authenticity of the referenced measurements.
+    lineage = triage["input_sha256"]
+    required = {"audit", "source_matrix", "ledger",
+                "independent_evidence", "canonical_registry"}
+    if (set(lineage) != required or
+            any(not isinstance(value, str) or
+                re.fullmatch(r"[0-9a-f]{64}", value) is None
+                for value in lineage.values())):
+        raise ValueError("G2_PUBLISH_INPUT_DIGEST_SET_INVALID")
     return {"g2_blocked": blocked, "g2_pass_candidates": candidates,
             "source_blocked": source_blocked}
 
