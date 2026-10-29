@@ -61,6 +61,8 @@ public final class FoodFreshnessTab {
     private boolean capturing=false;
     private long started=0,lastAccept=0,frozenElapsed=0;
     private int snapshots=0;
+    private double tempSum=0,humiditySum=0,finalTemperature=Double.NaN,finalHumidity=Double.NaN;
+    private int tempCount=0,humidityCount=0;
     private String reportId="";
     private FoodFreshnessEngine.Result completed;
     private BeefResearchEngine.Result meatCompleted;
@@ -157,6 +159,8 @@ public final class FoodFreshnessTab {
         capturing=true;completed=null;meatCompleted=null;frozenReadings=null;reportId="";
         sum.clear();counts.clear();lastCycle.clear();signalHistory.clear();
         snapshots=0;started=SystemClock.elapsedRealtime();lastAccept=0;frozenElapsed=0;
+        tempSum=humiditySum=0;tempCount=humidityCount=0;
+        finalTemperature=finalHumidity=Double.NaN;
         progress.setProgress(0);
         start.setEnabled(false);finish.setEnabled(true);export.setEnabled(false);
         foodChoice.setEnabled(false);modeChoice.setEnabled(false);
@@ -190,7 +194,18 @@ public final class FoodFreshnessTab {
                         .add(new PlotPoint(elapsed/1000.0,rs));
                     accepted++;
                 }
-                if(accepted>0){snapshots++;signalGraph.invalidate();}
+                if(accepted>0){
+                    // The beef source study also recorded T/RH. Use existing
+                    // BME280 context, no extra telemetry request to ESP32.
+                    JSONObject env=snapshot.optJSONObject("env");
+                    if(env!=null&&env.optBoolean("ok",true)){
+                        double temp=env.optDouble("t",env.optDouble("temperature",Double.NaN));
+                        double rh=env.optDouble("h",env.optDouble("humidity",Double.NaN));
+                        if(Double.isFinite(temp)){tempSum+=temp;tempCount++;}
+                        if(Double.isFinite(rh)){humiditySum+=rh;humidityCount++;}
+                    }
+                    snapshots++;signalGraph.invalidate();
+                }
             }
             lastAccept=now;
         }
@@ -214,6 +229,8 @@ public final class FoodFreshnessTab {
         finish.setEnabled(false);start.setEnabled(true);
         foodChoice.setEnabled(true);modeChoice.setEnabled(true);
         frozenReadings=averaged();
+        finalTemperature=tempCount>0?tempSum/tempCount:Double.NaN;
+        finalHumidity=humidityCount>0?humiditySum/humidityCount:Double.NaN;
         reportId=new SimpleDateFormat("yyyyMMdd-HHmmss",Locale.US).format(new Date());
         progress.setProgress((int)Math.min(180,frozenElapsed/1000));
         status.setText(("MEAT".equals(operationMode)?"اللحوم":"الفواكه")+
@@ -230,7 +247,12 @@ public final class FoodFreshnessTab {
                .append("المرجع: Wijaya 2018؛ خمس عينات، 10,800 قراءة، حساسات MQ مشتركة: 7.\n")
                .append("الفترة الأصلية: 36 ساعة/عينة؛ عملية الروبوت: ")
                .append(String.format(Locale.US,"%.1f",frozenElapsed/1000.0))
-               .append(" ثانية فقط.\n");
+               .append(" ثانية فقط.\n")
+               .append("الحرارة المتوسطة: ")
+               .append(Double.isFinite(finalTemperature)?String.format(Locale.US,"%.1f °C",finalTemperature):"غير متاحة")
+               .append(" • الرطوبة: ")
+               .append(Double.isFinite(finalHumidity)?String.format(Locale.US,"%.1f%%",finalHumidity):"غير متاحة")
+               .append("\n");
             for(BeefResearchEngine.Match item:meatCompleted.rankedClasses){
                 String name;
                 switch(item.classCode){
@@ -289,10 +311,11 @@ public final class FoodFreshnessTab {
         if((beef&&meat==null)||(!beef&&fruit==null))return;
         final Map<String,Double> observations=new LinkedHashMap<>(frozenReadings);
         final String id=reportId;final long duration=frozenElapsed;final int count=snapshots;
+        final double temp=finalTemperature,rh=finalHumidity;
         export.setEnabled(false);
         host.io().execute(()->{
             try{
-                if(beef)BeefResearchPdf.save(context,meat,observations,count,duration,id);
+                if(beef)BeefResearchPdf.save(context,meat,observations,count,duration,id,temp,rh);
                 else FoodFreshnessPdf.save(context,fruit,observations,count,duration,id);
                 view.post(()->{
                     export.setEnabled(true);
