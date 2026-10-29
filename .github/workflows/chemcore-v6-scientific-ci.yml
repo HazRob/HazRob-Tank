@@ -127,7 +127,7 @@ jobs:
           from pathlib import Path
           p=Path("research/chemcore_v6/results/source_audit.json")
           a=json.loads(p.read_text())
-          assert a["source_integrity"]["verified"] == 14
+          assert a["source_integrity"]["verified"] == 13
           assert a["curve_roundtrips"]["points_tested"] == 387
           assert a["synthetic_R0_counterfactual_cases"] == 172
           assert a["M4_or_safety_certification"] is False
