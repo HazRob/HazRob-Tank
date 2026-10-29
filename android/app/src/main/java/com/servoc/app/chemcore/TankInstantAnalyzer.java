@@ -1,133 +1,104 @@
 package com.servoc.app.chemcore;
 
-import com.servoc.app.analytics.AnalyticsSnapshot;
-import com.servoc.app.calibration.AcceptedR0Normalizer;
-import com.servoc.app.calibration.SqliteCalibrationProvider;
-import com.servoc.app.chemical.ChemicalRepository;
+import com.hazrob.tank.v6integration.TankV6TelemetryAdapter;
+import com.hazrob.tank.chemcore.v6.ChemCoreTankV6;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.hardware.HazRobHardwareProfile;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
-/** One immutable in-memory Tank measurement operation, NEVER a field-site session. */
+/**
+ * ONE immutable instant gas-analysis operation. V6-only for new operations.
+ *
+ * Intentionally does NOT import/invoke predecessor inference, Stable legacy
+ * screeners, food-freshness profiles, or prior AnalyticsSnapshot fallback.
+ * All source fits are hypotheses; no Tank physical G3 calibrated identity/ppm.
+ * Historical V5 session data and field approvals are not modified.
+ */
 public final class TankInstantAnalyzer {
     private TankInstantAnalyzer(){}
+
     public static final class Result {
         public final String id;
         public final JSONObject original,analysis;
         public final long capturedAtMs;
         public final int channels;
-        Result(String id,long at,JSONObject source,JSONObject computed,int channels){
-            this.id=id;this.capturedAtMs=at;this.original=source;this.analysis=computed;this.channels=channels;
+        Result(String id,long at,JSONObject source,JSONObject computed,int channels) {
+            this.id=id;this.capturedAtMs=at;original=source;
+            analysis=computed;this.channels=channels;
         }
     }
-    public static Result analyze(ExperimentsDb db,JSONObject live,long timestamp)throws Exception{
+
+    public static Result analyze(ExperimentsDb db,JSONObject live,long timestamp)throws Exception {
         return analyze(null,db,live,timestamp);
     }
+
     public static Result analyze(android.content.Context androidContext,ExperimentsDb db,
-                                 JSONObject live,long timestamp)throws Exception{
-        if(db==null||live==null)throw new IllegalArgumentException("Live reading required");
-        // Copy first: subsequent telemetry and new saved R0 must never alter this operation.
-        JSONObject frozen=new JSONObject(live.toString());
-        JSONObject mq=frozen.optJSONObject("mq");
-        Map<String,Double> ratios=new LinkedHashMap<>();
-        for(HazRobHardwareProfile.Channel channel:HazRobHardwareProfile.MQ){
-            JSONObject value=mq==null?null:mq.optJSONObject(channel.key);
-            if(value==null||!value.optBoolean("ok",value.optBoolean("valid",false))||
-                    value.has("powered")&&!value.optBoolean("powered",false))continue;
-            double normalized=AcceptedR0Normalizer.recordedRatio(channel.key,value);
-            if(Double.isFinite(normalized)&&normalized>0)ratios.put(channel.key,normalized);
+                                 JSONObject live,long timestamp)throws Exception {
+        if(live==null||db==null||timestamp<=0)
+            throw new IllegalArgumentException("Immutable original gas snapshot required");
+        // Freeze first: any later telemetry or R0 updates must not change this
+        // operation, and must not create screenshot history or a field session.
+        final JSONObject frozen=new JSONObject(live.toString());
+        final JSONObject mq=frozen.optJSONObject("mq");
+        if(mq==null)throw new IllegalArgumentException("Missing MQ source observations");
+        int valid=0;
+        for(HazRobHardwareProfile.Channel channel:HazRobHardwareProfile.MQ) {
+            JSONObject observation=mq.optJSONObject(channel.key);
+            if(observation==null)continue;
+            boolean hardwareOk=observation.optBoolean("ok",
+                                             observation.optBoolean("valid",false));
+            boolean powered=!observation.has("powered")||
+                              observation.optBoolean("powered",false);
+            double rs=observation.optDouble("rs",Double.NaN);
+            if(hardwareOk&&powered&&Double.isFinite(rs)&&rs>0)valid++;
         }
-        if(ratios.isEmpty())throw new IllegalStateException("No valid measured MQ/R0 ratios");
-        final String id="INSTANT-"+Math.max(1,timestamp);
-        JSONObject output;
-        TankStableScreeningModelRegistry.LoadResult activeStable=null;
-        try{
-            JSONObject env=frozen.optJSONObject("env");
-            double temp=env==null?Double.NaN:env.optDouble("temperature",Double.NaN);
-            double rh=env==null?Double.NaN:env.optDouble("humidity",Double.NaN);
-            SamplingProfile profile=SamplingProfile.hazRobStandardChamberV2();
-            ChemCoreInferenceEngine.Context context=new ChemCoreInferenceEngine.Context(
-                id,profile.profileId,"tank-v5-instant-screening/2",temp,rh,null,false);
-            // Unified V5 path merges accepted reference fingerprints, source curves and verified Stable priors.
-            activeStable=TankStableRuntimeCatalog.responseModels(androidContext,db);
-            ChemCoreResultEnvelope inferred=ChemCoreInferenceEngine.analyze(ratios,activeStable.candidates,profile,context);
-            output=inferred==null?new JSONObject():inferred.toJson();
-        }catch(Exception ex){
-            // A solver failure should be visible, while still allowing other scientific methods
-            // to return evidence. A failed solver is never presented as a successful inference.
-            output=new JSONObject().put("solver_error",ex.getClass().getSimpleName());
+        if(valid==0)throw new IllegalStateException("No eligible original sensor Rs");
+        // Sole chemical inference path. Exceptions intentionally propagate,
+        // never replaced by old ChemCore/legacy analytics and never certified.
+        ChemCoreTankV6.Result analyzed=TankV6TelemetryAdapter.analyzeSnapshot(frozen);
+        JSONObject out=TankV6TelemetryAdapter.toJson(analyzed);
+        // Candidate list is a *compatibility display projection* only, derived
+        // from the independent new V6 source curve hypothesis ledger.
+        JSONArray source=out.optJSONArray("source_curve_hypotheses");
+        JSONArray candidates=new JSONArray();
+        if(source!=null)for(int i=0;i<source.length();i++){
+            JSONObject ref=source.optJSONObject(i);
+            if(ref==null)continue;
+            JSONObject item=new JSONObject();
+            item.put("rank",candidates.length()+1);
+            item.put("label",ref.optString("gas_or_class","UNRESOLVED_SOURCE"));
+            item.put("source_curve_id",ref.optString("source_curve_id",""));
+            item.put("source_root",ref.optString("source_root",""));
+            item.put("sensor_model",ref.optString("sensor_model",""));
+            item.put("source_chemical_reference_id",
+                     ref.optString("chemical_reference_id",""));
+            item.put("research_only",true);
+            item.put("reported_identity","UNKNOWN");
+            item.put("evidence_tier","SOURCE_CURVE_RESEARCH_UNVALIDATED");
+            // Deliberately no percentile confidence, no screening_fit_ppm,
+            // no fabricated sensor model calibration/acceptance gate.
+            candidates.put(item);
         }
-        // The active Stable snapshot is SHA256 verified against its installed manifest
-        // before its source-backed response models enter the inverse solver.
-        JSONObject stableEvidence=new JSONObject();
-        stableEvidence.put("status",activeStable==null?"SOLVER_NOT_REACHED":activeStable.status);
-        stableEvidence.put("version",activeStable==null?"":activeStable.version);
-        stableEvidence.put("sha256",activeStable==null?"":activeStable.sha256);
-        stableEvidence.put("models_imported",activeStable==null?0:activeStable.importedModels);
-        stableEvidence.put("models_rejected",activeStable==null?0:activeStable.rejectedModels);
-        stableEvidence.put("reference_curve_is_device_calibration",false);
-        stableEvidence.put("tank_specific_initial_burn_in_48h_provenance","DEVICE_VERIFICATION_PENDING");
-        output.put("active_stable_reference_models",stableEvidence);
-        // Independently evaluate ALL available research fingerprint references.
-        // No M4 or open-set approval is required to display a hypothesis.
-        output.put(TankFingerprintScreening.KEY,TankFingerprintScreening.evaluate(ratios));
-        // This existing independent fingerprint/curve evidence path is retained.
-        JSONObject legacy=new JSONObject(AnalyticsSnapshot.toJson(frozen,
-            new ChemicalRepository(db),new SqliteCalibrationProvider(db),false));
-        output.put("legacy_fingerprint_curve_analysis",legacy);
-        JSONArray primary=output.optJSONArray("candidates");
-        if(primary==null||primary.length()==0){
-            JSONArray alternatives=new JSONArray(),raw=legacy.optJSONArray("results");
-            if(raw!=null)for(int i=0;i<Math.min(20,raw.length());i++){
-                JSONObject r=raw.optJSONObject(i);if(r==null)continue;
-                JSONObject a=new JSONObject();
-                a.put("rank",alternatives.length()+1);
-                a.put("chemical_uid",r.optLong("chemical_uid",-1));
-                a.put("label",r.optString("name_ar",r.optString("name","—")));
-                double vcandidatescorepct=r.optDouble("candidate_score_pct",Double.NaN);
-                if(Double.isFinite(vcandidatescorepct))a.put("candidate_score_pct",vcandidatescorepct);
-                double vcoveragepct=r.optDouble("coverage_pct",Double.NaN);
-                if(Double.isFinite(vcoveragepct))a.put("coverage_pct",vcoveragepct);
-                double vagreementpct=r.optDouble("agreement",Double.NaN);
-                if(Double.isFinite(vagreementpct))a.put("agreement_pct",vagreementpct);
-                double vscreeningfitppm=r.optDouble("ppm",Double.NaN);
-                if(Double.isFinite(vscreeningfitppm))a.put("screening_fit_ppm",vscreeningfitppm);
-                a.put("evidence_tier","FINGERPRINT_CURVE_SCREENING");
-                alternatives.put(a);
-            }
-            output.put("candidates",alternatives);
-            output.put("candidate_count",alternatives.length());
-            output.put("evidence_tier","SCREENING_ONLY");
-        }
-        // Snapshot local authoritative OSHA/NIOSH/etc. reference facts for ranked hypotheses.
-        // Display does not depend on M4 and never constitutes an exposure-limit exceedance.
-        output.put(TankExposureReferenceCatalog.KEY,
-            TankExposureReferenceCatalog.forAnalysis(db,output));
-        // Proactive, conditional TWA/STEL and immediate LFL comparison of calculated
-        // screening ppm: separate from the strictly gated regulatory exposure engine.
-        output.put(TankScreeningExposureWarning.KEY,
-            TankScreeningExposureWarning.evaluate(output));
-        // Separate estimated concentration from regulatory-reportable concentration.
-        // M1/M2/M3 source-backed curves/fingerprints may yield finite screening PPM
-        // with their provenance, but only the qualified M4 path may declare reportability.
-        TankPpmEstimate.Result ppmEstimate=TankPpmEstimate.from(output);
-        output.put("screening_m4_required",false);
-        output.put("screening_techniques","accepted_source_curves_logarithmic_fit_fingerprint_qspr_when_eligible");
-        output.put("screening_ppm_method",ppmEstimate.method);
-        output.put("screening_ppm_available",ppmEstimate.available());
-        if(ppmEstimate.available())output.put("screening_ppm_estimate",ppmEstimate.ppm);
-        output.put("screening_ppm_not_a_certified_measurement",true);
-        output.put("session_id",id);
-        output.put("source_kind","ONE_SHOT_IN_MEMORY_NO_HISTORY");
-        output.put("captured_utc_ms",timestamp);
-        output.put("observed_channels",ratios.size());
-        output.put("single_snapshot_no_temporal_series",true);
-        output.put("ppm_reportable",false); // one snapshot is never a certified exposure value
-        output.put("operator_approved_field_session",false);
-        return new Result(id,timestamp,frozen,output,ratios.size());
+        String id="INSTANT-"+timestamp;
+        out.put("candidates",candidates);
+        out.put("candidate_count",candidates.length());
+        out.put("source_kind","ONE_SHOT_IN_MEMORY_NO_HISTORY");
+        out.put("session_id",id);
+        out.put("captured_utc_ms",timestamp);
+        out.put("observed_channels",valid);
+        out.put("single_snapshot_no_temporal_series",true);
+        out.put("reported_identity","UNKNOWN");
+        out.put("open_set_status","N05H_SOURCE_UNKNOWN_GATE_FAILED_NO_TANK_G3");
+        out.put("unknown_candidate_retained",true);
+        out.put("evidence_tier","V6_SOURCE_ONLY_NOT_VALIDATED");
+        out.put("model_version","ChemCore Tank V6 independent source engine");
+        out.put("ppm_reportable",false);
+        out.put("operator_approved_field_session",false);
+        out.put("legacy_inference_fallback_used",false);
+        out.put("report_research_only",true);
+        out.put("no_firmware_heater_changes",true);
+        out.put("gas_food_isolated",true);
+        return new Result(id,timestamp,frozen,out,valid);
     }
 }
