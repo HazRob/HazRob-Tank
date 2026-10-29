@@ -1,0 +1,49 @@
+name: ChemCore Tank V6 external real-MQ source dataset acquisition
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - research/chemcore_v6/acquisition/mq_source_fetch_2026_10_30.py
+      - .github/workflows/chemcore-v6-mq-source-acquisition.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  external-mq-source-acquisition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch public MQ source originals and record failures and SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_v6/acquisition/mq_source_fetch_2026_10_30.py
+      - name: Validate all actually downloaded source file SHA256 and research claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pathlib,hashlib
+          data=json.loads(pathlib.Path('mq_acquisition/acquisition_manifest.json').read_text())
+          assert data['gas_food_separation'] and not data['tank_g3']
+          good=[r for r in data['source_items'] if r['status']=='RAW_DOWNLOADED_SHA256_VERIFIED']
+          assert good,"At least one new external MQ dataset must have original raw file"
+          for row in good:
+            b=pathlib.Path(row['file']).read_bytes()
+            assert len(b)==row['bytes'] and hashlib.sha256(b).hexdigest()==row['sha256']
+            print('VERIFIED_FILE',row['source_id'],row['bytes'],row['sha256'])
+          print('PASS MQ source original acquisitions',len(good))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HazRob-External-MQ-Measurements-Sources-2026-10-30
+          path: mq_acquisition/
+          retention-days: 30
