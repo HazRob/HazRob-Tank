@@ -182,10 +182,33 @@ def main():
         'sensor_finite_positive_required':bool((mob[['MQ-3 Voltage','MQ-4 Voltage','MQ-8 Voltage']]>0).all().all()),
         'gas_identity_inferred':False,'ppm_from_MQ_inferred':False,'status':'SOURCE_QC_ONLY_NO_CHEMICAL_GROUND_TRUTH'}
     (out/'mq_mobile_source_signal_qc.json').write_text(json.dumps(mobile,ensure_ascii=False,indent=2)+'\n')
-    # Fault-injection structural test: missing MQ4 source channel MUST fail closed for 3-MQ model.
-    fault={'test_type':'STRUCTURAL_FAULT_INJECTION_NOT_PHYSICAL_MEASUREMENT',
+    # Actual input schema fault-injection test for the independent research adapter.
+    # Not an Android service or physical disconnected MQ4 wiring test.
+    def require_original_three_mq4(sensor_map):
+        if not isinstance(sensor_map,dict):raise ValueError('original sensor mapping required')
+        for channel in MQ:
+            if channel not in sensor_map:raise ValueError('missing original MQ4 channel '+channel)
+            val=sensor_map[channel]
+            if not isinstance(val,(int,float,np.number)) or not np.isfinite(val) or val<=0:
+                raise ValueError('invalid original MQ4 source ohm for '+channel)
+        return True
+    clean_source=d.loc[0,MQ].to_dict()
+    assert require_original_three_mq4(clean_source)
+    injected={k:v for k,v in clean_source.items() if k!='MQ4_2'}
+    rejected_missing=False
+    try:require_original_three_mq4(injected)
+    except ValueError:rejected_missing=True
+    assert rejected_missing, 'missing source channel must fail closed, not silently substitute old engine'
+    injected_nan=dict(clean_source);injected_nan['MQ4_3']=float('nan')
+    rejected_nonfinite=False
+    try:require_original_three_mq4(injected_nan)
+    except ValueError:rejected_nonfinite=True
+    assert rejected_nonfinite, 'nonfinite MQ4 channel must fail closed'
+    fault={'test_type':'SOURCE_SCHEMA_FAULT_INJECTION_ACTUALLY_EXECUTED_NOT_HARDWARE_TEST',
         'source_record_index':int(d.index[0]),'sensor_channels_expected':MQ,
-        'fault_channel':'MQ4_2','three_channel_inference_allowed_when_missing':False,
+        'fault_channel':'MQ4_2','missing_channel_rejected_by_code':rejected_missing,
+        'nonfinite_channel_rejected_by_code':rejected_nonfinite,
+        'three_channel_inference_allowed_when_missing':False,
         'fallback_to_old_engine_allowed':False,'source_only':True,'tank_g3':False}
     (out/'mq4_fault_injection_gate.json').write_text(json.dumps(fault,indent=2)+'\n')
     # Robust result metadata: no training/test reused source row IDs per fold, no food profiles.
