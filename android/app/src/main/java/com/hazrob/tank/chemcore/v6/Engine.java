@@ -38,8 +38,11 @@ public final class Engine {
             sensorInstance=instance==null||instance.trim().isEmpty()?sensorType:instance.trim();
             rs=observedRs;r0=baselineR0;
         }
-        public boolean numericallyValid(){
-            return positiveFinite(rs)&&positiveFinite(r0)&&positiveFinite(rs/r0);
+        /** A valid raw sensor resistance is retained even without a usable R0. */
+        public boolean rawResistanceValid(){return positiveFinite(rs);}
+        /** Curve formula uses Rs/R0; missing R0 is not grounds to discard raw Rs. */
+        public boolean normalizedRatioAvailable(){
+            return rawResistanceValid()&&positiveFinite(r0)&&positiveFinite(rs/r0);
         }
     }
 
@@ -89,13 +92,19 @@ public final class Engine {
         public final String schema;
         public final List<SourceFit> allSourceFits;
         public final List<Candidate> rankedCandidates;
-        public final int observedPhysicalChannels, rejectedNumericalChannels;
+        public final int observedPhysicalChannels, ratioReadyChannels;
+        public final int rawChannelsAwaitingR0, rejectedNumericalChannels;
+        public final List<Channel> retainedRawSensorRecords;
         public final boolean actualTankCalibrationVerified,ppmReportable;
         public final String rankingSemantics;
-        private Result(List<SourceFit> rows,List<Candidate> rankings,int observed,int rejected){
+        private Result(List<SourceFit> rows,List<Candidate> rankings,
+                       List<Channel> rawRecords,int ratioReady,int rejected){
             schema=SCHEMA;allSourceFits=Collections.unmodifiableList(new ArrayList<>(rows));
             rankedCandidates=Collections.unmodifiableList(new ArrayList<>(rankings));
-            observedPhysicalChannels=observed;rejectedNumericalChannels=rejected;
+            retainedRawSensorRecords=Collections.unmodifiableList(new ArrayList<>(rawRecords));
+            observedPhysicalChannels=rawRecords.size();ratioReadyChannels=ratioReady;
+            rawChannelsAwaitingR0=rawRecords.size()-ratioReady;
+            rejectedNumericalChannels=rejected;
             actualTankCalibrationVerified=false;ppmReportable=false;
             rankingSemantics="sensor_breadth_then_joint_log_residual_not_calibrated_probability";
         }
@@ -162,15 +171,19 @@ public final class Engine {
 
     public static Result analyze(List<Channel> inputs){
         // One measurement per real physical instance and sensor model.
-        Map<String,Channel> channels=new LinkedHashMap<>();
+        Map<String,Channel> rawRecords=new LinkedHashMap<>();
         int invalid=0;
         if(inputs!=null)for(Channel channel:inputs){
-            if(channel==null||channel.sensorType.isEmpty()||!channel.numericallyValid()){
+            if(channel==null||channel.sensorType.isEmpty()||!channel.rawResistanceValid()){
                 invalid++;continue;
             }
             String key=channel.sensorInstance+"::"+channel.sensorType;
-            channels.put(key,channel);
+            rawRecords.put(key,channel);
         }
+        Map<String,Channel> channels=new LinkedHashMap<>();
+        for(Map.Entry<String,Channel> entry:rawRecords.entrySet())
+            if(entry.getValue().normalizedRatioAvailable())
+                channels.put(entry.getKey(),entry.getValue());
         List<SourceFit> sourceFits=new ArrayList<>();
         Map<Long,Group> candidates=new LinkedHashMap<>();
         for(SourceCatalog.Curve source:SourceCatalog.curves()){
@@ -200,6 +213,7 @@ public final class Engine {
             .comparingInt((Candidate c)->c.supportingSensorInstances).reversed()
             .thenComparingDouble(c->c.jointResidualRmseLog10)
             .thenComparingLong(c->c.chemicalId));
-        return new Result(sourceFits,rank,channels.size(),invalid);
+        return new Result(sourceFits,rank,new ArrayList<>(rawRecords.values()),
+                          channels.size(),invalid);
     }
 }
