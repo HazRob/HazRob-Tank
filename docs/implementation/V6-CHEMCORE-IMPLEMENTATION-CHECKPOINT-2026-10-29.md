@@ -75,3 +75,11 @@
 - **CI حديث:** [Run 40912404109](https://github.com/HazRob/HazRob-Tank/actions/runs/40912404109) عند SHA `42732b2cd51b3e1d0567cda686d0291f8b75a909` — **success**: Python 30/30, Java compile & 31 assertions, source curve 387, synthetic R0 172, source peers validated؛ artifact ID `12914686568`, digest `2056f5cb2f995ea0226f5225c65652352df57f63a6626d5de2ecd9b6cb613d06`.
 - **حدود الإنجاز:** ملف Java مصدر فعلي على فرع V6، لكنه **غير موصل بالاستدلال الفعلي** في التطبيق ولم يُشغل Gradle Android ولا build APK. لا ترفع حالة P03 إلى `PASS` قبل تكامل البيانات وSQLite والجلسات والتقارير والتجارب.
 - **استئناف:** الخطوة التالية P03: تصميم وربط `SourceCurveRegistryV6` بمخرجات V5 على read-only sidecar، ثم اختبارات مقارنة قبل السماح باستبدال أي source selector.
+
+## 8. متابعة تنفيذ Android-Java gate — تحقق لاحق
+
+- أُضيف `android/app/src/main/java/com/servoc/app/chemcore/TankV6SourceCompatibility.java` على فرع V6 في commit `714541f37eb6e29f562bb3433f547b19089e9ef5`، ثم عُزّز برفض رفع نتيجة M4 من مجرد flags metadata في commit `1ca5a8c4df23b327b98e62cab7ccfbf8f6cd57a1`.
+- أُضيف `research/chemcore_v6/tests/java/TankV6SourceCompatibilityTest.java` في commit `74f81ef2bb73a97f9a05a7cc61b809b6c963eead`. يتحقق من الوحدات، تطابق R0، مجال المنحنى، الجهاز/الحساس، السخان، ورفض M4 دون سجل G3 مستقل.
+- **تأكيد GitHub Actions:** التشغيل [40912404109](https://github.com/HazRob/HazRob-Tank/actions/runs/40912404109)، head `42732b2cd51b3e1d0567cda686d0291f8b75a909`، النتيجة `success`: تجميع Java/JDK وتشغيل اختبار عقد التوافق، تشغيل 30 اختبار Python، تشغيل المحاكاة العددية وتدقيق الدراسات المنشورة، ورفع ملفات نتائج CI.
+- **القيد:** `TankV6SourceCompatibility` مكوّن منفصل يعمل على JVM ولم يُربط بعد بمدير الاستدلال والإبلاغ في تطبيق Android؛ لا تُفسر نجاحه كنجاح التطبيق أو دليل G3.
+- **توقيت متابعة المستخدم:** بعد سؤال عن حالة العمل، تم التحقق من نتيجة GitHub Actions مباشرة ولم توجد حالة `in_progress` متوقفة في التشغيل المذكور. لا يوجد تنفيذ غير متزامن مستمر خارج دورة المحادثة.
