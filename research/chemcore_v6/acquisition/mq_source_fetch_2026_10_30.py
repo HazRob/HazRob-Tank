@@ -151,6 +151,45 @@ if not found:manifest["source_items"].append({"source_id":source_id,
   "source_url":"https://hdl.handle.net/11299/226714",
   "status":"LANDING_VERIFIED_RAW_DOWNLOAD_PENDING","reason":"public DSpace API route unavailable"})
 
+
+# D2. Verified target UUID from Minnesota's actual searchable item metadata
+# (handle 11299/226714). Do not confuse it with the same author's thesis.
+umn_uuid="863729b3-62bd-4de9-be7a-6d60cc449ce1"
+try:
+    root="https://conservancy.umn.edu/server/api/core"
+    item,actual=text_json(f"{root}/items/{umn_uuid}")
+    if item.get("handle")!=handle:
+        raise ValueError("Minnesota item UUID/handle mismatch")
+    manifest["source_items"].append({"source_id":"MQ-ACQ-2026-06",
+      "status":"UMN_EXACT_HANDLE_AND_UUID_VERIFIED","item_uuid":umn_uuid,
+      "handle":item.get("handle"),"title":item.get("name")})
+    bundles,_=text_json(f"{root}/items/{umn_uuid}/bundles?size=100")
+    group=(bundles.get("_embedded") or {}).get("bundles",[])
+    print("MINNESOTA_TARGET_BUNDLES",[(x.get("name"),x.get("uuid")) for x in group])
+    for b in group:
+        if b.get("name") not in ("ORIGINAL","LICENSE"):continue
+        b_id=b.get("uuid")
+        if not b_id:continue
+        bitstreams,_=text_json(f"{root}/bundles/{b_id}/bitstreams?size=100")
+        files=(bitstreams.get("_embedded") or {}).get("bitstreams",[])
+        for f in files:
+            n=f.get("name","");fid=f.get("uuid")
+            if not fid:continue
+            if n.lower().endswith((".csv",".txt",".tsv",".zip")):
+                store("MQ-ACQ-2026-06",
+                    "umn_"+re.sub('[^A-Za-z0-9_-]','_',n)[:50],
+                    f"{root}/bitstreams/{fid}/content",100,
+                    n.lower().endswith((".csv",".tsv")))
+            else:
+                manifest["source_items"].append({"source_id":"MQ-ACQ-2026-06",
+                    "status":"UMN_ORIGINAL_NON_TABULAR_FILE_METADATA",
+                    "original_filename":n,"bitstream_uuid":fid})
+except Exception as e:
+    manifest["source_items"].append({"source_id":"MQ-ACQ-2026-06",
+        "status":"UMN_TARGET_BITSTREAM_FETCH_PENDING",
+        "item_uuid":umn_uuid,"error":type(e).__name__+": "+str(e)[:280]})
+    print("MINNESOTA_TARGET_UNAVAILABLE",type(e).__name__,str(e)[:130])
+
 # E. Existing MQ6400 duplicate from previously benchmarked local source:
 manifest["source_items"].append({"source_id":"MQ-EXT-03","status":"PREVIOUSLY_STORED_NOT_DUPLICATED",
  "source_repo":"HazRob/HazRob-Tank",
