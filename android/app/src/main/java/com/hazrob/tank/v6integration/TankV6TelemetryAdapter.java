@@ -40,10 +40,15 @@ public final class TankV6TelemetryAdapter {
         if(mq!=null)for(String model:MQ){
             JSONObject value=mq.optJSONObject(model.toLowerCase(Locale.ROOT));
             if(value==null)continue;
+            // Snapshot eligibility must be consistent with the user-facing instant
+            // operation. A stale or explicitly unpowered channel is NOT a live
+            // measurement merely because its last finite Rs remains in telemetry.
+            if(!value.optBoolean("ok",value.optBoolean("valid",false)))continue;
+            if(value.has("powered")&&!value.optBoolean("powered",false))continue;
             double rs=value.optDouble("rs",Double.NaN);
             double r0=value.optDouble("r0",Double.NaN);
-            // No eligibility threshold except a mathematically invalid Rs:
-            // independent V6 Engine retains valid raw Rs even without R0.
+            // Preserve valid raw Rs with missing R0 for evidence; it can never
+            // yield a source-curve concentration until a valid R0 is supplied.
             if(!Double.isFinite(rs)||rs<=0)continue;
             channels.add(new Engine.Channel(model,model+"-tank-current-snapshot",rs,r0));
         }
@@ -73,6 +78,20 @@ public final class TankV6TelemetryAdapter {
         root.put("elapsed_seconds",numberOrNull(data.elapsedSeconds));
         root.put("observed_mq_channels",data.responseCurves.observedPhysicalChannels);
         root.put("raw_only_mq_channels",data.responseCurves.rawChannelsAwaitingR0);
+        // Full raw channel ledger, independent of the existence of curve fits.
+        // R0 is NULL rather than guessed when missing.
+        JSONArray rawChannels=new JSONArray();
+        for(Engine.Channel raw:data.responseCurves.retainedRawSensorRecords){
+            JSONObject row=new JSONObject();
+            row.put("sensor_model",raw.sensorType);
+            row.put("sensor_instance",raw.sensorInstance);
+            row.put("rs_as_received",numberOrNull(raw.rs));
+            row.put("r0_as_received",numberOrNull(raw.r0));
+            row.put("rs_r0_ratio_ready",raw.normalizedRatioAvailable());
+            row.put("tank_g3_reference_calibration_validated",false);
+            rawChannels.put(row);
+        }
+        root.put("original_mq_channel_evidence",rawChannels);
         root.put("ratio_ready_mq_channels",data.responseCurves.ratioReadyChannels);
         root.put("numerically_rejected",data.responseCurves.rejectedNumericalChannels);
         root.put("physical_calibration_proven",false);
