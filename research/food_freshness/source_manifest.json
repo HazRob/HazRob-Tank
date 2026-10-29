@@ -1,0 +1,22 @@
+{
+  "schema": "hazrob-tank-food-freshness-source-manifest/1",
+  "feature": "FOOD_FRESHNESS_INDEPENDENT_OF_GAS_CHEMCORE",
+  "original_source": {
+    "repository": "HazRob/build-harness",
+    "path": "library/research/hr069/food_freshness_headspace_fingerprints_v1.json",
+    "git_blob_sha1": "959aae7574307a0030d218d4b86eb6618a6f72b0",
+    "study_doi": "10.5281/zenodo.17285312"
+  },
+  "research_copy": "research/food_freshness/source_snapshots/food_freshness_headspace_fingerprints_v1.json",
+  "android_asset": "android/app/src/main/assets/food_freshness/reference/food_freshness_headspace_fingerprints_v1.json",
+  "original_session_count": 59,
+  "eight_channel_profiles": true,
+  "vector_type": "geometric-mean-normalized food-headspace MQ shape",
+  "no_molecular_gas_identity": true,
+  "no_calibrated_ppm": true,
+  "no_gas_chemcore_import": true,
+  "independent_module_package": "com.hazrob.tank.foodfreshness",
+  "runtime_status": "DATA_STAGED_SEPARATE_FEATURE_IMPLEMENTATION_PENDING",
+  "instrumentation": "shared_read_only_sensor_telemetry",
+  "owner_instruction": "Never include food-specific curves, fingerprints, scores or models in gas ChemCore engine or gas source registry"
+}
