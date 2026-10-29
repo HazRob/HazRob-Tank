@@ -1,0 +1,145 @@
+{
+  "schema_version": "1.0",
+  "project": "HazRob-Tank",
+  "study": "UCI308 real external-source flow-modulated mixture numerical audit",
+  "date": "2026-10-20",
+  "source_doi": "10.24432/C5BG7G",
+  "license": "CC BY 4.0 Ziyatdinov and Fonollosa",
+  "source_zip_sha256": "7b062960dbef1a9e8aefc62bc7dbac09bdadb8cbb40793cf2b8e122da1862f90",
+  "original_exposures": 58,
+  "original_sensors": 16,
+  "raw_sensor_traces": 928,
+  "raw_timepoints_each": 7500,
+  "frequency_hz": 25,
+  "feature_rows": 58,
+  "feature_attributes_per_row": 432,
+  "raw_signal_scalar_values": 6960000,
+  "source_batches": 5,
+  "gas_component_preparation": "liquid dilutions vol.% in water, NOT gas ppm",
+  "verified_tank_calibration": false,
+  "run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553",
+  "tested_sha": "6db703dd856c07544f8f96efd8af4f01211bedfd",
+  "artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435979553/artifacts/12272830172",
+  "source_inspection_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39435016417",
+  "synthetic_protocol_tests_passed": 13,
+  "per_technique": {
+    "02.6": {
+      "status": "NUMERIC_ONLY_PHYSICALLY_NONCOMPLIANT",
+      "measured_raw_traces_used": 928,
+      "trajectory_count": 58,
+      "downsample_hz": 1,
+      "numeric_median_path_length": 1.2294572022354684,
+      "environment_covariate": false,
+      "warning": "dR source signal is NOT verified as the log Rs ratio input the module requires"
+    },
+    "02.8": {
+      "status": "BLOCKED",
+      "reason": "Missing device_id, firmware/calibration provenance, exact UTC timestamps and heater phase"
+    },
+    "05.4": {
+      "status": "BLOCKED",
+      "reason": "Unknown Rs/R0 and no headspace gas ppm; liquid dilution percentage is not ppm"
+    },
+    "05.5": {
+      "status": "BLOCKED",
+      "reason": "Unknown Rs/R0 and no known gas ppm"
+    },
+    "05.6": {
+      "status": "BLOCKED",
+      "reason": "Unknown Rs/R0 and no known gas ppm"
+    },
+    "05.7": {
+      "status": "BLOCKED",
+      "reason": "No calibrated gas identity probabilities nor certified gas-specific ppm calibrators"
+    },
+    "08.8": {
+      "status": "EXTERNAL_SENSOR_NUMERIC_EXPLORATORY",
+      "threshold_fixed_before_test": 0.5,
+      "test_positive_gas_mixtures": 20,
+      "mixtures_flagged": 6,
+      "sensitivity": 0.3,
+      "pure_exposures": 30,
+      "pure_false_flags": 16,
+      "specificity": 0.4666666666666667,
+      "test_pure_or_mix": 50
+    },
+    "08.9": {
+      "status": "EXTERNAL_SENSOR_NUMERIC_EXPLORATORY",
+      "mixture_numeric_fits": 20,
+      "signal_source": "16 S_max dR features",
+      "no_validated_gas_concentrations": true
+    },
+    "08.10": {
+      "status": "EXTERNAL_SENSOR_NUMERIC_EXPLORATORY",
+      "mixture_numeric_fits": 20,
+      "signal_source": "16 S_max dR features",
+      "no_validated_gas_concentrations": true
+    },
+    "08.11": {
+      "status": "BLOCKED",
+      "reason": "No experimentally paired interferent and controlled background trials"
+    }
+  },
+  "aggregate": {
+    "reviewed": 10,
+    "external_numeric_operations": 4,
+    "semantically_incompatible_numeric_operations": 1,
+    "blocked_without_validated_required_data": 6,
+    "Tank_G3_scientifically_validated": 0,
+    "negative_finding": "08.8 at fixed uncalibrated threshold showed 30% mixture sensitivity, 46.7% pure specificity: unsuitable for reliable identification."
+  },
+  "heldout_batches": [
+    {
+      "batch": "day-1-morning",
+      "n_train": 39,
+      "n_test": 19,
+      "mixture_n": 4,
+      "pure_n": 12,
+      "mixture_flagged": 1,
+      "pure_false_flags": 8
+    },
+    {
+      "batch": "day-2-afternoon",
+      "n_train": 48,
+      "n_test": 10,
+      "mixture_n": 4,
+      "pure_n": 4,
+      "mixture_flagged": 1,
+      "pure_false_flags": 2
+    },
+    {
+      "batch": "day-2-morning",
+      "n_train": 48,
+      "n_test": 10,
+      "mixture_n": 3,
+      "pure_n": 5,
+      "mixture_flagged": 0,
+      "pure_false_flags": 3
+    },
+    {
+      "batch": "day-3-morning",
+      "n_train": 47,
+      "n_test": 11,
+      "mixture_n": 4,
+      "pure_n": 6,
+      "mixture_flagged": 1,
+      "pure_false_flags": 2
+    },
+    {
+      "batch": "day-4-afternoon",
+      "n_train": 50,
+      "n_test": 8,
+      "mixture_n": 5,
+      "pure_n": 3,
+      "mixture_flagged": 3,
+      "pure_false_flags": 1
+    }
+  ],
+  "caveats": [
+    "Source raw dR signals are NOT calibrated Rs/R0; 02.6 only a numerical stability proof not a scientifically eligible log-response feature.",
+    "Endmembers built from source pure samples only, withheld entire source batch each time.",
+    "All 50 non-air exposure decisions are cross-batch, but do not prove independent device, environmental generalization, or hazardous detection.",
+    "Mixture unmixing coefficients are NOT gas phase concentrations nor prepared liquid mixing fractions.",
+    "Does not establish Tank eight-MQ transferability, ppm or safety performance."
+  ]
+}
