@@ -1,0 +1,56 @@
+name: ChemCore Tank V6 Android compile-only integration
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/chemcore/**'
+      - '.github/workflows/chemcore-v6-android-compile.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - name: Checkout frozen Android baseline, read only
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Apply Tank V6 source overlay for syntax/type checking
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then
+            cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          fi
+          echo "Pinned original Android app checked out read-only; Tank overlay only in temporary CI workspace"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Compile entire merged Android Java application (no APK)
+        working-directory: source
+        run: gradle --no-daemon :app:compileDebugJavaWithJavac
+      - name: Record scope of validation
+        run: |
+          echo "PASS means Java/Android compilation only."
+          echo "No APK was produced. No device, telemetry, heater, R0 or G3 test executed."
