@@ -153,7 +153,7 @@ class PairedPredictionReplayTests(unittest.TestCase):
     def test_semantic_prediction_fingerprint_is_order_invariant(self):
         original = self.replay()
         self.write(pred="".join(reversed(PRED_ROWS.splitlines(keepends=True))),
-                   metrics="b,2,1,1\\na,2,1,1\\n")
+                   metrics="b,2,1,1\na,2,1,1\n")
         reordered = self.replay()
         self.assertEqual(original["prediction_rows_semantic_sha256"],
                          reordered["prediction_rows_semantic_sha256"])
@@ -173,11 +173,11 @@ class PairedPredictionReplayTests(unittest.TestCase):
 
     def test_per_group_opposing_discordance_not_hidden_by_pooled_tie(self):
         # Two groups have opposite paired net advantages: pooled delta zero.
-        self.write(pred=("e1,a,A,A,B\\n"
-                         "e2,a,B,B,A\\n"
-                         "e3,b,A,B,A\\n"
-                         "e4,b,B,A,B\\n"),
-                   metrics="a,2,2,0\\nb,2,0,2\\n")
+        self.write(pred=("e1,a,A,A,B\n"
+                         "e2,a,B,B,A\n"
+                         "e3,b,A,B,A\n"
+                         "e4,b,B,A,B\n"),
+                   metrics="a,2,2,0\nb,2,0,2\n")
         result = self.replay()
         self.assertEqual(result["observed_delta"], 0)
         groups = result["paired_outcomes_by_declared_physical_group"]
