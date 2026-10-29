@@ -5,6 +5,7 @@ on:
     branches: [feature/tank-v6-implementation]
     paths:
       - 'android/app/src/main/java/com/servoc/app/chemcore/**'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/**'
       - '.github/workflows/chemcore-v6-android-compile.yml'
   workflow_dispatch:
 
