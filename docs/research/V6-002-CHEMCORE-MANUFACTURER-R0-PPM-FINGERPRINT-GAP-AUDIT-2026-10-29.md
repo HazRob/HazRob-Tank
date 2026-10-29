@@ -135,3 +135,44 @@ Sources:
 - Legacy research `ChemCoreInferenceEngine` and `AcceptedFingerprintIdentityEngine` are fetched from the pinned baseline and staged into Android at build time, so a V6 fix affecting them must be implemented as **Tank-local overlays**; never edit the original four-wheel repository.
 
 `V6_002_STATE=SOURCE_AND_LITERATURE_GAP_AUDIT_DOCUMENTED / NO_ALGORITHM_PATCH / NO_FIRMWARE_CHANGE / NO_PPM_CERTIFICATION`.
+
+## 10. Pending scientific tools — MQDataScience 76 versus Tank 80 (additional audit, 2026-10-29)
+
+**Exact source of on-screen `PORT PENDING`:** inherited `sohpany/SERVOC-Android@6281d3e`:
+- `app/src/main/java/com/servoc/app/models/ModelRuntimeRegistry.java`: `runtimeStatus(i)` returns `ADOPTED / PORT PENDING` for any catalogue model lacking native Android implementation. `pendingPortCount=adoptedCount-nativeCount`.
+- `app/src/main/java/com/servoc/app/models/MqDataScience76Catalog.java`: registered 76 upstream `MQDataScience 6.0.0` models, pinned commit `e88f876140587a708ee84a4d4d3acbd5720274ee`.
+- `app/src/main/java/com/servoc/app/models/Mq76ModelRoleRegistry.java`: 76 role registrations, 14 Android-native, others assigned to `PINNED_UPSTREAM_LAB`; `pinnedLabExecutable` is a registry membership flag, NOT empirical proof each model trained successfully for every dataset.
+- `app/src/main/java/com/servoc/app/models/CalibrationRegressionModels.java`: 14 native 1-D calibration models; `ModelRuntimeRegistry` reports 12 upstream-verified mathematical ports, 2 approximations (Huber, Theil-Sen), 62 Android `PORT PENDING`.
+- `app/src/main/java/com/servoc/app/ui/ExperimentsTab.java`: 76 catalogue model names paired with `runtimeStatus`, hence visible Pending statuses. `DeveloperExperimentsTab` summarizes counts.
+- `tools/hazrob_mq76_upstream.py`: independent Python laboratory bridge loads pinned upstream `PredictData.py`, requiring native scientific Python dependencies. A source bridge is NOT an Android embedded executor and its cross-model spread is expressly not calibrated uncertainty.
+
+**Pending counts by function (0-based catalogue indices):**
+
+| Function | Catalogue indices | Total | Android native | Port pending |
+|---|---|---:|---:|---:|
+| Environmental & multivariable response | 0–10 | 11 | 0 | 11 |
+| 1-D/robust curve regression | 11–48 | 38 | 14 | 24 |
+| Temporal dynamics/smoothing/forecast | 49–62 | 14 | 0 | 14 |
+| ML regression | 63–75 | 13 | 0 | 13 |
+| **TOTAL** | **0–75** | **76** | **14** | **62** |
+
+These 76 models are NOT the separate **80 Tank research techniques**. The latter live in `HazRob/HazRob-Tank:main/research/techniques/<ID>/`. The catalogue's 62 Pending ports cannot be resolved merely by setting a flag or importing the full 80 Python research files into Android. In particular, 11 environmental and 14 temporal models do not directly represent gas concentration regressors, and model interchangeability requires unit/domain/evidence parity.
+
+**V6-002 required sub-workstream `PENDING-MODEL-CLOSURE`:**
+
+1. Create 76-row equivalence matrix `model_id / version / domain / implementation_language / field_inference_required / Android_executor / source hash / datasets / G1 / G2 / G3 / release_status`.
+2. Separate `REGISTERED`, `LAB_EXECUTABLE`, `ANDROID_NATIVE_VERIFIED`, `ANDROID_NATIVE_APPROXIMATION`, `PORT_PENDING`, `DATASET_QUALIFIED`, `G3_DEVICE_VALIDATED` into different UI fields; no "all adopted" implication of 76 field-running engines.
+3. Reuse scientific library and Tank-80 prototypes via reproducible offline research training if their workflow does not require field inference; for field-suitable models, add *only tested* Android executors with explicit model byte/feature schema, runtime cost and calibration gates.
+4. Prefer implementing validated physical/electrical and linear/log response contracts (R0, source units, heater mode) before deploying an unsupported neural/network solver. Model sophistication cannot repair physically invalid Rs/R0.
+5. Baseline equality tests for each port use the **pinned exact upstream model** with fixed train/test data and tolerances, plus grouped external holdouts, latency/memory measurements and sensor dropout. `PENDING` becomes `ANDROID_NATIVE_VERIFIED` only after a real implementation and equivalence test. G3 remains independent.
+
+**Status in this conversation:** `62_ANDROID_PORT_PENDING_CONFIRMED`; `76_REGISTERED`; `12_UPSTREAM_VERIFIED_SOURCE_CLAIMS`; `2_APPROXIMATE_SOURCE_CLAIMS`; `NO_NEW_PORTS`; `NO_EXECUTED_RUNTIME_BENCHMARK`.
+
+### Full canonical-library and all-80 research-technique inventory correction
+
+GitHub source readback of `HazRob/build-harness:main/library/reference-bank/external-research/master_catalog.json` confirms 80 catalog entries, each with category/provenance/status. Git tree inventory of `HazRob/build-harness:main/library/reference-bank` shows 20 direct files; this is a **bibliography/metadata layer**, not a claim that every linked raw archive or historic library was individually downloaded and requalified. In particular 15 entries are explicitly `SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING`, and 24 method study entries `NOT_IMPORTED` (these statuses have **different meaning** from Android `PORT PENDING`).
+
+Git tree inventory of `HazRob/HazRob-Tank:main/research/techniques` confirms **80 unique technique directories**, all 80 have `README.md`, a Python research implementation and test file(s). `research/PROGRESS_80.json` explicitly records 80 unit `PASS` (1,261 historical test cases); G2 49 external numeric/metadata experiments (some scientifically unsuitable), 29 blocked for required independent physical data and 2 analytical-only. Four UCI collections are counted as 14,238 external exposures without double-counting. Tank G3 physical validation remains 0/80. Presence of a research file or historical CI unit PASS **does not** imply corresponding Android native runtime implementation.
+
+**Follow-up issue for the central reference-bank completeness:** `LEGACY_COLLECTIONS.md` admits that individual legacy archive records (43 MQ curves, 76 model definitions, research fingerprint families, etc.) have NOT all been itemized one-by-one in `master_catalog.json`; thus “80 entries” is the canonical 2026-10-21 curated reference set, not an exhaustive count of every file or scientific source ever used. Do not silently mark this aspect `FULL_RAW_LIBRARY_VERIFIED`.
+
