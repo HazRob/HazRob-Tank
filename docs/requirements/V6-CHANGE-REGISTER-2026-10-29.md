@@ -50,3 +50,18 @@ Inherited `ModelRuntimeRegistry` exposes **76 adopted**, **14 native Android** (
 ## V6-002 — خطة التنفيذ المعتمدة كمقترح للمراجعة
 
 تم إعداد **خطة علمية محكمة قابلة للتنفيذ** تضم: `docs/implementation/V6-CHEMCORE-SCIENTIFIC-MASTER-PLAN-2026-10-29_AR.md`، بروتوكول عينات الباحثين `docs/research/V6-CHEMCORE-DATASET-SAMPLING-PROTOCOL-2026-10-29_AR.md`، متتبع المراحل `docs/implementation/V6-CHEMCORE-EXECUTION-TRACKER.json`، مصفوفة 80 تقنية، مصفوفة 76 نموذجًا، مصفوفة 80 مرجعًا، و24 سيناريو simulation/physical. المراحل P00–P11 جميعها `NOT_STARTED` ولم تُشغّل اختبارات جديدة أو تُجمع قياسات. الخطة تلتزم ببروتوكول G3 المؤرخ 2026-10-26 وبقاء `Tank G3=0/80` قبل الاختبارات الفيزيائية المرجعية.
+
+## V6-002/R0-LIBRARY-AND-FINGERPRINT-INGESTION (2026-10-29)
+
+**طلب المستخدم:** الاستفادة الكاملة من نماذج مكتبة `MQUnifiedsensor` التي استخدمت للمعايرة R0، وكذلك كل منحنى أو بصمة قابلة للاستفادة في المرجعية المركزية/التاريخية.
+
+**وثائق إضافية منشأة في فرع V6:**
+- `docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md`;
+- `docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv` (8 قنوات);
+- `docs/research/V6-CHEMCORE-MQDATA-CURVES-43-COMPATIBILITY.csv` (43);
+- `docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv` (14).
+Updated original simulation scenarios list to 31 cases including `SIM-R01..R07`; execution tracker P01 `IN_PROGRESS_SOURCE_METADATA_ONLY`; P02–P11 pending.
+
+**Mandatory design additions:** `ratio_direction`, `r0_definition_id`, source SHA, graph revision, heater, circuit RL/Vc, source gas & units and output_scale. Six MQ3 reference curves use `output_scale=50`; cannot be treated as physical ppm without verifying original source transformation. 2018 paper arithmetic contradictory for MQ7/MQ8. 59 food headspace sessions and four MQ odors are class data, not pure gas standards. Do not inflate 13 derived fingerprint families or 49 model priors into independent gas exposures.
+
+**Not done:** actual 8-channel RL measurements, manufacturer PDF curve-digitization, additional raw archives, simulation runs, new V6 ChemCore executors, APK, device G3. Existing R0 values and Stable snapshots unchanged.
