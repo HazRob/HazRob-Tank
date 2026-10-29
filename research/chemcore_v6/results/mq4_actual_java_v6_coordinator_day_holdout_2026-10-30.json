@@ -1,0 +1,136 @@
+{
+  "schema": "hazrob-chemcore-v6-real-MQ4-in-actual-Java-coordinator-N05J/1",
+  "date": "2026-10-30",
+  "scope": "Real original source methane MQ4 physical resistances passed through actual standalone ChemCoreTankV6 Java coordinator; separate SourceNumericsV6 PLS1 train/cal/test day blocked exploratory research.",
+  "source": {
+    "reference": "Furuta 2022 University of Minnesota original 10ppm_data.csv",
+    "url": "https://hdl.handle.net/11299/226714",
+    "original_csv_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+    "physical_source_rows": 14186,
+    "distinct_acquisition_days": 11,
+    "distinct_original_mq4_sensor_instances": 3,
+    "physical_recorded_sensor_columns": [
+      "MQ4_1",
+      "MQ4_2",
+      "MQ4_3"
+    ],
+    "signal_unit": "Ohm Rs as published; sensor specific R0 not provided",
+    "external_reference_gas": "CH4",
+    "external_gas_reference_instrument": "Li-Cor",
+    "reference_concentration_source_unit": "ppb",
+    "source_concentration_conversion": "original reference licor_ch4 ppb / 1000 to ppm; only external source labels"
+  },
+  "runtime": {
+    "actual_java_coordinator": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/ChemCoreTankV6.java",
+    "actual_java_curve_engine": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/Engine.java",
+    "actual_java_numerical_method": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceNumericsV6.java::Pls1",
+    "benchmark_source": "research/chemcore_v6/benchmarks/MinnesotaMq4JavaV6Replay.java",
+    "workflow": ".github/workflows/chemcore-v6-mq4-java-replay-ci.yml",
+    "ci_run_id": 40968282679,
+    "ci_success": true,
+    "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/40968282679",
+    "original_full_source_coordinator_rows_replayed": 14186,
+    "original_raw_resistance_values_retained": 42558,
+    "channels_per_timestamp": 3,
+    "missing_external_r0_per_timestamp": 3,
+    "raw_input_r0_used": null,
+    "source_curve_fits_generated": 0,
+    "chemical_hypotheses_generated": 0,
+    "reportable_ppm": false,
+    "physical_tank_calibration_verified": false,
+    "food_models_attached": false,
+    "fingerprint_hypotheses_unjustified_for_source": false
+  },
+  "study_design": {
+    "whole_day_test_folds": 11,
+    "train_days_per_fold": 9,
+    "calibration_days_per_fold": 1,
+    "test_days_per_fold": 1,
+    "java_pls1_model_variants": 4,
+    "model_day_fold_evaluations": 44,
+    "source_heldout_predictions": 56744,
+    "calibration_method": "finite-sample split conformal nominal 90% absolute residual quantile from one independently held out source day; target coverage not guaranteed on unseen day",
+    "fixed_analytical_ch4_ppm_cutoff": 4,
+    "cutoff_field_safety_claim": false,
+    "models": [
+      {
+        "model": "SOURCE_TRAIN_MEDIAN",
+        "MAE_ppm": 0.8767309348177781,
+        "RMSE_ppm": 1.4774449864963821,
+        "empirical_90pct_interval_coverage": 0.7959255604116735,
+        "TP_4ppm": 0,
+        "FN_4ppm": 2346,
+        "FP_4ppm": 0,
+        "TN_4ppm": 11840,
+        "sensitivity_4ppm": 0,
+        "nonpositive_source_estimates": 0
+      },
+      {
+        "model": "V6_PLS1_MQ4_UNIT1",
+        "MAE_ppm": 0.8604754758742281,
+        "RMSE_ppm": 1.267820764102651,
+        "empirical_90pct_interval_coverage": 0.7725926970252361,
+        "TP_4ppm": 244,
+        "FN_4ppm": 2102,
+        "FP_4ppm": 811,
+        "TN_4ppm": 11029,
+        "sensitivity_4ppm": 0.10400682011935208,
+        "nonpositive_source_estimates": 0
+      },
+      {
+        "model": "V6_PLS1_MQ4_THREE",
+        "MAE_ppm": 0.879288083005308,
+        "RMSE_ppm": 1.2860931776947684,
+        "empirical_90pct_interval_coverage": 0.7701959678556323,
+        "TP_4ppm": 6,
+        "FN_4ppm": 2340,
+        "FP_4ppm": 725,
+        "TN_4ppm": 11115,
+        "sensitivity_4ppm": 0.0025575447570332483,
+        "nonpositive_source_estimates": 0
+      },
+      {
+        "model": "V6_PLS1_MQ4_THREE_T_RH",
+        "MAE_ppm": 1.0183910282430353,
+        "RMSE_ppm": 1.4083590152680954,
+        "empirical_90pct_interval_coverage": 0.8621175807133794,
+        "TP_4ppm": 0,
+        "FN_4ppm": 2346,
+        "FP_4ppm": 0,
+        "TN_4ppm": 11840,
+        "sensitivity_4ppm": 0,
+        "nonpositive_source_estimates": 0
+      }
+    ]
+  },
+  "comparison_to_checkpoint15": {
+    "previous_python_models": "Scikit-learn Ridge and HistogramGradientBoosting external research, NOT same algorithm as Java V6 PLS1.",
+    "previous_python_HGB_MAE_ppm": 0.8020564287788516,
+    "previous_python_HGB_4ppm_sensitivity": 0.22719522591645352,
+    "method_comparison_validity": "Same source and day-holdout logic but different estimators; no superiority or final selection based on sealed test outcomes is authorized."
+  },
+  "archive": {
+    "artifact_id": 12937904465,
+    "artifact_sha256": "094f773174402ff312c6abdc984fe3657494c8ea0aaa6ffa7c6331ab46b25203",
+    "library_file": "/HazRob/MQ_Reference_Measurements_2026/HazRob_Tank_V6_Java_MQ4_Actual_Engine_Validation_2026-10-30.zip",
+    "library_file_id": "libfile_1950b5ce7e1c8191b022c6216f456e02",
+    "contents": [
+      "v6_coordinator_raw_no_r0_audit.csv",
+      "v6_pls1_whole_day_source_folds.csv",
+      "v6_pls1_whole_day_heldout_predictions.csv",
+      "v6_mq4_java_replay_manifest.json"
+    ]
+  },
+  "gates": {
+    "tank_physical_G3_techniques": 0,
+    "techniques_research_partial": 78,
+    "techniques_unported": 2,
+    "unknown_gas_tested": false,
+    "multi_gas_identity_tested": false,
+    "actual_android_apk_built": false,
+    "device_android_application_tested": false,
+    "gas_food_separation_preserved": true,
+    "heater_or_motion_modified": false,
+    "recommendation": "Do not report physical ppm or gas identity on Tank. Collect valid device-specific R0 and traceable reference concentration, repeat on actual Tank with independent sensor/day groups before upgrading G3."
+  }
+}
