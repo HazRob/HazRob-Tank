@@ -42,6 +42,11 @@ jobs:
             android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodReferenceCatalog.java \
             android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodFreshnessEngine.java \
             research/food_freshness/FoodFreshnessEngineTest.java
+          javac -d /tmp/food-freshness-classes \
+            android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchCatalog.java \
+            android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchEngine.java \
+            research/food_freshness/BeefResearchEngineTest.java
+          java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.meat.BeefResearchEngineTest
           java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.FoodFreshnessEngineTest
           ! grep -R -nE '^import com[.]hazrob[.]tank[.]chemcore|^import com[.]servoc[.]app[.]chemcore' \
             android/app/src/main/java/com/hazrob/tank/foodfreshness
