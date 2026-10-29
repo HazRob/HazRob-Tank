@@ -32,23 +32,27 @@ public final class TankV6EvidenceConsensusTest {
         check(Math.abs(duplicated.rankedCandidates.get(0).matchIndex-d.rankedCandidates.get(0).matchIndex)<1e-12,
                "duplicating same source sensor cannot raise score");
         check(duplicated.rankedCandidates.get(0).physicalSensorBreadth==2,"duplicate remains 2 sensors");
-        status(fuse(a),TankV6EvidenceConsensus.Outcome.INSUFFICIENT_EVIDENCE);
+        status(fuse(a),TankV6EvidenceConsensus.Outcome.RESEARCH_SCREENING);
         status(fuse(e(101,"MQ2","a","m1",.9),e(101,"MQ2","b","m2",.8)),
-               TankV6EvidenceConsensus.Outcome.INSUFFICIENT_EVIDENCE);
+               TankV6EvidenceConsensus.Outcome.RESEARCH_SCREENING);
         d=fuse(a,b,e(101,"MQ2-serial-1","paper-Z","contrary",.10));
-        status(d,TankV6EvidenceConsensus.Outcome.SOURCE_CONFLICT);
+        status(d,TankV6EvidenceConsensus.Outcome.RESEARCH_SCREENING);
         check(d.rankedCandidates.get(0).conflictingSourceModels,"conflict explicitly reported");
         status(fuse(e(1,"a","root","a",.5),e(1,"b","root","b",.48)),
-               TankV6EvidenceConsensus.Outcome.UNKNOWN_OR_OUTSIDE_RESEARCH_DOMAIN);
+               TankV6EvidenceConsensus.Outcome.RESEARCH_SCREENING);
         status(fuse(e(1,"a","root","a",.7),e(1,"b","root","b",.7),
                     e(2,"a","root2","c",.65),e(2,"b","root2","d",.68)),
-               TankV6EvidenceConsensus.Outcome.AMBIGUOUS);
-        status(fuse(new TankV6EvidenceConsensus.Evidence(1,"MQ2","","x",.9,1,true),
-                    new TankV6EvidenceConsensus.Evidence(1,"MQ8","","y",.9,1,true)),
-               TankV6EvidenceConsensus.Outcome.INSUFFICIENT_EVIDENCE);
-        status(fuse(new TankV6EvidenceConsensus.Evidence(1,"MQ2","root","x",.9,0,true),
-                    new TankV6EvidenceConsensus.Evidence(1,"MQ8","root","y",.9,1,false)),
-               TankV6EvidenceConsensus.Outcome.INSUFFICIENT_EVIDENCE);
+               TankV6EvidenceConsensus.Outcome.RESEARCH_SCREENING);
+        d=fuse(new TankV6EvidenceConsensus.Evidence(1,"MQ2","","x",.9,1,true),
+               new TankV6EvidenceConsensus.Evidence(1,"MQ8","","y",.9,1,true));
+        status(d,TankV6EvidenceConsensus.Outcome.RESEARCH_SCREENING);
+        check(d.rankedCandidates.get(0).missingProvenance,"missing source labels annotated");
+        d=fuse(new TankV6EvidenceConsensus.Evidence(1,"MQ2","root","x",.9,0,true),
+               new TankV6EvidenceConsensus.Evidence(1,"MQ8","root","y",.9,1,false));
+        status(d,TankV6EvidenceConsensus.Outcome.RESEARCH_SCREENING);
+        check(d.rankedCandidates.get(0).hasOutsideSourceDomain,
+              "source range status is advisory, not a filter");
+        check(d.rejectedObservations==1,"invalid numeric quality rejected");
         status(fuse(new TankV6EvidenceConsensus.Evidence(1,"MQ2","root","x",Double.NaN,1,true)),
                TankV6EvidenceConsensus.Outcome.INSUFFICIENT_EVIDENCE);
         d=fuse(e(101,"s1","A","m1",.9),e(101,"s2","B","m2",.9));
@@ -61,6 +65,13 @@ public final class TankV6EvidenceConsensusTest {
         try{d.rankedCandidates.clear();throw new AssertionError("mutable rankedCandidates");}
         catch(UnsupportedOperationException expected){assertions++;}
         check(TankV6EvidenceConsensus.SCORE_SEMANTICS.contains("not_probability"),"score never probability");
+        check(d.rankedCandidates.get(0).candidateUid==101,"no heuristic threshold rejection");
+        check(fuse(a).rankedCandidates.size()==1,"one sensor remains visible");
+        check(fuse(e(10,"X","Y","Z",.01)).rankedCandidates.size()==1,
+              "low score remains visible");
+        check(fuse(new TankV6EvidenceConsensus.Evidence(7,"",null,null,.5,.5,false))
+              .rankedCandidates.get(0).missingProvenance,
+              "unattributed input still calculable");
         System.out.println("PASS V6 evidence consensus: "+assertions+" assertions; research-only, zero G3 claims");
     }
 }
