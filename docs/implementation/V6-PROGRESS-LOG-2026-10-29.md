@@ -59,3 +59,13 @@
 - **Commits:** `c54da0d2132bbc0e1409c6f96cdd8952680a573b` 43 curves; `59e44fc926f7fd9a8be2dc8d8dc12c4f1f203adc` 14 assets; `ca63e5b8e91484005eff3f15e1167d35573377d0` 8-R0 matrix; `f11d365cc126001330125c332dfab5ed50d6ecdd` scientific addendum; `f1f1c3c3bc0ea591825fb45e752725fceafe2575` seven new simulation scenarios. Master plan/sampling protocol/tracker updated.
 - **State:** `P01=IN_PROGRESS_SOURCE_METADATA_ONLY / SOURCE_RAW_PARITY_PENDING / SIMULATION=NOT_RUN / V6_CHEMCORE_CODE=NOT_CHANGED / G3=0_OF_80`. No firmware or Android source modified for this expansion. No release/certified ppm claim.
 - **Next:** audit sources individually to resolve duplicate source/curve relationships, then implement `R0CurveCompatibilityGate`, run source-crossing SIM-R cases, and test group-safe researcher data.
+
+## 2026-10-29 — ChemCore V6-002 first execution batch, verified
+
+- **Historical assets** 14/14 SHA-equivalent original HR069 files copied read-only as Tank-local research inputs; three R0 paper datasets copied with matching Git blob source hash.
+- **Code written** `source_audit.py` 43 source curves × 9 roundtrip, 172 synthetic R0 variations, 14 hash checks, 4-source-class fingerprint mask; `peer_r0_audit.py` confirms original-paper MQ7/MQ8 arithmetic errors and never substitutes R0 physical Tank.
+- **External actual data** UCI1081 original zip SHA `813ebb7d00ed9172114b68d27ab3210d6c220b8b23907dce91e9838cd48ab`: 90 physically recorded source exposures (NOT Tank), 6 gases, 3 ppb concentration levels, 5 reps; local grouped concentration holdout with 4 model/channel comparisons. Measured balanced accuracies in `docs/research/V6-CHEMCORE-UCI1081-REAL-DATA-PILOT-2026-10-29_AR.md`; no G3 and no independent device/day validation.
+- **Android-facing source contract** `TankV6SourceCompatibility.java` created, enhanced fail-closed M4 policy. Source exists but not active runtime integration.
+- **CI** [40912404109](https://github.com/HazRob/HazRob-Tank/actions/runs/40912404109), head `42732b2cd51b3e1d0567cda686d0291f8b75a909`: **30 Python tests PASS + 31 Java assertions PASS**, 387/387 numerical model self-check, 172 R0 counterfactuals, 94 out-of-domain rejected. Artifact `12914686568`.
+- **Durable resume point** `docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md` and JSON execution tracker (P00,P01,P02,P03,P04,P05 partial; P06–P11 not started). **No V6 APK built, no field firmware changed, no G3.**
+- **Next work** read-only V5-replay and P03 schema/data migration, then P04 additional SIM-B, P05 UCI270/308/309 real raw sampling, followed by P06 engine integration.
