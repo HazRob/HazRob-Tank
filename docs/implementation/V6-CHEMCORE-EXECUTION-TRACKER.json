@@ -606,5 +606,26 @@
     "android_compile_run_id": 40925657334,
     "android_compile_status": "SUCCESS",
     "android_compile_head_sha": "4d242cd5004167959c823d367e2d351fba921d80"
-  }
+  },
+  "food_freshness_feature_boundary": {
+    "decision": "SEPARATE_APPLICATION_FEATURE_NOT_GAS_CHEMCORE",
+    "architecture": "docs/architecture/FOOD-FRESHNESS-MODULE-BOUNDARY-2026-10-29_AR.md",
+    "food_source_manifest": "research/food_freshness/source_manifest.json",
+    "food_asset": "android/app/src/main/assets/food_freshness/reference/food_freshness_headspace_fingerprints_v1.json",
+    "food_research_source": "research/food_freshness/source_snapshots/food_freshness_headspace_fingerprints_v1.json",
+    "profile_count": 59,
+    "immutable_source_blob_sha": "959aae7574307a0030d218d4b86eb6618a6f72b0",
+    "gas_research_manifest_sources": 13,
+    "original_historical_total_files": 14,
+    "shared_with_gas_engine": "RAW_SENSOR_TELEMETRY_ONLY",
+    "science_models_shared": false,
+    "candidate_scoring_shared": false,
+    "first_isolation_CI": {
+      "id": 40928648698,
+      "conclusion": "SUCCESS"
+    },
+    "implementation_status": "DATA_MIGRATED_AND_ARCHITECTURAL_SEPARATION_VERIFIED_FOOD_UI_AND_ANALYZER_NOT_YET_BUILT"
+  },
+  "latest_gas_source_manifest_policy": "GAS_ONLY_13_FILES_FOOD_ARCHIVE_SEPARATE",
+  "next_food_feature_action": "Develop independent FoodFreshnessAnalyzer and one-shot UI/reports outside gas ChemCore, using source 59 food headspace profiles"
 }
