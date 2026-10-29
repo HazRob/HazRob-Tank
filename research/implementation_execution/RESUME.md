@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 canonical exposure IDs across evidence CSVs (327/327 CI)
+
+- Resumed from `237476c31ad55b11575413ed89b2550c773a8e38`; verified prior G2 CI success and central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets), pinned source readiness 0/14 and independent evidence `records=[]`.
+- Fixed a distinct observation identity gap: NFC-stable Unicode compatibility aliases such as `e1` / `ｅ1` in `exposure_id` could evade exact duplicate and cross-CSV joins. `g2_cross_artifact_gate.py` now emits `NONCANONICAL_EXPOSURE_ID:<CSV_NAME>` for noncanonical exposure identifiers in group, prediction or optional per-group CSV columns; chemical labels and measured values remain untouched.
+- Added four synthetic negative/positive regression tests in `test_g2_physical_source_nfkc_gate.py`. Code SHA `17fab3c5b7b4aa6aa55664848e305c33a6a2f114`; test SHA `9e979c3d9eb8a8b71dfc9b46b78051286afba7b4`. [G2 CI #40848756722](https://github.com/HazRob/HazRob-Tank/actions/runs/40848756722), job `123362676459`: **327/327 PASS**, double replay and publication PASS, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, artifact `12885787664` (ZIP SHA256 `b1c84f3d803d10816916fc2b1d734b477b24ebf7019e653c3b674c38f9910d0c`).
+- Research branch only; no ChemCore Stable, Android or firmware changes. No G2/G3 scientific promotion. See `G2_CANONICAL_EXPOSURE_ID_CROSS_CSV_GATE_2026-10-29_AR.md`.
+- Next: recheck final documentation CI, then acquire original independent physical exposures, traceable concentration references, device/session/exposure provenance, and preregistered grouped blind holdouts.
+
+---
+
 ## 2026-10-29 — G2 NFKC physical source column identity (323/323 CI)
 
 - Resumed from `f877276234d481a2db1ae20e2e697d9dd9cebc4d`, confirmed prior G2 CI success; central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets), pinned readiness 0/14, independent evidence `records=[]`.
