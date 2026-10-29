@@ -38,7 +38,6 @@ import com.servoc.app.measurement.LiveGasStateEngine;
 import com.servoc.app.measurement.PhoneAlertTone;
 import com.servoc.app.measurement.SensorHealthEngine;
 import com.servoc.app.measurement.TelemetryRecorder;
-import com.servoc.app.measurement.PhoneMqStartupRecorder;
 import com.servoc.app.navigation.MotionHistory;
 import com.servoc.app.report.ReferenceBankExporter;
 import com.servoc.app.report.ReportExporter;
@@ -79,7 +78,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     // Compare calibration provenance each poll; old health_baseline_* keys must not re-base fresh R0 alarms.
     private final java.util.Map<String,String> activeR0Revisions=new java.util.HashMap<>();
     private final GasAlertCoordinator gasAlertCoordinator=new GasAlertCoordinator();
-    private SharedPreferences prefs;private HazRobUserLibrary userLibrary;private RobotApi robotApi;private CameraApi cameraApi;private ExperimentsDb db;private TelemetryRecorder telemetryRecorder;private PhoneMqStartupRecorder mqStartupPhoneRecorder;private PhoneAlertTone phoneAlertTone;
+    private SharedPreferences prefs;private HazRobUserLibrary userLibrary;private RobotApi robotApi;private CameraApi cameraApi;private ExperimentsDb db;private TelemetryRecorder telemetryRecorder;private PhoneAlertTone phoneAlertTone;
     private volatile String pendingPhysicalSnapshot="{}",pendingPhysicalUtc="";
     private volatile String pendingInstantTelemetry="{}",pendingInstantAnalysis="{}",pendingInstantId="";
     private volatile long pendingInstantTime=0;
@@ -91,7 +90,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private ControlTab controlTab;private FieldSessionsTab fieldSessionsTab;private MeasurementsTab measurementsTab;private ReportsTab reportsTab;private StatusTab statusTab;private SettingsTab settingsTab;private DeveloperTab developerTab;private View[] tabViews;
 
     @Override public void onCreate(Bundle b){
-        super.onCreate(b);HazRobStorageBootstrap.ensure(this);prefs=getSharedPreferences("servoc",MODE_PRIVATE);ManualR0Calibration.load(prefs);userLibrary=new HazRobUserLibrary(this);robotApi=new RobotApi(prefs.getString("robot","192.168.4.1"));cameraApi=new CameraApi(prefs.getString("camera","192.168.4.2"));flashMode="on".equals(prefs.getString("flash_mode","off"))?"on":"off";trackingTarget=prefs.getInt("tracking_id",-1);trackingName=prefs.getString("tracking_name","");db=new ExperimentsDb(this);telemetryRecorder=new TelemetryRecorder(getApplicationContext(),db);mqStartupPhoneRecorder=new PhoneMqStartupRecorder(getApplicationContext());try{phoneAlertTone=new PhoneAlertTone();}catch(Exception ignored){phoneAlertTone=null;}loadSensorBaselines();
+        super.onCreate(b);HazRobStorageBootstrap.ensure(this);prefs=getSharedPreferences("servoc",MODE_PRIVATE);ManualR0Calibration.load(prefs);userLibrary=new HazRobUserLibrary(this);robotApi=new RobotApi(prefs.getString("robot","192.168.4.1"));cameraApi=new CameraApi(prefs.getString("camera","192.168.4.2"));flashMode="on".equals(prefs.getString("flash_mode","off"))?"on":"off";trackingTarget=prefs.getInt("tracking_id",-1);trackingName=prefs.getString("tracking_name","");db=new ExperimentsDb(this);telemetryRecorder=new TelemetryRecorder(getApplicationContext(),db);try{phoneAlertTone=new PhoneAlertTone();}catch(Exception ignored){phoneAlertTone=null;}loadSensorBaselines();
         String mode=getIntent()==null?null:getIntent().getStringExtra("connection_mode");if(mode!=null&&!mode.trim().isEmpty())prefs.edit().putString("connection_mode",mode).apply();
         RobotApi.setTankOffline(isOffline());
         // SAF may recreate the Activity while the system picker is open.
@@ -246,11 +245,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private void requestManualRefresh(){if(isOffline()){refreshAllTabs();showToast("وضع الاستعراض دون اتصال • لا توجد قراءات حية");return;}workers.execute(()->pollTelemetry(true));}
     private void pollTelemetry(boolean manual){
         if(!entered||isOffline())return;if(!telemetryPolling.compareAndSet(false,true)){if(manual)showToast("التحديث جارٍ");return;}
-        try{long now=SystemClock.elapsedRealtime();JSONObject snap=robotApi.snapshot(left,right);latestDiag=snap;syncOperationalR0();sensorHealth.accept(snap,now);updateGasAlert(snap,now);telemetryRecorder.accept(snap,left,right,developerMode&&selectedTab==6);
-            // V6-003 uses the existing snapshot only: no new ESP32 request or heater commands.
-            if(mqStartupPhoneRecorder!=null && prefs.getBoolean("tank_v6_phone_startup_research_capture",true))
-                mqStartupPhoneRecorder.accept(snap,prefs.getString("robot","192.168.4.1"));
-            ui.post(this::onTelemetryUpdated);if(manual)showToast("تم تحديث البيانات الحية");}
+        try{long now=SystemClock.elapsedRealtime();JSONObject snap=robotApi.snapshot(left,right);latestDiag=snap;syncOperationalR0();sensorHealth.accept(snap,now);updateGasAlert(snap,now);telemetryRecorder.accept(snap,left,right,developerMode&&selectedTab==6);ui.post(this::onTelemetryUpdated);if(manual)showToast("تم تحديث البيانات الحية");}
         catch(Exception e){latestDiag=null;gasAlertCoordinator.reset();lastGasAlertLevel=GasAlertCoordinator.NONE;gasAlertSentAt=0;if(phoneAlertTone!=null)phoneAlertTone.clear();ui.post(this::onTelemetryUpdated);if(manual)showToast("تعذر التحديث: "+e.getClass().getSimpleName());}
         finally{telemetryPolling.set(false);}
     }
@@ -311,7 +306,6 @@ public final class MainActivity extends Activity implements HazRobHost {
             }finally{
                 if(telemetryRecorder!=null)
                     telemetryRecorder.abortInterruptedFieldCapture("ACTIVITY_DESTROYED");
-                if(mqStartupPhoneRecorder!=null)mqStartupPhoneRecorder.close();
                 WifiRoute.unbind(closingContext);
                 if(closingDb!=null)try{closingDb.close();}catch(Exception ignored){}
             }
