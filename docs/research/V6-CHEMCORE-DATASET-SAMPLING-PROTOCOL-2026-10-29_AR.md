@@ -90,3 +90,15 @@ research/chemcore_v6/
 [UCI1081](https://archive.ics.uci.edu/dataset/1081/gas+sensor+array+low-concentration)؛ [UCI270](https://archive.ics.uci.edu/dataset/270/gas+sensor+array+drift+dataset+at+different+concentrations)؛ [UCI308](https://archive.ics.uci.edu/dataset/308/gas+sensor+array+under+flow+modulation)؛ [UCI309](https://archive.ics.uci.edu/dataset/309/gas+sensor+array+exposed+to+turbulent+gas+mixtures.)؛ [MQ-EXT-10](https://data.mendeley.com/datasets/vpc887d53s/3)؛ [MQ-EXT-11](https://data.mendeley.com/datasets/gvwr8hmv2t/2)؛ [MQ-EXT-12](https://data.mendeley.com/datasets/brwptm8wjb/1)؛ [MQ-EXT-14](https://data.mendeley.com/datasets/78y8kv6hz7/1)؛ [MOS-EXT-16](https://data.mendeley.com/datasets/9v3nywn7hy/1)؛ [MOS-EXT-17](https://zenodo.org/records/15681119)؛ [MOS-EXT-18](https://zenodo.org/records/6821340).
 
 **Current state:** `SAMPLING_DESIGN_COMPLETE; NEW_FILES_DOWNLOADED=0; NEW_SAMPLED_EXPOSURES=0; BENCHMARKS_EXECUTED=0`.
+
+## ح — إدخال بصمات ومراجع R0 التاريخية في خطة عينات الباحثين
+
+**المرجع:** `V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md`.
+- `identification_fingerprint_priors_v1.json`: 11 analyte priors و2 class priors، جميعها بصمات مُشتقة من مرجعيات وليس exposure groups مستقلة؛ للاختبار الوصفي/الرياضي فقط ما لم تتوافر أصولها الخام.
+- `food_freshness_headspace_fingerprints_v1.json`: 59 جلسة بمجموعات روائح أغذية، تعامل كوحدات session وليس CAS غاز نقي ولا PPM.
+- `multimodal_mq_transfer_fingerprints_v1.json`: 6400 raw ADC **rows** في أربع فئات، تقسيم البيانات شرطه إعادة بناء المصدر الأصلي للجلسات؛ لا تقسيم عشوائي للصفوف.
+- `uci_mq135_lowconcentration_transfer_fingerprints_v1.json`: 18 موجزًا إحصائيًا مشتقًا من 90 exposure في 6 غازات×3 تركيزات، يختبر `MQ135` واحدًا فقط ولا يُعامل بوصفه 18 exposure جديدة أو مصفوفة Tank ثمانية.
+- `mq_research_curves_43.json`: ليست 43 تجربة تعرّض خام؛ استعملها source-constrained SIM-A وإجهاد العكس، ثم بيانات تعرض مستقلة عند التحقق.
+- `MQ_R0_RS_CROSS_STUDY`, `MQ_R0_ADDITIONAL_5_SOURCES` و`mq_r0_rs_peer_sources`: تُستعمل كاختلافات بين أجهزة/منهجيات وتحليل حساسية للمعايرة؛ **ليست** عينة تدريب لتركيز غاز Tank أو مرجعًا لاستبدال R0.
+- طبّق dedup على أصل التجربة، ورابط المصدر/التزام الملف ورسم المصنع عند تكراره بين MQUnifiedsensor/MQDataScience/Stable والمراجع 80.
+- لا تُقيّد قبول البصمات فقط بسبب نقص PPM إذا كانت المهمة الوصفية لها مشروعة، لكن لا تعلن concentration/regulated identity من تصنيف class.
