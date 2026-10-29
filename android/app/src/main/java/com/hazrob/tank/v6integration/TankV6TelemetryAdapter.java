@@ -97,6 +97,25 @@ public final class TankV6TelemetryAdapter {
             sources.put(row);
         }
         root.put("source_curve_hypotheses",sources);
+        // Descriptive comparison only; contradictory source curves never
+        // suppress the rest of the research candidates or trigger robot action.
+        JSONArray disagreements=new JSONArray();
+        for(com.hazrob.tank.chemcore.v6.EvidenceConflictV6.Pair pair:
+                data.sourceCurveDisagreements.allComparablePairs){
+            JSONObject row=new JSONObject();
+            row.put("chemical_reference_id",pair.chemicalReferenceId);
+            row.put("curve_a",pair.sourceCurveA);
+            row.put("curve_b",pair.sourceCurveB);
+            row.put("source_root_a",pair.rootA);
+            row.put("source_root_b",pair.rootB);
+            row.put("same_physical_sensor",pair.samePhysicalSensor);
+            row.put("different_reference_sources",pair.differentSourceRoots);
+            row.put("absolute_log10_ppm_difference",numberOrNull(pair.log10PpmDifference));
+            row.put("research_ppm_ratio",numberOrNull(pair.concentrationRatioMaxMin));
+            row.put("interpretation","SOURCE_DISAGREEMENT_NOT_A_VALIDATED_GAS_VETO");
+            disagreements.put(row);
+        }
+        root.put("source_curve_disagreements",disagreements);
         JSONArray fingerprints=new JSONArray();
         for(FingerprintEngineV6.Result space:data.fingerprintSpaces){
             JSONObject group=new JSONObject();
