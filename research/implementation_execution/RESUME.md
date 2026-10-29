@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 paired post-blind exposure-row replay and cross-CSV reconciliation (364/364 CI)
+
+- Resumed from `1ea14d32a9fc61afde0537573bade25b135a42eb`; checked previous G2 CI and pinned central reference catalog Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets). Pinned readiness remains 0/14; independent evidence `records=[]`.
+- New research-only `g2_paired_prediction_replay.py` recomputes model and baseline correctness from the SAME post-blind `exposure_id` rows, cross-checks exact per-physical-group metrics, reports both-correct/both-wrong and discordant outcomes, and pins exact input CSV SHA256 plus sorted exposure-to-group assignment digest. Fails closed on duplicate exposure IDs, mismatched counts, invalid CSV and noncanonical physical IDs. It cannot establish physical provenance or blind release timing.
+- Ten synthetic regression tests added in `test_g2_paired_prediction_replay.py`. Code commit `beb68455a96e20c1ee687bc746cb6b9e9d36cbba`, tests commit `8c09ce1bc4114f5519ce1c9245b20bb8b1b340ac`. [G2 CI #40900342477](https://github.com/HazRob/HazRob-Tank/actions/runs/40900342477), job `123540583951`: **364/364 PASS**, double replay and publication gate PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12909641085`, SHA256 `857421a7996a76a03e16f01b52ad609b243b8956ec99e55d5e11fa3844feedfe`.
+- Evidence note: `G2_PAIRED_BLIND_PREDICTION_ROW_REPLAY_2026-10-29_AR.md`. Research branch only; ChemCore Stable, Android and firmware unchanged. No scientific G2/G3 promotion.
+- Next: check documentation-checkpoint CI; acquire independently sourced original raw physical exposures, traceable concentration standards, preregistered device/session/exposure-group holdouts and externally audited post-blind labels. Run the paired-row tool only on qualified evidence; synthetic tests are not gas measurements.
+
+---
+
 ## 2026-10-29 — G2 physical-group weighting sensitivity and CSV header integrity (354/354 CI)
 
 - Resumed from `13b94f2934f1fa0eab23f37ce7c1cfc1414f9459`, 20/20 previous CI successes. Rechecked central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records / 14 external datasets), readiness 0/14 and independent evidence `records=[]`.
