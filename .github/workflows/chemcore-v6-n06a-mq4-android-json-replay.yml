@@ -35,9 +35,10 @@ jobs:
             'https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar' \
             -o /tmp/v6-n06a/json.jar
           curl --fail --location --retry 3 --max-time 45 \
-            'https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar.sha256' \
-            -o /tmp/v6-n06a/json.jar.sha256
-          printf '%s  /tmp/v6-n06a/json.jar\n' "$(tr -d ' \n\r' </tmp/v6-n06a/json.jar.sha256)" | sha256sum -c -
+            'https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar.sha1' \
+            -o /tmp/v6-n06a/json.jar.sha1
+          printf '%s  /tmp/v6-n06a/json.jar\n' "$(tr -d ' \n\r' </tmp/v6-n06a/json.jar.sha1)" | sha1sum -c -
+          echo 'MAVEN_JSON_JAR_SHA256' "$(sha256sum /tmp/v6-n06a/json.jar | cut -d ' ' -f 1)"
       - name: Compile actual new V6 source coordinator AND Android JSON telemetry adapter
         shell: bash
         run: |
