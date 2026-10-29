@@ -25,7 +25,8 @@ class PhysicalSourceIdentityTests(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertFalse(_canonical_physical_source_value(value))
 
-    def _audit_synthetic_group_manifest(self, test_device):
+    def _audit_synthetic_group_manifest(self, test_device, train_exposure="e1",
+                                        test_exposure="e3", prediction_exposure=None):
         with tempfile.TemporaryDirectory() as temp:
             base = (Path(temp) / "research" / "g2" / "evidence" /
                     "01.1" / "synthetic" / "run1")
@@ -53,14 +54,15 @@ class PhysicalSourceIdentityTests(unittest.TestCase):
                     ["exposure_id", "group_id", "device_id", "session_id",
                      "gas_reference_id"],
                     [
-                        ["e1", "train", "d1", "s1", "gasA"],
+                        [train_exposure, "train", "d1", "s1", "gasA"],
                         ["e2", "cal", "d2", "s2", "gasA"],
-                        ["e3", "test", test_device, "s1", "gasA"],
+                        [test_exposure, "test", test_device, "s1", "gasA"],
                     ],
                 ),
                 "predictions_blind.csv": (
                     ["exposure_id", "group_id"],
-                    [["e3", "test"]],
+                    [[prediction_exposure if prediction_exposure is not None
+                      else test_exposure, "test"]],
                 ),
                 "metrics_per_group.csv": (
                     ["group_id", "sample_count"],
@@ -93,6 +95,28 @@ class PhysicalSourceIdentityTests(unittest.TestCase):
     def test_distinct_canonical_device_does_not_trigger_new_blocker(self):
         issues = self._audit_synthetic_group_manifest("d3")
         self.assertNotIn("NONCANONICAL_PHYSICAL_SOURCE_ID", issues)
+
+    def test_fullwidth_exposure_alias_in_group_manifest_fails_closed(self):
+        # NFKC(ｅ1) == e1, but bytewise equality would miss this duplicate.
+        issues = self._audit_synthetic_group_manifest(
+            "d3", test_exposure="ｅ1")
+        self.assertIn("NONCANONICAL_EXPOSURE_ID:GROUP_MANIFEST", issues)
+
+    def test_fullwidth_exposure_alias_in_predictions_fails_closed(self):
+        issues = self._audit_synthetic_group_manifest(
+            "d3", prediction_exposure="ｅ3")
+        self.assertIn("NONCANONICAL_EXPOSURE_ID:PREDICTIONS_BLIND", issues)
+
+    def test_multilingual_canonical_exposure_ids_remain_supported(self):
+        issues = self._audit_synthetic_group_manifest(
+            "d3", train_exposure="تعرض-١", test_exposure="café-2")
+        self.assertFalse(any(issue.startswith("NONCANONICAL_EXPOSURE_ID:")
+                             for issue in issues))
+
+    def test_empty_exposure_id_is_rejected_at_identity_boundary(self):
+        issues = self._audit_synthetic_group_manifest(
+            "d3", test_exposure="")
+        self.assertIn("NONCANONICAL_EXPOSURE_ID:GROUP_MANIFEST", issues)
 
 
 if __name__ == "__main__":
