@@ -118,13 +118,16 @@ def _nonempty_str(value):
 def _canonical_physical_group_id(value):
     """Reject ambiguous physical group IDs before split/leakage evaluation.
 
-    NFC and Unicode control checks prevent visually identical session/device
+    NFKC and Unicode control checks prevent visually identical session/device
     IDs from being treated as independent groups. Interior ASCII spaces and
     valid NFC multilingual identifiers remain supported.
     """
     if not _nonempty_str(value) or value != value.strip():
         return False
-    if unicodedata.normalize("NFC", value) != value:
+    # Compatibility forms (e.g. fullwidth Latin letters, circled digits)
+    # can name the same physical unit with distinct raw strings. Fail closed
+    # rather than silently treating those aliases as independent holdouts.
+    if unicodedata.normalize("NFKC", value) != value:
         return False
     return not any(
         unicodedata.category(ch).startswith("C") or
