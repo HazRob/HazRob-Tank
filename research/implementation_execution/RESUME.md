@@ -1,3 +1,14 @@
+## 2026-10-29 — G2 paired group heterogeneity and leave-one-out sensitivity (348/348 CI)
+
+- Resumed from research HEAD `1e880b5bccef33b8cac1c947fe231ce8ac87abe6` after checking the prior 345-test G2 run and current GitHub Actions status. Rechecked central catalog `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json`, blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records / 14 external datasets); independent evidence `records=[]`.
+- Expanded research-only `g2_paired_delta_diagnostic.py` with model/baseline accuracies, counts and extrema of positive/negative/tied per-group effects, leave-one-physical-group-out pooled delta bounds, largest exposure-group fraction, and descriptive Kish effective group count. This exposes heterogeneity and group-weight concentration; it is NOT proof of physical independence, power, or G2/G3 qualification.
+- Three synthetic regression tests added for mixed-sign unequal groups, 99% group dominance and deterministic group-order invariance. Code commit `27016f671f16da6a59d3a144135d5144c2048318`; test commit `69b839761ccef233da71d923062a97af2724b252`.
+- [G2 Actions #40881408497](https://github.com/HazRob/HazRob-Tank/actions/runs/40881408497), job `123473588931`: **348/348 PASS**, byte-identical replay PASS, publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12900526114`, ZIP SHA256 `f5fd172efeb8d027a18f9ae02ce049dbf254032a6e71549015d001f0f11fde98`.
+- Research branch only; no ChemCore Stable, Android, firmware, or scientific G2/G3 promotion. See `G2_PAIRED_GROUP_HETEROGENEITY_LOO_DIAGNOSTICS_2026-10-29_AR.md`.
+- Next: verify documentation checkpoint and any pending CI. Obtain source-qualified original physical exposures, traceable concentration standards, device/session/exposure provenance, preregistered group splits, and independent blinded holdouts before promotion.
+
+---
+
 ## 2026-10-29 — G2 paired physical-group delta diagnostic (345/345 CI)
 
 - Resumed from `1794f6b9fd9f3ed6e42ef38799870085cdfb82de`; checked prior successful G2 CI and central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries / 14 external datasets). Independent evidence `records=[]`; source readiness 0/14.
