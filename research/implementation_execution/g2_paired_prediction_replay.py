@@ -90,6 +90,8 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
     baseline_correct = Counter()
     both_correct = both_wrong = model_only = baseline_only = 0
     assignment = []
+    outcome_rows = []
+    per_group_outcomes = {}
 
     for row in predictions:
         exposure, group = row["exposure_id"], row["group_id"]
@@ -100,6 +102,9 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
             raise ValueError("PAIRED_REPLAY_DUPLICATE_EXPOSURE_ID")
         seen_exposures.add(exposure)
         assignment.append([exposure, group])
+        outcome_rows.append([exposure, group, row["true_reference"],
+                             row["predicted_reference"],
+                             row["baseline_predicted_reference"]])
         truth = row["true_reference"]
         model = row["predicted_reference"] == truth
         baseline = row["baseline_predicted_reference"] == truth
@@ -110,6 +115,17 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         both_wrong += int(not model and not baseline)
         model_only += int(model and not baseline)
         baseline_only += int(baseline and not model)
+        if group not in per_group_outcomes:
+            per_group_outcomes[group] = {
+                "both_correct": 0, "both_wrong": 0,
+                "model_only_correct": 0, "baseline_only_correct": 0,
+            }
+        outcome_key = (
+            "both_correct" if model and baseline else
+            "model_only_correct" if model else
+            "baseline_only_correct" if baseline else "both_wrong"
+        )
+        per_group_outcomes[group][outcome_key] += 1
 
     declared = {}
     for row in metrics:
@@ -130,6 +146,31 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         if declared[group] != expected:
             raise ValueError("PAIRED_REPLAY_METRIC_COUNT_MISMATCH")
 
+    # Per-group paired discordance exposes cancellation across physical groups.
+    # It is descriptive, not a McNemar significance test or evidence of
+    # independent physical exposures.
+    group_pairing = []
+    for group in sorted(counts):
+        outcomes = per_group_outcomes[group]
+        if (sum(outcomes.values()) != counts[group] or
+                outcomes["both_correct"] + outcomes["model_only_correct"]
+                != model_correct[group] or
+                outcomes["both_correct"] + outcomes["baseline_only_correct"]
+                != baseline_correct[group]):
+            raise ValueError("PAIRED_REPLAY_GROUP_DISCORDANCE_INVALID")
+        group_pairing.append({
+            "group_id": group,
+            "exposures": counts[group],
+            **outcomes,
+            "paired_net_model_advantage_count": (
+                outcomes["model_only_correct"] -
+                outcomes["baseline_only_correct"]
+            ),
+        })
+    if (sum(g["model_only_correct"] for g in group_pairing) != model_only or
+            sum(g["baseline_only_correct"] for g in group_pairing) != baseline_only):
+        raise ValueError("PAIRED_REPLAY_GROUP_DISCORDANCE_INVALID")
+
     # This check uses the paired post-unblinding outcomes, rather than
     # inferring pair agreement from two marginal group accuracies.
     if (model_only - baseline_only
@@ -147,6 +188,11 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         "paired_both_wrong": both_wrong,
         "paired_model_only_correct": model_only,
         "paired_baseline_only_correct": baseline_only,
+        "paired_outcomes_by_declared_physical_group": group_pairing,
+        "prediction_rows_semantic_sha256": hashlib.sha256(
+            json.dumps(sorted(outcome_rows), ensure_ascii=False,
+                       separators=(",", ":")).encode("utf-8")
+        ).hexdigest(),
         "predictions_csv_sha256": hashlib.sha256(predictions_raw).hexdigest(),
         "metrics_per_group_csv_sha256": hashlib.sha256(metrics_raw).hexdigest(),
         "exposure_group_assignment_sha256": hashlib.sha256(
