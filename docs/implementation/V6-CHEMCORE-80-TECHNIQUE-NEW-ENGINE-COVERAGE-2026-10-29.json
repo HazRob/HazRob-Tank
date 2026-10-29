@@ -4,8 +4,8 @@
   "scoping": "NEW independent com.hazrob.tank.chemcore.v6 package; food freshness and prior inference code excluded",
   "counts": {
     "total": 80,
-    "partial": 14,
-    "not_yet_ported": 66,
+    "partial": 24,
+    "not_yet_ported": 56,
     "fully_implemented_and_device_validated": 0
   },
   "available_numerical_references": {
@@ -20,19 +20,23 @@
       "id": "01.1",
       "name": "ADC to Rs",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "MeasurementDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "01.2",
       "name": "R0 calibration",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "MeasurementDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "01.3",
@@ -68,19 +72,23 @@
       "id": "01.6",
       "name": "Signal quality",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "MeasurementDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "01.7",
       "name": "Drift monitoring",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "MeasurementDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "02.1",
@@ -142,19 +150,23 @@
       "id": "02.6",
       "name": "3D/4D features",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "MeasurementDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "02.7",
       "name": "Feature selection",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ResearchDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "02.8",
@@ -192,10 +204,12 @@
       "id": "03.3",
       "name": "Class overlap",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ResearchDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "03.4",
@@ -210,10 +224,12 @@
       "id": "03.5",
       "name": "Sensor importance",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ResearchDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "03.6",
@@ -230,19 +246,23 @@
       "id": "03.7",
       "name": "Concentration confounding",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ResearchDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "03.8",
       "name": "Identifiability limits",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ResearchDiagnosticsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent V6 numerical method and synthetic/original-prototype JDK tests, CI 40938234785; 392 checks for 10-technique batch. No Tank G3. Missing source metadata only advisory; invalid math omitted."
     },
     {
       "id": "04.1",
@@ -767,5 +787,59 @@
       "no_physical_tank_validation": true,
       "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
     }
-  ]
+  ],
+  "last_new_batch": {
+    "date": "2026-10-29",
+    "batch": "V6-N03-A",
+    "new_partial_techniques": [
+      {
+        "id": "01.1",
+        "name": "ADC to Rs"
+      },
+      {
+        "id": "01.2",
+        "name": "R0 calibration"
+      },
+      {
+        "id": "01.6",
+        "name": "Signal quality"
+      },
+      {
+        "id": "01.7",
+        "name": "Drift monitoring"
+      },
+      {
+        "id": "02.6",
+        "name": "3D/4D features"
+      },
+      {
+        "id": "02.7",
+        "name": "Feature selection"
+      },
+      {
+        "id": "03.3",
+        "name": "Class overlap"
+      },
+      {
+        "id": "03.5",
+        "name": "Sensor importance"
+      },
+      {
+        "id": "03.7",
+        "name": "Concentration confounding"
+      },
+      {
+        "id": "03.8",
+        "name": "Identifiability limits"
+      }
+    ],
+    "modules": [
+      "MeasurementDiagnosticsV6.java",
+      "ResearchDiagnosticsV6.java"
+    ],
+    "tests": "V6BatchTenDiagnosticsTest.java",
+    "assertions": 392,
+    "ci_run": 40938234785,
+    "status": "RESEARCH_NUMERIC_METHODS_JVM_PASS_NOT_DEVICE_VALIDATED"
+  }
 }
