@@ -45,9 +45,87 @@ public final class TankInstantReportPdf {
     private static String data(JSONObject o,String key,int digits){
         return o==null?"غير متاح":fmt(o.optDouble(key,Double.NaN),digits);
     }
+    /**
+     * Dedicated V6 gas-only ONE-SHOT PDF. Unlike the V5 source format this
+     * intentionally contains NO ranked posterior, synthetic confidence,
+     * exposure exceedance, certified ppm or hazard-class claim. UNKNOWN is
+     * always the field identity while Tank physical G3 is absent.
+     */
+    private static void writeResearchV6(OutputStream stream,JSONObject telemetry,
+                            JSONObject v6,String id,long timestamp)throws Exception{
+        PdfDocument doc=new PdfDocument();
+        try{
+            PdfDocument.Page page=doc.startPage(new PdfDocument.PageInfo.Builder(595,842,1).create());
+            Canvas canvas=page.getCanvas();
+            canvas.drawColor(Color.WHITE);
+            int y=46;
+            rtl(canvas,"HazRob Tank — تقرير غازات ChemCore V6 البحثي",y,17,true);y+=29;
+            rtl(canvas,"العملية: "+id+" • "+utc(timestamp),y,10,false);y+=21;
+            rtl(canvas,"نتيجة مؤقتة للقراءة الختامية فقط — ليست قياس تعرض زمني",y,10,false);y+=23;
+            rtl(canvas,"الهوية: UNKNOWN — لم يتم اعتماد أي غاز على Tank G3",y,13,true);y+=23;
+            rtl(canvas,"تركيز ppm معتمد: غير متاح • لا يمكن إصدار حكم تجاوز حدود مهنية",y,10,false);y+=23;
+            canvas.drawLine(35,y,560,y,paint(1,false,0xFFBEC7D1));y+=26;
+            rtl(canvas,"سجل القراءات الأصلية (بوحدة استقبال ESP32؛ kΩ عند توثيقها)",y,12,true);y+=23;
+            JSONObject mq=telemetry.optJSONObject("mq");
+            for(HazRobHardwareProfile.Channel channel:HazRobHardwareProfile.MQ){
+                JSONObject s=mq==null?null:mq.optJSONObject(channel.key);
+                boolean eligible=s!=null&&s.optBoolean("ok",s.optBoolean("valid",false))&&
+                    (!s.has("powered")||s.optBoolean("powered",false))&&
+                    Double.isFinite(s.optDouble("rs",Double.NaN))&&
+                    s.optDouble("rs",Double.NaN)>0;
+                String row=channel.key.toUpperCase(Locale.US)+"  •  "+
+                    (eligible?"Rs "+data(s,"rs",3)+
+                        "  •  R0 "+data(s,"r0",3)+
+                        "  •  المصدر "+s.optString("r0_source","غير موثق"):
+                        "قراءة غائبة أو غير صالحة، لم تدخل التحليل");
+                rtl(canvas,row,y,9,false);y+=19;
+            }
+            y+=9;
+            rtl(canvas,"جودة بيانات V6 المستقلة",y,12,true);y+=23;
+            rtl(canvas,"قنوات Rs محفوظة "+v6.optInt("observed_mq_channels",0)+
+                " • بلا R0 "+v6.optInt("raw_only_mq_channels",0)+
+                " • نسبة صالحة "+v6.optInt("ratio_ready_mq_channels",0),y,10,false);y+=21;
+            rtl(canvas,"الامتناع عن الهوية: "+v6.optString("open_set_status",
+                    "UNKNOWN_WITHOUT_PHYSICAL_TANK_G3"),y,9,false);y+=22;
+            JSONArray source=v6.optJSONArray("source_curve_hypotheses");
+            int total=source==null?0:source.length();
+            rtl(canvas,"فرضيات منحنيات المصادر — غير مثبتة ميدانيًا ("+total+")",y,12,true);y+=20;
+            if(total==0){
+                rtl(canvas,"لا توجد منحنيات مؤهلة للحساب من القيم الأصلية المتاحة",y,10,false);
+                y+=20;
+            }else{
+                for(int i=0;i<Math.min(total,7)&&y<733;i++){
+                    JSONObject q=source.optJSONObject(i);
+                    if(q==null)continue;
+                    String row="#"+(i+1)+" "+q.optString("gas_or_class","—")+
+                        " • "+q.optString("sensor_model","—")+
+                        " • المصدر "+q.optString("source_curve_id","—");
+                    rtl(canvas,row,y,9,false);y+=18;
+                }
+                if(total>7&&y<748){
+                    rtl(canvas,"بقية فرضيات المصادر محفوظة رقمياً ("+(total-7)+")",y,9,false);
+                    y+=18;
+                }
+            }
+            if(y<770)y=770;
+            rtl(canvas,"تحذير: لا تُستخدم فرضيات المنحنيات لإطلاق إنذار أو حساب ppm مهني.",y,9,true);
+            y+=19;
+            rtl(canvas,"بيانات الأغذية ومحرك الغازات منفصلان؛ لا يوجد دمج تلقائي.",y,9,false);
+            doc.finishPage(page);
+            doc.writeTo(stream);
+        }finally{
+            doc.close();
+        }
+    }
+
     public static void write(OutputStream out,JSONObject telemetry,JSONObject chemcore,String id,long timestamp)throws Exception{
         if(out==null||telemetry==null||chemcore==null||id==null||id.isEmpty())
             throw new IllegalArgumentException("Completed immutable measurement required");
+        if("hazrob-tank-v6-android-telemetry-bridge/1".equals(
+                chemcore.optString("schema",""))){
+            writeResearchV6(out,telemetry,chemcore,id,timestamp);
+            return;
+        }
         PdfDocument doc=new PdfDocument();
         try{
             PdfDocument.Page page=doc.startPage(new PdfDocument.PageInfo.Builder(595,842,1).create());
