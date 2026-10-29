@@ -25,7 +25,7 @@ public final class BeefResearchPdf {
     }
     public static Uri save(Context ctx,BeefResearchEngine.Result result,
                            Map<String,Double> channels,int sampleCount,
-                           long durationMs,String id) throws Exception{
+                           long durationMs,String id,double temperatureC,double humidityPct) throws Exception{
         if(ctx==null||result==null||id==null)throw new IllegalArgumentException("missing beef report input");
         PdfDocument pdf=new PdfDocument();
         try{
@@ -40,7 +40,11 @@ public final class BeefResearchPdf {
             t(c,p,"Source model: Wijaya TS1-TS4 training / TS5 held out",35,114,10,false);
             t(c,p,"Seven matching sensor types: MQ2 MQ3 MQ4 MQ5 MQ8 MQ9 MQ135",35,134,9,false);
             t(c,p,"Source resistances: geomean-centered log10 Rs shape",35,151,9,false);
-            t(c,p,"Tank captured channels",35,179,11,true);
+            t(c,p,"Ambient T: "+(Double.isFinite(temperatureC)?
+                String.format(Locale.US,"%.1f C",temperatureC):"n/a")+
+                " | Relative humidity: "+(Double.isFinite(humidityPct)?
+                String.format(Locale.US,"%.1f%%",humidityPct):"n/a"),35,165,9,false);
+            t(c,p,"Tank captured channels",35,188,11,true);
             int y=199;
             for(String sensor:BeefResearchCatalog.SENSOR_ORDER){
                 Double rs=channels.get(sensor);
