@@ -1,0 +1,98 @@
+name: ChemCore V6 MQ4 whole-system external reference validation (11 day and 3 unit holds)
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/chemcore_v6/benchmarks/mq4_full_system_external_source_benchmark.py'
+      - '.github/workflows/chemcore-v6-mq4-system-reference-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mq4-reference-system-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          distribution: python
+          python-version: '3.11'
+      - name: Install fixed mathematical research harness versions (NOT Android production runtime)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-input "numpy==2.3.5" "pandas==2.2.3" "scikit-learn==1.8.0"
+      - name: Retrieve original MQ4 and MQ3/MQ4/MQ8 source files and SHA256 verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/mq4-raw
+          curl --fail --location --retry 3 --max-time 90 \
+            "https://conservancy.umn.edu/server/api/core/bitstreams/1542d00c-67b4-4a61-93f3-48ee1dd97208/content" \
+            -o /tmp/mq4-raw/10ppm_data.csv
+          curl --fail --location --retry 3 --max-time 60 \
+            "https://raw.githubusercontent.com/NohPei/mobile-AQ-documentation/main/sensor_log.csv" \
+            -o /tmp/mq4-raw/sensor_log.csv
+          echo "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d  /tmp/mq4-raw/10ppm_data.csv" | sha256sum -c -
+          echo "9ff45148718003878bca102c28d53df2708b87c7371e7d4ba986ddfd0ba98dc8  /tmp/mq4-raw/sensor_log.csv" | sha256sum -c -
+      - name: Run external MQ4 complete numerical processing, source/day holdout, transfer and faults
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_v6/benchmarks/mq4_full_system_external_source_benchmark.py \
+            --source /tmp/mq4-raw --out /tmp/mq4-v6-system
+      - name: Verify artifact integrity and HARD scientific/promotion gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,csv,pathlib,collections,statistics
+          d=pathlib.Path('/tmp/mq4-v6-system')
+          def rows(n):
+            with (d/n).open() as f:return list(csv.DictReader(f))
+          manifest=json.loads((d/'source_manifest.json').read_text())
+          folds=rows('mq4_day_blocked_folds.csv')
+          predictions=rows('mq4_day_blocked_predictions.csv')
+          transfer=rows('mq4_unseen_instance_plus_day_transfer.csv')
+          mobile=json.loads((d/'mq_mobile_source_signal_qc.json').read_text())
+          faults=json.loads((d/'mq4_fault_injection_gate.json').read_text())
+          assert manifest['source_rows']==14186
+          assert manifest['distinct_reference_gases']==1 and manifest['physical_Tank_G3_validated']==0
+          assert manifest['source_reference_instrument']=='Li-Cor CH4'
+          assert manifest['multi_gas_discrimination_evaluable'] is False
+          assert manifest['real_time_Android_ChemCoreV6_routing_evaluated'] is False
+          assert manifest['food_freshness_data_used'] is False
+          assert len(folds)==55 and len(predictions)==70930 and len(transfer)==33
+          assert set(int(f['n_train'])+int(f['n_cal'])+int(f['n_test']) for f in folds)=={14186}
+          assert all(f['test_day']!=f['calibration_day'] and float(f['mae_ppm'])>=0 for f in folds)
+          bymodel=collections.defaultdict(list)
+          for r in predictions:bymodel[r['model']].append(r)
+          assert len(bymodel)==5
+          for model,rs in bymodel.items():
+            assert len(rs)==14186
+            assert len(set(int(x['source_row_id']) for x in rs))==14186
+          assert len(set((x['test_day'],x['heldout_sensor_instance']) for x in transfer))==33
+          assert all(x['heldout_sensor_instance'] not in x['training_instances'].split('|') for x in transfer)
+          assert all(int(x['training_days'])==9 for x in transfer)
+          assert mobile['source_rows']==114 and not mobile['ppm_from_MQ_inferred']
+          assert not mobile['gas_identity_inferred']
+          assert mobile['temperature_valid_entries']==4
+          assert not faults['three_channel_inference_allowed_when_missing']
+          assert not faults['fallback_to_old_engine_allowed']
+          print('PASS_SOURCE_NUMERICS 55 day/model tests, 70930 heldout source predictions, 33 unseen sensor+day transfers')
+          for model,rs in bymodel.items():
+            errs=[abs(float(x['estimated_ch4_ppm_research'])-float(x['reference_ch4_ppm'])) for x in rs]
+            cov=sum(x['interval_contains_reference']=='True' for x in rs)/len(rs)
+            print(f'SOURCE_SYSTEM {model} n={len(rs)} MAE_ppm={statistics.mean(errs):.6f} coverage90={cov:.6f}')
+          print('PASS_RESEARCH_ONLY NO_TANK_G3 NO_80_TECHNIQUE_DEVICE_VALIDATION NO_ANDROID_APK NO_MULTI_GAS_ID NO_FOOD')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: HazRob-ChemCoreV6-MQ4-FullSystem-Reference-11Days-3Units
+          path: /tmp/mq4-v6-system/
+          retention-days: 30
