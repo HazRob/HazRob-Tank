@@ -1,0 +1,137 @@
+name: ChemCore V6 N06-C temporary Android emulator PDF rendering proof
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/chemcore_v6/tests/android/V6ResearchPdfSmokeFixtureActivity.java'
+      - 'android/app/src/main/java/com/servoc/app/report/SmartFieldSessionPdfWriter.java'
+      - '.github/workflows/chemcore-v6-n06c-emulator-pdf-smoke-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-v6-pdf-on-emulator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay Tank sources and add emulator TEST-ONLY PDF smoke Activity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then
+            cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          fi
+          cp tank/research/chemcore_v6/tests/android/V6ResearchPdfSmokeFixtureActivity.java \
+            source/app/src/main/java/com/servoc/app/report/V6ResearchPdfSmokeFixtureActivity.java
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('source/app/src/main/AndroidManifest.xml')
+          s=p.read_text()
+          marker='<activity android:name=".MainActivity" android:exported="false"/>'
+          assert marker in s
+          s=s.replace(marker,
+            '<activity android:name=".report.V6ResearchPdfSmokeFixtureActivity" android:exported="true"/>\n        '+marker)
+          p.write_text(s)
+          print('TEST ONLY: temporary PDF fixture Activity injected in CI workspace')
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Prepare Android SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Build temporary Android DEBUG APK for emulator test only
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Run three real PDF page rasters on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            set -euo pipefail
+            adb install -r source/app/build/outputs/apk/debug/app-debug.apk
+            adb shell am start -W -n com.servoc.app/com.servoc.app.report.V6ResearchPdfSmokeFixtureActivity
+            mkdir -p /tmp/v6-n06c-pdf
+            ready=0
+            for i in $(seq 1 55); do
+              if adb shell run-as com.servoc.app test -f files/v6_pdf_status.json >/dev/null 2>&1; then
+                ready=1
+                break
+              fi
+              sleep 2
+            done
+            if [ "$ready" != 1 ]; then
+              adb logcat -d -t 500 | tail -100
+              exit 1
+            fi
+            adb exec-out run-as com.servoc.app cat files/v6_pdf_status.json > /tmp/v6-n06c-pdf/v6_pdf_status.json
+            cat /tmp/v6-n06c-pdf/v6_pdf_status.json
+            python3 - <<'PY'
+            import json
+            p='/tmp/v6-n06c-pdf/v6_pdf_status.json'
+            d=json.load(open(p))
+            assert d['status']=='PASS',d
+            assert d['pages_created']==3 and d['pages_rasterized_with_android_pdf_renderer']==3
+            assert d['reportable_ppm'] is False and d['physical_tank_g3']==0
+            print('PASS ANDROID_EMULATOR_PDF_RENDERER THREE_PAGES')
+            PY
+            adb exec-out run-as com.servoc.app cat files/v6_pdf_fixture.pdf > /tmp/v6-n06c-pdf/v6_pdf_fixture.pdf
+            for i in 1 2 3; do
+              adb exec-out run-as com.servoc.app cat files/v6_pdf_fixture_page_$i.png > /tmp/v6-n06c-pdf/v6_pdf_fixture_page_$i.png
+            done
+      - name: Verify actual PDF and PNG output header, dimensions and SHAs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,struct
+          p=Path('/tmp/v6-n06c-pdf')
+          pdf=p/'v6_pdf_fixture.pdf'
+          assert pdf.stat().st_size>3000 and pdf.read_bytes().startswith(b'%PDF-')
+          im=[]
+          for i in range(1,4):
+              f=p/f'v6_pdf_fixture_page_{i}.png'
+              b=f.read_bytes()
+              assert b[:8]==b'\x89PNG\r\n\x1a\n'
+              w,h=struct.unpack('>II',b[16:24])
+              assert (w,h)==(842,595),(w,h)
+              im.append({'name':f.name,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
+          d=json.loads((p/'v6_pdf_status.json').read_text())
+          d.update({'pdf_sha256':hashlib.sha256(pdf.read_bytes()).hexdigest(),
+                    'pdf_size':pdf.stat().st_size,'page_images':im,
+                    'temporary_test_apk_only':True,'full_approved_DB_report_tested':False})
+          (p/'v6_pdf_emulator_verified_manifest.json').write_text(json.dumps(d,indent=2)+'\n')
+          print('PASS N06C REAL ANDROID PDF RASTERS',json.dumps(d))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: HazRob-Tank-V6-N06C-Android-PdfRenderer-Page-Proof
+          path: /tmp/v6-n06c-pdf/
+          retention-days: 30
