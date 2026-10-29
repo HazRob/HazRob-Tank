@@ -4,8 +4,8 @@
   "scoping": "NEW independent com.hazrob.tank.chemcore.v6 package; food freshness and prior inference code excluded",
   "counts": {
     "total": 80,
-    "partial": 34,
-    "not_yet_ported": 46,
+    "partial": 44,
+    "not_yet_ported": 36,
     "fully_implemented_and_device_validated": 0
   },
   "available_numerical_references": {
@@ -363,10 +363,12 @@
       "id": "04.10",
       "name": "Benchmarking",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Heldout confusion-matrix accuracy, balanced accuracy and macro-F1; unknown/abstention still counted as errors. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "05.1",
@@ -476,46 +478,56 @@
       "id": "06.2",
       "name": "Bayesian inference",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Explicit nonnegative source priors and likelihoods with Bayesian normalization; not device-calibrated probabilities. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "06.3",
       "name": "Probability calibration",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Discrete temperature fit by held-out calibration NLL, stable softmax, no test-set fitting. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "06.4",
       "name": "Conformal prediction",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Split-conformal finite-sample quantile with conservative all-label set at unattainable rank; exchangeability not established by synthetic tests. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "06.5",
       "name": "Open-set recognition",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Explicit open-set score threshold and margin, unknown decision without deleting ranked evidence. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "06.6",
       "name": "OOD detection",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Train-only diagonal Mahalanobis OOD score with explicit variance regularization; thresholds still need independent calibration. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "06.7",
@@ -541,37 +553,45 @@
       "id": "06.9",
       "name": "Abstention",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Reason-coded reporting abstention retaining all numerically valid scores; source calibration not fabricated. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "07.1",
       "name": "Cross-session tests",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Complete source-session heldout grouping, repeated frames kept within session. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "07.2",
       "name": "Cross-device tests",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Complete physical-device heldout grouping based on externally supplied real device IDs. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "07.3",
       "name": "Cross-concentration tests",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceValidationV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-C JDK research-stage primitive; Complete source-concentration heldout grouping using independent reference-level IDs. 38 explicit assertions in V6ThirdTenTechniquesTest.java across 10 partial techniques, independent engine CI 40949107155 success. No Tank G3, no UCI1081 Java-model validation, no UI integration."
     },
     {
       "id": "07.4",
@@ -932,5 +952,6 @@
       "No device-calibrated training set or actual Tank gas identity",
       "Source datasets and sensor feature spaces remain distinct"
     ]
-  }
+  },
+  "last_checkpoint": "V6-N03-C CI_SUCCESS 40949107155; 1924 JDK assertions; Android compile observed on earlier N03-C source commit 40948928576; G3=0."
 }
