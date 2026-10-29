@@ -31,7 +31,7 @@
     "library_reference_records": 80,
     "independent_Tank_G3_validated_techniques": 0
   },
-  "disclaimer": "57+1 Python tests and Java 598 assertions are software checks; V6 instant overlay compiles in Android merged application but runtime on phone not tested, session/report consumers pending; Tank G3 remains zero.",
+  "disclaimer": "The new V6 core has no dependency on any previous inference engine. Historic experimental files remain as scientific data only. No Android V6 UI/report cutover, APK or Tank G3 demonstrated.",
   "stage_count": 12,
   "stages": [
     {
@@ -346,7 +346,7 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "P06_RESEARCH_ALL_43_P03_ANDROID_ONE_SHOT_WIRED_GRADLE_COMPILE_PASS_P09_PARTIAL",
+  "state": "NEW_CHEMCORE_TANK_V6_INDEPENDENT_SOURCE_AND_JDK_VERIFIED_ANDROID_UI_NOT_SWITCHED",
   "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
   "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
   "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
@@ -490,7 +490,7 @@
     }
   ],
   "scientific_checkpoint": "docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md",
-  "current_phase": "P03_P05_P06_P08_P09_IN_PROGRESS_RESEARCH_ONLY",
+  "current_phase": "CLEAN_SLATE_V6_N01_N02_N04_CORE_IMPLEMENTATION",
   "scientific_checkpoint_02": "docs/implementation/V6-CHEMCORE-CHECKPOINT-02-2026-10-29_AR.md",
   "scientific_checkpoint_03": "docs/implementation/V6-CHEMCORE-CHECKPOINT-03-2026-10-29_AR.md",
   "deferred_extensions": [
@@ -543,5 +543,63 @@
     "status": "ANDROID_GRADLE_COMPILE_PASS_DEVICE_TEST_PENDING",
     "scientific_CI_run_id": 40924315634,
     "Android_compile_run_id": 40924139634
+  },
+  "architecture_policy": "CLEAN_SLATE_INDEPENDENT_TANK_CHEMCORE_V6",
+  "architecture_decision": "docs/architecture/CHEMCORE-TANK-V6-CLEAN-SLATE-ADR-2026-10-29_AR.md",
+  "legacy_code_dependency_allowed": false,
+  "legacy_inference_used_for_acceptance": false,
+  "original_app_inference_interop_allowed": false,
+  "new_engine_scope": "com.hazrob.tank.chemcore.v6",
+  "new_engine_root": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/",
+  "previous_v6_instant_overlay": "REMOVED_FROM_PRIOR_ANDROID_ANALYZER_AT_COMMIT_8ed61a4bec10b543208185e743e964be8fd1de08",
+  "new_engine_milestones": [
+    {
+      "id": "V6-N01",
+      "status": "IN_PROGRESS_NEW_INDEPENDENT_SENSOR_INPUT_AND_MATH_JDK_PASS",
+      "components": [
+        "com.hazrob.tank.chemcore.v6.Engine",
+        "com.hazrob.tank.chemcore.v6.SourceCatalog"
+      ],
+      "outcome": "43_RESEARCH_CURVES_13_ORIGINAL_CANDIDATE_GROUPS",
+      "open": "Add raw-only and temperature/humidity/time-channel adapters"
+    },
+    {
+      "id": "V6-N02",
+      "status": "IN_PROGRESS_SOURCE_43_OF_43_INCLUDED",
+      "open": "Ingest additional independent raw curves, spectra, fingerprints, temperature and time models"
+    },
+    {
+      "id": "V6-N03",
+      "status": "NOT_STARTED_DEDICATED_NEW_80_TECHNIQUE_ADAPTERS"
+    },
+    {
+      "id": "V6-N04",
+      "status": "BASIC_JOINT_LOG_DOMAIN_RANKING_JDK_PASS_FUSION_PENDING"
+    },
+    {
+      "id": "V6-N05",
+      "status": "EXTERNAL_UCI1081_PILOT_RECORDED_OTHER_ORIGINAL_SOURCES_PENDING"
+    },
+    {
+      "id": "V6-N06",
+      "status": "ANDROID_STANDALONE_PACKAGE_COMPILE_PENDING_NO_UI_CUTOVER"
+    },
+    {
+      "id": "V6-N07",
+      "status": "INDEPENDENT_ENGINE_JDK_PASS_PHYSICAL_AND_APK_TESTS_PENDING"
+    }
+  ],
+  "independent_engine_tests": {
+    "run_id": 40925694019,
+    "status": "COMPLETED_SUCCESS",
+    "java_assertions": 59,
+    "source_parity_tests": 3,
+    "original_curves": 43,
+    "chemical_groups": 13,
+    "retains_rs_without_r0": true,
+    "nonfinite_resistance_not_used_for_ratio": true,
+    "software_only": true,
+    "APK_built": false,
+    "physical_Tank_G3": 0
   }
 }
