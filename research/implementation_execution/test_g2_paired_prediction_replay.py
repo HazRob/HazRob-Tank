@@ -406,11 +406,11 @@ class PairedPredictionReplayTests(unittest.TestCase):
         # Same true class in two groups, but group sizes are unequal:
         # weighted +1/7 versus equal-group (1/3 - 1)/2 = -1/3.
         pred = "".join(
-            f"e{i},a,A,A,B\\n" for i in range(1, 5)
+            f"e{i},a,A,A,B\n" for i in range(1, 5)
         ) + "".join(
-            f"e{i},a,A,B,A\\n" for i in range(5, 7)
-        ) + "e7,b,A,B,A\\n"
-        self.write(pred=pred, metrics="a,6,4,2\\nb,1,0,1\\n")
+            f"e{i},a,A,B,A\n" for i in range(5, 7)
+        ) + "e7,b,A,B,A\n"
+        self.write(pred=pred, metrics="a,6,4,2\nb,1,0,1\n")
         result = self.replay()
         row = result["true_reference_class_declared_group_coverage"][0]
         self.assertEqual(row["true_reference"], "A")
@@ -426,11 +426,11 @@ class PairedPredictionReplayTests(unittest.TestCase):
             ["A"])
 
     def test_unobserved_class_group_cells_are_not_imputed(self):
-        self.write(pred=("e1,a,A,A,B\\n"
-                         "e2,a,A,B,A\\n"
-                         "e3,b,B,B,A\\n"
-                         "e4,b,B,A,B\\n"),
-                   metrics="a,2,1,1\\nb,2,1,1\\n")
+        self.write(pred=("e1,a,A,A,B\n"
+                         "e2,a,A,B,A\n"
+                         "e3,b,B,B,A\n"
+                         "e4,b,B,A,B\n"),
+                   metrics="a,2,1,1\nb,2,1,1\n")
         result = self.replay()
         cells = result["true_reference_class_support_by_declared_group"]
         self.assertEqual(len(cells), 2)
@@ -445,10 +445,10 @@ class PairedPredictionReplayTests(unittest.TestCase):
                       result["class_group_discordance_scope"])
 
     def test_class_group_discordance_invariant_to_row_order_and_arabic(self):
-        self.write(pred=("e1,a,إيثانول,إيثانول,أسيتون\\n"
-                         "e2,a,أسيتون,إيثانول,أسيتون\\n"
-                         "e3,b,إيثانول,إيثانول,إيثانول\\n"
-                         "e4,b,أسيتون,إيثانول,إيثانول\\n"))
+        self.write(pred=("e1,a,إيثانول,إيثانول,أسيتون\n"
+                         "e2,a,أسيتون,إيثانول,أسيتون\n"
+                         "e3,b,إيثانول,إيثانول,إيثانول\n"
+                         "e4,b,أسيتون,إيثانول,إيثانول\n"))
         before = self.replay()
         lines = self.pred.read_text(encoding="utf-8").splitlines(keepends=True)
         self.pred.write_text(lines[0] + "".join(reversed(lines[1:])),
