@@ -67,3 +67,11 @@
 6. أوثق `commit SHA`، `run ID`، `actual test PASS/FAIL` ومخرجات البيانات عند كل خطوة، ولا تغيّر حالة G3 تلقائيًا.
 
 **Final research checkpoint:** `SOURCE_14_OF_14_VERIFIED / PEER_R0_3_OF_3 / RESEARCH_CI_30_OF_30_PASS / CURVE_ROUNDTRIP_387 / SYNTH_R0_172 / REAL_EXTERNAL_UCI1081_90 / G3_TANK_0_OF_80 / ANDROID_CHEMCORE_V6_NOT_INTEGRATED / APK_V6_NOT_BUILT`.
+
+## 8. إضافة تنفيذية لاحقة: بوابة Android Java لتوافق R0 والمصدر
+
+- **شيفرة فعلية:** `android/app/src/main/java/com/servoc/app/chemcore/TankV6SourceCompatibility.java`, commit `714541f37eb6e29f562bb3433f547b19089e9ef5`, ثم تصحيح fail-closed `1ca5a8c4df23b327b98e62cab7ccfbf8f6cd57a1`. تُعرّف عقد `sensor model/device instance`, `R0 definition`, `ratio direction`, `RL/VC/ADC`, `ppm source domain`, `heater flag` وترفض source غير المتوافق قبل إنتاج حساب كمي. **لا يمنح أي مصدر M4** بالاعتماد على flags دون سجل تحقق G3 مستقل.
+- **اختبار JVM مستقل:** `research/chemcore_v6/tests/java/TankV6SourceCompatibilityTest.java`, commit `74f81ef2bb73a97f9a05a7cc61b809b6c963eead`, **31 assertion passed**.
+- **CI حديث:** [Run 40912404109](https://github.com/HazRob/HazRob-Tank/actions/runs/40912404109) عند SHA `42732b2cd51b3e1d0567cda686d0291f8b75a909` — **success**: Python 30/30, Java compile & 31 assertions, source curve 387, synthetic R0 172, source peers validated؛ artifact ID `12914686568`, digest `2056f5cb2f995ea0226f5225c65652352df57f63a6626d5de2ecd9b6cb613d06`.
+- **حدود الإنجاز:** ملف Java مصدر فعلي على فرع V6، لكنه **غير موصل بالاستدلال الفعلي** في التطبيق ولم يُشغل Gradle Android ولا build APK. لا ترفع حالة P03 إلى `PASS` قبل تكامل البيانات وSQLite والجلسات والتقارير والتجارب.
+- **استئناف:** الخطوة التالية P03: تصميم وربط `SourceCurveRegistryV6` بمخرجات V5 على read-only sidecar، ثم اختبارات مقارنة قبل السماح باستبدال أي source selector.
