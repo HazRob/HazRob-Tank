@@ -19,3 +19,9 @@
 الأمر: python research/implementation_execution/g2_mq4_temporal_continuity_audit.py --archive /path/to/HazRob_MQ_Reference_Real_Measurements_2026-10-30.zip --output /tmp/mq4_temporal.json
 اختبارات: python -m unittest discover -s research/implementation_execution -p 'test_g2_mq4_temporal_continuity_audit.py' -v
 لم يُعدل ChemCore Stable أو Android أو الفريموير أو main. ما تزال النتائج العلمية g2_pass_candidates=0 وg2_blocked=80، والمصادر المؤهلة ضمن النطاق المقفل 0/14، وسجل الأدلة المستقلة فارغاً. يلزم توثيق تجارب التعرض والأجهزة والمراجع القابلة للتتبع واختبار محجوب مستقل قبل أي ترقية.
+
+## توثيق GitHub Actions
+- الالتزام البحثي: 8f224ea7df8873c33fdc786c34571bbe19b21819.
+- تشغيل G2 رقم 40973482997، المهمة 123795729064: نجاح 398/398 اختباراً؛ إعادة إنتاج تدقيق G2 وفرز الاكتساب المطابقة بايتياً؛ نجاح بوابة سلامة النشر. النتائج 0 مرشح مؤهل، 80 محجوبة، 14 مصدراً محجوباً.
+- الأثر 12940599902، SHA256 6515ab45dba0c2454b591009f021f2d1101e20013d75730e01006a0f04c84dea. نجحت جميع تشغيلات CI المرتبطة بالتغيير 21/21، دون إخفاقات.
+- الرابط: https://github.com/HazRob/HazRob-Tank/actions/runs/40973482997
