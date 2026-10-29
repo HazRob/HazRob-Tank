@@ -103,3 +103,14 @@
 - **Discarded deferred implementation:** `TankV6StartupWindow.java`, `PhoneMqStartupRecorder.java`, Java startup unit test, Python startup feature prototype and Python startup unit test. `V6-003` source study retained in `docs/research/`, marked `DEFERRED_BY_OWNER`.
 - **Effect:** no phone-side first-minute recording is active, no new ESP32 request/flash/SPI/heap pressure; baseline V5 telemetry, R0 and normal analytics preserved.
 - **Main work resumed:** P06 `SourceCurveRegistryV6`, P03 provenance mapping, P08 validation; G3 remains `0/80`.
+
+## 2026-10-29 — Open-source research policy and P06/P08 source registry implementation
+
+- **Owner requested:** use all available numerically usable observations, curves and fingerprints; no restrictive scientific provenance/R0/heater/domain/margin gates that hide research calculations. Exception: corrupt/nonfinite/undefined numerical operations. Keep uncertainty annotations and do not mislabel research estimates as physical calibration.
+- **43 original curves:** `research/chemcore_v6/manifests/source_curve_registry_43.json` revised from HOLD to `USABLE_RESEARCH_WITH_CAVEATS` for all 43, commit `4ba4e691cae421304299c498e605aa2e2203eed3`. Source parameters unchanged.
+- **Python source registry audit:** `research/chemcore_v6/curve_registry_audit.py`, commit `c5091c4c0338354e1e29dfa5725e11628d9796df`; provenance remains pinned while incomplete source details are advisory. Seven unit regressions added in `test_curve_registry_audit.py`, commit `c1092a4dc541e1574205067e127a5f5575417fd9`.
+- **Android V6 numerical research inventory:** `SourceCurveRegistryV6.java`, commit `e5e576b93b9bbde6c24bdbe6dc31d619c2c7db52`. All 43 model coefficients exposed in `all()`, `forSensor()`, and `explore()` with `ppmResearch` and `risk_flags`, never a fabricated calibration. Java test `SourceCurveRegistryV6Test.java` commit `84b6f1d24ba0c401960a132f71232a38692442d5`.
+- **Evidence consensus:** `TankV6EvidenceConsensus.java` commit `7b6f7355174b391ba079240da3d794a46f22fcae` now retains every valid research observation. Missing source IDs are grouped as `source_unattributed`, out-of-domain and source conflict are included as explanatory flags, not dropped. JDK test updated `1417beecfbcd9ec9a08b2b884f06ab22791d34f4`. Initial CI before updated tests failed as expected; new tests run passed.
+- **CI:** `40923146562`, head `1417beecfbcd9ec9a08b2b884f06ab22791d34f4`, **success** with **57 Python unit cases and 414 JVM assertions** (R0=31, consensus=40, math=15, registry=328). Artifact `12919626294`.
+- **Scientific classification:** numeric estimates remain research estimates; physical G3=0/80, V6 APK not built, V5 production active inference unchanged.
+- **Resumption:** `docs/research/V6-002-INCLUSIVE-ANALYTICS-POLICY-2026-10-29_AR.md` and machine tracker, then P03/P06 Android research integration and source data experiments.
