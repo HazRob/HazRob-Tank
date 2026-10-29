@@ -98,13 +98,22 @@ public final class V6FieldSessionResearchAppendix {
         // Scan only approved gas-including acquisitions already verified by
         // the report resolver; never include failed, deleted or superseded cycles.
         int eligibleCycles=0;
+        FieldCycleRepository verifier=new FieldCycleRepository(db);
         for(FieldCycleRepository.Cycle cycle:approved.cycleLedger){
             if(!cycle.approved()||!cycle.modes.gas)continue;
-            eligibleCycles++;
             String sid=cycle.measurementId;
             if(!approved.measurementSessionIds.contains(sid))
                 throw new IllegalStateException("Approved gas cycle missing from bundle");
-            entries.put(analyzeOneVerifiedCycle(db,sid,cycle.id));
+            // A previously resolved Bundle is not a permanent authorization:
+            // guard against a concurrent DB mutation between approval/resolve
+            // and this second read of raw archived telemetry.
+            if(!verifier.verifyApprovedEvidence(cycle))
+                throw new IllegalStateException("Archived approved source changed before V6 replay");
+            JSONObject derived=analyzeOneVerifiedCycle(db,sid,cycle.id);
+            if(!verifier.verifyApprovedEvidence(cycle))
+                throw new IllegalStateException("Archived approved source changed during V6 replay");
+            entries.put(derived);
+            eligibleCycles++;
         }
         root.put("approved_gas_cycles",eligibleCycles);
         root.put("cycles",entries);
