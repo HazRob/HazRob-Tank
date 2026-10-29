@@ -280,12 +280,12 @@ class PairedPredictionReplayTests(unittest.TestCase):
 
     def test_class_imbalance_reverses_pooled_and_equal_class_deltas(self):
         # The majority class favours the model, minority favours baseline.
-        self.write(pred=("e1,a,A,A,B\\n"
-                         "e2,a,A,A,B\\n"
-                         "e3,a,A,A,B\\n"
-                         "e4,a,A,B,A\\n"
-                         "e5,b,B,A,B\\n"),
-                   metrics="a,4,3,1\\nb,1,0,1\\n")
+        self.write(pred=("e1,a,A,A,B\n"
+                         "e2,a,A,A,B\n"
+                         "e3,a,A,A,B\n"
+                         "e4,a,A,B,A\n"
+                         "e5,b,B,A,B\n"),
+                   metrics="a,4,3,1\nb,1,0,1\n")
         result = self.replay()
         self.assertAlmostEqual(result["observed_delta"], 0.2)
         self.assertAlmostEqual(
@@ -295,10 +295,10 @@ class PairedPredictionReplayTests(unittest.TestCase):
                           for c in classes], [0.5, -1.0])
 
     def test_class_diagnostics_invariant_to_row_order_and_unicode_labels(self):
-        self.write(pred=("e1,a,إيثانول,إيثانول,أسيتون\\n"
-                         "e2,a,أسيتون,إيثانول,أسيتون\\n"
-                         "e3,b,إيثانول,إيثانول,إيثانول\\n"
-                         "e4,b,أسيتون,إيثانول,إيثانول\\n"))
+        self.write(pred=("e1,a,إيثانول,إيثانول,أسيتون\n"
+                         "e2,a,أسيتون,إيثانول,أسيتون\n"
+                         "e3,b,إيثانول,إيثانول,إيثانول\n"
+                         "e4,b,أسيتون,إيثانول,إيثانول\n"))
         original = self.replay()
         rows = self.pred.read_text(encoding="utf-8").splitlines(keepends=True)
         self.pred.write_text(rows[0] + "".join(reversed(rows[1:])),
