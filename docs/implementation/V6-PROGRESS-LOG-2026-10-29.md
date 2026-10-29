@@ -31,3 +31,12 @@
 - **Key findings:** current engine already joint-inverts and marks research ppm; priority constraints are physical per-board RL/R0/VC, exact MQ7/MQ9 heater phases, chemical label specificity, source-to-curve comparability, statistical identification and independent reference-gas accuracy.
 - **Code or firmware edits:** NONE for V6-002. **Verification:** source/literature review; no runtime/JUnit/Android/robot experiment executed; 80 entries are reference catalog, Tank G3 remains not validated.
 - **Next:** choose controlled implementation changes, build a numeric model/source audit with pinned refs and physical device measurements, then test against explicit grouped holdouts.
+
+## 2026-10-29 — V6-002 additional Pending scientific tools review
+
+- Confirmed the **62** `ADOPTED / PORT PENDING` records are `MQDataScience 6.0.0` model ports absent from Android, not missing Tank-80 research source code.
+- Source: pinned SERVOC `ModelRuntimeRegistry`, `MqDataScience76Catalog`, `Mq76ModelRoleRegistry`, `ExperimentsTab`, `CalibrationRegressionModels` and `tools/hazrob_mq76_upstream.py`.
+- Verified structural `HazRob/HazRob-Tank:main/research/techniques`: 80 directories, 80 README, research scripts and tests; `PROGRESS_80.json` historical G1 1,261 software tests, G2 49/29/2, Tank G3 0/80.
+- Confirmed central `HazRob/build-harness` 80 catalog entries cover curated sources only; `LEGACY_COLLECTIONS.md` explicitly does not claim all old source files were individually indexed; 15 external entries have raw files pending, 24 analytic studies marked not imported.
+- Documentation: `docs/research/V6-002-CHEMCORE-MANUFACTURER-R0-PPM-FINGERPRINT-GAP-AUDIT-2026-10-29.md`, section 10, commit `6fa4f9a6a2ef1b165fea1bc31ce0c646848f5606`.
+- No Android port, tests, APK or firmware changed in this Pending investigation.
