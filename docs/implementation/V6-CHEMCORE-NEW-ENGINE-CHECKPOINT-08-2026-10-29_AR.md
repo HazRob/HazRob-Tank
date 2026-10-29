@@ -62,3 +62,10 @@ Required source archive SHA256: 813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907
 4. **V6-N07/G3:** physical Android/Tank acceptance with real calibration evidence, then consider release. No unsupported gas ppm/identity assurance.
 
 **Resume token:** V6-N03-C_DONE / 44_PARTIAL / 36_NOT_PORTED / 1924_JDK_ASSERTIONS / CI_40949107155_SUCCESS / NO_UCI_JAVA_METRICS / G3_0_80 / NO_APK / FOOD_ISOLATED.
+
+
+## Post-checkpoint numerical hardening (same batch, 38 assertions)
+
+After review, underflow of small but nonzero Bayesian likelihoods was eliminated via log-sum-exp; softmax now subtracts the maximum *before* temperature division, avoiding overflow on finite extreme logits; exact open-set ties are unknown even for zero requested margin. Fixed source commit a8ad69bc2dc026b650d86930f00c6e22b001c8f2; regression commit 39dca1daeceb01bf774f34d71f4b92d282d105ef.
+
+**Latest independent JDK + source parity CI: 40949747063 = SUCCESS**, retaining **1924 total JDK assertions** (38 in N03-C). Scientific source CI 40949746723 = SUCCESS. This supersedes run 40949107155 only as the most recent CI reference; it does not alter the 44/36/0 coverage or establish a real UCI Java benchmark.
