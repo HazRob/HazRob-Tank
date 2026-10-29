@@ -20,7 +20,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.servoc.app.R;
-import com.servoc.app.ReleaseAudit;
 import com.servoc.app.camera.CameraApi;
 import com.servoc.app.communication.LocalNetworkContract;
 import com.servoc.app.communication.RemoteReadiness;
@@ -60,7 +59,7 @@ public final class ConnectionGate {
         content=UiKit.vbox(a);root.addView(content,new LinearLayout.LayoutParams(-1,-2));
         progress=new ProgressBar(a,null,android.R.attr.progressBarStyleHorizontal);progress.setMax(10);progress.setVisibility(View.GONE);root.addView(progress,new LinearLayout.LayoutParams(-1,UiKit.dp(a,10)));
         status=UiKit.small(a,"");status.setGravity(Gravity.CENTER);status.setTextColor(0xFF245A7A);status.setBackgroundColor(Color.TRANSPARENT);root.addView(status,UiKit.full(a));
-        TextView footer=UiKit.small(a,"HazRob Tank V3 • مساحة تشغيل مستقلة");footer.setGravity(Gravity.CENTER);footer.setTextColor(0xFF616161);footer.setBackgroundColor(Color.TRANSPARENT);LinearLayout.LayoutParams fp=UiKit.full(a);fp.topMargin=UiKit.dp(a,10);root.addView(footer,fp);
+        TextView footer=UiKit.small(a,"HazRob Tank • مساحة تشغيل مستقلة");footer.setGravity(Gravity.CENTER);footer.setTextColor(0xFF616161);footer.setBackgroundColor(Color.TRANSPARENT);LinearLayout.LayoutParams fp=UiKit.full(a);fp.topMargin=UiKit.dp(a,10);root.addView(footer,fp);
         showChoice();
     }
 
@@ -108,9 +107,11 @@ public final class ConnectionGate {
             boolean network=WifiRoute.waitForRobotWifi(a,30000);boolean robotReady=false;String detail="";
             if(!network)detail="لم يمنح Android التطبيق شبكة HazRob المحلية";
             else{
-                boolean switchNeeded=true;
-                try{switchNeeded=!"direct".equalsIgnoreCase(local.remoteStatus().optString("radio_profile",""));}catch(Exception ignored){}
-                if(switchNeeded){
+                // A missing /remote/status is not a login failure and must not trigger
+                // a mode-changing POST. Only an explicit remote profile needs Direct takeover.
+                boolean explicitlyRemote=false;
+                try{explicitlyRemote="remote".equalsIgnoreCase(local.remoteStatus().optString("radio_profile",""));}catch(Exception ignored){}
+                if(explicitlyRemote){
                     try{
                         local.postForm("/connection/direct","",1500);
                         detail="تم طلب التحويل إلى Direct؛ انتظار استقرار شبكة HazRob الحالية...";
@@ -126,7 +127,10 @@ public final class ConnectionGate {
                         try{
                             WifiRoute.maintainRobotWifi(a);
                             String banner=local.getText("/",1200);
-                            if(LocalNetworkContract.isExpectedFirmwareBanner(banner,ReleaseAudit.VERSION)){robotReady=true;detail="ESP32 الرئيسي Direct جاهز على 192.168.4.1";break;}
+                            // Transport discovery, not app/firmware version authentication.
+                            // Any recognized ESP32-Tank firmware revision may enter the app.
+                            // Unsupported commands remain subject to firmware endpoint/safety checks.
+                            if(TankFirmwareCompatibility.looksLikeTank(banner)){robotReady=true;detail="تم الاتصال بـ ESP32-Tank على 192.168.4.1 دون اشتراط تطابق رقم الإصدار";break;}
                             String got=banner==null?"":banner.trim();detail=got.isEmpty()?"وصل رد فارغ من 192.168.4.1":"تم الوصول إلى 192.168.4.1 لكن هوية البرنامج هي: "+got;break;
                         }catch(Exception e){detail="إعادة انتظار HazRob على 192.168.4.1 بعد استقرار نقطة الوصول...";try{Thread.sleep(500);}catch(InterruptedException x){Thread.currentThread().interrupt();break;}}
                     }
@@ -163,7 +167,7 @@ public final class ConnectionGate {
 
     private void showDirectRecovery(String detail){
         content.removeAllViews();progress.setVisibility(View.GONE);String reason=detail==null||detail.trim().isEmpty()?"تعذر التحقق من الاتصال المباشر":detail.trim();
-        status.setText(reason+"\nوافق على طلب Android للاتصال بشبكة HazRob. شرط الدخول المباشر هو استجابة ESP32 الرئيسي على 192.168.4.1؛ حالة ESP32-CAM مستقلة ولا تمنع دخول التطبيق.");status.setTextColor(0xFFD84315);
+        status.setText(reason+"\nتأكد من اتصال الهاتف بشبكة HazRob وإتاحة 192.168.4.1. لا تُشترط مطابقة إصدار التطبيق والفيرموير. حالة ESP32-CAM مستقلة.");status.setTextColor(0xFFD84315);
         Button wifi=UiKit.button(a,"فتح إعدادات Wi-Fi");wifi.setOnClickListener(v->openWifiSettings());content.addView(wifi,UiKit.full(a));Button retry=UiKit.button(a,"إعادة الاختبار");retry.setOnClickListener(v->enterDirect());content.addView(retry,UiKit.full(a));Button back=UiKit.button(a,"رجوع");back.setOnClickListener(v->showChoice());content.addView(back,UiKit.full(a));
     }
 
