@@ -1,8 +1,8 @@
-## 2026-10-29 — G2 fail-closed publication guard (CI verification pending)
+## 2026-10-29 — G2 fail-closed publication guard (296/296 CI verified)
 
 - Reviewed research HEAD 6885743dfe90c536fe671a648fc860f27888d724 and prior successful G2 run #40793543195 (289/289). Central catalog Git blob 1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f; 0/14 external sources review-ready, independent evidence records: [].
 - Added g2_artifact_publish_gate.py, seven tests and a pre-upload integrity step. Fixed if: always()/if-no-files-found: ignore, which allowed incomplete G2 artifacts after failed CI; now success-only with missing files treated as errors.
-- Research-only; no Stable, app or firmware edits. No G2/G3 promotion. Recheck this commit's CI before marking the change verified.
+- G2 CI run #40799799344, job 123204894955: 296/296 PASS; publish guard PASS; artifact 12865845365 (SHA256 de0928354a986342fb52ea1a6a7eae01d73336238676c11f22c2c819a56b57c9). Code SHA 98d7fc551b3533617d73d3b992c5d4ddc6168001. Research-only; no Stable, app or firmware edits. No G2/G3 promotion. Recheck documentation-only checkpoint CI next run.
 
 ---
 

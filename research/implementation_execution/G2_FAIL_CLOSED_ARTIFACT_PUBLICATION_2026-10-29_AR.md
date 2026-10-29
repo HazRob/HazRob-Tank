@@ -15,3 +15,9 @@ python research/implementation_execution/g2_artifact_publish_gate.py --audit /tm
 
 ## حدود الإثبات
 التحقق البرمجي لا يثبت أصالة بيانات غازات فعلية أو معايرة ppm أو استقلال تقسيمات الاختبار؛ لا يمنح G2/G3. التعديلات في فرع البحث حصرياً، ولا تغيير على ChemCore Stable أو تطبيق Android أو الفريموير. تُلحق نتيجة CI بعد اكتمال التشغيل.
+
+## نتائج CI المثبتة
+- التزام التطوير: 98d7fc551b3533617d73d3b992c5d4ddc6168001.
+- تشغيل G2 رقم 40799799344: https://github.com/HazRob/HazRob-Tank/actions/runs/40799799344؛ الوظيفة 123204894955؛ **296/296** اختباراً ناجحاً، مع نجاح التحقق النهائي ونشر artifact.
+- Artifact ID: 12865845365؛ SHA256 للحزمة: de0928354a986342fb52ea1a6a7eae01d73336238676c11f22c2c819a56b57c9.
+- g2_pass_candidates=0، g2_blocked=80، source_blocked=14. هذه ليست ترقية علمية.
