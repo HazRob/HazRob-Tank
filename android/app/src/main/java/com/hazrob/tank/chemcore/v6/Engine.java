@@ -53,7 +53,7 @@ public final class Engine {
         public final boolean outsideSourceRange;
         public final List<String> advisories;
         private SourceFit(Channel input,SourceCatalog.Curve src,double ppm){
-            id=src.id();sourceRoot=SourceCatalog.SOURCE_ROOT;
+            id=src.id();sourceRoot=src.sourceRoot();
             sensorType=src.sensorType;sensorInstance=input.sensorInstance;
             gasLabel=src.label;chemicalId=src.legacyChemicalId;
             observedRatio=input.rs/input.r0;fitPpm=ppm;
@@ -186,7 +186,7 @@ public final class Engine {
                 channels.put(entry.getKey(),entry.getValue());
         List<SourceFit> sourceFits=new ArrayList<>();
         Map<Long,Group> candidates=new LinkedHashMap<>();
-        for(SourceCatalog.Curve source:SourceCatalog.curves()){
+        for(SourceCatalog.Curve source:SourceCatalog.allCurves()){
             if(!source.numericalDefinitionValid()){invalid++;continue;}
             for(Channel ch:channels.values()){
                 if(!source.sensorType.equalsIgnoreCase(ch.sensorType))continue;
