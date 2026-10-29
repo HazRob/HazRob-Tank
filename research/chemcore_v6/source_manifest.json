@@ -132,5 +132,68 @@
     "food_freshness_gas_engine_import": "PROHIBITED",
     "food_freshness_research_asset_location": "android/app/src/main/assets/food_freshness/reference/",
     "food_freshness_independent_module": true
+  },
+  "v6_new_engine_inventory": {
+    "schema": "hazrob-tank-v6-independent-engine-numeric-source-index/1",
+    "independent_engine_package": "com.hazrob.tank.chemcore.v6",
+    "literature_curve_equations": 49,
+    "curve_source_families": 2,
+    "curve_sources": [
+      {
+        "file": "android/app/src/main/assets/chemcore_v6/reference/mq_research_curves_43.json",
+        "count": 43,
+        "source_blob_git_sha1": "bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1"
+      },
+      {
+        "file": "android/app/src/main/assets/chemcore_v6/reference/mq135_alternative_log_curves_6.json",
+        "count": 6,
+        "source_blob_git_sha1": "393f304c54027bb6f19e7bcd47309c4506f7f2b7"
+      }
+    ],
+    "gas_fingerprint_prototypes": 24,
+    "independent_fingerprint_feature_spaces": 3,
+    "fingerprint_sources": [
+      {
+        "space": "ADC_LOG_GEOMEAN_CLASS",
+        "file": "multimodal_mq_transfer_fingerprints_v1.json",
+        "count": 4,
+        "source_exposures_independent": false,
+        "raw_training_rows": 6400
+      },
+      {
+        "space": "OPERATIONAL_LOG1PLUS_CLR",
+        "file": "robofusion_hr069_gasleak_operational_transfer_v1.json",
+        "count": 2,
+        "source_exposures_independent": false,
+        "raw_selected_rows": 42704
+      },
+      {
+        "space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+        "file": "uci_mq135_lowconcentration_transfer_fingerprints_v1.json",
+        "count": 18,
+        "original_exposures": 90,
+        "source_concentrations_ppb": [
+          50,
+          100,
+          200
+        ]
+      }
+    ],
+    "engine_java_modules": [
+      "SourceCatalog.java",
+      "AlternativeCurveCatalog.java",
+      "Engine.java",
+      "GasFingerprintCatalogV6.java",
+      "FingerprintEngineV6.java",
+      "ChemCoreTankV6.java",
+      "SignalFeaturesV6.java"
+    ],
+    "android_bridge": "android/app/src/main/java/com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java",
+    "food_dataset_import_permitted": false,
+    "technical_research_methods_76_named_in_prior_source_catalog_are_not_76_additional_curve_models": true,
+    "technique_80_coverage": "docs/implementation/V6-CHEMCORE-80-TECHNIQUE-NEW-ENGINE-COVERAGE-2026-10-29.json",
+    "research_use_policy": "INCLUDE_ALL_FINITE_DATA_ONLY_ARITHMETICALLY_UNDEFINED_BLOCKED",
+    "claimed_device_calibration": false,
+    "physical_tank_g3_qualified": 0
   }
 }
