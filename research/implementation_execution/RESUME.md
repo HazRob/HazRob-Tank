@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 physical-group weighting sensitivity and CSV header integrity (354/354 CI)
+
+- Resumed from `13b94f2934f1fa0eab23f37ce7c1cfc1414f9459`, 20/20 previous CI successes. Rechecked central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records / 14 external datasets), readiness 0/14 and independent evidence `records=[]`.
+- Research-only `g2_paired_delta_diagnostic.py` now reports equal-group versus exposure-weighted delta, weighting direction disagreement, leave-one-group-out maximum shift and direction reversal count; no inferential significance or scientific promotion. Diagnostic CSV reader now rejects NFKC-unstable header aliases, including extra fields; valid Arabic header control preserved.
+- Added six synthetic regression tests. An intermediate test-fixture newline escaping error caused CI failure at `943dc5a9`; corrected at `f832fadce0ea5c8d5cbe063c77462a36f7528228`. [G2 Actions #40891221189](https://github.com/HazRob/HazRob-Tank/actions/runs/40891221189), job `123508232777`: **354/354 PASS**, byte-identical replay PASS, publication guard PASS, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, artifact `12905330781`.
+- Research branch only. No ChemCore Stable, Android, firmware changes or G2/G3 promotion. Evidence note: `G2_PAIRED_WEIGHTING_REVERSAL_AND_CSV_HEADER_GATE_2026-10-29_AR.md`.
+- Next: verify documentation-checkpoint CI; acquire independently measured physical exposures with traceable concentration references, source hashes, device/session/exposure provenance, preregistered physical-group splits and blinded holdouts before scientific review.
+
+---
+
 ## 2026-10-29 — G2 paired group heterogeneity and leave-one-out sensitivity (348/348 CI)
 
 - Resumed from research HEAD `1e880b5bccef33b8cac1c947fe231ce8ac87abe6` after checking the prior 345-test G2 run and current GitHub Actions status. Rechecked central catalog `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json`, blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records / 14 external datasets); independent evidence `records=[]`.
