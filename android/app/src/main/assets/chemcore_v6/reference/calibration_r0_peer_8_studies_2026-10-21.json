@@ -1,0 +1,460 @@
+{
+  "schema_version": "hazrob.central_library.R0_Rs_multi_source_audit.v1",
+  "survey_date": "2026-10-21",
+  "purpose": "Compare one device's calibration per study and distinguish declared R0 conventions and independent physical traces",
+  "source_count": 8,
+  "study_sources": [
+    {
+      "id": "R0-PEER-01",
+      "title": "Acquisition and Calibration Interface for Gas Sensors",
+      "year": 2018,
+      "type": "conference_article",
+      "url": "https://doi.org/10.1109/SIITME.2018.8599253",
+      "secondary_fulltext": "https://ro.scribd.com/document/725894569/H-P-Dorcea-Final-Paper-SIITME2018",
+      "source_authors": "Daniel Dorcea; Mihaela Hnatiuc; Iulian Lazar",
+      "reported_source_type": "physical prototype derived using modeled clean-air ratio",
+      "table": "Table II",
+      "notes": "Published R0 numeric values for nine types; MQ7/MQ8 division fails arithmetic; not certified physical reference-gas curves"
+    },
+    {
+      "id": "R0-PEER-02",
+      "title": "CityIOT: Air Quality in the City Supported by an IoT Ecosystem",
+      "year": 2023,
+      "type": "master_thesis",
+      "url": "https://repositorio.iscte-iul.pt/bitstream/10071/30319/1/master_goncalo_franco_morgado.pdf",
+      "author": "Gonçalo Franco Morgado",
+      "table": "Table 3.4, PDF p. 52; internal page 35",
+      "reported_source_type": "measured hardware clean-air resistance converted by published ratio",
+      "observations": [
+        {
+          "sensor_model": "MQ2",
+          "device": "sample-1",
+          "R0_kohm": 1.3
+        },
+        {
+          "sensor_model": "MQ7",
+          "device": "sample-1",
+          "R0_kohm": 4.78
+        },
+        {
+          "sensor_model": "MQ9",
+          "device": "sample-1",
+          "R0_kohm": 8.21
+        }
+      ],
+      "notes": "Manufacturer graph clean-air ratios approx MQ2=9.7 MQ7=27 MQ9=9.8; separate devices from prior paper; thesis 2023"
+    },
+    {
+      "id": "R0-PEER-03",
+      "title": "Universitas Hasanuddin air quality Wemos thesis and source appendices",
+      "year": 2023,
+      "type": "undergraduate_thesis",
+      "url": "https://repository.unhas.ac.id/28933/3/D041181020_skripsi_16-05-2023%20dp.pdf",
+      "reported_source_type": "device-specific values from actual serial screenshots and source code; cross-gas CO2 based calibration for MQ135",
+      "observations": [
+        {
+          "sensor_model": "MQ7",
+          "device": "sensor_1",
+          "R0_kohm": 1.83,
+          "source_level": "reported_measured_serial_mon",
+          "notes": "PDF page 5 (printed 97), Rs/R0 approach and code"
+        },
+        {
+          "sensor_model": "MQ7",
+          "device": "sensor_2",
+          "R0_kohm": 1.12,
+          "source_level": "reported_measured_serial_mon",
+          "notes": "PDF printed p97 says 1.12; a later code comment gives 1.13, inconsistency 0.01 kΩ"
+        },
+        {
+          "sensor_model": "MQ135",
+          "device": "sensor_1",
+          "R0_kohm": 110,
+          "source_level": "code_embedded_empirical_parameter",
+          "notes": "PDF printed p99 rO_2=110000 ohm, reference CO2 498 ppm assigned; not independently rechecked"
+        },
+        {
+          "sensor_model": "MQ135",
+          "device": "sensor_2",
+          "R0_kohm": 37,
+          "source_level": "code_embedded_empirical_parameter",
+          "notes": "PDF printed p99 comment change R0 for sensor_2 to 37000 ohm; not independent gas calibration"
+        }
+      ],
+      "notes": "Differing individual physical instances and/or circuit/CO2 calibration approach, not homogeneous with 2018 clean air ratio"
+    },
+    {
+      "id": "R0-PEER-04",
+      "title": "Prototype Sistem Ventilasi Pengendalian Kualitas Udara Ruang Laundry Menggunakan Rule-Based Berbasis IoT",
+      "year": 2026,
+      "type": "peer_reviewed_journal",
+      "url": "https://doi.org/10.33364/algoritma/v.23-1.3245",
+      "direct_pdf": "https://jurnal.itg.ac.id/index.php/algoritma/article/download/3245/1918/25720",
+      "reported_source_type": "MQ135 mean clean air Rs of 45 accepted of 50 readings; R0=Rs/3.6",
+      "observations": [
+        {
+          "sensor_model": "MQ135",
+          "device": "single_device",
+          "R0_kohm": 29.74,
+          "Rs_air_kohm": 107.07,
+          "air_ratio": 3.6
+        }
+      ],
+      "notes": "Manufacturer-reference mathematical calibration, not certified CO physical gas exposure"
+    },
+    {
+      "id": "R0-PEER-05",
+      "title": "Development of Carbon Monoxide Gas Detection and Monitoring System in Vehicle Cabin with Auto Ventilation and Auto Engine Switch Off",
+      "year": 2024,
+      "type": "peer_reviewed_journal",
+      "url": "https://doi.org/10.30880/peat.2024.05.02.036",
+      "direct_pdf": "https://publisher.uthm.edu.my/periodicals/index.php/peat/article/download/17544/5536/103871",
+      "reported_source_type": "Table 2 uses baseline 2.27 and after-gas 2.12 kOhm inconsistent with fixed R0 concept",
+      "observations": [
+        {
+          "sensor_model": "MQ9",
+          "device": "single_device",
+          "R0_kohm": 2.27,
+          "Rs_air_kohm": 22.27,
+          "air_ratio": 9.79,
+          "source_level": "baseline_derived_R0"
+        },
+        {
+          "sensor_model": "MQ9",
+          "device": "same_device_after_gas",
+          "R0_kohm": 2.12,
+          "Rs_air_kohm": 20.81,
+          "air_ratio": 9.82,
+          "source_level": "methodological_error_not_valid_as_new_device_R0"
+        }
+      ],
+      "notes": "After-gas recalculation of R0 undermines notion of fixed reference. Treat baseline 2.27 as low confidence, never adopt 2.12 as separate true calibration"
+    },
+    {
+      "id": "R0-PEER-06",
+      "title": "Sistema de monitoramento da qualidade do ar baseado em comunicação LoRa",
+      "year": 2022,
+      "type": "journal_article",
+      "url": "https://www.researchgate.net/publication/359518836_Sistem_Monitoring_Kualitas_Udara_Berbasis_Komunikasi_LoRa_di_IT_Telkom_Purwokerto",
+      "reported_source_type": "R0 claimed from 100 ppm CO calibration in published methodology",
+      "observations": [
+        {
+          "sensor_model": "MQ7",
+          "device": "single_device",
+          "R0_kohm": 6.69,
+          "reference_concentration_ppm": 100,
+          "reference_gas": "CO",
+          "source_level": "claimed_reference_100ppm_not_independent_raw_verified"
+        }
+      ],
+      "notes": "Gas-reference R0 definition explicitly 100ppm CO, NOT same as naive clean-air ratio; 20 ppm clean-air CO assumption in paper not well substantiated"
+    },
+    {
+      "id": "R0-PEER-07",
+      "title": "Low-cost ozone/combustible gas sensor characterization — Colombian university thesis",
+      "year": null,
+      "type": "university_thesis",
+      "url": "https://repository.udistrital.edu.co/server/api/core/bitstreams/f6ac507b-f43b-438a-92a5-955a33a27a86/content",
+      "reported_source_type": "clean-air Rs and ratio Rs/R0=k described, excerpt on p31",
+      "observations": [
+        {
+          "sensor_model": "MQ2",
+          "device": "single_device",
+          "R0_kohm": 8.4,
+          "source_level": "pdf_text_excerpt_full_page_not_available"
+        },
+        {
+          "sensor_model": "MQ131",
+          "device": "single_device",
+          "R0_kohm": 55.3,
+          "source_level": "pdf_text_excerpt_full_page_not_available"
+        }
+      ],
+      "notes": "PDF source has intermittently failed to load; values directly in indexed excerpt, verification incomplete; do not label fully verified"
+    },
+    {
+      "id": "R0-PEER-08",
+      "title": "AIRiSense Cloud hobby IoT calibration project",
+      "year": 2025,
+      "type": "independent_project_writeup",
+      "url": "https://www.electronicwings.com/users/MuthuMitrnRS/projects/5942/airisense-cloud",
+      "reported_source_type": "project author claims their individual clean-air measurements after 30-minute outdoors preparation",
+      "observations": [
+        {
+          "sensor_model": "MQ135",
+          "device": "single_device",
+          "R0_kohm": 15.29,
+          "source_level": "self_reported_not_primary_raw_verified"
+        },
+        {
+          "sensor_model": "MQ7",
+          "device": "single_device",
+          "R0_kohm": 11.39,
+          "source_level": "self_reported_not_primary_raw_verified"
+        }
+      ],
+      "notes": "Unreviewed user report, no raw firmware run log or heating phase verification; lower confidence than thesis"
+    }
+  ],
+  "baseline_2018_table": [
+    {
+      "model": "MQ2",
+      "Rs_air_kohm": 55.29411,
+      "RatioAir": 9.65,
+      "R0_reported_kohm": 5.72877,
+      "R0_recomputed_kohm": 5.72996,
+      "R0_consistent": true,
+      "load_RL_kohm": 5
+    },
+    {
+      "model": "MQ3",
+      "Rs_air_kohm": 1480.32786,
+      "RatioAir": 59.95,
+      "R0_reported_kohm": 24.6927,
+      "R0_recomputed_kohm": 24.69271,
+      "R0_consistent": true,
+      "load_RL_kohm": 200
+    },
+    {
+      "model": "MQ4",
+      "Rs_air_kohm": 226.98795,
+      "RatioAir": 4.43,
+      "R0_reported_kohm": 51.23881,
+      "R0_recomputed_kohm": 51.23881,
+      "R0_consistent": true,
+      "load_RL_kohm": 20
+    },
+    {
+      "model": "MQ5",
+      "Rs_air_kohm": 111.41025,
+      "RatioAir": 6.48,
+      "R0_reported_kohm": 17.19294,
+      "R0_recomputed_kohm": 17.19294,
+      "R0_consistent": true,
+      "load_RL_kohm": 20
+    },
+    {
+      "model": "MQ6",
+      "Rs_air_kohm": 74.47004,
+      "RatioAir": 9.9,
+      "R0_reported_kohm": 7.52222,
+      "R0_recomputed_kohm": 7.52223,
+      "R0_consistent": true,
+      "load_RL_kohm": 20
+    },
+    {
+      "model": "MQ7",
+      "Rs_air_kohm": 76.71618,
+      "RatioAir": 26.06,
+      "R0_reported_kohm": 6.94382,
+      "R0_recomputed_kohm": 2.94383,
+      "R0_consistent": false,
+      "load_RL_kohm": 10
+    },
+    {
+      "model": "MQ8",
+      "Rs_air_kohm": 44.52127,
+      "RatioAir": 69.48,
+      "R0_reported_kohm": 1.70841,
+      "R0_recomputed_kohm": 0.64078,
+      "R0_consistent": false,
+      "load_RL_kohm": 10
+    },
+    {
+      "model": "MQ9",
+      "Rs_air_kohm": 78.36206,
+      "RatioAir": 9.72,
+      "R0_reported_kohm": 8.06194,
+      "R0_recomputed_kohm": 8.06194,
+      "R0_consistent": true,
+      "load_RL_kohm": 10
+    },
+    {
+      "model": "MQ135",
+      "Rs_air_kohm": 84.06091,
+      "RatioAir": 3.6,
+      "R0_reported_kohm": 23.35025,
+      "R0_recomputed_kohm": 23.35025,
+      "R0_consistent": true,
+      "load_RL_kohm": 20
+    }
+  ],
+  "comparison_observations": [
+    {
+      "sensor_model": "MQ2",
+      "device": "sample-1",
+      "R0_kohm": 1.3,
+      "source_id": "R0-PEER-02",
+      "source_url": "https://repositorio.iscte-iul.pt/bitstream/10071/30319/1/master_goncalo_franco_morgado.pdf",
+      "R0_ratio_vs_2018_reported": 0.227
+    },
+    {
+      "sensor_model": "MQ7",
+      "device": "sample-1",
+      "R0_kohm": 4.78,
+      "source_id": "R0-PEER-02",
+      "source_url": "https://repositorio.iscte-iul.pt/bitstream/10071/30319/1/master_goncalo_franco_morgado.pdf",
+      "R0_ratio_vs_2018_reported": 0.688
+    },
+    {
+      "sensor_model": "MQ9",
+      "device": "sample-1",
+      "R0_kohm": 8.21,
+      "source_id": "R0-PEER-02",
+      "source_url": "https://repositorio.iscte-iul.pt/bitstream/10071/30319/1/master_goncalo_franco_morgado.pdf",
+      "R0_ratio_vs_2018_reported": 1.018
+    },
+    {
+      "sensor_model": "MQ7",
+      "device": "sensor_1",
+      "R0_kohm": 1.83,
+      "source_level": "reported_measured_serial_mon",
+      "notes": "PDF page 5 (printed 97), Rs/R0 approach and code",
+      "source_id": "R0-PEER-03",
+      "source_url": "https://repository.unhas.ac.id/28933/3/D041181020_skripsi_16-05-2023%20dp.pdf",
+      "R0_ratio_vs_2018_reported": 0.264
+    },
+    {
+      "sensor_model": "MQ7",
+      "device": "sensor_2",
+      "R0_kohm": 1.12,
+      "source_level": "reported_measured_serial_mon",
+      "notes": "PDF printed p97 says 1.12; a later code comment gives 1.13, inconsistency 0.01 kΩ",
+      "source_id": "R0-PEER-03",
+      "source_url": "https://repository.unhas.ac.id/28933/3/D041181020_skripsi_16-05-2023%20dp.pdf",
+      "R0_ratio_vs_2018_reported": 0.161
+    },
+    {
+      "sensor_model": "MQ135",
+      "device": "sensor_1",
+      "R0_kohm": 110,
+      "source_level": "code_embedded_empirical_parameter",
+      "notes": "PDF printed p99 rO_2=110000 ohm, reference CO2 498 ppm assigned; not independently rechecked",
+      "source_id": "R0-PEER-03",
+      "source_url": "https://repository.unhas.ac.id/28933/3/D041181020_skripsi_16-05-2023%20dp.pdf",
+      "R0_ratio_vs_2018_reported": 4.711
+    },
+    {
+      "sensor_model": "MQ135",
+      "device": "sensor_2",
+      "R0_kohm": 37,
+      "source_level": "code_embedded_empirical_parameter",
+      "notes": "PDF printed p99 comment change R0 for sensor_2 to 37000 ohm; not independent gas calibration",
+      "source_id": "R0-PEER-03",
+      "source_url": "https://repository.unhas.ac.id/28933/3/D041181020_skripsi_16-05-2023%20dp.pdf",
+      "R0_ratio_vs_2018_reported": 1.585
+    },
+    {
+      "sensor_model": "MQ135",
+      "device": "single_device",
+      "R0_kohm": 29.74,
+      "Rs_air_kohm": 107.07,
+      "air_ratio": 3.6,
+      "source_id": "R0-PEER-04",
+      "source_url": "https://doi.org/10.33364/algoritma/v.23-1.3245",
+      "R0_ratio_vs_2018_reported": 1.274
+    },
+    {
+      "sensor_model": "MQ9",
+      "device": "single_device",
+      "R0_kohm": 2.27,
+      "Rs_air_kohm": 22.27,
+      "air_ratio": 9.79,
+      "source_level": "baseline_derived_R0",
+      "source_id": "R0-PEER-05",
+      "source_url": "https://doi.org/10.30880/peat.2024.05.02.036",
+      "R0_ratio_vs_2018_reported": 0.282
+    },
+    {
+      "sensor_model": "MQ9",
+      "device": "same_device_after_gas",
+      "R0_kohm": 2.12,
+      "Rs_air_kohm": 20.81,
+      "air_ratio": 9.82,
+      "source_level": "methodological_error_not_valid_as_new_device_R0",
+      "source_id": "R0-PEER-05",
+      "source_url": "https://doi.org/10.30880/peat.2024.05.02.036",
+      "R0_ratio_vs_2018_reported": 0.263
+    },
+    {
+      "sensor_model": "MQ7",
+      "device": "single_device",
+      "R0_kohm": 6.69,
+      "reference_concentration_ppm": 100,
+      "reference_gas": "CO",
+      "source_level": "claimed_reference_100ppm_not_independent_raw_verified",
+      "source_id": "R0-PEER-06",
+      "source_url": "https://www.researchgate.net/publication/359518836_Sistem_Monitoring_Kualitas_Udara_Berbasis_Komunikasi_LoRa_di_IT_Telkom_Purwokerto",
+      "R0_ratio_vs_2018_reported": 0.963
+    },
+    {
+      "sensor_model": "MQ2",
+      "device": "single_device",
+      "R0_kohm": 8.4,
+      "source_level": "pdf_text_excerpt_full_page_not_available",
+      "source_id": "R0-PEER-07",
+      "source_url": "https://repository.udistrital.edu.co/server/api/core/bitstreams/f6ac507b-f43b-438a-92a5-955a33a27a86/content",
+      "R0_ratio_vs_2018_reported": 1.466
+    },
+    {
+      "sensor_model": "MQ131",
+      "device": "single_device",
+      "R0_kohm": 55.3,
+      "source_level": "pdf_text_excerpt_full_page_not_available",
+      "source_id": "R0-PEER-07",
+      "source_url": "https://repository.udistrital.edu.co/server/api/core/bitstreams/f6ac507b-f43b-438a-92a5-955a33a27a86/content",
+      "R0_ratio_vs_2018_reported": null
+    },
+    {
+      "sensor_model": "MQ135",
+      "device": "single_device",
+      "R0_kohm": 15.29,
+      "source_level": "self_reported_not_primary_raw_verified",
+      "source_id": "R0-PEER-08",
+      "source_url": "https://www.electronicwings.com/users/MuthuMitrnRS/projects/5942/airisense-cloud",
+      "R0_ratio_vs_2018_reported": 0.655
+    },
+    {
+      "sensor_model": "MQ7",
+      "device": "single_device",
+      "R0_kohm": 11.39,
+      "source_level": "self_reported_not_primary_raw_verified",
+      "source_id": "R0-PEER-08",
+      "source_url": "https://www.electronicwings.com/users/MuthuMitrnRS/projects/5942/airisense-cloud",
+      "R0_ratio_vs_2018_reported": 1.64
+    }
+  ],
+  "source_classification": "RESEARCH_ONLY_UNVALIDATED_FOR_HAZROB",
+  "confirmed_normative_R0_kohm_per_sensor": null,
+  "computed_hypotheses": {
+    "MQ7_2018": {
+      "Rs_kohm": 76.71618,
+      "RatioAir": 26.06,
+      "R0_published_kohm": 6.94382,
+      "R0_arithmetically_implied_kohm": 2.94383
+    },
+    "MQ8_2018": {
+      "Rs_kohm": 44.52127,
+      "RatioAir": 69.48,
+      "R0_published_kohm": 1.70841,
+      "R0_arithmetically_implied_kohm": 0.64078
+    }
+  },
+  "do_not_confuse": [
+    "paper R0 direct experiment vs calculation from ambient Rs with assumed ratio",
+    "two physical instances in one thesis vs independent published studies",
+    "gas-reference-R0 at standard known gas vs clean-air-R0 using curve divisor",
+    "Rs gas vs clean air",
+    "RL load resistor vs R0 calibrated resistance",
+    "fixed R0 should not change after gas exposure without explicit recalibration",
+    "0.01 kOhm MQ7 sensor 2 code vs text contradiction",
+    "source sensor MQ7 heater phase and MQ9 status unknown"
+  ],
+  "conclusions": [
+    "R0 is not a universal sensor-model constant; values across studies vary substantially",
+    "MQ9 coincidentally 8.062 and 8.21 kOhm in two studies (1.84% difference) is not metrological equivalence",
+    "Close values may share code/datasheet ratios rather than independent physical evidence",
+    "MQ3/MQ4/MQ5/MQ8 have not gained second high-quality numeric R0 source in current pass; report this absence honestly",
+    "No author-published R0 value is eligible to replace Tank's physical per-instance R0 or generate certified ppm"
+  ]
+}
