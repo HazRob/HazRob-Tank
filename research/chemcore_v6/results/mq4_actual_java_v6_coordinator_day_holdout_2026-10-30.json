@@ -26,9 +26,9 @@
     "actual_java_numerical_method": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceNumericsV6.java::Pls1",
     "benchmark_source": "research/chemcore_v6/benchmarks/MinnesotaMq4JavaV6Replay.java",
     "workflow": ".github/workflows/chemcore-v6-mq4-java-replay-ci.yml",
-    "ci_run_id": 40968282679,
+    "ci_run_id": 40968910819,
     "ci_success": true,
-    "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/40968282679",
+    "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/40968910819",
     "original_full_source_coordinator_rows_replayed": 14186,
     "original_raw_resistance_values_retained": 42558,
     "channels_per_timestamp": 3,
@@ -39,7 +39,9 @@
     "reportable_ppm": false,
     "physical_tank_calibration_verified": false,
     "food_models_attached": false,
-    "fingerprint_hypotheses_unjustified_for_source": false
+    "fingerprint_hypotheses_unjustified_for_source": false,
+    "benchmark_source_final_commit": "d386522ece4fae0c3c9a93e958953842b2a6a483",
+    "workflow_final_commit": "99c684be2af323ab4b249d4a1706b88d9830d8c5"
   },
   "study_design": {
     "whole_day_test_folds": 11,
@@ -101,7 +103,45 @@
         "sensitivity_4ppm": 0,
         "nonpositive_source_estimates": 0
       }
-    ]
+    ],
+    "source_transfer_validation": {
+      "experiment": "33 groups: each 11 entirely heldout source days x 3 physically withheld MQ4 sensor instances; model train 9 days and 2 OTHER units, calibration 1 other day on 2 OTHER units, heldout 1 unknown unit/day",
+      "original_source_unit_observations_train_only": true,
+      "calibration_on_heldout_test_unit": false,
+      "independent_source_exposure_rows_across_days": true,
+      "not_independent_sensor_rows_same_timestamp": true,
+      "total_source_fold_records": 33,
+      "unweighted_mean_of_fold_MAE_ppm": 0.9720531317878788,
+      "unweighted_mean_nominal90_coverage": 0.799873,
+      "by_heldout_unit": [
+        {
+          "unit": "MQ4_1",
+          "folds": 11,
+          "mean_MAE_ppm": 1.1090548692545454,
+          "mean_coverage": 0.7121872018636364,
+          "TP_4ppm": 313,
+          "FN_4ppm": 2033
+        },
+        {
+          "unit": "MQ4_2",
+          "folds": 11,
+          "mean_MAE_ppm": 0.9190480742727273,
+          "mean_coverage": 0.8371793685363637,
+          "TP_4ppm": 0,
+          "FN_4ppm": 2346
+        },
+        {
+          "unit": "MQ4_3",
+          "folds": 11,
+          "mean_MAE_ppm": 0.8880564518363636,
+          "mean_coverage": 0.8502519441363636,
+          "TP_4ppm": 0,
+          "FN_4ppm": 2346
+        }
+      ],
+      "evaluation_result": "UNSAFE_FOR_GAS_WARNING: zero true-positive rates when holding out MQ4_2 and MQ4_3 units, even though MAE values are below 1 ppm; 90% nominal coverage not attained across source-unit folds.",
+      "g3_promoted": false
+    }
   },
   "comparison_to_checkpoint15": {
     "previous_python_models": "Scikit-learn Ridge and HistogramGradientBoosting external research, NOT same algorithm as Java V6 PLS1.",
@@ -110,15 +150,16 @@
     "method_comparison_validity": "Same source and day-holdout logic but different estimators; no superiority or final selection based on sealed test outcomes is authorized."
   },
   "archive": {
-    "artifact_id": 12937904465,
-    "artifact_sha256": "094f773174402ff312c6abdc984fe3657494c8ea0aaa6ffa7c6331ab46b25203",
-    "library_file": "/HazRob/MQ_Reference_Measurements_2026/HazRob_Tank_V6_Java_MQ4_Actual_Engine_Validation_2026-10-30.zip",
-    "library_file_id": "libfile_1950b5ce7e1c8191b022c6216f456e02",
+    "artifact_id": 12939541688,
+    "artifact_sha256": "e6826c4fbdf6b90dbff88059c6fc9f8eec7bdce74d0db17b2a789ab7bb0a93f7",
+    "library_file": "/HazRob/MQ_Reference_Measurements_2026/HazRob_Tank_V6_MQ4_Java_Full_Evidence_N05JK_2026-10-30.zip",
+    "library_file_id": "libfile_d4a717e6543c8191b3294c7714a8aeec",
     "contents": [
       "v6_coordinator_raw_no_r0_audit.csv",
       "v6_pls1_whole_day_source_folds.csv",
       "v6_pls1_whole_day_heldout_predictions.csv",
-      "v6_mq4_java_replay_manifest.json"
+      "v6_mq4_java_replay_manifest.json",
+      "v6_pls1_unseen_unit_and_day_transfer.csv"
     ]
   },
   "gates": {
@@ -131,6 +172,7 @@
     "device_android_application_tested": false,
     "gas_food_separation_preserved": true,
     "heater_or_motion_modified": false,
-    "recommendation": "Do not report physical ppm or gas identity on Tank. Collect valid device-specific R0 and traceable reference concentration, repeat on actual Tank with independent sensor/day groups before upgrading G3."
+    "recommendation": "Do not report physical ppm or gas identity on Tank. Collect valid device-specific R0 and traceable reference concentration, repeat on actual Tank with independent sensor/day groups before upgrading G3.",
+    "heldout_unit_and_day_tested": true
   }
 }
