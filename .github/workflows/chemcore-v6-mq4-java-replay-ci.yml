@@ -149,4 +149,5 @@ jobs:
             /tmp/v6-mq4-java/v6_pls1_whole_day_source_folds.csv
             /tmp/v6-mq4-java/v6_pls1_whole_day_heldout_predictions.csv
             /tmp/v6-mq4-java/v6_mq4_java_replay_manifest.json
+            /tmp/v6-mq4-java/v6_pls1_unseen_unit_and_day_transfer.csv
           retention-days: 30
