@@ -57,7 +57,7 @@ public final class SmartFieldSessionPdfWriter {
         JSONObject v6ReadOnly=V6FieldSessionResearchAppendix.analyzeVerified(db,b);
         JSONArray v6Cycles=v6ReadOnly.optJSONArray("cycles");
         int v6Count=v6Cycles==null?0:v6Cycles.length();
-        int v6Pages=(v6Count+5)/6;
+        int v6Pages=(v6Count+2)/3;
         int total=basePages+cyclePages+v6Pages;
         PdfDocument pdf=new PdfDocument();
         PdfDocument.Page p=page(pdf,1);executiveOverview(p.getCanvas(),b,all,primary,plan,hazard,cs);chrome(p.getCanvas(),1,total,b,plan);pdf.finishPage(p);
@@ -154,7 +154,7 @@ public final class SmartFieldSessionPdfWriter {
             36,84,8,Color.DKGRAY,false);
         JSONArray cycles=evidence.optJSONArray("cycles");
         int len=cycles==null?0:cycles.length();
-        int start=chunk*6,end=Math.min(start+6,len);
+        int start=chunk*3,end=Math.min(start+3,len);
         float y=108;
         for(int i=start;i<end;i++){
             JSONObject q=cycles.optJSONObject(i);
