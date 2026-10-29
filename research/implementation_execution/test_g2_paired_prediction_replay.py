@@ -384,5 +384,82 @@ class PairedPredictionReplayTests(unittest.TestCase):
             self.assertEqual(before[key], after[key])
 
 
+    def test_true_class_group_discordance_reconciles_all_four_cells(self):
+        result = self.replay()
+        cells = result["true_reference_class_support_by_declared_group"]
+        self.assertEqual(
+            [(r["group_id"], r["true_reference"], r["both_correct"],
+              r["both_wrong"], r["model_only_correct"],
+              r["baseline_only_correct"]) for r in cells],
+            [("a", "A", 0, 0, 1, 0),
+             ("a", "B", 0, 0, 0, 1),
+             ("b", "A", 1, 0, 0, 0),
+             ("b", "B", 0, 1, 0, 0)])
+        self.assertEqual(
+            [r["paired_net_model_advantage_count"] for r in cells],
+            [1, -1, 0, 0])
+        self.assertEqual(result["true_reference_classes_with_opposite_group_effects"], [])
+        self.assertIn("NOT_INDEPENDENT_PHYSICAL_EVIDENCE",
+                      result["class_group_discordance_scope"])
+
+    def test_within_class_group_weighting_reverses_pooled_sign(self):
+        # Same true class in two groups, but group sizes are unequal:
+        # weighted +1/7 versus equal-group (1/3 - 1)/2 = -1/3.
+        pred = "".join(
+            f"e{i},a,A,A,B\\n" for i in range(1, 5)
+        ) + "".join(
+            f"e{i},a,A,B,A\\n" for i in range(5, 7)
+        ) + "e7,b,A,B,A\\n"
+        self.write(pred=pred, metrics="a,6,4,2\\nb,1,0,1\\n")
+        result = self.replay()
+        row = result["true_reference_class_declared_group_coverage"][0]
+        self.assertEqual(row["true_reference"], "A")
+        self.assertAlmostEqual(row["exposure_weighted_delta"], 1 / 7)
+        self.assertAlmostEqual(row["equal_observed_group_mean_delta"], -1 / 3)
+        self.assertEqual(row["min_observed_group_delta"], -1)
+        self.assertAlmostEqual(row["max_observed_group_delta"], 1 / 3)
+        self.assertTrue(row["opposite_signed_group_effects"])
+        self.assertTrue(row["equal_group_vs_exposure_weighted_sign_reversal"])
+        self.assertEqual(result["true_reference_classes_with_opposite_group_effects"], ["A"])
+        self.assertEqual(
+            result["true_reference_classes_with_group_weighting_sign_reversal"],
+            ["A"])
+
+    def test_unobserved_class_group_cells_are_not_imputed(self):
+        self.write(pred=("e1,a,A,A,B\\n"
+                         "e2,a,A,B,A\\n"
+                         "e3,b,B,B,A\\n"
+                         "e4,b,B,A,B\\n"),
+                   metrics="a,2,1,1\\nb,2,1,1\\n")
+        result = self.replay()
+        cells = result["true_reference_class_support_by_declared_group"]
+        self.assertEqual(len(cells), 2)
+        self.assertEqual(
+            [(r["group_id"], r["true_reference"]) for r in cells],
+            [("a", "A"), ("b", "B")])
+        for row in result["true_reference_class_declared_group_coverage"]:
+            self.assertTrue(row["confined_to_single_declared_group"])
+            self.assertFalse(row["opposite_signed_group_effects"])
+            self.assertFalse(row["equal_group_vs_exposure_weighted_sign_reversal"])
+        self.assertIn("MISSING_GROUP_CLASS_CELLS_NOT_IMPUTED",
+                      result["class_group_discordance_scope"])
+
+    def test_class_group_discordance_invariant_to_row_order_and_arabic(self):
+        self.write(pred=("e1,a,إيثانول,إيثانول,أسيتون\\n"
+                         "e2,a,أسيتون,إيثانول,أسيتون\\n"
+                         "e3,b,إيثانول,إيثانول,إيثانول\\n"
+                         "e4,b,أسيتون,إيثانول,إيثانول\\n"))
+        before = self.replay()
+        lines = self.pred.read_text(encoding="utf-8").splitlines(keepends=True)
+        self.pred.write_text(lines[0] + "".join(reversed(lines[1:])),
+                             encoding="utf-8")
+        after = self.replay()
+        for key in ("true_reference_class_support_by_declared_group",
+                    "true_reference_class_declared_group_coverage",
+                    "true_reference_classes_with_opposite_group_effects",
+                    "true_reference_classes_with_group_weighting_sign_reversal"):
+            self.assertEqual(before[key], after[key])
+
+
 if __name__ == "__main__":
     unittest.main()
