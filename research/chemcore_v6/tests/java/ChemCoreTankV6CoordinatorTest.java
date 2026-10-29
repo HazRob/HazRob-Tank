@@ -35,6 +35,12 @@ public final class ChemCoreTankV6CoordinatorTest {
         var result=ChemCoreTankV6.analyze(
             new ChemCoreTankV6.Request(coAt(200),data,26.5,54.0,180.0));
         ok(result.responseCurves.allSourceFits.size()==49,"49 response curves retained");
+        ok(result.sourceCurveDisagreements.sourceCurveCount==49,
+           "all original response evidence remains in source disagreements");
+        ok(!result.sourceCurveDisagreements.allComparablePairs.isEmpty(),
+           "every cross-source numeric comparison is available");
+        ok(!result.sourceCurveDisagreements.automaticallyDiscardedCandidates,
+           "conflicting source ppm estimates never veto a gas hypothesis");
         ok(result.fingerprintSpaces.size()==3,"independent feature-space outputs separate");
         ok(result.fingerprintSpaces.get(0).hypotheses.size()==4,"ADC labels");
         ok(result.fingerprintSpaces.get(1).hypotheses.size()==2,"operational labels");
