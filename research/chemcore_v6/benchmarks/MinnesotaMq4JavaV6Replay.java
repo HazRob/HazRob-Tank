@@ -248,18 +248,104 @@ public final class MinnesotaMq4JavaV6Replay {
         System.out.println("PASS V6_JAVA_PLS1_REAL_MQ4: 44 whole-day source folds, "+
             "56744 original-source heldout predictions, TRAIN/CAL/TEST day disjoint.");
     }
+
+    /**
+     * N05-K: physically different source MQ4 instance AND different source
+     * date held out simultaneously. All three 11*3 source splits are evaluated.
+     * Only OTHER two sensor units may contribute training and CAL residuals.
+     * Duplicate target label for two available instances shares timestamp:
+     * NOT two independent gas exposure events.
+     */
+    private static void heldoutSensorAndDay(List<Row> all,BufferedWriter output)
+            throws Exception {
+        output.write("heldout_day,heldout_sensor_instance,training_instances,"+
+            "training_days,training_original_timestamps,training_sensor_readings,"+
+            "calibration_day,calibration_source_readings,test_source_minutes,"+
+            "source_mae_ppm,source_rmse_ppm,nominal90_calibration_halfwidth_ppm,"+
+            "test_interval_coverage,source_4ppm_TP,source_4ppm_FN,"+
+            "source_4ppm_FP,source_4ppm_TN,nonpositive_source_estimates,"+
+            "true_source_unit_excluded_from_fit,source_only,no_tank_g3\n");
+        List<String> days=new ArrayList<>();
+        for(Row r:all)if(!days.contains(r.day))days.add(r.day);
+        int folds=0;
+        for(int d=0;d<days.size();d++){
+            String testDay=days.get(d);
+            String calDay=days.get((d+days.size()-1)%days.size());
+            for(int heldUnit=0;heldUnit<3;heldUnit++){
+                List<Row> train=new ArrayList<>(),cal=new ArrayList<>(),test=new ArrayList<>();
+                Set<String> trainingDays=new LinkedHashSet<>();
+                for(Row row:all){
+                    if(row.day.equals(testDay))test.add(row);
+                    else if(row.day.equals(calDay))cal.add(row);
+                    else{train.add(row);trainingDays.add(row.day);}
+                }
+                require(trainingDays.size()==9,"9 training acquisition days");
+                int[] used=new int[2];int at=0;
+                for(int u=0;u<3;u++)if(u!=heldUnit)used[at++]=u;
+                require(at==2&&used[0]!=heldUnit&&used[1]!=heldUnit,
+                    "real sensor instance must be entirely absent in train and calibration");
+                int n=train.size();
+                double[][] trainSource=new double[2*n][1];
+                double[] trainY=new double[2*n];
+                for(int i=0;i<n;i++)for(int u=0;u<2;u++){
+                    int pos=2*i+u;
+                    trainSource[pos][0]=Math.log(train.get(i).resistance[used[u]]);
+                    trainY[pos]=train.get(i).ppm();
+                }
+                SourceNumericsV6.Pls1 model=SourceNumericsV6.fitPls1(trainSource,trainY);
+                require(model.trainingRows==2*n&&model.axis.length==1,
+                    "PLS1 trained only on other two original sensor instances");
+                double[] calAbsErrors=new double[2*cal.size()];
+                for(int i=0;i<cal.size();i++)for(int u=0;u<2;u++)
+                    calAbsErrors[2*i+u]=Math.abs(model.predict(
+                        new double[]{Math.log(cal.get(i).resistance[used[u]])})-cal.get(i).ppm());
+                double width=percentile90(calAbsErrors);
+                double absolute=0,square=0,cover=0;
+                int tp=0,fn=0,fp=0,tn=0,nonpositive=0;
+                for(Row row:test){
+                    double forecast=model.predict(new double[]{
+                        Math.log(row.resistance[heldUnit])});
+                    require(Double.isFinite(forecast),"source transfer estimate must be finite");
+                    double error=forecast-row.ppm();
+                    absolute+=Math.abs(error);square+=error*error;
+                    if(Math.abs(error)<=width)cover++;
+                    if(forecast<=0)nonpositive++;
+                    if(row.ppm()>=4&&forecast>=4)tp++;
+                    else if(row.ppm()>=4)fn++;
+                    else if(forecast>=4)fp++;
+                    else tn++;
+                }
+                require(tp+fn+fp+tn==test.size(),"all heldout source times classified once");
+                output.write(String.format(Locale.ROOT,
+                    "%s,%s,%s|%s,9,%d,%d,%s,%d,%d,"+
+                    "%.10f,%.10f,%.10f,%.10f,%d,%d,%d,%d,%d,true,true,true%n",
+                    testDay,TYPES[heldUnit],TYPES[used[0]],TYPES[used[1]],
+                    train.size(),trainSource.length,calDay,calAbsErrors.length,
+                    test.size(),absolute/test.size(),Math.sqrt(square/test.size()),
+                    width,cover/test.size(),tp,fn,fp,tn,nonpositive));
+                folds++;
+            }
+        }
+        require(folds==33,"33 complete unseen source sensor and day tests");
+        System.out.println("PASS V6_JAVA_UNIT_DAY_TRANSFER: 33 completely heldout "+
+            "sensor-instance/day PLS1 research tests, no heldout unit in fit or CAL.");
+    }
+
     public static void main(String[] args)throws Exception {
-        require(args.length==4,"required original 10ppm_data.csv, coordinator ledger, "+
-                "research source day fold summaries, source heldout predictions");
+        require(args.length==5,"required original 10ppm_data.csv, coordinator ledger, "+
+                "source day fold summaries, heldout predictions and unit/day transfer metrics");
         List<Row> records=read(Path.of(args[0]));
         try(BufferedWriter audit=Files.newBufferedWriter(Path.of(args[1]),
                 StandardCharsets.UTF_8);
             BufferedWriter summary=Files.newBufferedWriter(Path.of(args[2]),
                 StandardCharsets.UTF_8);
             BufferedWriter predictions=Files.newBufferedWriter(Path.of(args[3]),
+                StandardCharsets.UTF_8);
+            BufferedWriter transfer=Files.newBufferedWriter(Path.of(args[4]),
                 StandardCharsets.UTF_8)) {
             replayCoordinator(records,audit);
             sourceDayHoldouts(records,summary,predictions);
+            heldoutSensorAndDay(records,transfer);
         }
         System.out.println("PASS N05-J ORIGINAL MQ4 JAVA REAL-SOURCE benchmark: "+
             "actual new ChemCoreTankV6 coordinator and SourceNumericsV6 PLS1 "+
