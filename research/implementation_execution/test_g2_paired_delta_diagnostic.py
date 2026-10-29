@@ -95,5 +95,47 @@ class PairedDeltaDiagnosticTests(unittest.TestCase):
                            {"a": 0, "b": 0}, **kwargs)
 
 
+    def test_group_heterogeneity_and_leave_one_out_are_exact(self):
+        # Three independent synthetic groups, unequal sizes, mixed effects.
+        result = replay({"a": 2, "b": 8, "c": 10},
+                        {"a": 2, "b": 3, "c": 9},
+                        {"a": 0, "b": 5, "c": 9}, resamples=1000)
+        self.assertEqual(result["observed_delta"], 0)
+        self.assertAlmostEqual(result["model_accuracy"], 14 / 20)
+        self.assertAlmostEqual(result["baseline_accuracy"], 14 / 20)
+        self.assertEqual((result["group_positive_delta_count"],
+                          result["group_negative_delta_count"],
+                          result["group_tied_delta_count"]), (1, 1, 1))
+        self.assertAlmostEqual(result["group_delta_min"], -2 / 8)
+        self.assertAlmostEqual(result["group_delta_max"], 1)
+        self.assertAlmostEqual(result["leave_one_group_out_delta_min"], -2 / 18)
+        self.assertAlmostEqual(result["leave_one_group_out_delta_max"], 2 / 12)
+        self.assertAlmostEqual(result["largest_group_exposure_fraction"], 0.5)
+        self.assertAlmostEqual(result["kish_effective_group_count_descriptive_only"],
+                               20**2 / (2**2 + 8**2 + 10**2))
+
+    def test_one_dominant_group_exposes_low_effective_group_count(self):
+        result = replay({"a": 1, "b": 99},
+                        {"a": 1, "b": 0},
+                        {"a": 0, "b": 99}, resamples=1000)
+        self.assertAlmostEqual(result["observed_delta"], -0.98)
+        self.assertAlmostEqual(result["largest_group_exposure_fraction"], 0.99)
+        self.assertLess(result["kish_effective_group_count_descriptive_only"], 1.03)
+        self.assertEqual(result["group_positive_delta_count"], 1)
+        self.assertEqual(result["group_negative_delta_count"], 1)
+        self.assertAlmostEqual(result["leave_one_group_out_delta_min"], -1)
+        self.assertAlmostEqual(result["leave_one_group_out_delta_max"], 1)
+
+    def test_diagnostics_are_deterministic_under_group_permutation(self):
+        original = replay({"z": 3, "a": 4, "m": 2},
+                          {"z": 2, "a": 4, "m": 0},
+                          {"z": 1, "a": 1, "m": 2}, resamples=1000)
+        reordered = replay({"m": 2, "z": 3, "a": 4},
+                           {"m": 0, "z": 2, "a": 4},
+                           {"m": 2, "z": 1, "a": 1}, resamples=1000)
+        self.assertEqual(original, reordered)
+        self.assertIn("NOT_G2_OR_G3_APPROVAL", original["scope"])
+
+
 if __name__ == "__main__":
     unittest.main()
