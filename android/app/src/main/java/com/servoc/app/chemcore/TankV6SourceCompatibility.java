@@ -107,8 +107,10 @@ public final class TankV6SourceCompatibility {
             if(!source.deviceValidated || !hasValue(source.calibrationId) ||
                !hasValue(source.deviceScope) || !hasValue(source.sensorInstanceScope))
                 return deny("M4_DEVICE_REFERENCE_MISSING");
-            return new Verdict(true, Level.DEVICE_VALIDATED_M4, "M4_SOURCE_CONTRACT_ONLY",
-                               logRatio);
+            // Compatibility metadata is NOT sufficient evidence to grant M4.
+            // Future G3 registry must independently verify reference, certificate,
+            // device instance, concentration domain, uncertainty and expiry.
+            return deny("M4_REQUIRES_INDEPENDENT_G3_REGISTRY");
         }
         return new Verdict(true, Level.RESEARCH_SCREENING, "SOURCE_COMPATIBLE_RESEARCH",
                            logRatio);
