@@ -10,6 +10,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6EvidenceConsensus.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6CurveKernel.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/SourceCurveRegistryV6.java'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6ResearchCurveOverlay.java'
       - '.github/workflows/chemcore-v6-scientific-ci.yml'
   pull_request:
     paths:
@@ -51,7 +52,9 @@ jobs:
             android/app/src/main/java/com/servoc/app/chemcore/TankV6CurveKernel.java \
             research/chemcore_v6/tests/java/TankV6CurveKernelTest.java \
             android/app/src/main/java/com/servoc/app/chemcore/SourceCurveRegistryV6.java \
-            research/chemcore_v6/tests/java/SourceCurveRegistryV6Test.java
+            research/chemcore_v6/tests/java/SourceCurveRegistryV6Test.java \
+            android/app/src/main/java/com/servoc/app/chemcore/TankV6ResearchCurveOverlay.java \
+            research/chemcore_v6/tests/java/TankV6ResearchCurveOverlayTest.java
           java -cp /tmp/tank-v6-chemcore-classes \
             com.servoc.app.chemcore.TankV6SourceCompatibilityTest
           java -cp /tmp/tank-v6-chemcore-classes \
@@ -60,6 +63,8 @@ jobs:
             com.servoc.app.chemcore.TankV6CurveKernelTest
           java -cp /tmp/tank-v6-chemcore-classes \
             com.servoc.app.chemcore.SourceCurveRegistryV6Test
+          java -cp /tmp/tank-v6-chemcore-classes \
+            com.servoc.app.chemcore.TankV6ResearchCurveOverlayTest
       - name: Run all V6 source and peer-R0 regression tests
         run: |
           python -m unittest discover -s research/chemcore_v6/tests -p 'test_*.py' -v
