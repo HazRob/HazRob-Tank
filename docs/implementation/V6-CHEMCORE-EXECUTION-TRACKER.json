@@ -31,7 +31,7 @@
     "library_reference_records": 80,
     "independent_Tank_G3_validated_techniques": 0
   },
-  "disclaimer": "Documentation & plans only. No new execution or validated Tank calibration. Existing V6-001 code fix remains separate.",
+  "disclaimer": "This tracker now includes actual metadata inventories (43/14/8 rows), not runnable engine implementation, simulation results, APK or Tank G3 validation.",
   "stage_count": 12,
   "stages": [
     {
@@ -63,15 +63,20 @@
         "source_manifest.json",
         "source_curve_matrix.csv",
         "technique_selection.csv",
-        "mq76_runtime_matrix.csv"
+        "mq76_runtime_matrix.csv",
+        "legacy_14_asset_manifest.csv",
+        "curves43_source_compatibility.csv",
+        "R0_peer_audit.csv"
       ],
       "gate": "ALL_REFERENCES_TYPED_NO_UNVERIFIED_PROMOTION",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS_SOURCE_METADATA_ONLY",
       "actual_commit": null,
       "ci_run": null,
       "verified_on": null,
-      "blockers": [],
-      "next_action": null
+      "blockers": [
+        "Raw external archives and one-by-one legacy scientific qualification not completed"
+      ],
+      "next_action": "Inspect all remaining raw files and source/curve equivalence; freeze source families"
     },
     {
       "id": "P02",
@@ -83,7 +88,10 @@
       "deliverables": [
         "channel_contract.json",
         "electrical_test_plan.md",
-        "R0_definitions.csv"
+        "R0_definitions.csv",
+        "r0_definition_contract.json",
+        "ratio_direction_mapping.json",
+        "R0_2018_arithmetic_issue_log.md"
       ],
       "gate": "DIGITAL_VALIDATION_PASS_PHYSICAL_PENDING_IF_MISSING",
       "status": "NOT_STARTED",
@@ -126,7 +134,10 @@
         "simulation_config.yaml",
         "oracles.jsonl",
         "simulation_test_results.json",
-        "V5_V6_diff.csv"
+        "V5_V6_diff.csv",
+        "SIM_R01_R07_report.json",
+        "curve_unit_roundtrip.json",
+        "ppm_sensitivity_to_r0.csv"
       ],
       "gate": "SYNTHETIC_ONLY_TESTS_PASS_OR_EXPLICIT_FAILURE",
       "status": "NOT_STARTED",
@@ -149,7 +160,9 @@
         "raw_manifest.csv",
         "sampling_manifest.csv",
         "split_manifest.csv",
-        "blocked_sources.csv"
+        "blocked_sources.csv",
+        "external_fingerprint_cohort_manifest.csv",
+        "headspace_and_MQ135_group_checks.csv"
       ],
       "gate": "RAW_AND_SPLIT_INTEGRITY_PASS_FOR_ELIGIBLE_DATA",
       "status": "NOT_STARTED",
@@ -171,7 +184,9 @@
       "deliverables": [
         "source_models.json",
         "curve_results.csv",
-        "quant_model_card.md"
+        "quant_model_card.md",
+        "SourceCurveRegistryV6_manifest.json",
+        "source_R0_compatibility_gates.json"
       ],
       "gate": "DOMAIN_AND_R0_GATES_AND_COMPARATIVE_RESULTS",
       "status": "NOT_STARTED",
@@ -192,7 +207,9 @@
       "deliverables": [
         "feature_schema.json",
         "model_candidates.json",
-        "ablation_metrics.json"
+        "ablation_metrics.json",
+        "FingerprintAdapterV6_schema.json",
+        "overlap_sensor_mask_tests.json"
       ],
       "gate": "GROUPED_HOLDOUT_METRICS_AND_EXPLICIT_SELECTION",
       "status": "NOT_STARTED",
@@ -213,7 +230,9 @@
       "deliverables": [
         "evidence_graph.json",
         "v6_decision_policy.md",
-        "conditional_accuracy.json"
+        "conditional_accuracy.json",
+        "independence_lineage_graph.json",
+        "cross_source_ablation.csv"
       ],
       "gate": "NO_FALSE_M4_AND_CHALLENGE_HOLDOUT_RESULTS",
       "status": "NOT_STARTED",
@@ -234,7 +253,8 @@
         "android_v6_patch",
         "tests",
         "build_manifest.json",
-        "apk_checksum.txt"
+        "apk_checksum.txt",
+        "historical_prior_source_display_tests.json"
       ],
       "gate": "CI_GRADLE_AND_ANDROID_DEVICE_ACCEPTANCE",
       "status": "NOT_STARTED",
@@ -301,5 +321,18 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "PLAN_PREPARED_ALL_PHASES_NOT_STARTED"
+  "state": "PLAN_PREPARED_P01_METADATA_INVENTORY_STARTED_NO_CHEMCORE_ENGINE_PATCH",
+  "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
+  "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
+  "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
+  "MQDataScience_43_curves": "docs/research/V6-CHEMCORE-MQDATA-CURVES-43-COMPATIBILITY.csv",
+  "simulation_scenarios_count": 31,
+  "inventory_progress": {
+    "historical_curves_rows": 43,
+    "historical_assets_rows": 14,
+    "mqunified_r0_factor_rows": 8,
+    "source_status": "INDEXED_WITH_PINNED_ORIGIN_NOT_ALL_RAW_QUALIFIED",
+    "evidence_computation": "NOT_RUN",
+    "V6_physical_validation": "NONE"
+  }
 }
