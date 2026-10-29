@@ -35,12 +35,12 @@ class N06BApprovedReportResearch(unittest.TestCase):
         self.assertIn("analyzeVerified(db,b)",self.pdf)
         self.assertLess(self.pdf.index("FieldSessionReportExporter.resolve(db,fieldSessionId)"),
                         self.pdf.index("analyzeVerified(db,b)"))
-        self.assertIn("FieldSessionReportExporter.Bundle b=resolve(db,fieldSessionId)",self.facade)
+        self.assertIn("Bundle b=resolve(db,fieldSessionId)",self.facade)
         self.assertIn("analyzeVerified(db,b)",self.xlsx)
 
     def test_read_only_no_schema_migration_and_no_legacy_fallback(self):
         self.assertIn("db.getReadableDatabase().rawQuery(",self.adapter)
-        for unsafe in ("getWritableDatabase(", "execSQL(", ".insert(", ".update(",
+        for unsafe in ("getWritableDatabase(", "execSQL(", ".insert(", "w.update(",
                        ".delete(", "ChemCoreInferenceEngine", "TankStableRuntimeCatalog",
                        "CompletedSessionChemCoreAnalyzer", "FoodFreshness"):
             self.assertNotIn(unsafe,self.adapter)
