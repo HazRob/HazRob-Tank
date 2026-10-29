@@ -207,7 +207,7 @@ public final class RealMqSourceV6Benchmark {
                     }
                 }
                 concentrationRows.write(String.format(Locale.ROOT,
-                    "UCI1081_MQ135,%d,%d,%s,%d,%s,%s,%s,%s,%s,%d|%d,true%n",
+                    "UCI1081_MQ135,%d,%d,%s,%d,%s,%s,%s,%s,%d|%d,true%n",
                     heldout,row.id,row.label,row.level,
                     Double.isFinite(estimated)?String.format(Locale.ROOT,"%.10f",estimated):"",
                     Double.isFinite(ae)?String.format(Locale.ROOT,"%.10f",ae):"",
