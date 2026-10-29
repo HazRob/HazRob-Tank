@@ -1,24 +1,25 @@
-# G2 — NFKC identity gate for evidence CSV headers (2026-10-29)
+# بوابة G2 لرفض الأسماء المتكافئة توافقياً في رؤوس ملفات CSV — 29 أكتوبر 2026
 
-## Scope and reproducibility
-- Repository: `HazRob/HazRob-Tank`; branch: `research/chemcore80-central-evidence-gap-analysis-20261021`.
-- Resumed from `46dd80de1bc29d118aec72b8f24924b720355173` after verifying the prior G2 workflow #40848957297: 327/327 tests PASS, double replay and publication gate PASS.
-- Central source index: `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json`, Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`; 80 catalog entries, 14 external measurement datasets.
-- Source-readiness matrix: `G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json` (Git blob `bd69304fc35175b90199c6cc6ad4a88fc10ae93f`), 0/14 qualified. Independent evidence register: `G2_INDEPENDENT_EVIDENCE.json` (Git blob `c44f7cbf9aa767c7aeabb750e34eaa339868e43e`), `records=[]`.
+## نطاق العمل والمصادر
+- المستودع: `HazRob/HazRob-Tank`؛ فرع البحث: `research/chemcore80-central-evidence-gap-analysis-20261021`.
+- نقطة الاستئناف: `46dd80de1bc29d118aec72b8f24924b720355173`. جرى التحقق من تشغيل G2 السابق رقم `40848957297`: نجاح 327/327 اختباراً، وإعادة التشغيل المطابقة بايتياً، وبوابة النشر.
+- فهرس المراجع المركزي: `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json`، بصمة Git blob: `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`. يتضمن 80 مدخلاً، منها 14 مجموعة قياسات خارجية.
+- مصفوفة المصادر: `G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json`، بصمة `bd69304fc35175b90199c6cc6ad4a88fc10ae93f`، المؤهل منها 0/14.
+- سجل الأدلة المستقلة: `G2_INDEPENDENT_EVIDENCE.json`، بصمة `c44f7cbf9aa767c7aeabb750e34eaa339868e43e`، ومحتواه `records=[]`.
 
-## Engineering defect and change
-`csv.DictReader` allows visually confusable NFKC-compatible field names (for example `exposure_id` versus `ｅxposure_id`, and `device_id` versus `ｄevice_id`). Previously, the CSV gate rejected duplicate headers, control characters and non-NFC text, but did not reject NFKC compatibility aliases. An extra confusable column could carry conflicting physical identity information while the gate consumes the canonical column, misleading a downstream reviewer.
+## الثغرة والإصلاح
+كان قارئ `csv.DictReader` يقبل أسماء أعمدة متشابهة بصرياً لكنها مختلفة بايتياً بسبب محارف Unicode المتكافئة توافقياً، مثل `exposure_id` مقابل `ｅxposure_id` أو `device_id` مقابل `ｄevice_id`. وكانت البوابة ترفض تكرار العناوين ومحارف التحكم والنص غير المطبع وفق NFC، لكنها لا ترفض جميع بدائل NFKC. قد يؤدي وجود عمود إضافي باسم مضلل إلى اختلاف بيانات هوية التعرض أو الجهاز التي يراها المراجع عن العمود المعتمد برمجياً.
 
-The `_read_csv` schema gate in `research/implementation_execution/g2_cross_artifact_gate.py` now requires every header to be NFKC-stable and fails closed with `CSV_HEADER_AMBIGUOUS`. This is intentionally scoped to CSV **header names**; it does not rewrite source measurements or chemical labels. Existing controls for row width, duplicate columns and Unicode control characters remain.
+أضيف إلى `_read_csv` في `research/implementation_execution/g2_cross_artifact_gate.py` شرط أن يكون **اسم كل عمود** مستقراً بعد تطبيع `NFKC`، وإلا تُرفض البنية برسالة `CSV_HEADER_AMBIGUOUS`. يقتصر التعديل على رؤوس أعمدة CSV؛ ولا يغير القياسات الخام أو أسماء المركبات الكيميائية أو القيم العددية. بقيت فحوص اتساق عرض الصفوف والأعمدة المكررة ومحارف التحكم كما هي.
 
-Added six deterministic synthetic tests in `test_g2_csv_header_nfkc_gate.py`: fullwidth exposure header; duplicate-looking canonical/compatibility exposure headers; device header alias; ordinary ASCII schema; multilingual canonical extra header; decomposed header. Synthetic fixtures are not gas measurements.
+أضيفت ستة اختبارات انحدار اصطناعية في `test_g2_csv_header_nfkc_gate.py`: عنوان تعرض بأحرف كاملة العرض؛ عنوانان متشابهان أحدهما معياري والآخر متوافق؛ عنوان جهاز متوافق؛ قبول البنية القياسية ASCII؛ قبول عنوان إضافي عربي سليم؛ واستمرار رفض عنوان غير مطبع وفق NFC. لا تُعد بيانات الاختبارات الاصطناعية دليلاً على قياسات غازية أو معايرة فعلية.
 
-## Verified CI evidence
-- Code/test commit: `ff04494fc99377bf673dd3564c544b594a385466`.
-- [G2 workflow #40857166203](https://github.com/HazRob/HazRob-Tank/actions/runs/40857166203), job `123390916550`: **333/333 PASS**; 80-technique audit and byte-identical replay PASS; publication guard PASS.
-- Results: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
-- Artifact: `12889014481` (`tank-v4-g2-signal-r0-gate`); ZIP SHA256 `2b418c362804a37bb879c98f6a78010ef3f490b2a944202a128f0f1c1d0bcdbe`.
-- No G2/G3 scientific promotion; no modifications to ChemCore Stable, Android or firmware.
+## أدلة الاختبار وإعادة الإنتاج
+- التزام الشيفرة والاختبارات: `ff04494fc99377bf673dd3564c544b594a385466`.
+- [تشغيل G2 رقم 40857166203](https://github.com/HazRob/HazRob-Tank/actions/runs/40857166203)، الوظيفة `123390916550`: **333/333 اختباراً ناجحاً**، وتدقيق التقنيات الثمانين وإعادة التشغيل المطابقة بايتياً وبوابة النشر ناجحة.
+- النتائج العلمية دون تغيير: `g2_pass_candidates=0` و`g2_blocked=80` و`source_blocked=14`.
+- الأثر المرفوع: `12889014481` باسم `tank-v4-g2-signal-r0-gate`، وبصمة ZIP SHA256: `2b418c362804a37bb879c98f6a78010ef3f490b2a944202a128f0f1c1d0bcdbe`.
+- اقتصر التغيير على فرع البحث؛ لم يُعدّل ChemCore Stable أو تطبيق Android أو الفريموير. لم تُمنح ترقية علمية G2 أو G3.
 
-## Remaining scientific blocker
-Acquire and independently audit original physical exposure data, traceable reference concentrations, source/device/session/exposure provenance and preregistered grouped blind holdouts. Software checks alone cannot establish empirical qualification. Recheck CI on this documentation checkpoint before proceeding.
+## ما يتعذر استكماله حالياً
+لا يمكن منح اعتماد G2 دون الحصول على قياسات تعرض فيزيائية أصلية ومستقلة، ومراجع تركيز قابلة للتتبع، ومصدر موثق ومعرّفات الجهاز والجلسة والتعرض، وتقسيمات اختبار محجوبة ومثبتة مسبقاً. لا تُعوض الاختبارات البرمجية هذه الأدلة. يجب مراجعة CI للالتزام التوثيقي النهائي قبل أي استئناف لاحق.
