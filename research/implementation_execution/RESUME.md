@@ -1,3 +1,14 @@
+## 2026-10-29 — G2 paired true-reference class × physical-group discordance (383/383 CI)
+
+- Resumed from `ff03433a2fc0c6cc10efe68e68ac71f4e51da458`, with 20/20 previous CI runs successful. Reverified central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records / 14 external measurement datasets). Source-ready 0/14; independent evidence `records=[]`.
+- Research-only `g2_paired_prediction_replay.py` now reconciles both-correct, both-wrong, model-only-correct, and baseline-only-correct for every observed true-reference-class × declared-physical-group cell, including exact class and group marginal checks. For each class, it reports equal-observed-group versus exposure-weighted paired accuracy deltas, group extrema, opposite-sign effects and weighting sign reversal. Missing cells are never imputed; physical group/label provenance is NOT independently authenticated.
+- Code commit `a68aab2a7b82d160bbebf9a5fa8802b0a4329406`; four new synthetic regression tests commit `6754365a437d3b5cce89eecbbdc7fa7fe5c30a71`; corrected synthetic CSV newline escaping in `54c932fd372be2d5bf8169910e6ae8274aa55ed3` before CI.
+- [G2 CI #40948094583](https://github.com/HazRob/HazRob-Tank/actions/runs/40948094583), job `123708659153`: **383/383 PASS**, deterministic byte-identical audit/triage replay PASS, research publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12928873712`, ZIP SHA256 `75ab4bb65b6175fc97f516718985580c478c766ed883de40b2e2c9d4010285d1`.
+- Evidence note: `G2_CLASS_BY_GROUP_PAIRED_DISCORDANCE_AND_WEIGHTING_2026-10-29_AR.md`. Research branch only; ChemCore Stable, Android, firmware and main unchanged. No scientific G2/G3 approval.
+- Next: verify CI on final documentation checkpoint; obtain independently sourced original raw physical exposures with traceable reference concentrations, device/session/exposure provenance, preregistered blinded grouped holdouts and independently verified post-blind labels.
+
+---
+
 ## 2026-10-29 — G2 true-reference class × physical-group support (379/379 CI)
 
 - Resumed from `32daa568deca9d0d18e1f2acf37625745391441e`; verified 20/20 CI successes on that checkpoint. Central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` remains 80 records / 14 external datasets, source-ready 0/14, independent evidence `records=[]`.
