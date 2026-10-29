@@ -6,6 +6,9 @@ on:
     paths:
       - 'android/app/src/main/java/com/servoc/app/chemcore/**'
       - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/**'
+      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
+      - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
+      - 'android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java'
       - '.github/workflows/chemcore-v6-android-compile.yml'
   workflow_dispatch:
 
