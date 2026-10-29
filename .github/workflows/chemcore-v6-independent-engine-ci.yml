@@ -1,0 +1,48 @@
+name: ChemCore Tank V6 independent engine tests
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/**'
+      - 'research/chemcore_v6/tests/java/NewChemCoreTankV6EngineTest.java'
+      - 'research/chemcore_v6/tests/test_independent_v6_catalog_parity.py'
+      - '.github/workflows/chemcore-v6-independent-engine-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-v6-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile new engine without prior ChemCore implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chemcore-tank-new-v6
+          javac -d /tmp/chemcore-tank-new-v6 \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceCatalog.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/Engine.java \
+            research/chemcore_v6/tests/java/NewChemCoreTankV6EngineTest.java
+          java -cp /tmp/chemcore-tank-new-v6 \
+            com.hazrob.tank.chemcore.v6.NewChemCoreTankV6EngineTest
+      - name: Verify all 43 coefficients match immutable original source
+        run: python -m unittest discover -s research/chemcore_v6/tests -p 'test_independent_v6_catalog_parity.py' -v
+      - name: Verify isolated dependency boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -R -nE '^import (com[.]servoc|android[.]|org[.]json)' \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6
+          echo "New inference engine JDK-only, standalone, source-pinned; no physical calibration claim"
