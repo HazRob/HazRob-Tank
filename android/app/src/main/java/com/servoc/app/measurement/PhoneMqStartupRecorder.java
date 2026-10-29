@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,7 +29,8 @@ import java.util.List;
 public final class PhoneMqStartupRecorder {
     private static final String TAG="TankV6StartupPhone";
     private static final String[] CHANNELS={"mq2","mq3","mq4","mq5","mq7","mq8","mq9","mq135"};
-    private static final int MAX_FILES=20, MAX_ROWS=640, FLUSH_EVERY_ROWS=8;
+    private static final int MAX_FILES=200, MAX_ROWS=640, FLUSH_EVERY_ROWS=8;
+    private static final long MAX_DIRECTORY_BYTES=32L*1024L*1024L;
     private final TankV6StartupWindow window=new TankV6StartupWindow();
     private final File directory;
     private BufferedWriter writer;
@@ -69,8 +68,15 @@ public final class PhoneMqStartupRecorder {
                     r.optLong("sample_us",-1),r.optDouble("rs",Double.NaN),
                     r.optBoolean("ok",false)&&r.optBoolean("powered",on)));
             }
+            // A network endpoint change is NOT an independent device serial number.
+            // Nevertheless, never mix two endpoint streams into the same phone trace.
+            String newEndpoint=robotEndpoint==null?"":robotEndpoint;
+            if(writer!=null && !endpoint.equals(newEndpoint)) {
+                end("ROBOT_ENDPOINT_CHANGED");
+                window.accept(false,0,null);
+            }
             TankV6StartupWindow.Batch batch=window.accept(on,powerMs,readings);
-            if(batch.newlyPoweredOn) {
+            if(batch.newlyPoweredOn && powerMs<=TankV6StartupWindow.WINDOW_MS) {
                 end("RELAY_RESTART_OR_NEW_POWER_EVENT");
                 endpoint=robotEndpoint==null?"":robotEndpoint;
                 startedNearPowerOn=batch.startedNearPowerOn;
@@ -118,7 +124,7 @@ public final class PhoneMqStartupRecorder {
 
     private void begin(long observedPowerMs) throws Exception {
         if(!directory.exists() && !directory.mkdirs())throw new IOException("Storage directory unavailable");
-        pruneCompleted();
+        verifyQuotaWithoutDeletingEvidence();
         String fname="startup-"+System.currentTimeMillis()+"-"+activeSequence+".jsonl";
         writer=new BufferedWriter(new OutputStreamWriter(
             new FileOutputStream(new File(directory,fname),false),StandardCharsets.UTF_8),8192);
@@ -176,14 +182,14 @@ public final class PhoneMqStartupRecorder {
     }
     public synchronized void close(){end("PHONE_RECORDER_CLOSED_OR_ACTIVITY_DESTROYED");}
 
-    private void pruneCompleted() {
-        File[] list=directory.listFiles((d,name)->name.startsWith("startup-")&&name.endsWith(".jsonl"));
-        if(list==null || list.length<MAX_FILES)return;
-        Arrays.sort(list,Comparator.comparingLong(File::lastModified)
-                                   .thenComparing(File::getName));
-        // Never prune an open writer; called before opening a new file only.
-        for(int i=0;i<=list.length-MAX_FILES;i++) {
-            if(!list[i].delete())Log.w(TAG,"Unable to prune old phone capture");
-        }
+    private void verifyQuotaWithoutDeletingEvidence() throws IOException {
+        File[] list=directory.listFiles((d,name)->
+            name.startsWith("startup-")&&name.endsWith(".jsonl"));
+        if(list==null)throw new IOException("Unable to examine phone research capture directory");
+        long bytes=0;
+        for(File f:list)bytes+=f.length();
+        if(list.length>=MAX_FILES || bytes>=MAX_DIRECTORY_BYTES)
+            throw new IOException("Phone research quota reached; export data before more captures");
+        // Existing evidence is NEVER deleted, pruned or overwritten automatically.
     }
 }
