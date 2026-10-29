@@ -4,8 +4,8 @@
   "scoping": "NEW independent com.hazrob.tank.chemcore.v6 package; food freshness and prior inference code excluded",
   "counts": {
     "total": 80,
-    "partial": 24,
-    "not_yet_ported": 56,
+    "partial": 34,
+    "not_yet_ported": 46,
     "fully_implemented_and_device_validated": 0
   },
   "available_numerical_references": {
@@ -63,10 +63,12 @@
       "id": "01.5",
       "name": "Environmental correction",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "CalibrationResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent mathematical V6 research-stage implementation; numeric source/synthetic tests in V6SecondTenTechniquesTest.java; 101 assertions, CI 40941518212. No physical Tank G3."
     },
     {
       "id": "01.6",
@@ -184,10 +186,12 @@
       "id": "03.1",
       "name": "PCA",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ClassicalLearningV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent mathematical V6 research-stage implementation; numeric source/synthetic tests in V6SecondTenTechniquesTest.java; 101 assertions, CI 40941518212. No physical Tank G3."
     },
     {
       "id": "03.2",
@@ -215,10 +219,12 @@
       "id": "03.4",
       "name": "LDA/PLS-DA",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ClassicalLearningV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Diagonal shared-covariance LDA implemented; PLS-DA not yet included. Tested on source-label synthetic fixtures; no Tank device validation."
     },
     {
       "id": "03.5",
@@ -290,19 +296,23 @@
       "id": "04.3",
       "name": "KNN",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ClassicalLearningV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent mathematical V6 research-stage implementation; numeric source/synthetic tests in V6SecondTenTechniquesTest.java; 101 assertions, CI 40941518212. No physical Tank G3."
     },
     {
       "id": "04.4",
       "name": "Logistic regression",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ClassicalLearningV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent mathematical V6 research-stage implementation; numeric source/synthetic tests in V6SecondTenTechniquesTest.java; 101 assertions, CI 40941518212. No physical Tank G3."
     },
     {
       "id": "04.5",
@@ -362,19 +372,23 @@
       "id": "05.1",
       "name": "Single-sensor calibration",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "CalibrationResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent mathematical V6 research-stage implementation; numeric source/synthetic tests in V6SecondTenTechniquesTest.java; 101 assertions, CI 40941518212. No physical Tank G3."
     },
     {
       "id": "05.2",
       "name": "Multipoint calibration",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "CalibrationResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent mathematical V6 research-stage implementation; numeric source/synthetic tests in V6SecondTenTechniquesTest.java; 101 assertions, CI 40941518212. No physical Tank G3."
     },
     {
       "id": "05.3",
@@ -420,19 +434,23 @@
       "id": "05.7",
       "name": "Identity-conditional estimates",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "CalibrationResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent mathematical V6 research-stage implementation; numeric source/synthetic tests in V6SecondTenTechniquesTest.java; 101 assertions, CI 40941518212. No physical Tank G3."
     },
     {
       "id": "05.8",
       "name": "LOD/LOQ",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "CalibrationResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent mathematical V6 research-stage implementation; numeric source/synthetic tests in V6SecondTenTechniquesTest.java; 101 assertions, CI 40941518212. No physical Tank G3."
     },
     {
       "id": "05.9",
@@ -503,10 +521,12 @@
       "id": "06.7",
       "name": "Evidence conflicts",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "EvidenceConflictV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "Independent mathematical V6 research-stage implementation; numeric source/synthetic tests in V6SecondTenTechniquesTest.java; 101 assertions, CI 40941518212. No physical Tank G3."
     },
     {
       "id": "06.8",
@@ -841,5 +861,76 @@
     "assertions": 392,
     "ci_run": 40938234785,
     "status": "RESEARCH_NUMERIC_METHODS_JVM_PASS_NOT_DEVICE_VALIDATED"
+  },
+  "latest_new_batch": {
+    "date": "2026-10-29",
+    "batch": "V6-N03-B",
+    "new_partial_techniques": [
+      {
+        "id": "01.5",
+        "name": "Environmental correction",
+        "module": "CalibrationResearchV6.java"
+      },
+      {
+        "id": "03.1",
+        "name": "PCA",
+        "module": "ClassicalLearningV6.java"
+      },
+      {
+        "id": "03.4",
+        "name": "LDA/PLS-DA",
+        "module": "ClassicalLearningV6.java"
+      },
+      {
+        "id": "04.3",
+        "name": "KNN",
+        "module": "ClassicalLearningV6.java"
+      },
+      {
+        "id": "04.4",
+        "name": "Logistic regression",
+        "module": "ClassicalLearningV6.java"
+      },
+      {
+        "id": "05.1",
+        "name": "Single-sensor calibration",
+        "module": "CalibrationResearchV6.java"
+      },
+      {
+        "id": "05.2",
+        "name": "Multipoint calibration",
+        "module": "CalibrationResearchV6.java"
+      },
+      {
+        "id": "05.7",
+        "name": "Identity-conditional estimates",
+        "module": "CalibrationResearchV6.java"
+      },
+      {
+        "id": "05.8",
+        "name": "LOD/LOQ",
+        "module": "CalibrationResearchV6.java"
+      },
+      {
+        "id": "06.7",
+        "name": "Evidence conflicts",
+        "module": "EvidenceConflictV6.java"
+      }
+    ],
+    "modules": [
+      "CalibrationResearchV6.java",
+      "ClassicalLearningV6.java",
+      "EvidenceConflictV6.java"
+    ],
+    "tests": "V6SecondTenTechniquesTest.java",
+    "assertions": 101,
+    "ci_run": 40941518212,
+    "status": "RESEARCH_SOURCE_AND_JVM_PASS_NOT_DEVICE_VALIDATED",
+    "integration": "ChemCoreTankV6.sourceCurveDisagreements and Android JSON fields wired",
+    "limitations": [
+      "LDA diagonal only, no PLS-DA",
+      "No device-calibrated training set or actual Tank gas identity",
+      "Source datasets and sensor feature spaces remain distinct"
+    ]
   }
 }
