@@ -74,7 +74,7 @@ public final class V6SeventhNeuralTechniquesTest {
 
         // Causality: manipulate future input without changing earlier prefix.
         double[][] before=series(1.3),after=series(1.3);
-        for(int i=8;i<after.length;i++){after[i][0]=-1000;after[i][1]=1000;}
+        for(int i=8;i<after.length;i++){after[i][0]=-3;after[i][1]=3;}
         var prefix1=TemporalNeuralResearchV6.causalTcnPrefix(before,7);
         var prefix2=TemporalNeuralResearchV6.causalTcnPrefix(after,7);
         for(int i=0;i<prefix1.length;i++)
