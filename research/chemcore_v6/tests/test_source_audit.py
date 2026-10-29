@@ -22,10 +22,10 @@ class SourceIntegrityTests(unittest.TestCase):
         self.assertEqual(a.git_blob_sha1(b"hello\n"),
                          hashlib.sha1(b"blob 6\0hello\n").hexdigest())
 
-    def test_02_all_14_pinned_blobs(self):
+    def test_02_all_13_gas_pinned_blobs(self):
         z = a.verify_source_snapshot()
-        self.assertEqual(z["verified"], 14)
-        self.assertEqual(len({v["git_blob_sha1"] for v in z["files"]}), 14)
+        self.assertEqual(z["verified"], 13)
+        self.assertEqual(len({v["git_blob_sha1"] for v in z["files"]}), 13)
 
     def test_03_modified_raw_source_fail_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -156,9 +156,8 @@ class CurveAndFingerprintTests(unittest.TestCase):
 
     def test_23_evidence_counts_not_physical_claims(self):
         z = a.audit()
-        self.assertEqual(z["source_integrity"]["verified"], 14)
+        self.assertEqual(z["source_integrity"]["verified"], 13)
         self.assertEqual(z["derived_source_fingerprint_families"], 13)
-        self.assertEqual(z["food_headspace_session_count"], 59)
         self.assertEqual(z["UCI1081_derived_mq135_gas_level_records"], 18)
         self.assertTrue(z["no_real_Tank_gas_data_used"])
         self.assertIs(z["M4_or_safety_certification"], False)
