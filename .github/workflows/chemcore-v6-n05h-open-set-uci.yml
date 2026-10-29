@@ -87,6 +87,15 @@ jobs:
               if part in ('calibration_known','test_known'):
                   assert r['original_ppb']==k[1]
           assert len(set(key(row) for row in decisions))==36
+          for row in decisions:
+            labels=row['all_source_candidate_labels'].split('|')
+            scores=[float(x) for x in row['all_source_candidate_scores'].split('|')]
+            assert len(labels)==4 and len(set(labels))==4 and len(scores)==4
+            assert all(0<=x<=1 for x in scores)
+            assert abs(sum(scores)-1)<1e-8
+            assert row['pre_gate_candidate']==labels[0]
+            assert abs(float(row['max_score'])-max(scores))<1e-9
+            assert row['reported_label'] in (labels[0],'UNKNOWN')
           for f in folds:
             assert f['train_known']=='40' and f['calibration_known']=='8'
             assert f['calibration_unknown']=='15' and f['test_known']=='12'
