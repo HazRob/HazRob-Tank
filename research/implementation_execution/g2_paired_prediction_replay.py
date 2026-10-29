@@ -115,6 +115,12 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
     group_class_both_wrong = Counter()
     group_class_model_only = Counter()
     group_class_baseline_only = Counter()
+    # Optional physical-sample identifiers detect one sample declared as
+    # independent test groups. Repeated reads inside a group are reported,
+    # not treated as independent samples.
+    has_physical_sample_ids = "physical_sample_id" in predictions[0]
+    physical_sample_groups = {}
+    physical_sample_read_counts = Counter()
 
     for row in predictions:
         exposure, group = row["exposure_id"], row["group_id"]
@@ -124,6 +130,15 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         if exposure in seen_exposures:
             raise ValueError("PAIRED_REPLAY_DUPLICATE_EXPOSURE_ID")
         seen_exposures.add(exposure)
+        if has_physical_sample_ids:
+            sample_id = row["physical_sample_id"]
+            if not _canonical_group_id(sample_id):
+                raise ValueError("PAIRED_REPLAY_PHYSICAL_SAMPLE_ID_INVALID")
+            if (sample_id in physical_sample_groups
+                    and physical_sample_groups[sample_id] != group):
+                raise ValueError("PAIRED_REPLAY_PHYSICAL_SAMPLE_GROUP_LEAKAGE")
+            physical_sample_groups[sample_id] = group
+            physical_sample_read_counts[sample_id] += 1
         assignment.append([exposure, group])
         outcome_rows.append([exposure, group, row["true_reference"],
                              row["predicted_reference"],
@@ -330,6 +345,23 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
     result.update({
         "paired_outcomes_recomputed_from_same_exposure_rows": True,
         "per_group_metrics_recomputed_from_prediction_rows": True,
+        "physical_sample_group_consistency_checked": has_physical_sample_ids,
+        "distinct_declared_physical_samples": (
+            len(physical_sample_groups) if has_physical_sample_ids else None
+        ),
+        "repeated_exposure_rows_within_declared_physical_samples": (
+            sum(n - 1 for n in physical_sample_read_counts.values())
+            if has_physical_sample_ids else None
+        ),
+        "max_exposure_rows_per_declared_physical_sample": (
+            max(physical_sample_read_counts.values())
+            if has_physical_sample_ids else None
+        ),
+        "physical_sample_scope": (
+            "OPTIONAL_DECLARED_PHYSICAL_SAMPLE_ID_GROUP_CONSISTENCY_ONLY;"
+            "REPEATED_READS_NOT_INDEPENDENT_SAMPLES;"
+            "NOT_AUTHENTICATED_SAMPLE_PROVENANCE_OR_G2_G3_APPROVAL"
+        ),
         "paired_both_correct": both_correct,
         "paired_both_wrong": both_wrong,
         "paired_model_only_correct": model_only,
