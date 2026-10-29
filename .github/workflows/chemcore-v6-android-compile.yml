@@ -10,6 +10,8 @@ on:
       - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
       - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
       - 'android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java'
+      - 'android/app/src/main/java/com/servoc/app/report/TankInstantReportPdf.java'
+      - 'research/chemcore_v6/tests/test_v6_android_instant_research_contract.py'
       - '.github/workflows/chemcore-v6-android-compile.yml'
   workflow_dispatch:
 
@@ -55,6 +57,12 @@ jobs:
       - name: Compile entire merged Android Java application (no APK)
         working-directory: source
         run: gradle --no-daemon :app:compileDebugJavaWithJavac
+      - name: Check N06 V6-only instant/report boundaries (structural, not runtime)
+        working-directory: tank
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest research/chemcore_v6/tests/test_v6_android_instant_research_contract.py -v
       - name: Record scope of validation
         run: |
           echo "PASS means Java/Android compilation only."
