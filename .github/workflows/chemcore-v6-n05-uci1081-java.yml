@@ -1,0 +1,85 @@
+name: ChemCore Tank V6 N05 original UCI1081 Java benchmark
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/chemcore_v6/benchmarks/Uci1081JavaV6Benchmark.java'
+      - 'research/chemcore_v6/benchmarks/extract_uci1081_verified.py'
+      - '.github/workflows/chemcore-v6-n05-uci1081-java.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-uci1081-90-exposure-java:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download official UCI and fail closed unless both archive and raw CSV SHA match
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chemcore-v6-n05
+          python research/chemcore_v6/benchmarks/extract_uci1081_verified.py \
+            --out /tmp/chemcore-v6-n05/verified_features.csv \
+            --manifest /tmp/chemcore-v6-n05/source_manifest.json
+      - name: Compile only independent V6 Java models and evaluation harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chemcore-v6-n05/classes
+          javac -d /tmp/chemcore-v6-n05/classes \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/ClassicalLearningV6.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceValidationV6.java \
+            research/chemcore_v6/benchmarks/Uci1081JavaV6Benchmark.java
+      - name: Execute concentration-heldout ORIGINAL UCI source evaluation
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp /tmp/chemcore-v6-n05/classes \
+            com.hazrob.tank.chemcore.v6.Uci1081JavaV6Benchmark \
+            /tmp/chemcore-v6-n05/verified_features.csv \
+            /tmp/chemcore-v6-n05/heldout_predictions.csv \
+            /tmp/chemcore-v6-n05/fold_metrics.csv
+          python - <<'PY'
+          import csv,collections,pathlib
+          f=pathlib.Path('/tmp/chemcore-v6-n05/fold_metrics.csv')
+          r=list(csv.DictReader(f.open()))
+          assert len(r)==24, f"Expected 24 source folds, got {len(r)}"
+          p=pathlib.Path('/tmp/chemcore-v6-n05/heldout_predictions.csv')
+          predictions=list(csv.DictReader(p.open()))
+          assert len(predictions)==720, f"Expected 720 predictions, got {len(predictions)}"
+          groups=collections.Counter((x['mode'],x['algorithm'],x['heldout_ppb']) for x in predictions)
+          assert len(groups)==24 and set(groups.values())=={30}
+          print('PASS N05 original source 24 fold-metrics rows and 720 source predictions')
+          for (mode,algorithm),items in sorted(
+            ((key,[x for x in r if (x['mode'],x['algorithm'])==key])
+             for key in set((x['mode'],x['algorithm']) for x in r))):
+            assert len(items)==3
+            bal=sum(float(x['balanced_accuracy']) for x in items)/3
+            f1=sum(float(x['macro_f1']) for x in items)/3
+            print(f'N05_SUMMARY mode={mode} algorithm={algorithm} mean_balanced_accuracy={bal:.6f} mean_macro_f1={f1:.6f}')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: chemcore-v6-n05-original-uci1081-java
+          path: |
+            /tmp/chemcore-v6-n05/source_manifest.json
+            /tmp/chemcore-v6-n05/fold_metrics.csv
+            /tmp/chemcore-v6-n05/heldout_predictions.csv
+          retention-days: 30
+      - name: Scientific scope
+        run: |
+          echo "Exploratory UCI source-domain evaluation only, NOT Tank G3."
+          echo "No physical Rs/R0, ppm accuracy, unknown-gas rejection calibration, device/day holdout, or food models."
