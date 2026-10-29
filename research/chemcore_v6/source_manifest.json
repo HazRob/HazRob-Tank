@@ -28,12 +28,6 @@
         "source_verified_identical": true
       },
       {
-        "filename": "food_freshness_headspace_fingerprints_v1.json",
-        "git_blob_sha1": "959aae7574307a0030d218d4b86eb6618a6f72b0",
-        "source_git_blob_sha1": "959aae7574307a0030d218d4b86eb6618a6f72b0",
-        "source_verified_identical": true
-      },
-      {
         "filename": "identification_fingerprint_priors_v1.json",
         "git_blob_sha1": "5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
         "source_git_blob_sha1": "5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
@@ -120,18 +114,23 @@
     }
   },
   "validation": {
-    "canonical_copy_count": 14,
+    "canonical_copy_count": 13,
     "canonical_git_blobs_match": true,
     "raw_independent_experiments_revalidated": false,
     "all_manufacturer_curves_digitized": false,
     "Android_V6_algorithms_integrated": false,
-    "actual_Tank_G3_validated": false
+    "actual_Tank_G3_validated": false,
+    "original_historical_source_count": 14,
+    "food_freshness_source_moved_to": "research/food_freshness/source_snapshots/food_freshness_headspace_fingerprints_v1.json"
   },
   "policy": {
     "never_promote_library_curve_to_M4": true,
     "never_use_R0_from_other_device_as_local_R0": true,
     "always_group_external_exposures": true,
     "android_app_and_firmware_release_numbers_independent": true,
-    "do_not_mutate_original_repo": true
+    "do_not_mutate_original_repo": true,
+    "food_freshness_gas_engine_import": "PROHIBITED",
+    "food_freshness_research_asset_location": "android/app/src/main/assets/food_freshness/reference/",
+    "food_freshness_independent_module": true
   }
 }
