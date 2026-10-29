@@ -39,6 +39,27 @@ class PhysicalGroupIdentityTests(unittest.TestCase):
                 self.assertIn("NONCANONICAL_PHYSICAL_GROUP_ID",
                               audit_record(row)["issues"])
 
+    def test_nfkc_compatibility_aliases_fail_closed_in_all_partitions(self):
+        # Fullwidth ASCII, circled digits, ligatures and superscript digits
+        # can be visually/semantically confused with other physical IDs.
+        # These are software-only negative controls, not gas measurements.
+        aliases = ("device Ａ", "session ①", "session ²", "oﬃce 1")
+        for key in ("train_group_ids", "calibration_group_ids", "test_group_ids"):
+            for alias in aliases:
+                with self.subTest(partition=key, alias=alias):
+                    row = self.record()
+                    row[key] = [alias]
+                    self.assertIn("NONCANONICAL_PHYSICAL_GROUP_ID",
+                                  audit_record(row)["issues"])
+
+    def test_canonical_ascii_and_multilingual_physical_ids_remain_valid(self):
+        row = self.record()
+        row["train_group_ids"] = ["جهاز ١ / جلسة ١"]
+        row["calibration_group_ids"] = ["café / session 2"]
+        row["test_group_ids"] = ["device B / session 1", "device B / session 2"]
+        self.assertNotIn("NONCANONICAL_PHYSICAL_GROUP_ID",
+                         audit_record(row)["issues"])
+
     def test_split_alias_does_not_masquerade_as_independent_test_group(self):
         row = self.record()
         row["test_group_ids"] = ["device B / session 1",
