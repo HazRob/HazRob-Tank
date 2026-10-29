@@ -401,3 +401,14 @@ ESP32 Tank / session replays / research adapters (separate provenance)
 **مهم:** هذه الاختبارات ليست تشغيل Android هاتف/محاكي ولا اختبار PDF مرئي/فتح ملف أو رسائل جلسات معتمدة؛ مرحلة N06 للجلسات وإنتاج تقارير الموقع/الجلسة والترحيل التاريخي ما تزال **غير منجزة**. مرجع الاستئناف: [Checkpoint 17](V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-17-N06-ANDROID-2026-10-30_AR.md)، النتائج الرقمية `research/chemcore_v6/results/tank_v6_n06a_android_mq4_original_json_bridge_2026-10-30.json`، حزمة الأثر في Library `libfile_00bbb73d77ac819184c1d2c1aacc1ce4`.
 
 **الحالة العلمية:** 78/80 تنفيذًا بحثيًا جزئيًا، 2 غير منقولتين، **0/80 G3**. لا APK V6، ولا دمج للغذاء، ولا تغيير مسار تسخين MQ أو الحركة.
+
+
+## 34) Checkpoint 18 — N06-B ملحق غازات V6 للجلسات المعتمدة PDF/XLSX (2026-10-30)
+
+تم ربط `V6FieldSessionResearchAppendix` بالقارئ للقراءات الأصلية `telemetry_samples` **بعد تحقق اعتماد الدورة وSHA** داخل `FieldSessionReportExporter.resolve`. يقرأ كل `scan_cycle` أصلي ويزيل استعلامات Android المتكررة؛ يشترط **10 دورات مسح مستقلة** لكل حساس ويستخدم **قراءة أصلية محفوظة** لا متوسط Rs/R0 مُركّب ولا لقطة ختامية بديلة. ينفذ التحليل عبر `TankV6TelemetryAdapter` / `ChemCoreTankV6` بمخرجات `UNKNOWN` و`reportable_ppm=false` دائمًا لعدم وجود G3. لا كتابة SQLite ولا تعديل نتائج V5 أو الموافقات، ولا طراز غذائي أو fallback لمحرك غاز قديم داخل الملحق.
+
+جرى تحديث مساري التقرير الفعليين: **ملحق صفحات PDF بحثي** (ثلاث دورات غاز كحد أقصى للصفحة)، و**ورقتا Excel مستقلتان** للقراءات الأصلية وفرضيات المنحنيات/التعارضات كاملة. لا تغيير لخانة المرشحين التاريخية أو اعتمادهم داخل النسخ السابقة.
+
+**التحقق:** [Android compile + 14 عقدًا برمجيًا CI 40973174549](https://github.com/HazRob/HazRob-Tank/actions/runs/40973174549) **SUCCESS**، و[source verification 40973174716](https://github.com/HazRob/HazRob-Tank/actions/runs/40973174716) **SUCCESS**، المصدر المختبر commit `64cb96f585b6bca9324a0816f3cd178fea3976a4`. هذه اختبارات **تجميع + تحليل ثابت + fixture SQLite**، وليست تشغيل هاتف أو اختبارًا بصريًا للـPDF أو XLSX الناتج. لم يُبنَ APK V6 ولم تُنقل قرارات الجلسات الأساسية من محرك V5؛ الملحق البحثي مستقل للقراءة فقط.
+
+[Checkpoint18 المفصل](V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-18-N06B-APPROVED-REPORTS-2026-10-30_AR.md). **78/80 تنفيذًا بحثيًا جزئيًا، 2 غير منقولتين، Tank G3=0/80**. لا تعديل لتسخين MQ أو الحركة، ولا خلط للأغذية.
