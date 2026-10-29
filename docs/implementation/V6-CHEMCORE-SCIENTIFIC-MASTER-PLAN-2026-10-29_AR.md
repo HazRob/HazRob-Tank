@@ -390,3 +390,14 @@ ESP32 Tank / session replays / research adapters (separate provenance)
 ### Checkpoint 16 N05-K — نقل MQ4 بين الوحدات واليوم (30 أكتوبر)
 
 [CI 40968910819](https://github.com/HazRob/HazRob-Tank/actions/runs/40968910819) نجاح Java على القياسات الأصلية الحقيقية: 14,186 مدخلات عبر منسق V6 (R0 غير متوفر في المصدر؛ لا ppm)، بالإضافة إلى 44 تقييمًا بحجب يوم و**33 اختبارًا لنقل معايرة PLS1 إلى وحدة MQ4 ويوم محجوبين معًا**، ومنع استخدام الوحدة المحجوبة في التدريب أو المعايرة. متوسط MAE عبر 33 تقسيمًا **0.972053 ppm**، تغطية المجال الاسمي 90% **79.99%**؛ وحدتا MQ4_2 وMQ4_3 لم يكتشف النموذج فيهما أي حالة مرتفعة ضمن 2346 حالة مرجعية لكل وحدة عند عتبة تشخيصية 4 ppm. **حظر الترقية للقياس الآمن أو الإنذارات**؛ مصدر خارجي واحد وغاز واحد، وليست معايرة Tank. المرجع المعتمد [Checkpoint16](V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-16-MQ4-JAVA-2026-10-30_AR.md)، [JSON](../../research/chemcore_v6/results/mq4_actual_java_v6_coordinator_day_holdout_2026-10-30.json)، أرشيف Library `libfile_d4a717e6543c8191b3294c7714a8aeec`. الحالة 78 جزئية/2 غير منقولتين/G3 0.
+
+
+## 33) Checkpoint 17 — N06-A تكامل Android البحثي للقياس الآني (2026-10-30)
+
+**مسار القياس الآني الجديد:** `TankInstantAnalyzer` يطلب فقط `ChemCoreTankV6` عبر `TankV6TelemetryAdapter`، بلا fallback لمحرك الغاز السابق عند فشل التحليل. تم تعديل `TankV6TelemetryAdapter` لاستبعاد قنوات MQ غير الصالحة/المطفأة، والاحتفاظ بكل Rs الموثقة مع R0 مفقود دون اختلاق نسبة أو ppm. وتم تعديل شاشة المرشحين وتقرير PDF الآني لعرض `UNKNOWN` وفرضيات المصادر البحثية وحظر Posterior والتعرض المهني غير المؤهل.
+
+**الدليل البرمجي:** [Android CI 40969942752](https://github.com/HazRob/HazRob-Tank/actions/runs/40969942752) ناجح في `compileDebugJavaWithJavac` مع **7** اختبارات حدود source-code. [N06-A actual JSON bridge 40970539124](https://github.com/HazRob/HazRob-Tank/actions/runs/40970539124) ناجح في تمرير **42,558 مقاومة MQ4 أصلية من 14,186 توقيتًا لثلاث وحدات أصلية** كل وحدة بتسلسل مستقل إلى `TankV6TelemetryAdapter.analyzeSnapshot` على Java: **638,380 تأكيدًا**، 0 منحنيات/هوية مع R0 مفقودة، 0 ppm أو G3. حولت Ω إلى kΩ عند حدود بيانات Android، ولم تمرَّر تسمية CH4 المرجعية إلى المحرك؛ المصدر فقط لا يؤهل Tank.
+
+**مهم:** هذه الاختبارات ليست تشغيل Android هاتف/محاكي ولا اختبار PDF مرئي/فتح ملف أو رسائل جلسات معتمدة؛ مرحلة N06 للجلسات وإنتاج تقارير الموقع/الجلسة والترحيل التاريخي ما تزال **غير منجزة**. مرجع الاستئناف: [Checkpoint 17](V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-17-N06-ANDROID-2026-10-30_AR.md)، النتائج الرقمية `research/chemcore_v6/results/tank_v6_n06a_android_mq4_original_json_bridge_2026-10-30.json`، حزمة الأثر في Library `libfile_00bbb73d77ac819184c1d2c1aacc1ce4`.
+
+**الحالة العلمية:** 78/80 تنفيذًا بحثيًا جزئيًا، 2 غير منقولتين، **0/80 G3**. لا APK V6، ولا دمج للغذاء، ولا تغيير مسار تسخين MQ أو الحركة.
