@@ -159,7 +159,8 @@ def audit_evidence_bundle(record, repo_root=Path(".")):
                 with resolved.open(newline="", encoding="utf-8") as stream:
                     rows = csv.reader(stream, strict=True)
                     header = next(rows)
-                    if (not header or any(not c.strip() or _csv_has_control(c)
+                    if (not header or any(not c.strip() or _csv_has_control(c) or
+                              unicodedata.normalize("NFKC", c) != c
                               for c in header)
                             or len(set(header)) != len(header)):
                         raise ValueError("invalid or duplicate CSV headers")
