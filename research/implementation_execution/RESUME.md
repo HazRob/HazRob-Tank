@@ -1,3 +1,12 @@
+## 2026-10-30 — G2 original MQ4 temporal-dependence and catalog-revision audit
+
+- Resumed from 8310a0118c656f94e8346fc243fa76328e388ed1 (20/20 prior CI successes). Central pinned 80-entry blob unchanged; independent evidence records=[]; 0/14 source-ready.
+- SHA-verified original UMN MQ4 14,186-row Library ZIP: 14,175 one-minute pairs, 10 gaps, 10/10 contiguous midnight crossings; reference methane lag-1 correlation 0.996812 and MQ4 channel lag-1 correlations 0.997290–0.998305. Calendar day labels are not independent physical holdout evidence. Reference ppb and MQ4 ohm units preserved.
+- Current build-harness catalog main blob 248e6006a3bac6f814a6e92d9d334c3d7fb4cf73 has 94 entries; first 80 identical to G2 pinned blob 1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f. Fourteen appended entries (11 MQ-EXT and 3 FOOD_ONLY), none measurement-qualified. Do not silently rebase locked G2 scope or mix food into gas ChemCore.
+- Added research-only temporal audit code, 6 synthetic regressions, raw-result JSON, catalog-revision JSON and Arabic documentation G2_MQ4_TEMPORAL_CONTINUITY_AND_CATALOG_REVISION_2026-10-30_AR.md. CI pending for new commit; no ChemCore Stable/Android/firmware/main edits or G2/G3 scientific promotion.
+
+---
+
 ## 2026-10-30 — G2 declared-sample weighting and new MQ4 raw-library intake (392/392 CI)
 
 - Resumed from `8f667942a4139bdc4d8f8b98d0c897b81faa4ff7`; verified prior 20/20 CI successes. Central catalog pinned Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets); central source readiness 0/14; `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
