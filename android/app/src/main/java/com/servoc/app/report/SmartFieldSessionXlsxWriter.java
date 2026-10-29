@@ -47,12 +47,8 @@ final class SmartFieldSessionXlsxWriter {
         // READ-ONLY V6 research appendix. The authoritative V5 approved
         // decision and original raw evidence remain unchanged and SHA-checked.
         JSONObject v6Field=V6FieldSessionResearchAppendix.analyzeVerified(db,b);
-        if(v6Field.optInt("approved_gas_cycles",0)>0){
-            sheets.add(new SmartXlsxPackage.Sheet("V6 بحثي غازات",
-                researchOnlyV6FieldAppendix(b,v6Field)));
-            sheets.add(new SmartXlsxPackage.Sheet("V6 مصادر وتعارضات",
-                researchOnlyV6SourceHypotheses(b,v6Field)));
-        }
+        V6ResearchXlsxSheets.append(sheets,b.site.name,b.site.id,
+            b.fieldSession.name,b.fieldSession.id,v6Field);
         SmartXlsxPackage.write(out,sheets);
     }
 
@@ -68,113 +64,6 @@ final class SmartFieldSessionXlsxWriter {
         g.rowStyled(SmartXlsxPackage.WARN,"تنبيه","EST/screening-fit ppm هو سياق أولوية فقط ولا ينشئ TWA/STEL/LFL alarm أو حكم امتثال.");return g.finish();
     }
 
-
-    /** Distinct source-only V6 worksheet, never overwriting legacy/V5
-     * candidate and occupational exposure worksheets. */
-    private static String researchOnlyV6FieldAppendix(
-             FieldSessionReportExporter.Bundle b,JSONObject v6){
-        SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(
-            25,24,20,23,17,18,18,20,20,24,16,32,40);
-        identity(g,b,"ChemCore Tank V6 — بحثي فقط / UNKNOWN");
-        g.blank();g.section("ضوابط قبول المصدر");
-        g.header("البند","القيمة","معنى المؤشر");
-        g.row("Schema",v6.optString("schema","—"),"READ ONLY");
-        g.row("Identity","UNKNOWN","لا يوجد غاز مؤهل G3");
-        g.row("PPM reportable",false,"لا تستخدم أرقام المصادر لحساب تعرض مهني");
-        g.row("Approved gas cycles",v6.optInt("approved_gas_cycles",0),
-              "SHA الرسمي يتحقق قبل هذا الملحق");
-        g.row("Source","telemetry_samples","قراءات Rs/R0 الأصلية المحفوظة لكل scan_cycle");
-        g.row("Selection","recorded middle scan by index","لا نخلط قيم أجهزة/أزمنة مختلفة");
-        g.blank();g.section("نتائج V6 المشتقة لكل دورة وحساس — أدلة بحثية غير معتمدة");
-        g.header("Measurement ID","Cycle ID","Sensor","State",
-                 "Distinct source scans","Eligible raw rows","Source t_ms",
-                 "Source scan","Rs as stored","R0 as stored","Ratio ready",
-                 "Curve hypotheses","Archive SHA256");
-        JSONArray cycles=v6.optJSONArray("cycles");
-        if(cycles!=null)for(int i=0;i<cycles.length();i++){
-            JSONObject cycle=cycles.optJSONObject(i);
-            if(cycle==null)continue;
-            JSONArray sensors=cycle.optJSONArray("sensors");
-            if(sensors==null)continue;
-            for(int j=0;j<sensors.length();j++){
-                JSONObject s=sensors.optJSONObject(j);
-                if(s==null)continue;
-                JSONArray curves=s.optJSONArray("source_curve_hypotheses");
-                g.row(cycle.optString("measurement_session_id",""),
-                    cycle.optString("cycle_id",""),
-                    s.optString("sensor_model",""),
-                    s.optString("state",""),
-                    s.optInt("distinct_original_scan_cycles",0),
-                    s.optInt("eligible_original_channel_rows",0),
-                    s.has("selected_original_t_ms")?
-                        s.optLong("selected_original_t_ms",0):null,
-                    s.has("selected_original_scan_cycle")?
-                        s.optLong("selected_original_scan_cycle",0):null,
-                    s.has("selected_original_rs")?
-                        s.optDouble("selected_original_rs",Double.NaN):null,
-                    s.isNull("selected_original_r0")?
-                        null:(s.has("selected_original_r0")?
-                            s.optDouble("selected_original_r0",Double.NaN):null),
-                    s.optInt("ratio_ready_channels",0),
-                    curves==null?0:curves.length(),
-                    cycle.optString("research_source_sha256",""));
-            }
-        }
-        g.blank();
-        g.rowStyled(SmartXlsxPackage.WARN,
-           "UNKNOWN","كل نتائج هذا الملحق بحثية؛ G3=0 ولا ppm معتمد.");
-        g.rowStyled(SmartXlsxPackage.WARN,
-           "Integrity","هذا الملحق للقراءة فقط ولا يغير ملف الاعتماد SHA للقياس.");
-        return g.finish();
-    }
-
-
-    /** ALL source-curve hypotheses are preserved. Their possible ppm values
-     * are non-certified curve fits, never measured Tank chemical concentration.
-     */
-    private static String researchOnlyV6SourceHypotheses(
-                 FieldSessionReportExporter.Bundle b,JSONObject v6){
-        SmartXlsxPackage.Grid g=wide();
-        identity(g,b,"V6 — جميع فرضيات منحنيات المصادر والتعارضات");
-        g.blank();
-        g.rowStyled(SmartXlsxPackage.WARN,
-           "UNKNOWN","هذه فرضيات بحثية فقط؛ لا اعتماد G3 ولا ppm قابل للإبلاغ.");
-        g.header("Measurement ID","Cycle ID","Sensor","Reference curve",
-            "Source root","Chemical source ID","Gas or class",
-            "Research-only curve ppm","Out of source range",
-            "Contradictions count","Original scan cycle");
-        JSONArray cycles=v6.optJSONArray("cycles");
-        if(cycles!=null)for(int i=0;i<cycles.length();i++){
-            JSONObject cycle=cycles.optJSONObject(i);
-            if(cycle==null)continue;
-            JSONArray sensors=cycle.optJSONArray("sensors");
-            if(sensors==null)continue;
-            for(int j=0;j<sensors.length();j++){
-                JSONObject sensor=sensors.optJSONObject(j);
-                if(sensor==null)continue;
-                JSONArray fits=sensor.optJSONArray("source_curve_hypotheses");
-                JSONArray conflicts=sensor.optJSONArray("source_curve_disagreements");
-                if(fits==null)continue;
-                for(int k=0;k<fits.length();k++){
-                    JSONObject fit=fits.optJSONObject(k);
-                    if(fit==null)continue;
-                    g.row(cycle.optString("measurement_session_id",""),
-                        cycle.optString("cycle_id",""),
-                        sensor.optString("sensor_model",""),
-                        fit.optString("source_curve_id",""),
-                        fit.optString("source_root",""),
-                        fit.optString("chemical_reference_id",""),
-                        fit.optString("gas_or_class",""),
-                        fit.isNull("source_estimate_ppm_research")?null:
-                            fit.optDouble("source_estimate_ppm_research",Double.NaN),
-                        fit.optBoolean("outside_original_reference_domain",false),
-                        conflicts==null?0:conflicts.length(),
-                        sensor.optLong("selected_original_scan_cycle",-1));
-                }
-            }
-        }
-        return g.finish();
-    }
 
     private static String sessionMetadata(FieldSessionReportExporter.Bundle b){SmartXlsxPackage.Grid g=grid();identity(g,b,"هوية الموقع والجلسة");g.blank();g.section("بيانات Field Session");g.header("الحقل","القيمة");g.row("Site",b.site.name);g.row("Site ID",b.site.id);g.row("Field Session",b.fieldSession.name);g.row("Field Session ID",b.fieldSession.id);g.row("Status",b.fieldSession.status);g.row("Started",b.fieldSession.startedTs);g.row("Ended",nz(b.fieldSession.endedTs).isEmpty()?"ACTIVE":b.fieldSession.endedTs);g.row("Measurement Session count",b.measurementSessionIds.size());g.row("Derived experiment records",b.records.size());g.row("Primary analytical measurement",nz(b.primaryMeasurementSessionId));g.blank();g.section("Measurement Sessions");g.header("#","Measurement Session ID");for(int i=0;i<b.measurementSessionIds.size();i++)g.row(i+1,b.measurementSessionIds.get(i));return g.finish();}
 
