@@ -108,6 +108,9 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
     outcome_rows = []
     per_group_outcomes = {}
     per_true_class_outcomes = {}
+    group_class_counts = Counter()
+    group_class_model_correct = Counter()
+    group_class_baseline_correct = Counter()
 
     for row in predictions:
         exposure, group = row["exposure_id"], row["group_id"]
@@ -153,6 +156,9 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         class_counts["model_correct"] += int(model)
         class_counts["baseline_correct"] += int(baseline)
         class_counts[outcome_key] += 1
+        group_class_counts[(group, truth)] += 1
+        group_class_model_correct[(group, truth)] += int(model)
+        group_class_baseline_correct[(group, truth)] += int(baseline)
 
     declared = {}
     for row in metrics:
@@ -229,6 +235,49 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
             != baseline_only):
         raise ValueError("PAIRED_REPLAY_CLASS_DISCORDANCE_INVALID")
 
+    # Cross-tabulate true-reference classes against declared physical groups.
+    # A class appearing in only one group makes a class-specific cross-group
+    # comparison impossible, even if pooled/class-only accuracy looks strong.
+    # These are asserted labels/group IDs, not authenticated physical sources.
+    group_class_support = []
+    for group, truth in sorted(group_class_counts):
+        n = group_class_counts[(group, truth)]
+        m = group_class_model_correct[(group, truth)]
+        b = group_class_baseline_correct[(group, truth)]
+        group_class_support.append({
+            "group_id": group,
+            "true_reference": truth,
+            "exposures": n,
+            "model_correct": m,
+            "baseline_correct": b,
+            "paired_model_minus_baseline_accuracy": (m - b) / n,
+        })
+    class_group_coverage = []
+    for class_row in class_pairing:
+        truth = class_row["true_reference"]
+        support = [r for r in group_class_support
+                   if r["true_reference"] == truth]
+        if (sum(r["exposures"] for r in support) != class_row["exposures"]
+                or sum(r["model_correct"] for r in support)
+                != class_row["model_correct"]
+                or sum(r["baseline_correct"] for r in support)
+                != class_row["baseline_correct"]):
+            raise ValueError("PAIRED_REPLAY_CLASS_GROUP_RECONCILIATION_INVALID")
+        class_group_coverage.append({
+            "true_reference": truth,
+            "declared_groups_with_class": len(support),
+            "declared_group_coverage_fraction": len(support) / len(counts),
+            "confined_to_single_declared_group": len(support) == 1,
+        })
+    for group in counts:
+        support = [r for r in group_class_support if r["group_id"] == group]
+        if (sum(r["exposures"] for r in support) != counts[group]
+                or sum(r["model_correct"] for r in support)
+                != model_correct[group]
+                or sum(r["baseline_correct"] for r in support)
+                != baseline_correct[group]):
+            raise ValueError("PAIRED_REPLAY_CLASS_GROUP_RECONCILIATION_INVALID")
+
     result = paired_cluster_accuracy_delta(
         dict(counts), dict(model_correct), dict(baseline_correct),
         seed=seed, resamples=resamples,
@@ -243,6 +292,19 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         "paired_outcomes_by_declared_physical_group": group_pairing,
         "paired_outcomes_by_true_reference_class": class_pairing,
         "true_reference_class_count": len(class_pairing),
+        "true_reference_class_support_by_declared_group": group_class_support,
+        "true_reference_class_declared_group_coverage": class_group_coverage,
+        "true_reference_classes_confined_to_one_declared_group": [
+            row["true_reference"] for row in class_group_coverage
+            if row["confined_to_single_declared_group"]
+        ],
+        "true_reference_class_min_declared_group_coverage": min(
+            row["declared_groups_with_class"] for row in class_group_coverage
+        ),
+        "true_reference_group_support_scope": (
+            "POST_UNBLINDING_DESCRIPTIVE_CLASS_BY_GROUP_SUPPORT_ONLY;"
+            "NOT_AUTHENTICATED_GROUP_INDEPENDENCE_OR_G2_G3_APPROVAL"
+        ),
         "equal_true_reference_class_mean_delta": (
             sum(row["paired_model_minus_baseline_accuracy"]
                 for row in class_pairing) / len(class_pairing)
