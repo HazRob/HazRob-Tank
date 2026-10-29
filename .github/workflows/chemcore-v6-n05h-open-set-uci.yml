@@ -1,0 +1,126 @@
+name: ChemCore Tank V6 N05-H original UCI1081 sealed independent unknown-gas evaluation
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/chemcore_v6/benchmarks/Uci1081OpenSetV6Benchmark.java'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/OpenSetResearchV6.java'
+      - '.github/workflows/chemcore-v6-n05h-open-set-uci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-uci-independent-unknown-source-gases:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Fetch ORIGINAL UCI1081 source ZIP, verify archive and gsalc.csv SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chemcore-v6-n05h
+          python research/chemcore_v6/benchmarks/extract_uci1081_verified.py \
+            --out /tmp/chemcore-v6-n05h/verified_features.csv \
+            --manifest /tmp/chemcore-v6-n05h/source_manifest.json
+      - name: Compile real independent V6 softmax and source-only open-set calibrator
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chemcore-v6-n05h/classes
+          javac -d /tmp/chemcore-v6-n05h/classes \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/ClassicalLearningV6.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/OpenSetResearchV6.java \
+            research/chemcore_v6/benchmarks/Uci1081OpenSetV6Benchmark.java
+      - name: Evaluate unseen test gas DISJOINT from calibration negative and train gases
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp /tmp/chemcore-v6-n05h/classes \
+            com.hazrob.tank.chemcore.v6.Uci1081OpenSetV6Benchmark \
+            /tmp/chemcore-v6-n05h/verified_features.csv \
+            /tmp/chemcore-v6-n05h/fold_metrics.csv \
+            /tmp/chemcore-v6-n05h/heldout_decisions.csv \
+            /tmp/chemcore-v6-n05h/source_partition_audit.csv
+          python - <<'PY'
+          import csv,collections,pathlib,statistics
+          root=pathlib.Path('/tmp/chemcore-v6-n05h')
+          def load(file):
+            with (root/file).open(newline='') as f:return list(csv.DictReader(f))
+          folds=load('fold_metrics.csv')
+          decisions=load('heldout_decisions.csv')
+          ledger=load('source_partition_audit.csv')
+          assert len(folds)==36,(len(folds),36)
+          assert len(decisions)==972,(len(decisions),972)
+          assert len(ledger)==3240,(len(ledger),3240)
+          key=lambda r:(r['mode'],r['heldout_ppb'],
+                        r['calibration_unknown_gas'],r['heldout_test_unknown_gas'])
+          groups=collections.defaultdict(list)
+          for row in ledger:groups[key(row)].append(row)
+          assert len(groups)==36
+          for k,rows in groups.items():
+            assert len(rows)==90
+            ids=[int(r['source_row_id']) for r in rows]
+            assert len(set(ids))==90 and sorted(ids)==list(range(90))
+            counts=collections.Counter(r['partition'] for r in rows)
+            assert counts==dict(train_known=40,calibration_known=8,
+                calibration_unknown=15,test_known=12,test_unknown=15),counts
+            cg,tg=k[2],k[3]
+            assert cg!=tg
+            for r in rows:
+              part=r['partition']
+              if part=='calibration_unknown': assert r['gas']==cg
+              if part=='test_unknown': assert r['gas']==tg
+              if part in ('train_known','calibration_known','test_known'):
+                  assert r['gas'] not in (cg,tg)
+              if part=='train_known': assert r['original_ppb']!=k[1]
+              if part in ('calibration_known','test_known'):
+                  assert r['original_ppb']==k[1]
+          assert len(set(key(row) for row in decisions))==36
+          for f in folds:
+            assert f['train_known']=='40' and f['calibration_known']=='8'
+            assert f['calibration_unknown']=='15' and f['test_known']=='12'
+            assert f['test_unknown']=='15'
+            assert int(f['test_unknown_rejected'])+int(f['test_unknown_false_known'])==15
+            assert 0<=float(f['test_unknown_false_known_accept_rate'])<=1
+            assert 0<=float(f['test_known_correct_coverage'])<=1
+          for mode in ('MQ135_only','full_source_10_channels'):
+            rows=[f for f in folds if f['mode']==mode]
+            assert len(rows)==18
+            def mean(field):
+              return statistics.mean(float(r[field]) for r in rows)
+            print(f'N05H_FINAL mode={mode} folds=18 '
+                  f'unknown_false_known_accept={mean("test_unknown_false_known_accept_rate"):.6f} '
+                  f'unknown_reject={mean("test_unknown_rejection_rate"):.6f} '
+                  f'known_correct_coverage={mean("test_known_correct_coverage"):.6f} '
+                  f'known_retention={mean("test_known_retention"):.6f} '
+                  f'known_accuracy_no_gate={mean("test_known_accuracy_before_gate"):.6f} '
+                  f'combined_open_set_accuracy={mean("open_set_correct_fraction"):.6f}')
+          print('PASS N05-H 36 source folds, 972 sealed test decisions, 3240 audited source partition assignments')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: chemcore-v6-n05h-uci1081-unknown-gas-sealed-source
+          path: |
+            /tmp/chemcore-v6-n05h/source_manifest.json
+            /tmp/chemcore-v6-n05h/fold_metrics.csv
+            /tmp/chemcore-v6-n05h/heldout_decisions.csv
+            /tmp/chemcore-v6-n05h/source_partition_audit.csv
+          retention-days: 30
+      - name: Evidence boundary
+        run: |
+          echo "Unknown TEST gas never in known fit or negative calibration."
+          echo "No day/device independence proven, no new physical Tank G3."
+          echo "Calibration-only threshold is source-domain exploratory and NOT a safety detection limit."
+          echo "Keep gas ChemCore separate from food freshness."
