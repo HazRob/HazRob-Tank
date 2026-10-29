@@ -346,7 +346,7 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "NEW_CHEMCORE_TANK_V6_INDEPENDENT_SOURCE_AND_JDK_VERIFIED_ANDROID_UI_NOT_SWITCHED",
+  "state": "NEW_GAS_ENGINE_INDEPENDENT_V6_FOOD_TWO_MODES_ANDROID_COMPILE_PASS",
   "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
   "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
   "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
@@ -627,5 +627,49 @@
     "implementation_status": "DATA_MIGRATED_AND_ARCHITECTURAL_SEPARATION_VERIFIED_FOOD_UI_AND_ANALYZER_NOT_YET_BUILT"
   },
   "latest_gas_source_manifest_policy": "GAS_ONLY_13_FILES_FOOD_ARCHIVE_SEPARATE",
-  "next_food_feature_action": "Develop independent FoodFreshnessAnalyzer and one-shot UI/reports outside gas ChemCore, using source 59 food headspace profiles"
+  "next_food_feature_action": "Develop independent FoodFreshnessAnalyzer and one-shot UI/reports outside gas ChemCore, using source 59 food headspace profiles",
+  "parallel_independent_food_feature": {
+    "id": "TANK-FOOD-02",
+    "status": "TWO_MODES_SOURCE_AND_ANDROID_JAVA_COMPILE_PASS_ON_DEVICE_AND_PDF_RENDER_PENDING",
+    "does_not_belong_to_gas_chemcore": true,
+    "owner_decision": "FOOD_MODES_MEAT_AND_FRUIT_DIFFERENT_METHODS_CHARTS_REPORTS",
+    "entry_point": "android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java",
+    "main_measurement_tab_index": 4,
+    "source_manifest": "research/food_freshness/source_manifest.json",
+    "checkpoint": "docs/implementation/TANK-FOOD-FRESHNESS-TWO-MODES-CHECKPOINT-2026-10-29_AR.md",
+    "meat": {
+      "training": 8640,
+      "heldout": 2160,
+      "original_rows": 10800,
+      "source": "10.17632/mwmhh766fc.3",
+      "matching_sensors": 7,
+      "reference_categories": 4,
+      "heldout_accuracy": 0.4393518518518518,
+      "heldout_balanced_accuracy": 0.38878968253968255,
+      "certified_food_quality": false,
+      "raw_source_dir": "research/food_freshness/meat/source_original/"
+    },
+    "fruit": {
+      "study_source": "10.5281/zenodo.17285312",
+      "archived_profiles": 59,
+      "visible_fruit_profiles": 54,
+      "other_mushroom_profiles_preserved": 5,
+      "food_safety_certified": false
+    },
+    "combined_scope": "Single operation 180s / BME280 temperature-humidity for beef / one PDF per completed operation",
+    "CI": {
+      "food_isolation_test_run": 40932744483,
+      "fruit_java_assertions": 316,
+      "beef_java_assertions": 30,
+      "python_tests": 11,
+      "Android_compile_run": 40932621388,
+      "Android_java_compile_success": true
+    },
+    "open_tasks": [
+      "Android 12 phone UI render & touch tests",
+      "Actual MQ food sample comparison/real reference bench",
+      "One-off PDF export visual rendering",
+      "No APK V6 built for this step"
+    ]
+  }
 }
