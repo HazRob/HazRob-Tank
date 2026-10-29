@@ -40,3 +40,13 @@
 - Confirmed central `HazRob/build-harness` 80 catalog entries cover curated sources only; `LEGACY_COLLECTIONS.md` explicitly does not claim all old source files were individually indexed; 15 external entries have raw files pending, 24 analytic studies marked not imported.
 - Documentation: `docs/research/V6-002-CHEMCORE-MANUFACTURER-R0-PPM-FINGERPRINT-GAP-AUDIT-2026-10-29.md`, section 10, commit `6fa4f9a6a2ef1b165fea1bc31ce0c646848f5606`.
 - No Android port, tests, APK or firmware changed in this Pending investigation.
+
+## 2026-10-29 — V6-002 scientific development plan and traceability artifacts
+
+- **Produced:** master plan `docs/implementation/V6-CHEMCORE-SCIENTIFIC-MASTER-PLAN-2026-10-29_AR.md` (architecture AS-IS/TO-BE; source R0 physics; simulation SIM-A/SIM-B; dataset groups; G3 policy; Android integration and rollback), source sampling protocol and machine-readable execution tracker P00–P11.
+- **Source-pinned matrices:** 80 real research technique IDs and their recorded G1/G2/G3 statuses, 76 MQDataScience model names and recorded native/pending state, 80 curated bibliography entries and their raw-state. GitHub files `docs/research/V6-CHEMCORE-TECHNIQUE-80-TRACEABILITY.csv`, `docs/research/V6-CHEMCORE-MQDATASCIENCE-76-RUNTIME-MATRIX.csv`, `docs/research/V6-CHEMCORE-CENTRAL-REFERENCE-80-PROVENANCE.csv`.
+- **Simulation:** `docs/research/V6-CHEMCORE-SIMULATION-SCENARIOS.csv` — **24 planned** scientific/engineering stress cases including a required separate real-device G3 entry.
+- **External source verification:** UCI1081, UCI270, UCI308, UCI309 official descriptions and ISO 6145-1:2019, ISO 6143:2025, ISO/IEC 17025:2017, JCGM 100:2008 pages checked; UCI/MQ raw experiments not downloaded or re-run in this planning task.
+- **Executed tests:** format/readback of GitHub source content; no new numerical simulation, model training, calibration or Android device test.
+- **State:** `PLAN_PREPARED; ALL_PHASES_NOT_STARTED; G3_DEVICE_VALIDATION=0/80; V6_APK_NOT_BUILT`.
+- **Next controlled implementation:** baseline/versions and regression tests (P00), source matrices/eligibility (P01), and math-only simulation (P04) while missing hardware parameters are tracked as blockers.
