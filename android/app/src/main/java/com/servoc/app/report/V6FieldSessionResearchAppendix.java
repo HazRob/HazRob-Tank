@@ -38,7 +38,7 @@ public final class V6FieldSessionResearchAppendix {
     private static final class Sample {
         final long timestamp,scanCycle;
         final JSONObject observed,environment;
-        Sample(long t,long scan,JSONObject q,JSONObject env){
+        Sample(long t,long scan,JSONObject q,JSONObject env) throws org.json.JSONException{
             timestamp=t;scanCycle=scan;
             observed=new JSONObject(q.toString());
             environment=env==null?new JSONObject():new JSONObject(env.toString());
