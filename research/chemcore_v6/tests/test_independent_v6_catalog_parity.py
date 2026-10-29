@@ -35,7 +35,7 @@ class IndependentEngineSourceParity(unittest.TestCase):
         self.assertNotIn("ChemCoreInferenceEngine",s)
         self.assertNotIn("TankInstantAnalyzer",s)
         self.assertNotIn("TankStableRuntimeCatalog",s)
-        self.assertIn("SourceCatalog.curves()",s)
+        self.assertIn("SourceCatalog.allCurves()",s)
         self.assertIn("rankedCandidates",s)
 
     def test_03_only_invalid_arithmetic_is_excluded(self):
