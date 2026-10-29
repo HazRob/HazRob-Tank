@@ -461,5 +461,71 @@ class PairedPredictionReplayTests(unittest.TestCase):
             self.assertEqual(before[key], after[key])
 
 
+    def test_declared_physical_sample_repeated_reads_stay_in_one_group(self):
+        header = PRED_HEADER.rstrip("\n") + ",physical_sample_id\n"
+        pred = ("e1,a,A,A,B,s1\n"
+                "e2,a,B,A,B,s1\n"
+                "e3,b,A,A,A,s2\n"
+                "e4,b,B,A,A,s3\n")
+        self.write(pred=pred, pred_header=header)
+        result = self.replay()
+        self.assertTrue(result["physical_sample_group_consistency_checked"])
+        self.assertEqual(result["distinct_declared_physical_samples"], 3)
+        self.assertEqual(
+            result["repeated_exposure_rows_within_declared_physical_samples"], 1)
+        self.assertEqual(result["max_exposure_rows_per_declared_physical_sample"], 2)
+        self.assertIn("NOT_AUTHENTICATED_SAMPLE_PROVENANCE",
+                      result["physical_sample_scope"])
+
+    def test_declared_physical_sample_cannot_cross_test_groups(self):
+        header = PRED_HEADER.rstrip("\n") + ",physical_sample_id\n"
+        pred = ("e1,a,A,A,B,s1\n"
+                "e2,a,B,A,B,s2\n"
+                "e3,b,A,A,A,s1\n"
+                "e4,b,B,A,A,s3\n")
+        self.write(pred=pred, pred_header=header)
+        with self.assertRaisesRegex(ValueError,
+                                    "PAIRED_REPLAY_PHYSICAL_SAMPLE_GROUP_LEAKAGE"):
+            self.replay()
+
+    def test_partial_or_noncanonical_physical_sample_ids_rejected(self):
+        header = PRED_HEADER.rstrip("\n") + ",physical_sample_id\n"
+        for invalid in ("", "ｓ1", " s1"):
+            with self.subTest(invalid=invalid):
+                pred = (f"e1,a,A,A,B,{invalid}\n"
+                        "e2,a,B,A,B,s2\n"
+                        "e3,b,A,A,A,s3\n"
+                        "e4,b,B,A,A,s4\n")
+                self.write(pred=pred, pred_header=header)
+                with self.assertRaisesRegex(
+                        ValueError, "PAIRED_REPLAY_PHYSICAL_SAMPLE_ID_INVALID"):
+                    self.replay()
+
+    def test_physical_sample_checks_are_row_order_invariant(self):
+        header = PRED_HEADER.rstrip("\n") + ",physical_sample_id\n"
+        pred = ("e1,a,A,A,B,عينة-١\n"
+                "e2,a,B,A,B,عينة-١\n"
+                "e3,b,A,A,A,عينة-٢\n"
+                "e4,b,B,A,A,عينة-٣\n")
+        self.write(pred=pred, pred_header=header)
+        before = self.replay()
+        rows = self.pred.read_text(encoding="utf-8").splitlines(keepends=True)
+        self.pred.write_text(rows[0] + "".join(reversed(rows[1:])),
+                             encoding="utf-8")
+        after = self.replay()
+        for key in ("physical_sample_group_consistency_checked",
+                    "distinct_declared_physical_samples",
+                    "repeated_exposure_rows_within_declared_physical_samples",
+                    "max_exposure_rows_per_declared_physical_sample"):
+            self.assertEqual(before[key], after[key])
+
+    def test_absent_sample_id_is_explicitly_unverified(self):
+        result = self.replay()
+        self.assertFalse(result["physical_sample_group_consistency_checked"])
+        self.assertIsNone(result["distinct_declared_physical_samples"])
+        self.assertIsNone(
+            result["repeated_exposure_rows_within_declared_physical_samples"])
+
+
 if __name__ == "__main__":
     unittest.main()
