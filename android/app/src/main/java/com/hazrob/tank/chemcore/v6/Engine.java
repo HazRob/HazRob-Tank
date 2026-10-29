@@ -132,21 +132,25 @@ public final class Engine {
             terms.add(term);
         }
         Candidate fit() {
+            // Every source equation is used; each physical sensor gets equal total
+            // weight regardless of the number of independent reference curves.
+            Map<String,List<Term>> bySensor=new LinkedHashMap<>();
+            for(Term t:terms){
+                String key=t.observed.sensorInstance+"::"+t.curve.sensorType;
+                bySensor.computeIfAbsent(key,k->new ArrayList<>()).add(t);
+            }
             double num=0,denom=0;
             Set<String> sensors=new LinkedHashSet<>();
-            // A source model for the same physical channel is counted only once.
-            Map<String,Term> unique=new LinkedHashMap<>();
-            for(Term term:terms){
-                String key=term.observed.sensorInstance+"::"+term.curve.sensorType;
-                if(!unique.containsKey(key))unique.put(key,term);
-            }
-            for(Term t:unique.values()){
-                double y=Math.log10(t.observed.rs/t.observed.r0);
-                double b=t.curve.b;
-                double alpha=Math.log10(t.curve.a)-b*Math.log10(t.curve.outputScale);
-                num+=b*(y-alpha);
-                denom+=b*b;
-                sensors.add(t.observed.sensorInstance);
+            for(List<Term> alternatives:bySensor.values()){
+                double w=1.0/alternatives.size();
+                for(Term t:alternatives){
+                    double y=Math.log10(t.observed.rs/t.observed.r0);
+                    double b=t.curve.b;
+                    double alpha=Math.log10(t.curve.a)-b*Math.log10(t.curve.outputScale);
+                    num+=w*b*(y-alpha);
+                    denom+=w*b*b;
+                }
+                sensors.add(alternatives.get(0).observed.sensorInstance);
             }
             if(!positiveFinite(denom))return null;
             double logPpm=num/denom;
@@ -154,18 +158,21 @@ public final class Engine {
             if(!positiveFinite(ppm))return null;
             double residual=0;
             boolean extrapolation=false;
-            for(Term t:unique.values()){
-                double y=Math.log10(t.observed.rs/t.observed.r0);
-                double predicted=t.curve.log10Prediction(logPpm);
-                double err=y-predicted;
-                residual+=err*err;
-                if(ppm<t.curve.minSourcePpm||ppm>t.curve.maxSourcePpm)
-                    extrapolation=true;
+            for(List<Term> alternatives:bySensor.values()){
+                double w=1.0/alternatives.size();
+                for(Term t:alternatives){
+                    double y=Math.log10(t.observed.rs/t.observed.r0);
+                    double prediction=t.curve.log10Prediction(logPpm);
+                    double error=y-prediction;
+                    residual+=w*error*error;
+                    if(ppm<t.curve.minSourcePpm||ppm>t.curve.maxSourcePpm)
+                        extrapolation=true;
+                }
             }
-            double rmse=Math.sqrt(residual/unique.size());
+            double rmse=Math.sqrt(residual/bySensor.size());
             if(!Double.isFinite(rmse))return null;
-            return new Candidate(uid,firstLabel,labels,ids,sensors.size(),unique.size(),
-                                 ppm,rmse,extrapolation);
+            return new Candidate(uid,firstLabel,labels,ids,sensors.size(),
+                                 terms.size(),ppm,rmse,extrapolation);
         }
     }
 
