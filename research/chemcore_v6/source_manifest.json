@@ -1,0 +1,137 @@
+{
+  "schema": "hazrob-tank-v6-source-pins/1",
+  "created_at": "2026-10-29",
+  "identity": {
+    "repo": "HazRob/HazRob-Tank",
+    "branch": "feature/tank-v6-implementation",
+    "parent": "c132fc2f8eb7a54d5b3c96b4fdcd6090096d1a5b",
+    "inherited_readonly": "sohpany/SERVOC-Android@6281d3eb7c1c961ce63b0b5e4ae0792874626720"
+  },
+  "research_sources": {
+    "canonical": "HazRob/build-harness",
+    "canonical_ref": "main",
+    "original_commit": "33ee17dbbd291ded7154f5030612d90f6e79f81b",
+    "canonical_manifest_blob": "40513a5781466b99d8c3394e672b8cc71999a024",
+    "source_subdir": "library/research/hr069/",
+    "copied_subdir": "research/chemcore_v6/source_snapshots/hr069/",
+    "copies": [
+      {
+        "filename": "1_propanol_sjtu_mq_transfer_evidence_v1.json",
+        "git_blob_sha1": "6f5cbd9a62a7196a96ede056b776c23bf41fd584",
+        "source_git_blob_sha1": "6f5cbd9a62a7196a96ede056b776c23bf41fd584",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "ethylene_mq3_transfer_evidence_v1.json",
+        "git_blob_sha1": "78426227c4d66ea2f2154af5fac803cc4048756c",
+        "source_git_blob_sha1": "78426227c4d66ea2f2154af5fac803cc4048756c",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "food_freshness_headspace_fingerprints_v1.json",
+        "git_blob_sha1": "959aae7574307a0030d218d4b86eb6618a6f72b0",
+        "source_git_blob_sha1": "959aae7574307a0030d218d4b86eb6618a6f72b0",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "identification_fingerprint_priors_v1.json",
+        "git_blob_sha1": "5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
+        "source_git_blob_sha1": "5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "kononov_mox_numeric_transfer_batch_v1.json",
+        "git_blob_sha1": "3495571c72b46027e1e6099dd8be7b93f4a13c45",
+        "source_git_blob_sha1": "3495571c72b46027e1e6099dd8be7b93f4a13c45",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "methanol_mq_transfer_evidence_v1.json",
+        "git_blob_sha1": "462b241bb026fe39dd07ed8501c57ef99f56ba47",
+        "source_git_blob_sha1": "462b241bb026fe39dd07ed8501c57ef99f56ba47",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "mq_experiment_source_index_v1.json",
+        "git_blob_sha1": "0f1a5388d2d28071091df833855238ba8c00804a",
+        "source_git_blob_sha1": "0f1a5388d2d28071091df833855238ba8c00804a",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "mq_models_76.json",
+        "git_blob_sha1": "7607764415cb26fbba4e46da9219e7dc861e2c23",
+        "source_git_blob_sha1": "7607764415cb26fbba4e46da9219e7dc861e2c23",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "mq_research_curves_43.json",
+        "git_blob_sha1": "bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1",
+        "source_git_blob_sha1": "bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "multimodal_mq_transfer_fingerprints_v1.json",
+        "git_blob_sha1": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+        "source_git_blob_sha1": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "pubchem_resolution_delta_v1.json",
+        "git_blob_sha1": "1124cff3c22aecdab71448f96396992fbf4202a1",
+        "source_git_blob_sha1": "1124cff3c22aecdab71448f96396992fbf4202a1",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "robofusion_hr069_gasleak_operational_transfer_v1.json",
+        "git_blob_sha1": "8484d576926ba8a97dd00d8b4feff6a3bce0f9a1",
+        "source_git_blob_sha1": "8484d576926ba8a97dd00d8b4feff6a3bce0f9a1",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "same_sensor_peer_reviewed_identity_evidence_v1.json",
+        "git_blob_sha1": "412a9d48eb17b39c88645adba70380ce7a752d17",
+        "source_git_blob_sha1": "412a9d48eb17b39c88645adba70380ce7a752d17",
+        "source_verified_identical": true
+      },
+      {
+        "filename": "uci_mq135_lowconcentration_transfer_fingerprints_v1.json",
+        "git_blob_sha1": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+        "source_git_blob_sha1": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+        "source_verified_identical": true
+      }
+    ]
+  },
+  "library_sources": {
+    "techniques_80": {
+      "repo": "HazRob/HazRob-Tank",
+      "ref": "main",
+      "path": "research/PROGRESS_80.json",
+      "blob": "0919307d46b352a887f2fdbc5e94c752a74b16d0"
+    },
+    "external_80": {
+      "repo": "HazRob/build-harness",
+      "ref": "main",
+      "path": "library/reference-bank/external-research/master_catalog.json",
+      "blob": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f"
+    },
+    "mq76": {
+      "repo": "abcdaaaaaaaaa/MQDataScience",
+      "commit": "e88f876140587a708ee84a4d4d3acbd5720274ee"
+    }
+  },
+  "validation": {
+    "canonical_copy_count": 14,
+    "canonical_git_blobs_match": true,
+    "raw_independent_experiments_revalidated": false,
+    "all_manufacturer_curves_digitized": false,
+    "Android_V6_algorithms_integrated": false,
+    "actual_Tank_G3_validated": false
+  },
+  "policy": {
+    "never_promote_library_curve_to_M4": true,
+    "never_use_R0_from_other_device_as_local_R0": true,
+    "always_group_external_exposures": true,
+    "android_app_and_firmware_release_numbers_independent": true,
+    "do_not_mutate_original_repo": true
+  }
+}
