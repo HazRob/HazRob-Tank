@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 canonical physical group IDs at evidence-register entry (317/317 CI)
+
+- Resumed from `775285129d00399f48dc7b81e85ccd6c09d602cb`; confirmed all 20 previous CI runs successful. Central catalogue current blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries, 14 external measurement datasets); independent evidence `records: []`; pinned source readiness 0/14.
+- Added early fail-closed `NONCANONICAL_PHYSICAL_GROUP_ID` in `g2_evidence_audit.py` for train/calibration/test physical group IDs. Rejects edge whitespace, invisible/control Unicode, non-ASCII spacing and non-NFC aliases while permitting NFC multilingual IDs and interior ASCII spaces. Added four synthetic regression tests; CSV-level checks remain unchanged.
+- Research commit `ad5a0ea555f9a3712dbf09aaae8cb270353c4b9d`: [G2 CI #40828407547](https://github.com/HazRob/HazRob-Tank/actions/runs/40828407547), job `123296692377`: **317/317 PASS**, double replay PASS, publication guard PASS, artifact `12877612206` (ZIP SHA256 `ff75132605cf7a23c805656dcc2a9f0d0ab62dd0c78cbe114dabf55673678e7a`). All **21/21** associated CI runs succeeded. Audit: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Changed files: research-only G2 Python gate, new test and `G2_CANONICAL_PHYSICAL_GROUP_ID_ENTRY_GATE_2026-10-29_AR.md`. No ChemCore Stable, Android or firmware modifications. No G2/G3 scientific promotion.
+- Next: verify documentation checkpoint CI; obtain independently measured raw physical exposures with traceable concentration references, device/session/exposure IDs, and locked grouped blind holdouts.
+
+---
+
 ## 2026-10-29 — G2 nonfinite exponent fail-closed publication (313/313 CI)
 
 - Resumed from research HEAD `a327c32bcb8371392e82eb43cf6703bd79807db0`; central catalogue pinned blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries, 14 datasets), source matrix blob `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (0/14 review-ready), independent evidence `records: []`.
