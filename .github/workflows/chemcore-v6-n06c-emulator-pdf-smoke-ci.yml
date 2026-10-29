@@ -60,6 +60,17 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.5.0'
+      - name: Create DISPOSABLE emulator-only test keystore (NEVER release signing)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source/signing
+          keytool -genkeypair -alias hazrob-prototype \
+            -keystore source/signing/hazrob-prototype.jks \
+            -storepass hazrob-prototype -keypass hazrob-prototype \
+            -keyalg RSA -keysize 2048 -validity 1 \
+            -dname "CN=Disposable HazRob V6 PDF CI, OU=TEST ONLY, O=NO RELEASE" -noprompt
+          echo "Disposable one-day emulator-only key; never upload/reuse for user APK upgrades"
       - name: Build temporary Android DEBUG APK for emulator test only
         working-directory: source
         run: gradle --no-daemon :app:assembleDebug
