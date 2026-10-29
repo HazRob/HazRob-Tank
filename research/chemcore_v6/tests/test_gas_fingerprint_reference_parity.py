@@ -8,7 +8,7 @@ import re
 import unittest
 from pathlib import Path
 
-ROOT=Path(__file__).resolve().parents[2]
+ROOT=Path(__file__).resolve().parents[3]
 ASSETS=ROOT/"android/app/src/main/assets/chemcore_v6/reference"
 JAVA=ROOT/"android/app/src/main/java/com/hazrob/tank/chemcore/v6/GasFingerprintCatalogV6.java"
 MQ=ASSETS/"multimodal_mq_transfer_fingerprints_v1.json"
