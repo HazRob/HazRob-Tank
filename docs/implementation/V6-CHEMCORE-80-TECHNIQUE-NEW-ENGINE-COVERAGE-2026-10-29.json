@@ -4,8 +4,8 @@
   "scoping": "NEW independent com.hazrob.tank.chemcore.v6 package; food freshness and prior inference code excluded",
   "counts": {
     "total": 80,
-    "partial": 64,
-    "not_yet_ported": 16,
+    "partial": 74,
+    "not_yet_ported": 6,
     "fully_implemented_and_device_validated": 0
   },
   "available_numerical_references": {
@@ -318,46 +318,56 @@
       "id": "04.5",
       "name": "SVM",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SupervisedLearningResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: Deterministic linear binary hinge-loss SVM; no kernel or calibrated probability. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     },
     {
       "id": "04.6",
       "name": "Random Forest",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SupervisedLearningResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: Seeded bootstrap ensemble of one-split CART classification stumps; not full-depth Random Forest. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     },
     {
       "id": "04.7",
       "name": "XGBoost",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SupervisedLearningResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: Binary logistic Newton gradient/Hessian boosted regression stumps, XGBoost-style only; not XGBoost full implementation. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     },
     {
       "id": "04.8",
       "name": "MLP",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SupervisedLearningResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: Seeded tanh one-hidden-layer binary MLP fit by batch backprop; no deep multidomain gas certification. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     },
     {
       "id": "04.9",
       "name": "Physics+ML",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SupervisedLearningResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: Externally fixed log sensor-response physics anchor plus train-only linear log residual; does not calibrate physical Tank ppm. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     },
     {
       "id": "04.10",
@@ -550,10 +560,12 @@
       "id": "06.8",
       "name": "SHAP",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "AdaptationEvidenceResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: Exact small-dimension fixed-baseline interventional Shapley contribution; not conditional/causal SHAP across correlated sensors. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     },
     {
       "id": "06.9",
@@ -625,19 +637,23 @@
       "id": "07.6",
       "name": "Domain adaptation",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "AdaptationEvidenceResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: Diagonal mean/variance source-target alignment requiring independent target calibration rows; no physical transfer established. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     },
     {
       "id": "07.7",
       "name": "Transfer learning",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "AdaptationEvidenceResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: Ridge regression fine-tuning penalized toward externally trained prior weights; not deep transfer learning. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     },
     {
       "id": "07.8",
@@ -654,10 +670,12 @@
       "id": "07.9",
       "name": "Continual learning",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "AdaptationEvidenceResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: One-step importance-weighted elastic consolidation source update; model promotion disabled pending independent holdout. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     },
     {
       "id": "07.10",
@@ -862,10 +880,12 @@
       "id": "10.1",
       "name": "Negative Evidence & Sensor-Guided Exclusion",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "AdaptationEvidenceResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-F partial source-only implementation: Evidence-preserving family-negative sensor annotation with explicit Tank-calibration/operation/detection-limit/stability and provenance gates; no candidate is deleted, UNKNOWN retained, no unvalidated exclusions. Tested via V6SixthTenTechniquesTest.java 58 JDK assertions, CI 40956582213 SUCCESS, 2073 total JDK assertions. Android compile-only 40956403097 SUCCESS; food isolation 40956403090 SUCCESS. No Tank G3; external source N05-F benchmark runs separately."
     }
   ],
   "last_new_batch": {
@@ -993,5 +1013,5 @@
       "Source datasets and sensor feature spaces remain distinct"
     ]
   },
-  "last_checkpoint": "V6 Checkpoint10 N03-E source-only temporal/spatial 10 partial implementations + 47 JDK assertions; 2015 total JDK CI SUCCESS 40954841693; Android compilation PASS 40954696816; gas/food isolation PASS 40954696500; 64 partial /16 unported / G3 0/80 / no APK."
+  "last_checkpoint": "N03-F ten partial supervised learning/evidence methods, 58 new Java checks / 2073 total CI 40956582213 SUCCESS; independent original UCI1081 N05-F benchmark in workflow chemcore-v6-n05f-uci1081-java.yml; 74 partial / 6 unported / 0 Tank G3 / no V6 APK."
 }
