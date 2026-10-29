@@ -31,7 +31,7 @@
     "library_reference_records": 80,
     "independent_Tank_G3_validated_techniques": 0
   },
-  "disclaimer": "Independent V6 engine JDK tests pass and entire merged Android Java compiles. It is not yet activated as the application analytics service, no new ChemCore reports/UI are built and no APK or physical G3 exists.",
+  "disclaimer": "Only numerically valid research hypotheses are screened; no hard provenance exclusion. 14 of 80 techniques partially implemented, 66 not yet ported, 0 physical Tank G3. No new Android analytical screen cutover or APK in this batch.",
   "stage_count": 12,
   "stages": [
     {
@@ -346,7 +346,7 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "NEW_GAS_ENGINE_INDEPENDENT_V6_FOOD_TWO_MODES_ANDROID_COMPILE_PASS",
+  "state": "NEW_CHEMCORE_V6_49_CURVES_24_GAS_SIGNATURES_JDK_1390_ASSERTIONS_ANDROID_BRIDGE_COMPILED_NO_APK",
   "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
   "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
   "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
@@ -490,7 +490,7 @@
     }
   ],
   "scientific_checkpoint": "docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md",
-  "current_phase": "CLEAN_SLATE_V6_N01_N02_N04_CORE_IMPLEMENTATION",
+  "current_phase": "CLEAN_SLATE_V6_N01_N02_N03_N04_RUNNING_CHECKPOINT05",
   "scientific_checkpoint_02": "docs/implementation/V6-CHEMCORE-CHECKPOINT-02-2026-10-29_AR.md",
   "scientific_checkpoint_03": "docs/implementation/V6-CHEMCORE-CHECKPOINT-03-2026-10-29_AR.md",
   "deferred_extensions": [
@@ -555,40 +555,44 @@
   "new_engine_milestones": [
     {
       "id": "V6-N01",
-      "status": "IN_PROGRESS_NEW_INDEPENDENT_SENSOR_INPUT_AND_MATH_JDK_PASS",
+      "status": "NEW_CORE_INPUT_AND_JAVA_SIGNAL_MATH_PASS_ANDROID_BRIDGE_COMPILED",
       "components": [
         "com.hazrob.tank.chemcore.v6.Engine",
         "com.hazrob.tank.chemcore.v6.SourceCatalog"
       ],
       "outcome": "43_RESEARCH_CURVES_13_ORIGINAL_CANDIDATE_GROUPS",
-      "open": "Add raw-only and temperature/humidity/time-channel adapters"
+      "open": "Complete typed chronological sensor session/context model and unit checks"
     },
     {
       "id": "V6-N02",
-      "status": "IN_PROGRESS_SOURCE_43_OF_43_INCLUDED",
-      "open": "Ingest additional independent raw curves, spectra, fingerprints, temperature and time models"
+      "status": "49_SOURCE_CURVES_AND_24_SIGNED_GAS_FINGERPRINTS_REGISTERED_TESTED",
+      "open": "Add numerical source data from other research banks and original manufacturer specifications without counting 76 technique names as curves"
     },
     {
       "id": "V6-N03",
-      "status": "NOT_STARTED_DEDICATED_NEW_80_TECHNIQUE_ADAPTERS"
+      "status": "14_OF_80_PARTIALLY_IMPLEMENTED_66_REMAIN_TO_PORT",
+      "open": "Implement remaining independent algorithm modules, grouped holdout tests and resource/mixture/open-set techniques"
     },
     {
       "id": "V6-N04",
-      "status": "BASIC_JOINT_LOG_DOMAIN_RANKING_JDK_PASS_FUSION_PENDING"
+      "status": "RESEARCH_LEDGER_MULTI_SOURCE_TESTED_NO_PROBABILITY_FUSION",
+      "open": "Develop independent, explicit component-specific uncertainty and mixture inference; do not multiply correlated source roots"
     },
     {
       "id": "V6-N05",
-      "status": "EXTERNAL_UCI1081_PILOT_RECORDED_OTHER_ORIGINAL_SOURCES_PENDING"
+      "status": "REAL_UCI1081_EXTERNAL_PILOT_ARCHIVED_NEW_ENGINE_REPLAY_PENDING",
+      "open": "Test true heldout source acquisitions and raw UCI270/308/309 when available"
     },
     {
       "id": "V6-N06",
-      "status": "NEW_PACKAGE_ANDROID_FULL_JAVA_COMPILE_PASS_NO_UI_CUTOVER",
+      "status": "ANDROID_V6_DIRECT_TELEMETRY_ADAPTER_JAVA_COMPILE_PASS_APP_UI_NOT_SWITCHED",
       "android_compile_CI": 40925657334,
-      "open": "Design direct V6 input adapter, independent results UI/session reporting and Android runtime tests"
+      "open": "Replace app analytical UI/service with independent V6 results and perform session/report tests before APK"
     },
     {
       "id": "V6-N07",
-      "status": "INDEPENDENT_ENGINE_JDK_PASS_PHYSICAL_AND_APK_TESTS_PENDING"
+      "status": "JDK_AND_ANDROID_JAVA_COMPILE_PASS_NO_REAL_DEVICE_G3_OR_APK",
+      "open": "Phone/ESP32/G3 physical validation and signed APK build after UI integration"
     }
   ],
   "independent_engine_tests": {
@@ -670,6 +674,64 @@
       "Actual MQ food sample comparison/real reference bench",
       "One-off PDF export visual rendering",
       "No APK V6 built for this step"
+    ]
+  },
+  "checkpoint_05": "docs/implementation/V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-05-2026-10-29_AR.md",
+  "technique_80_new_engine_progress": "docs/implementation/V6-CHEMCORE-80-TECHNIQUE-NEW-ENGINE-COVERAGE-2026-10-29.json",
+  "new_v6_research_implementation": {
+    "namespace": "com.hazrob.tank.chemcore.v6",
+    "original_gas_curve_count": 43,
+    "alternative_gas_curve_count": 6,
+    "total_gas_curves": 49,
+    "original_numeric_gas_fingerprints": 24,
+    "feature_spaces": {
+      "ADC_LOG_GEOMEAN_CLASS": 4,
+      "OPERATIONAL_LOG1PLUS_CLR": 2,
+      "MQ135_BASELINE_NORMALIZED_TEMPORAL": 18
+    },
+    "implemented_modules": [
+      "SourceCatalog.java",
+      "AlternativeCurveCatalog.java",
+      "Engine.java",
+      "GasFingerprintCatalogV6.java",
+      "FingerprintEngineV6.java",
+      "ChemCoreTankV6.java",
+      "SignalFeaturesV6.java"
+    ],
+    "android_bridge": "android/app/src/main/java/com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java",
+    "old_chemcore_dependency": false,
+    "food_freshness_dependency": false,
+    "artificial_probability_output": false,
+    "physical_device_calibration_claim": false,
+    "G3_qualified_techniques": 0,
+    "owner_deferred_startup_transient": true,
+    "technique_80": {
+      "total": 80,
+      "partially_implemented": 14,
+      "not_yet_new_engine_ported": 66,
+      "fully_device_validated": 0
+    },
+    "last_verified_CI": {
+      "independent_run": 40935647665,
+      "python_independent_tests": 8,
+      "java_assertions": {
+        "source_curve_engine": 60,
+        "signature_engine": 1245,
+        "evidence_coordinator": 55,
+        "signal_feature_engine": 30,
+        "total": 1390
+      },
+      "scientific_run": 40934854637,
+      "scientific_python_tests": 66,
+      "android_compile_run": 40935139045,
+      "android_signal_compile_run": 40935496430
+    },
+    "outstanding": [
+      "No Android UI/report cutover to V6 independent new result service",
+      "No original raw UCI270/308/309 replay on new V6 engine",
+      "All 80 research algorithms not yet ported",
+      "No APK V6 build or phone runtime test",
+      "No physical Tank G3 evidence"
     ]
   }
 }
