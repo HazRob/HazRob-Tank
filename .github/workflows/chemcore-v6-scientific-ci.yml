@@ -9,6 +9,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6SourceCompatibility.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6EvidenceConsensus.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6CurveKernel.java'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/SourceCurveRegistryV6.java'
       - '.github/workflows/chemcore-v6-scientific-ci.yml'
   pull_request:
     paths:
@@ -34,7 +35,7 @@ jobs:
           python --version
       - name: Compile V6 research source and tests
         run: |
-          python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/peer_r0_audit.py research/chemcore_v6/g2_portfolio_audit.py research/chemcore_v6/temporal_simulation.py research/chemcore_v6/tests/test_temporal_simulation.py research/chemcore_v6/tests/test_g2_portfolio_audit.py research/chemcore_v6/tests/test_source_audit.py research/chemcore_v6/tests/test_peer_r0_audit.py
+          python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/peer_r0_audit.py research/chemcore_v6/g2_portfolio_audit.py research/chemcore_v6/temporal_simulation.py research/chemcore_v6/curve_registry_audit.py research/chemcore_v6/tests/test_curve_registry_audit.py research/chemcore_v6/tests/test_temporal_simulation.py research/chemcore_v6/tests/test_g2_portfolio_audit.py research/chemcore_v6/tests/test_source_audit.py research/chemcore_v6/tests/test_peer_r0_audit.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -48,13 +49,17 @@ jobs:
             android/app/src/main/java/com/servoc/app/chemcore/TankV6EvidenceConsensus.java \
             research/chemcore_v6/tests/java/TankV6EvidenceConsensusTest.java \
             android/app/src/main/java/com/servoc/app/chemcore/TankV6CurveKernel.java \
-            research/chemcore_v6/tests/java/TankV6CurveKernelTest.java
+            research/chemcore_v6/tests/java/TankV6CurveKernelTest.java \
+            android/app/src/main/java/com/servoc/app/chemcore/SourceCurveRegistryV6.java \
+            research/chemcore_v6/tests/java/SourceCurveRegistryV6Test.java
           java -cp /tmp/tank-v6-chemcore-classes \
             com.servoc.app.chemcore.TankV6SourceCompatibilityTest
           java -cp /tmp/tank-v6-chemcore-classes \
             com.servoc.app.chemcore.TankV6EvidenceConsensusTest
           java -cp /tmp/tank-v6-chemcore-classes \
             com.servoc.app.chemcore.TankV6CurveKernelTest
+          java -cp /tmp/tank-v6-chemcore-classes \
+            com.servoc.app.chemcore.SourceCurveRegistryV6Test
       - name: Run all V6 source and peer-R0 regression tests
         run: |
           python -m unittest discover -s research/chemcore_v6/tests -p 'test_*.py' -v
@@ -96,6 +101,19 @@ jobs:
           assert d['scenario_count']==8
           assert d['Tank_G3_validations']==0 and d['claims_m4'] is False
           print('SIM-B software tests passed; all coefficients remain assumed synthetic')
+          PY
+      - name: Audit inclusive 43 reference curve provenance
+        run: |
+          python research/chemcore_v6/curve_registry_audit.py --out research/chemcore_v6/results/curve_registry_inclusive.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(Path("research/chemcore_v6/results/curve_registry_inclusive.json").read_text())
+          assert j["total_source_curves"]==43
+          assert j["curves_open_to_research_exploration"]==43
+          assert j["r0_definition_unverified"]==43
+          assert j["physically_validated_tank_curves"]==0
+          print("All numerically usable reference curves available with uncertainty labels")
           PY
       - name: Report software-only evidence boundary
         run: |
