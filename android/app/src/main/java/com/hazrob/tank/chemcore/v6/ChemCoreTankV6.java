@@ -63,6 +63,7 @@ public final class ChemCoreTankV6 {
     public static final class Result {
         public final String schema;
         public final Engine.Result responseCurves;
+        public final EvidenceConflictV6.Result sourceCurveDisagreements;
         public final List<FingerprintEngineV6.Result> fingerprintSpaces;
         public final List<ChemicalEvidence> chemicalEvidence;
         public final List<FingerprintEngineV6.Hypothesis> operationalClasses;
@@ -73,6 +74,7 @@ public final class ChemCoreTankV6 {
                        List<ChemicalEvidence> chemicals,
                        List<FingerprintEngineV6.Hypothesis> classes,Request request){
             schema=SCHEMA;responseCurves=responses;
+            sourceCurveDisagreements=EvidenceConflictV6.compare(responses);
             fingerprintSpaces=Collections.unmodifiableList(new ArrayList<>(inputSpaces));
             chemicalEvidence=Collections.unmodifiableList(new ArrayList<>(chemicals));
             operationalClasses=Collections.unmodifiableList(new ArrayList<>(classes));
