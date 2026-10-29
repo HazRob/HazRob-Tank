@@ -42,3 +42,7 @@ Reviewed **live** Tank V6/V5 and pinned SERVOC analytical source, Tank ESP32 `Ha
 **P0 investigation themes:** module-specific RL/Vc and ADS calibration; per-source R0 conventions; MQ7/MQ9 heater-profile identity; ethanol vs generic alcohol; stable model provenance and source switching; one-sensor perfect-fit bias; humidity drift and nonlinear mixture/unknown gas; actual device G3. See `G01..G13` in the report and `V6-C002-T01..T12` test proposals.
 
 **Acceptance states:** `SOURCE_REVIEW=COMPLETE_FOR_INSPECTED_SET`; `ALL_RAW_SOURCES_VERIFIED=NO`; `NEW_ALGORITHM=NOT_IMPLEMENTED`; `G3_TANK=NOT_VALIDATED`; `V6_APK=NOT_BUILT`. No file in firmware, ChemCore engine or Stable release was modified for this research request. Owner's next concrete change instructions may select which gaps are implemented.
+
+### V6-002/PENDING — 76 MQDataScience models (confirmed)
+
+Inherited `ModelRuntimeRegistry` exposes **76 adopted**, **14 native Android** (**12 claimed upstream-verified**, **2 approximate**), **62 Android ports pending**. These **76 are separate from the 80 research techniques** and the 80 central reference catalogue records. `ADOPTED / PORT PENDING` is a truthful field-execution status, not a claim of scientific inactivity. The pinned Python laboratory bridge is registered for all 76 but no new full-runtime equivalence or scientific qualification was executed. Next gate: per-model source/Android/lab/qualified status matrix and controlled port parity tests; never clear Pending by a label-only change. See §10 of the scientific audit.
