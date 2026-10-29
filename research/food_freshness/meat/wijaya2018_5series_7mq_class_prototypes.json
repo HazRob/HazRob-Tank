@@ -1,0 +1,226 @@
+{
+  "schema": "hazrob-food-meat-wijaya-5series-prototypes/1",
+  "method": "per_row_centered_log10_Rs_across_7_matching_MQ_sensor_models; median_class_profile; nearest_euclidean_log_shape",
+  "provenance": {
+    "original_source_doi": "10.17632/mwmhh766fc.3",
+    "original_paper_doi": "10.1016/j.dib.2018.11.075",
+    "open_mirror": "MomThu/Beef-Quality-Analysis",
+    "mirror_files": [
+      {
+        "name": "TS1.csv",
+        "git_blob_sha1": "f70c3e136b8747e258ebe12b6b9dc49b3390d2a0",
+        "rows": 2160
+      },
+      {
+        "name": "TS2.csv",
+        "git_blob_sha1": "8f35c99da882562edaf22398da1bfa59dd3c77ba",
+        "rows": 2160
+      },
+      {
+        "name": "TS3.csv",
+        "git_blob_sha1": "d85024d2b947381adec76d8cc934db7adcc3972e",
+        "rows": 2160
+      },
+      {
+        "name": "TS4.csv",
+        "git_blob_sha1": "93aa6bd17284951f96741acf4c8710f36df9e066",
+        "rows": 2160
+      },
+      {
+        "name": "TS5.csv",
+        "git_blob_sha1": "1bf366a6b0a13937b756d5e9354b53c195b8f00a",
+        "rows": 2160
+      }
+    ],
+    "source_sensor_models": [
+      "MQ2",
+      "MQ3",
+      "MQ4",
+      "MQ5",
+      "MQ8",
+      "MQ9",
+      "MQ135"
+    ],
+    "source_missing_tank_sensor": "MQ7",
+    "excluded_source_sensors": [
+      "MQ6",
+      "MQ136"
+    ],
+    "study_classes": [
+      "excellent",
+      "good",
+      "acceptable",
+      "spoiled"
+    ]
+  },
+  "train_files": [
+    "TS1.csv",
+    "TS2.csv",
+    "TS3.csv",
+    "TS4.csv"
+  ],
+  "heldout_file": "TS5.csv",
+  "train_rows": 8640,
+  "heldout_rows": 2160,
+  "prototypes": [
+    {
+      "label": "excellent",
+      "row_count": 1320,
+      "median_log_shape": [
+        -0.22874039553091652,
+        -0.07563906182913427,
+        0.19800778303759403,
+        0.21485237171951643,
+        0.31675691447727283,
+        -0.21475920170217228,
+        -0.09027243289645726
+      ],
+      "raw_median_rs_source_units": [
+        9.13,
+        14.24,
+        29.15,
+        29.88,
+        33.55,
+        11.41,
+        12.52
+      ],
+      "tvc_median": 2.663053746
+    },
+    {
+      "label": "good",
+      "row_count": 2280,
+      "median_log_shape": [
+        -0.3703318135558432,
+        0.09821923966682489,
+        0.15501727901613827,
+        -0.1352554089206457,
+        0.2368388306710052,
+        -0.025031350502869698,
+        -0.007759191595329784
+      ],
+      "raw_median_rs_source_units": [
+        3.02,
+        9.41,
+        10.51,
+        6.03,
+        15.440000000000001,
+        6.08,
+        6.585
+      ],
+      "tvc_median": 3.5006090050000003
+    },
+    {
+      "label": "acceptable",
+      "row_count": 1680,
+      "median_log_shape": [
+        -0.16490612734603166,
+        0.18376703757403168,
+        -0.3565854445975135,
+        -0.04865652527760847,
+        -0.13694646904117275,
+        0.1237773938892423,
+        0.09486705906887632
+      ],
+      "raw_median_rs_source_units": [
+        2.68,
+        5.7,
+        2.27,
+        3.73,
+        2.82,
+        5.38,
+        4.82
+      ],
+      "tvc_median": 4.9143066575
+    },
+    {
+      "label": "spoiled",
+      "row_count": 3360,
+      "median_log_shape": [
+        -0.08278315899345207,
+        0.20274433821915255,
+        -0.5068317418223839,
+        -0.1088166396864989,
+        -0.06073942291351336,
+        0.24069875529608675,
+        0.19679980780454645
+      ],
+      "raw_median_rs_source_units": [
+        2.64,
+        5.19,
+        0.99,
+        2.68,
+        3.1,
+        6.39,
+        4.93
+      ],
+      "tvc_median": 4.99271599
+    }
+  ],
+  "holdout_results": {
+    "accuracy": 0.4393518518518518,
+    "balanced_accuracy": 0.38878968253968255,
+    "confusion": {
+      "excellent": {
+        "excellent": 43,
+        "good": 317,
+        "acceptable": 0,
+        "spoiled": 0
+      },
+      "good": {
+        "excellent": 0,
+        "good": 540,
+        "acceptable": 0,
+        "spoiled": 0
+      },
+      "acceptable": {
+        "excellent": 0,
+        "good": 420,
+        "acceptable": 0,
+        "spoiled": 0
+      },
+      "spoiled": {
+        "excellent": 0,
+        "good": 115,
+        "acceptable": 359,
+        "spoiled": 366
+      }
+    },
+    "per_class": [
+      {
+        "class": "excellent",
+        "train": 1320,
+        "test": 360,
+        "recall": 0.11944444444444445
+      },
+      {
+        "class": "good",
+        "train": 2280,
+        "test": 540,
+        "recall": 1
+      },
+      {
+        "class": "acceptable",
+        "train": 1680,
+        "test": 420,
+        "recall": 0
+      },
+      {
+        "class": "spoiled",
+        "train": 3360,
+        "test": 840,
+        "recall": 0.4357142857142857
+      }
+    ]
+  },
+  "claims": {
+    "tank_device_validated": false,
+    "meat_microbiological_safety_certified": false,
+    "measured_TVC_from_tank": false,
+    "food_model_separate_from_gas_chemcore": true
+  },
+  "notes": [
+    "Study reports resistances in Ω. Use log-shape normalization; source instrument transfer to Tank not validated.",
+    "Some source TVC/class pairs do not match textbook thresholds exactly; retain source-provided labels without relabeling.",
+    "Held-out series is a different study cut; only one held-out cut, and correlated minute rows are not independent test exposures."
+  ]
+}
