@@ -304,3 +304,12 @@ ESP32 Tank / session replays / research adapters (separate provenance)
 
 
 **تصحيح رقمي لاحق للدفعة ذاتها:** Bayes log-sum-exp وsoftmax stable extreme finite values ورفض التعادل التام دون حدّ هامش؛ [CI 40949747063](https://github.com/HazRob/HazRob-Tank/actions/runs/40949747063) **SUCCESS** مع بقاء **1924 تأكيدًا**، و[CI المراجع 40949746723](https://github.com/HazRob/HazRob-Tank/actions/runs/40949746723) **SUCCESS**. لا زيادة عدد التقنيات بسبب التصحيح.
+
+
+## 26) آخر نقطة استئناف — Checkpoint 09 (N05 + N03-D، 2026-10-29)
+
+**هذا القسم يلغي أرقام 44/36 الأقدم بوصفها أحدث حالة.** بعد نجاح [CI 40952792580](https://github.com/HazRob/HazRob-Tank/actions/runs/40952792580) أصبحت تغطية نواة الغاز الجديدة **54 تقنية ذات تنفيذ بحثي جزئي / 26 لم تُنقل / 0 معتمدة على Tank G3**، بمجموع **1968 تحقق JDK ناجح**. أضيفت تقنيات 05.5، 05.6، 05.9، 07.4، 07.5، 07.8، 07.10، 08.6، 08.8، 08.11 في SourceNumericsV6.java، مع 44 تحققًا جديدًا. تجميع Android Java ناجح في [40952676989](https://github.com/HazRob/HazRob-Tank/actions/runs/40952676989)، وهو تجميع فقط وليس APK.
+
+**N05 أصبح مُنفَّذًا على بيانات UCI1081 الأصلية** في [40952186046](https://github.com/HazRob/HazRob-Tank/actions/runs/40952186046) بعد تحقق SHA لكل من ZIP وCSV، وحجب التركيز 50 أو 100 أو 200 ppb بالكامل في كل قسم. 24 تقييمًا / 720 تنبؤًا؛ متوسط balanced accuracy لخوارزمية Softmax الجديدة 38.89% مع MQ135 فقط و76.67% مع مصفوفة UCI ذات 10 حساسات. هذه أرقام Java الجديدة لا sklearn القديم، ولا تثبت أي معايرة Tank أو صلاحية هوية غاز مجهول. توجد النتائج الموثقة في research/chemcore_v6/results/uci1081_v6_n05_java_original_source_results_2026-10-29.json، وحزمة النتائج الأصلية محفوظة في المكتبة.
+
+التفاصيل العلمية والروابط والحدود: [Checkpoint 09](V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-09-2026-10-29_AR.md). الخطوة التالية N03-E (عشر تقنيات بحثية من 26) ثم N05-open-set مع مجهولات وتقييم مُنفصل للتدريب/المعايرة/الاختبار، ثم ربط الواجهات والتقارير N06. تبقى الأغذية مستقلة تمامًا وتحليل إحماء MQ/Bosch مؤجلًا، دون APK أو تحقق G3.
