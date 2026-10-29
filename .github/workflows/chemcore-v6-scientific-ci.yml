@@ -1,0 +1,64 @@
+name: ChemCore Tank V6 scientific source verification
+
+on:
+  push:
+    branches:
+      - feature/tank-v6-implementation
+    paths:
+      - 'research/chemcore_v6/**'
+      - '.github/workflows/chemcore-v6-scientific-ci.yml'
+  pull_request:
+    paths:
+      - 'research/chemcore_v6/**'
+      - '.github/workflows/chemcore-v6-scientific-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research-source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Show immutable source snapshot commit
+        run: |
+          git rev-parse HEAD
+          python --version
+      - name: Compile V6 research source and tests
+        run: |
+          python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/tests/test_source_audit.py
+      - name: Run 23 unit regressions against pinned source blobs
+        run: |
+          python -m unittest discover -s research/chemcore_v6/tests -p 'test_*.py' -v
+      - name: Run numerical audit and synthetic R0 counterfactuals
+        run: |
+          python research/chemcore_v6/source_audit.py \
+            --output research/chemcore_v6/results/source_audit.json \
+            --counterfactual-output research/chemcore_v6/results/synthetic_r0_sensitivity.json
+      - name: Report software-only evidence boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("research/chemcore_v6/results/source_audit.json")
+          a=json.loads(p.read_text())
+          assert a["source_integrity"]["verified"] == 14
+          assert a["curve_roundtrips"]["points_tested"] == 387
+          assert a["synthetic_R0_counterfactual_cases"] == 172
+          assert a["M4_or_safety_certification"] is False
+          assert a["no_real_Tank_gas_data_used"] is True
+          print("VERIFIED numerical source consistency only; Tank G3 remains 0/80")
+          PY
+      - name: Preserve machine-readable audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chemcore-v6-source-research-audit
+          path: research/chemcore_v6/results/
+          if-no-files-found: warn
+          retention-days: 30
