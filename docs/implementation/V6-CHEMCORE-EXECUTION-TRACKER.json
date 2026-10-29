@@ -31,7 +31,7 @@
     "library_reference_records": 80,
     "independent_Tank_G3_validated_techniques": 0
   },
-  "disclaimer": "This tracker now includes actual metadata inventories (43/14/8 rows), not runnable engine implementation, simulation results, APK or Tank G3 validation.",
+  "disclaimer": "G3 Tank physical validation remains 0/80; V6 APK not built; no calibrated gas identity/PPM. UCI1081 exploratory external results from source raw file and local Python, not reproduced in GitHub CI.",
   "stage_count": 12,
   "stages": [
     {
@@ -45,12 +45,14 @@
         "v5_replay.json"
       ],
       "gate": "BASELINE_PINNED_WITH_CLEAN_REPLAY",
-      "status": "NOT_STARTED",
-      "actual_commit": null,
+      "status": "IN_PROGRESS_BASELINE_PINS_VERIFIED",
+      "actual_commit": "269bc84d7bd7771ad22f29a1732737d8c3ec1a7e",
       "ci_run": null,
       "verified_on": null,
-      "blockers": [],
-      "next_action": null
+      "blockers": [
+        "V5 runtime replay and APK/physical baseline not tested"
+      ],
+      "next_action": "Replay V5 captured sessions into frozen baseline; compare API and reports"
     },
     {
       "id": "P01",
@@ -69,14 +71,15 @@
         "R0_peer_audit.csv"
       ],
       "gate": "ALL_REFERENCES_TYPED_NO_UNVERIFIED_PROMOTION",
-      "status": "IN_PROGRESS_SOURCE_METADATA_ONLY",
-      "actual_commit": null,
+      "status": "IN_PROGRESS_14_HISTORICAL_PLUS_3_R0_SOURCE_BLOBS_VERIFIED",
+      "actual_commit": "eec7fcfbcf4f8637d649fa4848d9bd4dd9317290",
       "ci_run": null,
       "verified_on": null,
       "blockers": [
-        "Raw external archives and one-by-one legacy scientific qualification not completed"
+        "Other raw external archives and manufacturer datasheet digitizations still pending",
+        "No full dedup across all prior sources"
       ],
-      "next_action": "Inspect all remaining raw files and source/curve equivalence; freeze source families"
+      "next_action": "Source-qualify UCI270/308/309 and per-model R0 definitions"
     },
     {
       "id": "P02",
@@ -94,12 +97,15 @@
         "R0_2018_arithmetic_issue_log.md"
       ],
       "gate": "DIGITAL_VALIDATION_PASS_PHYSICAL_PENDING_IF_MISSING",
-      "status": "NOT_STARTED",
-      "actual_commit": null,
+      "status": "DIGITAL_R0_CONTRACTS_TESTED_PHYSICAL_PENDING",
+      "actual_commit": "889ee27944a36d0f81e7fed5a96716af0bdd2bdd",
       "ci_run": null,
       "verified_on": null,
-      "blockers": [],
-      "next_action": null
+      "blockers": [
+        "Eight physical RL and ADS reference voltages not measured",
+        "MQ7/MQ9 actual heater variant/phase not inspected"
+      ],
+      "next_action": "Prepare hardware channel map and exact physical measurement guide; do not change firmware"
     },
     {
       "id": "P03",
@@ -140,12 +146,15 @@
         "ppm_sensitivity_to_r0.csv"
       ],
       "gate": "SYNTHETIC_ONLY_TESTS_PASS_OR_EXPLICIT_FAILURE",
-      "status": "NOT_STARTED",
-      "actual_commit": null,
+      "status": "IN_PROGRESS_ALGEBRAIC_SIM_A_387_ROUNDTRIPS_172_SYNTHETIC_R0_CASES",
+      "actual_commit": "c4277c5e6e10849ea3b0b64e128693332bf760f2",
       "ci_run": null,
       "verified_on": null,
-      "blockers": [],
-      "next_action": null
+      "blockers": [
+        "SIM-B environmental/temporal/mixture still planned",
+        "No physical validation of sim parameters"
+      ],
+      "next_action": "Build scenario-runner for SIM-A/B with source-qualified uncertainties"
     },
     {
       "id": "P05",
@@ -165,12 +174,16 @@
         "headspace_and_MQ135_group_checks.csv"
       ],
       "gate": "RAW_AND_SPLIT_INTEGRITY_PASS_FOR_ELIGIBLE_DATA",
-      "status": "NOT_STARTED",
-      "actual_commit": null,
+      "status": "IN_PROGRESS_UCI1081_90_REAL_EXTERNAL_EXPOSURES_LOCAL_PILOT",
+      "actual_commit": "0345ac430ecb7455554937d2127b6b0055f15f7a",
       "ci_run": null,
       "verified_on": null,
-      "blockers": [],
-      "next_action": null
+      "blockers": [
+        "UCI270/308/309 original archives not inspected in this execution",
+        "No same-device day grouping metadata for UCI1081; reported results exploratory",
+        "GitHub CI UCI1081 dataset training not run because raw zip not stored in repo"
+      ],
+      "next_action": "Ingest more source-authorized researcher datasets, hash originals, benchmark by whole exposure"
     },
     {
       "id": "P06",
@@ -321,7 +334,7 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "PLAN_PREPARED_P01_METADATA_INVENTORY_STARTED_NO_CHEMCORE_ENGINE_PATCH",
+  "state": "FIRST_EXECUTION_BATCH_VERIFIED_CI_SOURCE_SIMULATION_AND_UCI1081_PILOT_WITHOUT_ANDROID_INTEGRATION",
   "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
   "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
   "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
@@ -334,5 +347,47 @@
     "source_status": "INDEXED_WITH_PINNED_ORIGIN_NOT_ALL_RAW_QUALIFIED",
     "evidence_computation": "NOT_RUN",
     "V6_physical_validation": "NONE"
-  }
+  },
+  "validation_runs": [
+    {
+      "run_id": 40911664273,
+      "workflow": ".github/workflows/chemcore-v6-scientific-ci.yml",
+      "head_sha": "989ffdf8b7b71baa378994e1072b21f372a83db0",
+      "status": "COMPLETED_SUCCESS",
+      "unit_tests_pass": 30,
+      "roundtrip_tests": 387,
+      "synthetic_R0_variations": 172,
+      "synthetic_outside_domain": 94,
+      "source_snapshots_verified": 14,
+      "peer_sources_verified": 3,
+      "artifact_id": 12914830258,
+      "artifact_sha256": "be3e9e4c97ca4302cbab5bd63609235854902864fa4c19b0293b1dc2dcef8939"
+    }
+  ],
+  "external_real_pilots": [
+    {
+      "dataset": "UCI1081",
+      "raw_sha256": "813ebb7d00ed9172114b68d27ab3210d6c220b8b23907dce91e9838cd48ab",
+      "csv_sha256": "d79afe6494903b988de68d4a8ab133167151a1bb620ba413e5cefd15003d07b3",
+      "exposure_count": 90,
+      "channel_count": 10,
+      "gas_count": 6,
+      "concentration_ppb": [
+        50,
+        100,
+        200
+      ],
+      "status": "LOCAL_EXPLORE_ONLY_NOT_TANK_G3",
+      "report": "docs/research/V6-CHEMCORE-UCI1081-REAL-DATA-PILOT-2026-10-29_AR.md",
+      "mean_balanced_accuracy": {
+        "mq135_logreg": 0.5666666666666668,
+        "mq135_lda": 0.5,
+        "source_10_logreg": 0.6,
+        "source_10_lda": 0.6222222222222222
+      },
+      "github_CI_raw_training_reproduced": false
+    }
+  ],
+  "scientific_checkpoint": "docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md",
+  "current_phase": "P00_P01_P02_P04_P05_EARLY_IMPLEMENTATION_WITH_GATES_OPEN"
 }
