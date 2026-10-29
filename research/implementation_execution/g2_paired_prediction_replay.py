@@ -111,6 +111,10 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
     group_class_counts = Counter()
     group_class_model_correct = Counter()
     group_class_baseline_correct = Counter()
+    group_class_both_correct = Counter()
+    group_class_both_wrong = Counter()
+    group_class_model_only = Counter()
+    group_class_baseline_only = Counter()
 
     for row in predictions:
         exposure, group = row["exposure_id"], row["group_id"]
@@ -159,6 +163,10 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         group_class_counts[(group, truth)] += 1
         group_class_model_correct[(group, truth)] += int(model)
         group_class_baseline_correct[(group, truth)] += int(baseline)
+        group_class_both_correct[(group, truth)] += int(model and baseline)
+        group_class_both_wrong[(group, truth)] += int(not model and not baseline)
+        group_class_model_only[(group, truth)] += int(model and not baseline)
+        group_class_baseline_only[(group, truth)] += int(baseline and not model)
 
     declared = {}
     for row in metrics:
@@ -244,13 +252,24 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         n = group_class_counts[(group, truth)]
         m = group_class_model_correct[(group, truth)]
         b = group_class_baseline_correct[(group, truth)]
+        bc = group_class_both_correct[(group, truth)]
+        bw = group_class_both_wrong[(group, truth)]
+        mo = group_class_model_only[(group, truth)]
+        bo = group_class_baseline_only[(group, truth)]
+        if bc + bw + mo + bo != n or bc + mo != m or bc + bo != b:
+            raise ValueError("PAIRED_REPLAY_CLASS_GROUP_DISCORDANCE_INVALID")
         group_class_support.append({
             "group_id": group,
             "true_reference": truth,
             "exposures": n,
             "model_correct": m,
             "baseline_correct": b,
-            "paired_model_minus_baseline_accuracy": (m - b) / n,
+            "both_correct": bc,
+            "both_wrong": bw,
+            "model_only_correct": mo,
+            "baseline_only_correct": bo,
+            "paired_net_model_advantage_count": mo - bo,
+            "paired_model_minus_baseline_accuracy": (mo - bo) / n,
         })
     class_group_coverage = []
     for class_row in class_pairing:
@@ -263,11 +282,33 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
                 or sum(r["baseline_correct"] for r in support)
                 != class_row["baseline_correct"]):
             raise ValueError("PAIRED_REPLAY_CLASS_GROUP_RECONCILIATION_INVALID")
+        if any(
+                sum(r[key] for r in support) != class_row[key]
+                for key in ("both_correct", "both_wrong",
+                            "model_only_correct", "baseline_only_correct")):
+            raise ValueError("PAIRED_REPLAY_CLASS_GROUP_DISCORDANCE_INVALID")
+        cell_deltas = [
+            r["paired_model_minus_baseline_accuracy"] for r in support
+        ]
+        equal_group_delta = sum(cell_deltas) / len(cell_deltas)
+        exposure_weighted_delta = class_row[
+            "paired_model_minus_baseline_accuracy"
+        ]
         class_group_coverage.append({
             "true_reference": truth,
             "declared_groups_with_class": len(support),
             "declared_group_coverage_fraction": len(support) / len(counts),
             "confined_to_single_declared_group": len(support) == 1,
+            "equal_observed_group_mean_delta": equal_group_delta,
+            "exposure_weighted_delta": exposure_weighted_delta,
+            "min_observed_group_delta": min(cell_deltas),
+            "max_observed_group_delta": max(cell_deltas),
+            "opposite_signed_group_effects": (
+                min(cell_deltas) < 0 < max(cell_deltas
+            )),
+            "equal_group_vs_exposure_weighted_sign_reversal": (
+                equal_group_delta * exposure_weighted_delta < 0
+            ),
         })
     for group in counts:
         support = [r for r in group_class_support if r["group_id"] == group]
@@ -277,6 +318,10 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
                 or sum(r["baseline_correct"] for r in support)
                 != baseline_correct[group]):
             raise ValueError("PAIRED_REPLAY_CLASS_GROUP_RECONCILIATION_INVALID")
+        for key in ("both_correct", "both_wrong",
+                    "model_only_correct", "baseline_only_correct"):
+            if sum(r[key] for r in support) != per_group_outcomes[group][key]:
+                raise ValueError("PAIRED_REPLAY_CLASS_GROUP_DISCORDANCE_INVALID")
 
     result = paired_cluster_accuracy_delta(
         dict(counts), dict(model_correct), dict(baseline_correct),
@@ -300,6 +345,19 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         ],
         "true_reference_class_min_declared_group_coverage": min(
             row["declared_groups_with_class"] for row in class_group_coverage
+        ),
+        "true_reference_classes_with_opposite_group_effects": [
+            row["true_reference"] for row in class_group_coverage
+            if row["opposite_signed_group_effects"]
+        ],
+        "true_reference_classes_with_group_weighting_sign_reversal": [
+            row["true_reference"] for row in class_group_coverage
+            if row["equal_group_vs_exposure_weighted_sign_reversal"]
+        ],
+        "class_group_discordance_scope": (
+            "POST_UNBLINDING_DESCRIPTIVE_WITHIN_CLASS_GROUP_CONFOUNDING;"
+            "MISSING_GROUP_CLASS_CELLS_NOT_IMPUTED;"
+            "NOT_INDEPENDENT_PHYSICAL_EVIDENCE_OR_G2_G3_APPROVAL"
         ),
         "true_reference_group_support_scope": (
             "POST_UNBLINDING_DESCRIPTIVE_CLASS_BY_GROUP_SUPPORT_ONLY;"
