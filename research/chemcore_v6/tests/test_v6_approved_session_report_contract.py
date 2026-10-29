@@ -77,6 +77,9 @@ class N06BApprovedReportResearch(unittest.TestCase):
 
     def test_xlsx_is_additive_separate_sheet(self):
         self.assertIn('new SmartXlsxPackage.Sheet("V6 بحثي غازات"',self.xlsx)
+        self.assertIn('new SmartXlsxPackage.Sheet("V6 مصادر وتعارضات"',self.xlsx)
+        self.assertIn('researchOnlyV6SourceHypotheses(b,v6Field)',self.xlsx)
+        self.assertIn('fit.optString("source_curve_id","")',self.xlsx)
         self.assertIn('V6FieldSessionResearchAppendix.analyzeVerified(db,b)',self.xlsx)
         self.assertIn('s.optInt("distinct_original_scan_cycles",0)',self.xlsx)
         self.assertIn('cycle.optString("research_source_sha256","")',self.xlsx)
