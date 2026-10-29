@@ -1,0 +1,305 @@
+{
+  "schema": "hazrob-tank-v6-chemcore-execution-tracker/1",
+  "prepared_at": "2026-10-29",
+  "repository": "HazRob/HazRob-Tank",
+  "branch": "feature/tank-v6-implementation",
+  "scope": "ChemCore_Tank_Android_V6_only",
+  "version": "1.0",
+  "plan": "docs/implementation/V6-CHEMCORE-SCIENTIFIC-MASTER-PLAN-2026-10-29_AR.md",
+  "sampling_protocol": "docs/research/V6-CHEMCORE-DATASET-SAMPLING-PROTOCOL-2026-10-29_AR.md",
+  "technique_matrix": "docs/research/V6-CHEMCORE-TECHNIQUE-80-TRACEABILITY.csv",
+  "models_matrix": "docs/research/V6-CHEMCORE-MQDATASCIENCE-76-RUNTIME-MATRIX.csv",
+  "reference_matrix": "docs/research/V6-CHEMCORE-CENTRAL-REFERENCE-80-PROVENANCE.csv",
+  "simulation_matrix": "docs/research/V6-CHEMCORE-SIMULATION-SCENARIOS.csv",
+  "source_pins": {
+    "v5_commit": "c132fc2f8eb7a54d5b3c96b4fdcd6090096d1a5b",
+    "shared_research_progress_blob": "0919307d46b352a887f2fdbc5e94c752a74b16d0",
+    "shared_reference_catalog_blob": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+    "inherited_original_analytics": "6281d3eb7c1c961ce63b0b5e4ae0792874626720",
+    "mqdatascience_v6_commit": "e88f876140587a708ee84a4d4d3acbd5720274ee"
+  },
+  "baseline_evidence": {
+    "techniques": 80,
+    "verified_unit_tests_historical": 1261,
+    "G2_external_numeric_or_metadata": 49,
+    "G2_blocked": 29,
+    "G2_analytical_only": 2,
+    "mq76_models": 76,
+    "mq76_android_source_verified": 12,
+    "mq76_android_source_approximate": 2,
+    "mq76_android_pending": 62,
+    "library_reference_records": 80,
+    "independent_Tank_G3_validated_techniques": 0
+  },
+  "disclaimer": "Documentation & plans only. No new execution or validated Tank calibration. Existing V6-001 code fix remains separate.",
+  "stage_count": 12,
+  "stages": [
+    {
+      "id": "P00",
+      "name": "BASELINE_AND_CHANGE_FREEZE",
+      "depends_on": [],
+      "goal": "Pinned V5/Stable firmware Android baseline and V5 behaviour",
+      "deliverables": [
+        "baseline_manifest.json",
+        "compatibility_contract.md",
+        "v5_replay.json"
+      ],
+      "gate": "BASELINE_PINNED_WITH_CLEAN_REPLAY",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P01",
+      "name": "SOURCE_TECHNIQUE_MODEL_INVENTORY",
+      "depends_on": [
+        "P00"
+      ],
+      "goal": "80 refs, 80 techniques, 76 MQ model roles and dedicated R0 sources",
+      "deliverables": [
+        "source_manifest.json",
+        "source_curve_matrix.csv",
+        "technique_selection.csv",
+        "mq76_runtime_matrix.csv"
+      ],
+      "gate": "ALL_REFERENCES_TYPED_NO_UNVERIFIED_PROMOTION",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P02",
+      "name": "HARDWARE_ELECTRICAL_R0_CONTRACT",
+      "depends_on": [
+        "P00"
+      ],
+      "goal": "As-built ADC RL Vc heater R0 definitions; model variant and unknown caveats",
+      "deliverables": [
+        "channel_contract.json",
+        "electrical_test_plan.md",
+        "R0_definitions.csv"
+      ],
+      "gate": "DIGITAL_VALIDATION_PASS_PHYSICAL_PENDING_IF_MISSING",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P03",
+      "name": "SYSTEM_ARCHITECTURE_AND_SCHEMAS",
+      "depends_on": [
+        "P00",
+        "P01"
+      ],
+      "goal": "Typed data provenance evidence dependency and backwards-compatible DB APIs",
+      "deliverables": [
+        "ADR.md",
+        "schema.json",
+        "database_migration_plan.md"
+      ],
+      "gate": "REPLAY_AND_MIGRATION_TESTS_DEFINED",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P04",
+      "name": "SIMULATION_AND_REPLAY",
+      "depends_on": [
+        "P02",
+        "P03"
+      ],
+      "goal": "Physics math and exploratory environmental/mixture simulator with synthetic labels",
+      "deliverables": [
+        "simulation_config.yaml",
+        "oracles.jsonl",
+        "simulation_test_results.json",
+        "V5_V6_diff.csv"
+      ],
+      "gate": "SYNTHETIC_ONLY_TESTS_PASS_OR_EXPLICIT_FAILURE",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P05",
+      "name": "EXTERNAL_DATA_IMPORT_AND_SAMPLING",
+      "depends_on": [
+        "P01",
+        "P03"
+      ],
+      "goal": "Source-qualified multiple real datasets, integrity & stratified group-safe splits",
+      "deliverables": [
+        "sources.json",
+        "raw_manifest.csv",
+        "sampling_manifest.csv",
+        "split_manifest.csv",
+        "blocked_sources.csv"
+      ],
+      "gate": "RAW_AND_SPLIT_INTEGRITY_PASS_FOR_ELIGIBLE_DATA",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P06",
+      "name": "CURVES_R0_AND_QUANT_RESEARCH_ENGINE",
+      "depends_on": [
+        "P02",
+        "P04",
+        "P05"
+      ],
+      "goal": "Source traceable curve priors, robust log inverse, ppm screening only",
+      "deliverables": [
+        "source_models.json",
+        "curve_results.csv",
+        "quant_model_card.md"
+      ],
+      "gate": "DOMAIN_AND_R0_GATES_AND_COMPARATIVE_RESULTS",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P07",
+      "name": "FEATURES_FINGERPRINTS_AND_ML",
+      "depends_on": [
+        "P04",
+        "P05"
+      ],
+      "goal": "Temporal and static signatures, selected ML, model leakage/parity tests",
+      "deliverables": [
+        "feature_schema.json",
+        "model_candidates.json",
+        "ablation_metrics.json"
+      ],
+      "gate": "GROUPED_HOLDOUT_METRICS_AND_EXPLICIT_SELECTION",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P08",
+      "name": "EVIDENCE_FUSION_UNKNOWN_MIXTURE",
+      "depends_on": [
+        "P06",
+        "P07"
+      ],
+      "goal": "Independence-aware candidate ranking, known/unknown and mixture safeguards",
+      "deliverables": [
+        "evidence_graph.json",
+        "v6_decision_policy.md",
+        "conditional_accuracy.json"
+      ],
+      "gate": "NO_FALSE_M4_AND_CHALLENGE_HOLDOUT_RESULTS",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P09",
+      "name": "ANDROID_INTEGRATION_AND_REGRESSION",
+      "depends_on": [
+        "P08"
+      ],
+      "goal": "Integrate measured/research/approved session and report consumers",
+      "deliverables": [
+        "android_v6_patch",
+        "tests",
+        "build_manifest.json",
+        "apk_checksum.txt"
+      ],
+      "gate": "CI_GRADLE_AND_ANDROID_DEVICE_ACCEPTANCE",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P10",
+      "name": "PHYSICAL_TANK_G3_EVIDENCE",
+      "depends_on": [
+        "P02",
+        "P08"
+      ],
+      "goal": "Physically referenced gases per existing 2026-10-26 G3 protocol",
+      "deliverables": [
+        "protocol.json",
+        "reference_register.csv",
+        "exposures.jsonl",
+        "holdouts.csv",
+        "metrics.json",
+        "decision.md"
+      ],
+      "gate": "INDEPENDENT_G3_APPROVAL_PER_CLAIM_OR_NOT_VALIDATED",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    },
+    {
+      "id": "P11",
+      "name": "V6_RELEASE_READINESS",
+      "depends_on": [
+        "P09"
+      ],
+      "goal": "Signed upgrade and source snapshots, public limits with explicit owner decision",
+      "deliverables": [
+        "release_candidate_manifest.json",
+        "operator_acceptance.md",
+        "release_notes.md"
+      ],
+      "gate": "OWNER_APPROVAL_AND_SIGNED_APK_UPGRADE_PASS",
+      "status": "NOT_STARTED",
+      "actual_commit": null,
+      "ci_run": null,
+      "verified_on": null,
+      "blockers": [],
+      "next_action": null
+    }
+  ],
+  "acceptance_rules": {
+    "immutable_test": true,
+    "source_hash_and_licence_required": true,
+    "group_split_by_exposure_session_day_device": true,
+    "no_Synthetic_to_G3": true,
+    "no_Android_ready_without_runtime": true,
+    "no_M4_without_physical_reference": true,
+    "fail_closed_if_insufficient_data": true,
+    "V5_regression_must_pass": true,
+    "per_technique_decision": true,
+    "owner_release_approval": true
+  },
+  "state": "PLAN_PREPARED_ALL_PHASES_NOT_STARTED"
+}
