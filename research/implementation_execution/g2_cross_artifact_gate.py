@@ -36,6 +36,19 @@ def _csv_has_control(value):
                for ch in value)
 
 
+def _canonical_physical_source_value(value):
+    """Require unambiguous original device/session/batch identity bytes.
+
+    NFC-only CSV checks allow NFKC compatibility aliases (e.g. fullwidth
+    Latin) to name the same physical device with distinct strings. Apply
+    the stronger rule ONLY to grouping-source identity columns; arbitrary
+    chemical labels and measured values retain their existing semantics.
+    """
+    return (isinstance(value, str) and bool(value.strip()) and
+            unicodedata.normalize("NFKC", value) == value and
+            not _csv_has_control(value))
+
+
 def _read_csv(base, name):
     """Reject ambiguous CSV schemas even when the file hash is valid.
 
@@ -314,6 +327,13 @@ def audit_cross_artifact(record, repo_root=Path(".")):
                     any(not (row.get(name) or "").strip()
                         for name in physical_columns)):
                 issues.append("GROUPING_SOURCE_VALUE_MISSING")
+                continue
+            # CSV validation is NFC-only; compatibility aliases in the
+            # actual physical identity columns can still fake independent
+            # train/test devices even when group_id itself is canonical.
+            if any(not _canonical_physical_source_value(row.get(name))
+                   for name in identity_columns):
+                issues.append("NONCANONICAL_PHYSICAL_SOURCE_ID")
                 continue
             if gid in group_to_physical and group_to_physical[gid] != physical:
                 issues.append("GROUP_ID_MAPS_TO_MULTIPLE_PHYSICAL_UNITS")
