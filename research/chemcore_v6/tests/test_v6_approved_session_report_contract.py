@@ -68,6 +68,9 @@ class N06BApprovedReportResearch(unittest.TestCase):
         self.assertIn('approved.measurementSessionIds.contains(sid)',self.adapter)
         self.assertIn('!approved.fieldSession.approved()',self.adapter)
         self.assertIn('root.put("v5_approval_and_decisions_unchanged",true)',self.adapter)
+        self.assertIn('Archived approved source changed before V6 replay',self.adapter)
+        self.assertIn('Archived approved source changed during V6 replay',self.adapter)
+        self.assertGreaterEqual(self.adapter.count('verifier.verifyApprovedEvidence(cycle)'),2)
 
     def test_pdf_is_additive_and_v5_pages_not_replaced(self):
         self.assertIn('int total=basePages+cyclePages+v6Pages',self.pdf)
