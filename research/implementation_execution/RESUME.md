@@ -1,3 +1,14 @@
+## 2026-10-29 — G2 paired physical-group delta diagnostic (345/345 CI)
+
+- Resumed from `1794f6b9fd9f3ed6e42ef38799870085cdfb82de`; checked prior successful G2 CI and central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries / 14 external datasets). Independent evidence `records=[]`; source readiness 0/14.
+- Added research-only `g2_paired_delta_diagnostic.py` for deterministic paired cluster bootstrap of model-minus-baseline accuracy from the same physical test groups, plus CSV byte SHA256 lineage. Unlike marginal intervals or row resampling, paired resampling preserves within-group comparison. It is a diagnostic, not a new scientific promotion rule or a p-value.
+- Added nine synthetic regression tests in `test_g2_paired_delta_diagnostic.py`: paired equality/improvement, deterministic group-order invariance, invalid or NFKC-aliased group IDs, invalid/missing counts, CSV schema and byte lineage, invalid protocol. Code SHA `029559d216737265e507b801727e7f55b6a7bc70`; test SHA `c0ce51b6c2b919667e543e252b7c0c42d975785f`.
+- [G2 CI #40872313640](https://github.com/HazRob/HazRob-Tank/actions/runs/40872313640): **345/345 PASS**, byte-identical replay PASS, publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact `12895579575`, ZIP SHA256 `287b2d4029891f73ed4394794560de2771306e3278d05467176db4ef917f383e`.
+- Research branch only. No ChemCore Stable, Android or firmware changes, and no G2/G3 scientific promotion. Documentation: `G2_PAIRED_PHYSICAL_GROUP_DELTA_DIAGNOSTIC_2026-10-29_AR.md`.
+- Next: verify documentation-checkpoint CI; acquire independent original physical exposures, traceable concentration references, preregistered physical group splits and blind holdout before considering any G2 candidate.
+
+---
+
 ## 2026-10-29 — G2 early NFKC CSV header gate in evidence bundle (336/336 CI)
 
 - Resumed from `7d8b2b3bf3735b30bcf294dbb8f3991eac02c52c`; verified prior CI and central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets). Pinned source readiness remains 0/14; independent evidence `records=[]`.
