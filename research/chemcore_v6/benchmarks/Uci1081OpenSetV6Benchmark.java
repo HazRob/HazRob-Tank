@@ -118,14 +118,20 @@ public final class Uci1081OpenSetV6Benchmark {
                     if(decision.reportedLabel.equals(row.gas))r.knownCorrectAfterGate++;
                 }
             }
+            StringBuilder fullScores=new StringBuilder();
+            for(int i=0;i<decision.allCandidateRelativeScores.length;i++){
+                if(i>0)fullScores.append("|");
+                fullScores.append(String.format(Locale.ROOT,"%.12f",
+                    decision.allCandidateRelativeScores[i]));
+            }
             out.write(String.format(Locale.ROOT,
-                "%s,%d,%s,%s,%s,%d,%s,%s,%s,%s,%.12f,%.12f,%b,%s%n",
+                "%s,%d,%s,%s,%s,%d,%s,%s,%s,%s,%.12f,%.12f,%b,%s,%s%n",
                 mode,heldoutLevel,calUnknown,testUnknown,
                 isUnknown?"test_unknown":"test_known",row.id,row.gas,
                 decision.candidateLabel,decision.reportedLabel,
                 "SOURCE_ONLY",decision.maximumRelativeScore,
                 decision.selectedSourceThreshold,decision.unknown,
-                String.join("|",decision.allCandidateLabels)));
+                String.join("|",decision.allCandidateLabels),fullScores.toString()));
         }
         return r;
     }
@@ -145,7 +151,7 @@ public final class Uci1081OpenSetV6Benchmark {
               "test_unknown_false_known_accept_rate,open_set_correct_fraction\n");
             predictions.write("mode,heldout_ppb,calibration_unknown_gas,heldout_test_unknown_gas,"+
               "partition,source_row_id,actual_gas,pre_gate_candidate,reported_label,"+
-              "model_scope,max_score,source_only_cutoff,abstained,all_source_candidate_labels\n");
+              "model_scope,max_score,source_only_cutoff,abstained,all_source_candidate_labels,all_source_candidate_scores\n");
             ledger.write("mode,heldout_ppb,calibration_unknown_gas,heldout_test_unknown_gas,"+
               "partition,source_row_id,gas,original_ppb\n");
             for(String mode:MODES)for(int heldout:LEVELS)
