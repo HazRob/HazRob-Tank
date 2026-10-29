@@ -1,0 +1,120 @@
+{
+  "schema": "hazrob-uci1081-source-layout-correction/1",
+  "date": "2026-10-29",
+  "dataset_url": "https://archive.ics.uci.edu/dataset/1081/gas+sensor+array+low-concentration",
+  "source_archive_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "original_csv_sha256": "d79afe6494903b988de68d4a8ab133167151a1bb620ba413e5cefd15003d07b3",
+  "raw_rows": 90,
+  "source_sensor_count": 10,
+  "time_points_per_sensor": 900,
+  "layout": "Each source CSV row has ten contiguous 900-sample blocks, one for each source sensor; reshape(10,900).T",
+  "proof": {
+    "source_fingerprint": "uci_mq135_lowconcentration_transfer_fingerprints_v1.json",
+    "source_group": "acetone 50 ppb, 5 original replicates",
+    "source_reference_endpoint_over_baseline_mean": 0.9471726656594102,
+    "corrected_raw_endpoint_over_baseline_mean": 0.9471726656594102,
+    "incorrect_interleaved_raw_mean": 5.277230002555443
+  },
+  "evaluation": "3 folds, each withholding an entire concentration level (50,100,200 ppb), 30 source exposures held out",
+  "feature_schema": "per channel: endpoint 840–900 / baseline 0–300 - 1; early 300–360 / baseline - 1; middle 600–660 / baseline - 1",
+  "models": [
+    {
+      "channels": "MQ135_only",
+      "algorithm": "StandardScaler + LogisticRegression(C=0.1)",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "balanced_accuracy": 0.2,
+          "macro_f1": 0.089744
+        },
+        {
+          "withheld_ppb": 100,
+          "balanced_accuracy": 0.3333333333333333,
+          "macro_f1": 0.32381
+        },
+        {
+          "withheld_ppb": 200,
+          "balanced_accuracy": 0.3333333333333333,
+          "macro_f1": 0.22619
+        }
+      ],
+      "mean_balanced_accuracy": 0.2888888888888889
+    },
+    {
+      "channels": "MQ135_only",
+      "algorithm": "StandardScaler + LDA(lsqr,shrinkage=auto)",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "balanced_accuracy": 0.23333333333333334,
+          "macro_f1": 0.120202
+        },
+        {
+          "withheld_ppb": 100,
+          "balanced_accuracy": 0.4666666666666667,
+          "macro_f1": 0.456878
+        },
+        {
+          "withheld_ppb": 200,
+          "balanced_accuracy": 0.3333333333333333,
+          "macro_f1": 0.22619
+        }
+      ],
+      "mean_balanced_accuracy": 0.34444444444444444
+    },
+    {
+      "channels": "full_source_10_channels",
+      "algorithm": "StandardScaler + LogisticRegression(C=0.1)",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "balanced_accuracy": 0.5333333333333333,
+          "macro_f1": 0.457197
+        },
+        {
+          "withheld_ppb": 100,
+          "balanced_accuracy": 0.8,
+          "macro_f1": 0.792989
+        },
+        {
+          "withheld_ppb": 200,
+          "balanced_accuracy": 0.8,
+          "macro_f1": 0.733761
+        }
+      ],
+      "mean_balanced_accuracy": 0.7111111111111111
+    },
+    {
+      "channels": "full_source_10_channels",
+      "algorithm": "StandardScaler + LDA(lsqr,shrinkage=auto)",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "balanced_accuracy": 0.5333333333333333,
+          "macro_f1": 0.510256
+        },
+        {
+          "withheld_ppb": 100,
+          "balanced_accuracy": 0.8666666666666667,
+          "macro_f1": 0.859687
+        },
+        {
+          "withheld_ppb": 200,
+          "balanced_accuracy": 0.9666666666666667,
+          "macro_f1": 0.96633
+        }
+      ],
+      "mean_balanced_accuracy": 0.7888888888888889
+    }
+  ],
+  "previous_report": "docs/research/V6-CHEMCORE-UCI1081-REAL-DATA-PILOT-2026-10-29_AR.md",
+  "previous_results_invalid": true,
+  "scientific_warnings": [
+    "Not a Tank experiment or Tank G3",
+    "No calibration/physical ppm validated",
+    "MQ135 only is a model match, not an identical electronic measurement chain",
+    "One research study and its concentration holds do not establish day/device independence",
+    "Raw UCI archive not stored in GitHub; original source ZIP required for full reproduction"
+  ],
+  "corrected_benchmark_script": "research/chemcore_v6/benchmarks/uci1081_v6_benchmark.py"
+}
