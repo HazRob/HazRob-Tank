@@ -1,6 +1,6 @@
 # V6-003 — دراسة إضافة بصمات إحماء MQ ومكتبات Bosch BME688/BME690 إلى ChemCore Tank
 
-**التاريخ:** 2026-10-29 · **حالة التصميم:** `SOURCE_REVIEWED / EXPERIMENTAL_FEATURE_TRACK_APPROVED_FOR_RESEARCH_ONLY` · **الفرع:** `feature/tank-v6-implementation`  
+**التاريخ:** 2026-10-29 · **حالة التصميم:** `DEFERRED_BY_OWNER_UNTIL_AFTER_CHEMCORE_V6_MASTER_PLAN` · **الفرع:** `feature/tank-v6-implementation`  
 **النطاق:** بحث علمي + أداة تسجيل وميزات مبكرة منفصلة + مراجعة توفر المكتبات. **لا تغيير لسخان MQ ولا لمراحل R0 أو نتائج الاستدلال المعتمدة في التطبيق.**
 
 ## ملخص القرار الفني
@@ -79,5 +79,7 @@
 `G-T07` دليل عدم التراجع/إيقاف الطوارئ وCI وAndroid runtime قبل تفعيل المكون.  
 `G-T08` تستخدم T/RH/P من BME280 كمتغيرات سياق، وليس GAS measurements.
 
-**المخرجات المخطط لها:** `research/chemcore_v6/startup_transient.py`، `test_startup_transient.py`، سيناريوهات `SIM-T01..T08`، `research/chemcore_v6/results/mq_startup_simulation.json` من GitHub CI، ثم `android/app/.../TankStartupTransientFeatureExtractor.java` تدريجيًا إذا نجحت المواصفات.  
+**قرار المستخدم اللاحق (29 أكتوبر 2026):** تأجيل استحداث هذه التقنية إلى ما بعد إكمال خطة ChemCore Tank V6 الأساسية. يُحفظ هذا المستند كدراسة جدوى فقط؛ لا بدء تسجيل قياسات MQ المبكرة ولا تحميل للـESP32، ولا تغيير للقياسات أو التقرير. جرى إلغاء ربط تسجيل الهاتف من MainActivity وإعادة ملف الـCI السابق. أي إعادة طرح لاحقة تستلزم موافقة جديدة، وتصميم جمع بيانات على Android دون زيادة الحمل على ESP32.
+
+**مخرجات مؤجلة (غير مطلوبة في المسار الأساسي حاليًا):** `research/chemcore_v6/startup_transient.py`، `test_startup_transient.py`، سيناريوهات `SIM-T01..T08`، `research/chemcore_v6/results/mq_startup_simulation.json` من GitHub CI، ثم `android/app/.../TankStartupTransientFeatureExtractor.java` تدريجيًا إذا نجحت المواصفات.  
 **غير منجز ضمن هذه الوثيقة:** تجارب رطوبة/غازات فعلية، benchmark MQ early 60 seconds، تعديل firmware أو إضافة Bosch hardware أو APK.
