@@ -412,3 +412,12 @@ ESP32 Tank / session replays / research adapters (separate provenance)
 **التحقق:** [Android compile + 14 عقدًا برمجيًا CI 40973174549](https://github.com/HazRob/HazRob-Tank/actions/runs/40973174549) **SUCCESS**، و[source verification 40973174716](https://github.com/HazRob/HazRob-Tank/actions/runs/40973174716) **SUCCESS**، المصدر المختبر commit `64cb96f585b6bca9324a0816f3cd178fea3976a4`. هذه اختبارات **تجميع + تحليل ثابت + fixture SQLite**، وليست تشغيل هاتف أو اختبارًا بصريًا للـPDF أو XLSX الناتج. لم يُبنَ APK V6 ولم تُنقل قرارات الجلسات الأساسية من محرك V5؛ الملحق البحثي مستقل للقراءة فقط.
 
 [Checkpoint18 المفصل](V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-18-N06B-APPROVED-REPORTS-2026-10-30_AR.md). **78/80 تنفيذًا بحثيًا جزئيًا، 2 غير منقولتين، Tank G3=0/80**. لا تعديل لتسخين MQ أو الحركة، ولا خلط للأغذية.
+
+
+## 35) Checkpoint19 — N06-C ملفات Excel فعلية واختبار الضغط 100 دورة (30 أكتوبر)
+
+[CI 40975202131](https://github.com/HazRob/HazRob-Tank/actions/runs/40975202131) **SUCCESS** في توليد XLSX حقيقي من شيفرة `V6ResearchXlsxSheets` المستخدمة في Android نفسه مع `SmartXlsxPackage` الأصلي المثبّت، وليس مجرد اختبار نص الشيفرة: ملف 3 دورات بحثية مصطنعة / 42 فرضية / 9,415 بايت، وملف 100 دورة / 2,800 فرضية / 189,126 بايت، مع فحص CRC وOOXML وXML و3 أوراق عربية وتتبعية المصدر ووجود `UNKNOWN` وعدم إنشاء ppm أو G3. ملفات الاختبارية فقط محفوظة Library `libfile_cd53eb0a8694819184dab8b1d17ac3b4`. توجد بصمات الأرشيف والملفات في `research/chemcore_v6/results/n06c_real_xlsx_ooxml_2026-10-30.json`.
+
+أضيف التحقق من SHA الأصلي للدورة **قبل وبعد** القراءة المشتقة في `V6FieldSessionResearchAppendix` لمنع تغير قاعدة البيانات بين لحظة `resolve` وتقرير V6؛ [Android CI 40975800422](https://github.com/HazRob/HazRob-Tank/actions/runs/40975800422) **SUCCESS**، [source CI 40975800321](https://github.com/HazRob/HazRob-Tank/actions/runs/40975800321) **SUCCESS** مع 14 اختبار حدود بنيوية/SQLite.
+
+**اختبار PDF:** workflow اختباري منفصل [40975895004](https://github.com/HazRob/HazRob-Tank/actions/runs/40975895004) يولّد APK موقّعًا بمفتاح مؤقت ***للمحاكي فقط*** من فرع مصدر أساس Android ويستدعي مولّد صفحة PDF الفعلي ثم `PdfRenderer` لثلاث صفحات؛ لا تُعتمد النتيجة حتى يتحقق run/artifact. [Checkpoint19](V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-19-N06C-REAL-REPORT-OUTPUTS-2026-10-30_AR.md). لم يجرِ اختبار تصدير **جلسة معتمدة حقيقية من SQLite داخل التطبيق** ولا إصدار APK V6 إنتاجي، ولا اعتماد G3. الحالة العلمية 78/80 جزئية، اثنتان غير منقولتين، G3=0/80. الأغذية مستقلة.
