@@ -33,7 +33,7 @@ jobs:
           python --version
       - name: Compile V6 research source and tests
         run: |
-          python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/peer_r0_audit.py research/chemcore_v6/g2_portfolio_audit.py research/chemcore_v6/tests/test_g2_portfolio_audit.py research/chemcore_v6/tests/test_source_audit.py research/chemcore_v6/tests/test_peer_r0_audit.py
+          python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/peer_r0_audit.py research/chemcore_v6/g2_portfolio_audit.py research/chemcore_v6/temporal_simulation.py research/chemcore_v6/tests/test_temporal_simulation.py research/chemcore_v6/tests/test_g2_portfolio_audit.py research/chemcore_v6/tests/test_source_audit.py research/chemcore_v6/tests/test_peer_r0_audit.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -80,6 +80,17 @@ jobs:
           assert report['Tank_G3_measurement_promotions']==0
           assert report['uci270_UCI224_same_dataset_mirror'] is True
           print('Historical external G2 reports pinned: raw re-execution NOT claimed')
+          PY
+      - name: Run explicitly synthetic temporal SIM-B scenario suite
+        run: |
+          python research/chemcore_v6/temporal_simulation.py --out research/chemcore_v6/results/temporal_sim_b.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('research/chemcore_v6/results/temporal_sim_b.json').read_text())
+          assert d['scenario_count']==8
+          assert d['Tank_G3_validations']==0 and d['claims_m4'] is False
+          print('SIM-B software tests passed; all coefficients remain assumed synthetic')
           PY
       - name: Report software-only evidence boundary
         run: |
