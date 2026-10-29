@@ -70,6 +70,8 @@ class N06BApprovedReportResearch(unittest.TestCase):
 
     def test_pdf_is_additive_and_v5_pages_not_replaced(self):
         self.assertIn('int total=basePages+cyclePages+v6Pages',self.pdf)
+        self.assertIn('int v6Pages=(v6Count+2)/3',self.pdf)
+        self.assertIn('int start=chunk*3,end=Math.min(start+3,len)',self.pdf)
         self.assertIn('v6ResearchAppendixPage(p.getCanvas(),b,v6ReadOnly,chunk)',self.pdf)
         self.assertIn('executiveOverview(p.getCanvas(),b,all,primary,plan,hazard,cs)',self.pdf)
         self.assertIn('cycleLedgerPage(p.getCanvas(),b,chunk)',self.pdf)
