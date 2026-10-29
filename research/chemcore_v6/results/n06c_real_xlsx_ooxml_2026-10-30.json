@@ -1,0 +1,88 @@
+{
+  "schema": "hazrob-tank-v6-n06c-real-xlsx-artifact-validation/1",
+  "date": "2026-10-30",
+  "research_scope": "Exact Android production V6ResearchXlsxSheets and pinned original SERVOC SmartXlsxPackage executed under independent Java 17, with synthetic approved-session fixtures and XML/ZIP verification.",
+  "github": {
+    "repo": "HazRob/HazRob-Tank",
+    "branch": "feature/tank-v6-implementation",
+    "ci_run": 40975202131,
+    "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/40975202131",
+    "conclusion": "success",
+    "ci_source_commit": "1516c822af01c600be01afc71813763cd2a23652",
+    "original_packager_repo": "sohpany/SERVOC-Android",
+    "original_packager_commit": "6281d3eb7c1c961ce63b0b5e4ae0792874626720",
+    "source_paths": [
+      "android/app/src/main/java/com/servoc/app/report/V6ResearchXlsxSheets.java",
+      "android/app/src/main/java/com/servoc/app/report/SmartFieldSessionXlsxWriter.java",
+      "research/chemcore_v6/tests/java/V6ResearchXlsxExportJvmTest.java"
+    ]
+  },
+  "source_fixture": {
+    "synthetic_fixture_not_tank_measurement": true,
+    "full_approved_sqlite_export_run": false,
+    "original_V5_fixture_sheet_kept": true,
+    "source_only_gas_identity": "UNKNOWN",
+    "new_physical_tank_g3": 0,
+    "reportable_ppm": false,
+    "sensor_models_8_per_cycle": [
+      "MQ2",
+      "MQ3",
+      "MQ4",
+      "MQ5",
+      "MQ7",
+      "MQ8",
+      "MQ9",
+      "MQ135"
+    ],
+    "invalid_or_missing_R0_as_null": true,
+    "reference_candidates_not_certified": true
+  },
+  "artifacts": [
+    {
+      "filename": "V6_RESEARCH_XLSX_TEST_FIXTURE_3_CYCLES.xlsx",
+      "cycles": 3,
+      "source_curve_hypotheses": 42,
+      "xlsx_bytes": 9415,
+      "sha256": "a706501ee3f1d4bcc13e3a9f743cfe45714bbb14111f0df54d94a5421ca91267",
+      "measurement_rows": 42,
+      "hypotheses_rows": 48
+    },
+    {
+      "filename": "V6_RESEARCH_XLSX_STRESS_FIXTURE_100_CYCLES.xlsx",
+      "cycles": 100,
+      "source_curve_hypotheses": 2800,
+      "xlsx_bytes": 189126,
+      "sha256": "00d4728ba909e9da6ab714a303fa3c219e66ced584e4504123fa3c192dd86346",
+      "measurement_rows": 818,
+      "hypotheses_rows": 2806
+    }
+  ],
+  "verification": {
+    "actual_zip_bytes_generated": true,
+    "zip_crc_checked": true,
+    "office_open_xml_well_formed": true,
+    "arabic_sheet_names_verified": true,
+    "preserves_original_v5_sheet_in_fixture": true,
+    "special_xml_characters_escaped": true,
+    "unknown_and_no_ppm_markers": true,
+    "foreign_field_session_guard_rejects": true,
+    "ppm_certification_guard_rejects": true,
+    "g3_guard_rejects": true,
+    "cycle_count_guard_rejects": true,
+    "zero_gas_cycle_no_v6_sheet": true,
+    "stress_100_cycles_pass": true
+  },
+  "archive": {
+    "artifact_id": 12941419764,
+    "artifact_zip_sha256": "94529671fab197ebb1f4a34df5094c7a6ed8aa3f07438466626c6ec0d7b35e27",
+    "library_path": "/HazRob/MQ_Reference_Measurements_2026/HazRob_Tank_V6_N06C_Real_Excel_Fixtures_and_Checks_2026-10-30.zip",
+    "library_id": "libfile_cd53eb0a8694819184dab8b1d17ac3b4"
+  },
+  "limits": [
+    "Not full end-to-end Android read of actual approved SQLite database",
+    "Not visually tested in Microsoft Excel/LibreOffice; OOXML structure verified by XML parser",
+    "Not on Android phone; only production source sheet renderer on JDK",
+    "Not calibrated gas identity, G3, or field ppm",
+    "PDF rendered separately in a pending emulator workflow; do not claim success prematurely"
+  ]
+}
