@@ -128,7 +128,7 @@ public final class Engine {
             // A source model for the same physical channel is counted only once.
             Map<String,Term> unique=new LinkedHashMap<>();
             for(Term term:terms){
-                String key=term.observed.sensorInstance+"\u0000"+term.curve.sensorType;
+                String key=term.observed.sensorInstance+"::"+term.curve.sensorType;
                 if(!unique.containsKey(key))unique.put(key,term);
             }
             for(Term t:unique.values()){
@@ -168,7 +168,7 @@ public final class Engine {
             if(channel==null||channel.sensorType.isEmpty()||!channel.numericallyValid()){
                 invalid++;continue;
             }
-            String key=channel.sensorInstance+"\u0000"+channel.sensorType;
+            String key=channel.sensorInstance+"::"+channel.sensorType;
             channels.put(key,channel);
         }
         List<SourceFit> sourceFits=new ArrayList<>();
