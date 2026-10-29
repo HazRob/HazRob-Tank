@@ -1,0 +1,87 @@
+name: ChemCore Tank V6 N05-G original UCI1081 temporal Java source benchmark
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/chemcore_v6/benchmarks/extract_uci1081_temporal_verified.py'
+      - 'research/chemcore_v6/benchmarks/Uci1081N03GJavaBenchmark.java'
+      - '.github/workflows/chemcore-v6-n05g-temporal-source-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-uci-90-source-exposure-sequences:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify both original source SHA256 values and extract 90 untouched exposure groups
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chemcore-v6-n05g
+          python research/chemcore_v6/benchmarks/extract_uci1081_temporal_verified.py \
+            --out /tmp/chemcore-v6-n05g/verified_sequences.csv \
+            --manifest /tmp/chemcore-v6-n05g/source_manifest.json
+      - name: Compile independent source-only Java research temporal encoders
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chemcore-v6-n05g/classes
+          javac -d /tmp/chemcore-v6-n05g/classes \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/TemporalNeuralResearchV6.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceValidationV6.java \
+            research/chemcore_v6/benchmarks/Uci1081N03GJavaBenchmark.java
+      - name: Three original source heldout concentration folds — CNN, TCN and GRU readouts
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp /tmp/chemcore-v6-n05g/classes \
+            com.hazrob.tank.chemcore.v6.Uci1081N03GJavaBenchmark \
+            /tmp/chemcore-v6-n05g/verified_sequences.csv \
+            /tmp/chemcore-v6-n05g/heldout_predictions.csv \
+            /tmp/chemcore-v6-n05g/fold_metrics.csv
+          python - <<'PY'
+          import csv,collections,pathlib
+          directory=pathlib.Path('/tmp/chemcore-v6-n05g')
+          predictions=list(csv.DictReader((directory/'heldout_predictions.csv').open()))
+          folds=list(csv.DictReader((directory/'fold_metrics.csv').open()))
+          assert len(folds)==18 and len(predictions)==540,(len(folds),len(predictions))
+          c=collections.Counter((r['mode'],r['method'],r['heldout_ppb']) for r in predictions)
+          assert len(c)==18 and set(c.values())=={30}
+          for r in folds:
+            assert r['train_original_exposures']=='60'
+            assert r['test_original_exposures']=='30'
+            assert 0<=float(r['balanced_accuracy'])<=1
+          for key in sorted(set((r['mode'],r['method']) for r in folds)):
+            rows=[r for r in folds if (r['mode'],r['method'])==key]
+            assert len(rows)==3
+            ba=sum(float(r['balanced_accuracy']) for r in rows)/3
+            f1=sum(float(r['macro_f1']) for r in rows)/3
+            print(f'N05G_MEAN mode={key[0]} method={key[1]} balanced_accuracy={ba:.6f} macro_f1={f1:.6f}')
+          print('PASS N05-G original 90 source sequences, 18 concentration holdouts and 540 predictions')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: chemcore-v6-n05g-original-uci1081-temporal-java
+          path: |
+            /tmp/chemcore-v6-n05g/source_manifest.json
+            /tmp/chemcore-v6-n05g/fold_metrics.csv
+            /tmp/chemcore-v6-n05g/heldout_predictions.csv
+          retention-days: 30
+      - name: Claim limitations
+        run: |
+          echo "CNN, TCN and GRU have FROZEN encoders and only trained logistic readouts."
+          echo "UCI does not establish sensor graph topology; GNN is not evaluated here."
+          echo "No physical Tank calibration, G3, ppm, independently characterized day/device or safety identity."
