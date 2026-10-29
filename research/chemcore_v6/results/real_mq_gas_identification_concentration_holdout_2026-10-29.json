@@ -1,0 +1,253 @@
+{
+  "schema": "chemcore-v6-n05i-real-mq-measurements-multiple-gases-concentrations/1",
+  "date": "2026-10-29",
+  "workflow": {
+    "run_id": 40962025285,
+    "conclusion": "success",
+    "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/40962025285",
+    "head_sha": "19f1c72fb0bbaedac61e46c639670d882880bbbe",
+    "artifact_id": 12936685657,
+    "artifact_sha256": "7c1b0303e6c3919f70a2b18736e21daf4ba3b6685814570ac88dd3d3fb527ac5"
+  },
+  "source_mqarray": {
+    "source": "Narkhede et al. MultimodalGasData, DOI 10.17632/zkwgkjkjn9.1; real MQ raw ADC archive copied into HazRob Tank central source snapshots",
+    "repository_path": "research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv",
+    "sha256": "13c2c85cfbb23357a71555b9bc2cbe7dd68e931ffc94df30389c1a4631203745",
+    "original_measurement_rows": 6400,
+    "source_row_offset_index": "0..6399 unique; published original source Serial Number restarts from 0 per class",
+    "source_classes": [
+      "NoGas",
+      "Perfume",
+      "Smoke",
+      "Mixture"
+    ],
+    "source_class_count_each": 1600,
+    "source_sensors": [
+      "MQ2",
+      "MQ3",
+      "MQ5",
+      "MQ6",
+      "MQ7",
+      "MQ8",
+      "MQ135"
+    ],
+    "tank_overlap": [
+      "MQ2",
+      "MQ3",
+      "MQ5",
+      "MQ7",
+      "MQ8",
+      "MQ135"
+    ],
+    "missing_installed_tank_sensors": [
+      "MQ4",
+      "MQ9"
+    ],
+    "quantitative_gas_concentration_available": false,
+    "pure_named_chemical_identity_available": false,
+    "raw_units": "source ADC, not tank kOhm Rs or Rs/R0",
+    "split": "five 320-consecutive-original-row blocks PER CLASS, each held-out once; train on four other blocks/class and embargo 20 rows on either side of heldout block; no source-day/device/session IDs",
+    "model": "V6 ClassicalLearningV6.fitSoftmax; 600 iterations, learning rate 0.16, L2 0.003; training-only standardization",
+    "folds_per_mode": 5,
+    "source_test_rows_per_fold": 1280,
+    "total_source_predictions_per_mode": 6400,
+    "results": [
+      {
+        "mode": "MQ135_only",
+        "balanced_accuracy": 0.6684375,
+        "macro_f1": 0.659925,
+        "accuracy": 0.6684375
+      },
+      {
+        "mode": "TANK_OVERLAP_6_MQ",
+        "balanced_accuracy": 0.7465625,
+        "macro_f1": 0.716459,
+        "accuracy": 0.7465625
+      },
+      {
+        "mode": "SOURCE_ALL_7_MQ",
+        "balanced_accuracy": 0.74921875,
+        "macro_f1": 0.720226,
+        "accuracy": 0.74921875
+      }
+    ],
+    "tank_six_overlap_confusion": {
+      "columns": [
+        "Mixture",
+        "NoGas",
+        "Perfume",
+        "Smoke"
+      ],
+      "rows": [
+        {
+          "actual": "Mixture",
+          "counts": [
+            1588,
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "actual": "NoGas",
+          "counts": [
+            0,
+            804,
+            796,
+            0
+          ]
+        },
+        {
+          "actual": "Perfume",
+          "counts": [
+            0,
+            814,
+            786,
+            0
+          ]
+        },
+        {
+          "actual": "Smoke",
+          "counts": [
+            0,
+            0,
+            0,
+            1600
+          ]
+        }
+      ]
+    },
+    "limitations": [
+      "Label categories are original source classes, NOT four distinct chemically pure analytes.",
+      "No known reference gas ppm at any row; do not use for concentration model training or safety detection limits.",
+      "Serial Number resets per source class, no independent measurement session IDs. 6400 rows likely correlated time sequences; five row blocks per class do not prove independent test days/devices.",
+      "No imputed MQ4/MQ9. Source electronics/RL/R0 unknown so no direct Tank sensor interchangeability."
+    ]
+  },
+  "source_mq135_real_known_gas": {
+    "source": "UCI1081 Gas sensor array low-concentration; 90 source exposures of six gases x three known concentration labels (50,100,200 ppb) x 5 repeats; use ONLY physical MQ135 channel from its ten-source array",
+    "original_source_archive_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+    "original_gsalc_csv_sha256": "d79afe6494903b988de68d4a8ab133167151a1bb620ba413e5cefd15003d07b3",
+    "derived_source_features_sha256": "c3f930b18b4d2ebfab8d691b1e2b5dcbe2ff5f94cd082a2e4fdd46d913a0d6da",
+    "original_exposures": 90,
+    "known_source_gas_labels": [
+      "ethanol",
+      "acetone",
+      "toluene",
+      "ethyl acetate",
+      "isopropanol",
+      "hexane"
+    ],
+    "known_concentrations_ppb": [
+      50,
+      100,
+      200
+    ],
+    "sensor_used": "MQ135 ONLY; source ten array NOT treated as Tank MQ array",
+    "source_mq135_features": [
+      "endpoint from 840:900 / baseline first 300 - 1",
+      "early 300:360 / baseline - 1",
+      "middle 600:660 / baseline - 1"
+    ],
+    "classifier": "Same V6 Softmax as N05, 800 iterations, LR 0.15, L2 0.005, training-only scaler",
+    "classification_holdout": "one whole concentration level left out 60 source rows train, 30 source rows test, repeated x3",
+    "per_concentration": [
+      {
+        "heldout_ppb": 50,
+        "n": 30,
+        "identity_balanced_accuracy": 0.23333333,
+        "median_abs_error_ppb_oracle_known_gas": 28.123317326545,
+        "extrapolation_rows": 28,
+        "interpolation_rows": 2
+      },
+      {
+        "heldout_ppb": 100,
+        "n": 30,
+        "identity_balanced_accuracy": 0.5,
+        "median_abs_error_ppb_oracle_known_gas": 33.53559277574,
+        "extrapolation_rows": 10,
+        "interpolation_rows": 20
+      },
+      {
+        "heldout_ppb": 200,
+        "n": 30,
+        "identity_balanced_accuracy": 0.43333333,
+        "median_abs_error_ppb_oracle_known_gas": 120.14533056345,
+        "extrapolation_rows": 22,
+        "interpolation_rows": 8
+      }
+    ],
+    "identity_mean_balanced_accuracy": 0.38888889,
+    "concentration_method": "TRUE GAS ORACLE CONDITIONED: for each gas, derive two training-concentration mean original MQ135 endpoint/baseline ratios, invert log-ratio versus log-concentration using SourceNumericsV6.estimateUnseen; never uses heldout source concentration in fit",
+    "quantitation_not_end_to_end": true,
+    "all_90_numeric_inversions": 90,
+    "in_domain_interpolation_rows": 30,
+    "out_of_domain_extrapolation_rows": 60,
+    "overall_median_absolute_error_ppb": 54.988155342535,
+    "overall_mean_absolute_error_ppb": 3075.2178306313385,
+    "estimated_ppb_range": [
+      5.661677888867e-12,
+      237750.299559
+    ],
+    "per_gas_median_absolute_error_ppb": {
+      "acetone": {
+        "50": 21.87,
+        "100": 23.59,
+        "200": 193.17
+      },
+      "ethanol": {
+        "50": 11.1,
+        "100": 56.78,
+        "200": 4306.79
+      },
+      "ethyl acetate": {
+        "50": 5.77,
+        "100": 20.77,
+        "200": 74.77
+      },
+      "hexane": {
+        "50": 50,
+        "100": 191.3,
+        "200": 112.97
+      },
+      "isopropanol": {
+        "50": 19.19,
+        "100": 10.91,
+        "200": 108
+      },
+      "toluene": {
+        "50": 739.51,
+        "100": 74.42,
+        "200": 120.04
+      }
+    },
+    "original_source_ppb_below_robust_manufacturer_detection_limits": true,
+    "limitations": [
+      "This regression uses TRUE gas identity provided in advance (oracle), not a realistic unknown-gas-to-ppm pipeline.",
+      "Only one MQ model (MQ135) is present among installed Tank MQ array, and no physical Tank Rs/R0 or shared electrical characterization is available.",
+      "The original ppb exposures are declared below sensing device's reliable detection limit; a finite interpolation is NOT physical validation of ppm sensitivity.",
+      "A significant number of extrapolation estimates are wildly implausible; do not use as operational ppm, exposure warnings or G3 evidence.",
+      "Original source acquisitions do not prove independent days/devices, so results only establish an exploratory research baseline."
+    ]
+  },
+  "artifact_contents": [
+    "mq_source_manifest.json",
+    "uci1081_source_manifest.json",
+    "mq6400_blocked_class_metrics.csv",
+    "mq6400_blocked_predictions.csv",
+    "mq135_six_gas_concentration_holdout_class_metrics.csv",
+    "mq135_six_gas_concentration_holdout_predictions.csv",
+    "mq135_concentration_error_by_exposure.csv"
+  ],
+  "library_backup": "ChemCore_V6_Real_MQ_Gases_Concentrations_2026-10-29.zip",
+  "library_id": "libfile_3db75bf3369481919ebd181c3f9ec59f",
+  "scientific_promotion": {
+    "chemical_identity": false,
+    "quantitative_ppm": false,
+    "open_set_unknown_detection": false,
+    "field_safety": false,
+    "tank_g3_validated_techniques": 0
+  },
+  "food_engine_independence": true,
+  "n06_previous_work_note": "An earlier N06 partial instant V6 routing change exists in the branch; this MQ benchmark did not alter Android instantaneous, approved-session or report code."
+}
