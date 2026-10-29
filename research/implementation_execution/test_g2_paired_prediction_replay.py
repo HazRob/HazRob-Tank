@@ -527,5 +527,59 @@ class PairedPredictionReplayTests(unittest.TestCase):
             result["repeated_exposure_rows_within_declared_physical_samples"])
 
 
+    def test_equal_declared_sample_weight_reveals_pseudoreplication_reversal(self):
+        header = PRED_HEADER.rstrip("\\n") + ",physical_sample_id\\n"
+        # Nine readings of one sample must not outweigh two other samples.
+        pred = "".join(
+            f"e{i},a,A,A,B,s1\\n" for i in range(1, 10)
+        ) + "e10,a,A,B,A,s2\\n" + "e11,b,A,B,A,s3\\n"
+        self.write(pred=pred, pred_header=header,
+                   metrics="a,10,9,1\\nb,1,0,1\\n")
+        diag = self.replay()["declared_physical_sample_equal_weight_diagnostic"]
+        self.assertAlmostEqual(diag["exposure_weighted_delta"], 7 / 11)
+        self.assertAlmostEqual(diag["equal_declared_sample_mean_delta"], -1 / 3)
+        self.assertTrue(diag["sample_vs_exposure_weighted_sign_reversal"])
+        self.assertEqual(
+            [g["distinct_declared_samples"] for g in
+             diag["by_declared_physical_group"]], [2, 1])
+        self.assertEqual(
+            [g["max_exposure_rows_per_sample"] for g in
+             diag["by_declared_physical_group"]], [9, 1])
+        self.assertIn("NOT_G2_OR_G3_APPROVAL", diag["scope"])
+
+    def test_unique_declared_samples_match_exposure_weighting(self):
+        header = PRED_HEADER.rstrip("\\n") + ",physical_sample_id\\n"
+        pred = ("e1,a,A,A,B,s1\\n"
+                "e2,a,B,A,B,s2\\n"
+                "e3,b,A,A,A,s3\\n"
+                "e4,b,B,A,A,s4\\n")
+        self.write(pred=pred, pred_header=header)
+        diag = self.replay()["declared_physical_sample_equal_weight_diagnostic"]
+        self.assertEqual(diag["equal_declared_sample_mean_delta"],
+                         diag["exposure_weighted_delta"])
+        self.assertFalse(diag["sample_vs_exposure_weighted_sign_reversal"])
+
+    def test_sample_equal_weight_diagnostic_order_invariant(self):
+        header = PRED_HEADER.rstrip("\\n") + ",physical_sample_id\\n"
+        pred = ("e1,a,A,A,B,عينة-١\\n"
+                "e2,a,A,A,B,عينة-١\\n"
+                "e3,a,B,A,B,عينة-٢\\n"
+                "e4,b,B,B,A,عينة-٣\\n")
+        self.write(pred=pred, pred_header=header,
+                   metrics="a,3,2,1\\nb,1,1,0\\n")
+        before = self.replay()["declared_physical_sample_equal_weight_diagnostic"]
+        lines = self.pred.read_text(encoding="utf-8").splitlines(keepends=True)
+        self.pred.write_text(lines[0] + "".join(reversed(lines[1:])),
+                             encoding="utf-8")
+        after = self.replay()["declared_physical_sample_equal_weight_diagnostic"]
+        self.assertEqual(before, after)
+
+    def test_missing_physical_sample_ids_does_not_impute_sample_weights(self):
+        result = self.replay()
+        self.assertIsNone(
+            result["declared_physical_sample_equal_weight_diagnostic"])
+
+
+
 if __name__ == "__main__":
     unittest.main()
