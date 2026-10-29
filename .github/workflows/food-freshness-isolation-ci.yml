@@ -1,0 +1,34 @@
+name: HazRob Tank food freshness module isolation
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/food_freshness/**'
+      - 'android/app/src/main/assets/food_freshness/**'
+      - 'android/app/src/main/assets/chemcore_v6/**'
+      - 'research/chemcore_v6/source_manifest.json'
+      - 'research/chemcore_v6/source_audit.py'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/**'
+      - '.github/workflows/food-freshness-isolation-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  separate-food-from-gas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify archival food profiles remain byte-identical and outside gas ChemCore
+        run: |
+          python -m unittest discover -s research/food_freshness -p 'test_*.py' -v
+      - name: Explain boundary
+        run: |
+          echo "Food freshness is a separate feature, not a gas ChemCore source"
+          echo "59 food headspace profiles are not gas ppm curves, and cannot enter gas candidate ranking"
