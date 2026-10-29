@@ -1,3 +1,14 @@
+## 2026-10-29 — G2 paired true-reference-class imbalance diagnostic (375/375 CI)
+
+- Resumed from `4db7c8bd3f291c247066c67c20d201e20e764f20`; verified its 20/20 GitHub Actions success. Pinned central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries / 14 external datasets), source-ready 0/14, independent evidence `records=[]`.
+- Research-only `g2_paired_prediction_replay.py` now recomputes per-true-reference-class paired outcomes and equal-class mean model-minus-baseline accuracy. This flags majority-class masking of minority-class regression; it is descriptive, NOT label authentication, independent physical validation, a significance test, or G2/G3 promotion.
+- Three synthetic regression tests: exact per-class paired reconciliation, majority/minority weighting-direction reversal, row-order invariance with Arabic labels. Initial commit `195b18585c647f821e890aa4f6abe76405d3afbc`; corrected synthetic CSV fixture newline escapes in `72c738bb993f67487a37cb7b961dd9c8dfc24c68`.
+- [G2 CI #40930981571](https://github.com/HazRob/HazRob-Tank/actions/runs/40930981571), job `123649012511`: **375/375 PASS**, byte-identical audit and triage replay PASS, publication gate PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact `12922332228`.
+- Evidence note: `G2_PAIRED_TRUE_REFERENCE_CLASS_IMBALANCE_DIAGNOSTICS_2026-10-29_AR.md`. Research branch only; no ChemCore Stable, Android, firmware or `main` changes. No scientific G2/G3 approval.
+- Next: verify CI on documentation checkpoint, then acquire original source-qualified independent physical exposures with traceable concentrations, device/session/exposure provenance and preregistered blind group holdouts.
+
+---
+
 ## 2026-10-29 — G2 full CSV provenance semantic digest (372/372 CI)
 
 - Resumed from `9c3e877c9d456bf55de3c802c5097136faa331c8`; verified prior 20/20 CI success. Central reference catalogue remains pinned at blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries / 14 external measurement datasets); readiness 0/14, independent evidence `records=[]`.
