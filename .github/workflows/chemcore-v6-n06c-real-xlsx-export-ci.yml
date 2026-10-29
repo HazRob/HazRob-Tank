@@ -1,0 +1,123 @@
+name: ChemCore V6 N06-C real XLSX OOXML export approved research sheets
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/report/V6ResearchXlsxSheets.java'
+      - 'android/app/src/main/java/com/servoc/app/report/SmartFieldSessionXlsxWriter.java'
+      - 'research/chemcore_v6/tests/java/V6ResearchXlsxExportJvmTest.java'
+      - '.github/workflows/chemcore-v6-n06c-real-xlsx-export-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-v6-xlsx-export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Download exact SHA256-pinned JSON Java runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v6-n06c
+          curl --fail --location --retry 3 --max-time 45 \
+            "https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar" \
+            -o /tmp/v6-n06c/json.jar
+          echo '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed  /tmp/v6-n06c/json.jar' | sha256sum -c -
+      - name: Compile exact actual approved-sheet source and original production OOXML packager
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v6-n06c/classes
+          javac -cp /tmp/v6-n06c/json.jar -d /tmp/v6-n06c/classes \
+            source/app/src/main/java/com/servoc/app/report/SmartXlsxPackage.java \
+            tank/android/app/src/main/java/com/servoc/app/report/V6ResearchXlsxSheets.java \
+            tank/research/chemcore_v6/tests/java/V6ResearchXlsxExportJvmTest.java
+      - name: Generate real ZIP-based production XLSX 3-cycle and 100-cycle stress fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -Xmx700m -cp /tmp/v6-n06c/classes:/tmp/v6-n06c/json.jar \
+            com.servoc.app.report.V6ResearchXlsxExportJvmTest \
+            /tmp/v6-n06c/V6_RESEARCH_XLSX_TEST_FIXTURE_3_CYCLES.xlsx \
+            /tmp/v6-n06c/V6_RESEARCH_XLSX_STRESS_FIXTURE_100_CYCLES.xlsx
+      - name: Validate OOXML workbook names, Arabic text, XML, reference provenance, nulls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import zipfile,xml.etree.ElementTree as ET,hashlib,json,pathlib
+          root=pathlib.Path('/tmp/v6-n06c')
+          S='{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
+          def inspect(path,minimum_sensors,minimum_fits):
+              with zipfile.ZipFile(path) as z:
+                  assert z.testzip() is None,'XLSX CRC failed'
+                  names=set(z.namelist())
+                  required={'[Content_Types].xml','_rels/.rels','xl/workbook.xml',
+                            'xl/_rels/workbook.xml.rels','xl/styles.xml',
+                            'xl/worksheets/sheet1.xml','xl/worksheets/sheet2.xml','xl/worksheets/sheet3.xml'}
+                  assert required.issubset(names),required-names
+                  for p in required: ET.fromstring(z.read(p))
+                  wb=ET.fromstring(z.read('xl/workbook.xml'))
+                  names=[e.attrib['name'] for e in wb.findall('.//'+S+'sheet')]
+                  assert names==['V5 محفوظة','V6 بحثي غازات','V6 مصادر وتعارضات'],names
+                  legacy=ET.fromstring(z.read('xl/worksheets/sheet1.xml'))
+                  sensors=ET.fromstring(z.read('xl/worksheets/sheet2.xml'))
+                  fits=ET.fromstring(z.read('xl/worksheets/sheet3.xml'))
+                  def words(element):return [x.text or '' for x in element.iter(S+'t')]
+                  a,b,c=map(words,(legacy,sensors,fits))
+                  assert 'LEGACY_V5_APPROVED_MARKER' in a
+                  assert 'UNKNOWN' in b and 'UNKNOWN' in c
+                  assert any('موقع' in x for x in b)
+                  assert 'FS-TEST-ONLY' in b and 'FS-TEST-ONLY' in c
+                  assert 'SOURCE-<0>&MQ0' in c
+                  assert not any('G3=true' in x or 'PPM CERTIFIED' in x for x in b+c)
+                  sensor_rows=sensors.findall('.//'+S+'sheetData/'+S+'row')
+                  fit_rows=fits.findall('.//'+S+'sheetData/'+S+'row')
+                  assert len(sensor_rows)>=minimum_sensors,len(sensor_rows)
+                  assert len(fit_rows)>=minimum_fits,len(fit_rows)
+                  assert not any(x.lower() in ('nan','null') for x in b+c)
+                  return {'name':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+                          'bytes':path.stat().st_size,'sheets':names,
+                          'measurement_sheet_rows':len(sensor_rows),
+                          'source_hypothesis_sheet_rows':len(fit_rows),
+                          'xml_crc_checked':True,'fixture_not_real_field_data':True}
+          data=[inspect(root/'V6_RESEARCH_XLSX_TEST_FIXTURE_3_CYCLES.xlsx',24,42),
+                inspect(root/'V6_RESEARCH_XLSX_STRESS_FIXTURE_100_CYCLES.xlsx',800,2800)]
+          manifest={'schema':'hazrob-v6-n06c-real-OOXML-report-export/1',
+              'code':'Actual V6ResearchXlsxSheets and original pinned SmartXlsxPackage',
+              'baseline_commit':'6281d3eb7c1c961ce63b0b5e4ae0792874626720',
+              'workbooks':data,'gas_identity':'UNKNOWN','ppm_reportable':False,
+              'physical_tank_g3':0,'new_apk_built':False,
+              'limits':['Fixture source records only, not actual approved SQLite export',
+                        'Android PDF render not tested','Tank physical gas G3 not tested']}
+          (root/'n06c_real_xlsx_manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+          for d in data:print('PASS PRODUCTION_XLSX',json.dumps(d,ensure_ascii=False))
+          print('PASS N06C REAL OOXML XLSX AND 100-CYCLE STRESS, UNKNOWN, G3=0')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: HazRob-V6-N06C-Real-Xlsx-Ooxml-Output-Verified
+          path: |
+            /tmp/v6-n06c/V6_RESEARCH_XLSX_TEST_FIXTURE_3_CYCLES.xlsx
+            /tmp/v6-n06c/V6_RESEARCH_XLSX_STRESS_FIXTURE_100_CYCLES.xlsx
+            /tmp/v6-n06c/n06c_real_xlsx_manifest.json
+          retention-days: 30
