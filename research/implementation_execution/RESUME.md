@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 publication acquisition-action/caveat integrity (305/305 CI)
+
+- Resumed from research HEAD `9ec4e2a3f058e3f231757f9329a85b875fa45d70` (20/20 previous CI successes). Reverified central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries/14 external datasets), pinned source matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (0/14 ready) and independent evidence `records: []`.
+- Fixed rehashed triage publication gap: acquisition instructions can no longer be altered/omitted while retaining valid blockers and counts; unknown source blockers and forged scientific caveat fail closed. All five input SHA256 fields are required and syntactically validated. Added five synthetic negative controls.
+- Research code/test SHA `4df264c736a5a259319052d41ed72ccd3fdb3c35`: [G2 Actions #40811858097](https://github.com/HazRob/HazRob-Tank/actions/runs/40811858097), job `123243777899`: **305/305 PASS**; publication gate PASS; audit `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact `12870458175`, SHA256 `6ac8e8826c9d32e091d2338b7423eaa83ab75e856d76f4b90b5a79bfffcc5971`.
+- Research branch only: `g2_acquisition_triage.py`, `g2_artifact_publish_gate.py`, `test_g2_artifact_publish_gate.py`, plus this evidence note and RESUME. No Stable/Android/firmware changes; no G2/G3 scientific promotion. See `G2_PUBLICATION_ACQUISITION_ACTION_INTEGRITY_2026-10-29_AR.md`.
+- Next: verify CI on documentation checkpoint. Acquire independently measured original physical exposures, traceable concentration references, device/session/exposure IDs, and preregistered grouped blind holdouts before any scientific promotion.
+
+---
+
 ## 2026-10-29 — G2 publication blocker-lineage and frequency consistency (300/300 CI)
 
 - Resumed from research HEAD `bd3b925be7323fbe0c60ebb5039dbab8c87e41fc` after verifying prior G2 success (296/296) and final documentation run #40800046451. Re-read central `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json`: Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, 80 entries including 14 external measurement datasets. Pinned source matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` remains 0/14 review-ready; independent evidence register `records: []`.
