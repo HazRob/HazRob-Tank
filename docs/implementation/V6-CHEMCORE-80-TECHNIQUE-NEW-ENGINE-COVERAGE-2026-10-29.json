@@ -4,8 +4,8 @@
   "scoping": "NEW independent com.hazrob.tank.chemcore.v6 package; food freshness and prior inference code excluded",
   "counts": {
     "total": 80,
-    "partial": 74,
-    "not_yet_ported": 6,
+    "partial": 78,
+    "not_yet_ported": 2,
     "fully_implemented_and_device_validated": 0
   },
   "available_numerical_references": {
@@ -692,37 +692,45 @@
       "id": "08.1",
       "name": "1D-CNN",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalNeuralResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-G frozen architecture encoder + fitted binary logistic readout research ONLY. Actual width-three 1D temporal convolutions (four fixed kernels/channel) with ReLU average pooling; TRAINED logistic binary source readout. Filter weights frozen, no end-to-end CNN backprop; source holdout CI 40958081282. Java synthetic 47 assertions, independent CI 40958218641 SUCCESS, 2120 cumulative JDK assertions; Android compile-only 40957697411 PASS and food isolation 40957697278 PASS. Physical Tank G3 0/80; not an end-to-end trained neural network or device-qualified model."
     },
     {
       "id": "08.2",
       "name": "TCN",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalNeuralResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-G frozen architecture encoder + fitted binary logistic readout research ONLY. Three causal dilated temporal convolution layers (d=1,2,4), deterministic fixed filters, terminal/mean features, TRAINED logistic head. Prefix causality tested; convolution layers not learned. Original UCI sequence folds CI 40958081282. Java synthetic 47 assertions, independent CI 40958218641 SUCCESS, 2120 cumulative JDK assertions; Android compile-only 40957697411 PASS and food isolation 40957697278 PASS. Physical Tank G3 0/80; not an end-to-end trained neural network or device-qualified model."
     },
     {
       "id": "08.3",
       "name": "LSTM/GRU",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalNeuralResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-G frozen architecture encoder + fitted binary logistic readout research ONLY. Scalar per-channel genuine GRU reset/update/candidate gate equations over whole source sequence with fixed coefficients and learned logistic head; no BPTT or learned gate matrices. Future leakage regression and original UCI folds CI 40958081282. Java synthetic 47 assertions, independent CI 40958218641 SUCCESS, 2120 cumulative JDK assertions; Android compile-only 40957697411 PASS and food isolation 40957697278 PASS. Physical Tank G3 0/80; not an end-to-end trained neural network or device-qualified model."
     },
     {
       "id": "08.4",
       "name": "GNN",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "TemporalNeuralResearchV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-G frozen architecture encoder + fitted binary logistic readout research ONLY. Two-hop undirected sensor graph message-passing with fixed propagator and TRAINED logistic head; requires externally specified physical sensor graph, never invents GNN adjacency. Numerical graph tests only; UCI missing validated source graph, NOT benchmarked. Java synthetic 47 assertions, independent CI 40958218641 SUCCESS, 2120 cumulative JDK assertions; Android compile-only 40957697411 PASS and food isolation 40957697278 PASS. Physical Tank G3 0/80; not an end-to-end trained neural network or device-qualified model."
     },
     {
       "id": "08.5",
@@ -1013,5 +1021,5 @@
       "Source datasets and sensor feature spaces remain distinct"
     ]
   },
-  "last_checkpoint": "N03-F ten partial supervised learning/evidence methods, 58 new Java checks / 2073 total CI 40956582213 SUCCESS; independent original UCI1081 N05-F benchmark in workflow chemcore-v6-n05f-uci1081-java.yml; 74 partial / 6 unported / 0 Tank G3 / no V6 APK."
+  "last_checkpoint": "Checkpoint12 N03-G: 4 frozen-encoder/learned-readout temporal neural research methods, 47 new JDK assertions, cumulative 2120, CI 40958218641 PASS; real original UCI temporal 18 folds/540 predictions CI 40958081282 PASS; 78 partial, 2 unported (01.4 heater cycles deferred; 09.6 autonomous motion safety), 0 Tank G3, no V6 APK."
 }
