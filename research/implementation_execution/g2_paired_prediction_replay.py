@@ -62,6 +62,21 @@ def _read_csv(path, required):
     return raw, rows
 
 
+def _full_table_semantic_sha256(rows):
+    """Bind EVERY CSV field, including optional provenance, independent of order.
+
+    This detects edits to declared device/session/reference metadata that do
+    not affect scored labels. It does NOT authenticate that metadata.
+    """
+    canonical_rows = [
+        [[key, row[key]] for key in sorted(row)]
+        for row in rows
+    ]
+    payload = json.dumps(sorted(canonical_rows), ensure_ascii=False,
+                         separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def _integer(value):
     try:
         number = int(value)
@@ -193,6 +208,16 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
             json.dumps(sorted(outcome_rows), ensure_ascii=False,
                        separators=(",", ":")).encode("utf-8")
         ).hexdigest(),
+        "prediction_full_rows_semantic_sha256": (
+            _full_table_semantic_sha256(predictions)
+        ),
+        "metrics_full_rows_semantic_sha256": (
+            _full_table_semantic_sha256(metrics)
+        ),
+        "full_row_digest_scope": (
+            "ALL_DECLARED_CSV_FIELDS_INCLUDING_OPTIONAL_PROVENANCE;"
+            "NOT_AUTHENTICATION_OF_PHYSICAL_SOURCE_OR_G2_G3_APPROVAL"
+        ),
         "predictions_csv_sha256": hashlib.sha256(predictions_raw).hexdigest(),
         "metrics_per_group_csv_sha256": hashlib.sha256(metrics_raw).hexdigest(),
         "exposure_group_assignment_sha256": hashlib.sha256(
