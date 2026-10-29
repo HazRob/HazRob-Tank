@@ -9,6 +9,9 @@ on:
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6SourceCompatibility.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6EvidenceConsensus.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6CurveKernel.java'
+      - 'android/app/src/main/java/com/servoc/app/measurement/TankV6StartupWindow.java'
+      - 'android/app/src/main/java/com/servoc/app/measurement/PhoneMqStartupRecorder.java'
+      - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
       - '.github/workflows/chemcore-v6-scientific-ci.yml'
   pull_request:
     paths:
@@ -48,13 +51,31 @@ jobs:
             android/app/src/main/java/com/servoc/app/chemcore/TankV6EvidenceConsensus.java \
             research/chemcore_v6/tests/java/TankV6EvidenceConsensusTest.java \
             android/app/src/main/java/com/servoc/app/chemcore/TankV6CurveKernel.java \
-            research/chemcore_v6/tests/java/TankV6CurveKernelTest.java
+            research/chemcore_v6/tests/java/TankV6CurveKernelTest.java \
+            android/app/src/main/java/com/servoc/app/measurement/TankV6StartupWindow.java \
+            research/chemcore_v6/tests/java/TankV6StartupWindowTest.java
+          java -cp /tmp/tank-v6-chemcore-classes \
+            com.servoc.app.measurement.TankV6StartupWindowTest
           java -cp /tmp/tank-v6-chemcore-classes \
             com.servoc.app.chemcore.TankV6SourceCompatibilityTest
           java -cp /tmp/tank-v6-chemcore-classes \
             com.servoc.app.chemcore.TankV6EvidenceConsensusTest
           java -cp /tmp/tank-v6-chemcore-classes \
             com.servoc.app.chemcore.TankV6CurveKernelTest
+      - name: Compile Android phone-private recording adapter against Android SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          if test ! -f "$SDK/platforms/android-36/android.jar"; then
+            "$SDK/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36"
+          fi
+          mkdir -p /tmp/tank-v6-phone-android-compile
+          javac -cp "$SDK/platforms/android-36/android.jar" \
+            -d /tmp/tank-v6-phone-android-compile \
+            android/app/src/main/java/com/servoc/app/measurement/TankV6StartupWindow.java \
+            android/app/src/main/java/com/servoc/app/measurement/PhoneMqStartupRecorder.java
+          echo "Android compile-only PASS; not an APK or runtime test"
       - name: Run all V6 source and peer-R0 regression tests
         run: |
           python -m unittest discover -s research/chemcore_v6/tests -p 'test_*.py' -v
