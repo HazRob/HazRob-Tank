@@ -3,6 +3,7 @@ import argparse
 from collections import Counter
 import hashlib
 import json
+import math
 import re
 from pathlib import Path
 from g2_acquisition_triage import (SOURCE_ACTIONS, CAVEAT, build_triage,
@@ -18,9 +19,14 @@ def _strict(path):
         return result
     def reject(_):
         raise ValueError("G2_PUBLISH_NONFINITE")
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("G2_PUBLISH_NONFINITE")
+        return number
     data = Path(path).read_bytes()
     obj = json.loads(data.decode("utf-8"), object_pairs_hook=unique,
-                     parse_constant=reject)
+                     parse_constant=reject, parse_float=finite_float)
     if not isinstance(obj, dict):
         raise ValueError("G2_PUBLISH_NOT_OBJECT")
     return data, obj
