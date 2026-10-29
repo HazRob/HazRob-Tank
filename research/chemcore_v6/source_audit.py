@@ -55,8 +55,8 @@ def verify_source_snapshot(manifest_path: Path = SOURCE_MANIFEST,
                            root: Path = SNAPSHOTS) -> dict[str, Any]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     rows = manifest["research_sources"]["copies"]
-    if len(rows) != 14 or len({r["filename"] for r in rows}) != len(rows):
-        raise EvidenceError("expected fourteen unique canonical source files")
+    if len(rows) != 13 or len({r["filename"] for r in rows}) != len(rows):
+        raise EvidenceError("expected thirteen gas-only canonical source files")
     names = {f.name for f in root.iterdir() if f.is_file()}
     expected = {row["filename"] for row in rows}
     if names != expected:
@@ -278,12 +278,9 @@ def audit(root: Path = SNAPSHOTS, manifest: Path = SOURCE_MANIFEST) -> dict[str,
     scaled = [{"curve_id": c.index, "sensor": c.sensor, "label": c.gas_label,
                "output_scale": c.output_scale} for c in curves if c.output_scale != 1]
     fp = json.loads((root / "identification_fingerprint_priors_v1.json").read_text())
-    food = json.loads((root / "food_freshness_headspace_fingerprints_v1.json").read_text())
     uci = json.loads((root / "uci_mq135_lowconcentration_transfer_fingerprints_v1.json").read_text())
     if fp["total_numeric_fingerprint_families"] != 13:
         raise EvidenceError("fingerprint family count changed")
-    if len(food["sessions"]) != 59 or food.get("quantitative_ppm") is not False:
-        raise EvidenceError("headspace semantics changed")
     if len(uci["records"]) != 18 or uci["overlap_count"] != 1:
         raise EvidenceError("UCI transfer source semantics changed")
     sensitivity = r0_sensitivity_simulation(curves)
@@ -296,7 +293,6 @@ def audit(root: Path = SNAPSHOTS, manifest: Path = SOURCE_MANIFEST) -> dict[str,
         "nonunit_output_scales": scaled,
         "fingerprint_class_audit": fingerprints,
         "derived_source_fingerprint_families": fp["total_numeric_fingerprint_families"],
-        "food_headspace_session_count": len(food["sessions"]),
         "UCI1081_derived_mq135_gas_level_records": len(uci["records"]),
         "synthetic_R0_counterfactual_cases": len(sensitivity),
         "synthetic_R0_out_of_domain": sum(e["state"] != "IN_DOMAIN" for e in sensitivity),
