@@ -133,6 +133,59 @@ class PairedPredictionReplayTests(unittest.TestCase):
         self.assertEqual(result["paired_model_only_correct"], 1)
         self.assertEqual(result["paired_baseline_only_correct"], 1)
 
+    def test_paired_outcomes_reconciled_for_each_declared_group(self):
+        result = self.replay()
+        groups = result["paired_outcomes_by_declared_physical_group"]
+        self.assertEqual([g["group_id"] for g in groups], ["a", "b"])
+        self.assertEqual(groups[0], {
+            "group_id": "a", "exposures": 2,
+            "both_correct": 0, "both_wrong": 0,
+            "model_only_correct": 1, "baseline_only_correct": 1,
+            "paired_net_model_advantage_count": 0,
+        })
+        self.assertEqual(groups[1], {
+            "group_id": "b", "exposures": 2,
+            "both_correct": 1, "both_wrong": 1,
+            "model_only_correct": 0, "baseline_only_correct": 0,
+            "paired_net_model_advantage_count": 0,
+        })
+
+    def test_semantic_prediction_fingerprint_is_order_invariant(self):
+        original = self.replay()
+        self.write(pred="".join(reversed(PRED_ROWS.splitlines(keepends=True))),
+                   metrics="b,2,1,1\\na,2,1,1\\n")
+        reordered = self.replay()
+        self.assertEqual(original["prediction_rows_semantic_sha256"],
+                         reordered["prediction_rows_semantic_sha256"])
+        self.assertEqual(original["paired_outcomes_by_declared_physical_group"],
+                         reordered["paired_outcomes_by_declared_physical_group"])
+
+    def test_semantic_fingerprint_detects_wrong_label_changes_without_count_change(self):
+        original = self.replay()
+        self.write(pred=PRED_ROWS.replace("e2,a,B,A,B", "e2,a,B,C,B"))
+        changed = self.replay()
+        self.assertEqual(original["exposure_group_assignment_sha256"],
+                         changed["exposure_group_assignment_sha256"])
+        self.assertEqual(original["paired_outcomes_by_declared_physical_group"],
+                         changed["paired_outcomes_by_declared_physical_group"])
+        self.assertNotEqual(original["prediction_rows_semantic_sha256"],
+                            changed["prediction_rows_semantic_sha256"])
+
+    def test_per_group_opposing_discordance_not_hidden_by_pooled_tie(self):
+        # Two groups have opposite paired net advantages: pooled delta zero.
+        self.write(pred=("e1,a,A,A,B\\n"
+                         "e2,a,B,B,A\\n"
+                         "e3,b,A,B,A\\n"
+                         "e4,b,B,A,B\\n"),
+                   metrics="a,2,2,0\\nb,2,0,2\\n")
+        result = self.replay()
+        self.assertEqual(result["observed_delta"], 0)
+        groups = result["paired_outcomes_by_declared_physical_group"]
+        self.assertEqual([g["paired_net_model_advantage_count"] for g in groups],
+                         [2, -2])
+        self.assertEqual(result["paired_model_only_correct"], 2)
+        self.assertEqual(result["paired_baseline_only_correct"], 2)
+
     def test_invalid_protocol_rejected_by_shared_cluster_kernel(self):
         with self.assertRaisesRegex(ValueError, "PROTOCOL_INVALID"):
             replay_paired_predictions(self.pred, self.metrics, resamples=999)
