@@ -69,3 +69,11 @@
 - **CI** [40912404109](https://github.com/HazRob/HazRob-Tank/actions/runs/40912404109), head `42732b2cd51b3e1d0567cda686d0291f8b75a909`: **30 Python tests PASS + 31 Java assertions PASS**, 387/387 numerical model self-check, 172 R0 counterfactuals, 94 out-of-domain rejected. Artifact `12914686568`.
 - **Durable resume point** `docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md` and JSON execution tracker (P00,P01,P02,P03,P04,P05 partial; P06–P11 not started). **No V6 APK built, no field firmware changed, no G3.**
 - **Next work** read-only V5-replay and P03 schema/data migration, then P04 additional SIM-B, P05 UCI270/308/309 real raw sampling, followed by P06 engine integration.
+
+## 2026-10-29 — V6-002 executable implementation checkpoint after user status request
+
+- **GitHub CI run:** `40912404109`, **success**, head commit `42732b2cd51b3e1d0567cda686d0291f8b75a909`.
+- **Completed before this status check:** 14/14 pinned HR069 snapshots verified; 3 pinned peer R0 studies; 30/30 Python source/calibration tests passed; Java/JDK `TankV6SourceCompatibility` contract compiled and its standalone tests executed successfully; 387 self-consistent curve roundtrips; 172 synthetic R0 counterfactuals (94 out-of-domain); external UCI1081 90-exposure research pilot documented.
+- **V6 source:** `android/app/src/main/java/com/servoc/app/chemcore/TankV6SourceCompatibility.java` rejects incompatible R0 definitions, invalid sensor/source domain, and reportable M4 absent independently verified G3 evidence. **Not yet wired into Android production inference.**
+- **Research continuity:** detailed checkpoint `docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md`, machine-readable `docs/implementation/V6-CHEMCORE-EXECUTION-TRACKER.json`.
+- **Not done:** physical RL/ADC/heater verification; remaining multiple-source benchmark program; core fusion upgrade; application-wide Gradle test/APK; actual Tank G3. No unattended background execution.
