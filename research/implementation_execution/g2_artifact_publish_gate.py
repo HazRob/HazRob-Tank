@@ -1,5 +1,6 @@
 """Research-only G2 publication guard: never a scientific qualification."""
 import argparse
+from collections import Counter
 import hashlib
 import json
 from pathlib import Path
@@ -76,6 +77,34 @@ def verify_publication(audit_path, triage_path, manifest_path):
             or any(type(value) is not int or value != expected_value
                    for value, expected_value in expected)):
         raise ValueError("G2_PUBLISH_COUNTS_OR_STATUS_MISMATCH")
+    # A self-consistent, rehashed triage must not rewrite the underlying
+    # audit's per-technique blockers, nor its blocker-frequency summaries.
+    # Publication is a separate trust boundary from triage generation.
+    def blockers(row, key):
+        values = row.get(key)
+        if (not isinstance(values, list)
+                or any(not isinstance(x, str) or not x.strip() for x in values)
+                or len(values) != len(set(values))):
+            raise ValueError("G2_PUBLISH_BLOCKERS_INVALID:" + key)
+        return set(values)
+
+    audit_by_id = {row["id"]: row for row in records}
+    technique_counts = Counter()
+    for row in techniques:
+        actual = blockers(row, "blockers")
+        original = blockers(audit_by_id[row["id"]], "issues")
+        if actual != original or (row["status"] == "G2_BLOCKED") != bool(actual):
+            raise ValueError("G2_PUBLISH_TECHNIQUE_BLOCKER_MISMATCH:" + row["id"])
+        technique_counts.update(actual)
+    source_counts = Counter()
+    for row in sources:
+        actual = blockers(row, "blockers")
+        if bool(actual) == row["ready_for_source_review"]:
+            raise ValueError("G2_PUBLISH_SOURCE_BLOCKER_MISMATCH:" + row["id"])
+        source_counts.update(actual)
+    if (triage.get("technique_blocker_counts") != dict(technique_counts)
+            or triage.get("source_blocker_counts") != dict(source_counts)):
+        raise ValueError("G2_PUBLISH_BLOCKER_FREQUENCY_MISMATCH")
     return {"g2_blocked": blocked, "g2_pass_candidates": candidates,
             "source_blocked": source_blocked}
 

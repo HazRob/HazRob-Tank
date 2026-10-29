@@ -18,14 +18,19 @@ class PublishGateTests(unittest.TestCase):
         self.a = {"schema": "hazrob.g2.audit.v1",
                   "scope": "new V4 independent source qualification",
                   "g2_blocked": 80, "g2_pass_candidates": 0,
-                  "records": [{"id": i, "status": "G2_BLOCKED"} for i in ids]}
+                  "records": [{"id": i, "status": "G2_BLOCKED", "issues": ["PHYSICAL_REFERENCE_MISSING"]} for i in ids]}
         self.t = {"schema": "hazrob.g2.acquisition-triage.v1",
                   "scope": "RESEARCH_ONLY_NOT_G2_OR_G3_APPROVAL",
                   "techniques_total": 80, "external_sources_total": 14,
                   "g2_blocked": 80, "g2_pass_candidates_requiring_review": 0,
                   "external_sources_blocked": 14,
-                  "techniques": [{"id": i, "status": "G2_BLOCKED"} for i in ids],
-                  "sources": [{"id": str(i), "ready_for_source_review": False}
+                  "technique_blocker_counts": {"PHYSICAL_REFERENCE_MISSING": 80},
+                  "source_blocker_counts": {"RAW_SOURCE_MISSING": 14},
+                  "techniques": [{"id": i, "status": "G2_BLOCKED",
+                                  "blockers": ["PHYSICAL_REFERENCE_MISSING"]}
+                                 for i in ids],
+                  "sources": [{"id": str(i), "ready_for_source_review": False,
+                               "blockers": ["RAW_SOURCE_MISSING"]}
                               for i in range(14)]}
         self.write()
 
@@ -81,6 +86,30 @@ class PublishGateTests(unittest.TestCase):
         del m["artifacts"][self.audit.name]
         self.manifest.write_text(json.dumps(m), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "G2_PUBLISH_MANIFEST_INVALID"):
+            self.verify()
+
+    def test_rehashed_forged_technique_blocker(self):
+        self.t["techniques"][0]["blockers"] = ["INVENTED_BLOCKER"]
+        self.write()
+        with self.assertRaisesRegex(ValueError, "G2_PUBLISH_TECHNIQUE_BLOCKER_MISMATCH"):
+            self.verify()
+
+    def test_rehashed_forged_audit_blocker(self):
+        self.a["records"][0]["issues"] = ["ALTERED_AUDIT_BLOCKER"]
+        self.write()
+        with self.assertRaisesRegex(ValueError, "G2_PUBLISH_TECHNIQUE_BLOCKER_MISMATCH"):
+            self.verify()
+
+    def test_rehashed_forged_source_blocker(self):
+        self.t["sources"][0]["blockers"] = []
+        self.write()
+        with self.assertRaisesRegex(ValueError, "G2_PUBLISH_SOURCE_BLOCKER_MISMATCH"):
+            self.verify()
+
+    def test_rehashed_forged_blocker_frequency(self):
+        self.t["technique_blocker_counts"]["PHYSICAL_REFERENCE_MISSING"] = 79
+        self.write()
+        with self.assertRaisesRegex(ValueError, "G2_PUBLISH_BLOCKER_FREQUENCY_MISMATCH"):
             self.verify()
 
     def test_ci_success_only_publication(self):
