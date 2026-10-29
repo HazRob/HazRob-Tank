@@ -121,6 +121,7 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
     has_physical_sample_ids = "physical_sample_id" in predictions[0]
     physical_sample_groups = {}
     physical_sample_read_counts = Counter()
+    physical_sample_outcomes = {}
 
     for row in predictions:
         exposure, group = row["exposure_id"], row["group_id"]
@@ -146,6 +147,14 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         truth = row["true_reference"]
         model = row["predicted_reference"] == truth
         baseline = row["baseline_predicted_reference"] == truth
+        if has_physical_sample_ids:
+            sample = physical_sample_outcomes.setdefault(sample_id, {
+                "group_id": group, "exposures": 0,
+                "model_correct": 0, "baseline_correct": 0,
+            })
+            sample["exposures"] += 1
+            sample["model_correct"] += int(model)
+            sample["baseline_correct"] += int(baseline)
         counts[group] += 1
         model_correct[group] += int(model)
         baseline_correct[group] += int(baseline)
@@ -338,6 +347,72 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
             if sum(r[key] for r in support) != per_group_outcomes[group][key]:
                 raise ValueError("PAIRED_REPLAY_CLASS_GROUP_DISCORDANCE_INVALID")
 
+    # Equal weight per declared physical sample, rather than per repeated
+    # sensor reading. This is descriptive and cannot authenticate sample IDs.
+    sample_equal_weight_diagnostics = None
+    if has_physical_sample_ids:
+        sample_rows = [
+            {"physical_sample_id": sample_id, **physical_sample_outcomes[sample_id]}
+            for sample_id in sorted(physical_sample_outcomes)
+        ]
+        if (sum(row["exposures"] for row in sample_rows) != len(predictions)
+                or sum(row["model_correct"] for row in sample_rows)
+                != sum(model_correct.values())
+                or sum(row["baseline_correct"] for row in sample_rows)
+                != sum(baseline_correct.values())):
+            raise ValueError("PAIRED_REPLAY_SAMPLE_RECONCILIATION_INVALID")
+        sample_group_rows = []
+        for group in sorted(counts):
+            subset = [row for row in sample_rows if row["group_id"] == group]
+            if (not subset
+                    or sum(row["exposures"] for row in subset) != counts[group]
+                    or sum(row["model_correct"] for row in subset)
+                    != model_correct[group]
+                    or sum(row["baseline_correct"] for row in subset)
+                    != baseline_correct[group]):
+                raise ValueError("PAIRED_REPLAY_SAMPLE_RECONCILIATION_INVALID")
+            sample_delta = sum(
+                (row["model_correct"] - row["baseline_correct"])
+                / row["exposures"] for row in subset
+            ) / len(subset)
+            exposure_delta = (
+                model_correct[group] - baseline_correct[group]
+            ) / counts[group]
+            sample_group_rows.append({
+                "group_id": group,
+                "distinct_declared_samples": len(subset),
+                "exposure_rows": counts[group],
+                "equal_declared_sample_mean_delta": sample_delta,
+                "exposure_weighted_delta": exposure_delta,
+                "sample_vs_exposure_weighted_sign_reversal": (
+                    sample_delta * exposure_delta < 0
+                ),
+                "max_exposure_rows_per_sample": max(
+                    row["exposures"] for row in subset
+                ),
+            })
+        sample_delta = sum(
+            (row["model_correct"] - row["baseline_correct"])
+            / row["exposures"] for row in sample_rows
+        ) / len(sample_rows)
+        exposure_delta = (
+            sum(model_correct.values()) - sum(baseline_correct.values())
+        ) / len(predictions)
+        sample_equal_weight_diagnostics = {
+            "equal_declared_sample_mean_delta": sample_delta,
+            "exposure_weighted_delta": exposure_delta,
+            "sample_vs_exposure_weighted_sign_reversal": (
+                sample_delta * exposure_delta < 0
+            ),
+            "by_declared_physical_group": sample_group_rows,
+            "scope": (
+                "POST_UNBLINDING_EQUAL_DECLARED_SAMPLE_WEIGHT_DIAGNOSTIC;"
+                "REPEATED_READS_ARE_NOT_INDEPENDENT_SAMPLES;"
+                "NO_TRAIN_TEST_LEAKAGE_CHECK_OR_SAMPLE_AUTHENTICATION;"
+                "NOT_G2_OR_G3_APPROVAL"
+            ),
+        }
+
     result = paired_cluster_accuracy_delta(
         dict(counts), dict(model_correct), dict(baseline_correct),
         seed=seed, resamples=resamples,
@@ -346,6 +421,7 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         "paired_outcomes_recomputed_from_same_exposure_rows": True,
         "per_group_metrics_recomputed_from_prediction_rows": True,
         "physical_sample_group_consistency_checked": has_physical_sample_ids,
+        "declared_physical_sample_equal_weight_diagnostic": sample_equal_weight_diagnostics,
         "distinct_declared_physical_samples": (
             len(physical_sample_groups) if has_physical_sample_ids else None
         ),
