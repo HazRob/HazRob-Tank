@@ -45,10 +45,21 @@ def load(path):
         ppb = int(label.removesuffix("ppb"))
         if ppb not in LEVELS:
             raise ValueError("unexpected concentration")
-        values = np.asarray([float(v) for v in row[2:]],dtype=float).reshape(900,10)
+        # UCI1081 CSV stores 900 consecutive samples PER SENSOR, then next sensor.
+        # Prior reshape(900,10) interleaved unrelated channel blocks and
+        # invalidated the published pilot metrics. Correct (10,900).T layout
+        # reproduces the pinned source MQ135 endpoint/baseline reference 0.94717.
+        values = np.asarray([float(v) for v in row[2:]],dtype=float).reshape(10,900).T
         if not np.all(np.isfinite(values)):
             raise ValueError("non-finite original signal values")
         records.append({"row_id":i, "gas":gas, "ppb":ppb, "signals":values})
+    # Layout parity with pinned independent MQ135 reference, derived from
+    # acetone 50 ppb (5 source replicates), before training any classifier.
+    check = [record for record in records if record["gas"] == "acetone" and record["ppb"] == 50]
+    ratios = [record["signals"][840:900,4].mean() /
+              record["signals"][:300,4].mean() for record in check]
+    if len(ratios)!=5 or abs(float(np.mean(ratios))-0.9471726656594102)>1e-9:
+        raise ValueError("UCI1081 source sensor layout mismatches pinned MQ135 reference")
     freq = Counter((r["gas"],r["ppb"]) for r in records)
     if len(freq) != 18 or set(freq.values()) != {5}:
         raise ValueError("source missing original replicate or gas/level")
@@ -104,9 +115,11 @@ def run(path):
               for mode in ("MQ135_only","full_source_10_channels")
               for name in ("LogisticRegression","LDA")]
     return {
-      "schema":"chemcore-tank-v6-uci1081-external-benchmark/1",
+      "schema":"chemcore-tank-v6-uci1081-external-benchmark/2",
       "source_url":"https://archive.ics.uci.edu/dataset/1081/gas+sensor+array+low-concentration",
       "zip_sha256":zip_sha, "csv_sha256":csv_sha, "independent_exposure_rows":len(records),
+      "source_layout":"900 samples PER sensor, 10 contiguous sensor blocks per row (10,900).T",
+      "supersedes_flawed_interleaved_layout_pilot_2026_10_29":True,
       "source_sensor_names":CHANNEL_NAMES,"mq135_index_zero_based":4,
       "source_gas_labels":GASES,"source_concentrations_ppb":LEVELS,
       "feature_schema":"baseline first 300 s; first60 after exposure; middle 600-660s; last60 840-900s",
