@@ -27,12 +27,18 @@ public final class SourceCatalog {
         public final String sensorType, label;
         public final long legacyChemicalId;
         public final double a,b,minSourcePpm,maxSourcePpm,outputScale;
-        private Curve(int idx,String sensor,long chemical,String name,
+        Curve(int idx,String sensor,long chemical,String name,
                       double a,double b,double min,double max,double scale){
             index=idx;sensorType=sensor;legacyChemicalId=chemical;label=name;
             this.a=a;this.b=b;minSourcePpm=min;maxSourcePpm=max;outputScale=scale;
         }
-        public String id(){return String.format(Locale.ROOT,"MQDATA43-%03d",index);}
+        public String id(){
+            return index<=43 ? String.format(Locale.ROOT,"MQDATA43-%03d",index)
+                             : String.format(Locale.ROOT,"MQ135ALT6-%02d",index-43);
+        }
+        public String sourceRoot(){
+            return index<=43 ? SOURCE_ROOT : "UMBU_MQ135_2023_ALTERNATIVE_DIGITIZED";
+        }
         public double log10Prediction(double log10Ppm) {
             return Math.log10(a)+b*(log10Ppm-Math.log10(outputScale));
         }
@@ -94,4 +100,11 @@ public final class SourceCatalog {
         ALL=Collections.unmodifiableList(v);
     }
     public static List<Curve> curves(){return ALL;}
+
+    /** All distinct source equations are retained, including six alternate MQ135 curves. */
+    public static List<Curve> allCurves(){
+        List<Curve> result=new ArrayList<>(ALL);
+        result.addAll(AlternativeCurveCatalog.curves());
+        return Collections.unmodifiableList(result);
+    }
 }
