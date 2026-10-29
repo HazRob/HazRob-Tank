@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 independent controlling-input publication replay (311/311 CI)
+
+- Resumed from research HEAD `8edc69702a72d09742fb0c1dfb752085d93b7d81` (20/20 previous CI successes); verified central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references/14 datasets), pinned source matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (0/14 ready), independent evidence `records: []`.
+- Closed a publication-boundary provenance gap: the publisher previously checked only the **shape** of four controlling input SHA256 fields. It now verifies exact bytes of all five inputs and independently rebuilds triage from controlling evidence; self-consistent forged audit/triage or altered ledger/evidence bytes fail closed. Six integration and negative-control tests added.
+- Code/workflow commit `e3eb39c7dbd91faddc58c09679c1035472971fa9`: [G2 Actions #40817579479](https://github.com/HazRob/HazRob-Tank/actions/runs/40817579479), job `123262175764`: **311/311 PASS**, publication replay PASS; artifact `12872717811` (SHA256 `60327caa080a18cfb0b2a5a4a23c2f24257f6a4c8eecf51128e4d4f7758320f5`); **21/21** CI runs succeeded on code SHA. `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Research branch only: G2 workflow, publication gate, new test, plus this note and RESUME. No ChemCore Stable, Android or firmware edits; no G2/G3 scientific promotion. See `G2_PUBLICATION_CONTROLLING_INPUT_REPLAY_2026-10-29_AR.md`.
+- Next: verify CI for this documentation checkpoint; acquire source-qualified independent physical raw exposures, traceable ppm references, device/session/exposure IDs and preregistered grouped blind holdouts.
+
+---
+
 ## 2026-10-29 — G2 publication acquisition-action/caveat integrity (305/305 CI)
 
 - Resumed from research HEAD `9ec4e2a3f058e3f231757f9329a85b875fa45d70` (20/20 previous CI successes). Reverified central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries/14 external datasets), pinned source matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (0/14 ready) and independent evidence `records: []`.
