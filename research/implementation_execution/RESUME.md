@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 declared physical-sample cross-group leakage guard (388/388 CI)
+
+- Resumed from `cb434a401a6c990fa2a2bde35d7a32df3dddb267`; verified 20/20 prior CI runs successful. Central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references / 14 external datasets), 0/14 source-qualified, independent evidence `records=[]`.
+- Research-only paired replay now optionally accepts `physical_sample_id`: fail closed if a sample appears in more than one declared physical group or has missing/noncanonical IDs. Repeated exposure reads within one sample/group are counted separately from distinct samples. Missing sample metadata is reported as **not checked**, not a zero-leakage finding. Declared sample identity is NOT authenticated independent physical provenance.
+- Code commit `24f0ef1a3aeb33a71bebf90aaecd5e9527e949ad`; five synthetic regression tests commit `0a746e5f60ebec4a854c90a07a3be3240d580652`.
+- [G2 CI #40957596290](https://github.com/HazRob/HazRob-Tank/actions/runs/40957596290), job `123741611646`: **388/388 PASS**, deterministic byte-identical audit/triage replay PASS, research publication gate PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12933719604`, SHA256 `5793245ecfb2052c014ec33107323bee04c310335b5b63bc6cd767da44c40bb6`.
+- Evidence note: `G2_PHYSICAL_SAMPLE_CROSS_GROUP_LEAKAGE_GATE_2026-10-30_AR.md`. Only `research/implementation_execution/` on the research branch modified; no ChemCore Stable, Android, firmware or main changes. No G2/G3 scientific promotion.
+- Next: verify documentation checkpoint CI; acquire independent original physical measurements, traceable reference concentrations, preregistered blinded holdouts, and independently authenticated device/session/sample/exposure provenance.
+
+---
+
 ## 2026-10-29 — G2 paired true-reference class × physical-group discordance (383/383 CI)
 
 - Resumed from `ff03433a2fc0c6cc10efe68e68ac71f4e51da458`, with 20/20 previous CI runs successful. Reverified central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 records / 14 external measurement datasets). Source-ready 0/14; independent evidence `records=[]`.
