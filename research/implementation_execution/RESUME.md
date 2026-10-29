@@ -1,3 +1,14 @@
+## 2026-10-29 — G2 full CSV provenance semantic digest (372/372 CI)
+
+- Resumed from `9c3e877c9d456bf55de3c802c5097136faa331c8`; verified prior 20/20 CI success. Central reference catalogue remains pinned at blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries / 14 external measurement datasets); readiness 0/14, independent evidence `records=[]`.
+- Research-only `g2_paired_prediction_replay.py` now emits `prediction_full_rows_semantic_sha256` and `metrics_full_rows_semantic_sha256`, binding ALL optional CSV provenance columns as well as scoring fields, invariant to row/column reordering. This closes a digest gap in which changing an optional device/session/reference field did not affect the earlier prediction-only semantic fingerprint. Hashes do not authenticate asserted metadata.
+- Four new synthetic regression tests in `test_g2_paired_prediction_replay.py`. Code SHA `9a9173dadb98d826fa62da9b12778b55ffb9208e`; test SHA `468eba1742a21494061725e8d005938d2dd5b91d`.
+- [G2 CI #40920322296](https://github.com/HazRob/HazRob-Tank/actions/runs/40920322296), job `123611470309`: **372/372 PASS**, byte-identical audit and triage replay PASS, research publication gate PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12916709117`, ZIP SHA256 `ac2697aafbe0ebea634f188f4e8b7572de5db1ab19956b76b3bc241d999ffa67`.
+- Evidence note: `G2_FULL_CSV_PROVENANCE_SEMANTIC_DIGEST_2026-10-29_AR.md`. Changes restricted to research branch `research/implementation_execution/`; no ChemCore Stable, Android, firmware or `main` edits. No scientific G2/G3 promotion.
+- Next: verify CI for this documentation checkpoint; prioritize source-qualified original raw independent exposures with traceable reference concentrations and preregistered blind physical group holdouts. Avoid interpreting synthetic test coverage as gas calibration.
+
+---
+
 ## 2026-10-29 — G2 per-group paired discordance and semantic prediction fingerprint (368/368 CI)
 
 - Resumed from `8ec21b7a340b4a4b26439aa7180be69226d99071`, verified 11/11 previous CI success and pinned central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets). Readiness remains 0/14; independent evidence `records=[]`.
