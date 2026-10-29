@@ -89,7 +89,7 @@ public final class FoodFreshnessTab {
         root.addView(protocolHint,UiKit.full(c));
         root.addView(UiKit.title(c,"نوع العينة"),UiKit.full(c));
         foodLabels.add("جميع الأصناف");
-        for(String family:FoodFreshnessEngine.foodFamilies())foodLabels.add(family);
+        for(String family:FoodFreshnessEngine.fruitFamilies())foodLabels.add(family);
         foodChoice=new Spinner(c);
         foodChoice.setAdapter(UiKit.lightOptions(c,foodLabels.toArray(new String[0])));
         UiKit.outlinedSpinner(foodChoice);
@@ -279,7 +279,7 @@ public final class FoodFreshnessTab {
             List<FoodFreshnessEngine.Reading> inputs=new ArrayList<>();
             for(Map.Entry<String,Double> e:frozenReadings.entrySet())
                 inputs.add(new FoodFreshnessEngine.Reading(e.getKey(),e.getValue()));
-            completed=FoodFreshnessEngine.analyze(inputs,selectedFamily());
+            completed=FoodFreshnessEngine.analyzeFruit(inputs,selectedFamily());
             meatCompleted=null;
             export.setEnabled(!completed.rankedTemplates.isEmpty());
             StringBuilder out=new StringBuilder();
