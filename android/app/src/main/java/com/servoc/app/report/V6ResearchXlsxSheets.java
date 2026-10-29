@@ -13,6 +13,7 @@ import org.json.JSONObject;
  * This class never asserts gas identity, reference-gas ppm or G3.
  */
 final class V6ResearchXlsxSheets {
+    static final String SCHEMA="hazrob-tank-v6-approved-field-readonly/1";
     private V6ResearchXlsxSheets(){}
 
     static int append(List<SmartXlsxPackage.Sheet> sheets,
@@ -20,7 +21,7 @@ final class V6ResearchXlsxSheets {
                       String sessionName,String fieldSessionId,
                       JSONObject v6) {
         if(sheets==null||v6==null)throw new IllegalArgumentException("V6 sheets require verified evidence");
-        if(!V6FieldSessionResearchAppendix.SCHEMA.equals(v6.optString("schema",""))){
+        if(!SCHEMA.equals(v6.optString("schema",""))){
             throw new IllegalArgumentException("Unexpected V6 approved report research source");
         }
         if(!"UNKNOWN".equals(v6.optString("reported_identity",""))||
@@ -65,7 +66,7 @@ final class V6ResearchXlsxSheets {
             "ChemCore Tank V6 — بحثي فقط / UNKNOWN");
         g.blank();g.section("ضوابط قبول المصدر");
         g.header("البند","القيمة","معنى المؤشر");
-        g.row("Schema",V6FieldSessionResearchAppendix.SCHEMA,"READ ONLY");
+        g.row("Schema",SCHEMA,"READ ONLY");
         g.row("Identity","UNKNOWN","لا يوجد غاز مؤهل G3");
         g.row("PPM reportable",false,"لا تستخدم أرقام المصادر لحساب تعرض مهني");
         g.row("Approved gas cycles",cycles.length(),"SHA الرسمي يتحقق قبل هذا الملحق");
