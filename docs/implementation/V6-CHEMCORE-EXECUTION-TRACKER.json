@@ -451,5 +451,31 @@
   "scientific_checkpoint": "docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md",
   "current_phase": "P01_P03_P04_P05_AND_P08_PROTOTYPE_ACTIVE",
   "scientific_checkpoint_02": "docs/implementation/V6-CHEMCORE-CHECKPOINT-02-2026-10-29_AR.md",
-  "scientific_checkpoint_03": "docs/implementation/V6-CHEMCORE-CHECKPOINT-03-2026-10-29_AR.md"
+  "scientific_checkpoint_03": "docs/implementation/V6-CHEMCORE-CHECKPOINT-03-2026-10-29_AR.md",
+  "deferred_extensions": [
+    {
+      "id": "V6-003",
+      "title": "MQ startup-transient and optional Bosch BME68x experimental methods",
+      "decision": "DEFERRED_BY_OWNER_2026-10-29",
+      "condition": "Only reopen after completing the existing ChemCore Tank V6 master plan",
+      "requirements_on_reopening": [
+        "phone_side_storage_not_ESP32",
+        "no_new_polling_pressure",
+        "preserve_mandatory_warmup_and_R0",
+        "heater_variant_verified",
+        "G3_separate"
+      ],
+      "research_reference": "docs/research/V6-003-BOSCH-BME68X-MQ-STARTUP-TRANSIENT-FEASIBILITY-2026-10-29_AR.md",
+      "production_impact": "NONE",
+      "current_owner_authorization": "NOT_AUTHORIZED_NOW"
+    }
+  ],
+  "deferred_feature_branch_status": {
+    "MainActivity": "REVERTED_TO_PRE_EXPERIMENT_BLOB_e1885a3b806c6b375b19e129880a3ef126ce5b68",
+    "scientific_ci": "REVERTED_TO_PRE_EXPERIMENT_BLOB_3ea9ac7ca1aa308df4def0283307d88608073fc2",
+    "phone_logger": "DELETED",
+    "startup_window": "DELETED",
+    "experimental_unit_tests": "DELETED"
+  },
+  "next_main_plan_action": "Continue P06 source-curve registry and P03 evidence provenance bridge without V6-003 startup sampling"
 }
