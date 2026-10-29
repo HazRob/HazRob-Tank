@@ -4,8 +4,8 @@
   "scoping": "NEW independent com.hazrob.tank.chemcore.v6 package; food freshness and prior inference code excluded",
   "counts": {
     "total": 80,
-    "partial": 44,
-    "not_yet_ported": 36,
+    "partial": 54,
+    "not_yet_ported": 26,
     "fully_implemented_and_device_validated": 0
   },
   "available_numerical_references": {
@@ -418,19 +418,23 @@
       "id": "05.5",
       "name": "PLS regression",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Single latent-factor PLS1 research regression with training-only centering; not multicomp PLS/PLS-DA. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "05.6",
       "name": "Tree regression",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Deterministic one-split CART regression stump; no full tree ensemble claim. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "05.7",
@@ -458,10 +462,12 @@
       "id": "05.9",
       "name": "Unseen concentrations",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Monotone log-ratio interpolation and marked extrapolation to unobserved concentration levels; no physical ppm verification. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "06.1",
@@ -597,19 +603,23 @@
       "id": "07.4",
       "name": "Drift detection",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Descriptive OLS slope of ordered baseline readings; not verified real device drift. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "07.5",
       "name": "Drift compensation",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Explicit reference-baseline transfer coefficient; no invented R0 or device calibration. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "07.6",
@@ -633,10 +643,12 @@
       "id": "07.8",
       "name": "Active learning/DoE",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Entropy ordering of relative class scores for active experiment candidates; no experimental design efficiency claim. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "07.9",
@@ -651,10 +663,12 @@
       "id": "07.10",
       "name": "Resource profiling",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Descriptive p50/p95 latency statistics from user-supplied nanosecond samples; no Android device performance benchmark. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "08.1",
@@ -705,10 +719,12 @@
       "id": "08.6",
       "name": "Simulation",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Deterministic seeded Gaussian feature perturbation; not a physically validated gas simulation. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "08.7",
@@ -723,10 +739,12 @@
       "id": "08.8",
       "name": "Mixture detection",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Nonnegative 2-prototype fit with single-source residual comparator; mathematical fit not confirmed mixture detection. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "08.9",
@@ -750,10 +768,12 @@
       "id": "08.11",
       "name": "Interference",
       "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
-      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
-      "new_engine_modules": [],
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceNumericsV6.java"
+      ],
       "no_physical_tank_validation": true,
-      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+      "evidence_notes": "N03-D independent research-stage mathematical implementation; Conditional interferer scale and source-residual diagnostics under explicitly specified target; not confirmed interferer identity. Synthetic fixture 44 JDK assertions for ten operations; GitHub Actions CI 40952792580 SUCCESS. No physical Tank G3, no real-source model validation for this method, no Android UI activation."
     },
     {
       "id": "08.12",
@@ -953,5 +973,5 @@
       "Source datasets and sensor feature spaces remain distinct"
     ]
   },
-  "last_checkpoint": "V6-N03-C + numeric hardening; 44 partial / 36 not ported; 1924 JDK assertions CI SUCCESS 40949747063; scientific CI SUCCESS 40949746723; Android compile-only SUCCESS 40949716739; food isolation SUCCESS 40949716664; no original UCI Java holdout; no V6 APK; G3=0."
+  "last_checkpoint": "N05 original UCI1081 Java benchmark CI 40952186046 success, 24 folds/720 source predictions; N03-D ten PARTIAL research methods: independent JDK CI 40952792580 success, 44 assertions new, 1968 total; Android compile-only success 40952676989; Tank G3 0/80, no APK."
 }
