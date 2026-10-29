@@ -73,7 +73,7 @@ public final class V6SeventhNeuralTechniquesTest {
             "ragged sampling axes are invalid");
 
         // Causality: manipulate future input without changing earlier prefix.
-        var before=series(1.3),after=series(1.3);
+        double[][] before=series(1.3),after=series(1.3);
         for(int i=8;i<after.length;i++){after[i][0]=1000;after[i][1]=-1000;}
         var prefix1=TemporalNeuralResearchV6.causalTcnPrefix(before,7);
         var prefix2=TemporalNeuralResearchV6.causalTcnPrefix(after,7);
