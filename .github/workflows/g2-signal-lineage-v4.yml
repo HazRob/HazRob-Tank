@@ -65,6 +65,21 @@ jobs:
             --audit "$RUNNER_TEMP/g2_audit_results.json" \
             --source-matrix research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json \
             --output "$RUNNER_TEMP/g2_acquisition_triage.json"
+      - name: "Replay G2 audit and acquisition triage from the same pinned inputs"
+        run: |
+          python research/implementation_execution/g2_evidence_audit.py --output "$RUNNER_TEMP/g2_audit_results_replay.json"
+          python research/implementation_execution/g2_acquisition_triage.py \
+            --audit "$RUNNER_TEMP/g2_audit_results_replay.json" \
+            --source-matrix research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json \
+            --output "$RUNNER_TEMP/g2_acquisition_triage_replay.json"
+      - name: "Verify byte-identical G2 replay and write integrity manifest"
+        run: |
+          python research/implementation_execution/g2_replay_consistency.py \
+            --audit-first "$RUNNER_TEMP/g2_audit_results.json" \
+            --audit-second "$RUNNER_TEMP/g2_audit_results_replay.json" \
+            --triage-first "$RUNNER_TEMP/g2_acquisition_triage.json" \
+            --triage-second "$RUNNER_TEMP/g2_acquisition_triage_replay.json" \
+            --output "$RUNNER_TEMP/g2_replay_integrity.json"
       - name: "Upload reproducible G2 gate output"
         if: always()
         uses: actions/upload-artifact@v4
@@ -73,4 +88,5 @@ jobs:
           path: |
             ${{ runner.temp }}/g2_audit_results.json
             ${{ runner.temp }}/g2_acquisition_triage.json
+            ${{ runner.temp }}/g2_replay_integrity.json
           if-no-files-found: ignore
