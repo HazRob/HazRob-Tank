@@ -75,6 +75,49 @@ public final class TankInstantAnalyzer {
         // Independently evaluate ALL available research fingerprint references.
         // No M4 or open-set approval is required to display a hypothesis.
         output.put(TankFingerprintScreening.KEY,TankFingerprintScreening.evaluate(ratios));
+        // V6 research-only addition: calculate EVERY finite source curve for the
+        // measured MQ ratios. Incomplete literature R0/heater provenance and
+        // out-of-source-range results are annotated, never silently discarded.
+        // This never replaces V5 ranked candidates or safety / alarm decisions.
+        try {
+            TankV6ResearchCurveOverlay.Result exploratory =
+                TankV6ResearchCurveOverlay.evaluate(ratios);
+            JSONObject research=new JSONObject();
+            research.put("schema",TankV6ResearchCurveOverlay.SCHEMA);
+            research.put("origin",SourceCurveRegistryV6.SOURCE_ROOT);
+            research.put("source_git_blob",SourceCurveRegistryV6.SOURCE_GIT_BLOB);
+            research.put("source_curves",exploratory.sourceCurves);
+            research.put("finite_estimates",exploratory.validNumericalFits);
+            research.put("sensor_not_measured",exploratory.missingSensorCurves);
+            research.put("invalid_numeric_estimates",exploratory.invalidNumericalFits);
+            research.put("scientific_classification","RESEARCH_EXPLORATORY_NOT_TANK_CALIBRATED");
+            research.put("ppm_reportable",false);
+            JSONArray all=new JSONArray();
+            for(TankV6ResearchCurveOverlay.Row hypothesis:exploratory.rows){
+                JSONObject row=new JSONObject();
+                row.put("source_curve_id",hypothesis.id);
+                row.put("source_root",hypothesis.sourceRoot);
+                row.put("sensor_model",hypothesis.sensorModel);
+                row.put("gas_or_class_label",hypothesis.gasLabel);
+                row.put("legacy_chemical_id",hypothesis.chemicalLegacyId);
+                row.put("numeric_fit_available",hypothesis.finite);
+                row.put("source_domain_extrapolated",hypothesis.outsideReferenceRange);
+                if(hypothesis.finite){
+                    row.put("observed_rs_over_r0",hypothesis.ratioObserved);
+                    row.put("source_fit_ppm_research",hypothesis.ppmResearch);
+                }
+                JSONArray advisory=new JSONArray();
+                for(String warning:hypothesis.advisories)advisory.put(warning);
+                row.put("advisories",advisory);
+                all.put(row);
+            }
+            research.put("hypotheses",all);
+            output.put(TankV6ResearchCurveOverlay.KEY,research);
+        }catch(Exception researchOnlyFailure){
+            // A V6 research overlay must never block the established V5 analyzer.
+            output.put("v6_research_overlay_error",
+                researchOnlyFailure.getClass().getSimpleName());
+        }
         // This existing independent fingerprint/curve evidence path is retained.
         JSONObject legacy=new JSONObject(AnalyticsSnapshot.toJson(frozen,
             new ChemicalRepository(db),new SqliteCalibrationProvider(db),false));
