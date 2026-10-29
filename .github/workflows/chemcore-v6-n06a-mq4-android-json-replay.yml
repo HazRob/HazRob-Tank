@@ -1,0 +1,114 @@
+name: ChemCore V6 N06-A actual Android JSON bridge on original MQ4 physical source
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/chemcore_v6/tests/java/MinnesotaMq4AndroidBridgeTest.java'
+      - 'android/app/src/main/java/com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java'
+      - '.github/workflows/chemcore-v6-n06a-mq4-android-json-replay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mq4-json-bridge-physical-source-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Fetch immutable original MQ4/Li-Cor source and public JSON runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v6-n06a
+          curl --fail --location --retry 3 --max-time 90 \
+            "https://conservancy.umn.edu/server/api/core/bitstreams/1542d00c-67b4-4a61-93f3-48ee1dd97208/content" \
+            -o /tmp/v6-n06a/10ppm_data.csv
+          echo '3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d  /tmp/v6-n06a/10ppm_data.csv' | sha256sum -c -
+          curl --fail --location --retry 3 --max-time 45 \
+            'https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar' \
+            -o /tmp/v6-n06a/json.jar
+          curl --fail --location --retry 3 --max-time 45 \
+            'https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar.sha256' \
+            -o /tmp/v6-n06a/json.jar.sha256
+          printf '%s  /tmp/v6-n06a/json.jar\n' "$(tr -d ' \n\r' </tmp/v6-n06a/json.jar.sha256)" | sha256sum -c -
+      - name: Compile actual new V6 source coordinator AND Android JSON telemetry adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v6-n06a/classes
+          javac -cp /tmp/v6-n06a/json.jar -d /tmp/v6-n06a/classes \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceCatalog.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/AlternativeCurveCatalog.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/Engine.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/GasFingerprintCatalogV6.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/FingerprintEngineV6.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/EvidenceConflictV6.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/ChemCoreTankV6.java \
+            android/app/src/main/java/com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java \
+            research/chemcore_v6/tests/java/MinnesotaMq4AndroidBridgeTest.java
+      - name: Execute 42558 original MQ4 resistances through real Android V6 adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -Xmx768m -cp /tmp/v6-n06a/classes:/tmp/v6-n06a/json.jar \
+            com.hazrob.tank.v6integration.MinnesotaMq4AndroidBridgeTest \
+            /tmp/v6-n06a/10ppm_data.csv \
+            /tmp/v6-n06a/v6_android_json_bridge_original_mq4_audit.csv
+      - name: Audit complete original traceability and no ppm/G3 qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import csv,collections,pathlib,hashlib,json
+          p=pathlib.Path('/tmp/v6-n06a')
+          with (p/'v6_android_json_bridge_original_mq4_audit.csv').open(newline='') as f:
+            rows=list(csv.DictReader(f))
+          assert len(rows)==42558,len(rows)
+          ids=collections.Counter(x['source_row_id'] for x in rows)
+          assert len(ids)==14186 and set(ids.values())=={3},len(ids)
+          units=collections.Counter(x['original_mq4_unit'] for x in rows)
+          assert units=={'MQ4_1':14186,'MQ4_2':14186,'MQ4_3':14186}
+          assert all(x['source_r0_present']=='false' and x['v6_observed_mq4_channels']=='1'
+                     and x['v6_ratio_ready']=='0' and x['v6_source_fits']=='0'
+                     and x['v6_gas_identity_candidate_count']=='0'
+                     and x['v6_reportable_ppm']=='false'
+                     and x['v6_physical_g3_qualified']=='false'
+                     and x['v6_food_used']=='false' for x in rows)
+          assert all(abs(float(x['original_rs_ohm'])/1000-
+                         float(x['android_rs_kohm']))<1e-7 for x in rows)
+          original=hashlib.sha256((p/'10ppm_data.csv').read_bytes()).hexdigest()
+          assert original=='3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d'
+          manifest={
+            'schema':'hazrob-v6-n06a-android-JSON-bridge-MQ4-replay/1',
+            'original_source_sha256':original,
+            'source_rows':14186,'actual_original_physical_source_unit_values':42558,
+            'replay_original_instances_sequentially_not_simultaneously':True,
+            'actual_adapter_executed':'TankV6TelemetryAdapter.analyzeSnapshot',
+            'actual_coordinator_executed':'ChemCoreTankV6.analyze',
+            'original_source_ohms_converted_to_Tank_kilohms':True,
+            'original_reference_ch4_never_supplied_to_engine':True,
+            'original_R0_available':False,
+            'source_curve_hypotheses_without_R0':0,
+            'gas_identity_certified':False,'reportable_ppm':False,
+            'tank_g3':0,'food_freshness_used':False,
+            'android_phone_app_run':False,
+            'json_runtime_artifact_sha256':hashlib.sha256((p/'json.jar').read_bytes()).hexdigest()
+          }
+          (p/'v6_adapter_mq4_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          print('PASS N06A_REAL_MQ4_ANDROID_JSON_ADAPTER 42558 source MQ4 records, zero fake R0/ppm/G3, no food')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: HazRob-V6-N06A-Original-MQ4-Android-JSON-Bridge-Evidence
+          path: |
+            /tmp/v6-n06a/v6_android_json_bridge_original_mq4_audit.csv
+            /tmp/v6-n06a/v6_adapter_mq4_manifest.json
+          retention-days: 30
