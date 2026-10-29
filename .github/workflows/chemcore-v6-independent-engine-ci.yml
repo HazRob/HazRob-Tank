@@ -33,6 +33,7 @@ jobs:
           mkdir -p /tmp/chemcore-tank-new-v6
           javac -d /tmp/chemcore-tank-new-v6 \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceCatalog.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/AlternativeCurveCatalog.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/Engine.java \
             research/chemcore_v6/tests/java/NewChemCoreTankV6EngineTest.java
           java -cp /tmp/chemcore-tank-new-v6 \
