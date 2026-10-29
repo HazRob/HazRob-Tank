@@ -953,5 +953,5 @@
       "Source datasets and sensor feature spaces remain distinct"
     ]
   },
-  "last_checkpoint": "V6-N03-C CI_SUCCESS 40949107155; 1924 JDK assertions; Android compile observed on earlier N03-C source commit 40948928576; G3=0."
+  "last_checkpoint": "V6-N03-C + numeric hardening; 44 partial / 36 not ported; 1924 JDK assertions CI SUCCESS 40949747063; scientific CI SUCCESS 40949746723; Android compile-only SUCCESS 40949716739; food isolation SUCCESS 40949716664; no original UCI Java holdout; no V6 APK; G3=0."
 }
