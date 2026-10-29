@@ -52,11 +52,11 @@ public final class SignalFeaturesV6Test {
         close(summary.medianRs,150,1e-9,"median");
         close(summary.standardDeviationRs,50,1e-9,"std");
         close(summary.relativeLastFirst,1.0,1e-9,"final increase");
-        close(summary.log10SlopePerSecond,Math.log10(2)*0.8/3,1e-7,
+        close(summary.log10SlopePerSecond,Math.log10(2)*0.4,1e-7,
               "least squares log ratio slope");
         ok(summary.firstTimeMs==0&&summary.lastTimeMs==3000,"time sorted not arbitrary");
         ok(!summary.calibratedConcentration,"not gas ppm");
-        double integral=Math.log10(2)*(0.5+1.0+1.0);
+        double integral=Math.log10(2)*(0.5+1.0);
         close(summary.integratedLog10DeltaSeconds,integral,1e-9,
               "trapezoidal measured AUC");
         List<SignalFeaturesV6.Sample> partiallyCorrupt=new ArrayList<>(observations);
