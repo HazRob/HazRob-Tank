@@ -11,6 +11,10 @@ on:
       - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
       - 'android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java'
       - 'android/app/src/main/java/com/servoc/app/report/TankInstantReportPdf.java'
+      - 'android/app/src/main/java/com/servoc/app/report/V6FieldSessionResearchAppendix.java'
+      - 'android/app/src/main/java/com/servoc/app/report/SmartFieldSessionPdfWriter.java'
+      - 'android/app/src/main/java/com/servoc/app/report/SmartFieldSessionXlsxWriter.java'
+      - 'research/chemcore_v6/tests/test_v6_approved_session_report_contract.py'
       - 'research/chemcore_v6/tests/test_v6_android_instant_research_contract.py'
       - '.github/workflows/chemcore-v6-android-compile.yml'
   workflow_dispatch:
