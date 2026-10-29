@@ -31,8 +31,8 @@ jobs:
           python --version
       - name: Compile V6 research source and tests
         run: |
-          python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/tests/test_source_audit.py
-      - name: Run 23 unit regressions against pinned source blobs
+          python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/peer_r0_audit.py research/chemcore_v6/tests/test_source_audit.py research/chemcore_v6/tests/test_peer_r0_audit.py
+      - name: Run all V6 source and peer-R0 regression tests
         run: |
           python -m unittest discover -s research/chemcore_v6/tests -p 'test_*.py' -v
       - name: Run numerical audit and synthetic R0 counterfactuals
@@ -40,6 +40,17 @@ jobs:
           python research/chemcore_v6/source_audit.py \
             --output research/chemcore_v6/results/source_audit.json \
             --counterfactual-output research/chemcore_v6/results/synthetic_r0_sensitivity.json
+      - name: Recalculate literature R0 arithmetic with historical provenance
+        run: |
+          python research/chemcore_v6/peer_r0_audit.py > research/chemcore_v6/results/peer_r0_audit.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('research/chemcore_v6/results/peer_r0_audit.json').read_text())
+          assert x['paper_arithmetic_issue_sensors']==['MQ7','MQ8']
+          assert x['device_Tank_R0_authority'] is False
+          print('Peer-paper discrepancy detected, not a Tank reference R0')
+          PY
       - name: Report software-only evidence boundary
         run: |
           python - <<'PY'
