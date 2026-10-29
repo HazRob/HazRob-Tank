@@ -5,6 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from g2_artifact_publish_gate import verify_publication
+from g2_acquisition_triage import SOURCE_ACTIONS, CAVEAT
 
 class PublishGateTests(unittest.TestCase):
     def setUp(self):
@@ -26,18 +27,37 @@ class PublishGateTests(unittest.TestCase):
                   "external_sources_blocked": 14,
                   "technique_blocker_counts": {"PHYSICAL_REFERENCE_MISSING": 80},
                   "source_blocker_counts": {"RAW_SOURCE_MISSING": 14},
+                  "acquisition_actions": [],
+                  "caveat": CAVEAT,
                   "techniques": [{"id": i, "status": "G2_BLOCKED",
                                   "blockers": ["PHYSICAL_REFERENCE_MISSING"]}
                                  for i in ids],
                   "sources": [{"id": str(i), "ready_for_source_review": False,
                                "blockers": ["RAW_SOURCE_MISSING"]}
                               for i in range(14)]}
+        # Synthetic blocker is not a canonical acquisition action; tests use
+        # a real SOURCE_ACTIONS key to verify the publication contract.
+        self.t["sources"] = [
+            {"id": str(i), "ready_for_source_review": False,
+             "blockers": ["ORIGINAL_RAW_SHA256_NOT_DOCUMENTED"]}
+            for i in range(14)]
+        self.t["source_blocker_counts"] = {
+            "ORIGINAL_RAW_SHA256_NOT_DOCUMENTED": 14}
+        self.t["acquisition_actions"] = [
+            {"blocker": "ORIGINAL_RAW_SHA256_NOT_DOCUMENTED",
+             "affected_sources": 14,
+             "action": SOURCE_ACTIONS["ORIGINAL_RAW_SHA256_NOT_DOCUMENTED"]}]
         self.write()
 
     def write(self):
         self.audit.write_text(json.dumps(self.a), encoding="utf-8")
-        self.t["input_sha256"] = {"audit": hashlib.sha256(
-            self.audit.read_bytes()).hexdigest()}
+        self.t["input_sha256"] = {
+            "audit": hashlib.sha256(self.audit.read_bytes()).hexdigest(),
+            "source_matrix": "0" * 64,
+            "ledger": "1" * 64,
+            "independent_evidence": "2" * 64,
+            "canonical_registry": "3" * 64,
+        }
         self.triage.write_text(json.dumps(self.t), encoding="utf-8")
         m = {"schema": "hazrob.g2.replay-integrity.v1",
              "scope": "RESEARCH_ONLY_NOT_G2_OR_G3_APPROVAL",
@@ -110,6 +130,45 @@ class PublishGateTests(unittest.TestCase):
         self.t["technique_blocker_counts"]["PHYSICAL_REFERENCE_MISSING"] = 79
         self.write()
         with self.assertRaisesRegex(ValueError, "G2_PUBLISH_BLOCKER_FREQUENCY_MISMATCH"):
+            self.verify()
+
+    def test_rehashed_forged_acquisition_action(self):
+        self.t["acquisition_actions"][0]["action"] = "Ignore source verification"
+        self.write()
+        with self.assertRaisesRegex(ValueError, "G2_PUBLISH_ACQUISITION_ACTION_MISMATCH"):
+            self.verify()
+
+    def test_rehashed_omitted_acquisition_action(self):
+        self.t["acquisition_actions"] = []
+        self.write()
+        with self.assertRaisesRegex(ValueError, "G2_PUBLISH_ACQUISITION_ACTION_MISMATCH"):
+            self.verify()
+
+    def test_rehashed_forged_scientific_caveat(self):
+        self.t["caveat"] = "G2 scientifically approved"
+        self.write()
+        with self.assertRaisesRegex(ValueError, "G2_PUBLISH_SCIENTIFIC_CAVEAT_MISMATCH"):
+            self.verify()
+
+    def test_rehashed_incomplete_input_lineage(self):
+        self.write()
+        self.t["input_sha256"].pop("canonical_registry")
+        self.triage.write_text(json.dumps(self.t), encoding="utf-8")
+        m = json.loads(self.manifest.read_text(encoding="utf-8"))
+        m["artifacts"][self.triage.name]["bytes"] = len(self.triage.read_bytes())
+        m["artifacts"][self.triage.name]["sha256"] = hashlib.sha256(
+            self.triage.read_bytes()).hexdigest()
+        self.manifest.write_text(json.dumps(m), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "G2_PUBLISH_INPUT_DIGEST_SET_INVALID"):
+            self.verify()
+
+    def test_rehashed_unknown_source_blocker(self):
+        self.t["sources"][0]["blockers"] = ["INVENTED_SOURCE_BLOCKER"]
+        self.t["source_blocker_counts"] = {
+            "ORIGINAL_RAW_SHA256_NOT_DOCUMENTED": 13,
+            "INVENTED_SOURCE_BLOCKER": 1}
+        self.write()
+        with self.assertRaisesRegex(ValueError, "G2_PUBLISH_UNKNOWN_SOURCE_BLOCKER"):
             self.verify()
 
     def test_ci_success_only_publication(self):
