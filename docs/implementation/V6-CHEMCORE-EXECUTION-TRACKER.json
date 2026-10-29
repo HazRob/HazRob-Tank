@@ -31,7 +31,7 @@
     "library_reference_records": 80,
     "independent_Tank_G3_validated_techniques": 0
   },
-  "disclaimer": "G3 Tank physical validation remains 0/80; V6 APK not built; no calibrated gas identity/PPM. UCI1081 exploratory external results from source raw file and local Python, not reproduced in GitHub CI.",
+  "disclaimer": "V6 source contract Java is compiled/tested JDK only but NOT wired to active Android ChemCore. No Gradle APK or device firmware change. Tank G3 remains 0/80; UCI1081 is external only.",
   "stage_count": 12,
   "stages": [
     {
@@ -121,12 +121,16 @@
         "database_migration_plan.md"
       ],
       "gate": "REPLAY_AND_MIGRATION_TESTS_DEFINED",
-      "status": "NOT_STARTED",
-      "actual_commit": null,
-      "ci_run": null,
-      "verified_on": null,
-      "blockers": [],
-      "next_action": null
+      "status": "IN_PROGRESS_TANK_JAVA_R0_SOURCE_GATE_COMPILED_NOT_WIRED",
+      "actual_commit": "1ca5a8c4df23b327b98e62cab7ccfbf8f6cd57a1",
+      "ci_run": 40912404109,
+      "verified_on": "2026-10-29",
+      "blockers": [
+        "Java source gate not connected to current ChemCore inference path",
+        "Actual V5 session replay and Android Gradle compilation not yet run",
+        "G3 registry not implemented; M4 request always denied"
+      ],
+      "next_action": "Architect source-curve contract registry and verify migration behavior before wiring Java gate to runtime"
     },
     {
       "id": "P04",
@@ -334,7 +338,7 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "FIRST_EXECUTION_BATCH_VERIFIED_CI_SOURCE_SIMULATION_AND_UCI1081_PILOT_WITHOUT_ANDROID_INTEGRATION",
+  "state": "FIRST_EXECUTION_BATCH_PYTHON30_JAVA31_CI_SUCCESS_UCI1081_PILOT_ANDROID_NOT_CONNECTED",
   "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
   "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
   "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
@@ -362,6 +366,21 @@
       "peer_sources_verified": 3,
       "artifact_id": 12914830258,
       "artifact_sha256": "be3e9e4c97ca4302cbab5bd63609235854902864fa4c19b0293b1dc2dcef8939"
+    },
+    {
+      "run_id": 40912404109,
+      "workflow": ".github/workflows/chemcore-v6-scientific-ci.yml",
+      "head_sha": "42732b2cd51b3e1d0567cda686d0291f8b75a909",
+      "status": "COMPLETED_SUCCESS",
+      "python_tests_pass": 30,
+      "java_source_gate_assertions": 31,
+      "java_compilation": "PASS",
+      "curve_roundtrip": 387,
+      "synthetic_r0": 172,
+      "source_hashes": 14,
+      "peer_sources": 3,
+      "artifact_id": 12914686568,
+      "artifact_sha256": "2056f5cb2f995ea0226f5225c65652352df57f63a6626d5de2ecd9b6cb613d06"
     }
   ],
   "external_real_pilots": [
@@ -389,5 +408,5 @@
     }
   ],
   "scientific_checkpoint": "docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md",
-  "current_phase": "P00_P01_P02_P04_P05_EARLY_IMPLEMENTATION_WITH_GATES_OPEN"
+  "current_phase": "P00_P01_P02_P03_P04_P05_EARLY_IMPLEMENTATION_WITH_GATES_OPEN"
 }
