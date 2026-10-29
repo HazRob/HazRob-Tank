@@ -95,3 +95,11 @@
 - **CI:** [run 40917593589](https://github.com/HazRob/HazRob-Tank/actions/runs/40917593589), head `1e52e2f7605b2ef7de5555ffea78ca402ed101cc`, **success**: 50 Python tests, 31 R0 compatibility + 33 consensus +15 bounded curve JVM assertions = 79 Java assertions. Research ZIP artifact `12916292465`.
 - **Permanent checkpoint:** `docs/implementation/V6-CHEMCORE-CHECKPOINT-03-2026-10-29_AR.md`; phase tracker `docs/implementation/V6-CHEMCORE-EXECUTION-TRACKER.json` updated. `P06=SOURCE_CURVE_JAVA_MATH_JDK_TESTED_NOT_STABLE_INTEGRATED`.
 - **Untested:** Android-specific Gradle/APK, real device sensors RL/Vc/heater, actual source-curve applicability, full Stable registry and P08/P09 runtime integration. **G3 Tank=0/80**.
+
+## 2026-10-29 — V6-003 user-approved DEFER and cleanup
+
+- **Owner instruction:** defer startup transient MQ and Bosch scan technique until after the core ChemCore Tank V6 scientific plan is completed. **Phone-side storage** remains a requirement should the idea be reopened; no ESP32 buffering or added request rate.
+- **Immediate rollback:** `MainActivity.java` restored byte-identical to pre-experiment blob `e1885a3b806c6b375b19e129880a3ef126ce5b68` (commit `2e948b57c454f193ab9b4fa39de55c4c5162ec21`); scientific CI restored byte-identical to prior blob `3ea9ac7ca1aa308df4def0283307d88608073fc2` (commit `ba70fc50a0cb72b9c6a5aea4bb272742ba5077b8`).
+- **Discarded deferred implementation:** `TankV6StartupWindow.java`, `PhoneMqStartupRecorder.java`, Java startup unit test, Python startup feature prototype and Python startup unit test. `V6-003` source study retained in `docs/research/`, marked `DEFERRED_BY_OWNER`.
+- **Effect:** no phone-side first-minute recording is active, no new ESP32 request/flash/SPI/heap pressure; baseline V5 telemetry, R0 and normal analytics preserved.
+- **Main work resumed:** P06 `SourceCurveRegistryV6`, P03 provenance mapping, P08 validation; G3 remains `0/80`.
