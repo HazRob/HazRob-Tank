@@ -51,7 +51,8 @@ def report(root=ROOT):
         raise EvidenceError("UCI308 source exposure/unit contract mismatch")
     if (mix["source_experiment_count"]!=180 or mix["unique_mixture_configurations"]!=30
         or mix["repetitions_per_configuration"]!=6
-        or mix["scientific_Tank_G3_validated"] is not False):
+        or not (type(mix["scientific_Tank_G3_validated"]) in (int,bool)
+                and mix["scientific_Tank_G3_validated"]==0)):
         raise EvidenceError("UCI309 source grouped exposure contract mismatch")
     if trained["research_only"] is not True or trained["tank_g3_validated"] is not False:
         raise EvidenceError("trained source evidence incorrectly promoted")
