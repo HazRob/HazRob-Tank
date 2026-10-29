@@ -55,6 +55,14 @@ public final class FoodFreshnessEngineTest {
         var all=FoodFreshnessEngine.analyze(Collections.singletonList(
            new FoodFreshnessEngine.Reading("MQ2",500)),"");
         ok(all.rankedTemplates.size()==59,"all food exemplars, none filtered by confidence");
+        var fruit=FoodFreshnessEngine.analyzeFruit(Collections.singletonList(
+            new FoodFreshnessEngine.Reading("MQ2",500)),"");
+        ok(fruit.rankedTemplates.size()==54,
+           "fruit UI uses 54 fruit samples and preserves 5 mushroom reference records");
+        ok(FoodFreshnessEngine.fruitFamilies().size()==18,
+           "fruit selector excludes only mushroom category");
+        ok(!FoodFreshnessEngine.fruitFamilies().contains("mushroom"),
+           "mushroom not mislabeled a fruit");
         ok(all.rankedTemplates.get(0).overlappingSensors==1,"limited evidence annotated");
         ok(all.rankedTemplates.get(0).similarityIndex<=100,"bounded similarity index");
         ok(!FoodFreshnessEngine.foodFamilies().isEmpty(),"food selection available");
