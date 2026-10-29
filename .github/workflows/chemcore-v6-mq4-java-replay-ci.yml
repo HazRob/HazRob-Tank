@@ -56,7 +56,8 @@ jobs:
             /tmp/v6-mq4-java/10ppm_data.csv \
             /tmp/v6-mq4-java/v6_coordinator_raw_no_r0_audit.csv \
             /tmp/v6-mq4-java/v6_pls1_whole_day_source_folds.csv \
-            /tmp/v6-mq4-java/v6_pls1_whole_day_heldout_predictions.csv
+            /tmp/v6-mq4-java/v6_pls1_whole_day_heldout_predictions.csv \
+            /tmp/v6-mq4-java/v6_pls1_unseen_unit_and_day_transfer.csv
       - name: Validate scientific holdout and raw-preservation evidence and quantify actual source results
         shell: bash
         run: |
@@ -69,7 +70,9 @@ jobs:
           audit=rows('v6_coordinator_raw_no_r0_audit.csv')
           folds=rows('v6_pls1_whole_day_source_folds.csv')
           pred=rows('v6_pls1_whole_day_heldout_predictions.csv')
+          transfer=rows('v6_pls1_unseen_unit_and_day_transfer.csv')
           assert len(audit)==14186 and len(folds)==44 and len(pred)==56744
+          assert len(transfer)==33
           assert len({r['source_row_id'] for r in audit})==14186
           days=sorted({r['source_day'] for r in audit})
           assert len(days)==11 and days[0]=='2021-07-21' and days[-1]=='2021-07-31'
@@ -108,6 +111,16 @@ jobs:
                            'nonpositive_source_estimates':nonphysical,
                            '4ppm_analytical_sensitivity':tp/(tp+fn) if tp+fn else None}
             print('MQ4_JAVA_ACTUAL_V6',name,json.dumps(summary[name],sort_keys=True))
+          assert len({(x['heldout_day'],x['heldout_sensor_instance']) for x in transfer})==33
+          assert all(x['heldout_sensor_instance'] not in x['training_instances'].split('|')
+                     and x['training_days']=='9' and x['true_source_unit_excluded_from_fit']=='true'
+                     and x['source_only']=='true' and x['no_tank_g3']=='true'
+                     for x in transfer)
+          import statistics as st
+          transfer_mae=st.mean(float(x['source_mae_ppm']) for x in transfer)
+          transfer_coverage=st.mean(float(x['test_interval_coverage']) for x in transfer)
+          print('N05K_JAVA_UNIT_DAY_SOURCE_TRANSFER 33 folds mean_MAE_ppm',round(transfer_mae,6),
+                'mean_nominal90_coverage',round(transfer_coverage,6))
           manifest={'schema':'hazrob-v6-java-real-mq4-day-holdout/1',
                     'original_source_sha256':'3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d',
                     'source_rows':14186,'reference_gas':'CH4','source_reference_unit':'ppb',
@@ -120,9 +133,12 @@ jobs:
                     'physical_tank_g3':0,'android_app_device_tested':False,
                     'food_model_attached':False,
                     'fixed_4ppm_cutoff_is_only_research_diagnostic':True,
-                    'models':summary}
+                    'models':summary,
+                    'unseen_unit_and_day_transfer_folds':33,
+                    'unseen_unit_and_day_transfer_mean_MAE_ppm':transfer_mae,
+                    'unseen_unit_and_day_transfer_mean_coverage':transfer_coverage}
           (root/'v6_mq4_java_replay_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
-          print('PASS N05-J SOURCE EXACT JAVA ENGINE 14186 ORIGINAL MQ4 AND PLS1 44 WHOLE DAY FOLDS 56744 HELDOUT PREDICTIONS, G3=0')
+          print('PASS N05-J/K SOURCE EXACT JAVA ENGINE 14186 ORIGINAL MQ4, 44 WHOLE DAY FOLDS, 56744 HELDOUT PREDICTIONS, 33 UNSEEN SENSOR+DAY TRANSFERS; G3=0')
           PY
       - uses: actions/upload-artifact@v4
         if: success()
