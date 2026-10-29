@@ -75,6 +75,29 @@ public final class FoodFreshnessEngine {
             unique.add(family(p.label));
         return Collections.unmodifiableList(new ArrayList<>(unique));
     }
+    /** The raw bank contains 59 profiles, including five mushroom profiles.
+     * The fruit UI deliberately uses 54 fruit/fruit-mixture profiles only.
+     * No raw study record is deleted.
+     */
+    public static List<String> fruitFamilies(){
+        List<String> families=new ArrayList<>();
+        for(String f:foodFamilies())if(!f.equals("mushroom"))families.add(f);
+        return Collections.unmodifiableList(families);
+    }
+    public static Result analyzeFruit(List<Reading> readings,String selectedFruit){
+        Result unfiltered=analyze(readings,selectedFruit);
+        List<Match> edibleDatasetSubset=new ArrayList<>();
+        List<Match> trend=new ArrayList<>();
+        for(Match item:unfiltered.rankedTemplates){
+            if(item.foodFamily.equals("mushroom"))continue;
+            edibleDatasetSubset.add(item);
+        }
+        for(Match item:unfiltered.selectedFoodTrend)
+            if(!item.foodFamily.equals("mushroom"))trend.add(item);
+        return new Result(edibleDatasetSubset,trend,unfiltered.foodSelection,
+                          unfiltered.usableSensorCount,unfiltered.unusableSensorCount);
+    }
+
     private static boolean valid(double x){return x>0&&Double.isFinite(x);}
     public static Result analyze(List<Reading> readings,String selectedFood){
         Map<String,Double> observed=new LinkedHashMap<>();
