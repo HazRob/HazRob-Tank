@@ -8,6 +8,7 @@ on:
       - 'research/chemcore_v6/tests/java/NewChemCoreTankV6EngineTest.java'
       - 'research/chemcore_v6/tests/java/GasFingerprintEngineV6Test.java'
       - 'research/chemcore_v6/tests/java/ChemCoreTankV6CoordinatorTest.java'
+      - 'research/chemcore_v6/tests/java/SignalFeaturesV6Test.java'
       - 'research/chemcore_v6/tests/test_gas_fingerprint_reference_parity.py'
       - 'research/chemcore_v6/tests/test_independent_v6_catalog_parity.py'
       - '.github/workflows/chemcore-v6-independent-engine-ci.yml'
@@ -41,15 +42,19 @@ jobs:
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/GasFingerprintCatalogV6.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/FingerprintEngineV6.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/ChemCoreTankV6.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/SignalFeaturesV6.java \
             research/chemcore_v6/tests/java/NewChemCoreTankV6EngineTest.java \
             research/chemcore_v6/tests/java/GasFingerprintEngineV6Test.java \
-            research/chemcore_v6/tests/java/ChemCoreTankV6CoordinatorTest.java
+            research/chemcore_v6/tests/java/ChemCoreTankV6CoordinatorTest.java \
+            research/chemcore_v6/tests/java/SignalFeaturesV6Test.java
           java -cp /tmp/chemcore-tank-new-v6 \
             com.hazrob.tank.chemcore.v6.NewChemCoreTankV6EngineTest
           java -cp /tmp/chemcore-tank-new-v6 \
             com.hazrob.tank.chemcore.v6.GasFingerprintEngineV6Test
           java -cp /tmp/chemcore-tank-new-v6 \
             com.hazrob.tank.chemcore.v6.ChemCoreTankV6CoordinatorTest
+          java -cp /tmp/chemcore-tank-new-v6 \
+            com.hazrob.tank.chemcore.v6.SignalFeaturesV6Test
       - name: Verify all 43 coefficients match immutable original source
         run: |
           python -m unittest discover -s research/chemcore_v6/tests -p 'test_independent_v6_catalog_parity.py' -v
