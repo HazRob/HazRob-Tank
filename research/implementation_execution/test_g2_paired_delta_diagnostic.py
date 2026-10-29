@@ -1,0 +1,99 @@
+"""Synthetic-only negative and positive controls; never physical gas evidence."""
+import hashlib
+import tempfile
+import unittest
+from pathlib import Path
+
+from g2_paired_delta_diagnostic import (paired_cluster_accuracy_delta as replay,
+                                        replay_per_group_csv)
+
+
+class PairedDeltaDiagnosticTests(unittest.TestCase):
+    def test_identical_model_and_baseline_has_zero_paired_delta(self):
+        result = replay({"session-a": 2, "session-b": 5},
+                        {"session-a": 1, "session-b": 4},
+                        {"session-a": 1, "session-b": 4}, resamples=1000)
+        self.assertEqual((result["observed_delta"], result["interval_low"],
+                          result["interval_high"]), (0, 0, 0))
+        self.assertEqual(result["bootstrap_nonpositive_fraction_not_p_value"], 1)
+        self.assertIn("NOT_G2_OR_G3_APPROVAL", result["scope"])
+
+    def test_perfect_paired_improvement_has_unit_interval(self):
+        result = replay({"a": 3, "b": 7}, {"a": 3, "b": 7},
+                        {"a": 0, "b": 0}, resamples=1000)
+        self.assertEqual((result["observed_delta"], result["interval_low"],
+                          result["interval_high"]), (1, 1, 1))
+        self.assertEqual(result["bootstrap_nonpositive_fraction_not_p_value"], 0)
+
+    def test_deterministic_and_invariant_to_input_dict_order(self):
+        counts = {"a": 2, "b": 5, "c": 4}
+        model = {"a": 2, "b": 2, "c": 4}
+        baseline = {"a": 1, "b": 3, "c": 1}
+        first = replay(counts, model, baseline, resamples=1200)
+        second = replay(dict(reversed(list(counts.items()))),
+                        dict(reversed(list(model.items()))),
+                        dict(reversed(list(baseline.items()))), resamples=1200)
+        self.assertEqual(first, second)
+        self.assertAlmostEqual(first["observed_delta"], 3 / 11)
+
+    def test_missing_or_extra_baseline_group_fails_closed(self):
+        for baseline in ({"a": 0}, {"a": 0, "b": 0, "c": 0}):
+            with self.subTest(baseline=baseline):
+                with self.assertRaisesRegex(ValueError, "PHYSICAL_GROUPS_INVALID"):
+                    replay({"a": 1, "b": 1}, {"a": 1, "b": 0}, baseline)
+
+    def test_noncanonical_or_invalid_physical_group_ids_fail_closed(self):
+        for ids in (("a", "ａ"), ("a", "a\u200b"), ("a", "b "), ("a", 1)):
+            with self.subTest(ids=ids):
+                counts = {ids[0]: 1, ids[1]: 1}
+                with self.assertRaisesRegex(ValueError, "PHYSICAL_GROUPS_INVALID"):
+                    replay(counts, dict.fromkeys(counts, 1), dict.fromkeys(counts, 0))
+
+    def test_invalid_numerators_and_boolean_counts_fail_closed(self):
+        for counts, model, baseline in (
+            ({"a": True, "b": 1}, {"a": 1, "b": 1}, {"a": 0, "b": 0}),
+            ({"a": 1, "b": 1}, {"a": 2, "b": 1}, {"a": 0, "b": 0}),
+            ({"a": 1, "b": 1}, {"a": 1, "b": 1}, {"a": -1, "b": 0}),
+        ):
+            with self.subTest(counts=counts, model=model, baseline=baseline):
+                with self.assertRaisesRegex(ValueError, "COUNTS_INVALID"):
+                    replay(counts, model, baseline)
+
+    def test_csv_replay_has_byte_lineage_and_rejects_duplicate_group(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "metrics_per_group.csv"
+            content = ("group_id,sample_count,correct_count,baseline_correct_count\n"
+                       "a,3,2,1\nb,5,4,3\n")
+            path.write_text(content, encoding="utf-8")
+            result = replay_per_group_csv(path, resamples=1000)
+            self.assertEqual(result["source_csv_sha256"],
+                             hashlib.sha256(content.encode()).hexdigest())
+            self.assertAlmostEqual(result["observed_delta"], 2 / 8)
+            path.write_text(content + "a,1,1,0\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "CSV_ROW_INVALID"):
+                replay_per_group_csv(path)
+
+    def test_csv_replay_rejects_ambiguous_header_and_noncanonical_count(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "metrics_per_group.csv"
+            path.write_text(("group_id,sample_count,correct_count,correct_count,baseline_correct_count\n"
+                             "a,3,2,2,1\nb,5,4,4,3\n"), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "CSV_HEADER_INVALID"):
+                replay_per_group_csv(path)
+            path.write_text(("group_id,sample_count,correct_count,baseline_correct_count\n"
+                             "a,03,2,1\nb,5,4,3\n"), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "CSV_ROW_INVALID"):
+                replay_per_group_csv(path)
+
+    def test_protocol_rejects_bad_resamples_seed_or_confidence(self):
+        for kwargs in ({"seed": True}, {"resamples": 999},
+                       {"resamples": 100001}, {"confidence_level": 0.90},
+                       {"confidence_level": float("nan")}):
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaisesRegex(ValueError, "PROTOCOL_INVALID"):
+                    replay({"a": 1, "b": 1}, {"a": 1, "b": 1},
+                           {"a": 0, "b": 0}, **kwargs)
+
+
+if __name__ == "__main__":
+    unittest.main()
