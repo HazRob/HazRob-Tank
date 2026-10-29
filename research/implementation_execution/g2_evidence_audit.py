@@ -7,6 +7,7 @@ import argparse
 import json
 import math
 import re
+import unicodedata
 from pathlib import Path
 from g2_signal_lineage_gate import audit_signal_lineage
 from g2_evidence_bundle_gate import audit_evidence_bundle
@@ -114,6 +115,25 @@ PHYSICAL_GROUP_KEYS = {"session_id", "device_session_id", "batch_id", "campaign_
 def _nonempty_str(value):
     return isinstance(value, str) and bool(value.strip())
 
+def _canonical_physical_group_id(value):
+    """Reject ambiguous physical group IDs before split/leakage evaluation.
+
+    NFC and Unicode control checks prevent visually identical session/device
+    IDs from being treated as independent groups. Interior ASCII spaces and
+    valid NFC multilingual identifiers remain supported.
+    """
+    if not _nonempty_str(value) or value != value.strip():
+        return False
+    if unicodedata.normalize("NFC", value) != value:
+        return False
+    return not any(
+        unicodedata.category(ch).startswith("C") or
+        unicodedata.category(ch) in ("Zl", "Zp") or
+        (unicodedata.category(ch) == "Zs" and ch != " ")
+        for ch in value
+    )
+
+
 def audit_record(item, repo_root=Path(".")):
     issues = []
     for key in REQUIRED:
@@ -143,6 +163,13 @@ def audit_record(item, repo_root=Path(".")):
            (any(not _nonempty_str(g) for g in p) or
             any(p.count(g) > 1 for g in p)) for p in partitions):
         issues.append("INVALID_OR_DUPLICATE_GROUP_IDS")
+    # An exact string comparison can miss the same physical group encoded
+    # with trailing whitespace, zero-width characters or decomposed Unicode.
+    # This is an independent fail-closed guard even when the bundle is absent.
+    if any(isinstance(p, list) and
+           any(not _canonical_physical_group_id(g) for g in p)
+           for p in partitions):
+        issues.append("NONCANONICAL_PHYSICAL_GROUP_ID")
     # Report known train/test leakage even when calibration provenance is absent.
     # The missing calibration group is a separate failure, not a reason to hide overlap.
     valid_sets = [set(p) if isinstance(p, list) and
