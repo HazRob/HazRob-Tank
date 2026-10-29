@@ -74,6 +74,13 @@ def paired_cluster_accuracy_delta(group_counts, model_correct, baseline_correct,
         for d, n in zip(differences, counts)
     ]
     effective_group_count = total * total / sum(n * n for n in counts)
+    # Equal-group and exposure-weighted estimands answer different questions.
+    # A direction reversal is a weighting sensitivity warning, not evidence
+    # of model superiority or a formal Simpson's-paradox test.
+    equal_group_mean_delta = math.fsum(group_deltas) / len(group_deltas)
+    weighting_direction_disagreement = (observed * equal_group_mean_delta < 0)
+    max_loo_shift = max(abs(value - observed) for value in leave_one_group_out)
+    loo_direction_reversals = sum(observed * value < 0 for value in leave_one_group_out)
     rng = random.Random(seed)
     draws = []
     for _ in range(resamples):
@@ -97,6 +104,11 @@ def paired_cluster_accuracy_delta(group_counts, model_correct, baseline_correct,
         "quantile_method": "linear",
         "observed_delta": observed,
         "model_accuracy": model_accuracy,
+        "equal_physical_group_mean_delta": equal_group_mean_delta,
+        "exposure_vs_equal_group_delta_gap": observed - equal_group_mean_delta,
+        "exposure_vs_equal_group_direction_disagreement": weighting_direction_disagreement,
+        "leave_one_group_out_max_absolute_shift": max_loo_shift,
+        "leave_one_group_out_direction_reversal_count": loo_direction_reversals,
         "baseline_accuracy": baseline_accuracy,
         "group_positive_delta_count": sum(d > 0 for d in differences),
         "group_negative_delta_count": sum(d < 0 for d in differences),
@@ -127,6 +139,7 @@ def replay_per_group_csv(path, *, seed=20261029, resamples=2000):
         header = reader.fieldnames
         required = {"group_id", "sample_count", "correct_count", "baseline_correct_count"}
         if (not header or len(set(header)) != len(header) or
+                any(not _canonical_group_id(name) for name in header) or
                 not required.issubset(set(header))):
             raise ValueError("PAIRED_DELTA_CSV_HEADER_INVALID")
         counts, model, baseline = {}, {}, {}
