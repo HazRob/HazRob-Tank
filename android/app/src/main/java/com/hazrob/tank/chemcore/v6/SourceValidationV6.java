@@ -68,22 +68,32 @@ public final class SourceValidationV6 {
     public static double[] bayesianPosterior(double[] prior,double[] likelihood){
         vector(prior);vector(likelihood);
         require(prior.length==likelihood.length,"Bayes dimensions");
+        // Log-sum-exp prevents underflow of perfectly valid small source likelihoods.
+        double[] logWeight=new double[prior.length];
+        double largest=Double.NEGATIVE_INFINITY;
+        for(int i=0;i<logWeight.length;i++){
+            require(prior[i]>=0&&likelihood[i]>=0,"negative probability/likelihood");
+            logWeight[i]=prior[i]==0||likelihood[i]==0?Double.NEGATIVE_INFINITY:
+                Math.log(prior[i])+Math.log(likelihood[i]);
+            largest=Math.max(largest,logWeight[i]);
+        }
+        require(finite(largest),"zero Bayes evidence");
         double[] w=new double[prior.length];double sum=0;
         for(int i=0;i<w.length;i++){
-            require(prior[i]>=0&&likelihood[i]>=0,"negative probability/likelihood");
-            w[i]=prior[i]*likelihood[i];
-            require(finite(w[i]),"Bayes numerical overflow");sum+=w[i];
+            w[i]=Math.exp(logWeight[i]-largest);sum+=w[i];
         }
-        require(finite(sum)&&sum>0,"zero Bayes evidence");
+        require(finite(sum)&&sum>0,"invalid Bayes normalization");
         for(int i=0;i<w.length;i++)w[i]/=sum;
         return w;
     }
     public static double[] softmaxTemperature(double[] logits,double temperature){
         vector(logits);require(finite(temperature)&&temperature>0,"positive temperature");
+        // Subtract raw max BEFORE division: z/temperature can overflow for
+        // finite z and small positive temperature even when posterior is defined.
         double max=Double.NEGATIVE_INFINITY;
-        for(double z:logits)max=Math.max(max,z/temperature);
+        for(double z:logits)max=Math.max(max,z);
         double[] p=new double[logits.length];double sum=0;
-        for(int i=0;i<p.length;i++){p[i]=Math.exp(logits[i]/temperature-max);sum+=p[i];}
+        for(int i=0;i<p.length;i++){p[i]=Math.exp((logits[i]-max)/temperature);sum+=p[i];}
         require(finite(sum)&&sum>0,"invalid softmax normalization");
         for(int i=0;i<p.length;i++)p[i]/=sum;
         return p;
@@ -170,7 +180,7 @@ public final class SourceValidationV6 {
             if(scores[i]>top){next=top;top=scores[i];best=i;}
             else next=Math.max(next,scores[i]);
         }
-        boolean unknown=top<minBest||(scores.length>1&&top-next<minMargin);
+        boolean unknown=top<minBest||(scores.length>1&&top-next<=minMargin);
         return new OpenSetResult(unknown,unknown?-1:best,top,next);
     }
     public static final class OodModel {
