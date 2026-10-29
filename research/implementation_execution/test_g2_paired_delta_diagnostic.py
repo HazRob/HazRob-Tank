@@ -137,5 +137,68 @@ class PairedDeltaDiagnosticTests(unittest.TestCase):
         self.assertIn("NOT_G2_OR_G3_APPROVAL", original["scope"])
 
 
+    def test_exposure_weighted_and_equal_group_directions_can_disagree(self):
+        # Synthetic group a is small but strongly positive; b is large
+        # and mildly negative. This is a weighting diagnostic, not G2 evidence.
+        result = replay({"a": 1, "b": 100},
+                        {"a": 1, "b": 30},
+                        {"a": 0, "b": 50}, resamples=1000)
+        self.assertAlmostEqual(result["observed_delta"], -19 / 101)
+        self.assertAlmostEqual(result["equal_physical_group_mean_delta"], 0.4)
+        self.assertTrue(result["exposure_vs_equal_group_direction_disagreement"])
+        self.assertAlmostEqual(result["exposure_vs_equal_group_delta_gap"],
+                               -19 / 101 - 0.4)
+        self.assertEqual(result["leave_one_group_out_direction_reversal_count"], 1)
+        self.assertAlmostEqual(result["leave_one_group_out_max_absolute_shift"],
+                               1 + 19 / 101)
+        self.assertIn("NOT_G2_OR_G3_APPROVAL", result["scope"])
+
+    def test_equal_group_sizes_have_identical_macro_and_pooled_deltas(self):
+        result = replay({"a": 4, "b": 4},
+                        {"a": 4, "b": 0},
+                        {"a": 0, "b": 4}, resamples=1000)
+        self.assertEqual(result["observed_delta"], 0)
+        self.assertEqual(result["equal_physical_group_mean_delta"], 0)
+        self.assertEqual(result["exposure_vs_equal_group_delta_gap"], 0)
+        self.assertFalse(result["exposure_vs_equal_group_direction_disagreement"])
+        self.assertEqual(result["leave_one_group_out_direction_reversal_count"], 0)
+
+    def test_weighting_diagnostics_stable_under_group_permutation(self):
+        a = replay({"z": 100, "a": 1, "m": 5},
+                   {"z": 30, "a": 1, "m": 4},
+                   {"z": 50, "a": 0, "m": 1}, resamples=1000)
+        b = replay({"m": 5, "z": 100, "a": 1},
+                   {"m": 4, "z": 30, "a": 1},
+                   {"m": 1, "z": 50, "a": 0}, resamples=1000)
+        self.assertEqual(a, b)
+
+    def test_csv_replay_rejects_nfkc_alias_in_extra_header(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "metrics_per_group.csv"
+            path.write_text(
+                "group_id,sample_count,correct_count,baseline_correct_count,ｅxtra\\n"
+                "a,3,2,1,x\\nb,5,4,3,y\\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "CSV_HEADER_INVALID"):
+                replay_per_group_csv(path, resamples=1000)
+
+    def test_csv_replay_rejects_nfkc_alias_of_required_header(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "metrics_per_group.csv"
+            path.write_text(
+                "group_id,ｇroup_id,sample_count,correct_count,baseline_correct_count\\n"
+                "a,a,3,2,1\\nb,b,5,4,3\\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "CSV_HEADER_INVALID"):
+                replay_per_group_csv(path, resamples=1000)
+
+    def test_csv_replay_preserves_canonical_arabic_extra_header(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "metrics_per_group.csv"
+            path.write_text(
+                "group_id,sample_count,correct_count,baseline_correct_count,الموقع\\n"
+                "a,3,2,1,صنعاء\\nb,5,4,3,تعز\\n", encoding="utf-8")
+            result = replay_per_group_csv(path, resamples=1000)
+            self.assertAlmostEqual(result["observed_delta"], 2 / 8)
+
+
 if __name__ == "__main__":
     unittest.main()
