@@ -111,6 +111,20 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     if any(not isinstance(document, dict) for document in documents):
         return ["CROSS_ARTIFACT_JSON_SCHEMA_INVALID"]
 
+    # Exposure IDs are physical observation keys across the group manifest,
+    # blind predictions and any optional per-group provenance columns. NFC
+    # alone permits compatibility aliases (e.g. e1 versus ｅ1) to evade
+    # duplicate-exposure checks and inflate apparent independent samples.
+    # Check identifier fields only; gas labels and measured values may retain
+    # their original scientific notation and Unicode semantics.
+    for csv_name, rows in (("GROUP_MANIFEST", groups),
+                           ("PREDICTIONS_BLIND", predictions),
+                           ("METRICS_PER_GROUP", per_group)):
+        if any("exposure_id" in row and
+               not _canonical_physical_source_value(row["exposure_id"])
+               for row in rows):
+            issues.append("NONCANONICAL_EXPOSURE_ID:" + csv_name)
+
     # ci_run.json is required by the fourteen-file bundle but previously was
     # never inspected. A matching file hash alone permits arbitrary placeholder
     # text to masquerade as a reproducible GitHub Actions execution.
