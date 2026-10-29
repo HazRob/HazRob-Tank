@@ -67,8 +67,18 @@ public final class NewChemCoreTankV6EngineTest {
           new Engine.Channel("MQ3","c",1000,0),
           new Engine.Channel("MQ8","d",Double.POSITIVE_INFINITY,8000),
           new Engine.Channel("MQ135","e",10000,-1)));
-        assertThat(bad.rejectedNumericalChannels==4,"only unfit numerical inputs rejected");
-        assertThat(bad.allSourceFits.isEmpty(),"never invent response from invalid numeric input");
+        assertThat(bad.rejectedNumericalChannels==2,"only broken raw Rs observations rejected");
+        assertThat(bad.rawChannelsAwaitingR0==2,"raw Rs with invalid R0 preserved for non-ratio methods");
+        assertThat(bad.observedPhysicalChannels==2,"all valid raw observations retained");
+        assertThat(bad.ratioReadyChannels==0,"ratio math not fabricated with missing R0");
+        assertThat(bad.retainedRawSensorRecords.size()==2,"raw samples accessible to future techniques");
+        assertThat(bad.allSourceFits.isEmpty(),"never invent ratio without a reference");
+        var noR0=Engine.analyze(Collections.singletonList(
+          new Engine.Channel("MQ2","not_calibrated",15000,Double.NaN)));
+        assertThat(noR0.observedPhysicalChannels==1,"uncalibrated MQ raw Rs kept");
+        assertThat(noR0.rawChannelsAwaitingR0==1,"missing R0 explicitly counted");
+        assertThat(noR0.rejectedNumericalChannels==0,"missing reference is not corrupt raw data");
+        assertThat(noR0.allSourceFits.isEmpty(),"no artificial ppm without source ratio");
         assertThat(Engine.analyze(null).rankedCandidates.isEmpty(),"no readings means empty results");
         var duplicate=sourceCoExample(200);
         duplicate.add(duplicate.get(0));
