@@ -182,7 +182,7 @@ public final class SmartFieldSessionPdfWriter {
                     r0="R0 "+fmt(s.optDouble("selected_original_r0",Double.NaN));
                 text(c,model+" • scans "+s.optInt("distinct_original_scan_cycles",0)+
                     " • "+raw+" "+r0+" • "+shorten(state,34),
-                    43,y,6.9f,Color.DARK_GRAY,false);
+                    43,y,6.9f,Color.DKGRAY,false);
                 y+=10;
             }
             y+=12;
