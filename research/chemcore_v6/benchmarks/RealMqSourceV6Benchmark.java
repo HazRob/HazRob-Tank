@@ -67,7 +67,7 @@ public final class RealMqSourceV6Benchmark {
                 counter.put(label,position+1);
                 double[] x=new double[7];
                 for(int j=0;j<7;j++)x[j]=number(v[j+1]);
-                req(Integer.parseInt(v[0].trim())==raw.size(),"source serial order");
+                req(Integer.parseInt(v[0].trim())==position,"source serial must reset per gas class to 0..1599");
                 raw.add(new Raw(raw.size(),position/320,position,label,x));
             }
         }
@@ -80,7 +80,7 @@ public final class RealMqSourceV6Benchmark {
                  BufferedWriter predictions)throws Exception{
         List<Raw> all=readMQ(rawPath);
         metric.write("dataset,mode,fold,train_rows,test_rows,embargo_rows,accuracy,balanced_accuracy,macro_f1\n");
-        predictions.write("dataset,mode,fold,source_serial,actual_class,predicted_class,source_raw_adc_no_ppm\n");
+        predictions.write("dataset,mode,fold,source_row_index_zero_based,actual_class,predicted_class,source_raw_adc_no_ppm\n");
         for(String mode:MODES)for(int fold=0;fold<5;fold++){
             List<double[]> features=new ArrayList<>();
             List<String> labels=new ArrayList<>();
