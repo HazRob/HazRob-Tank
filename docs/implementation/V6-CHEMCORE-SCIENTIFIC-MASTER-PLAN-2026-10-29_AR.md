@@ -232,3 +232,18 @@ ESP32 Tank / session replays / research adapters (separate provenance)
 ## 17) ملاحظة ضبط قائمة السيناريوهات
 
 يتضمن سجل `docs/research/V6-CHEMCORE-SIMULATION-SCENARIOS.csv` **24 سيناريو محددًا** من التحقق الكهربائي والمنحنيات إلى المحاكاة البيئية والخلائط والفحص الفيزيائي G3. هذا عدد سيناريوهات مخطط لها وليس تنفيذًا جديدًا؛ يجب توثيق النتيجة الفعلية لكل Scenario ID عند التنفيذ.
+
+## 18) إضافة معتمدة إلى نطاق الخطة: مكتبة معايرة R0 والمنحنيات والبصمات التاريخية
+
+**مستند المصدر الملزم:** `../research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md`. اعتمد باعتباره جزءًا أساسيًا من P01/P02/P04/P05/P06/P07/P08/P09، وليس دراسة خلفية مؤجلة.
+
+**المصفوفات الجديدة:**
+- `../research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv`: 8 عوامل `Rs_air/R0` الخاصة بأمثلة MQUnifiedsensor، مقارنة رياضيات R0 من تجربة 2018 ومعرفة عدم تطابق MQ7 وMQ8.
+- `../research/V6-CHEMCORE-MQDATA-CURVES-43-COMPATIBILITY.csv`: 43 منحنى مع معاملات المصدر ومجاله و`output_scale`؛ **ستة** MQ3 بها `output_scale=50` ويلزم توثيق تحويلها.
+- `../research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv`: 14 أصلًا بحثيًا تاريخيًا محفوظًا بأرقام Git blob أصلية، تشمل منحنيات وبصمات ونماذج ودراسات.
+
+**مبدأ الاستفادة:** حفظ بصمات 11 مادة + فئتين تشغيليتين (13 عائلة مصدرية مشتقة)، و59 جلسة headspace غير جزيئية، و4 فئات MQ ADC (6400 *صف* ليس 6400 تعرضًا)، و18 موجزًا غاز/تركيز من UCI1081، والاستفادة من نماذج 76 مع إبقاء `Pending` متى لم تُنقل فعليًا. 39 منحنى GasEngine والتصنيفات القديمة مصدر مقارن إضافي؛ لا إضافة مباشرة لعدد 49 Stable لأنها قد تتداخل معها. استُخدمت ملفات `HazRob/build-harness/library/research/hr069/current-manifest.json` كمصدر 14 أصلًا مع الالتزام المرجعي القديم `33ee17dbbd291ded7154f5030612d90f6e79f81b`.
+
+**مطلب عقد V6:** أضف `ratio_direction` و`r0_definition_id` و`source_graph_revision` و`reference_compound_semantics` لكل منحنى؛ اقفل التحليل الكمي إذا افتقد المصدر التوافق، لكن احتفظ به كبحثي مع سبب. `MQUnifiedsensor.readSensorR0Rs()` يستخدم `R0/Rs` بعكس `readSensor()`، وهو سبب لمنع الخلط. المصدر الخارجي لا يعوض R0 على جهاز Tank.
+
+**المخرجات الملزمة لمحاكاة هذه الإضافة:** `r0_cross_source_compatibility.csv`, `curve_unit_roundtrip.json`, `ppm_sensitivity_to_r0.csv`, `response_prior_dependent_fingerprints.jsonl`, `fingerprint_overlap_mask_test.json`, `duplicate_lineage_report.json` مع `source_hash` وأرقام المنحنيات. ما سبق مجرد أسماء مخرجات مطلوبة وليست نتائج مُنجزة.
