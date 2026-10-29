@@ -6,6 +6,7 @@ on:
       - feature/tank-v6-implementation
     paths:
       - 'research/chemcore_v6/**'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/TankV6SourceCompatibility.java'
       - '.github/workflows/chemcore-v6-scientific-ci.yml'
   pull_request:
     paths:
@@ -32,6 +33,18 @@ jobs:
       - name: Compile V6 research source and tests
         run: |
           python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/peer_r0_audit.py research/chemcore_v6/tests/test_source_audit.py research/chemcore_v6/tests/test_peer_r0_audit.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile and test Tank-local Java R0 source compatibility
+        run: |
+          mkdir -p /tmp/tank-v6-chemcore-classes
+          javac -d /tmp/tank-v6-chemcore-classes \
+            android/app/src/main/java/com/servoc/app/chemcore/TankV6SourceCompatibility.java \
+            research/chemcore_v6/tests/java/TankV6SourceCompatibilityTest.java
+          java -cp /tmp/tank-v6-chemcore-classes \
+            com.servoc.app.chemcore.TankV6SourceCompatibilityTest
       - name: Run all V6 source and peer-R0 regression tests
         run: |
           python -m unittest discover -s research/chemcore_v6/tests -p 'test_*.py' -v
