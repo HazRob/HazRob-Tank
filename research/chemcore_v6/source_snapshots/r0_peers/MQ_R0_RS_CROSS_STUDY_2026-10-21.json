@@ -1,0 +1,486 @@
+{
+  "schema": "hazrob.r0_rs_cross_study_evidence.v1",
+  "date": "2026-10-21",
+  "branch": "research/mq-r0-rs-cross-study-20261021",
+  "qualification": "RESEARCH_ONLY_NOT_STABLE_R0_AND_NOT_TANK_G3",
+  "paper_2018": {
+    "id": "CAL-01",
+    "doi": "10.1109/SIITME.2018.8599253",
+    "url": "https://www.researchgate.net/publication/330597436_Acquisition_and_Calibration_Interface_for_Gas_Sensors",
+    "method": "Measure clean-air voltage then calculate Rs_air=RL*(Vc-Vout)/Vout and divide by adopted clean-air factor",
+    "rows": [
+      {
+        "sensor": "MQ2",
+        "vc_V": 5.02,
+        "vout_V": 0.4165,
+        "RL_ohm": 5000,
+        "Rs_air_ohm": 55294.11,
+        "R0_reported_ohm": 5728.77,
+        "ratioAir_paper": 9.65,
+        "ratioAir_code": 9.577,
+        "R0_arithmetic_from_Rs_ohm": 5729.96,
+        "R0_paper_error_percent": 0.021,
+        "R0_arithmetic_valid": true,
+        "ratioAir_code_overlap_within_1pct": true
+      },
+      {
+        "sensor": "MQ3",
+        "vc_V": 5.02,
+        "vout_V": 0.5978,
+        "RL_ohm": 200000,
+        "Rs_air_ohm": 1480327.86,
+        "R0_reported_ohm": 24692.7,
+        "ratioAir_paper": 59.95,
+        "ratioAir_code": 60.314,
+        "R0_arithmetic_from_Rs_ohm": 24692.708,
+        "R0_paper_error_percent": 0,
+        "R0_arithmetic_valid": true,
+        "ratioAir_code_overlap_within_1pct": true
+      },
+      {
+        "sensor": "MQ4",
+        "vc_V": 5.02,
+        "vout_V": 0.4067,
+        "RL_ohm": 20000,
+        "Rs_air_ohm": 226987.95,
+        "R0_reported_ohm": 51238.81,
+        "ratioAir_paper": 4.43,
+        "ratioAir_code": 4.434,
+        "R0_arithmetic_from_Rs_ohm": 51238.815,
+        "R0_paper_error_percent": 0,
+        "R0_arithmetic_valid": true,
+        "ratioAir_code_overlap_within_1pct": true
+      },
+      {
+        "sensor": "MQ5",
+        "vc_V": 5.02,
+        "vout_V": 0.7644,
+        "RL_ohm": 20000,
+        "Rs_air_ohm": 111410.25,
+        "R0_reported_ohm": 17192.94,
+        "ratioAir_paper": 6.48,
+        "ratioAir_code": 6.455,
+        "R0_arithmetic_from_Rs_ohm": 17192.94,
+        "R0_paper_error_percent": 0,
+        "R0_arithmetic_valid": true,
+        "ratioAir_code_overlap_within_1pct": true
+      },
+      {
+        "sensor": "MQ6",
+        "vc_V": 5.02,
+        "vout_V": 1.0633,
+        "RL_ohm": 20000,
+        "Rs_air_ohm": 74470.04,
+        "R0_reported_ohm": 7522.22,
+        "ratioAir_paper": 9.9,
+        "ratioAir_code": 9.94,
+        "R0_arithmetic_from_Rs_ohm": 7522.226,
+        "R0_paper_error_percent": 0,
+        "R0_arithmetic_valid": true,
+        "ratioAir_code_overlap_within_1pct": true
+      },
+      {
+        "sensor": "MQ7",
+        "vc_V": 5.02,
+        "vout_V": 0.5789,
+        "RL_ohm": 10000,
+        "Rs_air_ohm": 76716.18,
+        "R0_reported_ohm": 6943.82,
+        "ratioAir_paper": 26.06,
+        "ratioAir_code": 26.09,
+        "R0_arithmetic_from_Rs_ohm": 2943.829,
+        "R0_paper_error_percent": -57.605,
+        "R0_arithmetic_valid": false,
+        "ratioAir_code_overlap_within_1pct": true
+      },
+      {
+        "sensor": "MQ8",
+        "vc_V": 5.02,
+        "vout_V": 0.9212,
+        "RL_ohm": 10000,
+        "Rs_air_ohm": 44521.27,
+        "R0_reported_ohm": 1708.41,
+        "ratioAir_paper": 69.48,
+        "ratioAir_code": 1,
+        "R0_arithmetic_from_Rs_ohm": 640.778,
+        "R0_paper_error_percent": -62.493,
+        "R0_arithmetic_valid": false,
+        "ratioAir_code_overlap_within_1pct": false
+      },
+      {
+        "sensor": "MQ9",
+        "vc_V": 5.02,
+        "vout_V": 0.5684,
+        "RL_ohm": 10000,
+        "Rs_air_ohm": 78362.06,
+        "R0_reported_ohm": 8061.94,
+        "ratioAir_paper": 9.72,
+        "ratioAir_code": 9.799,
+        "R0_arithmetic_from_Rs_ohm": 8061.94,
+        "R0_paper_error_percent": 0,
+        "R0_arithmetic_valid": true,
+        "ratioAir_code_overlap_within_1pct": true
+      },
+      {
+        "sensor": "MQ135",
+        "vc_V": 5.02,
+        "vout_V": 0.9653,
+        "RL_ohm": 20000,
+        "Rs_air_ohm": 84060.91,
+        "R0_reported_ohm": 23350.25,
+        "ratioAir_paper": 3.6,
+        "ratioAir_code": 3.59,
+        "R0_arithmetic_from_Rs_ohm": 23350.253,
+        "R0_paper_error_percent": 0,
+        "R0_arithmetic_valid": true,
+        "ratioAir_code_overlap_within_1pct": true
+      }
+    ],
+    "warning": "Published MQ7 and MQ8 fail internal R0 arithmetic; no original certified gas standard or sensor serial numbers obtained"
+  },
+  "typical_manufacturer_sensing_resistance_in_target_gas": [
+    {
+      "sensor": "MQ2",
+      "rs_range_at_gas_ohm": [
+        3000,
+        30000
+      ],
+      "gas": "isobutane",
+      "concentration_ppm": 1000,
+      "concentration_mg_L": null,
+      "source_url": "https://www.alldatasheet.net/html-pdf/1572280/HANWEI/MQ2/247/1/MQ2.html",
+      "reference_type": "HISTORIC_HANWEI_SENSING_BODY_SPEC",
+      "warning": "NOT clean air Rs or universal R0; match manufacturer revision/heater/gas first"
+    },
+    {
+      "sensor": "MQ3",
+      "rs_range_at_gas_ohm": [
+        1000000,
+        8000000
+      ],
+      "gas": "alcohol (ethanol)",
+      "concentration_ppm": null,
+      "concentration_mg_L": 0.4,
+      "source_url": "https://www.mouser.com/ds/2/321/MQ-3-17778.pdf",
+      "reference_type": "HISTORIC_HANWEI_SENSING_BODY_SPEC",
+      "warning": "NOT clean air Rs or universal R0; match manufacturer revision/heater/gas first"
+    },
+    {
+      "sensor": "MQ4",
+      "rs_range_at_gas_ohm": [
+        2000,
+        20000
+      ],
+      "gas": "methane",
+      "concentration_ppm": 5000,
+      "concentration_mg_L": null,
+      "source_url": "https://www.pololu.com/file/0J311/MQ4.pdf",
+      "reference_type": "HISTORIC_HANWEI_SENSING_BODY_SPEC",
+      "warning": "NOT clean air Rs or universal R0; match manufacturer revision/heater/gas first"
+    },
+    {
+      "sensor": "MQ5",
+      "rs_range_at_gas_ohm": [
+        10000,
+        60000
+      ],
+      "gas": "unspecified vendor test",
+      "concentration_ppm": null,
+      "concentration_mg_L": null,
+      "source_url": "https://wiki.seeedstudio.com/Grove-Gas_Sensor-MQ5/",
+      "reference_type": "VENDOR_MODULE_SPEC_NO_CAL_GAS",
+      "warning": "NOT clean air Rs or universal R0; match manufacturer revision/heater/gas first"
+    },
+    {
+      "sensor": "MQ7",
+      "rs_range_at_gas_ohm": [
+        2000,
+        20000
+      ],
+      "gas": "carbon monoxide",
+      "concentration_ppm": 100,
+      "concentration_mg_L": null,
+      "source_url": "https://www.hestore.hu/prod_getfile.php?id=8183",
+      "reference_type": "HISTORIC_HANWEI_SENSING_BODY_SPEC",
+      "warning": "NOT clean air Rs or universal R0; match manufacturer revision/heater/gas first"
+    },
+    {
+      "sensor": "MQ8",
+      "rs_range_at_gas_ohm": [
+        10000,
+        60000
+      ],
+      "gas": "hydrogen",
+      "concentration_ppm": 1000,
+      "concentration_mg_L": null,
+      "source_url": "https://dfimg.dfrobot.com/wiki/17034/SEN0133_hydrogen-gas-sensor_datasheet_v1.0.pdf",
+      "reference_type": "HISTORIC_HANWEI_SENSING_BODY_SPEC",
+      "warning": "NOT clean air Rs or universal R0; match manufacturer revision/heater/gas first"
+    },
+    {
+      "sensor": "MQ9",
+      "rs_range_at_gas_ohm": [
+        2000,
+        20000
+      ],
+      "gas": "carbon monoxide",
+      "concentration_ppm": 100,
+      "concentration_mg_L": null,
+      "source_url": "https://www.kyohritsu.com/eclib/OTHER/DATASHEET/SENSOR/mq9.pdf",
+      "reference_type": "HISTORIC_HANWEI_SENSING_BODY_SPEC",
+      "warning": "NOT clean air Rs or universal R0; match manufacturer revision/heater/gas first"
+    },
+    {
+      "sensor": "MQ135",
+      "rs_range_at_gas_ohm": [
+        30000,
+        200000
+      ],
+      "gas": "ammonia",
+      "concentration_ppm": 100,
+      "concentration_mg_L": null,
+      "source_url": "https://manuals.plus/m/1be66f0b1ccd32b256c3c816a7a19bfb206e3bdbd892f36348459b804c4506a6",
+      "reference_type": "HISTORIC_HANWEI_SENSING_BODY_SPEC",
+      "warning": "NOT clean air Rs or universal R0; match manufacturer revision/heater/gas first"
+    }
+  ],
+  "code_factors": {
+    "id": "CAL-02",
+    "url": "https://github.com/mdsiraj1992/Gassensors/blob/master/Gassensors_calibration/Gassensors_calibration.ino",
+    "is_measured_R0": false,
+    "meaning": "dimensionless clean-air Rs/R0 derived by author from graphs; 8/9 close to paper within 1%, MQ8 not"
+  },
+  "other_reported_examples": [
+    {
+      "id": "CAL-03",
+      "source": "https://onlinelibrary.wiley.com/doi/10.1155/2021/9931228",
+      "sensors": [
+        "MQ4",
+        "MQ135"
+      ],
+      "R0_reported": 4.78,
+      "units": "NOT_STATED",
+      "device_separated": false,
+      "status": "PAPER_AMBIGUOUS_NOT_COMPARABLE"
+    },
+    {
+      "id": "CAL-04",
+      "source": "https://github.com/Tareq-Khalil/ORBIT-Sensor-Calibration-Documentation/blob/main/MQ-135%20Gas%20Sensor",
+      "sensors": [
+        "MQ135"
+      ],
+      "Rs_air_example_ohm": 41100,
+      "ratio_air": 3.6,
+      "R0_derived_example_ohm": 11420,
+      "status": "ILLUSTRATIVE_TEACHING_EXAMPLE_NOT_VERIFIED_LAB"
+    },
+    {
+      "id": "CAL-05",
+      "source": "https://github.com/miguel5612/MQSensorsLib",
+      "sensors": [
+        "MQ4"
+      ],
+      "R0_source_code": 3.86018237,
+      "code_unit": "KOHM_AS_LIBRARY_INTERFACE",
+      "status": "CODE_CONSTANT_NOT_PEER_DEVICE_MEASUREMENT"
+    }
+  ],
+  "beef_source": {
+    "id": "MQ-EXT-02",
+    "source_original": "https://data.mendeley.com/datasets/mwmhh766fc/3",
+    "source_csv": "https://github.com/MomThu/Beef-Quality-Analysis/tree/main/data",
+    "series": 5,
+    "rows_each": 2160,
+    "rows_total": 10800,
+    "source_column_unit": "ohm per publisher",
+    "unit_verification": "FAILED_TO_CONFIDENTLY_RESOLVE_MAGNITUDE_AGAINST_DATASHEET; DO_NOT_MULTIPLY_1000_BY_GUESS",
+    "sensor_columns": 9,
+    "sensors_examined": [
+      {
+        "sensor": "MQ2",
+        "numerical_min": 1.03,
+        "numerical_median": 2.91,
+        "numerical_max": 45.76,
+        "first_row_by_session": [
+          29.56,
+          32,
+          41.54,
+          30.66,
+          23.91
+        ],
+        "last_row_by_session": [
+          2.17,
+          2.89,
+          2.64,
+          2.8,
+          3.07
+        ],
+        "physical_unit": "UNVERIFIED_PUBLISHER_WRITES_OHM"
+      },
+      {
+        "sensor": "MQ3",
+        "numerical_min": 3.84,
+        "numerical_median": 7.37,
+        "numerical_max": 25.88,
+        "first_row_by_session": [
+          14.83,
+          20.31,
+          19.34,
+          18.93,
+          24.89
+        ],
+        "last_row_by_session": [
+          4.86,
+          5.19,
+          5.94,
+          5.62,
+          7.28
+        ],
+        "physical_unit": "UNVERIFIED_PUBLISHER_WRITES_OHM"
+      },
+      {
+        "sensor": "MQ4",
+        "numerical_min": 0.55,
+        "numerical_median": 4.5,
+        "numerical_max": 49.77,
+        "first_row_by_session": [
+          49.38,
+          28.82,
+          39.83,
+          44.01,
+          39.83
+        ],
+        "last_row_by_session": [
+          1.34,
+          0.95,
+          0.96,
+          0.98,
+          1.37
+        ],
+        "physical_unit": "UNVERIFIED_PUBLISHER_WRITES_OHM"
+      },
+      {
+        "sensor": "MQ5",
+        "numerical_min": 1.87,
+        "numerical_median": 4.43,
+        "numerical_max": 81.41,
+        "first_row_by_session": [
+          11.1,
+          39.63,
+          38.89,
+          36.16,
+          22.49
+        ],
+        "last_row_by_session": [
+          70.89,
+          2.65,
+          2.65,
+          2.65,
+          3.65
+        ],
+        "physical_unit": "UNVERIFIED_PUBLISHER_WRITES_OHM"
+      },
+      {
+        "sensor": "MQ8",
+        "numerical_min": 1.74,
+        "numerical_median": 3.89,
+        "numerical_max": 56.63,
+        "first_row_by_session": [
+          32.09,
+          41.58,
+          40.54,
+          47.81,
+          50.6
+        ],
+        "last_row_by_session": [
+          13.86,
+          3.52,
+          4.08,
+          4.41,
+          2.29
+        ],
+        "physical_unit": "UNVERIFIED_PUBLISHER_WRITES_OHM"
+      },
+      {
+        "sensor": "MQ9",
+        "numerical_min": 3.64,
+        "numerical_median": 6.9,
+        "numerical_max": 17.34,
+        "first_row_by_session": [
+          14.29,
+          11.08,
+          13.24,
+          13.29,
+          15.56
+        ],
+        "last_row_by_session": [
+          4.51,
+          5.83,
+          8.1,
+          7.66,
+          6.79
+        ],
+        "physical_unit": "UNVERIFIED_PUBLISHER_WRITES_OHM"
+      },
+      {
+        "sensor": "MQ135",
+        "numerical_min": 3.63,
+        "numerical_median": 5.59,
+        "numerical_max": 27.55,
+        "first_row_by_session": [
+          22.86,
+          18.39,
+          24.06,
+          22.75,
+          18.31
+        ],
+        "last_row_by_session": [
+          4.24,
+          5.22,
+          5.35,
+          6.36,
+          5.93
+        ],
+        "physical_unit": "UNVERIFIED_PUBLISHER_WRITES_OHM"
+      }
+    ],
+    "source_blobs": [
+      "f70c3e136b8747e258ebe12b6b9dc49b3390d2a0",
+      "8f35c99da882562edaf22398da1bfa59dd3c77ba",
+      "d85024d2b947381adec76d8cc934db7adcc3972e",
+      "93aa6bd17284951f96741acf4c8710f36df9e066",
+      "1bf366a6b0a13937b756d5e9354b53c195b8f00a"
+    ],
+    "clean_air_reference_samples_available": false,
+    "R0_per_sensor_available": false,
+    "gas_labels": "beef quality not independent gas identity/ppm"
+  },
+  "compatibility_rules": {
+    "separate_RL_Rs_R0_RH": true,
+    "R0_values_are_not_sensor_model_constants": true,
+    "nominal_Rs_target_gas_not_equivalent_clean_air_Rs": true,
+    "identical_air_factor_is_shared_digital_graph_not_independent_experiment": true,
+    "MQ7_MQ9_heater_phase_required": true,
+    "no_production_R0_for_HR069_or_Tank": true
+  },
+  "critical_errors": [
+    {
+      "sensor": "MQ7",
+      "printed_R0_ohm": 6943.82,
+      "recomputed_R0_ohm": 2943.829,
+      "relative_difference_pct": -57.605
+    },
+    {
+      "sensor": "MQ8",
+      "printed_R0_ohm": 1708.41,
+      "recomputed_R0_ohm": 640.778,
+      "relative_difference_pct": -62.493
+    }
+  ],
+  "next_steps": [
+    "Verify MQ7 and MQ8 source worksheet and manufacturer-dependent ratio",
+    "Request author/source confirmation of beef numeric unit (Ω vs kΩ) and RL; do not infer R0 from spoiled meat data",
+    "Record R0 per physical sensor + heater phase + concentration reference; compare within same manufacturer model revision only",
+    "Preserve all negative and conflicting evidence as raw research, no Stable activation"
+  ]
+}
