@@ -1,0 +1,85 @@
+{
+  "schema": "chemcore-v6-n05g-original-uci1081-temporal-java-holdout/1",
+  "date": "2026-10-29",
+  "source_url": "https://archive.ics.uci.edu/dataset/1081/gas+sensor+array+low-concentration",
+  "original_zip_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "original_csv_sha256": "d79afe6494903b988de68d4a8ab133167151a1bb620ba413e5cefd15003d07b3",
+  "temporal_features_csv_sha256": "d4a1bf654aa3d8e4cda85f7869c4d7a73ea2d78d4d2cfbd02f8e82830955d5da",
+  "original_exposures": 90,
+  "source_gas_classes": 6,
+  "source_concentration_levels_ppb": [
+    50,
+    100,
+    200
+  ],
+  "source_layout": "10 contiguous 900-sample sensor blocks per exposure row; 30 source time bins of 30 seconds x 10 original sensor channels",
+  "normalization": "Each original source channel's 30-second bin mean divided by the same original exposure's initial 300-second baseline mean minus 1",
+  "holdout_policy": "whole original concentration level excluded (50/100/200), 60 source exposures train, 30 source exposures test in each fold; all 30 bins from each source exposure kept together",
+  "javasource": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/TemporalNeuralResearchV6.java",
+  "script": "research/chemcore_v6/benchmarks/extract_uci1081_temporal_verified.py",
+  "benchmark": "research/chemcore_v6/benchmarks/Uci1081N03GJavaBenchmark.java",
+  "workflow": "https://github.com/HazRob/HazRob-Tank/actions/runs/40958081282",
+  "workflow_commit_sha": "6f08a8ffbd33fe3ef64c5319ffe4604265034bce",
+  "artifact_id": 12934157263,
+  "artifact_zip_sha256": "9cd3b2b4cbd480b73b2d383fa391574c2f23814e19b2d06f1df9b28958750aaa",
+  "library_file_name": "ChemCore_V6_N05G_UCI1081_Temporal_Java_Results_2026-10-29.zip",
+  "library_id": "libfile_2e58d506e5008191aac25281b4e6248c",
+  "evaluations": 18,
+  "heldout_source_predictions": 540,
+  "results": [
+    {
+      "source_channels": "MQ135_only",
+      "method": "CNN1D_FROZEN_FILTERS",
+      "mean_balanced_accuracy": 0.488889,
+      "mean_macro_f1": 0.414419
+    },
+    {
+      "source_channels": "MQ135_only",
+      "method": "TCN_CAUSAL_FROZEN_FILTERS",
+      "mean_balanced_accuracy": 0.266667,
+      "mean_macro_f1": 0.189547
+    },
+    {
+      "source_channels": "MQ135_only",
+      "method": "GRU_FROZEN_GATES",
+      "mean_balanced_accuracy": 0.344444,
+      "mean_macro_f1": 0.264499
+    },
+    {
+      "source_channels": "full_source_10_channels",
+      "method": "CNN1D_FROZEN_FILTERS",
+      "mean_balanced_accuracy": 0.655556,
+      "mean_macro_f1": 0.621737
+    },
+    {
+      "source_channels": "full_source_10_channels",
+      "method": "TCN_CAUSAL_FROZEN_FILTERS",
+      "mean_balanced_accuracy": 0.533333,
+      "mean_macro_f1": 0.476807
+    },
+    {
+      "source_channels": "full_source_10_channels",
+      "method": "GRU_FROZEN_GATES",
+      "mean_balanced_accuracy": 0.811111,
+      "mean_macro_f1": 0.793598
+    }
+  ],
+  "fixed_training_settings": {
+    "logistic_iterations": 550,
+    "learning_rate": 0.12,
+    "l2": 0.002,
+    "encoder": "frozen source architecture; only logistic head trained",
+    "multiclass": "one-versus-rest for six original source gas classes, choose maximum uncalibrated score"
+  },
+  "g3_physically_validated": 0,
+  "gnn_evaluated_on_uci": false,
+  "gnn_omission": "No source-established UCI sensor graph topology/adjoining edges; cannot invent graph and call it physically validated.",
+  "limitations": [
+    "No source-proof of independent devices, days, or physically separate Tank sensor boards.",
+    "Frozen encoder architecture parameters mean NONE of the four methods is an end-to-end trained neural CNN/TCN/GRU/GNN.",
+    "Higher source GRU mean balanced accuracy 0.811111 compared to earlier V6 Java Softmax source 0.766667 is not a controlled superiority result because feature representation differs and no independent device/day experiment exists.",
+    "The source concentration unit ppb identifies sample labels only; no inferred HazRob Tank gas concentration in ppm is verified.",
+    "All results exploratory source model discrimination only; 0/80 Tank G3, no safety identification or unknown-gas rejection certification, no application UI integration or APK.",
+    "First 300 seconds are the UCI per-exposure baseline context, not a startup heating physics model. First-minute MQ/Bosch transient development remains deferred."
+  ]
+}
