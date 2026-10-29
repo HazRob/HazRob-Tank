@@ -1,3 +1,14 @@
+## 2026-10-29 — G2 true-reference class × physical-group support (379/379 CI)
+
+- Resumed from `32daa568deca9d0d18e1f2acf37625745391441e`; verified 20/20 CI successes on that checkpoint. Central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` remains 80 records / 14 external datasets, source-ready 0/14, independent evidence `records=[]`.
+- Research-only `g2_paired_prediction_replay.py` now cross-tabulates each true-reference class against each declared physical group, reports class group coverage and single-group-only classes, and reconciles class/group marginal counts with the original paired prediction rows. This exposes class-group confounding not visible in pooled or equal-class accuracy. Group independence and label authenticity remain unverified.
+- Code commit `5c76feae6cc186d51c01e743d83b003a81f92456`; four new synthetic regression tests commit `011998bedcae5e31ea53f51c60e2182af05d01cb`.
+- [G2 CI #40940130672](https://github.com/HazRob/HazRob-Tank/actions/runs/40940130672), job `123681007502`: **379/379 PASS**, byte-identical audit/triage replay PASS, publication gate PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12926672056`, ZIP SHA256 `5d30d4abb159317eb1488634721c93be7f3d06d8453870f53b79ad46a008d5dc`.
+- Evidence note: `G2_TRUE_REFERENCE_CLASS_BY_PHYSICAL_GROUP_SUPPORT_2026-10-29_AR.md`. Changes only in `research/implementation_execution/` on research branch; no ChemCore Stable, Android, firmware, or main changes. No scientific G2/G3 approval.
+- Next: verify documentation checkpoint CI; acquire source-qualified independent physical exposures with traceable concentration standards, device/session/exposure provenance and preregistered blinded grouped holdouts.
+
+---
+
 ## 2026-10-29 — G2 paired true-reference-class imbalance diagnostic (375/375 CI)
 
 - Resumed from `4db7c8bd3f291c247066c67c20d201e20e764f20`; verified its 20/20 GitHub Actions success. Pinned central catalogue blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries / 14 external datasets), source-ready 0/14, independent evidence `records=[]`.
