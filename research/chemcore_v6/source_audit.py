@@ -183,8 +183,13 @@ def load_curves(root: Path = SNAPSHOTS) -> list[Curve]:
 def logspaced_domain(curve: Curve, n: int = 9) -> list[float]:
     if n < 2:
         raise EvidenceError("at least two grid points required")
-    return [10 ** (math.log10(curve.ppm_min) + (math.log10(curve.ppm_max) -
-            math.log10(curve.ppm_min)) * j / (n-1)) for j in range(n)]
+    # Bound the floating-point logspace endpoints exactly to the source domain.
+    # Otherwise 10**log10(max) may round a few ULP above max and fail closed.
+    lo, hi = math.log10(curve.ppm_min), math.log10(curve.ppm_max)
+    grid = [min(curve.ppm_max, max(curve.ppm_min,
+            10 ** (lo + (hi - lo) * j / (n-1)))) for j in range(n)]
+    grid[0], grid[-1] = curve.ppm_min, curve.ppm_max
+    return grid
 
 
 def validate_curve_roundtrips(curves: list[Curve]) -> dict[str, Any]:
