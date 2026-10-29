@@ -346,7 +346,7 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "NEW_CHEMCORE_V6_24_PARTIAL_OF_80_CI_PASS_UCI1081_RAW_LAYOUT_CORRECTED_NO_APK_G3_ZERO",
+  "state": "NEW_V6_34_PARTIAL_46_UNPORTED_JVM1886_ANDROID_COMPILE_ONLY_NO_APK_G3_ZERO",
   "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
   "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
   "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
@@ -490,7 +490,7 @@
     }
   ],
   "scientific_checkpoint": "docs/implementation/V6-CHEMCORE-IMPLEMENTATION-CHECKPOINT-2026-10-29.md",
-  "current_phase": "CLEAN_SLATE_V6_N01_N02_N03_N04_RUNNING_CHECKPOINT05",
+  "current_phase": "CLEAN_SLATE_V6_N03_B_PARTIAL_METHODS_PASSED_N05_N06_PENDING",
   "scientific_checkpoint_02": "docs/implementation/V6-CHEMCORE-CHECKPOINT-02-2026-10-29_AR.md",
   "scientific_checkpoint_03": "docs/implementation/V6-CHEMCORE-CHECKPOINT-03-2026-10-29_AR.md",
   "deferred_extensions": [
@@ -570,20 +570,29 @@
     },
     {
       "id": "V6-N03",
-      "status": "24_OF_80_PARTIALLY_IMPLEMENTED_56_NOT_YET_PORTED",
-      "open": "Port next 10 algorithms, attach source-qualified dataset and integrate research diagnostics in standalone V6 runtime",
+      "status": "34_OF_80_PARTIALLY_IMPLEMENTED_46_NOT_YET_PORTED",
+      "open": "Next 10 source-defined independent techniques, with real UCI holdout benchmarks for classical learners",
       "next_batch": "V6-N03-B next 10 from source-traceable 80 technique list",
       "new_modules": [
         "MeasurementDiagnosticsV6.java",
         "ResearchDiagnosticsV6.java"
       ],
-      "ci_run": 40938234785,
-      "assertions_new": 392
+      "ci_run": 40941942329,
+      "assertions_new": 392,
+      "last_batch": "V6-N03-B",
+      "modules_added": [
+        "CalibrationResearchV6.java",
+        "ClassicalLearningV6.java",
+        "EvidenceConflictV6.java"
+      ],
+      "latest_batch_assertions": 101
     },
     {
       "id": "V6-N04",
-      "status": "RESEARCH_LEDGER_MULTI_SOURCE_TESTED_NO_PROBABILITY_FUSION",
-      "open": "Develop independent, explicit component-specific uncertainty and mixture inference; do not multiply correlated source roots"
+      "status": "SOURCE_ROOT_LEDGER_WITH_NUMERIC_CURVE_CONFLICT_ENUMERATION_NO_PROBABILITY_FUSION",
+      "open": "Evaluate scientific uncertainty on physically referenced data, no forced gas identity decisions",
+      "source_conflict_module": "EvidenceConflictV6.java",
+      "Android_research_json_field": "source_curve_disagreements"
     },
     {
       "id": "V6-N05",
@@ -601,9 +610,10 @@
     },
     {
       "id": "V6-N06",
-      "status": "ANDROID_V6_DIRECT_TELEMETRY_ADAPTER_JAVA_COMPILE_PASS_APP_UI_NOT_SWITCHED",
+      "status": "ANDROID_STANDALONE_V6_BRIDGE_WITH_CONFLICT_JSON_COMPILED_UI_REPORT_CUTOVER_PENDING",
       "android_compile_CI": 40925657334,
-      "open": "Replace app analytical UI/service with independent V6 results and perform session/report tests before APK"
+      "open": "Wire independent V6 service directly to analysis UI and report/session consumers; no predecessor inference",
+      "latest_compile_CI": 40941913288
     },
     {
       "id": "V6-N07",
@@ -714,7 +724,10 @@
       "ChemCoreTankV6.java",
       "SignalFeaturesV6.java",
       "MeasurementDiagnosticsV6.java",
-      "ResearchDiagnosticsV6.java"
+      "ResearchDiagnosticsV6.java",
+      "CalibrationResearchV6.java",
+      "ClassicalLearningV6.java",
+      "EvidenceConflictV6.java"
     ],
     "android_bridge": "android/app/src/main/java/com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java",
     "old_chemcore_dependency": false,
@@ -725,24 +738,25 @@
     "owner_deferred_startup_transient": true,
     "technique_80": {
       "total": 80,
-      "partially_implemented": 24,
-      "not_yet_new_engine_ported": 56,
+      "partially_implemented": 34,
+      "not_yet_new_engine_ported": 46,
       "fully_device_validated": 0
     },
     "last_verified_CI": {
-      "independent_run": 40938234785,
+      "independent_run": 40941942329,
       "python_independent_tests": 8,
       "java_assertions": {
         "source_curve_engine": 60,
         "signature_engine": 1245,
-        "evidence_coordinator": 55,
+        "evidence_coordinator": 58,
         "signal_feature_engine": 30,
-        "new_ten_diagnostics": 392,
-        "total": 1782
+        "batch_n03_a": 392,
+        "batch_n03_b": 101,
+        "total": 1886
       },
-      "scientific_run": 40939360159,
+      "scientific_run": 40941942306,
       "scientific_python_tests": 69,
-      "android_compile_run": 40935139045,
+      "android_compile_run": 40941913288,
       "android_signal_compile_run": 40935496430
     },
     "outstanding": [
@@ -750,8 +764,9 @@
       "No original raw UCI270/308/309 replay on new V6 engine",
       "No APK V6 build or phone runtime test",
       "No physical Tank G3 evidence",
-      "56/80 named techniques remain unported; 24/80 partial ports do not establish G3",
-      "Old UCI1081 reshaping benchmark explicitly retracted; corrected scores use 10 contiguous sensor blocks"
+      "Old UCI1081 reshaping benchmark explicitly retracted; corrected scores use 10 contiguous sensor blocks",
+      "46/80 techniques still unported and 34/80 partial; physical G3 remains zero",
+      "Need original source-data holdout validation for new classical learning modules before model selection"
     ]
   },
   "checkpoint_06": "docs/implementation/V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-06-2026-10-29_AR.md",
@@ -787,5 +802,45 @@
     "new_script_commit": "2317fe6bb4fbc81349f437809d37fb8a2c1a5752",
     "scientific_contract_CI": 40939360159,
     "real_tank_exposures": 0
+  },
+  "checkpoint_07": "docs/implementation/V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-07-2026-10-29_AR.md",
+  "batch_07": {
+    "date": "2026-10-29",
+    "scope": "NEW_CLEAN_SLATE_GAS_V6_ONLY",
+    "status": "JDK_AND_ANDROID_JAVA_COMPILE_SUCCESS_RESEARCH_STAGE",
+    "method_ids": [
+      "01.5",
+      "03.1",
+      "03.4",
+      "04.3",
+      "04.4",
+      "05.1",
+      "05.2",
+      "05.7",
+      "05.8",
+      "06.7"
+    ],
+    "modules": [
+      "CalibrationResearchV6.java",
+      "ClassicalLearningV6.java",
+      "EvidenceConflictV6.java"
+    ],
+    "test": "research/chemcore_v6/tests/java/V6SecondTenTechniquesTest.java",
+    "java_assertions_new": 101,
+    "java_assertions_total": 1886,
+    "CI": {
+      "independent_engine": 40941942329,
+      "scientific_sources": 40941942306,
+      "Android_compile": 40941913288
+    },
+    "real_training_data_used_for_these_jdk_unit_tests": false,
+    "physical_G3": 0,
+    "APK_built": false,
+    "notes": [
+      "03.4 implements diagonal LDA, PLS-DA not implemented",
+      "Source coefficients for environmental and LOD models must be externally provided",
+      "KNN/logistic numeric scores are not Tank-calibrated identity probabilities",
+      "Food module intentionally excluded"
+    ]
   }
 }
