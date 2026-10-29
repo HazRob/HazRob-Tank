@@ -16,6 +16,7 @@ on:
       - 'research/chemcore_v6/tests/java/V6FifthTenTechniquesTest.java'
       - 'research/chemcore_v6/tests/java/V6SixthTenTechniquesTest.java'
       - 'research/chemcore_v6/tests/java/V6SeventhNeuralTechniquesTest.java'
+      - 'research/chemcore_v6/tests/java/V6OpenSetResearchTest.java'
       - 'research/chemcore_v6/tests/test_gas_fingerprint_reference_parity.py'
       - 'research/chemcore_v6/tests/test_independent_v6_catalog_parity.py'
       - '.github/workflows/chemcore-v6-independent-engine-ci.yml'
@@ -61,6 +62,7 @@ jobs:
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/SupervisedLearningResearchV6.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/AdaptationEvidenceResearchV6.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/TemporalNeuralResearchV6.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/OpenSetResearchV6.java \
             research/chemcore_v6/tests/java/NewChemCoreTankV6EngineTest.java \
             research/chemcore_v6/tests/java/GasFingerprintEngineV6Test.java \
             research/chemcore_v6/tests/java/ChemCoreTankV6CoordinatorTest.java \
@@ -71,7 +73,8 @@ jobs:
             research/chemcore_v6/tests/java/V6FourthTenTechniquesTest.java \
             research/chemcore_v6/tests/java/V6FifthTenTechniquesTest.java \
             research/chemcore_v6/tests/java/V6SixthTenTechniquesTest.java \
-            research/chemcore_v6/tests/java/V6SeventhNeuralTechniquesTest.java
+            research/chemcore_v6/tests/java/V6SeventhNeuralTechniquesTest.java \
+            research/chemcore_v6/tests/java/V6OpenSetResearchTest.java
           java -cp /tmp/chemcore-tank-new-v6 \
             com.hazrob.tank.chemcore.v6.NewChemCoreTankV6EngineTest
           java -cp /tmp/chemcore-tank-new-v6 \
@@ -94,6 +97,8 @@ jobs:
             com.hazrob.tank.chemcore.v6.V6SixthTenTechniquesTest
           java -cp /tmp/chemcore-tank-new-v6 \
             com.hazrob.tank.chemcore.v6.V6SeventhNeuralTechniquesTest
+          java -cp /tmp/chemcore-tank-new-v6 \
+            com.hazrob.tank.chemcore.v6.V6OpenSetResearchTest
       - name: Verify all 43 coefficients match immutable original source
         run: |
           python -m unittest discover -s research/chemcore_v6/tests -p 'test_independent_v6_catalog_parity.py' -v
