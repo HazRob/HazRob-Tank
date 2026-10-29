@@ -1,3 +1,13 @@
+## 2026-10-29 — G2 byte-exact double replay for audit and acquisition triage (289/289 CI)
+
+- Resumed from research HEAD `5a2d18cf52e74c5c379378e82c91a99e3afe2692`; verified 20/20 previous CI successes. Rechecked central `HazRob/build-harness` catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries/14 external datasets); source readiness 0/14 and independent evidence `records: []`.
+- Added `g2_replay_consistency.py` and four negative/positive-control tests; updated `.github/workflows/g2-signal-lineage-v4.yml` to independently rerun both audit and triage, fail closed on byte mismatches, and upload `g2_replay_integrity.json` with SHA256 and sizes.
+- Code/workflow SHA `92edd4402aab54938244af755077433219abdd74`: [G2 Actions #40793543195](https://github.com/HazRob/HazRob-Tank/actions/runs/40793543195), job `123184342051`: **289/289 PASS**, both replay outputs byte-identical, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact `12862363060` (SHA256 `3fb6bd09688b9ec3f759fc5e9a7dede495adeef9b168c7082b7fd08536650eed`).
+- Documentation: `G2_BYTE_EXACT_DOUBLE_REPLAY_INTEGRITY_2026-10-29_AR.md`. Research branch only; no ChemCore Stable, Android or firmware changes. No G2/G3 promotion. Byte-identical replay is software reproducibility, not physical scientific validity.
+- Next: recheck final documentation checkpoint CI; acquire independently measured physical exposures, traceable concentration standards, device/session/exposure IDs and locked grouped blind holdouts.
+
+---
+
 ## 2026-10-29 — G2 exact-input SHA256 provenance for acquisition triage (285/285 CI)
 
 - Continued from research HEAD `21392e3e654203815453d569d47c6b6e28598fe9`. Rechecked central `HazRob/build-harness` catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries/14 external datasets), pinned source matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` (0/14 review-ready), and independent evidence `records: []`.
