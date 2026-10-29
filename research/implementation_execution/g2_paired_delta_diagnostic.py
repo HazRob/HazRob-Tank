@@ -63,6 +63,17 @@ def paired_cluster_accuracy_delta(group_counts, model_correct, baseline_correct,
     differences = [model_correct[g] - baseline_correct[g] for g in ids]
     total = sum(counts)
     observed = sum(differences) / total
+    # Report how much the pooled estimate depends on group size and any
+    # single physical test group. These diagnostics do not certify that the
+    # declared groups are independent or that the holdout was blinded.
+    model_accuracy = sum(model_correct[g] for g in ids) / total
+    baseline_accuracy = sum(baseline_correct[g] for g in ids) / total
+    group_deltas = [d / n for d, n in zip(differences, counts)]
+    leave_one_group_out = [
+        (sum(differences) - d) / (total - n)
+        for d, n in zip(differences, counts)
+    ]
+    effective_group_count = total * total / sum(n * n for n in counts)
     rng = random.Random(seed)
     draws = []
     for _ in range(resamples):
@@ -85,6 +96,17 @@ def paired_cluster_accuracy_delta(group_counts, model_correct, baseline_correct,
         "confidence_level": confidence_level,
         "quantile_method": "linear",
         "observed_delta": observed,
+        "model_accuracy": model_accuracy,
+        "baseline_accuracy": baseline_accuracy,
+        "group_positive_delta_count": sum(d > 0 for d in differences),
+        "group_negative_delta_count": sum(d < 0 for d in differences),
+        "group_tied_delta_count": sum(d == 0 for d in differences),
+        "group_delta_min": min(group_deltas),
+        "group_delta_max": max(group_deltas),
+        "leave_one_group_out_delta_min": min(leave_one_group_out),
+        "leave_one_group_out_delta_max": max(leave_one_group_out),
+        "largest_group_exposure_fraction": max(counts) / total,
+        "kish_effective_group_count_descriptive_only": effective_group_count,
         "interval_low": _linear_quantile(draws, tail),
         "interval_high": _linear_quantile(draws, 1.0 - tail),
         "bootstrap_nonpositive_fraction_not_p_value": nonpositive_fraction,
