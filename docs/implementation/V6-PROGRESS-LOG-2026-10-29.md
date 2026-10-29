@@ -22,3 +22,12 @@
 - **JVM test:** `TankV6DirectVersionIndependentEntryTest.java` added; specifically checks V4/V5/V6 firmware banners, non-Tank rejection and app-side source admission policy.
 - **Assurance:** code review/source inspection only; `JUNIT=NOT_RUN / GRADLE=NOT_RUN / APK=NOT_BUILT / ESP32_DEVICE=NOT_TESTED`. No firmware changes or flashing, and no new release authorization.
 - **Next:** device replay with physical firmware V4, then confirm read-only telemetry and E-STOP/watchdog. Keep controller protocol and safety checks separate from release labels.
+
+## 2026-10-29 — V6-002 ChemCore scientific and source audit
+
+- **Request:** compare all accessible manufacturers, MQUnifiedsensor R0 method, MQDataScience, scientific libraries/reference bank, gas curves, fingerprints, logarithms and PPM with inherited Tank ChemCore.
+- **Source inputs inspected:** Tank V5 inherited `Hardware.cpp` and `Config.h`; `AcceptedR0Normalizer`, `AcceptedReferenceResponseModel`, `TankStableScreeningModelRegistry`, `TankMultiSourceResponseModel`, `InverseMolecularSolver`, `TankInstantAnalyzer`, `TankFingerprintScreening`, legacy `ChemCoreInferenceEngine` and uncertainty/fingerprint/mixture/open-set rules; organizational central reference bank and R0 peer comparison; public Winsen, MQSensorsLib, MQDataScience, peer-reviewed reviews and UCI.
+- **Report:** `docs/research/V6-002-CHEMCORE-MANUFACTURER-R0-PPM-FINGERPRINT-GAP-AUDIT-2026-10-29.md` — tables G01–G13 and proposed tests T01–T12.
+- **Key findings:** current engine already joint-inverts and marks research ppm; priority constraints are physical per-board RL/R0/VC, exact MQ7/MQ9 heater phases, chemical label specificity, source-to-curve comparability, statistical identification and independent reference-gas accuracy.
+- **Code or firmware edits:** NONE for V6-002. **Verification:** source/literature review; no runtime/JUnit/Android/robot experiment executed; 80 entries are reference catalog, Tank G3 remains not validated.
+- **Next:** choose controlled implementation changes, build a numeric model/source audit with pinned refs and physical device measurements, then test against explicit grouped holdouts.
