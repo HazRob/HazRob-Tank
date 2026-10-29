@@ -54,11 +54,14 @@ def validate(registered=REGISTRY, original=ORIGINAL):
           "source_heater_profile_verified":False,
           "molecular_identity_qualified":False,
           "tank_device_reference_validated":False,
-          "status":"HOLD_REFERENCE_PROVENANCE",
+          "status":"USABLE_RESEARCH_WITH_CAVEATS",
+          "model_use_status":"RESEARCH_EXPLORATORY",
         }
         for k,value in required.items():
             if type(entry.get(k)) != type(value) or entry.get(k)!=value:
                 raise EvidenceError("registry diverges from source / premature promotion: %s %s"%(idx,k))
+        if not isinstance(entry.get("risk_flags"),list) or len(entry["risk_flags"])<3:
+            raise EvidenceError("missing explanatory risk flags: %s"%idx)
         if entry["record_id"] in ids: raise EvidenceError("duplicate source record ID")
         ids.add(entry["record_id"])
         if entry["original_gas_label"].lower() in CLASS_LABELS and entry["label_semantics"]!="AGGREGATE_OR_CLASS":
@@ -83,8 +86,10 @@ def validate(registered=REGISTRY, original=ORIGINAL):
         "mq3_nonunity_output_scale_count":len(scaled),
         "source_r0_qualified_for_tank":0,
         "physically_validated_tank_curves":0,
-        "automatically_promoted_screening_curves":0,
-        "quarantined_pending_source_definition":cases.count("HOLD_REFERENCE_PROVENANCE"),
+        "curves_open_to_research_exploration":len(records),
+        "research_with_caveats":cases.count("USABLE_RESEARCH_WITH_CAVEATS"),
+        "r0_definition_unverified":sum(not r["source_r0_definition_verified"] for r in records),
+        "rejection_policy":"NONFINITE_OR_MATHEMATICALLY_UNDEFINED_ONLY",
         "source_metadata_integrity":"PASS",
         "same_origin_curves_not_independent_exposures":True,
         "G3_Tank_validations":0,
