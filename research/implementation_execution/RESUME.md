@@ -1,3 +1,14 @@
+## 2026-10-29 — G2 publication blocker-lineage and frequency consistency (300/300 CI)
+
+- Resumed from research HEAD `bd3b925be7323fbe0c60ebb5039dbab8c87e41fc` after verifying prior G2 success (296/296) and final documentation run #40800046451. Re-read central `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json`: Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f`, 80 entries including 14 external measurement datasets. Pinned source matrix `bd69304fc35175b90199c6cc6ad4a88fc10ae93f` remains 0/14 review-ready; independent evidence register `records: []`.
+- Closed a publication-boundary gap: a rehashed triage report could change a technique's blocker labels while retaining identical technique IDs, status, and totals. The publication guard now checks each triage technique's blocker set against the corresponding audited `issues`, enforces source blocker/readiness consistency, and recomputes both blocker-frequency dictionaries. Missing, duplicate or malformed blocker entries fail closed.
+- Added four negative-control regression tests for forged triage blocker, forged audit blocker, forged source blocker and forged blocker-frequency totals; synthetic fixtures are not experimental data.
+- Research code/test commit `7e0f7c78cbba8198dc52942bfc71812a62d82780`: [G2 Actions #40806068181](https://github.com/HazRob/HazRob-Tank/actions/runs/40806068181), job `123225203201`: **300/300 PASS**. Audit `g2_pass_candidates=0`, `g2_blocked=80`; triage `source_blocked=14`. Publication guard PASS; artifact `12868456499`, SHA256 `5cfccd5c479c2874d51fa72cdc891c1c4d67093b406fd2d1e5cff7e36b861f4c`.
+- Changed only two files under `research/implementation_execution/` in the research branch for code/tests; no ChemCore Stable, Android or firmware edits. No G2/G3 scientific promotion. See `G2_PUBLICATION_BLOCKER_LINEAGE_2026-10-29_AR.md`. Documentation checkpoint CI should be checked on next run.
+- Next scientific requirement: acquire source-qualified independent physical raw exposures, traceable concentration references, device/session/exposure IDs, and pre-registered grouped blind holdouts; no claim of G2 completion before that evidence is audited.
+
+---
+
 ## 2026-10-29 — G2 fail-closed publication guard (296/296 CI verified)
 
 - Reviewed research HEAD 6885743dfe90c536fe671a648fc860f27888d724 and prior successful G2 run #40793543195 (289/289). Central catalog Git blob 1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f; 0/14 external sources review-ready, independent evidence records: [].
