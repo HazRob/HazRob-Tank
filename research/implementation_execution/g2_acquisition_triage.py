@@ -21,6 +21,8 @@ DEFAULT_LEDGER = HERE / "EXECUTION_LEDGER_2026-10-21.json"
 DEFAULT_EVIDENCE = HERE / "G2_INDEPENDENT_EVIDENCE.json"
 
 
+CAVEAT = "No software test or source inventory proves independent physical exposures, traceable ppm or Tank MQ8 G3."
+
 SOURCE_ACTIONS = {
     "ORIGINAL_RAW_SHA256_NOT_DOCUMENTED": "Acquire original archive bytes; record size and SHA256.",
     "ORIGINAL_RAW_BYTES_NOT_CATALOG_VERIFIED": "Replay original archive bytes and verify SHA256.",
@@ -196,7 +198,7 @@ def make_triage(audit, matrix):
             {"id": r["id"], "status": r["status"], "blockers": sorted(set(r["issues"]))}
             for r in sorted(techniques, key=lambda x: x["id"])
         ],
-        "caveat": "No software test or source inventory proves independent physical exposures, traceable ppm or Tank MQ8 G3.",
+        "caveat": CAVEAT,
     }
 
 
