@@ -1,0 +1,104 @@
+{
+  "schema": "chemcore-tank-v6-n06-android-research-instant-integration/1",
+  "date": "2026-10-30",
+  "branch": "feature/tank-v6-implementation",
+  "source_evidence": {
+    "origin": "Furuta et al Minnesota original physical MQ4 Li-Cor CH4 study, original 10ppm_data.csv",
+    "sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+    "source_rows": 14186,
+    "physical_source_mq4_instances": 3,
+    "source_instance_readings_total": 42558,
+    "original_unit": "ohm",
+    "android_json_unit": "kOhm",
+    "source_reference_ch4_not_supplied_to_engine": true,
+    "sensor_instances_replayed_sequentially": true
+  },
+  "android_instant": {
+    "actual_analyzer": "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java",
+    "actual_bridge": "android/app/src/main/java/com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java",
+    "ui": "android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java",
+    "pdf": "android/app/src/main/java/com/servoc/app/report/TankInstantReportPdf.java",
+    "new_instant_invokes_only": "ChemCoreTankV6 via TankV6TelemetryAdapter",
+    "source_validity_gate": "ok/valid true, explicitly powered false excluded, nonfinite and nonpositive Rs excluded",
+    "source_raw_rs_without_r0_retained": true,
+    "physically_absent_r0_synthesized": false,
+    "gas_identity_reported": "UNKNOWN",
+    "uncalibrated_source_hypotheses_retained": true,
+    "posterior_probability_reporting": false,
+    "occupational_limit_exceedance_reporting": false,
+    "automated_tracking_from_v6_source_candidates": false,
+    "pdf_research_schema_branch": true,
+    "pdf_includes_original_rs_r0_evidence_and_missing_r0": true,
+    "pdf_source_curve_research_not_field_certified": true,
+    "food_engine_separate": true,
+    "prior_v5_session_database_migrated": false,
+    "field_sessions_pdf_xlsx_approved_migration_done": false
+  },
+  "verification": {
+    "gradle_android_java_compile": {
+      "workflow_run": 40969942752,
+      "success": true,
+      "source": "Android compileDebugJavaWithJavac with pinned SERVOC baseline overlaid Tank V6 source",
+      "actual_apk_generated": false
+    },
+    "structural_unit_tests": {
+      "count": 7,
+      "workflow_run": 40969942752,
+      "success": true,
+      "limit": "Structural checks and compiler not Android device/PDF rendering runtime"
+    },
+    "jdk_real_source_android_json_adapter": {
+      "workflow_run": 40970539124,
+      "success": true,
+      "earlier_success_before_dependency_sha_pinning": 40970448667,
+      "earlier_failed_missing_maven_sha256_file": 40970372808,
+      "original_mq4_resistances_in_real_android_json_adapter": 42558,
+      "original_one_minute_source_rows": 14186,
+      "assertions": 638380,
+      "source_r0_available": false,
+      "source_curve_fits_without_r0": 0,
+      "certified_gas_identity_from_source_without_r0": false,
+      "reportable_ppm": false,
+      "tank_g3_certified": false,
+      "food_profiles_included": false,
+      "negative_inputs_tested": [
+        "invalid flag",
+        "explicitly unpowered channel",
+        "negative Rs",
+        "synthetically supplied R0 never promotes certified ppm"
+      ],
+      "android_json_library": "org.json json-20240303.jar",
+      "android_json_jar_pinned_sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed",
+      "scope_limit": "JDK replay of actual Android JSON adapter and coordinator, NOT Android phone or firmware"
+    }
+  },
+  "artifact": {
+    "id": 12939574004,
+    "sha256": "3e1c85fb206d12f982045c2d0007ab7b1b5f038c451d30d39232d30e16f0eef2",
+    "filenames": [
+      "v6_android_json_bridge_original_mq4_audit.csv",
+      "v6_adapter_mq4_manifest.json"
+    ],
+    "library_path": "/HazRob/MQ_Reference_Measurements_2026/HazRob_Tank_V6_N06A_MQ4_Android_JSON_Original_Evidence_2026-10-30.zip",
+    "library_id": "libfile_00bbb73d77ac819184c1d2c1aacc1ce4"
+  },
+  "technique_status": {
+    "partial_research_code": 78,
+    "not_yet_ported": 2,
+    "tank_g3_validated": 0
+  },
+  "next_unverified_steps": [
+    "Functional PDF render/test on Android device/emulator",
+    "Android app complete V6 V6-mode UI live telemetry and no-sensor failure test",
+    "Approved completed field sessions migration to independent V6 engine and reports",
+    "Original V5 session backward-compatibility, SQLite migration fixtures, PDF/XLSX report stability",
+    "Physically calibrated Tank R0/Rs multi-gas multi-concentration field G3",
+    "No new Android V6 APK generated in this run"
+  ],
+  "no_claims": [
+    "Not a source physical gas identification success",
+    "Not safety-grade ppm nor unknown-gas rejection",
+    "No motion/heater modification",
+    "Food freshness model not imported in gas engine"
+  ]
+}
