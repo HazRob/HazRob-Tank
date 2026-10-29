@@ -80,8 +80,14 @@ jobs:
             --triage-first "$RUNNER_TEMP/g2_acquisition_triage.json" \
             --triage-second "$RUNNER_TEMP/g2_acquisition_triage_replay.json" \
             --output "$RUNNER_TEMP/g2_replay_integrity.json"
+      - name: "Validate final G2 publication bytes and cross-report lineage"
+        run: |
+          python research/implementation_execution/g2_artifact_publish_gate.py \
+            --audit "$RUNNER_TEMP/g2_audit_results.json" \
+            --triage "$RUNNER_TEMP/g2_acquisition_triage.json" \
+            --manifest "$RUNNER_TEMP/g2_replay_integrity.json"
       - name: "Upload reproducible G2 gate output"
-        if: always()
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: tank-v4-g2-signal-r0-gate
@@ -89,4 +95,4 @@ jobs:
             ${{ runner.temp }}/g2_audit_results.json
             ${{ runner.temp }}/g2_acquisition_triage.json
             ${{ runner.temp }}/g2_replay_integrity.json
-          if-no-files-found: ignore
+          if-no-files-found: error

@@ -1,3 +1,11 @@
+## 2026-10-29 — G2 fail-closed publication guard (CI verification pending)
+
+- Reviewed research HEAD 6885743dfe90c536fe671a648fc860f27888d724 and prior successful G2 run #40793543195 (289/289). Central catalog Git blob 1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f; 0/14 external sources review-ready, independent evidence records: [].
+- Added g2_artifact_publish_gate.py, seven tests and a pre-upload integrity step. Fixed if: always()/if-no-files-found: ignore, which allowed incomplete G2 artifacts after failed CI; now success-only with missing files treated as errors.
+- Research-only; no Stable, app or firmware edits. No G2/G3 promotion. Recheck this commit's CI before marking the change verified.
+
+---
+
 ## 2026-10-29 — G2 byte-exact double replay for audit and acquisition triage (289/289 CI)
 
 - Resumed from research HEAD `5a2d18cf52e74c5c379378e82c91a99e3afe2692`; verified 20/20 previous CI successes. Rechecked central `HazRob/build-harness` catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries/14 external datasets); source readiness 0/14 and independent evidence `records: []`.
