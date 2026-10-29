@@ -77,3 +77,8 @@ Source scores and hypotheses are NOT deleted when research reporting abstains. E
 **N05-I:** explore better genuinely heldout known/negative calibration, domain-separated scores and false-known-rejection stress with a new experiment, without reusing the *sealed* N05-H scores for tuned model-selection and then calling the result independent. Physical Tank G3 remains decisive.
 
 **Resume token:** `V6_CHECKPOINT13 / N05H_SOURCE_OPENSET_36_FOLDS / 972_TEST_DECISIONS / FALSE_KNOWN_MQ135_35.56_PERCENT / FALSE_KNOWN_FULL_UCI_55.93_PERCENT / 78_PARTIAL / 2_UNPORTED / JDK_2148 / CI_40959501615_PASS / N05H_40959780208_PASS_EXECUTION_FAIL_SAFETY_GATE / G3_0_80 / FOOD_ISOLATED / NO_APK`.
+
+
+## 6. N06 technical preflight (no Android UI edits)
+
+The Android live-path audit is now preserved at [V6-N06 Android integration preflight](V6-N06-ANDROID-INTEGRATION-PREFLIGHT-2026-10-29_AR.md), commit `a3b4ef71116c6c26934949d94588ff6a130c4b07`. A new V6 telemetry adapter exists and marks chemical claims as unverified, but inspected instant measurements and completed-session paths still call predecessor `ChemCoreInferenceEngine`; the instant analyzer also includes a legacy AnalyticsSnapshot fallback. Accordingly **N06 is NOT integrated**. Next action is an Android V6-only analysis routing and report model with safe migration fixtures, not a cosmetic V6 version switch.  
