@@ -34,7 +34,7 @@ public final class NewChemCoreTankV6EngineTest {
         var co=sourceCoExample(200);
         assertThat(co.size()==8,"CO source has all 8 MQ types");
         var result=Engine.analyze(co);
-        assertThat(result.allSourceFits.size()==43,"every finite available source fit included");
+        assertThat(result.allSourceFits.size()==49,"all 49 original and alternate source fits included");
         assertThat(result.rankedCandidates.size()==13,"all source chemical identities represented");
         assertThat(result.observedPhysicalChannels==8,"8 unique physical sensors");
         assertThat(result.rejectedNumericalChannels==0,"no invalid numeric fixtures");
@@ -50,15 +50,17 @@ public final class NewChemCoreTankV6EngineTest {
         }
         assertThat(carbonMonoxide!=null,"CO remains visible");
         assertThat(carbonMonoxide.supportingSensorInstances==8,"eight CO evidence channels");
-        assertThat(Math.abs(carbonMonoxide.jointResearchPpm-200)<1e-7,
-                   "joint log least squares exactly fits same-source artificial response");
-        assertThat(carbonMonoxide.jointResidualRmseLog10<1e-10,
-                   "synthetic joint residual near zero");
+        assertThat(Math.abs(carbonMonoxide.jointResearchPpm-200)<50,
+                   "original source fixture remains near expected despite separate alternative MQ135");
+        assertThat(carbonMonoxide.jointResidualRmseLog10<0.2,
+                   "independent alternate MQ135 curve produces bounded source disagreement");
+        assertThat(carbonMonoxide.contributingSourceCurves==9,
+                   "CO uses eight original equations plus alternative MQ135, without extra sensor");
         assertThat(result.rankedCandidates.get(0).chemicalId==20L,
-                   "eight sensor source CO hypothesis ranks first by breadth");
+                   "eight sensor CO hypothesis ranks first by breadth");
         var only135=Engine.analyze(Collections.singletonList(
           new Engine.Channel("mq135","single-mq135",42000,10000)));
-        assertThat(only135.allSourceFits.size()==6,"single channel retains all 6 MQ135 curves");
+        assertThat(only135.allSourceFits.size()==12,"single channel retains both groups of 6 MQ135 curves");
         assertThat(only135.rankedCandidates.size()==6,"no artificial two-sensor exclusion");
         assertThat(only135.rankedCandidates.get(0).supportingSensorInstances==1,
                    "single-sensor research fit still visible");
@@ -84,7 +86,7 @@ public final class NewChemCoreTankV6EngineTest {
         duplicate.add(duplicate.get(0));
         var twice=Engine.analyze(duplicate);
         assertThat(twice.observedPhysicalChannels==8,"duplicate instance does not inflate sensor breadth");
-        assertThat(twice.allSourceFits.size()==43,"duplicate source rows do not duplicate evidence");
+        assertThat(twice.allSourceFits.size()==49,"duplicate source rows do not duplicate evidence");
         var extra=Engine.analyze(Collections.singletonList(
            new Engine.Channel("MQ2","unknown_calibration",1000000000,0.001)));
         assertThat(extra.allSourceFits.size()>0,"valid extrapolation not censored");
