@@ -176,8 +176,8 @@ class PairedDeltaDiagnosticTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "metrics_per_group.csv"
             path.write_text(
-                "group_id,sample_count,correct_count,baseline_correct_count,ｅxtra\\n"
-                "a,3,2,1,x\\nb,5,4,3,y\\n", encoding="utf-8")
+                "group_id,sample_count,correct_count,baseline_correct_count,ｅxtra\n"
+                "a,3,2,1,x\nb,5,4,3,y\n", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "CSV_HEADER_INVALID"):
                 replay_per_group_csv(path, resamples=1000)
 
@@ -185,8 +185,8 @@ class PairedDeltaDiagnosticTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "metrics_per_group.csv"
             path.write_text(
-                "group_id,ｇroup_id,sample_count,correct_count,baseline_correct_count\\n"
-                "a,a,3,2,1\\nb,b,5,4,3\\n", encoding="utf-8")
+                "group_id,ｇroup_id,sample_count,correct_count,baseline_correct_count\n"
+                "a,a,3,2,1\nb,b,5,4,3\n", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "CSV_HEADER_INVALID"):
                 replay_per_group_csv(path, resamples=1000)
 
@@ -194,8 +194,8 @@ class PairedDeltaDiagnosticTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "metrics_per_group.csv"
             path.write_text(
-                "group_id,sample_count,correct_count,baseline_correct_count,الموقع\\n"
-                "a,3,2,1,صنعاء\\nb,5,4,3,تعز\\n", encoding="utf-8")
+                "group_id,sample_count,correct_count,baseline_correct_count,الموقع\n"
+                "a,3,2,1,صنعاء\nb,5,4,3,تعز\n", encoding="utf-8")
             result = replay_per_group_csv(path, resamples=1000)
             self.assertAlmostEqual(result["observed_delta"], 2 / 8)
 
