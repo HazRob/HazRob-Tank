@@ -5,7 +5,8 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from g2_acquisition_triage import SOURCE_ACTIONS, CAVEAT
+from g2_acquisition_triage import (SOURCE_ACTIONS, CAVEAT, build_triage,
+                                   CANONICAL_REGISTRY)
 
 def _strict(path):
     def unique(pairs):
@@ -135,13 +136,51 @@ def verify_publication(audit_path, triage_path, manifest_path):
     return {"g2_blocked": blocked, "g2_pass_candidates": candidates,
             "source_blocked": source_blocked}
 
+
+def verify_controlling_evidence(audit_path, triage_path, source_matrix_path,
+                                ledger_path, evidence_path):
+    """Independently bind published triage to the five controlling input bytes.
+
+    A self-consistent replay manifest and plausible SHA256 strings do not prove
+    that the published triage was derived from the actual source/ledger/register.
+    The CI publication boundary rechecks all five bytes and recomputes triage.
+    This is software provenance only, never a scientific G2/G3 promotion.
+    """
+    _, triage = _strict(triage_path)
+    inputs = {
+        "audit": audit_path,
+        "source_matrix": source_matrix_path,
+        "ledger": ledger_path,
+        "independent_evidence": evidence_path,
+        "canonical_registry": CANONICAL_REGISTRY,
+    }
+    actual_digests = {
+        name: hashlib.sha256(Path(path).read_bytes()).hexdigest()
+        for name, path in inputs.items()
+    }
+    if triage.get("input_sha256") != actual_digests:
+        raise ValueError("G2_PUBLISH_CONTROLLING_INPUT_SHA256_MISMATCH")
+    try:
+        expected = build_triage(audit_path, source_matrix_path,
+                                ledger_path, evidence_path)
+    except (ValueError, TypeError, KeyError, OSError, UnicodeError) as exc:
+        raise ValueError("G2_PUBLISH_CONTROLLING_EVIDENCE_INVALID") from exc
+    if triage != expected:
+        raise ValueError("G2_PUBLISH_CONTROLLING_EVIDENCE_REPLAY_MISMATCH")
+    return actual_digests
+
 def main():
     parser = argparse.ArgumentParser()
     for flag in ("audit", "triage", "manifest"):
         parser.add_argument("--" + flag, required=True, type=Path)
+    parser.add_argument("--source-matrix", required=True, type=Path)
+    parser.add_argument("--ledger", required=True, type=Path)
+    parser.add_argument("--evidence", required=True, type=Path)
     args = parser.parse_args()
-    print("G2 research publication guard PASS:",
-          verify_publication(args.audit, args.triage, args.manifest))
+    result = verify_publication(args.audit, args.triage, args.manifest)
+    verify_controlling_evidence(args.audit, args.triage, args.source_matrix,
+                                args.ledger, args.evidence)
+    print("G2 research publication guard PASS:", result)
 
 if __name__ == "__main__":
     main()
