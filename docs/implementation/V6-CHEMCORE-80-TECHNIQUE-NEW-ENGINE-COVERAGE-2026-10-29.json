@@ -1,0 +1,771 @@
+{
+  "schema": "hazrob-v6-new-engine-80-technique-progress/1",
+  "date": "2026-10-29",
+  "scoping": "NEW independent com.hazrob.tank.chemcore.v6 package; food freshness and prior inference code excluded",
+  "counts": {
+    "total": 80,
+    "partial": 14,
+    "not_yet_ported": 66,
+    "fully_implemented_and_device_validated": 0
+  },
+  "available_numerical_references": {
+    "gas_source_curves": 49,
+    "gas_fingerprint_prototypes": 24,
+    "separate_80_named_techniques_are_not_independent_source_curves": true
+  },
+  "scientific_policy": "All numerically valid research data remains usable; caveats descriptive, corrupt/nonfinite math excluded; no Tank physical ppm certification",
+  "deferred": "MQ startup transient/Bosch heating experiments deferred by owner until core program completion",
+  "techniques": [
+    {
+      "id": "01.1",
+      "name": "ADC to Rs",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "01.2",
+      "name": "R0 calibration",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "01.3",
+      "name": "Sensitivity curves",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SourceCatalog.java",
+        "Engine.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "01.4",
+      "name": "Heater cycles",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "01.5",
+      "name": "Environmental correction",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "01.6",
+      "name": "Signal quality",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "01.7",
+      "name": "Drift monitoring",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "02.1",
+      "name": "Filtering",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SignalFeaturesV6.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "02.2",
+      "name": "Scaling",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SignalFeaturesV6.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "02.3",
+      "name": "Static features",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SignalFeaturesV6.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "02.4",
+      "name": "Temporal features",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "SignalFeaturesV6.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "02.5",
+      "name": "Fingerprints",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "GasFingerprintCatalogV6.java",
+        "FingerprintEngineV6.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "02.6",
+      "name": "3D/4D features",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "02.7",
+      "name": "Feature selection",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "02.8",
+      "name": "Provenance schema",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ChemCoreTankV6.java",
+        "TankV6TelemetryAdapter.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "03.1",
+      "name": "PCA",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "03.2",
+      "name": "Similarity",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "FingerprintEngineV6.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "03.3",
+      "name": "Class overlap",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "03.4",
+      "name": "LDA/PLS-DA",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "03.5",
+      "name": "Sensor importance",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "03.6",
+      "name": "Sensor subsets",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "FingerprintEngineV6.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "03.7",
+      "name": "Concentration confounding",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "03.8",
+      "name": "Identifiability limits",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "04.1",
+      "name": "Curve matching",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "Engine.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "04.2",
+      "name": "Fingerprint matching",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "FingerprintEngineV6.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "04.3",
+      "name": "KNN",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "04.4",
+      "name": "Logistic regression",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "04.5",
+      "name": "SVM",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "04.6",
+      "name": "Random Forest",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "04.7",
+      "name": "XGBoost",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "04.8",
+      "name": "MLP",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "04.9",
+      "name": "Physics+ML",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "04.10",
+      "name": "Benchmarking",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "05.1",
+      "name": "Single-sensor calibration",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "05.2",
+      "name": "Multipoint calibration",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "05.3",
+      "name": "Nonlinear regression",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "Engine.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "05.4",
+      "name": "Multisensor regression",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "Engine.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "05.5",
+      "name": "PLS regression",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "05.6",
+      "name": "Tree regression",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "05.7",
+      "name": "Identity-conditional estimates",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "05.8",
+      "name": "LOD/LOQ",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "05.9",
+      "name": "Unseen concentrations",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "06.1",
+      "name": "Evidence fusion",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "PARTIAL_NEW_ENGINE_CODE_PRESENT",
+      "new_engine_modules": [
+        "ChemCoreTankV6.java"
+      ],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Pure Java research calculations and synthetic/source-native fixtures; not a complete calibrated technique port"
+    },
+    {
+      "id": "06.2",
+      "name": "Bayesian inference",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "06.3",
+      "name": "Probability calibration",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "06.4",
+      "name": "Conformal prediction",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "06.5",
+      "name": "Open-set recognition",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "06.6",
+      "name": "OOD detection",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "06.7",
+      "name": "Evidence conflicts",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "06.8",
+      "name": "SHAP",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "06.9",
+      "name": "Abstention",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.1",
+      "name": "Cross-session tests",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.2",
+      "name": "Cross-device tests",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.3",
+      "name": "Cross-concentration tests",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.4",
+      "name": "Drift detection",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.5",
+      "name": "Drift compensation",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.6",
+      "name": "Domain adaptation",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.7",
+      "name": "Transfer learning",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.8",
+      "name": "Active learning/DoE",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.9",
+      "name": "Continual learning",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "07.10",
+      "name": "Resource profiling",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.1",
+      "name": "1D-CNN",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.2",
+      "name": "TCN",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.3",
+      "name": "LSTM/GRU",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.4",
+      "name": "GNN",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.5",
+      "name": "Temporal ensemble",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.6",
+      "name": "Simulation",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.7",
+      "name": "Sim-to-real",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.8",
+      "name": "Mixture detection",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.9",
+      "name": "Unmixing",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.10",
+      "name": "Multi-analyte regression",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.11",
+      "name": "Interference",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "08.12",
+      "name": "Complex products",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "09.1",
+      "name": "Robotic olfaction",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "09.2",
+      "name": "Gas mapping",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "09.3",
+      "name": "Source localization",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "09.4",
+      "name": "Active sampling",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "09.5",
+      "name": "Spatiotemporal fusion",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "09.6",
+      "name": "Motion decisions",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    },
+    {
+      "id": "10.1",
+      "name": "Negative Evidence & Sensor-Guided Exclusion",
+      "existing_historical_research_status": "RESEARCH_PROTOTYPE_ANDROID_PORT_NOT_CLAIMED",
+      "new_v6_status": "NOT_YET_PORTED_NEW_ENGINE",
+      "new_engine_modules": [],
+      "no_physical_tank_validation": true,
+      "evidence_notes": "Historical G1/G2 source evidence is not a V6 production implementation"
+    }
+  ]
+}
