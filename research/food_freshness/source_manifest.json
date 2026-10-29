@@ -16,7 +16,50 @@
   "no_calibrated_ppm": true,
   "no_gas_chemcore_import": true,
   "independent_module_package": "com.hazrob.tank.foodfreshness",
-  "runtime_status": "DATA_STAGED_SEPARATE_FEATURE_IMPLEMENTATION_PENDING",
+  "runtime_status": "FRUIT_AND_BEEF_TWO_WORKFLOWS_ANDROID_COMPILE_AND_JAVA_TESTS_ADDED",
   "instrumentation": "shared_read_only_sensor_telemetry",
-  "owner_instruction": "Never include food-specific curves, fingerprints, scores or models in gas ChemCore engine or gas source registry"
+  "owner_instruction": "Food menus MEAT / FRUIT use separate source catalogs, independent numeric algorithms, independent chart and PDF; never import food models in ChemCore gas engine.",
+  "feature_modes": {
+    "MEAT": {
+      "source": "research/food_freshness/meat/wijaya2018_5series_7mq_class_prototypes.json",
+      "source_doi": "10.17632/mwmhh766fc.3",
+      "raw_csv_dir": "research/food_freshness/meat/source_original/",
+      "recorded_source_rows": 10800,
+      "training_rows": 8640,
+      "holdout_rows": 2160,
+      "sensor_overlap": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ8",
+        "MQ9",
+        "MQ135"
+      ],
+      "quality_labels": [
+        "excellent",
+        "good",
+        "acceptable",
+        "spoiled"
+      ],
+      "heldout_accuracy": 0.4393518518518518,
+      "heldout_balanced_accuracy": 0.38878968253968255,
+      "algorithm": "seven-sensor-centered-log10-resistance-median-class-template",
+      "source_timecourse_minutes_per_cut": 2160,
+      "tank_one_operation_seconds": 180,
+      "safety_claim": "NOT_A_FOOD_SAFETY_TEST"
+    },
+    "FRUIT": {
+      "source": "research/food_freshness/source_snapshots/food_freshness_headspace_fingerprints_v1.json",
+      "source_doi": "10.5281/zenodo.17285312",
+      "source_total_patterns": 59,
+      "active_fruit_patterns": 54,
+      "other_preserved_patterns": 5,
+      "other_category": "mushroom",
+      "algorithm": "geometric-mean-normalized-multi-MQ-shape-matching",
+      "tank_one_operation_seconds": 180,
+      "original_study_day_interval_hours": 24,
+      "safety_claim": "NOT_A_FOOD_SAFETY_TEST"
+    }
+  }
 }
