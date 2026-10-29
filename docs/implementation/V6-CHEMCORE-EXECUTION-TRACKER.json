@@ -31,7 +31,7 @@
     "library_reference_records": 80,
     "independent_Tank_G3_validated_techniques": 0
   },
-  "disclaimer": "50 Python/79 Java assertions prove software checks. P06 Java math is a detached research-only kernel: original source definitions, Android integration and device calibration remain unverified.",
+  "disclaimer": "Research data and candidate calculations use all numerically valid evidence; caveats are advisory only. No model has physically verified Tank calibration, and core V5 app production inference remains unchanged.",
   "stage_count": 12,
   "stages": [
     {
@@ -206,17 +206,15 @@
         "source_R0_compatibility_gates.json"
       ],
       "gate": "DOMAIN_AND_R0_GATES_AND_COMPARATIVE_RESULTS",
-      "status": "SOURCE_CURVE_JAVA_MATH_JDK_TESTED_NOT_STABLE_INTEGRATED",
-      "actual_commit": "85ee3934b620dc58a737a485316d3ae17d74699d",
-      "ci_run": "40917593589",
+      "status": "RESEARCH_CURVE_REGISTRY_43_OF_43_JDK_PASS_NOT_ANDROID_RUNTIME_WIRED",
+      "actual_commit": "e5e576b93b9bbde6c24bdbe6dc31d619c2c7db52",
+      "ci_run": "40923146562",
       "verified_on": null,
       "blockers": [
-        "Original source R0 definition/ratio_direction not verified per individual curve on actual Tank",
-        "Source curve lineage dedup across MQDataScience, manufacturer and Stable still pending",
-        "No device RL/Vc/heater measurements",
-        "Not yet connected to TankInstantAnalyzer or field sessions"
+        "No active Android inference wiring; registry and source math tested on JVM only",
+        "Per-source physical validation not yet established, but no longer blocks research calculations"
       ],
-      "next_action": "Build curated SourceCurveRegistryV6 with source and R0 definition provenance; test real Stable import parity before activating Android runtime"
+      "next_action": "Connect research-only 43-curve registry to V6 chemCore diagnostics with nonblocking source caveats, compare with V5"
     },
     {
       "id": "P07",
@@ -257,16 +255,15 @@
         "cross_source_ablation.csv"
       ],
       "gate": "NO_FALSE_M4_AND_CHALLENGE_HOLDOUT_RESULTS",
-      "status": "RESEARCH_CONSENSUS_PROTOTYPE_33_JVM_ASSERTIONS_PASS_NOT_WIRED",
-      "actual_commit": "50f70c124f1c03c01f303dba26e61b0539026a77",
-      "ci_run": null,
+      "status": "RESEARCH_CONSENSUS_INCLUSIVE_RANKING_40_JVM_ASSERTIONS_PASS_NOT_WIRED",
+      "actual_commit": "7b6f7355174b391ba079240da3d794a46f22fcae",
+      "ci_run": "40923146562",
       "verified_on": null,
       "blockers": [
-        "Heuristic thresholds not calibrated against independent open-set or mixture datasets",
-        "Source-lineage root IDs need verified mapping for each model",
-        "Not connected to Android inference; no runtime gas identity claim"
+        "No active Android inference integration",
+        "No external group-held-out performance on this updated ranking configuration"
       ],
-      "next_action": "Evaluate evidence score thresholds with independent holdout; ensure source-root mapping and no ppm/identity promotion; integrate only after P06/07"
+      "next_action": "Run new consensus head-to-head with V5 on real archived exposures; preserve every finite candidate and display flags"
     },
     {
       "id": "P09",
@@ -347,7 +344,7 @@
     "per_technique_decision": true,
     "owner_release_approval": true
   },
-  "state": "CHECKPOINT03_P06_JAVA_NUMERICAL_KERNEL_PASS_NO_ANDROID_ACTIVE_ENGINE_OR_G3",
+  "state": "P06_43_CURVES_RESEARCH_OPEN_P08_ALL_FINITE_CANDIDATES_RANKED_CI_PASS_NO_ANDROID_RUNTIME",
   "additional_source_plan": "docs/research/V6-CHEMCORE-R0-CURVES-FINGERPRINTS-INGESTION-PLAN-2026-10-29_AR.md",
   "R0_ratio_matrix": "docs/research/V6-CHEMCORE-MQUNIFIED-R0-RATIO-AUDIT.csv",
   "legacy_14_assets": "docs/research/V6-CHEMCORE-HISTORICAL-LIBRARY-14-ASSET-MANIFEST.csv",
@@ -422,6 +419,24 @@
       "Android_Gradle_tests": "NOT_RUN",
       "APK": "NOT_BUILT",
       "Tank_G3": 0
+    },
+    {
+      "run_id": 40923146562,
+      "status": "COMPLETED_SUCCESS",
+      "head_sha": "1417beecfbcd9ec9a08b2b884f06ab22791d34f4",
+      "python_unit_tests": 57,
+      "java_assertions_total": 414,
+      "java_breakdown": {
+        "R0_compatibility": 31,
+        "consensus_inclusive": 40,
+        "curve_kernel_math": 15,
+        "curve_registry_all43": 328
+      },
+      "source_curves_used_for_research": 43,
+      "software_quantitation_only": true,
+      "physical_Tank_G3": 0,
+      "APK_v6": "NOT_BUILT",
+      "artifact_id": 12919626294
     }
   ],
   "external_real_pilots": [
@@ -477,5 +492,18 @@
     "startup_window": "DELETED",
     "experimental_unit_tests": "DELETED"
   },
-  "next_main_plan_action": "Continue P06 source-curve registry and P03 evidence provenance bridge without V6-003 startup sampling"
+  "next_main_plan_action": "Continue P06 source-curve registry and P03 evidence provenance bridge without V6-003 startup sampling",
+  "owner_policy_latest": "INCLUSIVE_RESEARCH_ANALYTICS_ALL_FINITE_INPUTS_WITH_ADVISORIES_ONLY",
+  "owner_policy_reference": "docs/research/V6-002-INCLUSIVE-ANALYTICS-POLICY-2026-10-29_AR.md",
+  "source_curve_manifest": "research/chemcore_v6/manifests/source_curve_registry_43.json",
+  "source_curve_jvm": "android/app/src/main/java/com/servoc/app/chemcore/SourceCurveRegistryV6.java",
+  "research_inclusion": {
+    "original_curves_available": 43,
+    "excluded_due_to_missing_R0_source": 0,
+    "source_R0_definition_unverified": 43,
+    "physical_Tank_calibrations_granted": 0,
+    "source_dataset_roots": 1,
+    "heuristic_candidate_thresholds_used_for_exclusion": false,
+    "only_nonfinite_or_undefined_math_excluded": true
+  }
 }
