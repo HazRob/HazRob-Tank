@@ -52,7 +52,13 @@ public final class SmartFieldSessionPdfWriter {
         boolean crossSession=all.size()>1;
         int basePages=crossSession?5:4;
         int cyclePages=Math.max(1,(b.cycleLedger.size()+ROWS_PER_CYCLE_PAGE-1)/ROWS_PER_CYCLE_PAGE);
-        int total=basePages+cyclePages;
+        // Source-only V6 pages are appended, never replacing original V5
+        // report sections or changing an approved cycle's stored SHA.
+        JSONObject v6ReadOnly=V6FieldSessionResearchAppendix.analyzeVerified(db,b);
+        JSONArray v6Cycles=v6ReadOnly.optJSONArray("cycles");
+        int v6Count=v6Cycles==null?0:v6Cycles.length();
+        int v6Pages=(v6Count+5)/6;
+        int total=basePages+cyclePages+v6Pages;
         PdfDocument pdf=new PdfDocument();
         PdfDocument.Page p=page(pdf,1);executiveOverview(p.getCanvas(),b,all,primary,plan,hazard,cs);chrome(p.getCanvas(),1,total,b,plan);pdf.finishPage(p);
         p=page(pdf,2);sensorSix(p.getCanvas(),primary);chrome(p.getCanvas(),2,total,b,plan);pdf.finishPage(p);
@@ -63,6 +69,13 @@ public final class SmartFieldSessionPdfWriter {
             int pageNo=basePages+chunk+1;
             p=page(pdf,pageNo);
             cycleLedgerPage(p.getCanvas(),b,chunk);
+            chrome(p.getCanvas(),pageNo,total,b,plan);
+            pdf.finishPage(p);
+        }
+        for(int chunk=0;chunk<v6Pages;chunk++){
+            int pageNo=basePages+cyclePages+chunk+1;
+            p=page(pdf,pageNo);
+            v6ResearchAppendixPage(p.getCanvas(),b,v6ReadOnly,chunk);
             chrome(p.getCanvas(),pageNo,total,b,plan);
             pdf.finishPage(p);
         }
@@ -127,6 +140,55 @@ public final class SmartFieldSessionPdfWriter {
         if(start==end)text(c,"لا توجد دورات مسجلة.",42,145,10,Color.DKGRAY,false);
         text(c,"G=Gas • P=Particles • F=Physical. أسماء المراجع ومعرفات SHA الكاملة وحالات الحذف في Excel.",36,539,7.8f,Color.DKGRAY,false);
         text(c,"القياسات المعتمدة فقط تدخل المخططات والتحليل؛ المحاولات الأخرى أدلة تدقيق لا نتائج كيميائية.",36,554,7.8f,Color.DKGRAY,false);
+    }
+
+
+    /** No reportable gas identity, ppm, occupational warning or invented scan:
+     * a compact human-readable appendix in the existing approved PDF. */
+    private static void v6ResearchAppendixPage(Canvas c,
+                  FieldSessionReportExporter.Bundle b,JSONObject evidence,int chunk){
+        title(c,"ChemCore Tank V6 • دليل بحثي للغازات / UNKNOWN",42);
+        text(c,"READ ONLY • G3=0 • PPM NOT REPORTABLE • NO AUTOMATIC GAS IDENTIFICATION",
+            36,65,8,0xFFC62828,true);
+        text(c,"الأدلة من telemetry_samples المعتمدة فقط؛ جميع قرارات V5 الأصلية محفوظة",
+            36,84,8,Color.DKGRAY,false);
+        JSONArray cycles=evidence.optJSONArray("cycles");
+        int len=cycles==null?0:cycles.length();
+        int start=chunk*6,end=Math.min(start+6,len);
+        float y=108;
+        for(int i=start;i<end;i++){
+            JSONObject q=cycles.optJSONObject(i);
+            if(q==null)continue;
+            box(c,30,y-13,784,22,0xFFEDF2F6);
+            text(c,"#"+(i+1)+" "+shorten(q.optString("measurement_session_id",""),37),
+                38,y,8.1f,Color.BLACK,true);
+            text(c,"Source SHA "+shorten(q.optString("research_source_sha256",""),22),
+                480,y,7.2f,Color.DKGRAY,false);
+            y+=20;
+            text(c,"Original rows "+q.optInt("original_archived_telemetry_rows",0)+
+                " / MQ V6 evaluated "+q.optInt("independently_evaluated_sensor_models",0)+
+                " / identity UNKNOWN",38,y,7.5f,0xFF8B2B24,false);
+            y+=17;
+            JSONArray sensor=q.optJSONArray("sensors");
+            if(sensor!=null)for(int j=0;j<sensor.length();j++){
+                JSONObject s=sensor.optJSONObject(j);
+                if(s==null)continue;
+                String state=s.optString("state",""),
+                    model=s.optString("sensor_model","—");
+                String raw="Rs —",r0="R0 —";
+                if(s.has("selected_original_rs"))
+                    raw="Rs "+fmt(s.optDouble("selected_original_rs",Double.NaN));
+                if(s.has("selected_original_r0")&&!s.isNull("selected_original_r0"))
+                    r0="R0 "+fmt(s.optDouble("selected_original_r0",Double.NaN));
+                text(c,model+" • scans "+s.optInt("distinct_original_scan_cycles",0)+
+                    " • "+raw+" "+r0+" • "+shorten(state,34),
+                    43,y,6.9f,Color.DARK_GRAY,false);
+                y+=10;
+            }
+            y+=12;
+        }
+        text(c,"لا يتم خلط قنوات بأوقات مختلفة أو تحويل فرضيات المصدر إلى إنذار أو قيمة ppm.",
+            36,546,7.6f,Color.DKGRAY,false);
     }
 
     private static void candidateStability(Canvas c,RectF r,List<Evidence> all){box(c,r.left,r.top,r.width(),r.height(),0xFFF8FAFC);text(c,"تكرار المرشح الأعلى",r.left+12,r.top+22,10,Color.BLACK,true);Map<String,Integer> m=new LinkedHashMap<>();for(Evidence e:all){if(!e.chemOk())continue;String k=e.topCandidate();if(k.isEmpty()||"—".equals(k))continue;m.put(k,m.containsKey(k)?m.get(k)+1:1);}int max=1;for(Integer n:m.values())max=Math.max(max,n);float y=r.top+50;int shown=0;for(Map.Entry<String,Integer> q:m.entrySet()){if(shown++>=5)break;float w=(r.width()-145)*(q.getValue()/(float)max);Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xFF1565C0);c.drawRect(r.left+130,y-11,r.left+130+w,y+3,p);text(c,shorten(q.getKey(),18),r.left+10,y,7.5f,Color.DKGRAY,false);text(c,String.valueOf(q.getValue()),r.right-18,y,7.5f,Color.BLACK,true,Paint.Align.RIGHT);y+=25;}}
