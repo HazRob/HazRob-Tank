@@ -1,3 +1,14 @@
+## 2026-10-29 — G2 early NFKC CSV header gate in evidence bundle (336/336 CI)
+
+- Resumed from `7d8b2b3bf3735b30bcf294dbb8f3991eac02c52c`; verified prior CI and central catalogue Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets). Pinned source readiness remains 0/14; independent evidence `records=[]`.
+- Closed an early-bundle schema ambiguity: `g2_evidence_bundle_gate.py` now rejects NFKC-unstable CSV header names even when the evidence file has a matching SHA256. The later cross-artifact gate already rejected such aliases; this change makes the earlier bundle-level integrity result fail closed independently.
+- Added three synthetic tests in `test_g2_bundle_csv_nfkc_gate.py`, including fullwidth/decomposed negatives and a valid Arabic column control. Code commit `bf028dd520973e6fe6f5ea3f02840f3539161e97`; test commit `6838a2a82cb5aeac51fca3c35ac7fc44262669f5`.
+- [G2 Actions #40865031754](https://github.com/HazRob/HazRob-Tank/actions/runs/40865031754), job `123417510648`: **336/336 PASS**, byte-identical replay PASS, publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact `12892244820`, ZIP SHA256 `47e08878b80b14e145241b1551f95a6f0d4bb006b62be3c221282b0f4f022c47`.
+- Research branch only. No ChemCore Stable, Android or firmware changes, and no scientific G2/G3 promotion. Documentation: `G2_BUNDLE_CSV_HEADER_NFKC_EARLY_GATE_2026-10-29_AR.md`.
+- Next: verify documentation-checkpoint CI and acquire original independently measured exposures, traceable concentration standards, physical provenance, and preregistered grouped blind holdouts.
+
+---
+
 ## 2026-10-29 — G2 NFKC evidence CSV header identity (333/333 CI)
 
 - Resumed from `46dd80de1bc29d118aec72b8f24924b720355173` (prior G2 CI 327/327 PASS). Central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` contains 80 entries / 14 external datasets; 0/14 review-ready; independent evidence `records=[]`.
