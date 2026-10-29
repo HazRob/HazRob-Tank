@@ -1,0 +1,282 @@
+{
+  "schema": "chemcore-v6-n05f-uci1081-original-source-four-n03f-java-learners/1",
+  "date": "2026-10-29",
+  "source_description": "UCI Machine Learning Repository: Gas sensor array low-concentration, 90 original exposures, 6 source gases, three 50/100/200 ppb concentration levels, five replicates per gas/level",
+  "source_url": "https://archive.ics.uci.edu/dataset/1081/gas+sensor+array+low-concentration",
+  "source_archive_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "source_csv_sha256": "d79afe6494903b988de68d4a8ab133167151a1bb620ba413e5cefd15003d07b3",
+  "features_csv_sha256": "c3f930b18b4d2ebfab8d691b1e2b5dcbe2ff5f94cd082a2e4fdd46d913a0d6da",
+  "source_layout": "ten 900-sample sensor blocks per original source row, reshaped equivalent to (10,900).T",
+  "source_feature_schema": "10 endpoint ratios + 10 early ratios + 10 middle ratios, each / source baseline mean - 1",
+  "evaluation": "original exposure level blocked: each of 3 folds withholds all 30 exposures at 50, 100, or 200 ppb; 60 training; 30 test; 4 OVR research models x 2 channel modes",
+  "java_source": "research/chemcore_v6/benchmarks/Uci1081N03FJavaBenchmark.java",
+  "java_models": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/SupervisedLearningResearchV6.java",
+  "run_id": 40956838753,
+  "run_status": "success",
+  "runner_commit": "a553728260374359ae868281c5738d5bebfed86a",
+  "artifact_id": 12934415961,
+  "artifact_zip_sha256": "3e1530005ecac4373438d67b9143157ef7cea9468379343843fe496f41b7df0a",
+  "artifact_contents": [
+    "source_manifest.json",
+    "fold_metrics.csv",
+    "heldout_predictions.csv"
+  ],
+  "artifact_prediction_rows": 720,
+  "artifact_metrics_rows": 24,
+  "library_saved_as": "ChemCore_V6_N05F_Original_UCI1081_Java_Results_2026-10-29.zip",
+  "library_file_id": "libfile_797166ba7778819181227a2846785900",
+  "hyperparameters_fixed_before_source_evaluation": {
+    "linear_svm_epochs": 150,
+    "learning_rate": 0.15,
+    "lambda": 0.02,
+    "forest_trees": 79,
+    "seed_base": 20261029,
+    "newton_boost_rounds": 12,
+    "ridge": 1,
+    "one_hidden_mlp_units": 4,
+    "epochs": 800,
+    "multiclass": "one-versus-rest for each of 6 source gases"
+  },
+  "source_metrics": [
+    {
+      "mode": "MQ135_only",
+      "algorithm": "V6_LinearHingeSVM_OVR",
+      "folds": [
+        {
+          "heldout_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2333333333,
+          "macro_f1": 0.1457431457
+        },
+        {
+          "heldout_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.1666666667,
+          "macro_f1": 0.0476190476
+        },
+        {
+          "heldout_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.1666666667,
+          "macro_f1": 0.0476190476
+        }
+      ],
+      "mean_balanced_accuracy": 0.188889,
+      "mean_macro_f1": 0.080327
+    },
+    {
+      "mode": "MQ135_only",
+      "algorithm": "V6_BootstrapStumpForest_OVR",
+      "folds": [
+        {
+          "heldout_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2,
+          "macro_f1": 0.0916666667
+        },
+        {
+          "heldout_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3,
+          "macro_f1": 0.2314814815
+        },
+        {
+          "heldout_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2666666667,
+          "macro_f1": 0.1845238095
+        }
+      ],
+      "mean_balanced_accuracy": 0.255556,
+      "mean_macro_f1": 0.169224
+    },
+    {
+      "mode": "MQ135_only",
+      "algorithm": "V6_NewtonBoostStumps_OVR",
+      "folds": [
+        {
+          "heldout_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3333333333,
+          "macro_f1": 0.2614379085
+        },
+        {
+          "heldout_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3666666667,
+          "macro_f1": 0.2994708995
+        },
+        {
+          "heldout_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2,
+          "macro_f1": 0.1172839506
+        }
+      ],
+      "mean_balanced_accuracy": 0.3,
+      "mean_macro_f1": 0.226064
+    },
+    {
+      "mode": "MQ135_only",
+      "algorithm": "V6_OneHiddenMLP_OVR",
+      "folds": [
+        {
+          "heldout_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.1666666667,
+          "macro_f1": 0.0520833333
+        },
+        {
+          "heldout_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3,
+          "macro_f1": 0.1666666667
+        },
+        {
+          "heldout_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3333333333,
+          "macro_f1": 0.224137931
+        }
+      ],
+      "mean_balanced_accuracy": 0.266667,
+      "mean_macro_f1": 0.147629
+    },
+    {
+      "mode": "full_source_10_channels",
+      "algorithm": "V6_LinearHingeSVM_OVR",
+      "folds": [
+        {
+          "heldout_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2333333333,
+          "macro_f1": 0.1494708995
+        },
+        {
+          "heldout_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.5333333333,
+          "macro_f1": 0.4297924298
+        },
+        {
+          "heldout_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.4,
+          "macro_f1": 0.3015873016
+        }
+      ],
+      "mean_balanced_accuracy": 0.388889,
+      "mean_macro_f1": 0.293617
+    },
+    {
+      "mode": "full_source_10_channels",
+      "algorithm": "V6_BootstrapStumpForest_OVR",
+      "folds": [
+        {
+          "heldout_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2666666667,
+          "macro_f1": 0.1944444444
+        },
+        {
+          "heldout_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.4666666667,
+          "macro_f1": 0.4486694678
+        },
+        {
+          "heldout_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.5,
+          "macro_f1": 0.3891555068
+        }
+      ],
+      "mean_balanced_accuracy": 0.411111,
+      "mean_macro_f1": 0.34409
+    },
+    {
+      "mode": "full_source_10_channels",
+      "algorithm": "V6_NewtonBoostStumps_OVR",
+      "folds": [
+        {
+          "heldout_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3666666667,
+          "macro_f1": 0.3108974359
+        },
+        {
+          "heldout_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.6333333333,
+          "macro_f1": 0.5838497015
+        },
+        {
+          "heldout_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2666666667,
+          "macro_f1": 0.2199430199
+        }
+      ],
+      "mean_balanced_accuracy": 0.422222,
+      "mean_macro_f1": 0.371563
+    },
+    {
+      "mode": "full_source_10_channels",
+      "algorithm": "V6_OneHiddenMLP_OVR",
+      "folds": [
+        {
+          "heldout_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3,
+          "macro_f1": 0.193452381
+        },
+        {
+          "heldout_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.5666666667,
+          "macro_f1": 0.5361860362
+        },
+        {
+          "heldout_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.4,
+          "macro_f1": 0.3051099228
+        }
+      ],
+      "mean_balanced_accuracy": 0.422222,
+      "mean_macro_f1": 0.344916
+    }
+  ],
+  "limitations": [
+    "All results are external original UCI source-domain tests, not HazRob Tank data; no Tank G3.",
+    "Study acquisition day, device and session separation not established by source CSV.",
+    "Four algorithms are small, explicitly partial research variants; do not claim full Random Forest, XGBoost or neural network performance.",
+    "Full UCI 10-channel hardware is NOT installed Tank sensor array and MQ135 readings are not interchangeable without physical validation.",
+    "No parameter optimization on sealed test, confidence/OOD threshold validation, ppm certification or real-time Android performance.",
+    "Source model differences are retained; not artificially adjusted to match higher previous Softmax reference."
+  ]
+}
