@@ -316,5 +316,73 @@ class PairedPredictionReplayTests(unittest.TestCase):
             replay_paired_predictions(self.pred, self.metrics, resamples=999)
 
 
+    def test_true_class_group_support_full_crossed_design(self):
+        result = self.replay()
+        support = result["true_reference_class_support_by_declared_group"]
+        self.assertEqual(
+            [(r["group_id"], r["true_reference"], r["exposures"])
+             for r in support],
+            [("a", "A", 1), ("a", "B", 1),
+             ("b", "A", 1), ("b", "B", 1)])
+        self.assertEqual(result["true_reference_classes_confined_to_one_declared_group"], [])
+        self.assertEqual(result["true_reference_class_min_declared_group_coverage"], 2)
+        self.assertEqual(
+            [r["declared_group_coverage_fraction"]
+             for r in result["true_reference_class_declared_group_coverage"]],
+            [1.0, 1.0])
+        self.assertIn("NOT_AUTHENTICATED_GROUP_INDEPENDENCE",
+                      result["true_reference_group_support_scope"])
+
+    def test_true_class_single_group_confinement_is_flagged(self):
+        # Perfectly reconciled pooled metrics cannot supply class-wise
+        # cross-group evidence when each class occurs in only one group.
+        self.write(pred=("e1,a,A,A,B\n"
+                         "e2,a,A,B,A\n"
+                         "e3,b,B,B,A\n"
+                         "e4,b,B,A,B\n"),
+                   metrics="a,2,1,1\nb,2,1,1\n")
+        result = self.replay()
+        self.assertEqual(result["observed_delta"], 0)
+        self.assertEqual(result["true_reference_classes_confined_to_one_declared_group"],
+                         ["A", "B"])
+        self.assertEqual(result["true_reference_class_min_declared_group_coverage"], 1)
+        self.assertEqual(
+            [r["declared_group_coverage_fraction"]
+             for r in result["true_reference_class_declared_group_coverage"]],
+            [0.5, 0.5])
+
+    def test_true_class_partial_group_support_reconciles(self):
+        self.write(pred=("e1,a,A,A,B\n"
+                         "e2,b,A,B,A\n"
+                         "e3,b,B,B,B\n"
+                         "e4,c,B,A,B\n"),
+                   metrics="a,1,1,0\nb,2,1,2\nc,1,0,1\n")
+        result = self.replay()
+        self.assertEqual(result["groups"], 3)
+        self.assertEqual(result["true_reference_class_min_declared_group_coverage"], 2)
+        self.assertEqual(result["true_reference_classes_confined_to_one_declared_group"], [])
+        for row in result["true_reference_class_declared_group_coverage"]:
+            self.assertAlmostEqual(row["declared_group_coverage_fraction"], 2 / 3)
+        self.assertEqual(
+            sum(r["exposures"] for r in
+                result["true_reference_class_support_by_declared_group"]), 4)
+
+    def test_true_class_group_support_order_and_arabic_label_invariant(self):
+        self.write(pred=("e1,a,إيثانول,إيثانول,أسيتون\n"
+                         "e2,a,أسيتون,إيثانول,أسيتون\n"
+                         "e3,b,إيثانول,إيثانول,إيثانول\n"
+                         "e4,b,أسيتون,إيثانول,إيثانول\n"))
+        before = self.replay()
+        rows = self.pred.read_text(encoding="utf-8").splitlines(keepends=True)
+        self.pred.write_text(rows[0] + "".join(reversed(rows[1:])),
+                             encoding="utf-8")
+        after = self.replay()
+        for key in ("true_reference_class_support_by_declared_group",
+                    "true_reference_class_declared_group_coverage",
+                    "true_reference_classes_confined_to_one_declared_group",
+                    "true_reference_class_min_declared_group_coverage"):
+            self.assertEqual(before[key], after[key])
+
+
 if __name__ == "__main__":
     unittest.main()
