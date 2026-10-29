@@ -81,6 +81,8 @@ jobs:
           assert mobile['source_rows']==114 and not mobile['ppm_from_MQ_inferred']
           assert not mobile['gas_identity_inferred']
           assert mobile['temperature_valid_entries']==4
+          assert faults['missing_channel_rejected_by_code'] is True
+          assert faults['nonfinite_channel_rejected_by_code'] is True
           assert not faults['three_channel_inference_allowed_when_missing']
           assert not faults['fallback_to_old_engine_allowed']
           print('PASS_SOURCE_NUMERICS 55 day/model tests, 70930 heldout source predictions, 33 unseen sensor+day transfers')
