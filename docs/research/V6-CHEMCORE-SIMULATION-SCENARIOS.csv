@@ -1,0 +1,25 @@
+scenario_id,domain,description,evidence_kind,required_inputs,expected_invariant_or_test,phase,physical_validation_state
+SIM-A01,ELECTRICAL,Nominal ADC to Vrl to Rs,synthetic_known_circuit,"RL,VC,divider,ADC_CODE",Rs against analytic solution within defined numeric tolerance,P04,NO_G3
+SIM-A02,ELECTRICAL,RL mismatch ±10/25/50 percent,hypothetical_sensitivity,RL_nominal vs RL_actual,detect bias and mark quantitative fit unqualified,"P02,P04",NO_G3
+SIM-A03,ELECTRICAL,VC supply drift,hypothetical_sensitivity,real VC unknown; simulated range only,voltage deviation documented; no silent constant substitution,"P02,P04",NO_G3
+SIM-A04,ELECTRICAL,"ADC clipping, rail zero, negative, NaN, Inf",synthetic_fault,"raw_code,Vrl","invalid measurement, no numeric ppm or identity promotion",P04,NO_G3
+SIM-A05,R0,"R0 half, double, 10x baseline",hypothetical_sensitivity,R0 model/source definition,"quantify induced ppm sensitivity, preserve provenance","P04,P06",NO_G3
+SIM-A06,R0,Mix clean-air R0 with reference-gas R0,synthetic_incompatibility,r0_definition_id,source incompatibility blocks quantitative claim,"P04,P06",NO_G3
+SIM-A07,UNIT,Ohm/kOhm and ppb/ppm deliberate mismatch,synthetic_fault,units,unit contract catches mismatch before solver,P04,NO_G3
+SIM-A08,CURVE,manufacturer/log/reciprocal power-curve inversion,SOURCE_CONSTRAINED_if_source_pinned,"min,max,intercept,slope,source",roundtrip inside valid domain and refusal outside,"P04,P06",NO_G3
+SIM-A09,CURVE,Competing curves switch by concentration,recorded_reference_models,source IDs per channel and C,"quantify discontinuity, no silent source switching",P06,NO_G3
+SIM-A10,HEATER,MQ7/MQ9 phase unknown or invalid,hypothetical_fault,"heater profile, model variant","restrict CO quantitative validity, retain research flags","P02,P04",NO_G3
+SIM-B01,ENV,Temperature and RH perturbation,synthetic_context,"T,RH,gas,reference",report sensitivity and domain status; not fabricate correction,"P04,P07",NO_G3
+SIM-B02,DRIFT,Correlated baseline drift 7/30/90 days,synthetic_process,drift per sensor/time,reject drift-based false concentration certainty,"P04,P07",NO_G3
+SIM-B03,TEMPORAL,Different response and recovery time constants,synthetic_process,"rise,recovery,time_alignment",inspect t10/t90/AUC and missing recovery,"P04,P07",NO_G3
+SIM-B04,TEMPORAL,Stale/gapped/out-of-order timestamps,synthetic_fault,time,quality fails or marks unresolved,P04,NO_G3
+SIM-B05,COVERAGE,8 vs 3 vs 1 MQ channels,synthetic_sensor_dropout,sensor mask and ranking,report identifiability and no fabricated independent breadth,"P07,P08",NO_G3
+SIM-B06,CORRELATION,Three curves from same sensor same source,synthetic_duplicate_evidence,independence group,one physical observation counted once,P08,NO_G3
+SIM-B07,UNKNOWN,Novel simulated gas outside library,synthetic_out_of_library,sim params and reference absence,"no forced M4 or named identity, OOD/UNKNOWN behavior evaluated",P08,NO_G3
+SIM-B08,MIXTURE,Nonlinear binary compound perturbation,hypothetical_nonlinear_mix,"gas1,gas2,nonlinear coefficients",do not sum ppm or claim component calibration,"P04,P08",NO_G3
+SIM-B09,INTERFERENCE,Humidity/solvent confounds reference gas,synthetic_conditional,"T,RH,interferent",produce diagnostic and conservative abstention,P08,NO_G3
+SIM-B10,AMBIGUITY,One perfect-fit sensor vs 5 noisy channels,synthetic_identifiability,"noise,source uncertainties","test score bias, document alternative decisions","P06,P08",NO_G3
+SIM-B11,OOD,Accepted vs rejected threshold with grouped calibration,external_source_required_for_calibration,"train,calibration,test groups",no calibrating threshold on sealed test,"P05,P08",NO_G3
+SIM-B12,RUNTIME,76 model catalog on Android 12 low resource,real_device_benchmark_not_simulated_safety,model roster and inference timing,"log latency, ANR, memory and fallback",P09,NO_G3
+SIM-B13,BACKWARD,V5 historic session and R0 replay,archived_provenance_required,session snapshot,same original values and unchanged approved report,"P03,P09",NO_G3
+REAL-G301,G3,"Traceable gas standards and blank, independent Tank exposures",real_Tank_physical_data_required,G3 gate protocol and certificates,pass claim-specific G3 independent only after field measurements,P10,G3_CANDIDATE
