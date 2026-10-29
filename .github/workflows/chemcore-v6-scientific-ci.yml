@@ -33,7 +33,7 @@ jobs:
           python --version
       - name: Compile V6 research source and tests
         run: |
-          python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/peer_r0_audit.py research/chemcore_v6/tests/test_source_audit.py research/chemcore_v6/tests/test_peer_r0_audit.py
+          python -m py_compile research/chemcore_v6/source_audit.py research/chemcore_v6/peer_r0_audit.py research/chemcore_v6/g2_portfolio_audit.py research/chemcore_v6/tests/test_g2_portfolio_audit.py research/chemcore_v6/tests/test_source_audit.py research/chemcore_v6/tests/test_peer_r0_audit.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -68,6 +68,18 @@ jobs:
           assert x['paper_arithmetic_issue_sensors']==['MQ7','MQ8']
           assert x['device_Tank_R0_authority'] is False
           print('Peer-paper discrepancy detected, not a Tank reference R0')
+          PY
+      - name: Verify historic G2 portfolio provenance and de-duplication
+        run: |
+          python research/chemcore_v6/g2_portfolio_audit.py --out research/chemcore_v6/results/g2_portfolio_audit.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path('research/chemcore_v6/results/g2_portfolio_audit.json').read_text())
+          assert report['total_distinct_external_source_exposures']==14238
+          assert report['Tank_G3_measurement_promotions']==0
+          assert report['uci270_UCI224_same_dataset_mirror'] is True
+          print('Historical external G2 reports pinned: raw re-execution NOT claimed')
           PY
       - name: Report software-only evidence boundary
         run: |
