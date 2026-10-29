@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
-from g2_artifact_publish_gate import verify_publication
+from g2_artifact_publish_gate import verify_publication, _strict
 from g2_acquisition_triage import SOURCE_ACTIONS, CAVEAT
 
 class PublishGateTests(unittest.TestCase):
@@ -170,6 +170,20 @@ class PublishGateTests(unittest.TestCase):
         self.write()
         with self.assertRaisesRegex(ValueError, "G2_PUBLISH_UNKNOWN_SOURCE_BLOCKER"):
             self.verify()
+
+    def test_nonfinite_exponent_and_constants_fail_closed_at_publication(self):
+        # json.loads(parse_constant=...) alone does not reject exponent overflow.
+        for raw in ('{"n":1e999}', '{"n":-1e999}',
+                    '{"n":NaN}', '{"n":Infinity}', '{"n":-Infinity}'):
+            with self.subTest(raw=raw):
+                self.manifest.write_text(raw, encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "G2_PUBLISH_NONFINITE"):
+                    _strict(self.manifest)
+
+    def test_finite_scientific_notation_remains_valid_json(self):
+        self.manifest.write_text('{"n":1.25e-3}', encoding="utf-8")
+        _, data = _strict(self.manifest)
+        self.assertEqual(data["n"], 0.00125)
 
     def test_ci_success_only_publication(self):
         workflow = (Path(__file__).resolve().parents[2] /
