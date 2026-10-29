@@ -1,0 +1,140 @@
+{
+  "schema": "chemcore-v6-n05h-uci1081-sealed-independent-unknown-gas/1",
+  "date": "2026-10-29",
+  "status": "RESEARCH-ONLY SOURCE OPEN-SET VALIDATION FAILED FOR SAFETY PROMOTION",
+  "source_origin": "UCI Machine Learning Repository, gas sensor array low-concentration; 90 original exposures, 6 gas identities, 3 concentration levels x5 original replicates",
+  "source_url": "https://archive.ics.uci.edu/dataset/1081/gas+sensor+array+low-concentration",
+  "source_archive_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "source_csv_sha256": "d79afe6494903b988de68d4a8ab133167151a1bb620ba413e5cefd15003d07b3",
+  "feature_csv_sha256": "c3f930b18b4d2ebfab8d691b1e2b5dcbe2ff5f94cd082a2e4fdd46d913a0d6da",
+  "source_sensor_layout": "ten 900-sample contiguous blocks per exposure, reshaping equivalent (10,900).T",
+  "original_exposures": 90,
+  "source_gases": [
+    "ethanol",
+    "acetone",
+    "toluene",
+    "ethyl acetate",
+    "isopropanol",
+    "hexane"
+  ],
+  "experiment": "for each mode and test-unknown gas and known withheld source ppb level, known train gases are the other FOUR, negative calibration gas is a FIFTH gas, and sealed negative test gas the SIXTH different gas",
+  "folds_per_mode": 18,
+  "folds_total": 36,
+  "source_train_known_per_fold": 40,
+  "source_cal_known_per_fold": 8,
+  "source_cal_unknown_per_fold": 15,
+  "source_test_known_per_fold": 12,
+  "source_test_unknown_per_fold": 15,
+  "source_folds_recorded": 36,
+  "unique_per_fold_original_exposure_ids": 90,
+  "source_partition_audit_assignments_total": 3240,
+  "sealed_test_decisions_total": 972,
+  "source_label_heldout_ppb": [
+    50,
+    100,
+    200
+  ],
+  "negative_calibration_class_separate_from_negative_sealed_test": true,
+  "test_unknown_gas_present_in_fit_or_calibration": false,
+  "calibration_unknown_gas_present_in_train_or_test": false,
+  "source_feature_model": "ClassicalLearningV6.SoftmaxModel 4 known gas classes, 800 iterations, learning rate 0.15, L2 0.005, train-only standardization; FULL candidate vector preserved",
+  "threshold": "fit on 8 known-calibration source exposures plus 15 calibration-negative from a different unknown gas; maximize half sum known retention and unknown rejection, tie bias toward more abstention; no test data used",
+  "source_hypothesis_survival": "All four known class scores recorded even if reported as UNKNOWN; open-set score is not a calibrated posterior, original candidate retained",
+  "results": [
+    {
+      "mode": "MQ135_only",
+      "folds": 18,
+      "sealed_test_known_count": 216,
+      "sealed_test_unknown_count": 270,
+      "known_raw_correct_without_gate": 113,
+      "known_retained": 103,
+      "known_correct_after_gate": 67,
+      "unknown_rejected": 174,
+      "unknown_false_known_accepted": 96,
+      "known_raw_accuracy": 0.5231481481481481,
+      "known_retention": 0.47685185185185186,
+      "known_correct_coverage": 0.3101851851851852,
+      "unknown_rejection_rate": 0.6444444444444445,
+      "unknown_false_known_acceptance_rate": 0.35555555555555557,
+      "combined_correct_fraction": 0.49588477366255146,
+      "source_only": true
+    },
+    {
+      "mode": "full_source_10_channels",
+      "folds": 18,
+      "sealed_test_known_count": 216,
+      "sealed_test_unknown_count": 270,
+      "known_raw_correct_without_gate": 178,
+      "known_retained": 123,
+      "known_correct_after_gate": 114,
+      "unknown_rejected": 119,
+      "unknown_false_known_accepted": 151,
+      "known_raw_accuracy": 0.8240740740740741,
+      "known_retention": 0.5694444444444444,
+      "known_correct_coverage": 0.5277777777777778,
+      "unknown_rejection_rate": 0.44074074074074077,
+      "unknown_false_known_acceptance_rate": 0.5592592592592592,
+      "combined_correct_fraction": 0.4794238683127572,
+      "source_only": true
+    }
+  ],
+  "external_source_findings": [
+    "Full ten-source array has high known closed-set accuracy (178/216=82.41%) but poor UNKNOWN rejection (119/270=44.07%), which means 151/270=55.93% unknowns were incorrectly accepted as known.",
+    "MQ135 alone unknown rejection was 174/270=64.44% with 96/270=35.56% false-known acceptance; lower closed-set known accuracy and severe known abstention remain.",
+    "These rates do not qualify for field gas identity or safety warnings. A model cannot be promoted for Tank from source-only score calibration.",
+    "Calibration-only threshold depends on identity of an alternate unknown gas; different unknown classes generalize poorly. Full array improves known-source recognition but not necessarily open-set rejection.",
+    "Repeat source folds share source gas categories, electronics and possibly acquisition day across folds; independent device/day Tank evidence is absent."
+  ],
+  "workflow_run": 40959780208,
+  "workflow_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/40959780208",
+  "workflow_commit_sha": "bb2f3114a40e573af582eac45baefef1c0bb0317",
+  "artifact_id": 12934992995,
+  "artifact_sha256": "ee26ed0973b4fdf7b59c350e60bd9f1eb9068a7a48988f805013fe007abd8804",
+  "artifact_contents": [
+    "source_manifest.json",
+    "fold_metrics.csv",
+    "heldout_decisions.csv",
+    "source_partition_audit.csv"
+  ],
+  "artifact_verified_counts": {
+    "folds": 36,
+    "test_decisions": 972,
+    "partition_audit_assignments": 3240
+  },
+  "library_file": "ChemCore_V6_N05H_UCI1081_OpenSet_Results_2026-10-29.zip",
+  "library_id": "libfile_35fb7eda29b8819199eabfc4d4283b4e",
+  "code_paths": [
+    "android/app/src/main/java/com/hazrob/tank/chemcore/v6/OpenSetResearchV6.java",
+    "research/chemcore_v6/benchmarks/Uci1081OpenSetV6Benchmark.java",
+    "research/chemcore_v6/tests/java/V6OpenSetResearchTest.java",
+    ".github/workflows/chemcore-v6-n05h-open-set-uci.yml"
+  ],
+  "jdk_validation": {
+    "ci_run": 40959501615,
+    "success": true,
+    "additional_assertions": 28,
+    "total_assertions": 2148
+  },
+  "android_validation": {
+    "java_compile_only_run": 40959245040,
+    "success": true,
+    "apk_built": false,
+    "physical_phone_ui_tested": false
+  },
+  "food_isolation": {
+    "ci_run": 40959244989,
+    "success": true
+  },
+  "coverage": {
+    "partial_research_techniques": 78,
+    "not_yet_ported": 2,
+    "g3_physically_validated": 0
+  },
+  "limitations": [
+    "Original UCI source device/day/session grouping not proved; unknown test identity separated from negative calibration identity only within fold.",
+    "All model scoring is external source research and no physical Tank gas-reference, Rs/R0 calibration, source traceability or safety-grade unknown rejection validation has been done.",
+    "This source-only threshold must never be applied to installed Tank gas identity without G3.",
+    "The official original UCI array does not match Tank electronics in channel set or device characteristics.",
+    "Food freshness remains a separate independent module; no food profile joins gas ChemCore."
+  ]
+}
