@@ -47,9 +47,12 @@ final class SmartFieldSessionXlsxWriter {
         // READ-ONLY V6 research appendix. The authoritative V5 approved
         // decision and original raw evidence remain unchanged and SHA-checked.
         JSONObject v6Field=V6FieldSessionResearchAppendix.analyzeVerified(db,b);
-        if(v6Field.optInt("approved_gas_cycles",0)>0)
+        if(v6Field.optInt("approved_gas_cycles",0)>0){
             sheets.add(new SmartXlsxPackage.Sheet("V6 بحثي غازات",
                 researchOnlyV6FieldAppendix(b,v6Field)));
+            sheets.add(new SmartXlsxPackage.Sheet("V6 مصادر وتعارضات",
+                researchOnlyV6SourceHypotheses(b,v6Field)));
+        }
         SmartXlsxPackage.write(out,sheets);
     }
 
@@ -122,6 +125,54 @@ final class SmartFieldSessionXlsxWriter {
            "UNKNOWN","كل نتائج هذا الملحق بحثية؛ G3=0 ولا ppm معتمد.");
         g.rowStyled(SmartXlsxPackage.WARN,
            "Integrity","هذا الملحق للقراءة فقط ولا يغير ملف الاعتماد SHA للقياس.");
+        return g.finish();
+    }
+
+
+    /** ALL source-curve hypotheses are preserved. Their possible ppm values
+     * are non-certified curve fits, never measured Tank chemical concentration.
+     */
+    private static String researchOnlyV6SourceHypotheses(
+                 FieldSessionReportExporter.Bundle b,JSONObject v6){
+        SmartXlsxPackage.Grid g=wide();
+        identity(g,b,"V6 — جميع فرضيات منحنيات المصادر والتعارضات");
+        g.blank();
+        g.rowStyled(SmartXlsxPackage.WARN,
+           "UNKNOWN","هذه فرضيات بحثية فقط؛ لا اعتماد G3 ولا ppm قابل للإبلاغ.");
+        g.header("Measurement ID","Cycle ID","Sensor","Reference curve",
+            "Source root","Chemical source ID","Gas or class",
+            "Research-only curve ppm","Out of source range",
+            "Contradictions count","Original scan cycle");
+        JSONArray cycles=v6.optJSONArray("cycles");
+        if(cycles!=null)for(int i=0;i<cycles.length();i++){
+            JSONObject cycle=cycles.optJSONObject(i);
+            if(cycle==null)continue;
+            JSONArray sensors=cycle.optJSONArray("sensors");
+            if(sensors==null)continue;
+            for(int j=0;j<sensors.length();j++){
+                JSONObject sensor=sensors.optJSONObject(j);
+                if(sensor==null)continue;
+                JSONArray fits=sensor.optJSONArray("source_curve_hypotheses");
+                JSONArray conflicts=sensor.optJSONArray("source_curve_disagreements");
+                if(fits==null)continue;
+                for(int k=0;k<fits.length();k++){
+                    JSONObject fit=fits.optJSONObject(k);
+                    if(fit==null)continue;
+                    g.row(cycle.optString("measurement_session_id",""),
+                        cycle.optString("cycle_id",""),
+                        sensor.optString("sensor_model",""),
+                        fit.optString("source_curve_id",""),
+                        fit.optString("source_root",""),
+                        fit.optString("chemical_reference_id",""),
+                        fit.optString("gas_or_class",""),
+                        fit.isNull("source_estimate_ppm_research")?null:
+                            fit.optDouble("source_estimate_ppm_research",Double.NaN),
+                        fit.optBoolean("outside_original_reference_domain",false),
+                        conflicts==null?0:conflicts.length(),
+                        sensor.optLong("selected_original_scan_cycle",-1));
+                }
+            }
+        }
         return g.finish();
     }
 
