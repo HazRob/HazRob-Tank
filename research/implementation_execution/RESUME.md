@@ -1,3 +1,12 @@
+## 2026-10-29 — G2 NFKC evidence CSV header identity (333/333 CI)
+
+- Resumed from `46dd80de1bc29d118aec72b8f24924b720355173` (prior G2 CI 327/327 PASS). Central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` contains 80 entries / 14 external datasets; 0/14 review-ready; independent evidence `records=[]`.
+- Closed a distinct CSV schema alias gap: NFKC compatibility aliases of header names such as `ｅxposure_id` or `ｄevice_id` now fail closed with `CSV_HEADER_AMBIGUOUS` before any evidence-field interpretation. Six synthetic regression controls added; multilingual canonical headers preserved.
+- Code/test commit `ff04494fc99377bf673dd3564c544b594a385466`; [G2 Actions #40857166203](https://github.com/HazRob/HazRob-Tank/actions/runs/40857166203), job `123390916550`: **333/333 PASS**, double replay and publication PASS, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; artifact `12889014481`, SHA256 `2b418c362804a37bb879c98f6a78010ef3f490b2a944202a128f0f1c1d0bcdbe`.
+- Research branch only. No ChemCore Stable/Android/firmware modifications or scientific G2/G3 promotion. See `G2_CSV_HEADER_NFKC_ALIAS_FAIL_CLOSED_2026-10-29_AR.md`. Next: verify documentation CI and acquire independent physically referenced blind data.
+
+---
+
 ## 2026-10-29 — G2 canonical exposure IDs across evidence CSVs (327/327 CI)
 
 - Resumed from `237476c31ad55b11575413ed89b2550c773a8e38`; verified prior G2 CI success and central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets), pinned source readiness 0/14 and independent evidence `records=[]`.
