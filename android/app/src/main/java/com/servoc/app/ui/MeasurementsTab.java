@@ -806,12 +806,82 @@ public final class MeasurementsTab {
             technicalToggle=UiKit.button(c,"إظهار البواقي والتفاصيل");technicalToggle.setOnClickListener(v->{showTechnical=!showTechnical;technical.setVisibility(showTechnical?View.VISIBLE:View.GONE);technicalToggle.setText(showTechnical?"إخفاء البواقي والتفاصيل":"إظهار البواقي والتفاصيل");});box.addView(technicalToggle,UiKit.full(c));technical=card("");technical.setVisibility(View.GONE);technical.setTextIsSelectable(true);box.addView(technical,UiKit.full(c));
             decisions=new ChemCoreDecisionRepository(host.database());
         }
+        private boolean isResearchOnlyV6(JSONObject analysis){
+            return analysis!=null&&
+                "hazrob-tank-v6-android-telemetry-bridge/1".equals(
+                    analysis.optString("schema",""));
+        }
+        /** Research-only V6 presentation: no legacy posterior, hazard ranking,
+         * occupational exposure alerts or automatic target tracking.
+         */
+        private void renderResearchOnlyV6(JSONObject p){
+            selectedCandidateId=-1;
+            selectedCandidateName="";
+            startTracking.setEnabled(false);
+            screeningToggle.setEnabled(false);
+            selected.setText("المرشح المحدد • لا توجد هوية غاز معتمدة للتتبع الآلي");
+            decisionCard.setText("ChemCore Tank V6 • نتيجة بحثية فقط\n"+
+                "الهوية: UNKNOWN • لم تثبت المعايرة الفيزيائية G3\n"+
+                "لا يوجد تركيز ppm معتمد أو احتمال كشف موثوق");
+            decisionCard.setTextColor(INFO);
+            screeningCard.setText("فحص المصادر: فرضيات مستقلة، دون استبعاد آلي"+
+                "\nمصادر Rs/R0 صالحة "+p.optInt("ratio_ready_mq_channels",0)+
+                " • قراءات بغير R0 "+p.optInt("raw_only_mq_channels",0));
+            safetyCard.setText("سلامة الغاز والتعرض: غير مؤهل لإصدار تحذير مهني"+
+                "\nلا تستخدم نتيجة المصدر لقرار حدود التعرض أو الاشتعال");
+            exposureStyle(safetyCard,false);
+            screeningWarnings.setBackgroundColor(CARD);
+            screeningWarnings.setTextColor(TEXT);
+            screeningWarnings.setText("Open-set غير مؤهل على بيانات Tank؛"+
+                "\nلا إثبات للغاز أو تركيزه ولا حكم بغياب الخطر");
+            referenceInventory.setText("حدود التعرض: تُراجع مستقلة عن هذه النتيجة"+
+                "\nلا توجد قياسات ppm أو تجاوزات مثبتة");
+            JSONArray source=p.optJSONArray("source_curve_hypotheses");
+            int n=source==null?0:source.length();
+            if(n==0){
+                candidateList.addView(card("لا توجد فرضيات منحنيات مؤهلة للحساب"+
+                    "\nاحتُفظ بالقراءات الأصلية عند غياب R0"),UiKit.full(c));
+            }else{
+                for(int i=0;i<Math.min(n,12);i++){
+                    JSONObject q=source.optJSONObject(i);
+                    if(q==null)continue;
+                    String line="#"+(i+1)+" • "+q.optString("gas_or_class","—")+
+                        " • "+q.optString("sensor_model","—")+
+                        "\nمرجع البحث: "+q.optString("source_curve_id","—")+
+                        " • المصدر: "+q.optString("source_root","—")+
+                        "\nفرضية بحثية غير معتمدة؛ ليست غازًا مثبتًا";
+                    TextView row=card(line);
+                    row.setTextColor(TEXT);
+                    candidateList.addView(row,UiKit.full(c));
+                }
+                if(n>12)candidateList.addView(
+                    card("توجد "+(n-12)+" فرضيات إضافية محفوظة في نتيجة المصدر"),
+                    UiKit.full(c));
+            }
+            JSONArray raw=p.optJSONArray("original_mq_channel_evidence");
+            StringBuilder audit=new StringBuilder("ChemCore V6 • سجل أدلة مصدرية\n"+
+                "عدد فرضيات منحنيات المصادر: "+n+"\n"+
+                "القنوات الأصلية: "+(raw==null?0:raw.length())+"\n"+
+                "الهوية المبلغة: UNKNOWN\n"+
+                "R0 ومعايرة Tank G3: غير مثبتتين\n"+
+                "النتيجة لا تحتوي على Posterior أو ppm قابل للإبلاغ");
+            JSONArray conflict=p.optJSONArray("source_curve_disagreements");
+            audit.append("\nمقارنات منحنيات متعارضة: ")
+                .append(conflict==null?0:conflict.length());
+            technical.setText(audit.toString());
+        }
+
         void refresh(){
             long now=android.os.SystemClock.elapsedRealtime();
             if(lastRenderedAt>0&&now-lastRenderedAt<750L)return;
             lastRenderedAt=now;
             TankInstantAnalyzer.Result completed=currentOperation;JSONObject p=completed==null?null:completed.analysis;candidateList.removeAllViews();screeningList.removeAllViews();tracking.setText(host.trackingTargetId()>=0?"التتبع • "+host.trackingTargetName()+" (#"+host.trackingTargetId()+") • فرضية مشغل":"التتبع • لا يوجد");
             if(p==null){startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");exposureStyle(safetyCard,false);referenceInventory.setText("حدود التعرض: لا يوجد تحليل حالي.");screeningWarnings.setText("لا توجد نتيجة حالية لحساب تحذير تقديري.");technical.setText("—");return;}
+            if(isResearchOnlyV6(p)){
+                renderResearchOnlyV6(p);
+                return;
+            }
+            screeningToggle.setEnabled(true);
             String chemical=p.optString("chemical","—"),outcome=p.optString("outcome","—"),tier=p.optString("evidence_tier","—");double post=p.optDouble("top_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN);TankPpmEstimate.Result estimate=TankPpmEstimate.from(p);boolean ppmOk=estimate.reportable;double ppm=estimate.ppm;
             decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+" • Δ "+pct(margin)+" • "+tier+(estimate.available()?" • "+String.format(Locale.US,"%.2f ppm • %s",ppm,estimate.qualityAr()):" • لا يوجد رقم PPM محسوب"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
             JSONObject s=p.optJSONObject("screening_144");screeningCard.setText("فحص 144 • "+(s==null?"غير متاح":s.optString("state","—")+" • "+s.optInt("evaluated_count",0)+"/"+s.optInt("target_count",144)));
