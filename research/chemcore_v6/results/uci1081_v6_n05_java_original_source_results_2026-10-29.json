@@ -1,0 +1,280 @@
+{
+  "schema": "chemcore-tank-v6-n05-original-uci1081-java-results/1",
+  "date": "2026-10-29",
+  "source_citation": "Tian, F., Zhao, L., & Deng, S. (2023), Gas sensor array low-concentration, UCI Machine Learning Repository, DOI:10.24432/C5CK6F; CC BY 4.0",
+  "source_zip_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "source_csv_sha256": "d79afe6494903b988de68d4a8ab133167151a1bb620ba413e5cefd15003d07b3",
+  "fixed_features_csv_sha256": "c3f930b18b4d2ebfab8d691b1e2b5dcbe2ff5f94cd082a2e4fdd46d913a0d6da",
+  "source_layout": "Ten contiguous 900-sample blocks per exposure; equivalent reshape(10,900).T",
+  "source_exposures": 90,
+  "gas_classes": 6,
+  "source_levels_ppb": [
+    50,
+    100,
+    200
+  ],
+  "evaluation": "3 independent source concentration-level holdouts; total 24 model/mode/fold conditions and 720 recorded heldout predictions",
+  "java_models": "ClassicalLearningV6.java; SourceValidationV6.java",
+  "source_extractor": "research/chemcore_v6/benchmarks/extract_uci1081_verified.py",
+  "runner": "research/chemcore_v6/benchmarks/Uci1081JavaV6Benchmark.java",
+  "workflow_run": 40952186046,
+  "workflow_head_sha": "fb6b5d8573b9189409eeee439ebd8ea450e6fed2",
+  "artifact_id": 12931063894,
+  "artifact_zip_sha256": "04083f8a0398a0d1ae0e5a494b7e1551c161fa122e552dd94392e30ce054fac3",
+  "artifact_contents": [
+    "source_manifest.json",
+    "fold_metrics.csv",
+    "heldout_predictions.csv"
+  ],
+  "artifact_library_file_id": "libfile_4b7b621268f881919d097b6afda6d72d",
+  "model_config": {
+    "DiagonalLDA_ridge": 0.05,
+    "KNN_k": 3,
+    "Softmax_iterations": 800,
+    "Softmax_step": 0.15,
+    "Softmax_L2": 0.005,
+    "PCA_components": 2
+  },
+  "results": [
+    {
+      "mode": "MQ135_only",
+      "algorithm": "V6_DiagonalLDA",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2333333333,
+          "macro_f1": 0.1170634921
+        },
+        {
+          "withheld_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2333333333,
+          "macro_f1": 0.2342592593
+        },
+        {
+          "withheld_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3333333333,
+          "macro_f1": 0.2283950617
+        }
+      ],
+      "mean_balanced_accuracy": 0.266667,
+      "mean_macro_f1": 0.193239
+    },
+    {
+      "mode": "MQ135_only",
+      "algorithm": "V6_KNN_k3",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3333333333,
+          "macro_f1": 0.2375
+        },
+        {
+          "withheld_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.4,
+          "macro_f1": 0.3328371434
+        },
+        {
+          "withheld_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3,
+          "macro_f1": 0.2740740741
+        }
+      ],
+      "mean_balanced_accuracy": 0.344444,
+      "mean_macro_f1": 0.28147
+    },
+    {
+      "mode": "MQ135_only",
+      "algorithm": "V6_Softmax",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2333333333,
+          "macro_f1": 0.1202020202
+        },
+        {
+          "withheld_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.5,
+          "macro_f1": 0.4848905724
+        },
+        {
+          "withheld_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.4333333333,
+          "macro_f1": 0.3696581197
+        }
+      ],
+      "mean_balanced_accuracy": 0.388889,
+      "mean_macro_f1": 0.324917
+    },
+    {
+      "mode": "MQ135_only",
+      "algorithm": "V6_PCA2_then_DiagonalLDA",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3,
+          "macro_f1": 0.2242618493
+        },
+        {
+          "withheld_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.4666666667,
+          "macro_f1": 0.4666666667
+        },
+        {
+          "withheld_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3666666667,
+          "macro_f1": 0.2817460317
+        }
+      ],
+      "mean_balanced_accuracy": 0.377778,
+      "mean_macro_f1": 0.324225
+    },
+    {
+      "mode": "full_source_10_channels",
+      "algorithm": "V6_DiagonalLDA",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2333333333,
+          "macro_f1": 0.1479044834
+        },
+        {
+          "withheld_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.5,
+          "macro_f1": 0.516955267
+        },
+        {
+          "withheld_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.4333333333,
+          "macro_f1": 0.3892644393
+        }
+      ],
+      "mean_balanced_accuracy": 0.388889,
+      "mean_macro_f1": 0.351375
+    },
+    {
+      "mode": "full_source_10_channels",
+      "algorithm": "V6_KNN_k3",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.5333333333,
+          "macro_f1": 0.4586524587
+        },
+        {
+          "withheld_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.5333333333,
+          "macro_f1": 0.5395400895
+        },
+        {
+          "withheld_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.4666666667,
+          "macro_f1": 0.4184343434
+        }
+      ],
+      "mean_balanced_accuracy": 0.511111,
+      "mean_macro_f1": 0.472209
+    },
+    {
+      "mode": "full_source_10_channels",
+      "algorithm": "V6_Softmax",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.5666666667,
+          "macro_f1": 0.5218762719
+        },
+        {
+          "withheld_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.9,
+          "macro_f1": 0.9013532764
+        },
+        {
+          "withheld_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.8333333333,
+          "macro_f1": 0.7626262626
+        }
+      ],
+      "mean_balanced_accuracy": 0.766667,
+      "mean_macro_f1": 0.728619
+    },
+    {
+      "mode": "full_source_10_channels",
+      "algorithm": "V6_PCA2_then_DiagonalLDA",
+      "folds": [
+        {
+          "withheld_ppb": 50,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.2,
+          "macro_f1": 0.125
+        },
+        {
+          "withheld_ppb": 100,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.4333333333,
+          "macro_f1": 0.4057720058
+        },
+        {
+          "withheld_ppb": 200,
+          "train_exposures": 60,
+          "test_exposures": 30,
+          "balanced_accuracy": 0.3333333333,
+          "macro_f1": 0.2407407407
+        }
+      ],
+      "mean_balanced_accuracy": 0.322222,
+      "mean_macro_f1": 0.257171
+    }
+  ],
+  "warnings": [
+    "These are REAL UCI1081 source-domain heldout observations, but NOT physical HazRob Tank experiments.",
+    "Original source acquisition-day, physical-device and session independence not proven.",
+    "UCI's ten channels are not the installed Tank sensor array; single MQ135 channel is still not interchangeable without electronic characterization.",
+    "All tuned parameters were fixed in source before the reported run; confidence calibration and independent unknown-gas evaluation not performed.",
+    "Balanced accuracy is research class discrimination, not ppm calibration or workplace safety certification.",
+    "No model promoted to G3, APK or certified gas-identity claim."
+  ]
+}
