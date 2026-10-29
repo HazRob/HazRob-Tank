@@ -28,7 +28,7 @@ public final class V6ThirdTenTechniquesTest {
 
         // 06.2: source-conditional Bayes, no false device confidence.
         double[] bayes=SourceValidationV6.bayesianPosterior(
-                new double[]{.4,.6},new double[]{.3,.2});
+                new double[]{1e-250,1e-250},new double[]{1e-250,1e-250});
         near(bayes[0],.5,1e-12,"Bayes posterior");
         near(bayes[0]+bayes[1],1,1e-12,"normalized");
         throwsBad(()->SourceValidationV6.bayesianPosterior(
@@ -41,7 +41,7 @@ public final class V6ThirdTenTechniquesTest {
         near(temp.temperature,.5,1e-12,"best calibration NLL");
         ok(temp.calibrationRows==4,"all calibration rows");
         near(SourceValidationV6.softmaxTemperature(
-                  new double[]{1000,1000},.1)[0],.5,1e-12,"stable softmax");
+                  new double[]{1e300,1e300},1e-300)[0],.5,1e-12,"stable softmax");
         throwsBad(()->SourceValidationV6.fitTemperature(
                   new double[][]{{1,2}},new int[]{2},new double[]{1}),
                   "calibration true class bounds");
@@ -59,7 +59,7 @@ public final class V6ThirdTenTechniquesTest {
                   new double[]{1.01},new double[]{.5},.1),"probability range");
 
         // 06.5: open-set threshold and margin; preserve numerical evidence.
-        var tied=SourceValidationV6.openSet(new double[]{.7,.7,.1},.2,.05);
+        var tied=SourceValidationV6.openSet(new double[]{.7,.7,.1},.2,0);
         ok(tied.unknown&&tied.bestClassIndex==-1,"ambiguous tie");
         ok(!SourceValidationV6.openSet(new double[]{.8,.1},.2,.05).unknown,"clear best");
         ok(SourceValidationV6.openSet(new double[]{.1,.05},.2,0).unknown,"low score");
