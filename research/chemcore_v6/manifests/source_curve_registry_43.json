@@ -1,12 +1,12 @@
 {
-  "schema": "hazrob-tank-source-curve-registry/1",
+  "schema": "hazrob-tank-source-curve-registry/2",
   "created": "2026-10-29",
   "authoritative_upstream": "HazRob/build-harness/library/research/hr069/mq_research_curves_43.json",
   "source_commit": "e88f876140587a708ee84a4d4d3acbd5720274ee",
   "original_git_blob": "bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1",
   "source_group_count": 1,
   "curve_count": 43,
-  "policy": "NO_PER_MODEL_R0_ASSUMPTION_AND_NO_STABLE_AUTO_PROMOTION",
+  "policy": "INCLUDE_ALL_NUMERICALLY_VALID_CURVES_AS_RESEARCH_HYPOTHESES; REPORT_R0_AND_LABEL_UNCERTAINTY; NEVER_M4",
   "values_are": "SOURCE_COEFFICIENTS_NOT_TANK_DEVICE_REFERENCE",
   "records": [
     {
@@ -35,8 +35,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "LPG aggregate"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "LPG aggregate",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-002",
@@ -64,8 +71,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-003",
@@ -93,8 +107,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-004",
@@ -122,8 +143,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Generic alcohol curve mapped to ethanol for comparison"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Generic alcohol curve mapped to ethanol for comparison",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-005",
@@ -151,8 +179,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-006",
@@ -180,8 +215,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Composite smoke response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Composite smoke response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-007",
@@ -209,8 +251,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-008",
@@ -238,8 +287,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Source model uses 50x conversion from its internal alcohol concentration axis"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Source model uses 50x conversion from its internal alcohol concentration axis",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-009",
@@ -267,8 +323,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "MQ-3 cross-response; research comparison only"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "MQ-3 cross-response; research comparison only",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-010",
@@ -296,8 +359,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "MQ-3 cross-response; research comparison only"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "MQ-3 cross-response; research comparison only",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-011",
@@ -325,8 +395,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Research comparison only"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Research comparison only",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-012",
@@ -354,8 +431,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Research comparison only"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Research comparison only",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-013",
@@ -383,8 +467,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Very shallow response; weak quantitative discrimination"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Very shallow response; weak quantitative discrimination",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-014",
@@ -412,8 +503,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-015",
@@ -441,8 +539,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-016",
@@ -470,8 +575,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-017",
@@ -499,8 +611,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Composite smoke response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Composite smoke response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-018",
@@ -528,8 +647,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Shallow cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Shallow cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-019",
@@ -557,8 +683,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Extremely shallow cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Extremely shallow cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-020",
@@ -586,8 +719,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-021",
@@ -615,8 +755,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-022",
@@ -644,8 +791,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-023",
@@ -673,8 +827,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-024",
@@ -702,8 +863,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-025",
@@ -731,8 +899,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Research source range; verify against exact purchased revision"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Research source range; verify against exact purchased revision",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-026",
@@ -760,8 +935,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Heater protocol is revision-dependent; verify MQ-7/MQ-7B module"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Heater protocol is revision-dependent; verify MQ-7/MQ-7B module",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-027",
@@ -789,8 +971,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-028",
@@ -818,8 +1007,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Shallow cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Shallow cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-029",
@@ -847,8 +1043,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Shallow cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Shallow cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-030",
@@ -876,8 +1079,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Primary target; source range broader than some manufacturer specifications"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Primary target; source range broader than some manufacturer specifications",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-031",
@@ -905,8 +1115,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-032",
@@ -934,8 +1151,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-033",
@@ -963,8 +1187,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-034",
@@ -992,8 +1223,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-035",
@@ -1021,8 +1259,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "CO curve; verify heater phase and exact sensor revision"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "CO curve; verify heater phase and exact sensor revision",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-036",
@@ -1050,8 +1295,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-037",
@@ -1079,8 +1331,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": ""
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-038",
@@ -1108,8 +1367,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Research graph fit"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Research graph fit",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-039",
@@ -1137,8 +1403,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Research graph fit"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Research graph fit",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-040",
@@ -1166,8 +1439,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Generic alcohol mapped to ethanol for comparison"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Generic alcohol mapped to ethanol for comparison",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-041",
@@ -1195,8 +1475,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response model; MQ-135 is not a selective CO2 instrument"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response model; MQ-135 is not a selective CO2 instrument",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-042",
@@ -1224,8 +1511,15 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Source labels NH4; mapped to ammonia catalogue entry for comparison only"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Source labels NH4; mapped to ammonia catalogue entry for comparison only",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     },
     {
       "record_id": "MQDATA43-043",
@@ -1253,8 +1547,16 @@
       "source_heater_profile_verified": false,
       "molecular_identity_qualified": false,
       "tank_device_reference_validated": false,
-      "status": "HOLD_REFERENCE_PROVENANCE",
-      "note": "Cross-response"
+      "status": "USABLE_RESEARCH_WITH_CAVEATS",
+      "note": "Cross-response",
+      "model_use_status": "RESEARCH_EXPLORATORY",
+      "risk_flags": [
+        "SOURCE_R0_DEFINITION_UNVERIFIED",
+        "SOURCE_OUTPUT_SCALE_UNVERIFIED",
+        "HEATER_PROFILE_UNVERIFIED",
+        "LABEL_NOT_MOLECULARLY_QUALIFIED"
+      ]
     }
-  ]
+  ],
+  "research_reuse_enabled": true
 }
