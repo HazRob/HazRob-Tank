@@ -209,9 +209,9 @@ public final class RealMqSourceV6Benchmark {
                 concentrationRows.write(String.format(Locale.ROOT,
                     "UCI1081_MQ135,%d,%d,%s,%d,%s,%s,%s,%s,%d|%d,true%n",
                     heldout,row.id,row.label,row.level,
-                    Double.isFinite(estimated)?String.format(Locale.ROOT,"%.10f",estimated):"",
-                    Double.isFinite(ae)?String.format(Locale.ROOT,"%.10f",ae):"",
-                    Double.isFinite(re)?String.format(Locale.ROOT,"%.10f",re):"",
+                    Double.isFinite(estimated)?String.format(Locale.ROOT,"%.12e",estimated):"",
+                    Double.isFinite(ae)?String.format(Locale.ROOT,"%.12e",ae):"",
+                    Double.isFinite(re)?String.format(Locale.ROOT,"%.12e",re):"",
                     status,anchors[0],anchors[1]));
             }
             var score=SourceValidationV6.benchmark(actual,prediction,GASES);
