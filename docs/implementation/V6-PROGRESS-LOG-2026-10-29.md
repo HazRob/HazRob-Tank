@@ -87,3 +87,11 @@
 - **CI:** `40916864090`, head `3f81daa2913c3c679e1c8327d6fd188b183ca1f7`, **success**: 50/50 Python unit cases, 31 JVM compatibility assertions + 33 JVM evidence-consensus assertions, 387 curve numerical roundtrips, 172 synthetic R0 cases, eight SIM-B scenario outputs and G2 history audit. Machine evidence artifact `12915184303`. `Tank_G3=0/80`.
 - **Checkpoint:** `docs/implementation/V6-CHEMCORE-CHECKPOINT-02-2026-10-29_AR.md` and `docs/implementation/V6-CHEMCORE-EXECUTION-TRACKER.json` updated.
 - **Not executed/complete:** V6 Android active runtime/Gradle/APK, experiments on physical robot, new UCI270/308/309 raw files/benchmark, P06/P07 selection/validation, field G3 promotion. Do not promote P08 prototype to production decision from these tests.
+
+## 2026-10-29 — V6-002 Checkpoint 03: source curve Java numerical engine
+
+- **Implemented:** `TankV6CurveKernel.java` in `android/app/src/main/java/com/servoc/app/chemcore/`, commit `85ee3934b620dc58a737a485316d3ae17d74699d`: source-pinned power-law forward/inverse function with source ppm bounds, `outputScale`, explicit R0 definition and ratio direction through `TankV6SourceCompatibility`. All outcomes research-only, never reportable ppm or G3 by a model flag.
+- **Test code:** `research/chemcore_v6/tests/java/TankV6CurveKernelTest.java` commit `ec67ee5283dadce154bc535ebb374cfed642e940`: 15 JDK assertions including MQ3 50× source-axis algebra, cross-device denial, domain and invalid R0/concentration checks. Test coefficient fixture is synthetic, not a manufacturer's physical calibration.
+- **CI:** [run 40917593589](https://github.com/HazRob/HazRob-Tank/actions/runs/40917593589), head `1e52e2f7605b2ef7de5555ffea78ca402ed101cc`, **success**: 50 Python tests, 31 R0 compatibility + 33 consensus +15 bounded curve JVM assertions = 79 Java assertions. Research ZIP artifact `12916292465`.
+- **Permanent checkpoint:** `docs/implementation/V6-CHEMCORE-CHECKPOINT-03-2026-10-29_AR.md`; phase tracker `docs/implementation/V6-CHEMCORE-EXECUTION-TRACKER.json` updated. `P06=SOURCE_CURVE_JAVA_MATH_JDK_TESTED_NOT_STABLE_INTEGRATED`.
+- **Untested:** Android-specific Gradle/APK, real device sensors RL/Vc/heater, actual source-curve applicability, full Stable registry and P08/P09 runtime integration. **G3 Tank=0/80**.
