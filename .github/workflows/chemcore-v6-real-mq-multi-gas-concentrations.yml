@@ -83,7 +83,7 @@ jobs:
             folds=[x for x in raw if x['mode']==mode]
             assert sorted(int(x['fold']) for x in folds)==list(range(5))
             rows=[x for x in pred if x['mode']==mode]
-            assert len(rows)==6400 and len(set(x['source_serial'] for x in rows))==6400
+            assert len(rows)==6400 and len(set(x['source_row_index_zero_based'] for x in rows))==6400
             assert all(x['source_raw_adc_no_ppm']=='true' for x in rows)
             ba=statistics.mean(float(x['balanced_accuracy']) for x in folds)
             f1=statistics.mean(float(x['macro_f1']) for x in folds)
