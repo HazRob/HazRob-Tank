@@ -1,0 +1,363 @@
+{
+  "schema_version": "hazrob.reference-bank.mq-r0-cross-study-addendum.v1",
+  "date": "2026-10-21",
+  "linked_initial_audit": "library/reference-bank/external-research/calibration/MQ_R0_RS_CROSS_STUDY_2026-10-21.json",
+  "status": "RESEARCH_ONLY_NOT_APPROVED_STABLE",
+  "units": "kOhm",
+  "new_original_source_count": 5,
+  "sources": [
+    {
+      "id": "CAL-R0-2023-ISCTE-CITYIOT",
+      "type": "UNIVERSITY_MASTER_THESIS",
+      "title": "CityIOT - Air Quality in the city supported by an IoT ecosystem",
+      "author": "Gonçalo Franco Morgado",
+      "date": "2023-12",
+      "original_url": "https://repositorio.iscte-iul.pt/bitstream/10071/30319/1/master_goncalo_franco_morgado.pdf",
+      "values_kohm": {
+        "MQ2": 1.3,
+        "MQ7": 4.78,
+        "MQ9": 8.21
+      },
+      "definition": "clean-air 48-hour preheat, R0 derived with sensor-specific clean-air air factor per code appendix B",
+      "raw_values_replicated": false,
+      "published_location": "Table 3.4, PDF page index 52, book page 35",
+      "audit_status": "TEXT_OF_UNIVERSITY_THESIS_VERIFIED_PDF_SCREENSHOT_BLOCKED",
+      "independence": "separate thesis/physical sensor system; unknown overlap with other sources",
+      "strongest_use": "SINGLE_EXPERIMENT_REFERENCE_NOT_UNIVERSAL"
+    },
+    {
+      "id": "CAL-R0-2022-TELKOM",
+      "type": "PEER_REVIEWED_ARTICLE",
+      "title": "Sistem Monitoring Kualitas Udara Berbasis Komunikasi LoRa di IT Telkom Purwokerto",
+      "author": "Danny Kurnianto and colleagues",
+      "date": "2022",
+      "doi": "10.20884/1.dr.2022.18.1.520",
+      "original_url": "https://www.researchgate.net/publication/359518836_Sistem_Monitoring_Kualitas_Udara_Berbasis_Komunikasi_LoRa_di_IT_Telkom_Purwokerto",
+      "values_kohm": {
+        "MQ7": 6.69,
+        "MQ135": 18.59
+      },
+      "rs_air_kohm": {
+        "MQ135": 66.92
+      },
+      "definition": "MQ7 R0 at graph's 100ppm CO reference, value 6.69 reported with prior thesis [19] attribution; MQ135 from observed Rs_air=66.92 kΩ divided by datasheet clean air factor 3.6",
+      "raw_values_replicated": false,
+      "audit_status": "ORIGINAL_ARTICLE_FULL_TEXT_CHECKED",
+      "independence": "MQ7 source lineage cites Damanik 2019; NOT necessarily a new independently measured R0",
+      "strongest_use": "MQ135_ARITHMETIC_CHECK_ONLY_AND_MQ7_PRIOR_CITATION"
+    },
+    {
+      "id": "CAL-R0-2023-UMT-SUMBAGA",
+      "type": "PEER_REVIEWED_ARTICLE",
+      "title": "Pengaruh Blower Terhadap Hasil Uji Kadar Emisi Gas Buang ... Berbasis Mikrokontroler",
+      "author": "Dias Damar Sumbaga and Siti Shofiah",
+      "date": "2023-09-19",
+      "original_url": "https://jurnal.umt.ac.id/index.php/jt/article/viewFile/8333/4442",
+      "values_printed": {
+        "MQ2": 2.02,
+        "MQ7": 1.72,
+        "MQ135": 7.87
+      },
+      "values_kohm_conditional": {
+        "MQ2": 2.02,
+        "MQ7": 1.72,
+        "MQ135": 7.87
+      },
+      "rs_printed": {
+        "MQ2": 19271,
+        "MQ7": 47.15,
+        "MQ135": 28.31
+      },
+      "clean_air_ratio": {
+        "MQ2": 9.5,
+        "MQ7": 27.45,
+        "MQ135": 3.6
+      },
+      "definition": "Table 2 inconsistent units: calls Rs/ohm and R0/ohm, but MQ2 must be Rs=19,271 ohm and R0=2.02 kΩ to satisfy ratio 9.5; MQ7/MQ135 also consistent if values are same kΩ scale.",
+      "raw_values_replicated": false,
+      "audit_status": "PDF_PAGE_4_VISUALLY_VERIFIED; UNITS_INTERNALLY_INCONSISTENT",
+      "independence": "field trial not traceable source-gas standard",
+      "strongest_use": "CANDIDATE_R0_WITH_UNIT_AMBIGUITY_DO_NOT_AGGREGATE"
+    },
+    {
+      "id": "CAL-R0-2025-AIRISENSE",
+      "type": "PUBLIC_MAKER_PROJECT",
+      "title": "AIRiSense Cloud",
+      "author": "MuthuMitrnRS",
+      "date": "2025-11-30",
+      "original_url": "https://www.electronicwings.com/users/MuthuMitrnRS/projects/5942/airisense-cloud",
+      "values_kohm": {
+        "MQ7": 11.39,
+        "MQ135": 15.29
+      },
+      "definition": "Author reports unique R0 hard-coded per sensor from a 30-min outdoor calibration (not 48-hour initial seasoning); simulated examples other than these numbers are excluded",
+      "raw_values_replicated": false,
+      "audit_status": "PROJECT_DOCUMENTATION_READ_R0_VALUES_NOT_INDEPENDENTLY_REPRODUCED",
+      "independence": "one maker physical experiment, not gas laboratory certified",
+      "strongest_use": "COMMUNITY_SINGLE_DEVICE_OBSERVATION"
+    },
+    {
+      "id": "CAL-R0-COLOMBIA-UDFJC",
+      "type": "UNIVERSITY_THESIS",
+      "title": "Facultad de Ingeniería - Ingeniería Electrónica; MQ2/MQ131 clean air calibration",
+      "date": "2026 (repository recently indexed; document publication year not verified)",
+      "original_url": "https://repository.udistrital.edu.co/bitstreams/f6ac507b-f43b-438a-92a5-955a33a27a86/download",
+      "values_kohm": {
+        "MQ2": 8.4,
+        "MQ131": 55.3
+      },
+      "definition": "Clean-air voltage Rs then Rs/R0=k using a datasheet factor",
+      "raw_values_replicated": false,
+      "audit_status": "PDF_INDEXED_TEXT_RETURNED_BUT_DIRECT_PDF_FETCH_FAILED",
+      "independence": "another university document, hardware provenance not audited",
+      "strongest_use": "PROVISIONAL_CITABLE_THESIS_ROW"
+    }
+  ],
+  "baseline_2018": [
+    {
+      "sensor": "MQ2",
+      "r0_published_kohm": 5.72877,
+      "arithmetic_consistent": true,
+      "rs_air_kohm": 55.29411
+    },
+    {
+      "sensor": "MQ3",
+      "r0_published_kohm": 24.6927,
+      "arithmetic_consistent": true,
+      "rs_air_kohm": 1480.32786
+    },
+    {
+      "sensor": "MQ4",
+      "r0_published_kohm": 51.23881,
+      "arithmetic_consistent": true,
+      "rs_air_kohm": 226.98795
+    },
+    {
+      "sensor": "MQ5",
+      "r0_published_kohm": 17.19294,
+      "arithmetic_consistent": true,
+      "rs_air_kohm": 111.41025
+    },
+    {
+      "sensor": "MQ6",
+      "r0_published_kohm": 7.52222,
+      "arithmetic_consistent": true,
+      "rs_air_kohm": 74.47004
+    },
+    {
+      "sensor": "MQ7",
+      "r0_published_kohm": 6.94382,
+      "arithmetic_consistent": false,
+      "rs_air_kohm": 76.71618
+    },
+    {
+      "sensor": "MQ8",
+      "r0_published_kohm": 1.70841,
+      "arithmetic_consistent": false,
+      "rs_air_kohm": 44.52127
+    },
+    {
+      "sensor": "MQ9",
+      "r0_published_kohm": 8.06194,
+      "arithmetic_consistent": true,
+      "rs_air_kohm": 78.36206
+    },
+    {
+      "sensor": "MQ135",
+      "r0_published_kohm": 23.35025,
+      "arithmetic_consistent": true,
+      "rs_air_kohm": 84.06091
+    }
+  ],
+  "source_sensor_comparison": {
+    "MQ2": [
+      {
+        "source": "CAL-01-2018",
+        "r0_kohm": 5.72877,
+        "quality": "PUBLISHED_ARITHMETIC_CONSISTENT",
+        "calibration_protocol": "air-factor"
+      },
+      {
+        "source": "CAL-R0-2023-ISCTE-CITYIOT",
+        "r0_kohm": 1.3,
+        "quality": "THESIS_OR_PAPER_REPORTED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      },
+      {
+        "source": "CAL-R0-2023-UMT-SUMBAGA",
+        "r0_kohm": 2.02,
+        "quality": "UNIT_UNRESOLVED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      },
+      {
+        "source": "CAL-R0-COLOMBIA-UDFJC",
+        "r0_kohm": 8.4,
+        "quality": "ORIGINAL_PDF_NOT_VISUALLY_VERIFIED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      }
+    ],
+    "MQ3": [
+      {
+        "source": "CAL-01-2018",
+        "r0_kohm": 24.6927,
+        "quality": "PUBLISHED_ARITHMETIC_CONSISTENT",
+        "calibration_protocol": "air-factor"
+      }
+    ],
+    "MQ4": [
+      {
+        "source": "CAL-01-2018",
+        "r0_kohm": 51.23881,
+        "quality": "PUBLISHED_ARITHMETIC_CONSISTENT",
+        "calibration_protocol": "air-factor"
+      }
+    ],
+    "MQ5": [
+      {
+        "source": "CAL-01-2018",
+        "r0_kohm": 17.19294,
+        "quality": "PUBLISHED_ARITHMETIC_CONSISTENT",
+        "calibration_protocol": "air-factor"
+      }
+    ],
+    "MQ6": [
+      {
+        "source": "CAL-01-2018",
+        "r0_kohm": 7.52222,
+        "quality": "PUBLISHED_ARITHMETIC_CONSISTENT",
+        "calibration_protocol": "air-factor"
+      }
+    ],
+    "MQ7": [
+      {
+        "source": "CAL-01-2018",
+        "r0_kohm": 6.94382,
+        "quality": "PUBLISHED_ARITHMETIC_INCONSISTENT",
+        "calibration_protocol": "air-factor"
+      },
+      {
+        "source": "CAL-R0-2023-ISCTE-CITYIOT",
+        "r0_kohm": 4.78,
+        "quality": "THESIS_OR_PAPER_REPORTED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      },
+      {
+        "source": "CAL-R0-2022-TELKOM",
+        "r0_kohm": 6.69,
+        "quality": "SECONDARY_SOURCE_LINEAGE",
+        "calibration_protocol": "CO_100ppm_reference"
+      },
+      {
+        "source": "CAL-R0-2023-UMT-SUMBAGA",
+        "r0_kohm": 1.72,
+        "quality": "UNIT_UNRESOLVED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      },
+      {
+        "source": "CAL-R0-2025-AIRISENSE",
+        "r0_kohm": 11.39,
+        "quality": "MAKER_REPORTED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      }
+    ],
+    "MQ8": [
+      {
+        "source": "CAL-01-2018",
+        "r0_kohm": 1.70841,
+        "quality": "PUBLISHED_ARITHMETIC_INCONSISTENT",
+        "calibration_protocol": "air-factor"
+      }
+    ],
+    "MQ9": [
+      {
+        "source": "CAL-01-2018",
+        "r0_kohm": 8.06194,
+        "quality": "PUBLISHED_ARITHMETIC_CONSISTENT",
+        "calibration_protocol": "air-factor"
+      },
+      {
+        "source": "CAL-R0-2023-ISCTE-CITYIOT",
+        "r0_kohm": 8.21,
+        "quality": "THESIS_OR_PAPER_REPORTED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      }
+    ],
+    "MQ135": [
+      {
+        "source": "CAL-01-2018",
+        "r0_kohm": 23.35025,
+        "quality": "PUBLISHED_ARITHMETIC_CONSISTENT",
+        "calibration_protocol": "air-factor"
+      },
+      {
+        "source": "CAL-R0-2022-TELKOM",
+        "r0_kohm": 18.59,
+        "quality": "THESIS_OR_PAPER_REPORTED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      },
+      {
+        "source": "CAL-R0-2023-UMT-SUMBAGA",
+        "r0_kohm": 7.87,
+        "quality": "UNIT_UNRESOLVED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      },
+      {
+        "source": "CAL-R0-2025-AIRISENSE",
+        "r0_kohm": 15.29,
+        "quality": "MAKER_REPORTED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      }
+    ],
+    "MQ131": [
+      {
+        "source": "CAL-R0-COLOMBIA-UDFJC",
+        "r0_kohm": 55.3,
+        "quality": "ORIGINAL_PDF_NOT_VISUALLY_VERIFIED",
+        "calibration_protocol": "air-factor_or_outdoor_baseline"
+      }
+    ]
+  },
+  "descriptive_spreads": [
+    {
+      "sensor": "MQ2",
+      "n_measures_descriptive_only": 2,
+      "min_kohm": 1.3,
+      "max_kohm": 5.72877,
+      "spread_factor": 4.407,
+      "note": "Not same calibration conditions or verified independent gas reference, range NOT population-based confidence interval"
+    },
+    {
+      "sensor": "MQ7",
+      "n_measures_descriptive_only": 3,
+      "min_kohm": 4.78,
+      "max_kohm": 11.39,
+      "spread_factor": 2.383,
+      "note": "Not same calibration conditions or verified independent gas reference, range NOT population-based confidence interval"
+    },
+    {
+      "sensor": "MQ9",
+      "n_measures_descriptive_only": 2,
+      "min_kohm": 8.06194,
+      "max_kohm": 8.21,
+      "spread_factor": 1.018,
+      "note": "Not same calibration conditions or verified independent gas reference, range NOT population-based confidence interval"
+    },
+    {
+      "sensor": "MQ135",
+      "n_measures_descriptive_only": 3,
+      "min_kohm": 15.29,
+      "max_kohm": 23.35025,
+      "spread_factor": 1.527,
+      "note": "Not same calibration conditions or verified independent gas reference, range NOT population-based confidence interval"
+    }
+  ],
+  "source_lineage_warnings": [
+    "Kurnianto 2022 MQ7=6.69 kΩ may derive from 2019 Damanik thesis [19], not independent measured sensor R0.",
+    "UMT 2023 Table 2 R0/ohm and Rs/ohm columns mix numeric magnitudes: interpret only as hypothetical kΩ pending author clarification.",
+    "Colombian thesis direct PDF currently cannot be fetched; extracted text index only.",
+    "2018 Dorcea MQ7 and MQ8 fail ratio arithmetic, do not substitute recomputed R0 as real measurement.",
+    "R0 at 100ppm CO, R0 from clean-air datasheet factor and outdoor calibration are distinct protocols unless explicit matched definition.",
+    "MQ131 is not part of the Tank eight MQ hardware."
+  ],
+  "recommendation": "Preserve unique physical sensor observations in reference library, never select arithmetic average or median as factory-normalized Tank R0; remeasure each instance with RL and heater trace; compare log-distribution only within same protocol and sensor revision."
+}
