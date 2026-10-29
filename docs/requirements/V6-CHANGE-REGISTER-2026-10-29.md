@@ -65,3 +65,13 @@ Updated original simulation scenarios list to 31 cases including `SIM-R01..R07`;
 **Mandatory design additions:** `ratio_direction`, `r0_definition_id`, source SHA, graph revision, heater, circuit RL/Vc, source gas & units and output_scale. Six MQ3 reference curves use `output_scale=50`; cannot be treated as physical ppm without verifying original source transformation. 2018 paper arithmetic contradictory for MQ7/MQ8. 59 food headspace sessions and four MQ odors are class data, not pure gas standards. Do not inflate 13 derived fingerprint families or 49 model priors into independent gas exposures.
 
 **Not done:** actual 8-channel RL measurements, manufacturer PDF curve-digitization, additional raw archives, simulation runs, new V6 ChemCore executors, APK, device G3. Existing R0 values and Stable snapshots unchanged.
+
+## V6-002 — إعادة تصميم سياسة المصدر والتصنيف البحثي (2026-10-29)
+
+**Owner direction:** `INCLUSIVE_RESEARCH_ANALYTICS`: لا قيود صارمة على استخدام الأدلة في التحليل إلا فساد المعطيات الرقمية أو عدم إمكان حل الحساب.
+
+- **SourceCurveRegistryV6.java**: 43/43 منحنى متاح، الحساب حتى خارج المجال المرجعي مع `EXTRAPOLATED_BEYOND_SOURCE_RANGE` كتنبيه، وحقول R0 والسخان وlabel كتعليقات.
+- **TankV6EvidenceConsensus.java / schema2**: لا قيود `MIN_MATCH/MIN_MARGIN/MIN_SENSOR_BREADTH` على المرشحين. التعارض وعدم اكتمال المصدر يعرضان كأوصاف، لا يحجبان نتيجة رقمية صحيحة.
+- **CI 40923146562**: Python 57/57، Java assertions 414/414، جميع المنحنيات 43/43 مع نتائج بحثية مفتوحة.
+- **Documentation:** `docs/research/V6-002-INCLUSIVE-ANALYTICS-POLICY-2026-10-29_AR.md`.
+- **State:** فُعلت السياسة في سجل المنحنيات والمحرك البحثي المستقل؛ ما يزال الدمج التشغيلي Android V6 وAPK ينتظران P03/P09؛ G3 ليس ادعاءً للمخرجات البحثية.
