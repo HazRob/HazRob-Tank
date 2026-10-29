@@ -55,7 +55,7 @@ Seven contract checks:
 ### CI evidence
 
 - Initial Android compile attempts failed due to PDF color constant (`Color.DARK_GRAY` vs `Color.DKGRAY`) and missing checked `JSONException` declaration from immutable `JSONObject` copy. Both are **fixed**; do not count early failing runs as successful.
-- Android build [40972877496](https://github.com/HazRob/HazRob-Tank/actions/runs/40972877496) **SUCCESS** with 14 prior/new checks before adding complete source-hypothesis XLSX and PDF pagination; [source CI 40973059275](https://github.com/HazRob/HazRob-Tank/actions/runs/40973059275) **SUCCESS** after hypothesis XLSX changes. Newer Android compile should be referenced only after final success in Actions; see [Android V6 CI workflow](https://github.com/HazRob/HazRob-Tank/actions/workflows/chemcore-v6-android-compile.yml).
+- **Final source / final code CI:** [Android Gradle compile + 14 tests 40973174549](https://github.com/HazRob/HazRob-Tank/actions/runs/40973174549) **SUCCESS**, [scientific/source CI 40973174716](https://github.com/HazRob/HazRob-Tank/actions/runs/40973174716) **SUCCESS**, both on final tested source commit `64cb96f585b6bca9324a0816f3cd178fea3976a4` (includes PDF max-three-cycle pagination and both V6 XLSX sheets). Log: `BUILD SUCCESSFUL in 26s`, **7 instant contract checks and 7 approved-session contract/SQLite fixture checks PASS**. Earlier run [40972877496](https://github.com/HazRob/HazRob-Tank/actions/runs/40972877496) passed before the final XLSX and pagination additions.
 - The tests are Java compilation and **source/SQL fixture checks only**. PDF bitmap rendering, actual XLSX ZIP inspection after Java exporter execution, Android device/emulator and physical Tank firmware remain **UNTESTED**.
 
 ## 2. Scientific and safety status
