@@ -5,6 +5,7 @@ on:
     branches: [feature/tank-v6-implementation]
     paths:
       - 'research/food_freshness/**'
+      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
       - 'android/app/src/main/assets/food_freshness/**'
       - 'android/app/src/main/assets/chemcore_v6/**'
       - 'research/chemcore_v6/source_manifest.json'
@@ -28,6 +29,22 @@ jobs:
       - name: Verify archival food profiles remain byte-identical and outside gas ChemCore
         run: |
           python -m unittest discover -s research/food_freshness -p 'test_*.py' -v
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile independent food engine and compare all 59 study patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/food-freshness-classes
+          javac -d /tmp/food-freshness-classes \
+            android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodReferenceCatalog.java \
+            android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodFreshnessEngine.java \
+            research/food_freshness/FoodFreshnessEngineTest.java
+          java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.FoodFreshnessEngineTest
+          ! grep -R -nE '^import com[.]hazrob[.]tank[.]chemcore|^import com[.]servoc[.]app[.]chemcore' \
+            android/app/src/main/java/com/hazrob/tank/foodfreshness
       - name: Explain boundary
         run: |
           echo "Food freshness is a separate feature, not a gas ChemCore source"
