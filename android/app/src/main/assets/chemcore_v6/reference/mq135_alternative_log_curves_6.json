@@ -1,0 +1,180 @@
+{
+  "schema_version": "hazrob.stable.reference.equation-priors.v1",
+  "timestamp": "2026-10-21",
+  "status": "RESEARCH_ALTERNATIVE_NOT_APPROVED_PPM",
+  "source_doi": "10.23960/jtaf.v11i2.314",
+  "source_type": "digitized manufacturer graph, not device-specific gas calibration",
+  "sensor": "MQ135",
+  "canonical_equation": "Rs/R0=a*C_ppm^b",
+  "inverse_equation": "C_ppm=((Rs/R0)/a)^(1/b)",
+  "range_ppm": [
+    10,
+    100
+  ],
+  "no_extrapolation": true,
+  "calibration_required": true,
+  "formulae": [
+    {
+      "sensor": "MQ135",
+      "legacy_id": 110,
+      "analyte": "Acetone",
+      "peer_reviewed_graph_regression": {
+        "a": 2.7295,
+        "b": -0.2822,
+        "r2": 0.9996,
+        "min_ppm": 10,
+        "max_ppm": 100,
+        "doi": "10.23960/jtaf.v11i2.314",
+        "source_kind": "DIGITIZED_MANUFACTURER_CURVE_NOT_INDEPENDENT_GAS_CALIBRATION"
+      },
+      "currently_catalogued_research_curve": {
+        "a": 2.7988,
+        "b": -0.2913,
+        "min_ppm": 10,
+        "max_ppm": 200,
+        "source": "MQDataScience v6.0.0"
+      },
+      "ratio_delta_percent_vs_current": {
+        "at_10ppm": -0.411,
+        "at_100ppm": 1.698
+      },
+      "decision": "REVIEW_AS_ALTERNATIVE_WITHIN_10_TO_100_PPM_NOT_REPLACE",
+      "m4_device_validated": false
+    },
+    {
+      "sensor": "MQ135",
+      "legacy_id": 95,
+      "analyte": "Toluene",
+      "peer_reviewed_graph_regression": {
+        "a": 2.963,
+        "b": -0.2838,
+        "r2": 0.9998,
+        "min_ppm": 10,
+        "max_ppm": 100,
+        "doi": "10.23960/jtaf.v11i2.314",
+        "source_kind": "DIGITIZED_MANUFACTURER_CURVE_NOT_INDEPENDENT_GAS_CALIBRATION"
+      },
+      "currently_catalogued_research_curve": {
+        "a": 2.9788,
+        "b": -0.2892,
+        "min_ppm": 10,
+        "max_ppm": 200,
+        "source": "MQDataScience v6.0.0"
+      },
+      "ratio_delta_percent_vs_current": {
+        "at_10ppm": 0.714,
+        "at_100ppm": 1.974
+      },
+      "decision": "REVIEW_AS_ALTERNATIVE_WITHIN_10_TO_100_PPM_NOT_REPLACE",
+      "m4_device_validated": false
+    },
+    {
+      "sensor": "MQ135",
+      "legacy_id": 103,
+      "analyte": "Ethanol/alcohol",
+      "peer_reviewed_graph_regression": {
+        "a": 3.8659,
+        "b": -0.3091,
+        "r2": 0.9996,
+        "min_ppm": 10,
+        "max_ppm": 100,
+        "doi": "10.23960/jtaf.v11i2.314",
+        "source_kind": "DIGITIZED_MANUFACTURER_CURVE_NOT_INDEPENDENT_GAS_CALIBRATION"
+      },
+      "currently_catalogued_research_curve": {
+        "a": 3.8623,
+        "b": -0.3126,
+        "min_ppm": 10,
+        "max_ppm": 200,
+        "source": "MQDataScience v6.0.0"
+      },
+      "ratio_delta_percent_vs_current": {
+        "at_10ppm": 0.903,
+        "at_100ppm": 1.72
+      },
+      "decision": "REVIEW_AS_ALTERNATIVE_WITHIN_10_TO_100_PPM_NOT_REPLACE",
+      "m4_device_validated": false
+    },
+    {
+      "sensor": "MQ135",
+      "legacy_id": 23,
+      "analyte": "Carbon Dioxide",
+      "peer_reviewed_graph_regression": {
+        "a": 4.9999,
+        "b": -0.3387,
+        "r2": 0.9998,
+        "min_ppm": 10,
+        "max_ppm": 100,
+        "doi": "10.23960/jtaf.v11i2.314",
+        "source_kind": "DIGITIZED_MANUFACTURER_CURVE_NOT_INDEPENDENT_GAS_CALIBRATION"
+      },
+      "currently_catalogued_research_curve": {
+        "a": 5.2278,
+        "b": -0.3585,
+        "min_ppm": 10,
+        "max_ppm": 200,
+        "source": "MQDataScience v6.0.0"
+      },
+      "ratio_delta_percent_vs_current": {
+        "at_10ppm": 0.102,
+        "at_100ppm": 4.771
+      },
+      "decision": "REVIEW_AS_ALTERNATIVE_WITHIN_10_TO_100_PPM_NOT_REPLACE",
+      "m4_device_validated": false
+    },
+    {
+      "sensor": "MQ135",
+      "legacy_id": 21,
+      "analyte": "Ammonia",
+      "peer_reviewed_graph_regression": {
+        "a": 6.4835,
+        "b": -0.406,
+        "r2": 0.9996,
+        "min_ppm": 10,
+        "max_ppm": 100,
+        "doi": "10.23960/jtaf.v11i2.314",
+        "source_kind": "DIGITIZED_MANUFACTURER_CURVE_NOT_INDEPENDENT_GAS_CALIBRATION"
+      },
+      "currently_catalogued_research_curve": {
+        "a": 6.2968,
+        "b": -0.3892,
+        "min_ppm": 10,
+        "max_ppm": 200,
+        "source": "MQDataScience v6.0.0"
+      },
+      "ratio_delta_percent_vs_current": {
+        "at_10ppm": -0.942,
+        "at_100ppm": -4.701
+      },
+      "decision": "REVIEW_AS_ALTERNATIVE_WITHIN_10_TO_100_PPM_NOT_REPLACE",
+      "m4_device_validated": false
+    },
+    {
+      "sensor": "MQ135",
+      "legacy_id": 20,
+      "analyte": "Carbon Monoxide",
+      "peer_reviewed_graph_regression": {
+        "a": 5.2629,
+        "b": -0.2668,
+        "r2": 0.9992,
+        "min_ppm": 10,
+        "max_ppm": 100,
+        "doi": "10.23960/jtaf.v11i2.314",
+        "source_kind": "DIGITIZED_MANUFACTURER_CURVE_NOT_INDEPENDENT_GAS_CALIBRATION"
+      },
+      "currently_catalogued_research_curve": {
+        "a": 5.0533,
+        "b": -0.2541,
+        "min_ppm": 10,
+        "max_ppm": 200,
+        "source": "MQDataScience v6.0.0"
+      },
+      "ratio_delta_percent_vs_current": {
+        "at_10ppm": 1.146,
+        "at_100ppm": -1.769
+      },
+      "decision": "REVIEW_AS_ALTERNATIVE_WITHIN_10_TO_100_PPM_NOT_REPLACE",
+      "m4_device_validated": false
+    }
+  ]
+}
