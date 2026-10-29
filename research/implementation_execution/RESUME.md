@@ -1,3 +1,12 @@
+## 2026-10-29 — G2 NFKC physical source column identity (323/323 CI)
+
+- Resumed from `f877276234d481a2db1ae20e2e697d9dd9cebc4d`, confirmed prior G2 CI success; central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets), pinned readiness 0/14, independent evidence `records=[]`.
+- Closed a distinct physical holdout alias gap: NFC-valid compatibility characters in original `device_id`/`session_id`/`batch_id` CSV source columns could make one physical unit appear as different train/test units despite canonical `group_id` strings. `g2_cross_artifact_gate.py` now rejects NFKC-unstable physical source identities with `NONCANONICAL_PHYSICAL_SOURCE_ID`, while preserving ordinary multilingual labels and existing missing-value checks.
+- Four synthetic regression tests in `test_g2_physical_source_nfkc_gate.py`. Code commit `be797fcf1a2cd653ed9d0df6f7b05a889d818389`, tests commit `ada445a5d227111060809607829972e036e7741f`. [G2 CI #40841945615](https://github.com/HazRob/HazRob-Tank/actions/runs/40841945615), job `123340162063`: **323/323 PASS**, `g2_pass_candidates=0`, `g2_blocked=80`, artifact `12883500714`. See `G2_NFKC_PHYSICAL_SOURCE_COLUMNS_FAIL_CLOSED_2026-10-29_AR.md`.
+- Research branch only; no ChemCore Stable, Android or firmware edits. No scientific G2/G3 promotion. Next: recheck final documentation CI; acquire independent original physical exposure data, traceable concentration references, device/session/exposure provenance, and locked grouped blind holdouts.
+
+---
+
 ## 2026-10-29 — G2 NFKC compatibility aliases for physical holdout IDs (319/319 CI)
 
 - Resumed from `6af9fe99f45a0091f07cb71a80efc8d3bb3f17da`; previous G2 CI succeeded. Re-read central catalog `HazRob/build-harness/library/reference-bank/external-research/master_catalog.json`, blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 entries, 14 external datasets). Independent evidence remains `records=[]`; source readiness 0/14.
