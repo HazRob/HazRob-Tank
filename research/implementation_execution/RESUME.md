@@ -1,3 +1,14 @@
+## 2026-10-29 — G2 per-group paired discordance and semantic prediction fingerprint (368/368 CI)
+
+- Resumed from `8ec21b7a340b4a4b26439aa7180be69226d99071`, verified 11/11 previous CI success and pinned central catalog blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets). Readiness remains 0/14; independent evidence `records=[]`.
+- Research-only `g2_paired_prediction_replay.py` now emits mutually exclusive paired correctness/discordance counts **for each declared physical group**, cross-checks group arithmetic, and computes row-order-invariant `prediction_rows_semantic_sha256` including true/model/baseline labels. This exposes opposite group-level effects hidden by a pooled tie and detects label changes even when accuracy and group assignment are unchanged.
+- Four synthetic regression tests. Code SHA `aed622546089dda2178ec740f3d217dc44a5e37b`, initial tests SHA `9127e175a15b35e17c37d868eba193cd9706827e`. Intermediate G2 CI [#40911311715](https://github.com/HazRob/HazRob-Tank/actions/runs/40911311715) failed due to escaped newline strings in two new CSV fixtures; corrected in `e29ead32965c594bbc3d9e82202e5b150e826e5d`.
+- [G2 Actions #40911567612](https://github.com/HazRob/HazRob-Tank/actions/runs/40911567612), job `123580609382`: **368/368 PASS**, byte-identical audit/triage replay and research publication gate PASS, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12913767097`, ZIP SHA256 `0208d0056c25ef8bb22bfbca437d3415c11262b7091b774b23822c631ac200da`. 11/11 workflow runs succeeded on test-fix commit.
+- Evidence note: `G2_PAIRED_GROUP_DISCORDANCE_AND_SEMANTIC_PREDICTION_FINGERPRINT_2026-10-29_AR.md`. All changes within `research/implementation_execution/` on research branch. ChemCore Stable, Android, firmware untouched. No scientific G2/G3 promotion.
+- Next: check CI on this documentation checkpoint, then seek source-qualified independent raw physical exposures with traceable concentration references and preregistered blinded grouped holdouts. Do not infer independent physical validation from synthetic arithmetic tests.
+
+---
+
 ## 2026-10-29 — G2 paired post-blind exposure-row replay and cross-CSV reconciliation (364/364 CI)
 
 - Resumed from `1ea14d32a9fc61afde0537573bade25b135a42eb`; checked previous G2 CI and pinned central reference catalog Git blob `1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f` (80 references, 14 external datasets). Pinned readiness remains 0/14; independent evidence `records=[]`.
