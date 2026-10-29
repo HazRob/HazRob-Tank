@@ -263,6 +263,54 @@ class PairedPredictionReplayTests(unittest.TestCase):
         self.assertNotEqual(original["prediction_full_rows_semantic_sha256"],
                             altered["prediction_full_rows_semantic_sha256"])
 
+
+    def test_true_reference_class_paired_counts_reconciled(self):
+        result = self.replay()
+        classes = result["paired_outcomes_by_true_reference_class"]
+        self.assertEqual(result["true_reference_class_count"], 2)
+        self.assertEqual([c["true_reference"] for c in classes], ["A", "B"])
+        self.assertEqual(
+            [(c["exposures"], c["model_correct"], c["baseline_correct"],
+              c["both_correct"], c["both_wrong"], c["model_only_correct"],
+              c["baseline_only_correct"]) for c in classes],
+            [(2, 2, 1, 1, 0, 1, 0), (2, 0, 1, 0, 1, 0, 1)])
+        self.assertEqual(result["equal_true_reference_class_mean_delta"], 0)
+        self.assertIn("NOT_INDEPENDENT_LABEL_AUTHENTICATION",
+                      result["true_reference_class_diagnostic_scope"])
+
+    def test_class_imbalance_reverses_pooled_and_equal_class_deltas(self):
+        # The majority class favours the model, minority favours baseline.
+        self.write(pred=("e1,a,A,A,B\\n"
+                         "e2,a,A,A,B\\n"
+                         "e3,a,A,A,B\\n"
+                         "e4,a,A,B,A\\n"
+                         "e5,b,B,A,B\\n"),
+                   metrics="a,4,3,1\\nb,1,0,1\\n")
+        result = self.replay()
+        self.assertAlmostEqual(result["observed_delta"], 0.2)
+        self.assertAlmostEqual(
+            result["equal_true_reference_class_mean_delta"], -0.25)
+        classes = result["paired_outcomes_by_true_reference_class"]
+        self.assertEqual([c["paired_model_minus_baseline_accuracy"]
+                          for c in classes], [0.5, -1.0])
+
+    def test_class_diagnostics_invariant_to_row_order_and_unicode_labels(self):
+        self.write(pred=("e1,a,إيثانول,إيثانول,أسيتون\\n"
+                         "e2,a,أسيتون,إيثانول,أسيتون\\n"
+                         "e3,b,إيثانول,إيثانول,إيثانول\\n"
+                         "e4,b,أسيتون,إيثانول,إيثانول\\n"))
+        original = self.replay()
+        rows = self.pred.read_text(encoding="utf-8").splitlines(keepends=True)
+        self.pred.write_text(rows[0] + "".join(reversed(rows[1:])),
+                             encoding="utf-8")
+        reordered = self.replay()
+        self.assertEqual(
+            original["paired_outcomes_by_true_reference_class"],
+            reordered["paired_outcomes_by_true_reference_class"])
+        self.assertEqual(
+            original["equal_true_reference_class_mean_delta"],
+            reordered["equal_true_reference_class_mean_delta"])
+
     def test_invalid_protocol_rejected_by_shared_cluster_kernel(self):
         with self.assertRaisesRegex(ValueError, "PROTOCOL_INVALID"):
             replay_paired_predictions(self.pred, self.metrics, resamples=999)

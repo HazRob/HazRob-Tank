@@ -107,6 +107,7 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
     assignment = []
     outcome_rows = []
     per_group_outcomes = {}
+    per_true_class_outcomes = {}
 
     for row in predictions:
         exposure, group = row["exposure_id"], row["group_id"]
@@ -141,6 +142,17 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
             "baseline_only_correct" if baseline else "both_wrong"
         )
         per_group_outcomes[group][outcome_key] += 1
+        # Class-level paired outcomes expose majority-class dominance. They
+        # remain descriptive: labels and physical provenance are unverified.
+        class_counts = per_true_class_outcomes.setdefault(truth, {
+            "exposures": 0, "model_correct": 0, "baseline_correct": 0,
+            "both_correct": 0, "both_wrong": 0,
+            "model_only_correct": 0, "baseline_only_correct": 0,
+        })
+        class_counts["exposures"] += 1
+        class_counts["model_correct"] += int(model)
+        class_counts["baseline_correct"] += int(baseline)
+        class_counts[outcome_key] += 1
 
     declared = {}
     for row in metrics:
@@ -192,6 +204,31 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
             != sum(model_correct.values()) - sum(baseline_correct.values())):
         raise ValueError("PAIRED_REPLAY_DISCORDANCE_ARITHMETIC_INVALID")
 
+    class_pairing = []
+    for truth in sorted(per_true_class_outcomes):
+        values = per_true_class_outcomes[truth]
+        n = values["exposures"]
+        if (sum(values[k] for k in (
+                "both_correct", "both_wrong", "model_only_correct",
+                "baseline_only_correct")) != n or
+                values["both_correct"] + values["model_only_correct"]
+                != values["model_correct"] or
+                values["both_correct"] + values["baseline_only_correct"]
+                != values["baseline_correct"]):
+            raise ValueError("PAIRED_REPLAY_CLASS_DISCORDANCE_INVALID")
+        class_pairing.append({
+            "true_reference": truth, **values,
+            "model_accuracy": values["model_correct"] / n,
+            "baseline_accuracy": values["baseline_correct"] / n,
+            "paired_model_minus_baseline_accuracy": (
+                values["model_correct"] - values["baseline_correct"]) / n,
+        })
+    if (sum(row["exposures"] for row in class_pairing) != len(predictions)
+            or sum(row["model_only_correct"] for row in class_pairing) != model_only
+            or sum(row["baseline_only_correct"] for row in class_pairing)
+            != baseline_only):
+        raise ValueError("PAIRED_REPLAY_CLASS_DISCORDANCE_INVALID")
+
     result = paired_cluster_accuracy_delta(
         dict(counts), dict(model_correct), dict(baseline_correct),
         seed=seed, resamples=resamples,
@@ -204,6 +241,16 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         "paired_model_only_correct": model_only,
         "paired_baseline_only_correct": baseline_only,
         "paired_outcomes_by_declared_physical_group": group_pairing,
+        "paired_outcomes_by_true_reference_class": class_pairing,
+        "true_reference_class_count": len(class_pairing),
+        "equal_true_reference_class_mean_delta": (
+            sum(row["paired_model_minus_baseline_accuracy"]
+                for row in class_pairing) / len(class_pairing)
+        ),
+        "true_reference_class_diagnostic_scope": (
+            "POST_UNBLINDING_DESCRIPTIVE_CLASS_BALANCE_ONLY;"
+            "NOT_INDEPENDENT_LABEL_AUTHENTICATION_OR_G2_G3_APPROVAL"
+        ),
         "prediction_rows_semantic_sha256": hashlib.sha256(
             json.dumps(sorted(outcome_rows), ensure_ascii=False,
                        separators=(",", ":")).encode("utf-8")
