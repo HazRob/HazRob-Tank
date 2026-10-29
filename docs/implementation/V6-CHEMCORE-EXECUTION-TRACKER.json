@@ -31,7 +31,7 @@
     "library_reference_records": 80,
     "independent_Tank_G3_validated_techniques": 0
   },
-  "disclaimer": "The new V6 core has no dependency on any previous inference engine. Historic experimental files remain as scientific data only. No Android V6 UI/report cutover, APK or Tank G3 demonstrated.",
+  "disclaimer": "Independent V6 engine JDK tests pass and entire merged Android Java compiles. It is not yet activated as the application analytics service, no new ChemCore reports/UI are built and no APK or physical G3 exists.",
   "stage_count": 12,
   "stages": [
     {
@@ -582,7 +582,9 @@
     },
     {
       "id": "V6-N06",
-      "status": "ANDROID_STANDALONE_PACKAGE_COMPILE_PENDING_NO_UI_CUTOVER"
+      "status": "NEW_PACKAGE_ANDROID_FULL_JAVA_COMPILE_PASS_NO_UI_CUTOVER",
+      "android_compile_CI": 40925657334,
+      "open": "Design direct V6 input adapter, independent results UI/session reporting and Android runtime tests"
     },
     {
       "id": "V6-N07",
@@ -600,6 +602,9 @@
     "nonfinite_resistance_not_used_for_ratio": true,
     "software_only": true,
     "APK_built": false,
-    "physical_Tank_G3": 0
+    "physical_Tank_G3": 0,
+    "android_compile_run_id": 40925657334,
+    "android_compile_status": "SUCCESS",
+    "android_compile_head_sha": "4d242cd5004167959c823d367e2d351fba921d80"
   }
 }
