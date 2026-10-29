@@ -50,3 +50,12 @@
 - **Executed tests:** format/readback of GitHub source content; no new numerical simulation, model training, calibration or Android device test.
 - **State:** `PLAN_PREPARED; ALL_PHASES_NOT_STARTED; G3_DEVICE_VALIDATION=0/80; V6_APK_NOT_BUILT`.
 - **Next controlled implementation:** baseline/versions and regression tests (P00), source matrices/eligibility (P01), and math-only simulation (P04) while missing hardware parameters are tracked as blockers.
+
+## 2026-10-29 — V6-002 source expansion: MQUnifiedsensor R0 + legacy curves and fingerprints
+
+- **Change request:** treat models used for local R0 calibration plus all usable source curves and fingerprints as **mandatory ChemCore Tank V6 scientific inputs**, not an optional postrelease enhancement.
+- **Read / inspected:** MQUnifiedsensor `calibrate`, `readSensor`, `readSensorR0Rs`; central source cross-study and peer R0 JSON; organization `HazRob/build-harness/library/research/hr069/current-manifest.json` with 14 byte-identical legacy scientific assets; 43 source curves, 13 derived prior fingerprint families, 59 food-headspace sessions, 4 MQ odor classes from 6400 ADC rows, 18 MQ135 gas/concentration summaries from UCI1081.
+- **Finding:** `MQUnifiedsensor` uses dimensionless `RatioCleanAir` in `Rs_air/R0`; its `readSensorR0Rs` inverts the ratio, requiring a `ratio_direction` field. A 2018 R0 paper has MQ7/MQ8 calculation discrepancies; 6 MQ3 curves require a source-provenance interpretation of `output_scale=50`. None is a portable device-R0 reference.
+- **Commits:** `c54da0d2132bbc0e1409c6f96cdd8952680a573b` 43 curves; `59e44fc926f7fd9a8be2dc8d8dc12c4f1f203adc` 14 assets; `ca63e5b8e91484005eff3f15e1167d35573377d0` 8-R0 matrix; `f11d365cc126001330125c332dfab5ed50d6ecdd` scientific addendum; `f1f1c3c3bc0ea591825fb45e752725fceafe2575` seven new simulation scenarios. Master plan/sampling protocol/tracker updated.
+- **State:** `P01=IN_PROGRESS_SOURCE_METADATA_ONLY / SOURCE_RAW_PARITY_PENDING / SIMULATION=NOT_RUN / V6_CHEMCORE_CODE=NOT_CHANGED / G3=0_OF_80`. No firmware or Android source modified for this expansion. No release/certified ppm claim.
+- **Next:** audit sources individually to resolve duplicate source/curve relationships, then implement `R0CurveCompatibilityGate`, run source-crossing SIM-R cases, and test group-safe researcher data.
