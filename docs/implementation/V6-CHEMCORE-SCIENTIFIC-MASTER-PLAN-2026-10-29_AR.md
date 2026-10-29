@@ -247,3 +247,6 @@ ESP32 Tank / session replays / research adapters (separate provenance)
 **مطلب عقد V6:** أضف `ratio_direction` و`r0_definition_id` و`source_graph_revision` و`reference_compound_semantics` لكل منحنى؛ اقفل التحليل الكمي إذا افتقد المصدر التوافق، لكن احتفظ به كبحثي مع سبب. `MQUnifiedsensor.readSensorR0Rs()` يستخدم `R0/Rs` بعكس `readSensor()`، وهو سبب لمنع الخلط. المصدر الخارجي لا يعوض R0 على جهاز Tank.
 
 **المخرجات الملزمة لمحاكاة هذه الإضافة:** `r0_cross_source_compatibility.csv`, `curve_unit_roundtrip.json`, `ppm_sensitivity_to_r0.csv`, `response_prior_dependent_fingerprints.jsonl`, `fingerprint_overlap_mask_test.json`, `duplicate_lineage_report.json` مع `source_hash` وأرقام المنحنيات. ما سبق مجرد أسماء مخرجات مطلوبة وليست نتائج مُنجزة.
+
+## 19) مراجعة سيناريوهات المصادر الملحقة
+أضيفت **7 حالات محاكاة متخصصة** `SIM-R01..SIM-R07` إلى أصل **24** سيناريو، فأصبح سجل `../research/V6-CHEMCORE-SIMULATION-SCENARIOS.csv` يحتوي **31 سيناريو مخططًا**. يشمل المخطط الأصلي حالة تحقق فيزيائي منفصلة `REAL-G301`، لذا **30 سيناريو برمجيًا/بحثيًا + واحد G3 ميداني**. لم تُنفّذ هذه السيناريوهات؛ السجل الآن متطلبات اختبار لا نتائج. التتبع في `V6-CHEMCORE-EXECUTION-TRACKER.json`.
