@@ -1,0 +1,274 @@
+{
+  "schema_version": "1.0",
+  "created_at": "2026-10-19",
+  "project": "HazRob Tank research only",
+  "phase": "G2-04 measured external-source evidence; G3 Tank-device validation remains zero",
+  "source_dataset": "UCI Gas Sensor Array Drift at Different Concentrations",
+  "source_doi": "10.24432/C5MK6M",
+  "source_archive_sha256": "98fe3a30981a222dd4518fbcc3dddd45d5c0ce9b03ef6dc6fe5cf7a04cfbff5e",
+  "source_url": "https://archive.ics.uci.edu/static/public/270/gas+sensor+array+drift+dataset+at+different+concentrations.zip",
+  "source_label_encoding": {
+    "1": "ethanol",
+    "2": "ethylene",
+    "3": "ammonia",
+    "4": "acetaldehyde",
+    "5": "acetone",
+    "6": "toluene"
+  },
+  "license_caution": "UCI page lists CC BY 4.0, while dataset description says research-only, no commercial use. Retain research use and avoid raw re-distribution pending rights clarification.",
+  "source_records": 13910,
+  "source_features_per_record": 128,
+  "source_sensor_types": "16 original source TGS sensors, each 8 derived descriptors, NOT HazRob Tank MQ",
+  "unique_source_batches": 10,
+  "batch_counts": [
+    445,
+    1244,
+    1586,
+    161,
+    197,
+    2300,
+    3613,
+    294,
+    470,
+    3600
+  ],
+  "duplicate_with_UCI224": true,
+  "tested_commit": "8e065677c3c5653185b99847759f94baae223583",
+  "success_run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/39201607716",
+  "success_run_artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/39201607716/artifacts/12163638882",
+  "prior_failed_test_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39201362612",
+  "protocol_unit_tests": {
+    "executed": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "research_ids": [
+    "03.4",
+    "07.1",
+    "07.2",
+    "07.4",
+    "07.5",
+    "07.6",
+    "07.7",
+    "07.8",
+    "07.9",
+    "07.10"
+  ],
+  "status_tally": {
+    "executed_on_actual_external_data": 8,
+    "analytical_only": 1,
+    "blocked_on_physical_evidence": 1
+  },
+  "gas_counts_source_and_target_batches": {
+    "1": {
+      "n": 445,
+      "acetaldehyde": 30,
+      "acetone": 70,
+      "ammonia": 83,
+      "ethanol": 90,
+      "ethylene": 98,
+      "toluene": 74
+    },
+    "2": {
+      "n": 1244,
+      "acetaldehyde": 109,
+      "acetone": 532,
+      "ammonia": 100,
+      "ethanol": 164,
+      "ethylene": 334,
+      "toluene": 5
+    },
+    "10": {
+      "n": 3600,
+      "acetaldehyde": 600,
+      "acetone": 600,
+      "ammonia": 600,
+      "ethanol": 600,
+      "ethylene": 600,
+      "toluene": 600
+    }
+  },
+  "techniques": {
+    "03.4": {
+      "status": "EXECUTED_BINARY_ONLY",
+      "pair": [
+        "ethanol",
+        "acetone"
+      ],
+      "training_batches": [
+        1,
+        2
+      ],
+      "test_batch": 10,
+      "n_train": 856,
+      "n_test": 1200,
+      "lda": {
+        "correct": 619,
+        "accuracy": 0.5158333333333334
+      },
+      "pls1da": {
+        "correct": 332,
+        "accuracy": 0.27666666666666667
+      }
+    },
+    "07.1": {
+      "status": "BATCH_GROUP_PROXY",
+      "n_temporal_folds": 10,
+      "warning": "Batch IDs are not separately documented physical sessions or devices."
+    },
+    "07.2": {
+      "status": "BLOCKED_ONE_DEVICE",
+      "n_independent_devices": 1
+    },
+    "07.4": {
+      "status": "EXECUTED_MATCHED_REFERENCE_SHIFT",
+      "gas": "acetone",
+      "ppm": 200,
+      "source_batches": [
+        1,
+        2
+      ],
+      "test_batch": 10,
+      "n_source_ref": 107,
+      "n_target_calibrate": 50,
+      "n_target_holdout": 50,
+      "threshold_z": 3,
+      "heldout_shift_rate": 0.8
+    },
+    "07.5": {
+      "status": "EXECUTED_MATCHED_REFERENCE_OFFSET",
+      "gas": "acetone",
+      "ppm": 200,
+      "n_source_ref": 107,
+      "n_target_calibrate": 50,
+      "n_target_holdout": 50,
+      "mean_distance_before": 6.706493977770313,
+      "mean_distance_after": 4.80565155656969,
+      "warning": "Improvement on same reference gas/ppm, not transfer performance for other gases."
+    },
+    "07.6": {
+      "status": "EXECUTED_UNSUPERVISED_ALIGNMENT",
+      "n_source": 1689,
+      "n_target_unlabelled_fit": 720,
+      "n_target_heldout": 2880,
+      "mean_shift_before": 0.8421491065873207,
+      "mean_shift_after": 0.5592962853563869,
+      "warning": "L2 center-shift shrinkage is not gas classification accuracy and can remove signal."
+    },
+    "07.7": {
+      "status": "EXECUTED_TARGET_LABELLED_NEAREST_CENTROID",
+      "n_source_train": 1689,
+      "n_labelled_target": 60,
+      "n_target_heldout": 3540,
+      "source_head_correct": 923,
+      "source_head_accuracy": 0.26073446327683614,
+      "adapted_head_correct": 978,
+      "adapted_head_accuracy": 0.27627118644067794,
+      "warning": "Nearest centroid transfer proxy; not trained neural fine-tuning."
+    },
+    "07.8": {
+      "status": "EXECUTED_UNCALIBRATED_UNCERTAINTY_RANKING",
+      "n_candidates": 300,
+      "n_ranked_top": 30,
+      "source_gas_classes_in_top": 3,
+      "source_gas_classes_in_unranked_first": 2,
+      "gas_counts_in_top": {
+        "toluene": 23,
+        "ethanol": 5,
+        "acetaldehyde": 2
+      }
+    },
+    "07.9": {
+      "status": "EXECUTED_SEQUENTIAL_LABEL_APPROVED_PROTOTYPES",
+      "tested_future_records": 13465,
+      "adapted_prototype_correct": 4980,
+      "initial_frozen_correct": 4327,
+      "adapted_overall_accuracy": 0.36984775343483106,
+      "initial_frozen_accuracy": 0.32135165243223174,
+      "n_approved_source_label_updates": 565,
+      "by_batch": [
+        {
+          "batch": 2,
+          "n": 1244,
+          "adaptive_correct": 940,
+          "frozen_correct": 563,
+          "updates_after_test": 55
+        },
+        {
+          "batch": 3,
+          "n": 1586,
+          "adaptive_correct": 721,
+          "frozen_correct": 433,
+          "updates_after_test": 50
+        },
+        {
+          "batch": 4,
+          "n": 161,
+          "adaptive_correct": 86,
+          "frozen_correct": 25,
+          "updates_after_test": 50
+        },
+        {
+          "batch": 5,
+          "n": 197,
+          "adaptive_correct": 139,
+          "frozen_correct": 64,
+          "updates_after_test": 50
+        },
+        {
+          "batch": 6,
+          "n": 2300,
+          "adaptive_correct": 370,
+          "frozen_correct": 645,
+          "updates_after_test": 60
+        },
+        {
+          "batch": 7,
+          "n": 3613,
+          "adaptive_correct": 1161,
+          "frozen_correct": 1097,
+          "updates_after_test": 60
+        },
+        {
+          "batch": 8,
+          "n": 294,
+          "adaptive_correct": 40,
+          "frozen_correct": 41,
+          "updates_after_test": 60
+        },
+        {
+          "batch": 9,
+          "n": 470,
+          "adaptive_correct": 214,
+          "frozen_correct": 201,
+          "updates_after_test": 60
+        },
+        {
+          "batch": 10,
+          "n": 3600,
+          "adaptive_correct": 1309,
+          "frozen_correct": 1258,
+          "updates_after_test": 60
+        }
+      ]
+    },
+    "07.10": {
+      "status": "THEORETICAL_ONLY_NOT_TANK_PROFILE",
+      "features": 16,
+      "classes": 6,
+      "parameter_count": 96,
+      "estimated_parameter_bytes": 384,
+      "estimated_total_bytes": 448,
+      "operations_per_second_at_1hz": 288
+    }
+  },
+  "essential_caveats": [
+    "External sensor array and gas test rig, no Tank MQ8 gas measurements; G3 remains 0/80.",
+    "One physical source instrument observed over temporal drift; 10 batches are not 10 independent devices.",
+    "Concentration distributions and environment differ across source batches. Model errors can confound instrument drift and analyte concentration.",
+    "Several modules are simplified research primitives, not full-time autonomous learning.",
+    "No sensitivity/specificity for unknown gases, mixtures, occupational exposure thresholds, or safety certification."
+  ],
+  "permanent_reexecution": "research/benchmarks/uci270_g2_batch04_v1.py",
+  "pinned_archive_loader": "research/benchmarks/uci270_source_adapter_v1.py"
+}
