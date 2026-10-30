@@ -48,6 +48,14 @@ class CentralLibraryRecordQueries(unittest.TestCase):
         self.assertIn('Button curve=header(context,"منحنى"',MATRIX)
         self.assertIn('s.capabilityLine()',LAB)
         self.assertIn('countRemoteResearchM4Materials()',DASHBOARD)
+    def test_complete_withdrawal_and_source_order_are_safe(self):
+        self.assertIn('if(facts==null||facts.length()>15)',CHEM)
+        self.assertNotIn('facts.length()<1',CHEM)
+        for flag in ('fpQualified','curveQualified','ppmQualified','publishedM4Qualified'):
+            self.assertIn(flag+'|=qualified;',STATUS)
+        self.assertIn('N17-TWO-SOURCES',EMULATOR)
+        self.assertIn('N17-ALL-WITHDRAWN',EMULATOR)
+        self.assertIn('empty central publication withdraws all four capabilities',EMULATOR)
     def test_update_controls_do_not_download_whole_stable(self):
         self.assertIn('ChemicalReferenceSyncV6.refresh(',SETTINGS)
         self.assertIn('ChemicalReferenceSyncV6.refresh(',GLOBAL)
