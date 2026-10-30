@@ -19,7 +19,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE fingerprints(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, label TEXT NOT NULL, created_ts TEXT NOT NULL, payload TEXT NOT NULL)");
         db.execSQL("CREATE TABLE captures(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, chemical_uid INTEGER, known_ppm REAL, ts TEXT NOT NULL, session_id TEXT, temp_c REAL, rh REAL, phase TEXT, sensor_payload TEXT NOT NULL, feature_payload TEXT)");
         db.execSQL("CREATE TABLE models(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, model_type TEXT NOT NULL, version TEXT NOT NULL, created_ts TEXT NOT NULL, training_count INTEGER, metrics TEXT, payload TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 0)");
-        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);ChemicalHazardSeedV11.ensure(db);createV13ChemicalHazardAndTechniques(db);createCaptureUidIndex(db);
+        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);ChemicalHazardSeedV11.ensure(db);createV13ChemicalHazardAndTechniques(db);ChemicalHazardEvidenceSeedV13.ensure(db);createCaptureUidIndex(db);
     }
 
     @Override public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
@@ -40,7 +40,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         if(oldVersion<9)createV9UserFieldTables(db);
         if(oldVersion<10){createV10FieldCycleTables(db);importV9FieldCycleLinks(db);}
         if(oldVersion<12){createV11ScientificRiskTables(db);ChemicalHazardSeedV11.ensure(db);}
-        if(oldVersion<13)createV13ChemicalHazardAndTechniques(db);
+        if(oldVersion<13){createV13ChemicalHazardAndTechniques(db);ChemicalHazardEvidenceSeedV13.ensure(db);}
     }
 
     /**
