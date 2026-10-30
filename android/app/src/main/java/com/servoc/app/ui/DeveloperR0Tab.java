@@ -75,17 +75,17 @@ public final class DeveloperR0Tab {
         instructions.setTextColor(0xFF855300);root.addView(instructions,UiKit.full(c));
 
         LinearLayout automatic=UiKit.card(c);
-        automatic.addView(UiKit.title(c,"معايرة R0 V6 • 5 دقائق تسخين + ثلاث دورات قياس وراحتين • 20 دقيقة"),UiKit.full(c));
+        automatic.addView(UiKit.title(c,"معايرة R0 • 3 دقائق تسخين + دقيقة قياس واحدة • 4 دقائق"),UiKit.full(c));
         automatic.addView(UiKit.small(c,
-            "بروتوكول R0 V6 المعتمد: تشغيل حساسات MQ طوال العملية دون إطفاء؛ "+
-            "300 ثانية تسخين، 180 ثانية قياس، 180 ثانية راحة مع بقاء السخان مشغلاً، "+
-            "ثم 180 ثانية قياس و180 ثانية راحة، ثم 180 ثانية قياس أخيرة. "+
-            "R0 الجديدة هي المتوسط الحسابي لمتوسطات Rs في النوافذ الثلاث، "+
-            "بدون أي معامل من منحنى المصنع. تُعرض قيم النوافذ المراجعة قبل الاعتماد، "+
-            "ثم تُحفظ على ESP32 في NVS جديد بعد موافقة المستخدم، وتُراجع بعد إعادة القراءة. "+
-            "المعايرات القديمة V5 ذات معامل المصنع محفوظة للرجوع التاريخي وليست "+
-            "مرجعًا مكافئًا لـRs الهواء النظيف. معيار R0 لا يثبت هوية غاز أو ppm "+
-            "ولا يضمن نقاء الهواء دون جهاز مرجعي ومختبر G3."
+            "المدة المعتمدة: 180 ثانية تسخين و60 ثانية قياس واحدة فقط؛ "+
+            "يستمر تشغيل حساسات MQ طوال الأربع دقائق دون فصل الكهرباء "+
+            "أو تكرار النوافذ أو فترات راحة. "+
+            "R0 التشغيلية الجديدة = متوسط مقاومة Rs المقاسة في الدقيقة الأخيرة "+
+            "لكل حساس على حدة، دون استخدام معاملات منحنيات المصنع. "+
+            "بعد انتهاء القياس تُعرض القيم للمراجعة، ولا تُحفظ على ESP32 "+
+            "أو الهاتف إلا بعد اعتماد المستخدم. "+
+            "حفظ R0 ليس شهادة بنقاء الهواء أو تأكيدًا لتركيز غاز بوحدة ppm؛ "+
+            "قيم R0 القديمة محفوظة في سجل تاريخي منفصل."
         ),UiKit.full(c));
         autoProgress=UiKit.small(c,"جاهز • ضع الروبوت في هواء نظيف ثم ابدأ");
         automatic.addView(autoProgress,UiKit.full(c));
@@ -250,7 +250,7 @@ public final class DeveloperR0Tab {
             try{
                 host.robotApi().mqPower(true);
                 startRequested=true;
-                JSONObject started=host.robotApi().calibrationStart(300,180);
+                JSONObject started=host.robotApi().calibrationStart(180,60);
                 FirmwareR0Contract.Progress p=FirmwareR0Contract.progress(started);
                 if(!p.active())throw new IllegalStateException("Firmware calibration did not start");
                 scroll.post(()->{
@@ -329,8 +329,7 @@ public final class DeveloperR0Tab {
             if(counts.length()>0)counts.append("  ");
             counts.append(key.toUpperCase(Locale.US)).append(": ").append(p.counts.get(key));
         }
-        String stage="warmup".equals(p.state)?"تسخين":
-            "resting".equals(p.state)?"راحة مع استمرار تغذية الحساسات":"جمع قراءات • دورة "+p.windowIndex+"/"+p.windowCount;
+        String stage="warmup".equals(p.state)?"تسخين":"جمع قراءات R0 في نافذة واحدة";
         long total="warmup".equals(p.state)?p.warmupMs:p.durationMs;
         autoProgress.setText(stage+" • المتبقي "+Math.max(0,(total-p.elapsedMs+999)/1000)+" ثانية من "+(total/1000)+"\n"+
             "القراءات الصالحة: "+counts+"\nR0: "+p.r0Definition+" • "+p.protocol);
