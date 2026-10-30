@@ -36,6 +36,6 @@ for contract in ('"library_version":LIBRARY_VERSION',
                  '"calibration_count":0',
                  'root["content_counts"]["response_priors"]!=49'):
     if contract not in s:raise SystemExit("Stable evidence contract changed: "+contract)
-if generator.read_text(encoding="utf-8)!=s:
+if generator.read_text(encoding="utf-8")!=s:
     generator.write_text(s,encoding="utf-8")
 print("V6 offline Stable source prepared: pinned 1.0.0-hr069r1, app 6.0, 652 identities, 49 research priors, 0 M4.")
