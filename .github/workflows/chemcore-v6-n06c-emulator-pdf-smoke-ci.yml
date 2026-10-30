@@ -87,7 +87,7 @@ jobs:
             echo "NO_KVM_DEVICE: software emulator fallback may time out"
           fi
       # aosp_atd minimizes slow Google APIs boot and flaky initial input command.
-      - name: Run three real PDF page rasters on Android ATD emulator
+      - name: Run four legible PDF page rasters on Android ATD emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
@@ -108,7 +108,7 @@ jobs:
           pdf=p/'v6_pdf_fixture.pdf'
           assert pdf.stat().st_size>3000 and pdf.read_bytes().startswith(b'%PDF-')
           im=[]
-          for i in range(1,4):
+          for i in range(1,5):
               f=p/f'v6_pdf_fixture_page_{i}.png'
               b=f.read_bytes()
               assert b[:8]==b'\x89PNG\r\n\x1a\n'
