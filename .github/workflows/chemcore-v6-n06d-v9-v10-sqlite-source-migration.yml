@@ -1,0 +1,59 @@
+name: ChemCore V6 N06-D exact V9-to-V10 SQLite source migration provenance
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/chemcore_v6/tests/test_v6_n06d_actual_v9_v10_sqlite_migration.py'
+      - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
+      - 'android/app/src/main/java/com/servoc/app/report/V6FieldSessionResearchAppendix.java'
+      - '.github/workflows/chemcore-v6-n06d-v9-v10-sqlite-source-migration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  actual-source-v9-v10-sqlite-migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Execute original ExperimentsDb.java SQL (V9 -> V10) on controlled SQLite file
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v6-n06d
+          python3 -m unittest -v \
+            research/chemcore_v6/tests/test_v6_n06d_actual_v9_v10_sqlite_migration.py
+          cp research/chemcore_v6/results/n06d_v9_v10_sqlite_source_migration_2026-10-30.json \
+            /tmp/v6-n06d/
+      - name: Audit no invented legacy SHA or Gas G3 promotion, canonical source hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,pathlib,hashlib
+          p=pathlib.Path("/tmp/v6-n06d/n06d_v9_v10_sqlite_source_migration_2026-10-30.json")
+          d=json.loads(p.read_text())
+          assert d["source_db_user_version"]==9 and d["upgraded_db_user_version"]==10
+          assert d["v9_historical_measurements"]==6
+          assert d["v9_historical_telemetry_rows"]==84
+          assert d["preserved_tables_original_sha256"]==d["preserved_tables_after_sha256"]
+          assert d["imported_legacy_approved_without_fabricated_sha"]==4
+          assert d["imported_legacy_other_without_fabricated_sha"]==2
+          assert d["backfill_idempotent"] and d["foreign_key_integrity"]
+          assert d["v6_replay_of_unhashed_legacy_approval_is_forbidden"] and d["tank_g3"]==0
+          print("PASS N06D REAL JAVA SQLITE V9-V10 SCHEMA/BACKFILL AND IMMUTABLE APPROVED V9 TELEMETRY")
+          print("ORIGINAL JAVA SHA",d["java_experiments_db_sha256"])
+          print("MANIFEST SHA",hashlib.sha256(p.read_bytes()).hexdigest())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: HazRob-V6-N06D-Actual-SQLite-V9-V10-Migration-Source-Evidence
+          path: /tmp/v6-n06d/
+          retention-days: 30
