@@ -225,7 +225,7 @@ public final class TankInstantV7PdfWriter {
     }
     private static void radar(Canvas c,Map<String,JSONObject> evidence,float x,float y,float width,float height){
         right(c,"البصمة البحثية / MQ fingerprint",x,y,width,12,true,INK);
-        float cx=x+width*.52f,cy=y+111f,r=53f;
+        float cx=x+width*.52f,cy=y+104f,r=48f;
         Paint grid=p(12,false,0xFF959595);grid.setStyle(Paint.Style.STROKE);grid.setStrokeWidth(.6f);
         Paint spoke=p(12,false,0xFFB4B4B4);spoke.setStrokeWidth(.7f);
         float max=1;
@@ -286,7 +286,7 @@ public final class TankInstantV7PdfWriter {
         }else{
             center(c,"No ratio series",x,y+170,width,12,false,MEDIUM,false);
         }
-        left(c,"Rs/R0 • بحثي / Research only",x+8,y+202,width-16,12,false,INK);
+        left(c,"Rs/R0 • بحثي / Research only",x+8,y+188,width-16,12,false,INK);
     }
     private static void decision(Canvas c,JSONObject engine,float x,float y,float w){
         right(c,"قرار ChemCore / Decision",x,y,w,12,true,INK);
