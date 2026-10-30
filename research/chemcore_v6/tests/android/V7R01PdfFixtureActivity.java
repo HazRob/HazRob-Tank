@@ -92,7 +92,7 @@ public final class V7R01PdfFixtureActivity extends Activity {
         ByteArrayOutputStream bytes=new ByteArrayOutputStream();
         TankInstantReportPdf.write(bytes,telemetry,actual,"CI-DEMO-V6-ONE-SHOT",1793376000000L);
         store("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf",bytes);
-        verify("01_V6_Instant_ChemCore_Original.pdf");
+        verify("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf");
         bytes=new ByteArrayOutputStream();
         TankPhysicalSnapshotPdf.write(bytes,telemetry,"2026-10-30 20:45:00 UTC");
         store("02_V6_Physical_Snapshot_Original.pdf",bytes);
