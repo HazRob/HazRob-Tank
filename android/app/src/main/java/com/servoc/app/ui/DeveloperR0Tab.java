@@ -75,17 +75,18 @@ public final class DeveloperR0Tab {
         instructions.setTextColor(0xFF855300);root.addView(instructions,UiKit.full(c));
 
         LinearLayout automatic=UiKit.card(c);
-        automatic.addView(UiKit.title(c,"معايرة R0 في ESP32 • تسخين 300 ثانية ثم قياس 60 ثانية"),UiKit.full(c));
+        automatic.addView(UiKit.title(c,"معايرة R0 V6 • 5 دقائق تسخين + ثلاث دورات قياس وراحتين • 20 دقيقة"),UiKit.full(c));
         automatic.addView(UiKit.small(c,
-            "فيرموير V5 يحسب قيم R0 على ESP32 قبل الاعتماد: تشغيل حساسات MQ الثمانية، "+
-            "تسخين 300 ثانية ثم جمع جميع الدورات الصالحة خلال 60 ثانية، "+
-            "بحد أدنى 10 قراءات لكل حساس. النتيجة مبدئيًا في RAM ولا تُحفظ في NVS إلا بعد زر الاعتماد. "+
-            "يمكن إلغاء نتيجة RAM دون تغيير المعايرة السابقة، واستيراد القيم المعتمدة بعد إعادة فتح التطبيق. "+
-            "يجب استخدام هواء نظيف فعلاً؛ لا توفر هذه المعايرة شهادة دقة PPM. "+
-            "تنبيه بحثي: وضع الفيرموير الحالي (5 دقائق إحماء + دقيقة قياس واحدة) لا يطابق "+
-            "بروتوكول HazRob المعتمد لثلاث دورات، 5 دقائق إحماء ثم 3 دقائق قياس و3 دقائق راحة بين الدورات. "+
-            "لذلك تُحفظ هذه النتيجة في V14 كمعايرة تشغيلية أولية بدورة واحدة، "+
-            "ولا تُعتمد منها حدود تذبذب الهواء الطبيعي أو نتائج تحقق G3."),UiKit.full(c));
+            "بروتوكول R0 V6 المعتمد: تشغيل حساسات MQ طوال العملية دون إطفاء؛ "+
+            "300 ثانية تسخين، 180 ثانية قياس، 180 ثانية راحة مع بقاء السخان مشغلاً، "+
+            "ثم 180 ثانية قياس و180 ثانية راحة، ثم 180 ثانية قياس أخيرة. "+
+            "R0 الجديدة هي المتوسط الحسابي لمتوسطات Rs في النوافذ الثلاث، "+
+            "بدون أي معامل من منحنى المصنع. تُعرض قيم النوافذ المراجعة قبل الاعتماد، "+
+            "ثم تُحفظ على ESP32 في NVS جديد بعد موافقة المستخدم، وتُراجع بعد إعادة القراءة. "+
+            "المعايرات القديمة V5 ذات معامل المصنع محفوظة للرجوع التاريخي وليست "+
+            "مرجعًا مكافئًا لـRs الهواء النظيف. معيار R0 لا يثبت هوية غاز أو ppm "+
+            "ولا يضمن نقاء الهواء دون جهاز مرجعي ومختبر G3."
+        ),UiKit.full(c));
         autoProgress=UiKit.small(c,"جاهز • ضع الروبوت في هواء نظيف ثم ابدأ");
         automatic.addView(autoProgress,UiKit.full(c));
         LinearLayout autoActions=UiKit.hbox(c);
@@ -249,7 +250,7 @@ public final class DeveloperR0Tab {
             try{
                 host.robotApi().mqPower(true);
                 startRequested=true;
-                JSONObject started=host.robotApi().calibrationStart(300,60);
+                JSONObject started=host.robotApi().calibrationStart(300,180);
                 FirmwareR0Contract.Progress p=FirmwareR0Contract.progress(started);
                 if(!p.active())throw new IllegalStateException("Firmware calibration did not start");
                 scroll.post(()->{
@@ -328,10 +329,11 @@ public final class DeveloperR0Tab {
             if(counts.length()>0)counts.append("  ");
             counts.append(key.toUpperCase(Locale.US)).append(": ").append(p.counts.get(key));
         }
-        String stage="warmup".equals(p.state)?"تسخين":"جمع قراءات";
+        String stage="warmup".equals(p.state)?"تسخين":
+            "resting".equals(p.state)?"راحة مع استمرار تغذية الحساسات":"جمع قراءات • دورة "+p.windowIndex+"/"+p.windowCount;
         long total="warmup".equals(p.state)?p.warmupMs:p.durationMs;
         autoProgress.setText(stage+" • المتبقي "+Math.max(0,(total-p.elapsedMs+999)/1000)+" ثانية من "+(total/1000)+"\n"+
-            "القراءات الصالحة: "+counts);
+            "القراءات الصالحة: "+counts+"\nR0: "+p.r0Definition+" • "+p.protocol);
         clock.postDelayed(autoTick,1000);
     }
 
@@ -364,7 +366,12 @@ public final class DeveloperR0Tab {
                     if(Math.abs(requested.get(sensor)-actual.get(sensor))>
                         Math.max(0.00001,requested.get(sensor)*0.00001))
                         throw new IllegalStateException("NVS R0 readback mismatch: "+sensor);
-                if(!ManualR0Calibration.saveFirmware(host.preferences(),actual,deviceId,actualProgress.counts))
+                if(!ManualR0Calibration.saveFirmware(host.preferences(),actual,deviceId,
+                        actualProgress.counts,
+                        "DEVICE_CLEAN_AIR_RS_MEAN".equals(actualProgress.r0Definition)?
+                            "DEVICE_CLEAN_AIR_RS_MEAN":
+                            "LEGACY_MQ_FACTOR_SCALED_R0_NOT_AIR_RS",
+                        actualProgress.windowCount))
                     throw new IllegalStateException("Cannot durably save phone R0");
                 // The phone/NVS commit is complete. The V14 scientific ledger
                 // records this exact approved 8-channel state, but is NOT
