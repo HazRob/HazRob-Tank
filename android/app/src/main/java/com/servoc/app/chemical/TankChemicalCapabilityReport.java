@@ -115,6 +115,18 @@ public final class TankChemicalCapabilityReport {
             out.append("\nهذا إثبات ترادف أسماء فقط؛ لا يعيد كتابة النتائج القديمة")
                .append(" ولا يثبت رصد غاز أو تجاوز حد تعرض.");
         }
+        JSONArray canonicalMass=unified.optJSONArray("niosh_alias_pubchem_mass_sources");
+        if(canonicalMass!=null&&canonicalMass.length()>0){
+            JSONObject provenance=canonicalMass.optJSONObject(0);
+            if(provenance!=null){
+                out.append("\nالكتلة الجزيئية من المادة المرجعية المطابقة عبر CAS:")
+                   .append("\nNIOSH CAS ").append(provenance.optString("niosh_cas",""))
+                   .append(" / UID ").append(provenance.optLong("canonical_uid",0))
+                   .append(" / PubChem A_SOURCE")
+                   .append("\n").append(provenance.optString("niosh_source_url",""))
+                   .append("\nدليل خصائص جزيئية فقط وليس قياس تركيز أو معايرة MQ.");
+            }
+        }
         out.append("\nحقائق PubChem الجزيئية ذات أصل موثق: ")
             .append(unified.optInt("molecular_identity_source_fact_count",0))
             .append(" (ليست بصمات غاز أو معايرة MQ)");
