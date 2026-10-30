@@ -114,6 +114,20 @@ public final class GhsPictograms {
         List<String> result=found.get(uid);
         return result==null?Collections.emptyList():result;
     }
+    /**
+     * Alarm surfaces are different from reference browsing. GHS artwork is
+     * eligible on an actual on-site gas alert ONLY after an independent
+     * identity, quantitative measurement and alarm authorization gate.
+     * These gates are FALSE for all current Tank V6 MQ research candidates.
+     */
+    public static List<String> forQualifiedAlarm(ExperimentsDb db,long uid,
+            boolean identityVerified,boolean quantitativeMeasurementVerified,
+            boolean alarmAuthorized){
+        if(!identityVerified||!quantitativeMeasurementVerified||!alarmAuthorized)
+            return Collections.emptyList();
+        return forChemical(db,uid);
+    }
+
     public static JSONArray asJson(List<String> codes){
         JSONArray a=new JSONArray();
         if(codes!=null)for(String c:codes)if(valid(c))a.put(c);
