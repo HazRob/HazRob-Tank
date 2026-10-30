@@ -1,3 +1,13 @@
+## 2026-10-30 — G2 declared provenance NFKC compatibility-alias guard (459/459 CI)
+
+- Resumed from research HEAD `f1bbe4865dd0fd813f7dd3b2fcf7d63149230de3`; verified 20/20 previous workflow runs successful and independent evidence `records=[]`, source-ready 0/14, G2 candidates 0/80.
+- Research-only enhancement to `g2_declared_provenance_overlap_audit.py`: fail closed on NFKC-equivalent but byte-distinct group/session/exposure-batch/device IDs; also reject compatibility-aliased critical CSV headers and distinct headers with the same NFKC spelling. Preserve distinct valid Arabic identifiers; do not silently normalize source identity.
+- Eight new synthetic regressions in `test_g2_declared_provenance_nfkc_alias.py`. Implementation commits `df4a92af7485bdb54db32748cc22a2457516090e` and `53f3193ea6ed3a68bc1c39c0bca20011b16f511d`. [G2 Actions run 41032580256](https://github.com/HazRob/HazRob-Tank/actions/runs/41032580256), job `123985602747`: **459/459 PASS**, deterministic G2 audit/triage replay PASS, publication guard PASS; 80 blocked / 0 candidates / 14 source-blocked. No G2/G3 approval.
+- Arabic methodology: `G2_DECLARED_PROVENANCE_NFKC_ALIAS_FAIL_CLOSED_2026-10-30_AR.md`. Changes confined to research implementation directory, research branch only. ChemCore Stable, Android, firmware, and main untouched.
+- Next: obtain authenticated independent physical sample/exposure/session/device provenance, traceable concentration reference calibration, and preregistered blinded physically grouped holdouts. Until then, no scientific G2 qualification; G3 physical validation remains pending.
+
+---
+
 ## 2026-10-30 — G2 declared session/batch/device cross-group overlap audit (451/451 CI)
 
 - Resumed from research HEAD `aeb7c0baeeca684d49caa24a2a1871cd7bc7b0d8`, 11/11 previous GitHub Actions successful. Central pinned 80 techniques and 14 source slots unchanged; independent physical evidence still `records=[]`.
