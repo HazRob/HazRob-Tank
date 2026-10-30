@@ -30,7 +30,7 @@
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "V6_CENTRAL_LIBRARY_PER_RECORD_QUERY_WITH_PREQUALIFIED_FINGERPRINT_CURVE_PPM_M4_SYNC; CENTRAL_AUTHORITY_OWNED_NO_SECOND_PHONE_APPROVAL; N09_FINAL_ALIAS_TEST_PENDING; NO_RELEASE",
+  "latest_scope": "STABLE_EMBEDDED_OFFLINE; CENTRAL_UID_RECORD_SYNC_FROM_GITHUB_QUALIFICATION_ONLY_BY_LIBRARY; LIST_FINGERPRINT_CURVE_PPM_M4_LIVE; 41099757406_ANDROID_SOURCE_COMPILE_PASS; FINAL_LATEST_N09_ALIAS_DETAIL_PENDING; NO_RELEASE",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -281,7 +281,7 @@
       "DeveloperExperimentsTab",
       "ChemicalExperimentMatrixDialog"
     ],
-    "last_successful_scientific_source_run": 41099460522,
+    "last_successful_scientific_source_run": 41099592091,
     "latest_merged_java_compile_run": 41099398842,
     "latest_merged_java_compile_status": "PASS_OLDER_THAN_FINAL_CANONICAL_ALIAS_DETAIL_FIX",
     "latest_android_api31_complete_source_run": 41098652783,
@@ -289,6 +289,18 @@
     "pending_current_android_run": 41099592302,
     "pending_current_source_run": 41099592091,
     "implementation_doc": "docs/implementation/V6-INCREMENTAL-CENTRAL-LIBRARY-SYNC-2026-10-30_AR.md",
-    "source_publication_required_before_operator_online_use": true
+    "source_publication_required_before_operator_online_use": true,
+    "last_successful_android_compile_run": 41099757406,
+    "last_successful_android_compile_source_commit": "ffb3fe8054bb6b4117b0bfe8d1cfe05abea93087",
+    "last_source_published_4_capability_withdrawal_pass": 41099460652,
+    "latest_android_alias_detail_e2e_run": 41099592302,
+    "latest_android_alias_detail_e2e_result": "PENDING_AS_OF_ACCEPTANCE_RECORD",
+    "verified_canonical_niosh_alias_details": true,
+    "qualified_library_status_display_only_no_secondary_requalification": true,
+    "record_pagination_stale_first_25_starvation_fixed": true,
+    "material_status_one_indexed_query_per_row": true,
+    "material_detail_report_shows_publisher_provenance": true,
+    "targeted_uid_query_available_in_developer_experiments": true,
+    "publisher_index_deployed_to_main": false
   }
 }
