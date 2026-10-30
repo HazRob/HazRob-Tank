@@ -104,6 +104,30 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         // Non-destructive V10->V11 migration: no historical measurements or limits rewritten.
         db.execSQL("INSERT OR IGNORE INTO chemical_risk_profiles(chemical_uid) "+
             "SELECT uid FROM chemicals");
+
+        // The ONE active chemical menu/catalogue view. Exactly one row per UID:
+        // legacy 144 is a provenance/priority flag, never a competing list.
+        // Correlated aggregates intentionally avoid multiplying rows across
+        // sources, exposure limits, background ranges, and MQ evidence.
+        db.execSQL("CREATE VIEW IF NOT EXISTS v11_unified_chemical_catalog AS "+
+            "SELECT c.uid,c.legacy_id,c.cas,c.pubchem_cid,c.name_en,c.name_ar,"+
+            "c.formula,c.molar_mass,c.chemical_class,c.record_source,c.active,"+
+            "CASE WHEN c.legacy_id IS NOT NULL THEN 1 ELSE 0 END AS original_144_member,"+
+            "COALESCE(p.early_exposure_fraction,0.90) AS early_exposure_fraction,"+
+            "COALESCE(p.background_status,'NO_SOURCE_QUALIFIED_RANGE') AS background_status,"+
+            "COALESCE(p.review_status,'UNREVIEWED') AS review_status,"+
+            "(SELECT COUNT(*) FROM exposure_limits e WHERE e.chemical_uid=c.uid) "+
+            "AS exposure_limit_count,"+
+            "(SELECT COUNT(*) FROM chemical_background_ranges b WHERE b.chemical_uid=c.uid) "+
+            "AS background_range_count,"+
+            "(SELECT COUNT(*) FROM chemical_ambient_benchmarks a WHERE a.chemical_uid=c.uid) "+
+            "AS ambient_benchmark_count,"+
+            "(SELECT COUNT(*) FROM chemical_hazard_boundaries h WHERE h.chemical_uid=c.uid) "+
+            "AS hazard_boundary_count,"+
+            "(SELECT COUNT(*) FROM sensor_evidence s WHERE s.chemical_uid=c.uid) "+
+            "AS source_sensor_evidence_count "+
+            "FROM chemicals c LEFT JOIN chemical_risk_profiles p ON p.chemical_uid=c.uid "+
+            "WHERE c.active=1");
         db.execSQL("CREATE VIEW IF NOT EXISTS v11_exposure_early_boundary AS "+
             "SELECT e.id AS source_limit_id,e.chemical_uid,e.authority,e.jurisdiction,"+
             "e.limit_type,e.value AS exposure_reference_value,e.unit,e.duration_min,"+
