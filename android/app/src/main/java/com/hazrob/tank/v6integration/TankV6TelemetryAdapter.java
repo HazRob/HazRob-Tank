@@ -1,6 +1,7 @@
 package com.hazrob.tank.v6integration;
 
 import com.hazrob.tank.chemcore.v6.ChemCoreTankV6;
+import com.hazrob.tank.chemcore.v6.CleanAirResponseGateV6;
 import com.hazrob.tank.chemcore.v6.Engine;
 import com.hazrob.tank.chemcore.v6.FingerprintEngineV6;
 
@@ -98,6 +99,33 @@ public final class TankV6TelemetryAdapter {
         root.put("reportable_ppm",false);
         root.put("food_models_included",false);
         root.put("interpretation","EXPLORATORY_REFERENCE_FITS_NOT_CERTIFIED_GAS_IDENTITY");
+        // N08: never confuse the mathematical inverse of clean-air Rs/R0 with
+        // a detected chemical. Keep raw analytical math in research diagnostics,
+        // but show NO gas hypotheses or operator warnings at the baseline.
+        CleanAirResponseGateV6.Decision baseline=
+            CleanAirResponseGateV6.assess(data.responseCurves.retainedRawSensorRecords);
+        JSONObject gate=new JSONObject();
+        gate.put("schema",CleanAirResponseGateV6.SCHEMA);
+        gate.put("state",baseline.state);
+        gate.put("threshold_percent_provisional",baseline.thresholdDropFraction*100.0);
+        gate.put("threshold_is_manufacturer_or_safety_limit",false);
+        gate.put("independent_responding_sensor_models",baseline.respondingSensorModels);
+        gate.put("minimum_independent_sensor_models",
+            CleanAirResponseGateV6.MIN_DISTINCT_SENSOR_MODELS);
+        gate.put("rising_or_opposite_sensor_models",baseline.risingOrOppositeModels);
+        gate.put("visible_gas_hypotheses",baseline.showGasHypotheses);
+        gate.put("occupational_gas_alarm_authorized",false);
+        gate.put("interpretation",baseline.showGasHypotheses?
+            "SIGNAL_CHANGE_RESEARCH_HYPOTHESES_NOT_IDENTITY_OR_CERTIFIED_PPM":
+            "BASELINE_OR_UNCONFIRMED_CHANGE_NO_OPERATOR_CHEMICAL_FINDING");
+        root.put("baseline_response_gate",gate);
+        root.put("gas_response_screening_state",baseline.state);
+        root.put("gas_response_detected_research_only",baseline.showGasHypotheses);
+        root.put("gas_alerts",new JSONArray());
+        root.put("alarm_eligible",false);
+        root.put("clean_air_proven",false); // equality does NOT certify atmospheric safety
+        root.put("operator_chemical_finding_count",0);
+        root.put("source_fits_research_only_count",data.responseCurves.allSourceFits.size());
         JSONArray sources=new JSONArray();
         for(Engine.SourceFit fit:data.responseCurves.allSourceFits){
             JSONObject row=new JSONObject();
@@ -115,7 +143,11 @@ public final class TankV6TelemetryAdapter {
             row.put("advisories",caveats);
             sources.put(row);
         }
-        root.put("source_curve_hypotheses",sources);
+        // Preserve full mathematics for reproducibility WITHOUT surfacing gas
+        // claims or misleading ppm in the instant/field operator results.
+        root.put("source_curve_research_diagnostic_ledger",sources);
+        root.put("source_curve_hypotheses",baseline.showGasHypotheses?
+            sources:new JSONArray());
         // Descriptive comparison only; contradictory source curves never
         // suppress the rest of the research candidates or trigger robot action.
         JSONArray disagreements=new JSONArray();
@@ -134,7 +166,8 @@ public final class TankV6TelemetryAdapter {
             row.put("interpretation","SOURCE_DISAGREEMENT_NOT_A_VALIDATED_GAS_VETO");
             disagreements.put(row);
         }
-        root.put("source_curve_disagreements",disagreements);
+        root.put("source_curve_disagreements",baseline.showGasHypotheses?
+            disagreements:new JSONArray());
         JSONArray fingerprints=new JSONArray();
         for(FingerprintEngineV6.Result space:data.fingerprintSpaces){
             JSONObject group=new JSONObject();
@@ -157,7 +190,9 @@ public final class TankV6TelemetryAdapter {
             group.put("hypotheses",hypotheses);
             fingerprints.put(group);
         }
-        root.put("fingerprint_feature_spaces",fingerprints);
+        root.put("fingerprint_feature_spaces",baseline.showGasHypotheses?
+            fingerprints:new JSONArray());
+        root.put("fingerprint_unfiltered_research_diagnostic_ledger",fingerprints);
         JSONArray ledger=new JSONArray();
         for(ChemCoreTankV6.ChemicalEvidence e:data.chemicalEvidence){
             JSONObject chemical=new JSONObject();
@@ -169,7 +204,9 @@ public final class TankV6TelemetryAdapter {
             chemical.put("verified_identity",false);
             ledger.put(chemical);
         }
-        root.put("chemical_evidence_ledger",ledger);
+        root.put("chemical_unfiltered_research_diagnostic_ledger",ledger);
+        root.put("chemical_evidence_ledger",baseline.showGasHypotheses?
+            ledger:new JSONArray());
         return root;
     }
 }
