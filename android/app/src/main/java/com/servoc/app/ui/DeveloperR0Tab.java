@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.servoc.app.calibration.ManualR0Calibration;
 import com.servoc.app.calibration.FirmwareR0Contract;
+import com.servoc.app.data.MqDeviceR0LedgerV14;
 import com.servoc.app.chemcore.library.ChemCoreLibraryManager;
 import org.json.JSONObject;
 
@@ -361,11 +362,26 @@ public final class DeveloperR0Tab {
                         throw new IllegalStateException("NVS R0 readback mismatch: "+sensor);
                 if(!ManualR0Calibration.saveFirmware(host.preferences(),actual,deviceId,actualProgress.counts))
                     throw new IllegalStateException("Cannot durably save phone R0");
+                // The phone/NVS commit is complete. The V14 scientific ledger
+                // records this exact approved 8-channel state, but is NOT
+                // certification of clean-air purity, extended 3-window
+                // calibration or G3 gas ppm. Never relabel an already saved
+                // firmware result as a total failure if the ledger fails.
+                final String scientificLedgerStatus;
+                try{
+                    int saved=MqDeviceR0LedgerV14.recordFirmwareApproved(
+                        host.database(),deviceId,actual,actualProgress.counts);
+                    scientificLedgerStatus=" • مرجع V14: "+saved+" سجلات R0 تشغيلية";
+                }catch(Exception ledgerError){
+                    android.util.Log.e("TankR0V14","Device R0 ledger sync failed",ledgerError);
+                    scientificLedgerStatus=" • تعذر توثيق R0 في سجل V14 (مع بقائها محفوظة على الهاتف وESP32)";
+                }
                 scroll.post(()->{
                     if(disposed)return;
                     pendingFirmwareResult=null;automaticActive=false;
                     autoApprove.setEnabled(false);autoRetry.setEnabled(false);autoCancel.setEnabled(false);
-                    finishAutomatic("تم اعتماد 8 قيم R0 على ESP32 وNVS والهاتف • "+deviceId);
+                    finishAutomatic("تم اعتماد 8 قيم R0 على ESP32 وNVS والهاتف • "+deviceId+
+                        scientificLedgerStatus);
                     reloadFields();host.refreshAllTabs();
                 });
             }catch(Exception ex){
