@@ -147,6 +147,18 @@ public final class ChemicalSeedBootstrap {
                 "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
         }
 
+        // NIOSH-verified historical aliases may share the same molecule as
+        // a PubChem A_SOURCE canonical UID. Fill only the absent mass, after
+        // canonical properties exist. Never change historical identities.
+        try{
+            ChemicalAliasMolecularProjectionV6.Result aliasMass=
+                ChemicalAliasMolecularProjectionV6.ensure(db);
+            db.putMeta("v6_niosh_alias_molecular_mass",aliasMass.summary());
+        }catch(Exception e){
+            db.putMeta("v6_niosh_alias_molecular_mass",
+                "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
+        }
+
         // PubChem/QSPR is rebuilt only after the molecular seed and the negative curation layer
         // are installed. It remains an M1 ranking/screening prior and cannot create M3/M4 alone.
         try{
