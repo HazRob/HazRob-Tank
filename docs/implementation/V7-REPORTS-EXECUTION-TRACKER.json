@@ -178,6 +178,21 @@
       "id": "R03-A12",
       "text": "No arbitrary top-N report caps, source truncation or source gate duplication; maintain verified approved-cycle SHA and evidence integrity as independent storage guarantees.",
       "status": "APPROVED_BY_OWNER_AS_DESIGN_REQUIREMENT"
+    },
+    {
+      "id": "R03-D20",
+      "text": "Owner explicitly approves a four-equal-chart 2x2 gallery on A4 landscape: 141.5×79.5mm panels with 4mm gutters in 287mm content width, all AR/EN labels ≥12pt. This supersedes earlier recommendation of two large figures.",
+      "status": "APPROVED_BY_OWNER_DESIGN"
+    },
+    {
+      "id": "R03-D21",
+      "text": "Owner approves a dedicated R03 3D/4D and T/RH compensation page: large empty multi-dimensional graph on top and two lower before/after and T/RH influence panels, with no sample curves or invented values.",
+      "status": "APPROVED_BY_OWNER_DESIGN"
+    },
+    {
+      "id": "R03-D22",
+      "text": "Owner approves rich unlimited candidate table: candidate identity CAS/UID, evidence rank, candidate-specific official GHS toxicity/hazard pictograms, visually distinct presentation and miniature PPM-vs-authoritative-exposure-reference chart per candidate. During layout phase missing values are '-' and the chart is completely empty.",
+      "status": "APPROVED_BY_OWNER_DESIGN"
     }
   ],
   "checkpoints": [
@@ -279,7 +294,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R03 owner added mandatory full G+F+P composite pages, exact R02 physical reuse, separate particle detailed pages, 3D/4D, T/RH compensation, all source curves/fingerprints/PPM, and prominent candidate-specific GHS/OEL. Verified runtime shows partial research 4D and adapter hard caps. Documented only; R03 Java untouched; final layout pending.",
+  "latest_documented_change": "Owner approved four equal charts per landscape A4 chart page, separate large 3D/4D plus compensation page, complete candidate GHS/toxicity reference details and per-row PPM-vs-limit microchart. All blank without data, values '-'. Documented dimensions and no Android production report changes.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -332,7 +347,7 @@
   "active_report": {
     "id": "R03",
     "name": "Approved Field Session PDF",
-    "phase": "R03_COMPOSITE_SCOPE_AND_INTELLIGENCE_APPROVED_FINAL_LAYOUT_PENDING",
+    "phase": "R03_2X2_GRID_3D_AND_CANDIDATE_DETAIL_APPROVED_FINAL_VISUAL_TEMPLATE_PENDING",
     "analysis_document": "docs/implementation/V7-R03-APPROVED-FIELD-SESSION-PDF-AUDIT-AND-REDESIGN-2026-10-30_AR.md",
     "issues": [
       "2 fully empty 6-panel analysis pages in synthetic QA due absent legacy ChemCore decision",
@@ -358,7 +373,59 @@
       "SmartFieldSessionPdfWriter: executive list only 7 sessions",
       "TankExposureReferenceCatalog: MAX_CANDIDATES=8, MAX_LIMITS_PER_CANDIDATE=32",
       "SmartReport charts fixed 6-panel pages"
-    ]
+    ],
+    "approved_layout_choices": {
+      "chart_pages": {
+        "orientation": "A4 landscape",
+        "grid": "2x2_four_equal",
+        "panel_mm": [
+          141.5,
+          79.5
+        ],
+        "gutter_mm": 4,
+        "body_area_mm": [
+          287,
+          163
+        ],
+        "minimum_text_pt": 12
+      },
+      "multidimensional": {
+        "dedicated_page": true,
+        "three_four_d_mm": [
+          287,
+          95
+        ],
+        "compensation_panels_mm": [
+          141.5,
+          64
+        ],
+        "without_data": "axes_only_no_surface_no_plotted_values"
+      },
+      "candidates": {
+        "right_to_left_column_widths_mm": [
+          35,
+          58,
+          40,
+          29,
+          55,
+          70
+        ],
+        "column_meaning": [
+          "Official GHS",
+          "Candidate name and CAS",
+          "Rank/evidence",
+          "PPM and qualification",
+          "Exposure limit source/type/period",
+          "Blank miniature ppm-vs-limit bullet chart"
+        ],
+        "all_candidates_no_display_cap": true,
+        "allow_GHS_red_official_pictograms": true
+      },
+      "layout_phase": "NO_ENGINE_CHANGES",
+      "no_readings": "literal '-' for empty value fields; empty charts still reserve exact area"
+    },
+    "owner_design_signoff": false,
+    "design_specification": "docs/implementation/V7-R03-APPROVED-CHART-GRID-AND-CANDIDATE-TABLE-2026-10-30_AR.md"
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -391,7 +458,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_DISCUSSIONS_R03_PARTIALLY_APPROVED",
+    "current_phase": "DESIGN_ONLY_R03_GEOMETRY_APPROVED_IMPLEMENTATION_DEFERRED",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -403,7 +470,8 @@
       "R06"
     ],
     "final_apk_authorized": false,
-    "next_step": "Discuss R02 design, record its signoff, then R03-R06."
+    "next_step": "Discuss R02 design, record its signoff, then R03-R06.",
+    "layout_empty_data_policy": "docs/requirements/V7-REPORTS-DESIGN-FIRST-PLACEHOLDER-POLICY-2026-10-30_AR.md"
   },
   "r01_prototype": {
     "id": "R01",
