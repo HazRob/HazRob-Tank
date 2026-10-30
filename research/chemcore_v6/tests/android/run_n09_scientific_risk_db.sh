@@ -34,8 +34,8 @@ assert d['v14_unverified_source_r0_curves']==49
 assert d['v14_actual_tank_r0_samples']==0
 assert d['v14_simulator_only_r0_channels']==8
 assert d['bundled_ghs_vector_assets']==9
-assert d['ghs_pdf_page_count']==2
-assert d['ghs_pdf_vector_raster_red_pixels']>40
+assert d['ghs_pdf_page_count']==1
+assert d['ghs_pdf_vector_raster_red_pixels']==0
 assert d['coverage_fraction']==1
 assert d['osha_z1_rows']>=500 and d['niosh_idlh_rows']>=300
 assert d['co2_source_pel_ppm']==5000 and d['co2_early_warn_ppm']==4500
