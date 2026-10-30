@@ -311,7 +311,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Owner on 2026-10-30T23:36:27Z delegated full freedom to increase or decrease all report page counts. Central policy amended; R05/R03/R04 and six-report preflight annotated. R06 prior three-page requirement is preserved as a three-section content baseline not mandatory sheet index. V7 Android shared layout kit fixture and CI QA updated. No engine or APK changes.",
+  "latest_documented_change": "Central owner page flexibility decision now applied to V7 report policy, assessment of R01-R06, R03-R06 docs and tracker. Added real Java V7ReportPagePlanner preserving all source rows with repeated headings and dynamic pages and Android fixture for 18/45-row stress; latest CI run 41145706319 in progress. Existing production PDF writers are not replaced, no engine modified, no release APK claimed.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -464,7 +464,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_AND_SHARED_LAYOUT_KIT_QA_WITH_OWNER_AUTHORIZED_DYNAMIC_PAGINATION",
+    "current_phase": "DYNAMIC_PAGE_COUNT_OWNER_APPROVED_ANDROID_PDF_KIT_AND_PAGE_PLANNER_QA_IN_PROGRESS",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -662,5 +662,29 @@
     "page_labels": "true page n of N",
     "precedence": "supersedes earlier fixed-page owner signoffs",
     "source": "docs/requirements/V7-REPORTS-DESIGN-FIRST-PLACEHOLDER-POLICY-2026-10-30_AR.md"
+  },
+  "dynamic_page_planner": {
+    "source": "android/app/src/main/java/com/servoc/app/report/V7ReportPagePlanner.java",
+    "committed": true,
+    "design_data_only": true,
+    "not_wired_to_production_writers": true,
+    "rules": [
+      "Unlimited pages determined by rows+measured height",
+      "Section header repeated on continuation page",
+      "No truncation or arbitrary top-N cap",
+      "Overflow row reports exception rather than clipped content",
+      "Template displays missing values '-' and charts left empty"
+    ],
+    "tests_added": "research/chemcore_v6/tests/android/V7R01PdfFixtureActivity.java",
+    "test_scenarios": [
+      "18 source fruit family rows preserved across two planning pages",
+      "45 source rows preserved across more than two planning pages",
+      "Real Android Skia blank pages with both portrait and landscape A4"
+    ],
+    "github_actions": {
+      "latest_run_id": 41145706319,
+      "state": "in_progress_at_last_check",
+      "previous_compile_success_run_id": 41145229233
+    }
   }
 }
