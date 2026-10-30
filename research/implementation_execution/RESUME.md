@@ -1,3 +1,13 @@
+## 2026-10-30 — G2 declared physical sample ID / true-class ambiguity audit (443/443 CI)
+
+- Resumed from `953e7650403b5c8dffddbc99e7148edcc0e217af`, whose prior 438-test G2 run and associated CI succeeded. Existing 80-technique G2 gate and 14 external-source slots remain pinned.
+- Added research-only, order-invariant diagnostic to `g2_paired_prediction_replay.py` identifying declared `physical_sample_id` values mapped to multiple `true_reference` labels, and explicit `null` when the sample column is absent. Does not assume whether the cause is reused hardware, temporal exposure changes or incorrect IDs; does not reject valid multi-exposure scenarios.
+- Added five synthetic tests in `test_g2_paired_sample_true_class_audit.py`. On implementation commit `e4bda196e36427f86d56c56e789cb152fb9d8038`, G2 Actions run [41020025863](https://github.com/HazRob/HazRob-Tank/actions/runs/41020025863), job `123944979200`, **443/443 PASS**, deterministic replay PASS, publication guard PASS, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Prior baseline 438 tests.
+- Arabic methods: `G2_DECLARED_SAMPLE_MULTI_REFERENCE_CLASS_AMBIGUITY_2026-10-30_AR.md`. Comparison `953e765...e4bda196`: only two research files changed before documentation. No ChemCore Stable, Android, firmware or main modifications. No G2/G3 promotion.
+- Next: verify documentation checkpoint CI; obtain authenticated independent physical sample/exposure/session/device IDs, traceable concentration-reference calibration, and preregistered blinded physically grouped holdouts. Independent evidence `records=[]`; source-ready 0/14; G2 qualified 0/80.
+
+---
+
 ## 2026-10-30 — G2 MQ4 strict-minute plateau/reference-span audit
 
 - Resumed from `670a79adbac63bd6b8242387c169f48531b3bb8d`; previous 20/20 workflows SUCCESS, 432/432 tests, independent evidence `records=[]`, 0/14 source-qualified, 0/80 G2 candidates.
