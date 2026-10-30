@@ -454,24 +454,42 @@ bool calibrationAccept(){
  return true;
 }
 String calibrationJson(){
- const char* names[]={"idle","warmup","sampling","ready","error","cancelled","pending"};
+ const char* names[]={"idle","warmup","sampling","ready","error","cancelled","pending","resting"};
  R0Record stored={};
  bool storedOK=loadR0Record(stored);
  bool pending=calState==CAL_PENDING&&pendingR0Valid;
  bool committed=storedOK&&(calState==CAL_READY||calState==CAL_IDLE);
+ bool v6=pending?pendingR0.magic==R0_MAGIC_V6:
+   (calV6ThreeWindow||(storedOK&&stored.magic==R0_MAGIC_V6));
  const char* reported=committed?"ready":names[(uint8_t)calState];
- uint32_t elapsed=(calState==CAL_WARM||calState==CAL_SAMPLE)?millis()-calAt:0;
- String j="{\"device_id\":\""+WiFi.softAPmacAddress()+"\",\"state\":\""+String(reported)+"\",\"committed\":"+
-   (committed?"true":"false")+",\"pending\":"+(pending?"true":"false")+
-   ",\"schema\":\"tank-r0-fw-v5/2\",\"warmup_ms\":"+String(calWarmMs)+
+ uint32_t elapsed=(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_REST)?
+    millis()-calAt:0;
+ uint32_t duration=(calState==CAL_REST)?CAL_V6_REST_MS:
+   (calState==CAL_WARM)?calWarmMs:calWindowMs;
+ String j="{\"device_id\":\""+WiFi.softAPmacAddress()+"\",\"state\":\""+
+   String(reported)+"\",\"committed\":"+(committed?"true":"false")+
+   ",\"pending\":"+(pending?"true":"false")+
+   ",\"schema\":\""+String(v6?"tank-r0-fw-v6/1":"tank-r0-fw-v5/2")+
+   "\",\"warmup_ms\":"+String(calWarmMs)+
    ",\"error\":\""+String(calError)+"\",\"elapsed_ms\":"+String(elapsed)+
-   ",\"duration_ms\":"+String(calWindowMs)+",\"r0_definition\":\"MQ_FACTOR_SCALED_R0_NOT_AIR_RS\",\"window_count\":1,\"protocol\":\"V5_ONE_WINDOW_SOURCE_SCALED\",\"channels\":{";
+   ",\"duration_ms\":"+String(duration)+
+   ",\"r0_definition\":\""+String(v6?"DEVICE_CLEAN_AIR_RS_MEAN":
+                                    "MQ_FACTOR_SCALED_R0_NOT_AIR_RS")+
+   "\",\"window_count\":"+String(v6?3:1)+
+   ",\"window_index\":"+String(v6?(uint8_t)(calV6Window+1):1)+
+   ",\"protocol\":\""+String(v6?"V6_5M_WARM_3X3M_MEASURE_2X3M_POWERED_REST":
+                                  "V5_ONE_WINDOW_SOURCE_SCALED")+
+   "\",\"channels\":{";
  for(uint8_t i=0;i<Cfg::MQ_N;i++){
   if(i)j+=",";
-  uint32_t count=pending?pendingR0.counts[i]:(committed?stored.counts[i]:calCount[i]);
-  float value=pending?pendingR0.values[i]:(committed?stored.values[i]:
-    (calCount[i]?(float)(calSum[i]/calCount[i]/cleanAir[i]):NAN));
-  j+="\""+String(Cfg::mq[i].name)+"\":{\"samples\":"+String(count)+",\"r0\":"+num(value,7)+"}";
+  uint32_t count=pending?pendingR0.counts[i]:
+     (committed?stored.counts[i]:calCount[i]);
+  float value=pending?pendingR0.values[i]:
+     (committed?stored.values[i]:
+       ((!v6&&calCount[i])?(float)(calSum[i]/calCount[i]/cleanAir[i]):NAN));
+  j+="\""+String(Cfg::mq[i].name)+"\":{\"samples\":"+String(count)+
+      ",\"r0\":"+num(value,7)+"}";
  }
  return j+"}}";
 }
+
