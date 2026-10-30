@@ -148,6 +148,16 @@
       "id": "D17",
       "text": "User-proposed more efficient workflow adopted: review and approve R01-R06 report specs individually first, then implement all reports together using shared PDF components; test each exporter during integrated build.",
       "status": "WORKFLOW_ADOPTED_NO_RELEASE_APPROVAL"
+    },
+    {
+      "id": "D18",
+      "text": "For R02 missing physical values, use the literal ASCII hyphen '-' (U+002D) instead of Arabic 'غير متوفر', em dash or N/A, keeping separate engine-provided data-quality notes and original null values intact.",
+      "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "D19",
+      "text": "R02 design must include all 15 PhysicalCatalog indicators including ionizing radiation, UV, wind speed/direction, illuminance/flux, PM1/PM2.5/PM10, plus derived altitude and engine-delivered thermal analyses; no PDF-side gates.",
+      "status": "APPROVED_BY_OWNER"
     }
   ],
   "checkpoints": [
@@ -249,7 +259,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Completed verified detailed R02 original 1-page V6 PDF audit (SHA256 4c40...), checked UI/engine policy and authoritative OSHA/ASHRAE noise/thermal context; recorded 18-rule review and redesign options. R02 remains discussion-only, no production Java changes.",
+  "latest_documented_change": "Owner reaffirmed no report-layer gating, R02 covers all 15 physical indicators including radiation UV wind illumination and PM; missing value label must be literal '-' (not 'غير متوفر'); documentation only, no Java source change.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -302,7 +312,7 @@
   "active_report": {
     "id": "R02",
     "name": "Physical Measurement Snapshot PDF",
-    "phase": "ORIGINAL_PDF_AND_ANDROID_SOURCE_DETAILED_AUDIT_COMPLETE_PROPOSAL_PENDING_OWNER",
+    "phase": "R02_PARTIAL_OWNER_REQUIREMENTS_APPROVED_LAYOUT_PENDING",
     "analysis_document": "docs/implementation/V7-R02-PHYSICAL-REPORT-ANALYSIS-PROPOSAL-2026-10-30_AR.md",
     "report_source": "android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java",
     "data_source_entry": "MainActivity.requestPhysicalSnapshotPdf -> latestDiag; pendingPhysicalUtc from isoNow at report request",
@@ -318,15 +328,20 @@
       "Timestamp uses report request isoNow rather than verified sensor sample time"
     ],
     "discussion_decisions": [
-      "R02-D01: 3 primary gauges vs flexible 5 gauges",
       "R02-D02: compact matrix of unavailable channels vs full table",
       "R02-D03: include optional time-series statistics page only if engine supplies historic observations",
       "R02-D04: one-page adaptive A4 layout with overflow, no text under 12pt",
-      "R02-D05: GHS N/A to physical-only measurements; engine-authoritative references"
+      "R02-D05: GHS N/A to physical-only measurements; engine-authoritative references",
+      "Flexible count of physical gauges; all 15 indicators represented; report pages paginate without suppressing metrics"
     ],
     "source_code_changed": false,
     "owner_approved": false,
-    "next_step": "Discuss R02 diagram choices, approve report-specific design, then move to R03 without new production edits"
+    "next_step": "Discuss R02 diagram choices, approve report-specific design, then move to R03 without new production edits",
+    "approved_requirements": [
+      "Always use '-' (ASCII hyphen) for missing physical indicator values in R02 tables/cards; never synthesize zero",
+      "Include all 15 indicators from PhysicalCatalog: radiation, UV, wind, illuminance/flux, vibration, PM, altitude and core measurements",
+      "Use metric-specific vector icons; avoid second report-layer scientific constraints; display all engine-provided analyses"
+    ]
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
