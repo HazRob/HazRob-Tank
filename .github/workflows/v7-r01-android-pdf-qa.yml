@@ -8,6 +8,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/report/V7ReportLayoutKit.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7ReportPagePlanner.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java'
+      - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalIcons.java'
       - 'android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java'
       - 'android/app/src/main/res/drawable/hazrob_official_report_mark.xml'
       - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
