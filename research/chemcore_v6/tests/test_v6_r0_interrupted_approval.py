@@ -9,6 +9,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
 UI = (ROOT/"android/app/src/main/java/com/servoc/app/ui/DeveloperR0Tab.java").read_text(encoding="utf-8")
+CONTRACT = (ROOT/"android/app/src/main/java/com/servoc/app/calibration/FirmwareR0Contract.java").read_text(encoding="utf-8")
 
 
 class V6R0InterruptedApprovalContract(unittest.TestCase):
@@ -37,6 +38,13 @@ class V6R0InterruptedApprovalContract(unittest.TestCase):
         self.assertIn('throw new IllegalStateException("NVS R0 readback mismatch: "+sensor)', s)
         self.assertGreater(s.index("ManualR0Calibration.saveFirmware("), s.index("FirmwareR0Contract.committedValues(committed)"))
 
+
+    def test_exact_quick_protocol_is_checked_from_firmware_state_not_label_only(self):
+        self.assertIn('response.optInt("warmup_ms",-1)!=180000', CONTRACT)
+        self.assertIn('"warmup".equals(state)&&stageDuration!=180000', CONTRACT)
+        self.assertIn('&&stageDuration!=60000', CONTRACT)
+        self.assertIn("wrongQuickDuration", CONTRACT)
+        self.assertIn("V6_QUICK_SCHEMA", CONTRACT)
 
 if __name__=="__main__":
     unittest.main()
