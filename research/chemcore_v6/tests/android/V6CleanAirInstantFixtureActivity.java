@@ -47,6 +47,20 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
       JSONObject result=output.analysis;
       require(output.channels==8,"all eight raw channel readings present");
       require(result.optInt("observed_mq_channels",-1)==8,"original V6 interface reads 8");
+      JSONArray originalChannels=result.getJSONArray("original_mq_channel_evidence");
+      require(originalChannels.length()==8,
+          "eight MQ channels retain their own independent Rs/R0 provenance");
+      for(int i=0;i<originalChannels.length();i++){
+          JSONObject ch=originalChannels.getJSONObject(i);
+          require(Math.abs(ch.getDouble("rs_over_accepted_clean_air_r0")-1.0)<1e-9,
+              "same-air Rs normalized against same sensor R0 is one");
+          require(Math.abs(ch.getDouble("clean_air_reference_delta_percent"))<1e-9,
+              "same-air Rs has zero relative change");
+          require("NEAR_REFERENCE_WITHIN_UNVALIDATED_DEADBAND".equals(
+              ch.getString("sensor_response_state")),
+              "zero signal is source-referenced, not claimed atmospheric safety");
+      }
+
       require(result.optInt("ratio_ready_mq_channels",-1)==8,"R0 accepted for 8");
       require(result.optInt("raw_only_mq_channels",-1)==0,"no missing R0");
       JSONArray curves=result.optJSONArray("source_curve_hypotheses");
@@ -126,6 +140,12 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
           "original Rs from unqualified reference still retained");
       require(unqualifiedResult.getJSONArray("source_curve_research_diagnostic_ledger").length()==49,
           "source curve mathematics retained even for unqualified R0");
+      JSONObject unqualifiedChannel=unqualifiedResult.getJSONArray(
+          "original_mq_channel_evidence").getJSONObject(0);
+      require(unqualifiedChannel.isNull("rs_over_accepted_clean_air_r0"),
+          "unqualified old R0 never becomes an accepted air ratio");
+      require(Math.abs(unqualifiedChannel.getDouble("rs_r0_ratio_research")-0.45)<1e-9,
+          "mathematical ratio is retained in separate raw research field");
       require(unqualifiedResult.getJSONArray("source_curve_hypotheses").length()==0,
           "unqualified manufacturer R0 cannot surface gas hypotheses");
       require(unqualifiedResult.getJSONArray("candidates").length()==0,
@@ -196,6 +216,10 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
       require(changedResult.getJSONObject("baseline_response_gate")
           .optBoolean("visible_gas_hypotheses",false),
           "two independent provenanced sensor changes allow research-only hypotheses");
+      require("PROVISIONAL_RS_DECREASE".equals(changedResult
+          .getJSONArray("original_mq_channel_evidence").getJSONObject(0)
+          .getString("sensor_response_state")),
+          "Rs departure below clean-air baseline is a provisional signal only");
       require(changedResult.getJSONArray("candidates").length()>0,
           "provenanced deviation can create explicitly unverified research candidates");
       require(!changedResult.optBoolean("alarm_eligible",true)&&
