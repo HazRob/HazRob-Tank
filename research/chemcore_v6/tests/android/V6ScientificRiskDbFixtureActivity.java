@@ -227,6 +227,32 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 "quick firmware baseline is only one window, NOT misreported as approved 3 x 3 min");
             check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_envelopes")==0,
                 "no fictional empirical clean-air normality band from 8 R0 values");
+            // V6 source-specific clean-air Rs mean must be preserved in a
+            // DIFFERENT immutable revision; legacy V5 factor-scaled values
+            // may not be overwritten or re-labeled after migration.
+            Map<String,Integer> simulatedThreeWindowCounts=new LinkedHashMap<>();
+            for(String key:ManualR0Calibration.keys())
+                simulatedThreeWindowCounts.put(key,45);
+            check(ManualR0Calibration.saveFirmware(
+                getSharedPreferences("N09_V14_SIMULATED_FIRMWARE_TEST",MODE_PRIVATE),
+                syntheticR0,simulatorDevice,simulatedThreeWindowCounts,
+                "DEVICE_CLEAN_AIR_RS_MEAN",3),
+                "V6 explicit 3-window source definition accepted by phone");
+            int threeWindowRows=MqDeviceR0LedgerV14.recordFirmwareApproved(
+                db,simulatorDevice,syntheticR0,simulatedThreeWindowCounts);
+            check(threeWindowRows==8,"eight V6 3-window Rs-air records stored atomically");
+            check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_baselines "+
+                "WHERE device_id='EMULATOR-NOT-A-PHYSICAL-TANK' AND "+
+                "r0_definition='DEVICE_CLEAN_AIR_RS_MEAN' AND "+
+                "window_count=3 AND sample_count=45")==8,
+                "explicit V6 new calibration and 3 windows never confused with legacy");
+            check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_baselines "+
+                "WHERE device_id='EMULATOR-NOT-A-PHYSICAL-TANK' AND "+
+                "r0_definition='LEGACY_MQ_FACTOR_SCALED_R0_NOT_AIR_RS' AND "+
+                "window_count=1")==8,
+                "eight old factor-scaled values preserved without redefinition");
+            check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_baselines")==16,
+                "both distinct calibration revisions coexist; no history overwritten");
 
             check(num(sql,"SELECT COUNT(*) FROM v14_unified_chemical_catalog "+
                 "WHERE natural_concentration_coverage_status='NO_QUALIFIED_NATURAL_RANGE'")>700,
@@ -354,6 +380,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 .put("v14_unverified_source_r0_curves",unverifiedR0)
                 .put("v14_actual_tank_r0_samples",0)
                 .put("v14_simulator_only_r0_channels",simulatedBaselineRows)
+                .put("v14_simulator_only_v6_three_window_r0_channels",threeWindowRows)
                 .put("coverage_fraction",profiles/(double)materials)
                 .put("reference_limit_rows",limits)
                 .put("osha_z1_rows",osha).put("niosh_idlh_rows",nioshIdlh)
