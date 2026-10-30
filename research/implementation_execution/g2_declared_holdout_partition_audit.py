@@ -26,6 +26,76 @@ def _spanning(rows, key):
                   if len(splits) > 1)
 
 
+
+def _identity_component_test_support(rows, columns):
+    """Conservative declared-ID connectivity, excluding device reuse.
+
+    Test components connected to train/calibration/validation are not counted
+    as clean test-only components. These are declarations, not physical proof.
+    """
+    groups = sorted({row['group_id'] for row in rows})
+    parent = {g: g for g in groups}
+
+    def root(g):
+        while parent[g] != g:
+            parent[g] = parent[parent[g]]
+            g = parent[g]
+        return g
+
+    def join(a, b):
+        a, b = root(a), root(b)
+        if a != b:
+            parent[max(a, b)] = min(a, b)
+
+    for field in ('session_id', 'exposure_batch_id',
+                  'exposure_id', 'physical_sample_id'):
+        if field not in columns:
+            continue
+        first = {}
+        for row in rows:
+            key = row[field]
+            if key in first:
+                join(first[key], row['group_id'])
+            else:
+                first[key] = row['group_id']
+
+    by_root = defaultdict(list)
+    for group in groups:
+        by_root[root(group)].append(group)
+    partitions_by_group = defaultdict(set)
+    for row in rows:
+        partitions_by_group[row['group_id']].add(row['partition'])
+
+    components = sorted((sorted(c) for c in by_root.values()),
+                        key=lambda c: c[0])
+    test_components = []
+    test_only = []
+    cross_partition = []
+    for members in components:
+        labels = set().union(*(partitions_by_group[g] for g in members))
+        if 'test' in labels:
+            test_components.append(members)
+            if labels == {'test'}:
+                test_only.append(members)
+            else:
+                cross_partition.append({
+                    'groups': members, 'partitions': sorted(labels),
+                })
+    return {
+        'declared_identity_fields_used': [
+            k for k in ('session_id', 'exposure_batch_id',
+                        'exposure_id', 'physical_sample_id') if k in columns
+        ],
+        'declared_identity_test_component_count': len(test_components),
+        'declared_identity_test_only_component_count': len(test_only),
+        'declared_identity_test_cross_partition_components': cross_partition,
+        'test_has_two_disconnected_test_only_declared_identity_components': (
+            len(test_only) >= 2
+        ),
+        'declared_identity_components_are_not_authenticated_experiments': True,
+    }
+
+
 def audit_declared_holdout(rows, columns):
     """Inspect declared partition overlap; do not infer physical independence."""
     rows = list(rows)
@@ -59,6 +129,11 @@ def audit_declared_holdout(rows, columns):
         'calibration_partition_declared': None,
         'calibration_partition_absent_requires_g2_protocol_review': None,
         'test_has_two_declared_groups_for_cluster_uncertainty': None,
+        'declared_identity_test_component_count': None,
+        'declared_identity_test_only_component_count': None,
+        'declared_identity_test_cross_partition_components': None,
+        'test_has_two_disconnected_test_only_declared_identity_components': None,
+        'declared_identity_components_are_not_authenticated_experiments': True,
         'declared_group_counts_do_not_verify_physical_independence': True,
         'cross_partition_ids': None,
         'cross_partition_components': None,
@@ -119,6 +194,7 @@ def audit_declared_holdout(rows, columns):
     # Device reuse is reported, but never by itself counted as leakage.
     suspicious = ('group_id', 'session_id', 'exposure_batch_id',
                   'exposure_id', 'physical_sample_id')
+    out.update(_identity_component_test_support(rows, columns))
     out.update({
         'checked': True,
         'reason': None,
