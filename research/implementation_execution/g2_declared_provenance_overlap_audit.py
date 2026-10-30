@@ -25,6 +25,33 @@ def _valid_id(value):
                         for c in value))
 
 
+def _reject_nfkc_aliases(rows, columns):
+    """Fail closed on compatibility-equivalent identifiers; never silently merge groups.
+
+    NFKC is used only to detect ambiguity, not to rewrite scientific source IDs.
+    """
+    critical = {'group_id', *FIELDS}
+    folded_headers = {}
+    for column in columns:
+        folded = unicodedata.normalize('NFKC', column)
+        if (folded in folded_headers and folded_headers[folded] != column
+                or (folded != column and folded in critical)):
+            raise ValueError('G2_PROVENANCE_HEADER_ALIAS_NFKC')
+        folded_headers[folded] = column
+    for field in ('group_id', *FIELDS):
+        if field not in columns:
+            continue
+        folded_values = {}
+        for row in rows:
+            value = row[field]
+            if not _valid_id(value):
+                raise ValueError(f'G2_PROVENANCE_ID_INVALID:{field}')
+            folded = unicodedata.normalize('NFKC', value)
+            if folded in folded_values and folded_values[folded] != value:
+                raise ValueError(f'G2_PROVENANCE_ID_ALIAS_NFKC:{field}')
+            folded_values[folded] = value
+
+
 def audit_declared_overlap(rows, columns):
     """Return deterministic overlap counts for *declared* provenance only.
 
@@ -42,6 +69,7 @@ def audit_declared_overlap(rows, columns):
         if (set(row) != set(columns)
                 or any(not _valid_id(row.get(key)) for key in ('group_id',))):
             raise ValueError('G2_PROVENANCE_ROW_INVALID')
+    _reject_nfkc_aliases(rows, columns)
     result = {'schema': 'hazrob.g2.declared-group-overlap.v1',
               'rows': len(rows),
               'declared_groups': sorted({r['group_id'] for r in rows}),
