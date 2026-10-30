@@ -30,7 +30,7 @@ public final class ReleaseAudit {
     public static final boolean SOUND_RAW_RMS=true;
     public static final boolean LDR_DIGITAL_THRESHOLD=true;
     public static final boolean LOCAL_ALERT_OUTPUT=true;
-    public static final boolean GAS_RESPONSE_AUDIBLE_ALERT=true;
+    public static final boolean GAS_RESPONSE_AUDIBLE_ALERT=false; // MQ source hypotheses are research-only: G3 not validated.
     public static final boolean ALERT_TTL_FAILSAFE=true;
     public static final boolean NIOSH_CHEMICAL_SEED=true;
     public static final boolean NIOSH_IDLH_SEED=true;
