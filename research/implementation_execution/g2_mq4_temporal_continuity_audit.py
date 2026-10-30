@@ -74,6 +74,11 @@ def audit_mq4_temporal_continuity(archive, *, expected_member_sha256=PINNED_SHA2
         for name, value in readings.items():
             values[name].append(value)
     minute_pairs, midnight_pairs = [], []
+    # A 60-minute lag is valid only when ALL sixty intervening intervals
+    # are exactly one minute. Endpoint elapsed time alone is insufficient:
+    # a 30-second interval followed by a 90-second interval cancels out.
+    segment_ids = [0]
+    segment_starts = [0]
     gap_count = 0
     for i in range(1, len(timestamps)):
         seconds = (timestamps[i] - timestamps[i - 1]).total_seconds()
@@ -81,11 +86,18 @@ def audit_mq4_temporal_continuity(archive, *, expected_member_sha256=PINNED_SHA2
             minute_pairs.append((i - 1, i))
             if timestamps[i].date() != timestamps[i - 1].date():
                 midnight_pairs.append((i - 1, i))
+            segment_ids.append(segment_ids[-1])
         else:
             gap_count += 1
+            segment_ids.append(segment_ids[-1] + 1)
+            segment_starts.append(i)
+    segment_ends = segment_starts[1:] + [len(timestamps)]
+    segment_lengths = [
+        end - start for start, end in zip(segment_starts, segment_ends)
+    ]
     lag60_pairs = [
         (i - 60, i) for i in range(60, len(timestamps))
-        if (timestamps[i] - timestamps[i - 60]).total_seconds() == 3600
+        if segment_ids[i] == segment_ids[i - 60]
     ]
     dates = Counter(t.date().isoformat() for t in timestamps)
     if len(minute_pairs) + gap_count != len(rows) - 1:
@@ -104,6 +116,12 @@ def audit_mq4_temporal_continuity(archive, *, expected_member_sha256=PINNED_SHA2
         "last_timestamp": timestamps[-1].isoformat(sep=" "),
         "adjacent_one_minute_pairs": len(minute_pairs),
         "non_one_minute_gaps": gap_count,
+        "contiguous_one_minute_segment_count": len(segment_lengths),
+        "contiguous_one_minute_segment_lengths": segment_lengths,
+        "contiguous_segments_spanning_calendar_days": sum(
+            timestamps[start].date() != timestamps[end - 1].date()
+            for start, end in zip(segment_starts, segment_ends)
+        ),
         "one_minute_pairs_crossing_midnight": len(midnight_pairs),
         "cross_midnight_reference_abs_delta_ppb": [
             abs(values["licor_ch4"][j] - values["licor_ch4"][i])
@@ -118,6 +136,7 @@ def audit_mq4_temporal_continuity(archive, *, expected_member_sha256=PINNED_SHA2
             for i, j in lag60_pairs
         ]),
         "sixty_minute_contiguous_pairs": len(lag60_pairs),
+        "sixty_minute_lag_requires_60_consecutive_minute_steps": True,
         "reference_concentration_unit": "ppb",
         "mq4_channel_unit": "ohm",
         "calendar_day_independence_verified": False,
