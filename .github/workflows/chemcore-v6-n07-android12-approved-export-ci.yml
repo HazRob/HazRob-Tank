@@ -126,7 +126,7 @@ jobs:
           assert d.page_count==6
           original=d[0].get_text()
           annex=d[5].get_text()
-          assert 'HazRob 6.0' in original and 'HazRob 5.0' not in original,'production PDF must use independent Tank V6 header'
+          assert 'HazRob Tank 6.0' in original and 'HR069' not in original and 'HazRob 5.0' not in original,'production PDF must use independent Tank V6 header'
           assert 'HazRob Tank' in annex and 'ChemCore V6' in annex,annex[:400]
           assert 'HazRob 5.0' not in annex,'V6 annex must never inherit obsolete V5 header'
           assert 'UNKNOWN' in annex and 'G3=0' in annex
