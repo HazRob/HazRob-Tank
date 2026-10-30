@@ -1,9 +1,11 @@
-name: ChemCore V6 N09 actual V11 scientific chemical coverage Android emulator
+name: ChemCore V6 N09 unified V12 catalog and scientific hazard references Android emulator
 on:
   push:
     branches: [feature/tank-v6-implementation]
     paths:
       - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
+      - 'android/app/src/main/java/com/servoc/app/data/ChemicalHazardSeedV11.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalSeedBootstrap.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankExposureReferenceCatalog.java'
       - 'research/chemcore_v6/tests/android/V6ScientificRiskDbFixtureActivity.java'
@@ -27,7 +29,7 @@ jobs:
           token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
           persist-credentials: false
           path: source
-      - name: Overlay Tank V11 and temporary database fixture
+      - name: Overlay Tank V12 unified catalog and temporary database fixture
         run: |
           set -euo pipefail
           cp -a tank/android/app/src/main/java/. source/app/src/main/java/
@@ -55,7 +57,7 @@ jobs:
           keytool -genkeypair -alias hazrob-prototype -keystore source/signing/hazrob-prototype.jks \
             -storepass hazrob-prototype -keypass hazrob-prototype -keyalg RSA -keysize 2048 \
             -validity 1 -dname "CN=N09 SQLITE CI ONLY, OU=NOT FOR RELEASE, O=HazRob" -noprompt
-      - name: Build disposable emulator app with V11 seed
+      - name: Build disposable emulator app with V12 seed
         working-directory: source
         run: gradle --no-daemon :app:assembleDebug
       - run: if test -c /dev/kvm; then sudo chmod a+rw /dev/kvm; fi
