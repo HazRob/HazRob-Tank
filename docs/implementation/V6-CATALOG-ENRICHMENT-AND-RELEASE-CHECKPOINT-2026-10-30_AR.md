@@ -55,3 +55,12 @@
 ## 5. مصدر الاستئناف عند انقطاع الاتصال
 
 راجع هذا الملف و`docs/implementation/V6-ANDROID-COMPLETION-GATE-2026-10-30_AR.md` و`docs/implementation/V6-ANDROID-SOFTWARE-ACCEPTANCE.json`، ثم أحدث HEAD وCI عند الاستئناف. لا تنقل PASS من رأس أقدم إلى رأس تغيرت فيه الملفات المعنية. `release_authorization=NO_RELEASE` ثابت حتى دليل قبولي كامل وإذن المالك.
+
+## 6. تحديث A10 — إعادة اختبارات التقارير والجلسات على V14
+
+- `research/chemcore_v6/tests/android/V6MultiSessionSiteFixtureActivity.java` في commit `48c9a955edb75a20f45c8daf05a5d0070d592b1c` يثبت على المحاكي الفعلي أن قاعدة الجلسات تعمل مع `ExperimentsDb.getVersion()==14` والعرض الموحد **97 حقلًا** و144 أصلًا تاريخيًا، قبل إنشاء جلستين معتمدتين واختبار التجميع وتصدير PDF/XLSX والتلاعب.
+- `research/chemcore_v6/tests/android/V6ApprovedFieldE2EFixtureActivity.java` في commit `535706783d9d93634e1e08a13bae4a480f48d2f3` يضيف نفس ضمان **V14/97** إلى مسار Android 12 API31.
+- فشل اختبار N06G الأول في [CI 41011392859](https://github.com/HazRob/HazRob-Tank/actions/runs/41011392859) **بعد** نجاح إنشاء التقرير وملف Excel: كان الاختبار يطلب عبارة `HazRob 5.0` في صفحة جديدة بينما المصدر الجاري صار `ReleaseAudit.VERSION=6.0`. هذا شرط اختبار عتيق لا دليل على فساد CSV/SQLite.
+- صُححت ترويسات التحقق في أعمال N06G، N07 (Android12) وN06E: يجب أن تكون الصفحة المنتجة حديثًا `HazRob 6.0`، وألا تظهر `HazRob 5.0` في صفحات الإصدار الجديد. الالتزامات: `bf0a22ecef64e855467c6e13ec73bb2d16e27477`, `c52f2849c74392e6e1ccd0c52e1a4ab4d8261db0`, `db5d4f7d064f70b30217108eabb13bba2ea30282`.
+- نُفّذت إعادة التشغيل [N06G 41011737247](https://github.com/HazRob/HazRob-Tank/actions/runs/41011737247)، [N07 API31 41011742784](https://github.com/HazRob/HazRob-Tank/actions/runs/41011742784)، [N06E 41011747703](https://github.com/HazRob/HazRob-Tank/actions/runs/41011747703). **لا تُسجَّل PASS إلا بعد التحقق النهائي من خاتمة Actions نفسها**.
+- حتى لو نجحت هذه الحالات، فهي اختبار محاكي ببيانات تمثيلية معتمدة، ولا تغطي الحذف عبر الواجهة أو شهادة التوقيع أو ثبات اتصال ESP32، ولذلك A10/A13 وأعلام إذن البناء تبقى مفتوحة.
