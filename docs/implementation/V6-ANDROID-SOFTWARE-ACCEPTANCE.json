@@ -1,0 +1,31 @@
+{
+  "schema": "hazrob-tank-v6-software-acceptance/1",
+  "date": "2026-10-30",
+  "branch": "feature/tank-v6-implementation",
+  "policy": "NO_APK_GENERATION_OR_HANDOVER_UNTIL_COMPLETE",
+  "all_software_modifications_complete": false,
+  "all_software_acceptance_tests_passed": false,
+  "owner_approved_apk_build": false,
+  "verified_commit_sha": null,
+  "scope": [
+    "v6_chemcore_master_catalog_all_screens",
+    "r0_rs_clean_air_normality",
+    "g3_safe_alarm_boundary",
+    "r0_180s_warmup_60s_single_measurement",
+    "direct_android_firmware_version_independent",
+    "reports_sessions_sqlite_migration",
+    "food_freshness_isolation",
+    "ghs_per_hazard_threshold",
+    "offline_stable_and_embedded_assets",
+    "android_12_ui_regressions_and_signature",
+    "end_to_end_soak_and_data_integrity"
+  ],
+  "status": "IN_PROGRESS_RETEST_REQUIRED",
+  "last_known_source_compiles": {
+    "run": 41004723161,
+    "status": "success",
+    "source_commit": "fe24f5cc15672e6bede562d2443531281cf39d47"
+  },
+  "g3_physical_tests_deferred_after_release": true,
+  "release_authorization": "NO_RELEASE"
+}
