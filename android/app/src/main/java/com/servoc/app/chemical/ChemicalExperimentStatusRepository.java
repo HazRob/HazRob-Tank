@@ -128,13 +128,13 @@ public final class ChemicalExperimentStatusRepository {
                     "PUBLISHED_LIBRARY_AVAILABLE".equals(status);
                 if(!available)continue;
                 if("fingerprint_reference".equals(key)){
-                    referenceFp=true;fpQualified=qualified;
+                    referenceFp=true;fpQualified|=qualified;
                 }else if("mq_curve_reference".equals(key)){
-                    referenceCurve=true;curveQualified=qualified;
+                    referenceCurve=true;curveQualified|=qualified;
                 }else if("ppm_reference".equals(key)){
-                    referencePpm=true;ppmQualified=qualified;
+                    referencePpm=true;ppmQualified|=qualified;
                 }else if("m4_reference".equals(key)){
-                    referenceM4=true;publishedM4Qualified=qualified;
+                    referenceM4=true;publishedM4Qualified|=qualified;
                 }
             }
         }catch(Exception ignored){/* offline old DB displays its bundled statuses */}
