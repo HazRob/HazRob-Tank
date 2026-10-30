@@ -38,7 +38,13 @@ public final class ChemicalIdentityEquivalenceV6 {
         {"108","2-Butanol","sec-Butyl alcohol","78-92-2"},
         {"109","Isobutanol","Isobutyl alcohol","78-83-1"},
         {"110","tert-Butanol","tert-Butyl alcohol","75-65-0"},
-        {"123","1,4-Dioxane","Dioxane","123-91-1"}
+        {"123","1,4-Dioxane","Dioxane","123-91-1"},
+        {"39","Methanethiol","Methyl mercaptan","74-93-1"},
+        {"40","Ethanethiol","Ethyl mercaptan","75-08-1"},
+        {"70","1,2-Dichloropropane","Propylene dichloride","78-87-5"},
+        {"112","2-Butanone / MEK","2-Butanone","78-93-3"},
+        {"120","Diethyl Ether","Ethyl ether","60-29-7"},
+        {"125","Chlorodifluoromethane / R22","Chlorodifluoromethane","75-45-6"}
     };
     public static final class Result {
         public final int proposed,verified,inserted,rejected;
