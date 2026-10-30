@@ -76,7 +76,7 @@ public final class SmartFieldSessionPdfWriter {
             int pageNo=basePages+cyclePages+chunk+1;
             p=page(pdf,pageNo);
             v6ResearchAppendixPage(p.getCanvas(),b,v6ReadOnly,chunk);
-            chrome(p.getCanvas(),pageNo,total,b,plan);
+            v6ResearchChrome(p.getCanvas(),pageNo,total,b);
             pdf.finishPage(p);
         }
         pdf.writeTo(out);pdf.close();
@@ -151,15 +151,15 @@ public final class SmartFieldSessionPdfWriter {
      */
     private static void v6ResearchAppendixPage(Canvas c,
                   FieldSessionReportExporter.Bundle b,JSONObject evidence,int chunk){
-        title(c,"ChemCore Tank V6 • دليل بحثي للغازات / UNKNOWN",42);
+        title(c,"ChemCore Tank V6 • دليل بحثي للغازات / UNKNOWN",54);
         text(c,"READ ONLY • G3=0 • PPM NOT REPORTABLE • NO AUTOMATIC GAS IDENTIFICATION",
-            36,65,9,0xFFC62828,true);
+            36,76,9,0xFFC62828,true);
         text(c,"ملحق للقراءات المؤرشفة فقط؛ قرارات V5 المعتمدة محفوظة دون تعديل",
-            36,85,9,Color.DKGRAY,false);
+            36,96,9,Color.DKGRAY,false);
         JSONArray cycles=evidence.optJSONArray("cycles");
         int len=cycles==null?0:cycles.length();
         int start=chunk*2,end=Math.min(start+2,len);
-        float y=115;
+        float y=125;
         for(int i=start;i<end;i++){
             JSONObject q=cycles.optJSONObject(i);
             if(q==null)continue;
@@ -209,6 +209,24 @@ public final class SmartFieldSessionPdfWriter {
     private static int validMq(JSONObject q){if(q==null)return-1;JSONObject x=q.optJSONObject("measurement_quality");if(x==null)x=q.optJSONObject("lab_quality");return x==null?-1:x.optInt("valid_mq_channels",x.optInt("valid_channels",-1));}
     private static void metric(Canvas c,float x,float y,float w,float h,String label,String value,String note,int color){box(c,x,y,w,h,color);text(c,label,x+10,y+18,8.2f,Color.DKGRAY,true);text(c,shorten(value,26),x+10,y+41,11,Color.BLACK,true);text(c,shorten(note,34),x+10,y+59,7.1f,Color.DKGRAY,false);}
     private static void title(Canvas c,String s,float y){text(c,s,42,y,18,Color.BLACK,true);} private static void labelValue(Canvas c,String k,String v,float y){text(c,k,42,y,8.3f,Color.DKGRAY,true);text(c,shorten(v,62),180,y,8.8f,Color.BLACK,false);} private static void box(Canvas c,float x,float y,float w,float h,int color){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(color);p.setStyle(Paint.Style.FILL);c.drawRoundRect(new RectF(x,y,x+w,y+h),7,7,p);} private static void emptyBox(Canvas c,RectF r,String m){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xFFF3F3F3);c.drawRect(r,p);text(c,m,r.centerX(),r.centerY(),9,Color.DKGRAY,false,Paint.Align.CENTER);}
+    /** V6 annex identity is independent of the archived V5 report version.
+     * Do not rewrite historical V5 page headers, approval digests or decisions.
+     */
+    private static void v6ResearchChrome(Canvas c,int page,int total,
+                                          FieldSessionReportExporter.Bundle b){
+        Paint line=new Paint(Paint.ANTI_ALIAS_FLAG);
+        line.setColor(0xFFB0B0B0);
+        line.setStrokeWidth(.7f);
+        c.drawLine(MARGIN,32,PAGE_WIDTH-MARGIN,32,line);
+        c.drawLine(MARGIN,PAGE_HEIGHT-28,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-28,line);
+        text(c,"HazRob Tank • ChemCore V6",MARGIN,23,10,Color.BLACK,true);
+        text(c,b.site.name+" • "+b.fieldSession.name+" • V6 RESEARCH",
+            PAGE_WIDTH/2f,23,9,Color.BLACK,true,Paint.Align.CENTER);
+        text(c,"صفحة "+page+" من "+total,MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false);
+        text(c,"UNKNOWN • G3=0 • NOT CERTIFIED",
+            PAGE_WIDTH-MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false,Paint.Align.RIGHT);
+    }
+
     private static void chrome(Canvas c,int page,int total,FieldSessionReportExporter.Bundle b,ReportIntelligence.ReportPlan plan){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xFFB0B0B0);p.setStrokeWidth(.7f);c.drawLine(MARGIN,32,PAGE_WIDTH-MARGIN,32,p);c.drawLine(MARGIN,PAGE_HEIGHT-28,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-28,p);text(c,"HazRob "+ReleaseAudit.VERSION+" • HR069",MARGIN,23,10,Color.BLACK,true);text(c,b.site.name+" • "+b.fieldSession.name+" • "+plan.modeAr,PAGE_WIDTH/2f,23,9.5f,Color.BLACK,true,Paint.Align.CENTER);text(c,"صفحة "+page+" من "+total,MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false);text(c,ReleaseAudit.PROJECT_PREPARERS,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false,Paint.Align.RIGHT);}
     private static void text(Canvas c,String s,float x,float y,float size,int color,boolean bold){text(c,s,x,y,size,color,bold,Paint.Align.LEFT);} private static void text(Canvas c,String s,float x,float y,float size,int color,boolean bold,Paint.Align align){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(color);p.setTextSize(size);p.setFakeBoldText(bold);p.setTextAlign(align);c.drawText(s==null?"":s,x,y,p);} private static String pct(double v){return Double.isFinite(v)?String.format(Locale.US,"%.1f%%",v<=1.000001?v*100:v):"—";} private static String fmt(double v){return Double.isFinite(v)?String.format(Locale.US,"%.3f",v):"—";} private static String shorten(String s,int n){String v=s==null?"":s;return v.length()<=n?v:v.substring(0,Math.max(1,n-1))+"…";}
 }
