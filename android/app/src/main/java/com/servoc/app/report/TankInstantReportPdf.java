@@ -10,6 +10,8 @@ import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import com.servoc.app.hardware.HazRobHardwareProfile;
+import com.servoc.app.chemical.GhsPictograms;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.OutputStream;
@@ -112,6 +114,54 @@ public final class TankInstantReportPdf {
             y+=19;
             rtl(canvas,"بيانات الأغذية ومحرك الغازات منفصلان؛ لا يوجد دمج تلقائي.",y,9,false);
             doc.finishPage(page);
+            // A conditional second research appendix displays original GHS
+            // pictograms for the verified *reference chemical classification*
+            // associated with unresolved candidates. It NEVER asserts gas
+            // identity, actual exposure or validated Tank ppm.
+            JSONArray materials=v6.optJSONArray("candidates");
+            int coded=0;
+            if(materials!=null)for(int i=0;i<materials.length();i++){
+                JSONObject item=materials.optJSONObject(i);
+                if(item!=null && !GhsPictograms.fromJson(
+                        item.optJSONArray("ghs_pictograms")).isEmpty())coded++;
+            }
+            if(coded>0){
+                PdfDocument.Page appendix=doc.startPage(
+                    new PdfDocument.PageInfo.Builder(595,842,2).create());
+                Canvas g=appendix.getCanvas();g.drawColor(Color.WHITE);
+                rtl(g,"GHS — رموز مخاطر المواد المرجعية",46,16,true);
+                rtl(g,"الرموز تصف المادة إذا تأكدت هويتها؛ لا تعني اكتشاف الغاز",76,10,true);
+                rtl(g,"التقديرات والمرشحون بحثيون: لا معايرة G3 ولا إنذار غاز معتمد",98,9,false);
+                g.drawLine(35,111,560,111,paint(1,false,0xFFCBD5E1));
+                int gy=139,rendered=0;
+                for(int i=0;i<materials.length() && rendered<8;i++){
+                    JSONObject item=materials.optJSONObject(i);
+                    if(item==null)continue;
+                    List<String> codes=GhsPictograms.fromJson(
+                        item.optJSONArray("ghs_pictograms"));
+                    if(codes.isEmpty())continue;
+                    rtl(g,"مادة مرشحة بحثيًا: "+item.optString("label","—"),
+                        gy,10,true);
+                    // Artwork is bundled as offline Android vector resources.
+                    // If the application context was not registered, preserve
+                    // codes in text rather than showing misleading placeholders.
+                    android.content.Context app=GhsPictograms.applicationContext();
+                    if(app!=null){
+                        GhsPictograms.drawOnPdf(g,app,codes,45,gy+8,46,7,6);
+                    }
+                    StringBuilder names=new StringBuilder();
+                    for(String code:codes){
+                        if(names.length()>0)names.append(" • ");
+                        names.append(code).append(" ").append(GhsPictograms.arabic(code));
+                    }
+                    rtl(g,names.toString(),gy+70,9,false);
+                    gy+=87;rendered++;
+                    if(gy>740)break;
+                }
+                rtl(g,"ملاحظة: الإشعاع والخنق البسيط ليسا أيقونتي GHS مستقلتين.",
+                    810,9,false);
+                doc.finishPage(appendix);
+            }
             doc.writeTo(stream);
         }finally{
             doc.close();
