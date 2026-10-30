@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 transitive declared session/batch group connectivity (487/487 CI)
+
+- Resumed from research HEAD `1930b0afba262ee0f1cd950623951ac153a6517c`; previous 20/20 CI workflows SUCCESS. Confirmed pinned central readiness inventory: 14 external source slots, `source_review_ready=0`; `G2_INDEPENDENT_EVIDENCE.json` still `records=[]`. No new independent physical evidence.
+- Added research-only transitive connected-component diagnostic to `g2_declared_provenance_overlap_audit.py`. Groups are joined if they share declared `session_id` or `exposure_batch_id`; links can be transitive across both identifier types. Device reuse alone never creates an edge. If either session or batch column is missing, connectivity is explicitly unverified (`checked=false`, components `null`). Even disconnected declared components do NOT prove physical independence; multi-group components call for protocol review before split holdouts.
+- Added ten synthetic regressions `test_g2_declared_provenance_components.py`, including cross-field transitive links, device-only reuse, missing provenance, row-order and duplicate invariance, Arabic identifiers and multiple components. Implementation commit `bfcd0f3483b06432781cc1a710fadc72835983d0`, tests commit `681ae8827e488ee02fe723b07fde11f1f8d75893`.
+- [G2 Actions run 41055173880](https://github.com/HazRob/HazRob-Tank/actions/runs/41055173880), job `124060777385`: **487/487 PASS**, deterministic audit/triage replay PASS, publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No G2/G3 qualification.
+- Arabic method note `G2_DECLARED_SESSION_BATCH_TRANSITIVE_CONNECTIVITY_2026-10-30_AR.md`, documentation commit `77b9424605dd9dc6d1a93f9441e4aa5af00a3015`. Compare from previous HEAD: only three research implementation files changed prior to this checkpoint; ChemCore Stable, Android, firmware and main untouched.
+- Next scientific evidence blocker: authenticated physical sample/exposure/session/device IDs, traceable reference concentration calibration, preregistered blinded physical-group holdouts and independent review. No software-only promotion. Verify documentation-checkpoint CI and use this section to resume.
+
+---
+
 ## 2026-10-30 — G2 exact repeated declared-provenance row diagnostics (477/477 CI)
 
 - Resumed from research HEAD `070a4ffaf03bb8ad87d87a8feb54da0a313620d9`; verified all 20/20 previous branch-head workflows SUCCESS. Central pinned scope remains 80 techniques / 14 source slots; no independent source provenance `records=[]`, 0/14 qualified sources, 0/80 G2 candidates.
