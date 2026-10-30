@@ -141,7 +141,7 @@ public final class ChemicalReferenceSyncV6 {
         db.delete("chemical_reference_updates_v6","chemical_uid=?",
             new String[]{Long.toString(uid)});
         JSONArray facts=doc.optJSONArray("facts");
-        if(facts==null||facts.length()<1||facts.length()>15)
+        if(facts==null||facts.length()>15)
             throw new IllegalArgumentException("invalid source fact count");
         for(int i=0;i<facts.length();i++){
             JSONObject fact=facts.getJSONObject(i);
