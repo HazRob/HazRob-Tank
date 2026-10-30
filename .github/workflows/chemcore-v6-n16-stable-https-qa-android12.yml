@@ -160,7 +160,7 @@ jobs:
           arch: x86_64
           profile: pixel_2
           disable-animations: true
-          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none -dns-server 168.63.129.16,1.1.1.1
           script: bash tank/research/chemcore_v6/tests/android/run_n16_stable_real_github_https.sh
       - name: Remove ephemeral public QA branch after evidence collection
         if: always()
