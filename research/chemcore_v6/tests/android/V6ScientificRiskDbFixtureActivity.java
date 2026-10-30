@@ -828,6 +828,28 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 num(sql,"SELECT COUNT(*) FROM chemical_risk_profiles "+
                 "WHERE occupational_alarm_authorized!=0")==0,
                 "reference sync never changes central identities or gas alarm approval");
+            // The historical ethanol name UID104 is tied to NIOSH canonical
+            // ethyl-alcohol UID499, without rekeying any past experiment.
+            JSONObject aliasPublication=new JSONObject().put("uid",499)
+                .put("cas","64-17-5")
+                .put("facts",new JSONArray().put(new JSONObject()
+                    .put("key","fingerprint_reference")
+                    .put("text","N09 test-only publisher state")
+                    .put("source_id","HAZROB_RESEARCH")
+                    .put("source_url","https://github.com/HazRob/HazRob-Tank")
+                    .put("library_status","QUALIFIED")));
+            byte[] aliasBytes=aliasPublication.toString().getBytes(
+                java.nio.charset.StandardCharsets.UTF_8);
+            h=java.security.MessageDigest.getInstance("SHA-256").digest(aliasBytes);
+            hex=new StringBuilder();
+            for(byte b:h)hex.append(String.format(java.util.Locale.US,"%02x",b&0xff));
+            ChemicalReferenceSyncV6.applyVerifiedRecord(
+                db,aliasBytes,hex.toString(),"N09-CANONICAL-ETHANOL-SOURCE");
+            check(readiness.status(unifiedRepo.byUid(104)).publishedFingerprintQualified &&
+                readiness.status(unifiedRepo.byUid(499)).publishedFingerprintQualified,
+                "verified historical NIOSH alias sees central published canonical capabilities");
+            check(num(sql,"SELECT COUNT(*) FROM chemicals")==734,
+                "synonym status propagation never creates duplicate master records");
             out.put("central_published_capability_sync_e2e",
                 "PASS_STAGED_FOUR_CAPABILITIES_WITHDRAW_THREE_NO_REQUALIFICATION");
             out.put("material_field_coverage_audit",coverage);
