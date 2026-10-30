@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 conservative effective declared test-identity cluster audit (530/530 G2 CI)
+
+- Continued from verified research documentation checkpoint `93a1ee4f7ab2341b60ae62f15baef0eabbe43c8b` (11/11 associated workflows successful). Central source matrix still has 14 external source slots, 0 independently review-ready; `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
+- Identified a methodological false-support scenario: two distinct declared test `group_id` values can be connected via session, batch, exposure or physical-sample IDs, including transitive connections through train/calibration groups. The previous two-group flag alone could overstate cluster-uncertainty support.
+- Added conservative research-only union-find diagnostic to `g2_declared_holdout_partition_audit.py` that excludes device reuse, counts test-bearing and test-only identity components, and exposes cross-partition test components. Missing partition or session/batch provenance returns unverified/null, never a false independent-sample claim. Implementation commit `923cd88f7c99d2d9d4ab8407341a56160cfd55ae`.
+- Added 13 synthetic regressions `test_g2_declared_identity_test_cluster_support.py`, commit `b5d8302ee84b947965b24ded78b8cebac5b7a382`. [G2 Actions run 41079690285](https://github.com/HazRob/HazRob-Tank/actions/runs/41079690285), job `124145181373`: **530/530 tests PASS**, deterministic audit/triage replay PASS, publication guard PASS, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Arabic method note: `G2_DECLARED_EFFECTIVE_TEST_IDENTITY_CLUSTERS_2026-10-30_AR.md` committed as `0032f1d775a708487950fe73b662a462c4706ee6`. On latest CI check, G2 gate and nine associated workflows had succeeded; batch07 and batch08 remained queued. Recheck all workflows on final documentation checkpoint.
+- All changed paths are in `research/implementation_execution/` on research branch only. No changes to ChemCore Stable, Android, firmware, or main. **No scientific G2 or G3 qualification**; actual independent calibrated exposures, authenticated physical provenance, preregistered blinded held-out experiments and independent review remain missing.
+
+---
+
 ## 2026-10-30 — G2 calibration-partition and declared test-group support diagnostic (517/517 CI)
 
 - Resumed from research HEAD `0adae7082e0d092737d9c601aded0bc8d98a0bfb`; prior 20/20 associated workflows successful. Reviewed central source-readiness matrix: 14 external source slots, 0 review-ready; `G2_INDEPENDENT_EVIDENCE.json` still `records=[]`. The Library raw-intake candidate is not independently qualified.
