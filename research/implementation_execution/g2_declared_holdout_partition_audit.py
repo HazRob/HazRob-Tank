@@ -71,8 +71,13 @@ def _identity_component_test_support(rows, columns):
     test_components = []
     test_only = []
     cross_partition = []
+    calibration_test_shared = False
+    calibration_present = any('calibration' in labels
+                              for labels in partitions_by_group.values())
     for members in components:
         labels = set().union(*(partitions_by_group[g] for g in members))
+        if {'calibration', 'test'}.issubset(labels):
+            calibration_test_shared = True
         if 'test' in labels:
             test_components.append(members)
             if labels == {'test'}:
@@ -100,6 +105,13 @@ def _identity_component_test_support(rows, columns):
         'declared_identity_test_component_count': len(test_components),
         'declared_identity_test_only_component_count': len(test_only),
         'declared_identity_test_cross_partition_components': cross_partition,
+        # True is a detected declared-ID connection. False is defensible only
+        # with all identity fields and a declared calibration partition.
+        # Missing IDs or missing calibration remain unknown (None).
+        'calibration_test_declared_identity_component_overlap': (
+            True if calibration_test_shared else
+            False if identity_complete and calibration_present else None
+        ),
         'test_has_two_disconnected_test_only_declared_identity_components': (
             len(test_only) >= 2 if identity_complete else None
         ),
@@ -147,6 +159,7 @@ def audit_declared_holdout(rows, columns):
         'declared_identity_test_support_complete': None,
         'declared_identity_test_component_counts_are_upper_bounds_when_incomplete': None,
         'declared_identity_test_cross_partition_components': None,
+        'calibration_test_declared_identity_component_overlap': None,
         'test_has_two_disconnected_test_only_declared_identity_components': None,
         'declared_identity_components_are_not_authenticated_experiments': True,
         'declared_group_counts_do_not_verify_physical_independence': True,
