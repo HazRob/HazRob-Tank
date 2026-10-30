@@ -45,7 +45,11 @@ assert coverage['materials_with_name_en']==734,coverage
 assert not coverage['scientific_fields_exhaustive'],coverage
 assert coverage['missing_values_policy']=='NULL_NOT_ZERO_NO_SAFETY_INFERENCE'
 assert coverage['materials_with_cas']==698,coverage
-assert coverage['materials_with_molar_mass']==637,coverage
+assert coverage['materials_with_molar_mass']==638,coverage
+assert coverage['materials_with_formula']==669,coverage
+assert d['cas_checksum_invalid_direct_rows']==0,d
+assert d['cas_checksum_valid_direct_rows']==coverage['materials_with_cas'],d
+assert 'confirmed=2:rejected=0' in d['cas_correction_idempotence'],d
 assert d['nist_27_cas_identity_idempotence'].find('matched=27')>=0,d
 assert d['nist_27_cas_identity_idempotence'].find('cas_filled=0')>=0,d
 assert d['nist_27_cas_identity_idempotence'].find('rejected=0')>=0,d
@@ -69,6 +73,10 @@ assert next(x for x in records if x['uid']=='131')['cas']=='754-12-1'
 assert next(x for x in records if x['uid']=='132')['cas']=='29118-24-9'
 assert et['niosh_equivalent_cas']=='64-17-5'
 assert next(x for x in records if x['uid']=='143')['chemical_class']=='MEASUREMENT_INDEX_NOT_CHEMICAL'
+benz=next(x for x in records if x['uid']=='715')
+assert benz['cas']=='100-47-0' and benz['formula']=='C7H5N'
+assert abs(float(benz['molar_mass'])-103.1213)<0.0001
+assert next(x for x in records if x['uid']=='724')['cas']=='65996-93-2'
 print('V14 734 master UID coverage fields:',json.dumps(coverage,sort_keys=True))
 assert d['osha_z1_rows']>=500 and d['niosh_idlh_rows']>=300
 assert d['co2_source_pel_ppm']==5000 and d['co2_early_warn_ppm']==4500
