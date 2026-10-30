@@ -10,9 +10,11 @@ import com.servoc.app.chemcore.TankMultiSourceResponseModel;
 import com.servoc.app.data.ExperimentsDb;
 
 import java.util.Locale;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
- * V5 verified runtime capability inventory for an individual chemical.
+ * V6 unified UID chemical evidence and separate offline Stable snapshot inventory.
  * Distinguishes local SQLite evidence from actually activated, SHA-256-verified
  * ChemCore Stable priors. The absence of a local curve does not imply an
  * unavailable Stable curve; a catalog identity is not a sensor model.
@@ -79,6 +81,46 @@ public final class TankChemicalCapabilityReport {
             "موجود (قرينة وصفية وليست بصمة استجابة غاز)":"غير متاح");
         out.append("\nهذه القائمة جرد للطرق المتاحة؛ لا تعني أن كل طريقة قادرة على "+
             "تمييز مادة واحدة من خليط أو أن النتيجة معتمدة مهنيًا.");
+        // V14 scientific material profile: one stable UID, no duplicate
+        // 'primary chemical list' or hand-coded entries in the UI.
+        JSONObject unified=new ChemicalRepository(db).scientificProfile(chemical.uid);
+        JSONArray curves=unified.optJSONArray("mq_reference_curve_evidence");
+        JSONArray exposure=unified.optJSONArray("occupational_exposure_source_limits");
+        JSONArray hazard=unified.optJSONArray("source_qualified_hazard_classifications");
+        out.append("\n\nالمكتبة الكيميائية الموحدة V14:");
+        out.append("\nمعرّف المادة UID: ").append(chemical.uid);
+        out.append("\nمراجع MQ المرتبطة: ").append(curves==null?0:curves.length());
+        out.append("\nحدود تعرض مهنية موثقة: ").append(exposure==null?0:exposure.length());
+        out.append("\nتصنيفات أخطار موثقة: ").append(hazard==null?0:hazard.length());
+        out.append("\nنطاق التركيز الطبيعي: ")
+           .append("SOURCE_QUALIFIED_ENVIRONMENTAL_RANGE".equals(
+              unified.optString("natural_concentration_coverage_status",""))?
+              "توجد مراجع بيئية؛ تحقق من المكان والظروف":"غير معروف أو غير مؤهل لهذا السياق");
+        out.append("\nحدود الاشتعال الدنيا والعليا: ")
+           .append(unified.isNull("lfl_vol_pct")?"غير متاح":unified.optString("lfl_vol_pct"))
+           .append(" / ")
+           .append(unified.isNull("ufl_vol_pct")?"غير متاح":unified.optString("ufl_vol_pct"));
+        if(curves!=null)for(int i=0;i<Math.min(curves.length(),8);i++){
+            JSONObject row=curves.optJSONObject(i);
+            if(row==null)continue;
+            out.append("\nمنحنى مرجعي ").append(i+1).append(": ")
+               .append(row.optString("sensor_model","?"))
+               .append(" • ").append(row.optString("source_id","?"))
+               .append(" • R0 المصدر: ")
+               .append(row.isNull("source_r0_kohm")?"غير منشور":row.optString("source_r0_kohm"))
+               .append(" • Rs المصدر: ")
+               .append(row.isNull("source_rs_kohm")?"غير منشور":row.optString("source_rs_kohm"))
+               .append(" • kΩ (إن توفرت).");
+        }
+        if(curves!=null&&curves.length()>8)
+            out.append("\n... و").append(curves.length()-8).append(" منحنيات مصدرية إضافية.");
+        out.append("\nR0 وRs التشغيليتان: تخصان كل حساس في الروبوت ووقت القياس،")
+           .append(" وليستا ثابتتين خاصتين بالمادة.")
+           .append("\nحدود OSHA/NIOSH تصف مرجع التعرض بشروطه ولا تعني")
+           .append(" أن التركيز الحالي قيس أو تجاوز تلك الحدود.")
+           .append("\nرموز GHS المرجعية لا تظهر في تقرير اكتشاف فعلي إلا بعد")
+           .append(" إثبات الهوية والتركيز وتجاوز عتبة الخطر الخاصة بكل رمز.")
+           .append("\nحالة الاعتماد الميداني ChemCore Tank G3: 0/80.");
         return out.toString();
     }
 
