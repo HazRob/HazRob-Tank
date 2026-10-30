@@ -23,6 +23,10 @@ assert d['source_curves']==0 and d['ui_candidates']==0
 assert d['diagnostic_curves']==49 and d['diagnostic_chemical_groups']==13
 assert d['response_gate_state']=='WITHIN_CLEAN_AIR_REFERENCE_BAND'
 assert d['distinct_chemical_groups']==0
+assert d['unqualified_r0_operator_candidates']==0
+assert d['manual_unverified_candidates']==0
+assert d['firmware_without_samples_candidates']==0
+assert d['opposite_direction_candidates']==0
 assert d['reported_identity']=='UNKNOWN' and not d['certified_ppm']
 assert d['pdf_pages']==1 and not d['genuine_tank_exposure']
 print('PASS actual Android TankInstantAnalyzer and TankInstantReportPdf for SAME CLEAN AIR R0')
