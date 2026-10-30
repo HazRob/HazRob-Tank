@@ -51,3 +51,8 @@
 **الحالة العلمية:** 78/80 تقنية بتنفيذ بحثي جزئي، تقنيتان غير منقولتين، **Tank G3=0/80**، ولا دمج مع وحدة نضارة الأغذية، ولا تغيير للسيرفو أو بروتوكول التسخين المؤجل.
 
 **Resume token:** `V6_CHECKPOINT20_N06D_ORIGINAL_V9_V10_SOURCE_SQL_PASS / SQLITE_V9_AND_V10_BYTES_ARCHIVED / 6_MEASUREMENT_SESSIONS_84_SOURCE_SAMPLES / LEGACY_4_APPROVED_2_IMPORTED / NO_FABRICATED_SHA / V6_SKIP_LEGACY_WITHOUT_HASH / ANDROID_COMPILE_PASS / PDF_EMULATOR_KVM_RETRY_40978108804 / G3_0_80 / NO_RELEASE_APK`.
+
+
+## ملحق نتيجة PDF النهائية بعد الترحيل (30 أكتوبر 2026)
+
+نتيجة التشغيل [40978108804](https://github.com/HazRob/HazRob-Tank/actions/runs/40978108804) كانت **FAILURE** لأسباب تنفيذ YAML script بصدفة `sh`. والتشغيل [40978449015](https://github.com/HazRob/HazRob-Tank/actions/runs/40978449015) كان **FAILURE** بسبب تنفيذ كل سطر على حدة من أداة المحاكي (فشلت حلقة `for`). عولج ذلك بملف `research/chemcore_v6/tests/android/run_v6_pdf_emulator_smoke.sh` يُشغَّل كسطر واحد داخل action. **التشغيل النهائي [40978812570](https://github.com/HazRob/HazRob-Tank/actions/runs/40978812570) SUCCESS:** إنتاج PDF حقيقي 3 صفحات على Android و3 صور PNG، والتحقق المستقل من SHA والرسم. [Checkpoint21 كامل](V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-21-N06C-ANDROID-PDF-RENDERER-2026-10-30_AR.md). Archive Library `libfile_27a5671b735081919b189397e31b7b77`. ما يزال تقرير الجلسة الكاملة عبر SQLite الفعلية والتطبيق على هاتف المستخدم غير مختبر، وG3=0/80.
