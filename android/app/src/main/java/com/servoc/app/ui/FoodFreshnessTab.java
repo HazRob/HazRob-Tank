@@ -96,7 +96,7 @@ public final class FoodFreshnessTab {
         root.addView(foodChoice,UiKit.full(c));
         LinearLayout row=UiKit.hbox(c);
         start=UiKit.button(c,"▶ بدء الفحص");
-        finish=UiKit.button(c,"■ إنهاء وتحليل");
+        finish=UiKit.button(c,"■ إلغاء الفحص قبل الاكتمال");
         export=UiKit.button(c,"PDF التقرير");
         finish.setEnabled(false);export.setEnabled(false);
         row.addView(start,UiKit.weight(1));
@@ -104,7 +104,7 @@ public final class FoodFreshnessTab {
         row.addView(export,UiKit.weight(1));
         root.addView(row,UiKit.full(c));
         start.setOnClickListener(v->begin());
-        finish.setOnClickListener(v->complete());
+        finish.setOnClickListener(v->finishOrCancel());
         export.setOnClickListener(v->exportPdf());
         progress=new ProgressBar(c,null,android.R.attr.progressBarStyleHorizontal);
         progress.setMax(180);progress.setProgress(0);
@@ -181,7 +181,9 @@ public final class FoodFreshnessTab {
                 int accepted=0;
                 for(String sensor:FoodReferenceCatalog.SENSOR_ORDER){
                     JSONObject q=mq.optJSONObject(sensor.toLowerCase(Locale.ROOT));
-                    if(q==null || !q.optBoolean("ok",q.optBoolean("valid",false)))continue;
+                    if(q==null || !q.optBoolean("ok",q.optBoolean("valid",false)) ||
+                        !q.optBoolean("powered",true) ||
+                        q.optLong("last_ok_age_ms",0)>3000)continue;
                     double rs=q.optDouble("rs",Double.NaN);
                     long cycle=q.optLong("scan_cycle",-1);
                     if(!Double.isFinite(rs)||rs<=0||cycle<0)continue;
@@ -222,13 +224,53 @@ public final class FoodFreshnessTab {
         }
         return out;
     }
+    /**
+     * Never label a prematurely stopped food headspace capture as an
+     * independently measured 180-second research sample.
+     */
+    private void finishOrCancel(){
+        if(!capturing)return;
+        if(SystemClock.elapsedRealtime()-started>=STUDY_CAPTURE_MS){
+            complete();
+            return;
+        }
+        capturing=false;completed=null;meatCompleted=null;
+        frozenReadings=null;reportId="";frozenElapsed=0;
+        finish.setEnabled(false);start.setEnabled(true);
+        export.setEnabled(false);foodChoice.setEnabled(true);
+        modeChoice.setEnabled(true);
+        status.setText("أُلغي فحص الغذاء قبل اكتمال 180 ثانية؛ لا توجد نتيجة تحليلية.");
+        results.setText("لا يُنتج تقرير أو تقييم نضارة من فحص غير مكتمل.");
+        dayGraph.clear();
+    }
     private void complete(){
         if(!capturing)return;
-        capturing=false;
         frozenElapsed=Math.max(0,SystemClock.elapsedRealtime()-started);
+        // The same 180-second contract applies to both the research fruit
+        // and beef branches. Never infer a food condition from a single MQ
+        // reading, a stale frame or sparse channel coverage.
+        if(frozenElapsed<STUDY_CAPTURE_MS){
+            finishOrCancel();
+            return;
+        }
+        capturing=false;
         finish.setEnabled(false);start.setEnabled(true);
         foodChoice.setEnabled(true);modeChoice.setEnabled(true);
         frozenReadings=averaged();
+        int supportedSensors=0;
+        for(java.util.Map.Entry<String,Integer> count:counts.entrySet())
+            if(count.getValue()!=null&&count.getValue()>=10)supportedSensors++;
+        if(snapshots<30||supportedSensors<5){
+            completed=null;meatCompleted=null;frozenReadings=null;reportId="";
+            export.setEnabled(false);
+            status.setText("اكتملت المدة لكن جودة الأدلة غير كافية: "+
+                snapshots+" لقطات، "+supportedSensors+" حساسات مؤهلة.");
+            results.setText("لا يوجد تصنيف بحثي ولا تقرير. يلزم >=30 لقطة مستقلة "+
+                "و>=5 حساسات، لكل منها >=10 قراءات صحيحة في مدة 180 ثانية. "+
+                "تحقق من اتصال الحساسات واستقرار التغذية ثم أعد القياس.");
+            dayGraph.clear();
+            return;
+        }
         finalTemperature=tempCount>0?tempSum/tempCount:Double.NaN;
         finalHumidity=humidityCount>0?humiditySum/humidityCount:Double.NaN;
         reportId=new SimpleDateFormat("yyyyMMdd-HHmmss",Locale.US).format(new Date());
