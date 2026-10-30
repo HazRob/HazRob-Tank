@@ -1,0 +1,133 @@
+name: HazRob Tank V7 R01 ORIGINAL Android PDF QA (non-release)
+on:
+  push:
+    branches: [feature/tank-v7-reports]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/report/TankInstantReportPdf.java'
+      - 'android/app/src/main/java/com/servoc/app/report/TankInstantV7PdfWriter.java'
+      - 'android/app/src/main/res/drawable/hazrob_official_report_mark.xml'
+      - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
+      - 'research/chemcore_v6/tests/android/V7R01PdfFixtureActivity.java'
+      - '.github/workflows/v7-r01-android-pdf-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render-v7-r01-original-pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay V7 production source and attach test-only fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          cp tank/research/chemcore_v6/tests/android/V7R01PdfFixtureActivity.java source/app/src/main/java/com/servoc/app/report/
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('source/app/src/main/AndroidManifest.xml')
+          s=p.read_text()
+          marker='<activity android:name=".MainActivity" android:exported="false"/>'
+          assert marker in s
+          s=s.replace(marker,'<activity android:name=".report.V7R01PdfFixtureActivity" android:exported="true"/>\n        '+marker)
+          p.write_text(s)
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Disposable test signing
+        shell: bash
+        run: |
+          mkdir -p source/signing
+          keytool -genkeypair -alias hazrob-prototype -keystore source/signing/hazrob-prototype.jks -storepass hazrob-prototype -keypass hazrob-prototype -keyalg RSA -keysize 2048 -validity 1 -dname "CN=V7 R01 TEMP QA,OU=Disposable,O=HazRob" -noprompt
+      - name: Build test-only Android APK (not release)
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Enable KVM
+        run: 'if test -c /dev/kvm; then sudo chmod a+rw /dev/kvm; fi'
+      - name: Render original R01 using real Android PDF writer
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
+          script: |
+            set -euo pipefail
+            adb install -r source/app/build/outputs/apk/debug/app-debug.apk
+            mkdir -p /tmp/v7-r01-pdf
+            adb shell am start -W -n com.servoc.app/com.servoc.app.report.V7R01PdfFixtureActivity
+            ready=0
+            for i in $(seq 1 90); do
+              if adb shell run-as com.servoc.app test -f files/v7_r01_pdf_status.json >/dev/null 2>&1; then ready=1;break;fi
+              sleep 2
+            done
+            if test "$ready" != 1; then echo "QA fixture timeout";adb logcat -d -t 90 || :; exit 1;fi
+            adb exec-out run-as com.servoc.app cat files/v7_r01_pdf_status.json > /tmp/v7-r01-pdf/status.json
+            cat /tmp/v7-r01-pdf/status.json
+            python3 -c 'import json;p=json.load(open("/tmp/v7-r01-pdf/status.json"));assert p["status"]=="PASS",p'
+            adb exec-out run-as com.servoc.app cat files/V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf > /tmp/v7-r01-pdf/HazRob_Tank_V7_R01_Actual_Android_Report.pdf
+      - name: QA A4 PDF, font sizes, logo and contrast on actual Android pages
+        shell: bash
+        run: |
+          python3 -m pip install --quiet pymupdf pillow
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json, fitz
+          from PIL import Image
+          p=Path('/tmp/v7-r01-pdf/HazRob_Tank_V7_R01_Actual_Android_Report.pdf')
+          assert p.read_bytes().startswith(b'%PDF-') and p.stat().st_size>5000
+          pdf=fitz.open(p)
+          assert len(pdf)>=1
+          data=[]
+          for i,page in enumerate(pdf):
+              assert abs(page.rect.width-595)<1 and abs(page.rect.height-842)<1,page.rect
+              sizes=[span['size'] for block in page.get_text('dict')['blocks'] if 'lines' in block
+                       for line in block['lines'] for span in line['spans'] if span.get('text','').strip()]
+              assert sizes and min(sizes)>=11.5,(i,sizes)
+              pix=page.get_pixmap(matrix=fitz.Matrix(2,2),alpha=False)
+              dest=p.parent/f'V7_R01_Page_{i+1:02d}.png';pix.save(dest)
+              im=Image.open(dest).convert('RGB')
+              # Verify black header and owner amber colored emblem/palette on actual PDF.
+              header=im.crop((28,28,1162,166))
+              pixels=list(header.getdata())
+              dark=sum(1 for r,g,b in pixels if r<35 and g<35 and b<35)
+              amber=sum(1 for r,g,b in pixels if r>180 and 120<g<225 and b<55)
+              assert dark>12000,(i,dark)
+              assert amber>200,(i,amber)
+              data.append(dict(page=i+1,font_min_pt=min(sizes),font_max_pt=max(sizes),dark_pixels=dark,amber_pixels=amber,
+                               image=dest.name))
+          status=json.loads((p.parent/'status.json').read_text())
+          assert status['scientific_status']=='UNKNOWN_G3_ZERO_NO_CERTIFIED_PPM'
+          manifest={'format':'hazrob-v7-r01-original-android-pdf-qa/1','pages':data,
+                    'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                    'source':'Android production PDF writer from V7 branch, not manually recreated',
+                    'input':'Synthetic MQ values, not physical Tank evidence',
+                    'scientific_claim':'None; G3=0, not certified ppm'}
+          (p.parent/'manifest.json').write_text(json.dumps(manifest,indent=2))
+          print(json.dumps(manifest,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V7-R01-Original-Android-PDF-QA
+          path: /tmp/v7-r01-pdf/
+          if-no-files-found: error
+          retention-days: 30
