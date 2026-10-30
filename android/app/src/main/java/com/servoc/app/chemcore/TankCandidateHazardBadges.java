@@ -19,7 +19,7 @@ public final class TankCandidateHazardBadges {
         JSONObject screening=analysis.optJSONObject(TankScreeningExposureWarning.KEY);
         JSONArray warnings=screening==null?null:screening.optJSONArray("warnings");
         if(warnings==null)return "";
-        boolean exposure=false,lfl=false,approach=false,timeBased=false;
+        boolean exposure=false,lfl=false,approach=false,timeBased=false,earlyExposure=false;
         for(int i=0;i<warnings.length();i++){
             JSONObject w=warnings.optJSONObject(i);
             if(w==null||w.optLong("chemical_uid",-1)!=chemicalUid)continue;
@@ -31,13 +31,17 @@ public final class TankCandidateHazardBadges {
             if("LFL".equals(role)){
                 if(ratio>=1.0)lfl=true;
                 else if(ratio>=0.10)approach=true;
-            }else if(ratio>=1.0&&("IDLH".equals(role)||
-                    "CEILING".equals(role)||"TWA".equals(role)||"STEL".equals(role))){
-                exposure=true;
-                if("TWA".equals(role)||"STEL".equals(role))timeBased=true;
+            }else if("IDLH".equals(role)||"CEILING".equals(role)||
+                    "TWA".equals(role)||"STEL".equals(role)){
+                if(ratio>=1.0){
+                    exposure=true;
+                    if("TWA".equals(role)||"STEL".equals(role))timeBased=true;
+                }else if("EARLY_WARNING".equals(w.optString("screening_level",""))){
+                    earlyExposure=true;
+                }
             }
         }
-        if(!exposure&&!lfl&&!approach)return "";
+        if(!exposure&&!lfl&&!approach&&!earlyExposure)return "";
         StringBuilder b=new StringBuilder("  ");
         if(exposure)b.append("☠");
         if(lfl)b.append("🔥");
@@ -46,6 +50,7 @@ public final class TankCandidateHazardBadges {
             if(timeBased)b.append(" [التعرض المستمر افتراضي]");
         }
         if(approach&&!lfl)b.append(" ⚠ اقتراب LFL 10%");
+        if(earlyExposure&&!exposure)b.append(" ⚠ إنذار تعرض مبكر [تقديري/مشروط]");
         return b.toString();
     }
 }
