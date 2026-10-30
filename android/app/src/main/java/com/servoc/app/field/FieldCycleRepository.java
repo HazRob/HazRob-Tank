@@ -221,12 +221,35 @@ public final class FieldCycleRepository {
      */
     public boolean verifyApprovedEvidence(Cycle cycle){
         if(cycle==null||!cycle.approved())return false;
-        if("LEGACY_APPROVED".equals(cycle.state))return true;
-        if(!APPROVED.equals(cycle.state)||cycle.measurementId.isEmpty()||
-           cycle.deviceId.isEmpty()||cycle.evidenceSha.length()!=64)return false;
         SQLiteDatabase w=db.getWritableDatabase();
+        // Do not trust an older Cycle snapshot: a report can retain a Bundle
+        // while the approval record, device identity or SHA changes in SQLite.
+        // Compare the complete immutable approval identity INSIDE this read
+        // transaction before accepting either V10 SHA or legacy V9 policy.
         w.beginTransactionNonExclusive();
         try{
+            Cycle current=byId(cycle.id);
+            if(current==null||!current.approved()||
+               !cycle.state.equals(current.state)||
+               !cycle.fieldSessionId.equals(current.fieldSessionId)||
+               !cycle.measurementId.equals(current.measurementId)||
+               !cycle.deviceId.equals(current.deviceId)||
+               !cycle.evidenceSha.equalsIgnoreCase(current.evidenceSha)||
+               !cycle.started.equals(current.started)||
+               !cycle.completed.equals(current.completed)||
+               !cycle.approved.equals(current.approved)||
+               cycle.sequence!=current.sequence||cycle.attempt!=current.attempt||
+               cycle.modes.gas!=current.modes.gas||
+               cycle.modes.particles!=current.modes.particles||
+               cycle.modes.physical!=current.modes.physical)return false;
+            if("LEGACY_APPROVED".equals(cycle.state)){
+                // Historical V9 records have no canonical source SHA. This
+                // preserves their original export scope without promoting G3.
+                w.setTransactionSuccessful();
+                return true;
+            }
+            if(!APPROVED.equals(cycle.state)||cycle.measurementId.isEmpty()||
+               cycle.deviceId.isEmpty()||cycle.evidenceSha.length()!=64)return false;
             String metadata,payload;
             try(Cursor c=w.rawQuery(
                     "SELECT m.analytics,m.payload,m.kind,m.operator_role "+
