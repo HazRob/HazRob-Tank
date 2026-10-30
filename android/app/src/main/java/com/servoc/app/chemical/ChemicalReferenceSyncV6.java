@@ -291,11 +291,14 @@ public final class ChemicalReferenceSyncV6 {
         SQLiteDatabase db=source.getReadableDatabase();
         try{
             ensure(db);
+            long canonical=canonicalForQuery(db,uid);
             try(Cursor c=db.rawQuery(
                     "SELECT property_key,source_id,source_url,unit,value_text,value_numeric,"+
-                    "publication_revision,evidence_status FROM chemical_reference_updates_v6 "+
-                    "WHERE chemical_uid=? ORDER BY property_key,source_id LIMIT 30",
-                    new String[]{Long.toString(uid)})){
+                    "publication_revision,evidence_status,chemical_uid "+
+                    "FROM chemical_reference_updates_v6 "+
+                    "WHERE chemical_uid=? OR chemical_uid=? "+
+                    "ORDER BY property_key,source_id LIMIT 30",
+                    new String[]{Long.toString(uid),Long.toString(canonical)})){
                 while(c.moveToNext()){
                     JSONObject f=new JSONObject();
                     f.put("key",c.getString(0));f.put("source_id",c.getString(1));
@@ -303,6 +306,8 @@ public final class ChemicalReferenceSyncV6 {
                     f.put("text",c.isNull(4)?JSONObject.NULL:c.getString(4));
                     f.put("numeric",c.isNull(5)?JSONObject.NULL:c.getDouble(5));
                     f.put("revision",c.getString(6));f.put("evidence_status",c.getString(7));
+                    f.put("published_for_uid",c.getLong(8));
+                    f.put("displayed_via_verified_alias",c.getLong(8)!=uid);
                     out.put(f);
                 }
             }
