@@ -3,6 +3,8 @@ package com.servoc.app.report;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.RectF;
+import android.graphics.pdf.PdfDocument;
 import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,6 +72,49 @@ public final class V7R01PdfFixtureActivity extends Activity {
         x.put("r0_source","CI_TEST_FIXTURE_NOT_DEVICE_CALIBRATION");
         return x;
     }
+    /** Explicitly blank, nonclinical design fixture: exercises V7 shared kit in Android Skia. */
+    private void exerciseV7BlankLayoutKit()throws Exception {
+        PdfDocument pdf=new PdfDocument();
+        try {
+            PdfDocument.Page portrait=V7ReportLayoutKit.open(pdf,1,false);
+            android.graphics.Canvas c=portrait.getCanvas();
+            c.drawColor(Color.WHITE);
+            V7ReportLayoutKit.drawHeader(c,this,false,
+                "فحص قالب التقرير", "Blank Layout Kit QA", "-");
+            V7ReportLayoutKit.tableHeader(c,new RectF(20,125,310,165),
+                "قيمة الحساس / Sensor value",true);
+            V7ReportLayoutKit.tableValue(c,new RectF(20,165,310,205),"-",true);
+            // A non-existent value must not be red even if an inconsistent
+            // upstream display flag is true.
+            V7ReportLayoutKit.measuredValue(c,new RectF(310,165,570,205),
+                "-",true,true);
+            V7ReportLayoutKit.blankChart(c,new RectF(20,260,570,710),
+                "مخطط فارغ / Blank Chart","Time","MQ");
+            V7ReportLayoutKit.drawFooter(c,false,1,2);
+            pdf.finishPage(portrait);
+            PdfDocument.Page landscape=V7ReportLayoutKit.open(pdf,2,true);
+            c=landscape.getCanvas();c.drawColor(Color.WHITE);
+            V7ReportLayoutKit.drawHeader(c,this,true,
+                "أربع لوحات قياس متساوية", "Four Equal Blank Charts", "-");
+            float x1=20,x2=430,y1=100,y2=300,w=390,h=170;
+            V7ReportLayoutKit.blankChart(c,new RectF(x1,y1,x1+w,y1+h),
+                "مخطط أول / Plot 1","X","Y");
+            V7ReportLayoutKit.blankChart(c,new RectF(x2,y1,x2+w,y1+h),
+                "مخطط ثان / Plot 2","X","Y");
+            V7ReportLayoutKit.blankChart(c,new RectF(x1,y2,x1+w,y2+h),
+                "مخطط ثالث / Plot 3","X","Y");
+            V7ReportLayoutKit.blankChart(c,new RectF(x2,y2,x2+w,y2+h),
+                "مخطط رابع / Plot 4","X","Y");
+            V7ReportLayoutKit.drawFooter(c,true,2,2);
+            pdf.finishPage(landscape);
+            ByteArrayOutputStream out=new ByteArrayOutputStream();
+            pdf.writeTo(out);
+            store("V7_Blank_Layout_Kit_Actual_Android.pdf",out);
+        } finally { pdf.close(); }
+        verify("V7_Blank_Layout_Kit_Actual_Android.pdf");
+        status.put("v7_shared_layout_kit","ANDROID_2_PAGE_PORTRAIT_LANDSCAPE_BLANK_RENDER");
+    }
+
     private void execute()throws Exception {
         com.servoc.app.chemical.GhsPictograms.bindContext(this);
         TankInstantV7PdfWriter.bindContext(this);
@@ -91,6 +136,7 @@ public final class V7R01PdfFixtureActivity extends Activity {
             throw new IllegalStateException("Not V6 production scientific boundary");
         ByteArrayOutputStream bytes=new ByteArrayOutputStream();
         TankInstantReportPdf.write(bytes,telemetry,actual,"CI-DEMO-V6-ONE-SHOT",1793376000000L);
+        exerciseV7BlankLayoutKit();
         store("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf",bytes);
         verify("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf");
         bytes=new ByteArrayOutputStream();
