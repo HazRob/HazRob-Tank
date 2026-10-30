@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.MqDeviceR0LedgerV14;
+import com.servoc.app.data.MqExternalR0RsSeedV14;
 import com.servoc.app.calibration.ManualR0Calibration;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -135,7 +136,26 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM exposure_limits")==0,
                 "new test SQLite starts without fake numeric exposure limits");
             ChemicalSeedBootstrap.ensureNiosh(this,db);
-            long materials=num(sql,"SELECT COUNT(*) FROM chemicals");
+            long peerR0=num(sql,
+                "SELECT COUNT(*) FROM sensor_evidence "+
+                "WHERE evidence_type='EXTERNAL_PEER_R0_RS' AND chemical_uid IS NULL");
+            long disputedPeerR0=num(sql,
+                "SELECT COUNT(*) FROM sensor_evidence "+
+                "WHERE evidence_type='EXTERNAL_PEER_R0_RS' "+
+                "AND status='REJECTED_FOR_AUTOMATIC_CALIBRATION'");
+            check(peerR0==25,"all 25 external MQ R0/Rs sensor reference rows imported");
+            check(disputedPeerR0==5,
+                "disputed peer R0 arithmetic and methodological errors remain flagged");
+            check(MqExternalR0RsSeedV14.ensure(this,db)==0,
+                "source-qualified research R0/Rs importer idempotent");
+            check(num(sql,"SELECT COUNT(*) FROM sensor_evidence "+
+                "WHERE evidence_type='EXTERNAL_PEER_R0_RS' AND chemical_uid IS NOT NULL")==0,
+                "external R0 stays sensor-instance research, never chemical R0");
+            check(amount(sql,"SELECT CAST(json_extract(coefficients,'$.r0_kohm') AS REAL) "+
+                "FROM sensor_evidence WHERE source_id='CAL-R0-2022-TELKOM' "+
+                "AND sensor_key='MQ135' LIMIT 1")==18.59,
+                "source-reported MQ135 R0 value 18.59 kOhm preserved with identity");
+                        long materials=num(sql,"SELECT COUNT(*) FROM chemicals");
             long profiles=num(sql,"SELECT COUNT(*) FROM chemical_risk_profiles");
             long limits=num(sql,"SELECT COUNT(*) FROM exposure_limits");
             long osha=num(sql,"SELECT COUNT(*) FROM exposure_limits WHERE source_id='OSHA_Z1'");
@@ -233,7 +253,13 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
 
             ChemicalRepository unifiedRepo=new ChemicalRepository(db);
             check(unifiedRepo.count()==materials,"actual UI repository exposes whole catalog");
-            JSONObject oxygenProfile=unifiedRepo.scientificProfile(oxygenUid);
+            JSONObject benzeneStudyProfile=unifiedRepo.scientificProfile(benzeneUid);
+            check(benzeneStudyProfile.getJSONArray("external_mq_r0_rs_sensor_studies")
+                .length()>0,"one unified material profile links relevant external sensor context");
+            check(benzeneStudyProfile.optBoolean(
+                "external_r0_rs_not_material_constants",false),
+                "external sensor R0 never becomes a benzene R0 property");
+                        JSONObject oxygenProfile=unifiedRepo.scientificProfile(oxygenUid);
             JSONObject benzeneProfile=unifiedRepo.scientificProfile(benzeneUid);
             check(oxygenProfile.length()>=75 && oxygenProfile.optInt("is_oxidizer",0)==1,
                 "whole unified profile is accessible to operator/lab by master UID");
@@ -304,6 +330,8 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 .put("ghs_pdf_vector_raster_red_pixels",pdfGhsRedPixels)
                 .put("ghs_pdf_page_count",2)
                 .put("v14_unified_columns",v14Columns)
+                .put("external_peer_r0_rs_observations",peerR0)
+                .put("external_peer_r0_rs_disputed",disputedPeerR0)
                 .put("v14_master_uid_rows",v14Rows)
                 .put("v14_linked_source_curves",mappedCurves)
                 .put("v14_unverified_source_r0_curves",unverifiedR0)
