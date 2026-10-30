@@ -6,6 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
 import com.servoc.app.data.ExperimentsDb;
+import com.servoc.app.data.MqDeviceR0LedgerV14;
+import com.servoc.app.calibration.ManualR0Calibration;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.chemical.GhsPictograms;
 import com.servoc.app.report.TankInstantReportPdf;
@@ -161,6 +165,32 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 "new Tank database does not invent field clean-air R0 readings");
             check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_envelopes")==0,
                 "sensor specific normal air confidence requires repeated blanks");
+            Map<String,Double> syntheticR0=new LinkedHashMap<>();
+            Map<String,Integer> syntheticCounts=new LinkedHashMap<>();
+            for(String key:ManualR0Calibration.keys()){
+                syntheticR0.put(key,12.0+syntheticR0.size()*3.5);
+                syntheticCounts.put(key,15);
+            }
+            String simulatorDevice="EMULATOR-NOT-A-PHYSICAL-TANK";
+            check(ManualR0Calibration.saveFirmware(
+                getSharedPreferences("N09_V14_SIMULATED_FIRMWARE_TEST",MODE_PRIVATE),
+                syntheticR0,simulatorDevice,syntheticCounts),
+                "synthetic firmware NVS data is accepted in disposable test prefs");
+            int simulatedBaselineRows=MqDeviceR0LedgerV14.recordFirmwareApproved(
+                db,simulatorDevice,syntheticR0,syntheticCounts);
+            check(simulatedBaselineRows==8,"all eight confirmed R0 channels recorded atomically");
+            check(MqDeviceR0LedgerV14.recordFirmwareApproved(
+                db,simulatorDevice,syntheticR0,syntheticCounts)==0,
+                "same NVS revision cannot create duplicate R0 records");
+            check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_baselines")==8,
+                "eight sensor-specific approved operational R0 records retained");
+            check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_baselines "+
+                "WHERE device_id='EMULATOR-NOT-A-PHYSICAL-TANK' AND "+
+                "window_count=1 AND approved=1")==8,
+                "quick firmware baseline is only one window, NOT misreported as approved 3 x 3 min");
+            check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_envelopes")==0,
+                "no fictional empirical clean-air normality band from 8 R0 values");
+
             check(num(sql,"SELECT COUNT(*) FROM v14_unified_chemical_catalog "+
                 "WHERE natural_concentration_coverage_status='NO_QUALIFIED_NATURAL_RANGE'")>700,
                 "unknown ambient concentration is NOT labeled naturally zero");
@@ -278,6 +308,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 .put("v14_linked_source_curves",mappedCurves)
                 .put("v14_unverified_source_r0_curves",unverifiedR0)
                 .put("v14_actual_tank_r0_samples",0)
+                .put("v14_simulator_only_r0_channels",simulatedBaselineRows)
                 .put("coverage_fraction",profiles/(double)materials)
                 .put("reference_limit_rows",limits)
                 .put("osha_z1_rows",osha).put("niosh_idlh_rows",nioshIdlh)
