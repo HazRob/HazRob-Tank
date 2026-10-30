@@ -30,7 +30,7 @@
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "STABLE_EMBEDDED_OFFLINE; CENTRAL_UID_RECORD_SYNC_FROM_GITHUB_QUALIFICATION_ONLY_BY_LIBRARY; LIST_FINGERPRINT_CURVE_PPM_M4_LIVE; 41099757406_ANDROID_SOURCE_COMPILE_PASS; FINAL_LATEST_N09_ALIAS_DETAIL_PENDING; NO_RELEASE",
+  "latest_scope": "STABLE_OFFLINE_AND_CENTRAL_V6_LIBRARY_POLISH_COMMITTED; MULTISOURCE_AND_COMPLETE_WITHDRAWAL_FIX_CI_PENDING; FIRMWARE_CI_BIN_VERIFIED_41093126933; N16_HTTPS_QA_41094999163_FAILED; SIGNING_BLOCKED; NO_RELEASE",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -302,5 +302,30 @@
     "material_detail_report_shows_publisher_provenance": true,
     "targeted_uid_query_available_in_developer_experiments": true,
     "publisher_index_deployed_to_main": false
+  },
+  "final_polish_central_library_v6": {
+    "scope": "INCREMENTAL_CENTRAL_REFERENCE_QUERY_ONLY",
+    "behavior": [
+      "ZERO_FACT_PUBLICATION_WITHDRAWS_ALL_CAPABILITIES_TRANSACTIONALLY",
+      "MULTIPLE_SOURCES_PRESERVE_QUALIFIED_STATUS_IRRESPECTIVE_OF_ROW_ORDER",
+      "EMULATOR_FIXTURE_COVERS_WITHDRAW_THREE_WITHDRAW_ALL_AND_PUBLISHER_ORDER"
+    ],
+    "changed_source_commits": [
+      "c38203c508a6057c59d6731a11b81d9f86e2f499",
+      "fad26361d8ee35b6bbf6bdd63ef03ed6560261e2",
+      "b241eb3a469cd85bd24de550b64c7283bdb4605f"
+    ],
+    "latest_source_tests": "QUEUED_GITHUB_ACTIONS_NOT_YET_ACCEPTED",
+    "queued_emulator_run": 41101967713,
+    "queued_scientific_run": 41102007946,
+    "pending": [
+      "LATEST_BRANCH_ANDROID12_EMULATOR_PASS",
+      "LATEST_BRANCH_ANDROID_COMPILE_PASS",
+      "REAL_GITHUB_PUBLIC_MAIN_REFERENCE_UPDATES",
+      "ANDROID_INSTALLED_APK_SIGNER_MATCH_OR_VERIFIED_SAFE_DATA_MIGRATION",
+      "FINAL_RELEASE_SOFTWARE_ACCEPTANCE"
+    ],
+    "owner_conditional_delivery_authorization_preserved": true,
+    "release_status": "NO_RELEASE"
   }
 }
