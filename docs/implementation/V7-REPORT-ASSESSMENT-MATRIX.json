@@ -6,14 +6,15 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "TEMPLATE_CREATED_NOT_AUDITED",
+  "assessment_phase": "R01_BASELINE_COMPLETE_OWNER_DISCUSSION_PENDING_R02_R06_UNAUDITED",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
     "FAIL",
     "NOT_APPLICABLE",
     "BLOCKED_MISSING_DATA",
-    "BLOCKED_PENDING_APPROVAL"
+    "BLOCKED_PENDING_APPROVAL",
+    "SOURCE_AND_SAMPLE_PDF_AUDITED_PROPOSAL_PENDING_OWNER"
   ],
   "note": "Existing original Android PDFs from V6 provide a baseline but this template must not claim V7 visual audit, correctness or implementation. Rule G04 is scientifically condition-dependent, not universally GHS-applicable.",
   "rules": [
@@ -92,141 +93,141 @@
         "decision pathway or abstention flow"
       ],
       "risk": "Unqualified gas identity or ppm deemed safety measurement",
-      "review_state": "NOT_AUDITED",
-      "original_pdf_verified": false,
+      "review_state": "SOURCE_AND_SAMPLE_PDF_AUDITED_PROPOSAL_PENDING_OWNER",
+      "original_pdf_verified": true,
       "approved_design_mockup": false,
       "android_production_layout_changed": false,
       "visual_qa_passed": false,
       "data_integrity_passed": false,
       "bilingual_qa_passed": false,
-      "pdf_file_sha256": null,
-      "ci_run": null,
+      "pdf_file_sha256": "7c4cf3c7de06529f6d604df7c7c93ff5ee084453efdfc554e73db736f24b0725",
+      "ci_run": 41124888027,
       "code_commit": null,
       "owner_design_signoff": false,
       "rule_checklist": {
         "G01": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "No logo or repeated report header/footer; source has text title only.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G02": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "No unified report color grammar beyond dark/muted text.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G03": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "Text sizes 9,10pt violate 12pt minimum; one-line ellipsis can truncate IDs.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G04": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "BLOCKED_MISSING_DATA",
+          "applicable": true,
+          "notes": "No OEL/GHS finding because chemical identity/ppm are unverified; propose explicit explanation and isolated reference-only lookups.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
           "corrective_action": null,
           "verification_run": null
         },
         "G05": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
+          "status": "NOT_APPLICABLE",
+          "applicable": false,
+          "notes": "No charts in original; duplication check after proposed figures are implemented.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
           "verification_run": null
         },
         "G06": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
+          "status": "NOT_APPLICABLE",
+          "applicable": false,
+          "notes": "Physical exposure gauge applies to R02; gas ppm is unqualified.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
           "verification_run": null
         },
         "G07": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "No semantic color status cells or legend.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G08": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "No analytic chart or visually distinguished sensor fingerprint.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G09": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "Does not show baseline gate or traceable actual decision route despite available provenance JSON.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G10": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "Arabic body but not bilingual Arabic+English throughout.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G11": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "Fixed y layout wastes large page space, later jumps to y=770.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G12": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "Sensor readings are plain lines rather than bordered amber-header table.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G13": {
-          "status": "NOT_AUDITED",
-          "applicable": null,
-          "notes": "",
-          "evidence_pdf_page": null,
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "Few interpretations; raw numeric listing omits evidence decision meaning.",
+          "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": null,
+          "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         }
       },
       "analysis_approach": {
-        "source_code_review": false,
-        "original_pdf_page_review": false,
+        "source_code_review": true,
+        "original_pdf_page_review": true,
         "proposed_chart_mappings_verified": false,
-        "sampling_constraints_evaluated": false,
+        "sampling_constraints_evaluated": true,
         "bilingual_12pt_layout_qa": false,
         "approval_hash_integrity_verified": null
       },
@@ -241,7 +242,32 @@
         "Printed-scale page-size and overflow QA",
         "Source data to PDF checksum/value comparisons",
         "owner approval and CI run"
-      ]
+      ],
+      "audit_document": "docs/implementation/V7-R01-INSTANT-GAS-REPORT-ANALYSIS-2026-10-30_AR.md",
+      "baseline_facts": {
+        "pages": 1,
+        "page_size_pt": [
+          595,
+          842
+        ],
+        "font_sizes_pt": [
+          9,
+          10,
+          12,
+          13,
+          17
+        ],
+        "logo": false,
+        "charts": 0,
+        "images": 0,
+        "table_grid": false,
+        "arabic_rtl": true,
+        "fully_bilingual": false,
+        "time_series": false,
+        "gas_identity": "UNKNOWN",
+        "ppm_reportable": false,
+        "sample_type": "SYNTHETIC TEST"
+      }
     },
     {
       "report_id": "R02",
@@ -1112,5 +1138,5 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "V7-R01: exhaustive source and UI route inventory; V7-R02: assess R01-R06 without speculative PASS outcomes."
+  "next_action": "Discuss R01 proposal P01-P06 with owner, implement only after approval; review R02 next."
 }
