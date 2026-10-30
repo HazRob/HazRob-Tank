@@ -9,6 +9,7 @@ import com.servoc.app.chemcore.library.ChemCoreEmbeddedStableInstaller;
 import com.servoc.app.chemcore.library.ChemCoreLibraryStore;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.ChemicalHazardEvidenceSeedV13;
+import com.servoc.app.data.MqExternalR0RsSeedV14;
 import com.servoc.app.exposure.ExposureSeedBootstrap;
 import com.servoc.app.exposure.GasFlammabilitySeedBootstrap;
 
@@ -43,6 +44,17 @@ public final class ChemicalSeedBootstrap {
             ex.getClass().getSimpleName()+": "+String.valueOf(ex.getMessage()));}
 
         GasFlammabilitySeedBootstrap.ensure(context,db);
+        // Scientific publications report R0/Rs for THEIR sensor instances:
+        // these are not Tank calibration, not chemical properties, and not G3.
+        try{
+            int peerRows=MqExternalR0RsSeedV14.ensure(context,db);
+            db.putMeta("mq_peer_r0_rs_seed_status",
+                "source_qualified_research_only:new_rows="+peerRows);
+        }catch(Exception e){
+            db.putMeta("mq_peer_r0_rs_seed_error",
+                e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
+        }
+
 
         try{AnalyticalResearchBootstrap.ensure(db.getWritableDatabase());db.putMeta("analytical_research_seed_status","available:"+AnalyticalResearchBootstrap.SEED_VERSION);}catch(Exception e){db.putMeta("analytical_research_seed_status","error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));}
         try{AnalyticalTransferBootstrap.ensure(db.getWritableDatabase());db.putMeta("analytical_transfer_seed_status","available:"+AnalyticalTransferBootstrap.SEED_VERSION);}catch(Exception e){db.putMeta("analytical_transfer_seed_status","error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));}
