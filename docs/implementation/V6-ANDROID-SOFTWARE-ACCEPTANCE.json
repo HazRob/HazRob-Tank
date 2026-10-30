@@ -30,7 +30,7 @@
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "N09_168_ASSERTIONS_CATALOG_PASS_734_UID_725_CAS_IDENTITIES_666_MASSES; N14_ANDROID12_21PLUS_CHECKS_FIVE_MEASUREMENTS_FOOD_SESSIONS_REPORTS_PASS; A01_A14_STABLE_SIGNING_HW_OPEN",
+  "latest_scope": "N09_168_PASS_N14_SESSIONS_PASS_STABLE_N15_REAL_ANDROID_30_PASS_LIVE_GUARD_R0_TEXT_FIX_STABLE_CANDIDATE_ARTIFACT_READY_NO_PUBLICATION; SIGNING_AND_FULL_UI_OPEN",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -58,12 +58,16 @@
     "molecular_identities": 652,
     "source_research_priors": 49,
     "device_m4_calibrations": 0,
-    "source_build_run": 41007163886,
-    "source_build_result": "PASS",
+    "source_build_run": 41091669271,
+    "source_build_result": "PASS_WITH_VERIFIED_PUBLICATION_CANDIDATE_ARTIFACT_NO_PUBLISHED_UPDATE",
     "payload_sha256": "94f41ba754a1c239122b82081a91e9656012503cebda0eae6473ed8a4e45d7cf",
     "app_compatibility_version": "6.0",
     "apk_present": false,
-    "status": "OFFLINE_ASSET_GENERATION_VERIFIED_NOT_YET_EMBEDDED_IN_A_RELEASE_APK"
+    "status": "OFFLINE_ASSET_GENERATION_VERIFIED_NOT_YET_EMBEDDED_IN_A_RELEASE_APK",
+    "payload_size_bytes": 1744726,
+    "publication_candidate_artifact_id": 12994446592,
+    "publication_candidate_artifact_name": "HazRob-Tank-V6-Embedded-Stable-Source-Audit",
+    "published_to_main": false
   },
   "github_stable_update": {
     "existing_settings_button_used": true,
@@ -73,7 +77,15 @@
     "atomic_activation_and_rollback": true,
     "published_manifest_currently_available": false,
     "remaining": "PUBLISH_APPROVED_SOURCE_MANIFEST_AND_PAYLOAD_PAIR_AFTER_GITHUB_RELEASE_POLICY_ACCEPTANCE",
-    "note": "Not an APK updater; APK release separately gated."
+    "note": "Not an APK updater; APK release separately gated.",
+    "actual_android12_offline_two_version_install_rollback_run": 41091311366,
+    "actual_android12_offline_two_version_install_rollback_result": "PASS_30_ASSERTIONS_REPEATED_AFTER_LIVE_STATE_GUARD",
+    "measurement_active_activation_refused": true,
+    "tampered_payload_refused": true,
+    "corrupt_rollback_refused_without_pointer_swap": true,
+    "live_measurement_status_recheck_after_download": true,
+    "actual_https_download_from_public_main_tested": false,
+    "release_gate": "PENDING_PUBLIC_MANIFEST_PAYLOAD_PAIR_AND_ONLINE_VERIFIED_DOWNLOAD; NO_RELEASE"
   },
   "hourly_progress_monitoring": {
     "automation_active": true,
@@ -104,7 +116,9 @@
     "firmware_delivery": "NOT_RELEASED",
     "emulator_after_r0_source_gate_run": 41010457166,
     "emulator_after_r0_source_gate_result": "PASS",
-    "latest_source_gate_commit": "717d9c3248482d04ab143f0be03ef655e73a84d0"
+    "latest_source_gate_commit": "717d9c3248482d04ab143f0be03ef655e73a84d0",
+    "user_settings_text_180_plus_60_corrected": true,
+    "settings_full_ui_retest": "PENDING_N14_AFTER_SETTINGS_TEST_CHANGE"
   },
   "chemical_field_coverage_v14": {
     "audit_source": "REAL_ANDROID_12_EMULATOR_SQLITE_V14",
