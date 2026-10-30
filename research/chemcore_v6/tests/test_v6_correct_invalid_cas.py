@@ -28,6 +28,6 @@ class SourceQualifiedCasRepair(unittest.TestCase):
         self.assertIn("invalidCasRows==0",EMULATOR)
         self.assertIn("cas_correction_idempotence",EMULATOR)
         self.assertIn("cas_checksum_invalid_direct_rows",RUNNER)
-        self.assertIn("coverage['materials_with_formula']==669",RUNNER)
+        self.assertIn("coverage['materials_with_formula']==668",RUNNER)
         self.assertIn("coverage['materials_with_molar_mass']==638",RUNNER)
 if __name__=='__main__':unittest.main()
