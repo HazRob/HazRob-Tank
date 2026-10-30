@@ -30,9 +30,11 @@ def audit_declared_holdout(rows, columns):
     """Inspect declared partition overlap; do not infer physical independence."""
     rows = list(rows)
     # Reject compatibility aliases before the shared provenance header gate.
-    if any(c != 'partition' and unicodedata.normalize('NFKC', c) == 'partition'
+    if any(c != unicodedata.normalize('NFKC', c)
+           and unicodedata.normalize('NFKC', c)
+           in ('partition', 'exposure_id', 'physical_sample_id')
            for c in columns):
-        raise ValueError('G2_HOLDOUT_PARTITION_HEADER_ALIAS')
+        raise ValueError('G2_HOLDOUT_CRITICAL_HEADER_ALIAS')
     base = audit_declared_overlap(rows, columns)
     # Optional physical IDs are evidence-bearing: reject empty and
     # compatibility-equivalent aliases instead of silently conflating them.
