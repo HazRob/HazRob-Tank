@@ -303,6 +303,9 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM chemicals WHERE cas='null' "+
                 "OR cas='65966-93-2'")==0,
                 "invalid CAS strings cannot remain in operative unified identity");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_identifiers WHERE "+
+                "scheme='CAS' AND value IN ('null','65966-93-2')")==0,
+                "malformed CAS cannot appear in chemical identifier search paths");
             int validCasRows=0,invalidCasRows=0;
             try(Cursor cc=sql.rawQuery(
                 "SELECT uid,cas FROM chemicals WHERE cas IS NOT NULL AND TRIM(cas)<>''",
