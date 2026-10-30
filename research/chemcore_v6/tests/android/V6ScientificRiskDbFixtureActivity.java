@@ -8,6 +8,7 @@ import com.servoc.app.chemical.ChemicalSeedBootstrap;
 import com.servoc.app.chemical.ChemicalIdentityEquivalenceV6;
 import com.servoc.app.chemical.ChemicalIdentityCategoryV6;
 import com.servoc.app.chemical.ChemicalMolecularProjectionV6;
+import com.servoc.app.chemical.ChemicalNistIdentityCompletionV6;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.MqDeviceR0LedgerV14;
 import com.servoc.app.data.MqExternalR0RsSeedV14;
@@ -244,6 +245,26 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM exposure_limits")==0,
                 "new test SQLite starts without fake numeric exposure limits");
             ChemicalSeedBootstrap.ensureNiosh(this,db);
+            ChemicalNistIdentityCompletionV6.Result nistAudit=
+                ChemicalNistIdentityCompletionV6.ensure(db);
+            check(nistAudit.proposed==27&&nistAudit.matched==27&&
+                nistAudit.rejected==0&&nistAudit.casFilled==0&&
+                nistAudit.massFilled==0,
+                "27 verified NIST CAS identities and masses are idempotent");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_sources "+
+                "WHERE source_id='NIST_WEBBOOK' AND "+
+                "record_url LIKE 'https://webbook.nist.gov/cgi/cbook.cgi?ID=%'")==27,
+                "all 27 historical single substances carry permanent NIST SRD69 URLs");
+            check(num(sql,"SELECT COUNT(*) FROM chemicals WHERE "+
+                "uid IN (38,41,42,45,46,47,53,57,58,76,78,83,84,89,90,"+
+                "91,93,121,124,126,127,128,129,131,132,133,134) "+
+                "AND cas IS NOT NULL AND molar_mass>0")==27,
+                "all formerly missing single-molecule CAS rows now qualify by NIST");
+            check("1333-74-0".equals(text(sql,"SELECT cas FROM chemicals WHERE uid=76")),
+                "hydrogen CAS and mole fraction not confused with a gas calibration");
+            check("29118-24-9".equals(text(sql,"SELECT cas FROM chemicals WHERE uid=132")),
+                "trans R1234ze(E) is not conflated with isomer R1234yf");
+            out.put("nist_27_cas_identity_idempotence",nistAudit.summary());
             ChemicalIdentityCategoryV6.Result categoryAudit=
                 ChemicalIdentityCategoryV6.ensure(db);
             check(categoryAudit.proposed==9&&categoryAudit.already==9&&
@@ -333,13 +354,15 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 coverage.getInt("unique_uids")==materials&&
                 coverage.getInt("duplicate_uids")==0,
                 "734 rows each have exactly one stable canonical UID");
-            check(coverage.getInt("materials_with_cas")==671 &&
+            check(coverage.getInt("materials_with_molar_mass")==637,
+                "27 NIST reference molecular masses complete previously missing records");
+            check(coverage.getInt("materials_with_cas")==698 &&
                 coverage.getInt("materials_with_niosh_cas_equivalence")==27 &&
-                coverage.getInt("materials_with_direct_or_linked_cas")==698,
-                "direct CAS plus NIOSH synonym identity covers 698 entries");
+                coverage.getInt("materials_with_direct_or_linked_cas")==725,
+                "direct NIST and NIOSH-linked CAS covers all 725 single-material records");
             check(coverage.getInt("non_single_substance_labels")==9 &&
-                coverage.getInt("individual_materials_without_linked_cas")==27,
-                "9 non-CAS labels separated from 27 unresolved individual CAS cases");
+                coverage.getInt("individual_materials_without_linked_cas")==0,
+                "9 non-single-chemical concepts correctly lack a unique CAS");
             check(coverage.getInt("materials_with_name_en")==materials,
                 "no unnamed material silently appears as a complete identity");
             check(!coverage.getBoolean("scientific_fields_exhaustive"),
