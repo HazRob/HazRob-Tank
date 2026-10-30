@@ -160,10 +160,18 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM sensor_evidence "+
                 "WHERE evidence_type='EXTERNAL_PEER_R0_RS' AND chemical_uid IS NOT NULL")==0,
                 "external R0 stays sensor-instance research, never chemical R0");
-            check(amount(sql,"SELECT CAST(json_extract(coefficients,'$.r0_kohm') AS REAL) "+
-                "FROM sensor_evidence WHERE source_id='CAL-R0-2022-TELKOM' "+
-                "AND sensor_key='MQ135' LIMIT 1")==18.59,
-                "source-reported MQ135 R0 value 18.59 kOhm preserved with identity");
+            // Android 12 system SQLite does not guarantee JSON1 enabled.
+            // Parse source study JSON using the bundled org.json instead.
+            try(Cursor q=sql.rawQuery(
+                "SELECT coefficients FROM sensor_evidence "+
+                "WHERE source_id='CAL-R0-2022-TELKOM' AND sensor_key='MQ135' "+
+                "AND evidence_type='EXTERNAL_PEER_R0_RS' LIMIT 1",null)){
+                check(q.moveToFirst(),"Telkom peer observation exists by source");
+                JSONObject telkom=new JSONObject(q.getString(0));
+                check(Math.abs(telkom.getDouble("r0_kohm")-18.59)<1e-5 &&
+                    Math.abs(telkom.getDouble("rs_air_kohm")-66.92)<1e-5,
+                    "MQ135 external R0=18.59 and Rs_air=66.92 kOhm correctly preserved");
+            }
                         long materials=num(sql,"SELECT COUNT(*) FROM chemicals");
             long profiles=num(sql,"SELECT COUNT(*) FROM chemical_risk_profiles");
             long limits=num(sql,"SELECT COUNT(*) FROM exposure_limits");
