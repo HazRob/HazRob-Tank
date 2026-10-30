@@ -81,16 +81,27 @@ def _identity_component_test_support(rows, columns):
                 cross_partition.append({
                     'groups': members, 'partitions': sorted(labels),
                 })
+    identity_fields = ('session_id', 'exposure_batch_id',
+                       'exposure_id', 'physical_sample_id')
+    missing_identity_fields = [k for k in identity_fields if k not in columns]
+    # An absent optional identity column can conceal an edge between two
+    # apparently disconnected test components. The component counts remain
+    # descriptive upper bounds; positive support must fail closed.
+    identity_complete = not missing_identity_fields
     return {
         'declared_identity_fields_used': [
-            k for k in ('session_id', 'exposure_batch_id',
-                        'exposure_id', 'physical_sample_id') if k in columns
+            k for k in identity_fields if k in columns
         ],
+        'declared_identity_fields_missing': missing_identity_fields,
+        'declared_identity_test_support_complete': identity_complete,
+        'declared_identity_test_component_counts_are_upper_bounds_when_incomplete': (
+            not identity_complete
+        ),
         'declared_identity_test_component_count': len(test_components),
         'declared_identity_test_only_component_count': len(test_only),
         'declared_identity_test_cross_partition_components': cross_partition,
         'test_has_two_disconnected_test_only_declared_identity_components': (
-            len(test_only) >= 2
+            len(test_only) >= 2 if identity_complete else None
         ),
         'declared_identity_components_are_not_authenticated_experiments': True,
     }
@@ -131,6 +142,10 @@ def audit_declared_holdout(rows, columns):
         'test_has_two_declared_groups_for_cluster_uncertainty': None,
         'declared_identity_test_component_count': None,
         'declared_identity_test_only_component_count': None,
+        'declared_identity_fields_used': None,
+        'declared_identity_fields_missing': None,
+        'declared_identity_test_support_complete': None,
+        'declared_identity_test_component_counts_are_upper_bounds_when_incomplete': None,
         'declared_identity_test_cross_partition_components': None,
         'test_has_two_disconnected_test_only_declared_identity_components': None,
         'declared_identity_components_are_not_authenticated_experiments': True,
