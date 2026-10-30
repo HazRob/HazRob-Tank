@@ -6,7 +6,7 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "R01_R02_R03_REVIEWED_R03_DESIGN_PENDING_OWNER_R04_R06_NOT_AUDITED",
+  "assessment_phase": "R03_COMPOSITE_SCOPE_OWNER_APPROVED_FINAL_LAYOUT_PENDING_R04_R06_NOT_AUDITED",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -19,7 +19,8 @@
     "IMPLEMENTED_ACTUAL_ANDROID_PDF_QA_PASS_OWNER_VISUAL_ACCEPTANCE_PENDING",
     "PARTIAL_APPLICABILITY",
     "SOURCE_AND_ACTUAL_PDF_AUDITED_REDESIGN_PROPOSAL_PENDING_OWNER",
-    "R03_ORIGINAL_PDF_AND_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER"
+    "R03_ORIGINAL_PDF_AND_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+    "R03_SCOPE_GFP_CHEMCORE_ADVANCED_AND_HAZARD_REFERENCES_OWNER_APPROVED_LAYOUT_PENDING"
   ],
   "note": "Existing original Android PDFs from V6 provide a baseline but this template must not claim V7 visual audit, correctness or implementation. Rule G04 is scientifically condition-dependent, not universally GHS-applicable.",
   "rules": [
@@ -635,7 +636,7 @@
         "session summary cards"
       ],
       "risk": "Changed approval evidence or inflated number of independent decisions",
-      "review_state": "R03_ORIGINAL_PDF_AND_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+      "review_state": "R03_SCOPE_GFP_CHEMCORE_ADVANCED_AND_HAZARD_REFERENCES_OWNER_APPROVED_LAYOUT_PENDING",
       "original_pdf_verified": true,
       "approved_design_mockup": false,
       "android_production_layout_changed": false,
@@ -892,7 +893,46 @@
         "D06 complete timestamps/full SHA in PDF",
         "D07 optional 3D ribbon based on actual source data",
         "D08 '-' placeholder convention for R03"
-      ]
+      ],
+      "approved_scope_requirements": [
+        {
+          "id": "R03-A09",
+          "description": "Include full R02 physical report pages and dedicated particle analytics in same approved Field Session PDF for each actually selected G/F/P measurement family, preserving archived per-cycle provenance and optionally mixed A4 orientations."
+        },
+        {
+          "id": "R03-A10",
+          "description": "Display all engine-produced 3D/4D analyses, temperature/humidity compensation, fingerprint/curve comparisons, research versus reportable ppm and executed technique provenance without PDF-side analytic gates."
+        },
+        {
+          "id": "R03-A11",
+          "description": "Make ranked candidate results prominent with original candidate-specific GHS pictograms, SDS classification provenance, and exposure-limit references TWA/STEL/Ceiling etc, preserving each result's engine evidence status."
+        },
+        {
+          "id": "R03-A12",
+          "description": "No arbitrary top-N report caps, source truncation or source gate duplication; maintain verified approved-cycle SHA and evidence integrity as independent storage guarantees."
+        }
+      ],
+      "engine_delegation_and_reuse": {
+        "mixed_mode_per_cycle": true,
+        "selected_families": "gas/physical/particles",
+        "physical_pages_same_as_R02": true,
+        "physical_page_renderer": "PhysicalReportPageRendererV7 (planned)",
+        "particle_pages_dedicated": true,
+        "particle_page_renderer": "ParticleReportPageRendererV7 (planned)",
+        "particle_archived_data": "telemetry_samples.motion_payload.particles",
+        "environment_archived_data": "telemetry_samples.env_payload",
+        "multidimensional_3d_4d": "only actual engine outputs; current coverage PARTIAL_NEW_ENGINE_CODE_PRESENT",
+        "compensation_temperature_humidity": "before/after, reference/model from engine output only",
+        "candidates_and_ghs": "all engine candidates, genuine GHS classifications separate from conditional warning symbols",
+        "exposure_limits": "authority/type/value/unit/period/reference and engine comparison status, no second PDF rules",
+        "ppm": "research-source curve/fit and reportable ppm distinguished by engine payload",
+        "current_limitations": [
+          "legacy 6-panel fixed pages",
+          "top 7 technical sessions in executive page",
+          "TankExposureReferenceCatalog top 8 candidates and 32 limits per candidate"
+        ],
+        "coding_authorization": false
+      }
     },
     {
       "report_id": "R04",
@@ -1558,7 +1598,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Discuss report R03 proposed design D01-D08, document owner approvals, then audit R04 site-level report; do not edit R03 source yet.",
+  "next_action": "Discuss final R03 page distribution, advanced charts 3D/4D and PM page style, then move to R04; leave production sources untouched for single V7 batch.",
   "visual_contract": {
     "branding_palette": [
       "black",
