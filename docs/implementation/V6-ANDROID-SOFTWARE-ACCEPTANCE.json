@@ -22,15 +22,15 @@
   ],
   "status": "IN_PROGRESS_RETEST_REQUIRED",
   "last_known_source_compiles": {
-    "run": 41008637699,
+    "run": 41008984933,
     "status": "success",
-    "source_commit": "4b30019a17bfe03865198cfa5092da6c0e698a65",
-    "scope": "FULL_ANDROID_JAVA_COMPILE_NO_APK_AND_NO_REAL_HARDWARE"
+    "source_commit": "fb9bc80d4c10dbb7a7259c2be70a01b5bd2950d1",
+    "scope": "FULL_ANDROID_JAVA_COMPILE_NO_APK_NO_HARDWARE"
   },
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "N10D_UNIFIED_734_AND_OFFLINE_STABLE_SOURCE_VERIFIED; R0_PROVENANCE_AND_INTERRUPTED_ACCEPTANCE_PATCHED_AND_CI_GREEN; ANDROID_E2E_AND_REMOTE_STABLE_NOT_CLOSED",
+  "latest_scope": "N10D_AND_R0_PERSISTENCE_INTERRUPTED_NVS_AND_UNKNOWN_WINDOW_FIXES_VERIFIED_SOURCE_CI; FULL_UI_AND_STABLE_REMOTE_PENDING",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -72,7 +72,7 @@
     "limit": "MONITORING_ONLY_NOT_CONTINUOUS_CODE_EXECUTION"
   },
   "android_r0_v6_regression_checkpoint": {
-    "head_commit": "b6fba116d19a9b5c8545784305384619c07933f9",
+    "head_commit": "36607e0b753a434c0ee2522002a32ebcd6564e8f",
     "firmware_protocol": "tank-r0-fw-v6/2",
     "warmup_seconds": 180,
     "sample_seconds": 60,
@@ -81,11 +81,12 @@
       "manual_and_phone_side_R0_replacement_removes_firmware_definition_window_samples",
       "historical_manual_R0_load_does_not_inherit_firmware_attestation",
       "firmware_accept_reconciles_pending_vs_NVS_committed_on_lost_HTTP_response",
-      "firmware_protocol_exact_duration_checked"
+      "firmware_protocol_exact_duration_checked",
+      "missing_R0_window_metadata_is_unknown_zero_not_fabricated_three_or_one"
     ],
-    "android_java_compile_run": 41008637699,
+    "android_java_compile_run": 41008984933,
     "android_java_compile_result": "PASS",
-    "scientific_source_ci_run": 41008653427,
+    "scientific_source_ci_run": 41009008729,
     "scientific_source_ci_result": "PASS",
     "emulator_chemical_library_run": 41008371068,
     "emulator_chemical_library_result": "PASS_BEFORE_FINAL_METADATA_LOAD_PATCH",
