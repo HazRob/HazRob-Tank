@@ -30,7 +30,7 @@
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "V14_21_NIOSH_VERIFIED_CAS_LINKS_9_NON_SINGLE_LABELS; AMBIENT_CONTEXT_NOT_SAFETY; PDF_A12_API31_AND_TAMPER_PASS; V5_UPGRADE_KEY_MISSING; NO_RELEASE",
+  "latest_scope": "27_SOURCE_VERIFIED_NIOSH_EQUIVALENCE_LINKS_698_CAS_COVERED_9_TYPED_MIXTURES_REPLAY_PASS; V5_SIGNATURE_IN_PLACE_UPGRADE_BLOCKED; STABLE_GITHUB_UNPUBLISHED; NO_RELEASE",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -42,14 +42,16 @@
     "android_emulator_run": 41006768825,
     "android_assertions": 118,
     "physical_tank_g3": 0,
-    "status": "SOURCE_AND_EMULATOR_VERIFIED_21_NIOSH_ALIASES_PENDING_LATEST_CSV_REPLAY",
-    "proven_synonym_links": 15,
-    "latest_synonym_proposed": 21,
+    "status": "SOURCE_AND_EMULATOR_VERIFIED_CAS_LINKS_27_AND_9_TYPED_NONSINGLE; FULL_UI_AND_REMAINING_CHEMISTRY_STILL_OPEN",
+    "proven_synonym_links": 27,
+    "latest_synonym_proposed": 27,
     "non_single_substance_labels": 9,
-    "latest_coverage_run": "41044188586_PENDING",
-    "last_verified_coverage_run": 41043662257,
-    "last_verified_coverage_direct_plus_linked_cas": 686,
-    "last_verified_individual_unlinked_cas": 39
+    "latest_coverage_run": 41044802357,
+    "last_verified_coverage_run": 41044802357,
+    "last_verified_coverage_direct_plus_linked_cas": 698,
+    "last_verified_individual_unlinked_cas": 27,
+    "latest_coverage_result": "PASS_ANDROID12_API31_137_PLUS_CHECKS",
+    "total_without_direct_or_linked_cas": 36
   },
   "embedded_stable_v6": {
     "library_version": "1.0.0-hr069r1",
@@ -132,7 +134,15 @@
     "source_tests_run": 41010901832,
     "android_compile_run": 41010932844,
     "evidence": "docs/implementation/V6-CATALOG-ENRICHMENT-AND-RELEASE-CHECKPOINT-2026-10-30_AR.md",
-    "release_authorization": "NO_RELEASE"
+    "release_authorization": "NO_RELEASE",
+    "niosh_source_verified_synonym_links": 27,
+    "cas_direct_or_niosh_linked": 698,
+    "total_cas_unresolved": 36,
+    "conceptual_non_single_cas_labels": 9,
+    "individual_materials_without_qualified_cas": 27,
+    "latest_android12_coverage_run": 41044802357,
+    "latest_scientific_source_tests": 41044830613,
+    "last_confirmed_android_compile": 41044748497
   },
   "ambient_source_qualification_v6": {
     "natural_range_status": "NO_QUALIFIED_NATURAL_RANGE",
