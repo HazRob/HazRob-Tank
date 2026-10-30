@@ -34,6 +34,14 @@ import java.util.Set;
 public final class GhsPictograms {
     public static final String SCHEMA="hazrob-tank-ghs-provenance/1";
     private GhsPictograms(){}
+    // Only hold the application context (never an Activity) for deferred
+    // PDF export on a worker thread. Graphics remain offline resources.
+    private static volatile Context applicationContext;
+    public static void bindContext(Context context){
+        if(context!=null)applicationContext=context.getApplicationContext();
+    }
+    public static Context applicationContext(){return applicationContext;}
+
 
     public static boolean valid(String code){
         return code!=null&&code.matches("GHS0[1-9]");
