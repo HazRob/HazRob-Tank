@@ -33,7 +33,13 @@ class NioshSynonymContract(unittest.TestCase):
                       '{"70","1,2-Dichloropropane","Propylene dichloride","78-87-5"}',
                       '{"112","2-Butanone / MEK","2-Butanone","78-93-3"}',
                       '{"120","Diethyl Ether","Ethyl ether","60-29-7"}',
-                      '{"125","Chlorodifluoromethane / R22","Chlorodifluoromethane","75-45-6"}'):
+                      '{"125","Chlorodifluoromethane / R22","Chlorodifluoromethane","75-45-6"}',
+                      '{"10","Silane","Silicon tetrahydride","7803-62-5"}',
+                      '{"87","n-Octane","Octane","111-65-9"}',
+                      '{"88","n-Nonane","Nonane","111-84-2"}',
+                      '{"102","Mesitylene","1,3,5-Trimethylbenzene","108-67-8"}',
+                      '{"113","MIBK","Hexone","108-10-1"}',
+                      '{"117","Propyl Acetate","n-Propyl acetate","109-60-4"}'):
             self.assertIn(entry,SRC)
         self.assertNotIn('"Aniline (and homologs)"',SRC)
         self.assertNotIn('"TVOC","',SRC)
@@ -45,7 +51,7 @@ class NioshSynonymContract(unittest.TestCase):
         self.assertIn("automatic_measurement_rekey_performed",DETAIL)
         self.assertIn("alias_link_is_not_new_gas_detection_evidence",DETAIL)
     def test_source_executed_on_android_emulator(self):
-        self.assertIn("verifiedSynonyms==21",FIXTURE)
+        self.assertIn("verifiedSynonyms==27",FIXTURE)
         self.assertIn("synonymAudit.inserted==0",FIXTURE)
         self.assertIn("source_qualified_identity_aliases",FIXTURE)
         self.assertIn("SELECT COUNT(*) FROM chemicals",FIXTURE)
