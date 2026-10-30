@@ -375,10 +375,8 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
             "d_count, (SELECT COUNT(*) FROM mq_chemical_reference_curves m WHERE m.chemical_uid=v13.uid AND m.referenc"+
             "e_r0_kohm IS NOT NULL) AS mq_source_r0_numeric_count, (SELECT COUNT(*) FROM mq_chemical_reference_curves "+
             "m WHERE m.chemical_uid=v13.uid AND m.reference_rs_kohm IS NOT NULL) AS mq_source_rs_numeric_count, CASE W"+
-            "HEN EXISTS(SELECT 1 FROM chemical_background_ranges b WHERE b.chemical_uid=v13.uid AND "+ 
-"
-            "b.qualification_status='SOURCE_QUALIFIED' AND b.range_min IS NOT NULL AND b.range_max IS NOT NULL "+ 
-"
+            "HEN EXISTS(SELECT 1 FROM chemical_background_ranges b WHERE b.chemical_uid=v13.uid AND "+
+            "b.qualification_status='SOURCE_QUALIFIED' AND b.range_min IS NOT NULL AND b.range_max IS NOT NULL "+
             "AND b.range_min<=b.range_max) THEN 'SO"+
             "URCE_QUALIFIED_ENVIRONMENTAL_RANGE' ELSE 'NO_QUALIFIED_NATURAL_RANGE' END AS natural_concentration_covera"+
             "ge_status, CASE WHEN v13.hazard_boundary_count>0 THEN 'HAS_SCOPE_BOUND_HAZARD_REFERENCE' ELSE 'NO_QUALIFI"+
