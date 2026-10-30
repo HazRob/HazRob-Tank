@@ -134,17 +134,17 @@
     {
       "id": "V7-R02",
       "name": "Audit source PDF page by page against mandatory G01-G13 rules and correct applicability for six original report types",
-      "status": "TODO"
+      "status": "R01_AUDITED_REMAINING_5_TODO"
     },
     {
       "id": "V7-R03",
       "name": "Data-provenance and chart eligibility registry for relevant analytical diagrams",
-      "status": "TODO"
+      "status": "R01_CANDIDATES_PROPOSED_OWNER_NOT_APPROVED"
     },
     {
       "id": "V7-R04",
       "name": "Approve unified final hex theme, authentic logo placement, A4 pagination and one mockup for each report (G01-G13 binding)",
-      "status": "OWNER_REQUIREMENTS_APPROVED_MOCKUPS_PENDING"
+      "status": "R01_DESIGN_PROPOSAL_PENDING_OWNER"
     },
     {
       "id": "V7-R05",
@@ -214,7 +214,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "G01-G13 owner requirements documented; per-report audit scaffolding created with NOT_AUDITED states for six original Android PDF types; next implementation checkpoint V7-R01.",
+  "latest_documented_change": "Sequential report-by-report approval process documented. R01 authentic source+sample PDF analyzed; proposed redesign awaits owner. Other 5 reports remain NOT_AUDITED. No production Android changes.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -249,5 +249,28 @@
     "report_count": 6,
     "review_results": "0 assessed / 6 report types",
     "commit": "60f137d79e0a29dca4653408b058d27219d2bc4f"
+  },
+  "sequential_plan": {
+    "document": "docs/implementation/V7-REPORTS-SEQUENTIAL-REVIEW-PLAN-2026-10-30_AR.md",
+    "owner_policy": "one report at a time: source audit -> proposal -> owner approval -> implement -> original Android PDF -> QA -> next",
+    "commit": "f0744950daca11094f5b9d1dbab6cefce501f380"
+  },
+  "active_report": {
+    "id": "R01",
+    "name": "Instant ChemCore V6 gas research report",
+    "phase": "ANALYSIS_COMPLETED_PROPOSAL_PENDING_OWNER",
+    "document": "docs/implementation/V7-R01-INSTANT-GAS-REPORT-ANALYSIS-2026-10-30_AR.md",
+    "commit": "96594b4642cd97814d5bd7b84c98febda2e845a6",
+    "original_pdf_sha256": "7c4cf3c7de06529f6d604df7c7c93ff5ee084453efdfc554e73db736f24b0725",
+    "proposed_decisions": [
+      "P01 page adaptation",
+      "P02 evidence matrix and conditional fingerprint",
+      "P03 decision rail",
+      "P04 OEL and GHS as conditional reference",
+      "P05 official logo",
+      "P06 technical annex"
+    ],
+    "owner_approved": false,
+    "production_changes": 0
   }
 }
