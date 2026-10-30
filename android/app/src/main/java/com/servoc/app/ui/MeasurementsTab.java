@@ -280,7 +280,7 @@ public final class MeasurementsTab {
                 }
                 scroll.post(()->{
                     new AlertDialog.Builder(c).setCustomTitle(ghsDetailTitle(chemical,label))
-                        .setMessage("CAS: "+repo.catalogCasLabel(chemical)+
+                        .setMessage("CAS: "+new ChemicalRepository(host.database()).catalogCasLabel(chemical)+
                             "\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+
                             "\nالاسم: "+chemical.name+
                             "\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+
