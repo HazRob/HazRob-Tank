@@ -85,9 +85,16 @@ public final class TankV6TelemetryAdapter {
              sensor.optBoolean("r0_clean_air_reference_independently_verified",false));
         if(!sourceEligible)return false;
         // Firmware variants must have their independent sampling evidence.
-        if("firmware_clean_air_r0".equals(source)&&
-            sensor.optInt("r0_samples",0)<10)
-            return false;
+        if("firmware_clean_air_r0".equals(source)){
+            // V5 firmware divides Rs(clean air) by MQ model's approximate
+            // R0 factor. That legacy R0 gives Rs/R0~3.6..70 in clean air,
+            // NOT the ~1 baseline assumed by V6. Explicit versioned
+            // clean-air definition is mandatory to prevent false positives.
+            if(!"DEVICE_CLEAN_AIR_RS_MEAN".equals(
+                    sensor.optString("r0_definition","")))return false;
+            if(sensor.optInt("r0_samples",0)<30 ||
+               sensor.optInt("r0_window_count",0)!=3)return false;
+        }
         boolean complete=sensor.optBoolean("r0_provenance_complete",false)||
             (!sensor.optString("r0_session","").isEmpty()&&
              !sensor.optString("r0_utc","").isEmpty());
