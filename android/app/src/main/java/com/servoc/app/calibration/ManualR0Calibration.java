@@ -73,8 +73,10 @@ public final class ManualR0Calibration {
     public static synchronized int getWindowCount(String key){
         key=norm(key);Integer c=r0WindowCounts.get(key);
         if(c!=null)return c;
-        return "automatic_clean_air_field_r0".equals(getSource(key))?3:
-            "firmware_clean_air_r0".equals(getSource(key))?1:0;
+        // Absent window metadata is unknown, never an assumed three-window
+        // study or a presumed one-window firmware capture. Historical values
+        // remain usable for raw research without fabricating sample evidence.
+        return 0;
     }
     public static synchronized boolean has(String key){double v=get(key);return Double.isFinite(v)&&v>0;}
 
