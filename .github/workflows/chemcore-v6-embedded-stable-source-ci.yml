@@ -47,6 +47,13 @@ jobs:
                           ("versionCode 30","versionCode 6")):
               assert old in s, old
               s=s.replace(old,new)
+          stable_url='https://raw.githubusercontent.com/HazRob/HazRob-Tank/main/updates/chemcore-stable/manifest.json'
+          key="buildConfigField 'String', 'CHEMCORE_LIBRARY_MANIFEST_URL', "
+          pattern=key+"'"+chr(34)*2+"'"
+          replacement=key+"'"+chr(34)+stable_url+chr(34)+"'"
+          assert pattern in s
+          s=s.replace(pattern,replacement)
+          assert replacement in s
           p.write_text(s)
           PY
           python3 source/tools/prepare_v6_stable_source.py source
