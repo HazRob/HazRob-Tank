@@ -259,7 +259,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Owner reaffirmed no report-layer gating, R02 covers all 15 physical indicators including radiation UV wind illumination and PM; missing value label must be literal '-' (not 'غير متوفر'); documentation only, no Java source change.",
+  "latest_documented_change": "R03 source and original six-page Android PDF audited, quantified fonts and empty panels, checked approved-cycle SHA and V6 read-only source replay, created owner discussion options D01–D08; no R03 code changed. R04 next after signoff.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -310,38 +310,22 @@
     "commit": "f0744950daca11094f5b9d1dbab6cefce501f380"
   },
   "active_report": {
-    "id": "R02",
-    "name": "Physical Measurement Snapshot PDF",
-    "phase": "R02_PARTIAL_OWNER_REQUIREMENTS_APPROVED_LAYOUT_PENDING",
-    "analysis_document": "docs/implementation/V7-R02-PHYSICAL-REPORT-ANALYSIS-PROPOSAL-2026-10-30_AR.md",
-    "report_source": "android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java",
-    "data_source_entry": "MainActivity.requestPhysicalSnapshotPdf -> latestDiag; pendingPhysicalUtc from isoNow at report request",
-    "original_pdf_sha256": "4c40b7db8aee256036e69490e80b38d6d1a3ce7b54f04473c79cd6504f787572",
-    "standards": "HZT-V7-RPT-STD-001 rev 1.1 G01-G18",
-    "findings": [
-      "No logo/header/footer, misleading old V3 title",
-      "Actual font sizes 9,11,12,19pt; some <12pt",
-      "No gauges, comparative graphs, bordered tables or genuine temporal statistics",
-      "5 measured, 7 unavailable of 12 physical indicators in synthetic QA fixture",
-      "Altimeter estimate computed in the PDF rather than engine",
-      "Instantaneous 90 dBA warning worded as operator threshold; occupational exposure standards require duration/context",
-      "Timestamp uses report request isoNow rather than verified sensor sample time"
+    "id": "R03",
+    "name": "Approved Field Session PDF",
+    "phase": "SOURCE_AND_SIX_PAGE_ORIGINAL_AUDITED_OWNER_DISCUSSION_PENDING",
+    "analysis_document": "docs/implementation/V7-R03-APPROVED-FIELD-SESSION-PDF-AUDIT-AND-REDESIGN-2026-10-30_AR.md",
+    "issues": [
+      "2 fully empty 6-panel analysis pages in synthetic QA due absent legacy ChemCore decision",
+      "fonts mostly less than 12pt; page2 as low as 4.7pt",
+      "fixed four/five base pages + pagination annex; excess whitespace and chart crowding",
+      "up to seven technical sessions shown on executive page only; rest delegated to XLSX",
+      "SHA-256 and timestamps truncated in PDF",
+      "no fixed approved logo/bilingual header/footer",
+      "need true engine execution decision and source explanation"
     ],
-    "discussion_decisions": [
-      "R02-D02: compact matrix of unavailable channels vs full table",
-      "R02-D03: include optional time-series statistics page only if engine supplies historic observations",
-      "R02-D04: one-page adaptive A4 layout with overflow, no text under 12pt",
-      "R02-D05: GHS N/A to physical-only measurements; engine-authoritative references",
-      "Flexible count of physical gauges; all 15 indicators represented; report pages paginate without suppressing metrics"
-    ],
-    "source_code_changed": false,
-    "owner_approved": false,
-    "next_step": "Discuss R02 diagram choices, approve report-specific design, then move to R03 without new production edits",
-    "approved_requirements": [
-      "Always use '-' (ASCII hyphen) for missing physical indicator values in R02 tables/cards; never synthesize zero",
-      "Include all 15 indicators from PhysicalCatalog: radiation, UV, wind, illuminance/flux, vibration, PM, altitude and core measurements",
-      "Use metric-specific vector icons; avoid second report-layer scientific constraints; display all engine-provided analyses"
-    ]
+    "proposal": "Six expandable report modules with executive and cycle timeline, MQ evidence heatmap, engine decision explanation and provenance, physical/PM integration, full audit and source hashes",
+    "design_approved": false,
+    "production_changes": 0
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -364,9 +348,9 @@
     "pending": "Production PDF integration and Android render visual match"
   },
   "next_report": {
-    "id": "R03",
-    "name": "Approved Field Session PDF",
-    "state": "NEXT_SOURCE_AUDIT_AFTER_R02_DISCUSSION"
+    "id": "R04",
+    "name": "Site Summary PDF",
+    "phase": "TO_REVIEW_AFTER_R03_DISCUSSION"
   },
   "workflow_policy": {
     "id": "V7-RPT-BATCH-PLAN-001",
@@ -374,7 +358,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_DISCUSSIONS_R02",
+    "current_phase": "DESIGN_DISCUSSIONS_R03",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -454,5 +438,27 @@
     "production_changes_paused": true,
     "qa_document": "docs/implementation/V7-R01-IMPLEMENTATION-QA-2026-10-30_AR.md",
     "owner_final_visual_acceptance": false
+  },
+  "completed_design_audits": {
+    "R03": {
+      "status": "ORIGINAL_SOURCE_AND_PDF_AUDITED_DESIGN_NOT_YET_OWNER_APPROVED",
+      "pdf_sha256": "e3dbaf106f4989ee0c119e6dc8558afb57992a52085da5b36277a0af7343addf",
+      "page_count": 6,
+      "original_pdf_run": 41124888027,
+      "document": "docs/implementation/V7-R03-APPROVED-FIELD-SESSION-PDF-AUDIT-AND-REDESIGN-2026-10-30_AR.md",
+      "owner_decision_ids": [
+        "R03-D01",
+        "R03-D02",
+        "R03-D03",
+        "R03-D04",
+        "R03-D05",
+        "R03-D06",
+        "R03-D07",
+        "R03-D08"
+      ],
+      "scientific_engine_single_authority": true,
+      "approved_cycle_integrity_guards_preserved": true,
+      "production_code_changed": false
+    }
   }
 }
