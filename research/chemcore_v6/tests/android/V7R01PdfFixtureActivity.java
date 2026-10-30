@@ -219,8 +219,13 @@ public final class V7R01PdfFixtureActivity extends Activity {
         if(beefResult.rankedClasses.size()<4)throw new IllegalStateException("Missing beef classes");
         Uri meatUri=BeefResearchPdf.save(this,beefResult,beef,179,180000L,
             "CI-V6-MEAT",26.4,52.5);
-        copy("06_V6_Meat_Freshness_Original.pdf",meatUri);
-        verify("06_V6_Meat_Freshness_Original.pdf");
+        copy("V7_R06_Actual_Android_Report.pdf",meatUri);
+        int beefPages=verify("V7_R06_Actual_Android_Report.pdf");
+        if(beefPages<3)throw new IllegalStateException(
+            "V7 beef must include study research evidence section");
+        status.put("v7_r06",new JSONObject().put("pages",beefPages)
+            .put("research_model","SOURCE_ONLY_BEEF_TS5_CONFUSION")
+            .put("sample","SYNTHETIC_TEST_FIXTURE_NOT_TANK_MEAT_VALIDATION"));
         status.put("status","PASS");
         status.put("data_origin","EXPLICIT_SYNTHETIC_TEST_FIXTURES_NOT_PHYSICAL_TANK");
         status.put("renderer","ACTUAL_ANDROID_SKIA_PRODUCTION_PDF_GENERATORS");
