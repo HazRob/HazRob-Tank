@@ -280,7 +280,7 @@ public final class MeasurementsTab {
                 }
                 scroll.post(()->{
                     new AlertDialog.Builder(c).setCustomTitle(ghsDetailTitle(chemical,label))
-                        .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+
+                        .setMessage("CAS: "+repo.catalogCasLabel(chemical)+
                             "\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+
                             "\nالاسم: "+chemical.name+
                             "\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+
@@ -344,7 +344,7 @@ public final class MeasurementsTab {
                 if(!"جميع العائلات".equals(family)&&!matchesFamily(family,chemical.chemicalClass))continue;
                 visibleChemicals.add(chemical);
                 String label=chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name;
-                labels.add("🧪 "+label+"    |    "+(chemical.cas==null?"—":chemical.cas)+"    |    "+(chemical.chemicalClass==null?"—":chemical.chemicalClass));
+                labels.add("🧪 "+label+"    |    "+repo.catalogCasLabel(chemical)+"    |    "+(chemical.chemicalClass==null?"—":chemical.chemicalClass));
             }
             int sort=sortSpinner.getSelectedItemPosition();
             if(sort>=0){
@@ -357,7 +357,7 @@ public final class MeasurementsTab {
                 labels.clear();
                 for(ChemicalRepository.Chemical chemical:visibleChemicals){
                     String label=chemical.arabicName!=null&&!chemical.arabicName.isEmpty()?chemical.arabicName:chemical.name;
-                    labels.add("🧪 "+label+"    |    "+(chemical.cas==null?"—":chemical.cas)+"    |    "+(chemical.chemicalClass==null?"—":chemical.chemicalClass));
+                    labels.add("🧪 "+label+"    |    "+repo.catalogCasLabel(chemical)+"    |    "+(chemical.chemicalClass==null?"—":chemical.chemicalClass));
                 }
             }
             chemicalAdapter.clear();
@@ -1034,10 +1034,16 @@ public final class MeasurementsTab {
                 .setView(query)
                 .setNegativeButton("إلغاء",null)
                 .setPositiveButton("بحث",(d,w)->{
-                    List<ChemicalRepository.Chemical> matches=new ChemicalRepository(host.database()).search(query.getText().toString(),30);
+                    ChemicalRepository pickerRepo=new ChemicalRepository(host.database());
+                    List<ChemicalRepository.Chemical> matches=pickerRepo.search(query.getText().toString(),30);
                     if(matches.isEmpty()){host.showToast("لا توجد مادة مطابقة في المكتبة");return;}
                     String[] labels=new String[matches.size()];
-                    for(int i=0;i<matches.size();i++)labels[i]=matches.get(i).label();
+                    for(int i=0;i<matches.size();i++){
+                        ChemicalRepository.Chemical m=matches.get(i);
+                        String known=pickerRepo.catalogCasLabel(m);
+                        labels[i]=m.label()+(m.cas==null&&!"—".equals(known)?
+                            " • "+known:"");
+                    }
                     android.widget.ListAdapter candidateAdapter=new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,labels){
                         @Override public View getView(int position,View reused,android.view.ViewGroup parent){
                             View row=super.getView(position,reused,parent);
