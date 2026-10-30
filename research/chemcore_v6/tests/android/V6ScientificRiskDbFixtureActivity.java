@@ -255,7 +255,8 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(nistAudit.proposed==27&&nistAudit.matched==27&&
                 nistAudit.rejected==0&&nistAudit.casFilled==0&&
                 nistAudit.massFilled==0,
-                "27 verified NIST CAS identities and masses are idempotent");
+                "27 NIST CAS idempotence "+nistAudit.summary()+
+                    "; bootstrap="+db.getMeta("v6_chemical_nist_cas_completion","missing"));
             check(num(sql,"SELECT COUNT(*) FROM chemical_sources "+
                 "WHERE source_id='NIST_WEBBOOK' AND "+
                 "record_url LIKE 'https://webbook.nist.gov/cgi/cbook.cgi?ID=%'")==27,
