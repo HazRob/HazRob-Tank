@@ -92,9 +92,18 @@ public final class V7ReportLayoutKit {
         c.restore();
         return layout.getHeight();
     }
-    public static boolean fits(Canvas c,String value,RectF box,boolean rtl,
-                               boolean bold,float pt,int color){
-        return text(c,value,box,rtl,bold,pt,color)<=box.height();
+    /** Measure before drawing: enables page breaks without clipping or a side effect. */
+    public static boolean fits(String value,RectF box,boolean rtl,
+                               boolean bold,float pt){
+        if(pt<MIN_BODY_PT)throw new IllegalArgumentException("V7 text below 12pt");
+        String s=missing(value);
+        TextPaint p=new TextPaint(paint(INK,bold,pt));
+        StaticLayout layout=StaticLayout.Builder.obtain(s,0,s.length(),p,
+            Math.max(1,(int)box.width()))
+            .setTextDirection(rtl?TextDirectionHeuristics.FIRSTSTRONG_RTL:
+                TextDirectionHeuristics.FIRSTSTRONG_LTR)
+            .setLineSpacing(0,1.15f).setIncludePad(false).build();
+        return layout.getHeight()<=box.height();
     }
     public static void drawHeader(Canvas c,Context context,boolean landscape,
                                   String titleArabic,String titleEnglish,
@@ -152,10 +161,13 @@ public final class V7ReportLayoutKit {
      */
     public static void measuredValue(Canvas c,RectF r,String value,boolean rtl,
                                      boolean engineReportsExceeded){
-        fill(c,r,engineReportsExceeded?EXCEEDED_RED:WHITE);outline(c,r);
+        boolean hasReading=value!=null && !value.trim().isEmpty() &&
+            !"-".equals(value.trim());
+        boolean exceeded=hasReading && engineReportsExceeded;
+        fill(c,r,exceeded?EXCEEDED_RED:WHITE);outline(c,r);
         text(c,missing(value),new RectF(r.left+mm(2),r.top+mm(1),
-            r.right-mm(2),r.bottom-mm(1)),rtl,engineReportsExceeded,12,
-            engineReportsExceeded?WHITE:BLACK);
+            r.right-mm(2),r.bottom-mm(1)),rtl,exceeded,12,
+            exceeded?WHITE:BLACK);
     }
     /** Plot area without fake points, bars, numeric ticks or threshold lines. */
     public static void blankChart(Canvas c,RectF r,String title,String xAxis,String yAxis){
