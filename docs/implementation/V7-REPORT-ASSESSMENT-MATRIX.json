@@ -6,7 +6,7 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "R05_ORIGINAL_FRUIT_PDF_AND_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER_R06_UNAUDITED",
+  "assessment_phase": "R05_OWNER_APPROVED_TWO_PAGE_FRUIT_PHOTO_MATRIX_DESIGN_VISUAL_TEMPLATE_PENDING_R06_NOT_AUDITED",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -22,7 +22,8 @@
     "R03_ORIGINAL_PDF_AND_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
     "R03_SCOPE_GFP_CHEMCORE_ADVANCED_AND_HAZARD_REFERENCES_OWNER_APPROVED_LAYOUT_PENDING",
     "R04_ORIGINAL_FIVE_PAGE_SITE_PDF_AUDITED_LAYOUT_PROPOSED_AWAITING_OWNER",
-    "R05_ORIGINAL_ONE_PAGE_AND_FRUIT_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER"
+    "R05_ORIGINAL_ONE_PAGE_AND_FRUIT_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+    "R05_OWNER_APPROVED_2_PAGE_18_FRUIT_PHOTO_MATRIX_DESIGN_PREVIEW_PENDING"
   ],
   "note": "Existing original Android PDFs from V6 provide a baseline but this template must not claim V7 visual audit, correctness or implementation. Rule G04 is scientifically condition-dependent, not universally GHS-applicable.",
   "rules": [
@@ -1274,7 +1275,7 @@
         "feature radar when dimensionally appropriate"
       ],
       "risk": "Similarity represented as certified food-safety status",
-      "review_state": "R05_ORIGINAL_ONE_PAGE_AND_FRUIT_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+      "review_state": "R05_OWNER_APPROVED_2_PAGE_18_FRUIT_PHOTO_MATRIX_DESIGN_PREVIEW_PENDING",
       "original_pdf_verified": true,
       "approved_design_mockup": false,
       "android_production_layout_changed": false,
@@ -1284,7 +1285,7 @@
       "pdf_file_sha256": "21e97701f8d4f1fff9f67d83ee57ee0ca7f8568ba5ce04d66c9c75b7e6002a1c",
       "ci_run": 41124888027,
       "code_commit": null,
-      "owner_design_signoff": false,
+      "owner_design_signoff": true,
       "rule_checklist": {
         "G01": {
           "status": "FAIL",
@@ -1497,10 +1498,10 @@
       "proposed_layout": {
         "page_orientation": "A4 portrait",
         "page_groups": [
-          "F-01 source/sample executive cards and 8 MQ channel rows + blank fingerprint plot",
-          "F-02 source-vs-observed fingerprint plus ranked reference table",
-          "F-03 actual capture time response chart separate from D1-D5 study-days chart + source and limitations",
-          "F-04 unlimited appendix pages for all reference matches"
+          "Two portrait A4 pages, each with 9 image+fruit category rows (18 families total)",
+          "Repeated page header and table headings, selected-only engine result and '-' for unselected",
+          "One blank 40mm sensor/reference chart area at bottom of each page",
+          "Expandable referenced profiles appendix only when >2 pages needed to avoid trimming"
         ],
         "chart_types": [
           "Eight-channel MQ fingerprint",
@@ -1519,6 +1520,52 @@
         "no_fake_freshness_quality_grade": true,
         "minimum_text_point": 12,
         "owner_approved": false
+      },
+      "owner_approved_design_document": "docs/implementation/V7-R05-OWNER-APPROVED-TWO-PAGE-FRUIT-IMAGE-MATRIX-2026-10-30_AR.md",
+      "owner_approved_design": {
+        "pages_target": 2,
+        "orientation": "A4 portrait",
+        "pages_extend_when_overflow": true,
+        "total_fruit_selection_families": 18,
+        "active_fruit_reference_profiles": 54,
+        "excluded_mushroom_profiles": 5,
+        "all_categories_always_visible": true,
+        "first_visual_rtl_column": "Fruit photo or mixture photo, permanent static image",
+        "result_column_summaries": [
+          "Arabic/English name",
+          "Closest reference and study day",
+          "Similarity index, not freshness/safety %",
+          "Overlapping MQ sensors",
+          "Evidence quality/source note"
+        ],
+        "nonselected_value": "-",
+        "selected_value": "engine result only later",
+        "all_families_selected": "all source-returned fruit families may be populated in later functional phase",
+        "font_min_pt": 12,
+        "grid_page_rows": 9,
+        "grid_header_mm": 16,
+        "grid_row_mm": 18,
+        "thumbnail_mm": [
+          22,
+          14
+        ],
+        "column_widths_mm": [
+          25,
+          56,
+          31,
+          28,
+          26,
+          34
+        ],
+        "each_page_blank_chart_mm": [
+          200,
+          40
+        ],
+        "photo_assets_status": "required but not yet produced; source/licensing recorded when supplied",
+        "no_data_charts": "empty axes and title only",
+        "no_gas_chemcore_reinterpretation": true,
+        "owner_requirement_approved": true,
+        "visual_final_pdf_approved": false
       }
     },
     {
@@ -1748,7 +1795,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Discuss R05-D01–D06; source D1-D5 days versus Tank 180s, all 54 active fruit references, 8 MQ, no gas ChemCore GHS/PPM, blank chart geometry and '-' values. No production code.",
+  "next_action": "R05 design requirements approved. Gather licensed static images for 18 fruit/mixture families and render blank-data two-page Android layout preview later; R06 meat report next for independent design audit. No engine or PDF production source changes now.",
   "visual_contract": {
     "branding_palette": [
       "black",
