@@ -36,6 +36,9 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
       mq.put(keys[i],new JSONObject().put("rs",r0[i]).put("r0",r0[i])
         .put("ok",true).put("valid",true).put("powered",true)
         .put("r0_source","automatic_clean_air_field_r0")
+        .put("r0_definition","DEVICE_CLEAN_AIR_RS_MEAN")
+        .put("r0_window_count",1).put("r0_samples",15)
+        .put("r0_device_id","EMULATOR-SYNTHETIC-NOT-A-PHYSICAL-TANK")
         .put("r0_provenance_complete",true).put("scan_cycle",42));
     }
     JSONObject original=new JSONObject().put("mq",mq)
@@ -193,6 +196,32 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
       require(legacyScaledOut.getJSONObject("baseline_response_gate")
           .optInt("accepted_device_r0_channels",-1)==0,
           "manufacturer-factor R0 must not be treated as clean-air Rs mean");
+      // A legacy phone-side automatic R0 had a source label and timestamp
+      // but no window sample count or controller identity. Such a record
+      // cannot be promoted to normal-air reference evidence.
+      JSONObject legacyAutomatic=new JSONObject(original.toString());
+      for(String k:keys){
+        JSONObject v=legacyAutomatic.getJSONObject("mq").getJSONObject(k);
+        v.remove("r0_definition");
+        v.remove("r0_window_count");
+        v.remove("r0_samples");
+        v.remove("r0_device_id");
+      }
+      JSONObject legacyAutomaticResult=TankInstantAnalyzer.analyze(
+          db,legacyAutomatic,now+1650).analysis;
+      require(legacyAutomaticResult.getJSONObject("baseline_response_gate")
+          .optInt("accepted_device_r0_channels",-1)==0,
+          "historic phone auto-R0 without sample/window/device evidence rejected");
+      require(legacyAutomaticResult.getJSONArray("candidates").length()==0,
+          "unqualified historical automatic R0 never creates gas candidates");
+      JSONObject unboundAutomatic=new JSONObject(original.toString());
+      for(String k:keys)
+        unboundAutomatic.getJSONObject("mq").getJSONObject(k).remove("r0_device_id");
+      JSONObject unboundResult=TankInstantAnalyzer.analyze(
+          db,unboundAutomatic,now+1675).analysis;
+      require(unboundResult.getJSONObject("baseline_response_gate")
+          .optInt("accepted_device_r0_channels",-1)==0,
+          "source window evidence alone without automatic controller binding is not sufficient");
       JSONObject explicitThreeWindow=new JSONObject(legacyScaled.toString());
       for(String k:keys){
           explicitThreeWindow.getJSONObject("mq").getJSONObject(k)
