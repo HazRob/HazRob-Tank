@@ -120,6 +120,7 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
     # not treated as independent samples.
     has_physical_sample_ids = "physical_sample_id" in predictions[0]
     physical_sample_groups = {}
+    physical_sample_true_labels = {}
     physical_sample_read_counts = Counter()
     physical_sample_outcomes = {}
 
@@ -139,6 +140,7 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
                     and physical_sample_groups[sample_id] != group):
                 raise ValueError("PAIRED_REPLAY_PHYSICAL_SAMPLE_GROUP_LEAKAGE")
             physical_sample_groups[sample_id] = group
+            physical_sample_true_labels.setdefault(sample_id, set()).add(row['true_reference'])
             physical_sample_read_counts[sample_id] += 1
         assignment.append([exposure, group])
         outcome_rows.append([exposure, group, row["true_reference"],
@@ -347,6 +349,14 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
             if sum(r[key] for r in support) != per_group_outcomes[group][key]:
                 raise ValueError("PAIRED_REPLAY_CLASS_GROUP_DISCORDANCE_INVALID")
 
+    # A declared sample ID used for multiple true classes is ambiguous for
+    # equal-sample weighting. Flag it without assuming whether it represents
+    # a reused vessel, a changing exposure, or a mislabeled sample.
+    mixed_label_samples = sorted(
+        sample_id for sample_id, labels in physical_sample_true_labels.items()
+        if len(labels) > 1
+    )
+
     # Equal weight per declared physical sample, rather than per repeated
     # sensor reading. This is descriptive and cannot authenticate sample IDs.
     sample_equal_weight_diagnostics = None
@@ -399,6 +409,8 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
             sum(model_correct.values()) - sum(baseline_correct.values())
         ) / len(predictions)
         sample_equal_weight_diagnostics = {
+            "mixed_true_reference_declared_sample_count": len(mixed_label_samples),
+            "all_declared_samples_single_true_reference_class": not mixed_label_samples,
             "equal_declared_sample_mean_delta": sample_delta,
             "exposure_weighted_delta": exposure_delta,
             "sample_vs_exposure_weighted_sign_reversal": (
@@ -421,6 +433,19 @@ def replay_paired_predictions(predictions_csv, metrics_per_group_csv,
         "paired_outcomes_recomputed_from_same_exposure_rows": True,
         "per_group_metrics_recomputed_from_prediction_rows": True,
         "physical_sample_group_consistency_checked": has_physical_sample_ids,
+        "physical_sample_true_class_consistency_checked": has_physical_sample_ids,
+        "declared_samples_with_multiple_true_reference_classes": (
+            mixed_label_samples if has_physical_sample_ids else None
+        ),
+        "declared_samples_with_single_true_reference_class": (
+            len(physical_sample_true_labels) - len(mixed_label_samples)
+            if has_physical_sample_ids else None
+        ),
+        "sample_true_class_scope": (
+            "DECLARED_ID_TO_TRUE_CLASS_AMBIGUITY_ONLY;"
+            "MIXED_CLASS_SAMPLE_ID_MAY_MEAN_REUSED_VESSEL_OR_CHANGED_EXPOSURE;"
+            "NOT_AUTHENTICATED_SAMPLE_OR_G2_G3_APPROVAL"
+        ),
         "declared_physical_sample_equal_weight_diagnostic": sample_equal_weight_diagnostics,
         "distinct_declared_physical_samples": (
             len(physical_sample_groups) if has_physical_sample_ids else None
