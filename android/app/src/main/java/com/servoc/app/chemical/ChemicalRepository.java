@@ -95,6 +95,44 @@ public final class ChemicalRepository {
             android.util.Log.w("TankUnifiedChemCatalog",
                 "Cannot read source-qualified hazard profile uid="+uid,ex);
         }
+        // A synonym pair from the NIOSH Pocket Guide points to the same
+        // substance but does NOT erase the legacy UID or transplant exposure
+        // evidence into old approved experiments. Surface both directions of
+        // the crosswalk so consumers can resolve the master identity deliberately.
+        JSONArray identityAliases=new JSONArray();
+        try(Cursor alias=db.getReadableDatabase().rawQuery(
+                "SELECT x.alias_uid,x.canonical_uid,x.source_cas,x.source_id,"+
+                "x.source_url,x.evidence_status,a.name_en,b.name_en "+
+                "FROM chemical_identity_equivalence_v6 x "+
+                "JOIN chemicals a ON a.uid=x.alias_uid "+
+                "JOIN chemicals b ON b.uid=x.canonical_uid "+
+                "WHERE x.alias_uid=? OR x.canonical_uid=? "+
+                "ORDER BY x.alias_uid LIMIT 100",
+                new String[]{Long.toString(uid),Long.toString(uid)})){
+            while(alias.moveToNext()){
+                JSONObject item=new JSONObject();
+                item.put("alias_uid",alias.getLong(0));
+                item.put("canonical_uid",alias.getLong(1));
+                item.put("cas",alias.getString(2));
+                item.put("source_id",alias.getString(3));
+                item.put("source_url",alias.getString(4));
+                item.put("evidence_status",alias.getString(5));
+                item.put("historical_name",alias.getString(6));
+                item.put("canonical_name",alias.getString(7));
+                item.put("relation_to_query",alias.getLong(0)==uid?
+                    "HISTORICAL_ALIAS_OF_CANONICAL_UID":"CANONICAL_FOR_HISTORICAL_ALIAS");
+                item.put("automatic_measurement_rekey_performed",false);
+                identityAliases.put(item);
+            }
+        }catch(Exception e){
+            android.util.Log.w("TankUnifiedChemCatalog",
+                "NIOSH synonym crosswalk unavailable for uid="+uid,e);
+        }
+        try{
+            out.put("source_qualified_identity_aliases",identityAliases);
+            out.put("source_qualified_identity_alias_count",identityAliases.length());
+            out.put("alias_link_is_not_new_gas_detection_evidence",true);
+        }catch(Exception ignored){}
         // These observations are linked via applicable MQ sensor MODELS,
         // never via chemical identity. An external sensor's R0/Rs MUST NOT
         // populate this material's operational R0/ppm or G3 fields.
