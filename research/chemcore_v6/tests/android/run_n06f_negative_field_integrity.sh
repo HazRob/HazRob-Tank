@@ -3,7 +3,7 @@ set -euo pipefail
 OUT=/tmp/v6-n06f-approved
 mkdir -p "$OUT"
 adb install -r source/app/build/outputs/apk/debug/app-debug.apk
-adb shell am start -W -n com.servoc.app/com.servoc.app.report.V6ApprovedFieldE2EFixtureActivity
+adb shell am start -W -n com.servoc.app/com.servoc.app.report.V6NegativeFieldIntegrityFixtureActivity
 ready=0
 for i in $(seq 1 90); do
   if adb shell run-as com.servoc.app test -f files/n06f_status.json >/dev/null 2>&1; then
