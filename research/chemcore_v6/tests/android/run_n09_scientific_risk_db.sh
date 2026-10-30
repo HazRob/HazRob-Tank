@@ -32,6 +32,7 @@ assert d['v14_unified_columns']>=96
 assert d['v14_linked_source_curves']==49
 assert d['v14_unverified_source_r0_curves']==49
 assert d['v14_actual_tank_r0_samples']==0
+assert d['v14_simulator_only_r0_channels']==8
 assert d['bundled_ghs_vector_assets']==9
 assert d['ghs_pdf_page_count']==2
 assert d['ghs_pdf_vector_raster_red_pixels']>40
