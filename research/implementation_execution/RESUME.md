@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 MQ4 hypothetical LODO fold-context and reference-leakage guard (419/419 CI)
+
+- Resumed from research checkpoint `15bdd9994cd0ac8d8805dab56761e81ea2805ce7`; verified prior G2 CI and unchanged pinned 80 techniques / 14 external source slots. No independent exposure evidence promotion.
+- Added research-only `g2_mq4_lodo_fold_audit.py` and eight synthetic tests `test_g2_mq4_lodo_fold_audit.py`; reference `licor_ch4` cannot be used as a predictor, and contiguous one-minute lag windows are mapped to hypothetical leave-one-calendar-day-out folds with train→holdout and holdout→train context separated and row unions deduplicated.
+- Independently replayed SHA256-pinned original user Library MQ4 archive (`7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9`), member (`3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d`): 14,186 rows, 11 dates, 11 strict-minute segments. Across all 11 hypothetical LODO folds, union of cross-fold lag context affected rows is **2,400** for lags 1/5/15/30/60/120 (each interior date 240; first/last 120). The 120-minute lag alone accounts for the union; do not sum lags as unique rows.
+- Research files: `G2_MQ4_LODO_FOLD_CONTEXT_SUMMARY_2026-10-30.json` and `G2_MQ4_LODO_FOLD_CONTEXT_AND_REFERENCE_LEAKAGE_2026-10-30_AR.md`. Full locally regenerated JSON SHA256 `f18c25fb0647aa9ee84688e05977b173d542d80f8a65313e2434fa80fff04629`.
+- [G2 Actions #40996790837](https://github.com/HazRob/HazRob-Tank/actions/runs/40996790837), job `123871672937`: **419/419 PASS**, deterministic audit/triage replay PASS, publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12951278749`, ZIP SHA256 `6c412172faee7dc51cbc33884b0ea6d8a1d8699f40b72c6296a0626a0bf7b070`.
+- Calendar-day LODO is hypothetical and not physically independent evidence. No actual model trained, no verified feature usage, no source calibration/physical grouping/blind labels. No G2/G3 scientific approval. All changes limited to `research/implementation_execution/` on research branch; ChemCore Stable, Android, firmware and `main` unchanged. Verify final documentation-checkpoint CI, then obtain independent physical exposure/session/device provenance, traceable references and preregistered blinded grouped holdouts.
+
+---
+
 ## 2026-10-30 — G2 MQ4 multiscale lag-context embargo (411/411 CI)
 
 - Resumed from research checkpoint `ff7106e21bdb5de6d5e45dd9f79e28faee143651`; verified preceding 20/20 CI successes and original pinned 80-technique/14-source scope. Independent evidence remains `records=[]`, source-ready 0/14, `g2_pass_candidates=0`, `g2_blocked=80`.
