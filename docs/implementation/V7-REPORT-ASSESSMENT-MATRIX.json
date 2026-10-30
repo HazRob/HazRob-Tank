@@ -6,7 +6,7 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "R02_V7_NATIVE_IMPLEMENTATION_IN_PROGRESS_ALL_SIX_ORIGINALS_AUDITED_VISUAL_QA_PENDING",
+  "assessment_phase": "R02_NATIVE_ANDROID_AUTOMATED_QA_PASS_R01_R03_R06_FINAL_VISUAL_OR_PRODUCTION_PENDING",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -383,7 +383,7 @@
         "time distribution only if sample series exists"
       ],
       "risk": "False exceedance from an uncalibrated or incomparable metric",
-      "review_state": "R02_V7_NATIVE_PDF_WRITER_SOURCE_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING",
+      "review_state": "R02_V7_NATIVE_ANDROID_PDF_CI_AUTOMATED_QA_PASS_MANUAL_VISUAL_ACCEPTANCE_PENDING",
       "original_pdf_verified": true,
       "approved_design_mockup": false,
       "android_production_layout_changed": true,
@@ -639,7 +639,26 @@
         "Red/white bold cell only for explicit engine-origin exceeded state",
         "Input null values display ASCII '-'"
       ],
-      "qa_status": "ACTUAL_ANDROID_PDF_QA_PENDING_RUN_41146719225"
+      "qa_status": "AUTOMATED_PASS_ON_811ABDD_MANUAL_QA_AND_HEAD_752029_PENDING",
+      "actual_android_pdf_qa": {
+        "run_id": 41146719225,
+        "commit": "811abddf0eaa4b6cb99601d3b80675af0959d225",
+        "status": "SUCCESS",
+        "artifact_name": "HazRob-Tank-V7-R01-R02-Original-Android-PDF-QA",
+        "artifact_id": 13021781146,
+        "checks": [
+          "Gradle/Android build",
+          "Native Android R02 PDF emitted",
+          "All 15 physical and PM fields present",
+          "A4 portrait every page",
+          "font sizes >=11.5pt in PDF extraction",
+          "ASCII '-' for missing values",
+          "QA manifest and page screenshots emitted"
+        ],
+        "manual_page_by_page_image_accepted": false,
+        "owner_signoff": false,
+        "newer_context_binding_change_pending_ci": "752029419b39224eceaad6f56ebfa4836ec6dc58"
+      }
     },
     {
       "report_id": "R03",
@@ -1916,7 +1935,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Check run 41146719225 (R01+R02 actual Android PDF QA). Fix any compile/render/font/15-category failures. After QA, continue R03/R04/R05/R06 writers with exact design content and source trace.",
+  "next_action": "Review R02 per-page images artifact from run 41146719225; verify newest MainActivity/V7ReportLayoutKit binding CI, then continue native R03/R04/R05/R06 conversions. Do not claim final APK or source science qualification.",
   "visual_contract": {
     "branding_palette": [
       "black",
