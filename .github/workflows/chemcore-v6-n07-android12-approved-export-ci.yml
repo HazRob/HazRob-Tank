@@ -1,0 +1,142 @@
+name: ChemCore V6 N07 Android 12 API31 approved field PDF XLSX compatibility
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/chemcore_v6/tests/android/V6ApprovedFieldE2EFixtureActivity.java'
+      - 'android/app/src/main/java/com/servoc/app/field/FieldCycleRepository.java'
+      - 'android/app/src/main/java/com/servoc/app/report/SmartFieldSessionPdfWriter.java'
+      - 'research/chemcore_v6/tests/android/run_n06e_full_approved_field_export.sh'
+      - '.github/workflows/chemcore-v6-n07-android12-approved-export-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-approved-field-session-pdf-xlsx:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay independent Tank V6 sources and temporary E2E test-only Activity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then
+            cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          fi
+          cp tank/research/chemcore_v6/tests/android/V6ApprovedFieldE2EFixtureActivity.java \
+            source/app/src/main/java/com/servoc/app/report/V6ApprovedFieldE2EFixtureActivity.java
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('source/app/src/main/AndroidManifest.xml')
+          s=p.read_text()
+          needle='<activity android:name=".MainActivity" android:exported="false"/>'
+          assert needle in s
+          s=s.replace(needle,'<activity android:name=".report.V6ApprovedFieldE2EFixtureActivity" android:exported="true"/>\n        '+needle)
+          p.write_text(s)
+          print('N07 Android12: temporary CI-ONLY Activity, no production APK')
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Disposable TEST ONLY emulator signing, never release signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source/signing
+          keytool -genkeypair -alias hazrob-prototype -keystore source/signing/hazrob-prototype.jks \
+            -storepass hazrob-prototype -keypass hazrob-prototype -keyalg RSA -keysize 2048 \
+            -validity 1 -dname "CN=N07A12 CI ONLY, OU=DO NOT USE FOR RELEASE, O=HazRob TEST" -noprompt
+      - name: Build isolated temporary debug test APK
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Enable KVM for Android Test Device
+        run: |
+          if test -c /dev/kvm; then sudo chmod a+rw /dev/kvm; fi
+      - name: Android 12 API31 approved source PDF and XLSX real exporter compatibility
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: false
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
+          script: bash tank/research/chemcore_v6/tests/android/run_n06e_full_approved_field_export.sh
+      - name: Verify real PDF and XLSX output bytes, XML and immutable source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,zipfile,xml.etree.ElementTree as ET,hashlib,pathlib
+          p=pathlib.Path('/tmp/v6-n06e-approved')
+          d=json.loads((p/'n06e_status.json').read_text())
+          pdf=p/'n06e_full_approved_field.pdf';xlsx=p/'n06e_full_approved_field.xlsx'
+          assert pdf.read_bytes().startswith(b'%PDF-') and pdf.stat().st_size>5500
+          assert zipfile.is_zipfile(xlsx) and xlsx.stat().st_size>5500
+          with zipfile.ZipFile(xlsx) as z:
+            assert z.testzip() is None
+            names=z.namelist()
+            assert len([x for x in names if x.startswith('xl/worksheets/sheet') and x.endswith('.xml')])==14
+            root=ET.fromstring(z.read('xl/workbook.xml'))
+            ns='{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
+            names=[x.attrib['name'] for x in root.findall('.//'+ns+'sheet')]
+            assert len(names)==14 and 'V6 بحثي غازات' in names and 'V6 مصادر وتعارضات' in names
+            for name in z.namelist():
+              if name.endswith('.xml') or name.endswith('.rels'):ET.fromstring(z.read(name))
+          assert d['archive_digest_before']==d['archive_digest_after']
+          d['pdf_sha256']=hashlib.sha256(pdf.read_bytes()).hexdigest()
+          d['xlsx_sha256']=hashlib.sha256(xlsx.read_bytes()).hexdigest()
+          d['scope']='Actual Android FieldSessionReportExporter and V10 approved fixture; NOT user database or physical Tank/G3'
+          (p/'n06e_verified_manifest.json').write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+          print('PASS N07A12 FULL V10-APPROVED DB -> REAL PDF 6 PAGES / REAL XLSX 14 SHEETS / ORIGINAL SHA PRESERVED')
+          PY
+      - name: Inspect historical V5 and new independent V6 PDF page header text
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet PyMuPDF==1.26.7
+          python3 - <<'PY'
+          from pathlib import Path
+          import fitz
+          p=Path('/tmp/v6-n06e-approved/n06e_full_approved_field.pdf')
+          d=fitz.open(str(p))
+          assert d.page_count==6
+          original=d[0].get_text()
+          annex=d[5].get_text()
+          assert 'HazRob 5.0' in original,'original V5 footer intentionally remains historical'
+          assert 'HazRob Tank' in annex and 'ChemCore V6' in annex,annex[:400]
+          assert 'HazRob 5.0' not in annex,'V6 annex inherits obsolete wheeled HR069 header'
+          assert 'UNKNOWN' in annex and 'G3=0' in annex
+          assert annex.count('Rs:')==8 and annex.count('R0:')==8
+          print('PASS N07A12: historical V5 footer preserved only on V5 pages, Tank V6 appendix research header isolated and 8 MQ rows present')
+          d.close()
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: HazRob-Tank-V6-N07-Android12-Approved-Session-Report
+          path: /tmp/v6-n06e-approved/
+          retention-days: 30
