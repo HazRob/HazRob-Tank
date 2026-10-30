@@ -83,6 +83,16 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
             "FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid),"+
             "FOREIGN KEY(source_id) REFERENCES scientific_sources(source_id),"+
             "CHECK(threshold>=0),CHECK(comparison_operator IN ('<','>','<=','>=')))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS chemical_ambient_benchmarks("+
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,chemical_uid INTEGER NOT NULL,"+
+            "environment_type TEXT NOT NULL,nominal_value REAL NOT NULL,unit TEXT NOT NULL,"+
+            "observation_period TEXT,source_id TEXT NOT NULL,"+
+            "qualification_status TEXT NOT NULL,notes TEXT,"+
+            "FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid),"+
+            "FOREIGN KEY(source_id) REFERENCES scientific_sources(source_id),"+
+            "CHECK(nominal_value>=0))");
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS uq_v11_ambient_benchmark "+
+            "ON chemical_ambient_benchmarks(chemical_uid,environment_type,source_id,observation_period)");
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS uq_v11_hazard_ref "+
             "ON chemical_hazard_boundaries(chemical_uid,hazard_type,comparison_operator,source_id,regulatory_scope)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_v11_air_background_target "+
