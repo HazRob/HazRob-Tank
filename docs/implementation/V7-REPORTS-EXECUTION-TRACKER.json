@@ -299,7 +299,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Owner approved R05 two-page portrait design with permanent photo first column for all 18 fruit/mixture selectable source families, nine rows per page, results for selected row only and '-' for all unselected; a truly all-families selection may later populate returned categories. Chart regions remain blank. Designed with 12pt min and documented source image licensing; photos and final PDF visual QA not yet produced; no Android/engine code changed.",
+  "latest_documented_change": "R06 original 1-page 213267-byte PDF (SHA 053d78...), 48/54 text spans below 12pt and no owner identity; audited BeefResearchPdf/Engine/Catalog/source JSON and verified 2018 source DOI mismatch (.075 wrong, .091 correct). Proposed research-only A4 portrait two-page layout and 3 distinct blank chart slots, 7-MQ table, 4 study classes and source validity block. No code changed; owner approval pending. All six original PDFs now audited, but owner design signoffs are not uniformly complete.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -350,66 +350,59 @@
     "commit": "f0744950daca11094f5b9d1dbab6cefce501f380"
   },
   "active_report": {
-    "id": "R05",
-    "name": "Fruit Freshness Research PDF",
-    "phase": "R05_OWNER_APPROVED_TWO_PAGE_18_FAMILY_PHOTO_MATRIX_LAYOUT_PREVIEW_PENDING",
-    "analysis_document": "docs/implementation/V7-R05-FRUIT-FRESHNESS-ORIGINAL-PDF-AUDIT-AND-DESIGN-2026-10-30_AR.md",
-    "pdf_file_sha256": "21e97701f8d4f1fff9f67d83ee57ee0ca7f8568ba5ce04d66c9c75b7e6002a1c",
-    "source_pdf_pages": 1,
-    "source_pdf_font_min_pt": 8,
-    "spans_under_12pt": "50/56",
-    "source_code": "android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodFreshnessPdf.java",
-    "food_engine": "android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodFreshnessEngine.java",
-    "source_manifest": "research/food_freshness/source_manifest.json",
-    "audit_result": "10 FAIL / 4 PARTIAL / 3 NOT_APPLICABLE / 1 PASS against G01–G18",
-    "scientifically_important": [
-      "Fruit source is separate from gas ChemCore and meat branch",
-      "Original research bank has 59 profiles; active fruit comparison has 54; five mushroom patterns excluded from fruit choice",
-      "D1-D5 are study-day reference labels 24h apart, not a longitudinal Tank measurement",
-      "180s Tank headspace single-shot study similarity is not food safety or quantified ppm",
-      "UI has average ambient T/RH and sensor signalHistory but fruit PDF function currently does not receive them",
-      "PDF only shows first seven source matches, with some labels clipped",
-      "No original measurement start/end UTC stored in current R05 PDF"
+    "id": "R06",
+    "name": "Independent Beef / Meat Freshness Research PDF",
+    "phase": "ORIGINAL_ONE_PAGE_PDF_AND_BEEF_ENGINE_AUDITED_DESIGN_PROPOSAL_AWAITING_OWNER",
+    "original_pdf_file": "06_V6_Meat_Freshness_Original.pdf",
+    "original_pdf_pages": 1,
+    "pdf_sha256": "053d78db6133e2b519146ddd7ad85335d39c74a202fccbc47494d246319d2366",
+    "file_bytes": 213267,
+    "fonts_spans_below_12": "48/54",
+    "minimum_font_pt": 8,
+    "audit_document": "docs/implementation/V7-R06-MEAT-FRESHNESS-ORIGINAL-PDF-AUDIT-AND-DESIGN-PROPOSAL-2026-10-30_AR.md",
+    "audit_result": "10 FAIL, 4 PARTIAL, 3 NOT_APPLICABLE, 1 PASS_BASELINE",
+    "source_code": "android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchPdf.java",
+    "study_source": "Mendeley DOI 10.17632/mwmhh766fc.3 / Wijaya 2018",
+    "seven_MQ_channels": [
+      "MQ2",
+      "MQ3",
+      "MQ4",
+      "MQ5",
+      "MQ8",
+      "MQ9",
+      "MQ135"
     ],
-    "design_questions": [
-      "R05-D01: A4 portrait multi-section layout F01–F03 plus full rank appendix",
-      "R05-D02: separate actual 180s sensor response from 24h reference-day similarity",
-      "R05-D03: all engine-returned pattern matches, normalized fingerprint vs source overlay and full ranking",
-      "R05-D04: measurement context, sensor status and scientific source block in Arabic+English",
-      "R05-D05: '-' for missing cells and blank chart canvases without mock data",
-      "R05-D06: two large portrait charts rather than 2x2 landscape in fruit report"
+    "independent_from": [
+      "FRUIT",
+      "GAS_CHEMCORE"
     ],
-    "owner_design_signoff": true,
-    "design_scope_only": true,
+    "science_constraints": [
+      "Beef-only reference, four study class labels not food safety verdicts",
+      "Tank 180s scan is not 36h source study time course",
+      "Source one-cut heldout accuracy 43.9% and balanced accuracy 38.9% not Tank qualification",
+      "No direct Tank microbial TVC, no PPM or GHS",
+      "Only original seven MQ average Rs transmitted to PDF; UI sensor time histories not bound"
+    ],
+    "reference_metadata_issue": {
+      "wrong_doi_in_android_and_json": "10.1016/j.dib.2018.11.075",
+      "verified_article_doi": "10.1016/j.dib.2018.11.091",
+      "dataset_doi": "10.17632/mwmhh766fc.3",
+      "correction_status": "DOCUMENTED_FOR_LATER_AUTHORIZED_PHASE"
+    },
+    "proposal": "A4 portrait two-page baseline: acquisition + 7-MQ table + all four classes, then large blank observed/reference fingerprint, actual 180s signal plot, four-class research similarity graph and model limitations; optional source-only research appendix; do not fake data.",
+    "questions": [
+      "R06-D01 2-page A4 portrait dynamic layout",
+      "R06-D02 distinct three charts and source semantics",
+      "R06-D03 four research classes fully visible without false food safety colors",
+      "R06-D04 optional one clearly generic beef photo, not four staged spoilage claims",
+      "R06-D05 visible validation/source DOI provenance and no TVC claim",
+      "R06-D06 '-' missing and blank chart spaces",
+      "R06-D07 optional research-only confusion matrix and external 36h figure"
+    ],
+    "owner_design_signoff": false,
     "source_code_changed": false,
     "production_changes": 0,
-    "approved_design_specification": "docs/implementation/V7-R05-OWNER-APPROVED-TWO-PAGE-FRUIT-IMAGE-MATRIX-2026-10-30_AR.md",
-    "approved_layout": {
-      "printed_pages_target": 2,
-      "media": "A4 portrait",
-      "categories": "18 selectable source families; nine rows per page",
-      "first_RTL_column": "Photo (static per fruit/mixture, not a live photo of sample)",
-      "photo_thumbnail_mm": [
-        22,
-        14
-      ],
-      "columns_mm": [
-        25,
-        56,
-        31,
-        28,
-        26,
-        34
-      ],
-      "selected_only_results": true,
-      "nonselected": "-",
-      "all_families_selection": "engine supplied matches per category",
-      "two_chart_placeholders": "40mm x200mm bottom of each page; no plot values",
-      "image_assets": "not yet packaged",
-      "allow_overflow": "additional pages if needed; never truncate source",
-      "minimum_font_pt": 12
-    },
-    "owner_pdf_visual_acceptance": false
+    "actual_v7_pdf_preview_passed": false
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -432,9 +425,9 @@
     "pending": "Production PDF integration and Android render visual match"
   },
   "next_report": {
-    "id": "R06",
-    "name": "Meat Freshness Research PDF",
-    "state": "NEXT_FOR_REVIEW_ON_OWNER_REQUEST"
+    "id": "R01-R06",
+    "name": "Final six-report design signoffs then unified production implementation",
+    "state": "DO_NOT_START_UNTIL_OWNER_APPROVAL_ALL"
   },
   "workflow_policy": {
     "id": "V7-RPT-BATCH-PLAN-001",
@@ -442,7 +435,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_ONLY_R05_REQUIREMENTS_APPROVED_PENDING_VISUAL_ASSET_AND_QA",
+    "current_phase": "DESIGN_ONLY_R06_SOURCE_AND_PDF_REVIEW_COMPLETE_AWAITING_OWNER",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -559,5 +552,12 @@
     "owner_approved_additions": "docs/implementation/V7-R04-OWNER-APPROVED-EXECUTIVE-AND-MATRIX-DESIGN-2026-10-30_AR.md",
     "owner_signoff": false,
     "production_changes": 0
+  },
+  "r05_checkpoint": {
+    "id": "R05",
+    "review_state": "OWNER_APPROVED_TWO_PORTRAIT_PAGES_18_FRUIT_PHOTO_MATRIX_VISUAL_ASSETS_PENDING",
+    "owner_document": "docs/implementation/V7-R05-OWNER-APPROVED-TWO-PAGE-FRUIT-IMAGE-MATRIX-2026-10-30_AR.md",
+    "source_code_changed": false,
+    "visual_qa_passed": false
   }
 }
