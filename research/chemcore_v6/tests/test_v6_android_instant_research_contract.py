@@ -28,7 +28,8 @@ class N06AndroidV6GasReportSafety(unittest.TestCase):
     def test_exact_new_coordinator_used(self):
         self.assertIn("ChemCoreTankV6.analyze(new ChemCoreTankV6.Request(",self.a)
         self.assertIn("TankV6TelemetryAdapter.analyzeSnapshot(frozen)",self.i)
-        self.assertIn("TankV6TelemetryAdapter.toJson(analyzed)",self.i)
+        self.assertIn("TankV6TelemetryAdapter.toJson(analyzed,frozen)",self.i)
+        self.assertIn("new JSONObject(live.toString())",self.i)
         self.assertIn("TankInstantAnalyzer.analyze(c,host.database(),frozen,now)",self.u)
 
     def test_no_instant_legacy_fallback(self):
