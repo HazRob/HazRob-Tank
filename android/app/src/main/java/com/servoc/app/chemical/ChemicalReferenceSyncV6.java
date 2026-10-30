@@ -221,9 +221,12 @@ public final class ChemicalReferenceSyncV6 {
                 throw new IllegalArgumentException("invalid reference CAS/hash/path");
             // Only source-matched, already known individual chemical records.
             if(!cas.equals(localCas(db,uid)))continue;
+            // Skip already-current UIDs BEFORE applying the batch budget.
+            // Otherwise a 734-record index with the first 25 unchanged would
+            // permanently starve later changed compounds.
+            if(digest.equals(currentSha(db,uid))){unchanged++;continue;}
             if(candidates>=maxChanges)break;
             candidates++;
-            if(digest.equals(currentSha(db,uid))){unchanged++;continue;}
             String root=indexUrl.toString().substring(0,indexUrl.toString().lastIndexOf('/')+1);
             byte[] bytes=fetch(new URL(root+"records/"+file),RECORD_LIMIT);
             if(!digest.equals(sha256(bytes)))throw new IllegalStateException("GitHub record SHA256 mismatch");
