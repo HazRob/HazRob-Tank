@@ -209,7 +209,10 @@ class ActualV9ToV10Migrator(unittest.TestCase):
         # IMPORTANT: canonical legacy verifyApprovedEvidence returns true under
         # legacy policy; it is not a cryptographic proof. Keep this explicit.
         legacy_repo=Path("android/app/src/main/java/com/servoc/app/field/FieldCycleRepository.java").read_text(encoding="utf8")
-        self.assertIn('if("LEGACY_APPROVED".equals(cycle.state))return true',legacy_repo)
+        self.assertIn('if("LEGACY_APPROVED".equals(cycle.state)){',legacy_repo)
+        self.assertIn('Historical V9 records have no canonical source SHA',legacy_repo)
+        self.assertIn('w.setTransactionSuccessful();',legacy_repo)
+        self.assertIn('return true;',legacy_repo)
         manifest={
           "schema":"hazrob-v6-n06d-Java-exact-v9-to-v10-sql-migration/1",
           "java_experiments_db_sha256":java_sha,
