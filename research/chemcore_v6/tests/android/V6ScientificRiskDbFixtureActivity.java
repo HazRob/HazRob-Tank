@@ -9,6 +9,7 @@ import com.servoc.app.chemical.ChemicalIdentityEquivalenceV6;
 import com.servoc.app.chemical.ChemicalIdentityCategoryV6;
 import com.servoc.app.chemical.ChemicalMolecularProjectionV6;
 import com.servoc.app.chemical.ChemicalNistIdentityCompletionV6;
+import com.servoc.app.chemical.ChemicalCasCorrectionV6;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.MqDeviceR0LedgerV14;
 import com.servoc.app.data.MqExternalR0RsSeedV14;
@@ -44,6 +45,14 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
     }
     private static long num(SQLiteDatabase db,String sql){
         try(Cursor c=db.rawQuery(sql,null)){return c.moveToFirst()?c.getLong(0):-1;}
+    }
+    private static boolean casChecksumValid(String cas){
+        if(cas==null||!cas.matches("[0-9]{2,7}-[0-9]{2}-[0-9]"))return false;
+        String clean=cas.replace("-","");
+        int sum=0;
+        for(int i=clean.length()-2,w=1;i>=0;i--,w++)
+            sum+=(clean.charAt(i)-'0')*w;
+        return sum%10==(clean.charAt(clean.length()-1)-'0');
     }
     private static String scalarText(SQLiteDatabase db,String sql){
         try(Cursor c=db.rawQuery(sql,null)){
@@ -271,6 +280,45 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check("29118-24-9".equals(scalarText(sql,"SELECT cas FROM chemicals WHERE uid=132")),
                 "trans R1234ze(E) is not conflated with isomer R1234yf");
             out.put("nist_27_cas_identity_idempotence",nistAudit.summary());
+            ChemicalCasCorrectionV6.Result repaired=
+                ChemicalCasCorrectionV6.ensure(db);
+            check(repaired.inspected==2&&repaired.corrected==0&&
+                repaired.confirmed==2&&repaired.rejected==0,
+                "two source-audited invalid CAS corrections replay without changes: "+
+                repaired.summary()+"; startup="+
+                db.getMeta("v6_invalid_cas_source_repairs","not_started"));
+            check(num(sql,"SELECT COUNT(*) FROM chemical_cas_correction_audit_v6")==2,
+                "original malformed CAS values retained only as quarantined source audit");
+            check("100-47-0".equals(scalarText(sql,
+                "SELECT cas FROM chemicals WHERE uid=715"))&&
+                "C7H5N".equals(scalarText(sql,
+                "SELECT formula FROM chemicals WHERE uid=715")),
+                "NIST Benzonitrile CAS 100-47-0 and formula C7H5N");
+            check("65996-93-2".equals(scalarText(sql,
+                "SELECT cas FROM chemicals WHERE uid=724"))&&
+                num(sql,"SELECT COUNT(*) FROM chemical_cas_correction_audit_v6 "+
+                    "WHERE chemical_uid=724 AND original_invalid_cas='65966-93-2' "+
+                    "AND source_id='NIOSH_NPG'")==1,
+                "OSHA/NIOSH correct coal-tar pitch volatiles CAS without hiding original typo");
+            check(num(sql,"SELECT COUNT(*) FROM chemicals WHERE cas='null' "+
+                "OR cas='65966-93-2'")==0,
+                "invalid CAS strings cannot remain in operative unified identity");
+            int validCasRows=0,invalidCasRows=0;
+            try(Cursor cc=sql.rawQuery(
+                "SELECT uid,cas FROM chemicals WHERE cas IS NOT NULL AND TRIM(cas)<>''",
+                null)){
+                while(cc.moveToNext()){
+                    if(casChecksumValid(cc.getString(1)))validCasRows++;
+                    else invalidCasRows++;
+                }
+            }
+            check(invalidCasRows==0,
+                "every nonempty direct CAS passes CAS digit checksum (invalid="+
+                invalidCasRows+")");
+            out.put("cas_checksum_valid_direct_rows",validCasRows);
+            out.put("cas_checksum_invalid_direct_rows",invalidCasRows);
+            out.put("cas_correction_idempotence",repaired.summary());
+
             ChemicalIdentityCategoryV6.Result categoryAudit=
                 ChemicalIdentityCategoryV6.ensure(db);
             check(categoryAudit.proposed==9&&categoryAudit.already==9&&
