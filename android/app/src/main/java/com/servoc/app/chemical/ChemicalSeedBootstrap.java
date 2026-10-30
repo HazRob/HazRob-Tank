@@ -29,6 +29,17 @@ public final class ChemicalSeedBootstrap {
             }
         }catch(Exception e){db.putMeta("chemical_seed_niosh_last_error",e.getClass().getSimpleName()+": "+String.valueOf(e.getMessage()));}
 
+        // Explicitly type legacy labels for mixtures, chemical groups and
+        // measurement indices: no fictitious CAS or formula per group.
+        try{
+            ChemicalIdentityCategoryV6.Result categories=
+                ChemicalIdentityCategoryV6.ensure(db);
+            db.putMeta("v6_non_single_substance_classification",categories.summary());
+        }catch(Exception e){
+            db.putMeta("v6_non_single_substance_classification",
+                "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
+        }
+
         // Establish traceable links between historical Tank labels and
         // the matching CAS-bearing NIOSH source identities. Keep both original
         // UIDs/FKs intact; a naming alias never overwrites old session rows.
