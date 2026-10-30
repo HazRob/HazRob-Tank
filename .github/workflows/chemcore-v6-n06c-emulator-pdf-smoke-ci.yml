@@ -74,6 +74,17 @@ jobs:
       - name: Build temporary Android DEBUG APK for emulator test only
         working-directory: source
         run: gradle --no-daemon :app:assembleDebug
+      - name: Allow disposable GitHub runner to use /dev/kvm hardware acceleration
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -c /dev/kvm; then
+            sudo chmod a+rw /dev/kvm
+            ls -l /dev/kvm
+            echo "PASS KVM DEVICE FOR FASTER ANDROID EMULATOR BOOT"
+          else
+            echo "NO_KVM_DEVICE: software emulator fallback may time out"
+          fi
       - name: Run three real PDF page rasters on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
