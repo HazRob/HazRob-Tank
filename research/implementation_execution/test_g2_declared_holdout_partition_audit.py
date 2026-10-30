@@ -118,7 +118,15 @@ class HoldoutPartitionTests(unittest.TestCase):
         columns = COLUMNS + ['ｐａｒｔｉｔｉｏｎ']
         rows = [dict(r, **{'ｐａｒｔｉｔｉｏｎ': r['partition']})
                 for r in self.clean()]
-        with self.assertRaisesRegex(ValueError, 'G2_HOLDOUT_PARTITION_HEADER_ALIAS'):
+        with self.assertRaisesRegex(ValueError, 'G2_HOLDOUT_CRITICAL_HEADER_ALIAS'):
+            self.audit(rows, columns)
+
+    def test_nfkc_optional_header_alias_rejected(self):
+        columns = [c if c != 'exposure_id' else 'ｅｘｐｏｓｕｒｅ＿ｉｄ'
+                   for c in COLUMNS]
+        rows = [{(k if k != 'exposure_id' else 'ｅｘｐｏｓｕｒｅ＿ｉｄ'): v
+                 for k, v in r.items()} for r in self.clean()]
+        with self.assertRaisesRegex(ValueError, 'G2_HOLDOUT_CRITICAL_HEADER_ALIAS'):
             self.audit(rows, columns)
 
     def test_row_permutation_preserves_diagnostic(self):
