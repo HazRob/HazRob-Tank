@@ -22,7 +22,9 @@ class CentralLibraryRecordQueries(unittest.TestCase):
         self.assertIn('chemical_reference_updates_v6',CHEM)
         self.assertIn('chemical_reference_sync_receipts_v6',CHEM)
         self.assertIn('currentSha(db,uid)',CHEM)
-        self.assertIn('repo',INDEX) if False else None
+        self.assertLess(CHEM.index("if(digest.equals(currentSha(db,uid)))"),
+                        CHEM.index("if(candidates>=maxChanges)break"))
+        self.assertIn('if(requestedUid!=0&&uid!=requestedUid)continue;',CHEM)
         self.assertIn('"records": []',INDEX)
     def test_transport_integrity_but_no_extra_scientific_approval(self):
         self.assertIn('digest.equals(sha256(bytes))',CHEM)
