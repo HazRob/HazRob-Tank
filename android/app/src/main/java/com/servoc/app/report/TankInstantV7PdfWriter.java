@@ -162,10 +162,10 @@ public final class TankInstantV7PdfWriter {
     }
     private static void table(Canvas c,JSONObject telemetry,Map<String,JSONObject> evidence,float x,float y,float width){
         right(c,"قراءات الحساسات / MQ readings",x,y-22,width,12,true,INK);
-        final float h=36,hh=35;
+        final float h=36,hh=39;
         final float[] widths={81,66,61,61,width-269}; // left to right: state,ratio,r0,rs,sensor
         float xx=x;
-        String[] names={"الحالة","Rs/R0","R0","Rs","MQ"};
+        String[] names={"الحالة / State","Rs/R0","R0","Rs","MQ"};
         for(int j=0;j<5;j++){
             rect(c,xx,y,widths[j],hh,AMBER);border(c,xx,y,widths[j],hh);
             center(c,names[j],xx+mm(2),y+9,widths[j]-mm(4),12,true,BLACK,j==0);
@@ -176,7 +176,7 @@ public final class TankInstantV7PdfWriter {
             String code=MQ[i];
             JSONObject src=raw==null?null:raw.optJSONObject(code.toLowerCase(Locale.US));
             JSONObject engine=evidence.get(code);
-            String status=engine==null?"N/A":engine.optBoolean("r0_clean_air_device_evidence_qualified",false)?"R0 OK":"Research";
+            String status=engine==null?"—":engine.optBoolean("r0_clean_air_device_evidence_qualified",false)?"موثق / Q":"بحثي / R";
             String ratio=number(engine,"rs_r0_ratio_research",3);
             String[] cells={status,ratio,number(src,"r0",2),number(src,"rs",2),code};
             float yy=y+hh+i*h;xx=x;
@@ -225,7 +225,7 @@ public final class TankInstantV7PdfWriter {
     }
     private static void radar(Canvas c,Map<String,JSONObject> evidence,float x,float y,float width,float height){
         right(c,"البصمة البحثية / MQ fingerprint",x,y,width,12,true,INK);
-        float cx=x+width*.52f,cy=y+96f,r=63f;
+        float cx=x+width*.52f,cy=y+111f,r=53f;
         Paint grid=p(12,false,0xFF959595);grid.setStyle(Paint.Style.STROKE);grid.setStrokeWidth(.6f);
         Paint spoke=p(12,false,0xFFB4B4B4);spoke.setStrokeWidth(.7f);
         float max=1;
@@ -286,7 +286,7 @@ public final class TankInstantV7PdfWriter {
         }else{
             center(c,"No ratio series",x,y+170,width,12,false,MEDIUM,false);
         }
-        left(c,"Rs/R0 • Research only",x+8,y+189,width-16,12,false,INK);
+        left(c,"Rs/R0 • بحثي / Research only",x+8,y+202,width-16,12,false,INK);
     }
     private static void decision(Canvas c,JSONObject engine,float x,float y,float w){
         right(c,"قرار ChemCore / Decision",x,y,w,12,true,INK);
@@ -294,7 +294,7 @@ public final class TankInstantV7PdfWriter {
         JSONObject gate=engine.optJSONObject("baseline_response_gate");
         String state=gate==null?"—":gate.optString("state","—");
         String identity=engine.optString("open_set_status","UNKNOWN");
-        String[] keys={"Result","R0 source","MQ observed","Ratios","PPM report"};
+        String[] keys={"النتيجة / Result","مرجع R0","قنوات MQ","النسب / Ratios","حالة PPM"};
         String[] vals={identity,gate==null?"—":""+gate.optInt("accepted_device_r0_channels",0),
             ""+engine.optInt("observed_mq_channels",0),
             ""+engine.optInt("ratio_ready_mq_channels",0),
@@ -302,10 +302,10 @@ public final class TankInstantV7PdfWriter {
         for(int i=0;i<keys.length;i++){
             float ry=yy+i*28;
             rect(c,x,ry,w,27,i%2==0?0xFFF5F5F5:WHITE);border(c,x,ry,w,27);
-            left(c,keys[i],x+mm(2),ry+6,w*.37f,12,false,INK);
+            right(c,keys[i],x+mm(2),ry+6,w*.37f,12,false,INK);
             right(c,vals[i],x+w*.39f,ry+5,w*.57f,12,true,INK);
         }
-        left(c,"Gate: "+state,x+mm(2),yy+146,w-mm(4),12,false,INK);
+        right(c,"البوابة / Gate: "+state,x+mm(2),yy+146,w-mm(4),12,false,INK);
     }
     private static void mainPage(PdfDocument doc,JSONObject telemetry,JSONObject engine,
                                   String id,long timestamp,int total){
