@@ -1,3 +1,13 @@
+## 2026-10-30 — G2 declared provenance CSV exact-width fail-closed (470/470 CI)
+
+- Resumed from research HEAD `b8bb8bf7983660ab9f2a1e710861ef3518ebc2cc`, prior G2 workflow successful; pinned 80 techniques, 14 source slots, independent evidence `records=[]`.
+- Found a concrete parser integrity gap: `csv.DictReader` could silently pad missing noncritical trailing cells with `None` (or collect surplus cells under `None`) before the provenance semantic digest. Replaced with strict `csv.reader` plus per-record exact-width check and explicit header rejection; valid quoted commas, multiline fields and UTF-8 BOM remain supported.
+- Research implementation commit `a133e59f26be93340e3bba2bd80021c9e8d5b686`, 11 synthetic regressions commit `13ab1f978323fe4242b91de67d65de00ca518286`. [G2 Actions run 41040381887](https://github.com/HazRob/HazRob-Tank/actions/runs/41040381887), job `124011426464`: **470/470 PASS**, deterministic audit/triage replay PASS, publication guard PASS, 0 candidates / 80 blocked / 14 source-blocked. Artifact `12969164262` SHA256 `aa2c21b11c2b00cd248aae8703eab256ac066027dace2d34a9f81abf54c51e1d`.
+- Arabic methods: `G2_DECLARED_PROVENANCE_CSV_EXACT_WIDTH_FAIL_CLOSED_2026-10-30_AR.md`; documentation commit `f07f7e94e23b329900a837f457a7b7dc36635ed2`.
+- All edits limited to `research/implementation_execution/` on research branch. ChemCore Stable, Android, firmware and main untouched; no G2/G3 promotion. Next: authenticated physical exposure/sample/session/device IDs, traceable concentration calibration and preregistered blinded physically grouped holdouts.
+
+---
+
 ## 2026-10-30 — G2 declared provenance NFKC compatibility-alias guard (459/459 CI)
 
 - Resumed from research HEAD `f1bbe4865dd0fd813f7dd3b2fcf7d63149230de3`; verified 20/20 previous workflow runs successful and independent evidence `records=[]`, source-ready 0/14, G2 candidates 0/80.
