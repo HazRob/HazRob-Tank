@@ -189,7 +189,7 @@
     {
       "id": "V7-R06",
       "name": "New V7 instant and physical PDF production layouts",
-      "status": "TODO"
+      "status": "R01_PRODUCTION_IMPLEMENTED_TESTED_R02_PENDING_OWNER"
     },
     {
       "id": "V7-R07",
@@ -214,12 +214,12 @@
     {
       "id": "V7-R11",
       "name": "Android 12 PDF render QA; RTL legibility; multipage stress",
-      "status": "TODO"
+      "status": "R01_ANDROID33_A4_VISUAL_QA_PASS_OTHER_REPORTS_PENDING"
     },
     {
       "id": "V7-R12",
       "name": "Six or more authentic Android PDF sample outputs and ZIP, after source approval",
-      "status": "TODO"
+      "status": "R01_SINGLE_ORIGINAL_PDF_AVAILABLE_OTHER_REPORTS_PENDING"
     },
     {
       "id": "V7-R13",
@@ -249,7 +249,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Switched to all-report design discussions then shared-batch implementation. R01 source prototype frozen, R02 proposal ready to discuss, no more production PDF updates until six specs reviewed and signed off; per-report CI still required.",
+  "latest_documented_change": "R01 original Android A4 PDF with official logo, tables, matrix and radar successfully built and emulator-rendered; original PDF SHA256 7a2d..., CI 41135056334 SUCCESS. R02 original report analyzed for design discussion only. No user-distributed V7 APK or firmware changes.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -302,7 +302,7 @@
   "active_report": {
     "id": "R01",
     "name": "Instant ChemCore V6 gas research report",
-    "phase": "R01_PROTO_CODE_EXISTS_FROZEN_PENDING_COLLECTIVE_IMPLEMENTATION",
+    "phase": "R01_IMPLEMENTED_ANDROID_EMULATOR_QA_PASS_VISUAL_OWNER_REVIEW_OPEN",
     "document": "docs/implementation/V7-R01-INSTANT-GAS-REPORT-ANALYSIS-2026-10-30_AR.md",
     "commit": "96594b4642cd97814d5bd7b84c98febda2e845a6",
     "original_pdf_sha256": "7c4cf3c7de06529f6d604df7c7c93ff5ee084453efdfc554e73db736f24b0725",
@@ -324,12 +324,8 @@
       "G18 footer/wordmark"
     ],
     "needs_owner_discussion": [
-      "P01 page adaptation",
-      "P02 evidence matrix and conditional fingerprint",
-      "P03 decision rail",
-      "P04 OEL and GHS as conditional reference",
-      "P06 technical annex",
-      "P04 graphic placement only, no second analysis gates"
+      "Final R01 visual review based on actual rendered PDF",
+      "Additional analytic narrative/exposure references only if engine provides them"
     ],
     "approved_design_details": {
       "P05": "Owner logo image supplied; Android vector derivative committed, final rendering QA pending",
@@ -348,16 +344,27 @@
     "route_commit": "8ef02aa2083aa845fb3c5c6a7f065962f7a830ec",
     "app_binding_commit": "323004ee20f2660100284202ff4014b0ff7cc8e2",
     "build_test": {
-      "run": 41133733032,
-      "java_compile": "PASS",
-      "android_pdf_emulator": "NOT_EXECUTED_DUE_CI_SHELL_PIPEFAIL",
-      "qa_fix_commit": "097660ae2ee80917505936a7f8c1262dc8adf83e",
-      "rerun": 41134124841,
-      "status": "IN_PROGRESS"
+      "run": 41135056334,
+      "status": "SUCCESS",
+      "code_commit": "c5b9f6e87b9883001699885f4f1cd6cdb6fb85ed",
+      "pdf_sha256": "7a2d285543c58d5e5c536a07662ac48a378ceb84ab08cfd76e47adf5c54978e4",
+      "pages": 1,
+      "portrait_a4_pt": [
+        595,
+        842
+      ],
+      "font_min_pt": 12,
+      "font_max_pt": 15,
+      "official_logo_rendered": true,
+      "original_android_generator": true,
+      "synthetic_qa_data": true,
+      "signing": "DISPOSABLE DEBUG CI ONLY"
     },
     "preliminary_android_pdf_QA_run": 41134485012,
     "note": "Actual Android R01 PDF produced and CI QA passed for pre-refinement commit. Subsequent Radar/text refinements need a final fresh QA run after implementation consolidation. No R01 release acceptance asserted.",
-    "production_changes_paused": true
+    "production_changes_paused": true,
+    "qa_document": "docs/implementation/V7-R01-IMPLEMENTATION-QA-2026-10-30_AR.md",
+    "owner_final_visual_acceptance": false
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -381,11 +388,9 @@
   },
   "next_report": {
     "id": "R02",
-    "phase": "DISCUSSION_READY_NOT_APPROVED",
+    "phase": "ORIGINAL_PDF_AND_SOURCE_AUDITED_PROPOSAL_AWAITING_OWNER_REVIEW",
     "document": "docs/implementation/V7-R02-PHYSICAL-REPORT-ANALYSIS-PROPOSAL-2026-10-30_AR.md",
-    "production_changes": 0,
-    "source_analysis": "docs/implementation/V7-R02-PHYSICAL-REPORT-ANALYSIS-PROPOSAL-2026-10-30_AR.md",
-    "source_modifications_allowed_now": false
+    "production_changes": 0
   },
   "workflow_policy": {
     "id": "V7-RPT-BATCH-PLAN-001",
