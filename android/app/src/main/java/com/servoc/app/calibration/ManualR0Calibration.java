@@ -86,14 +86,17 @@ public final class ManualR0Calibration {
                 .putString("manual_r0_source_"+key,"manual_device_r0")
                 .putString("manual_r0_session_"+key,session)
                 .putString("manual_r0_utc_"+key,utc);
-        edit.remove("manual_r0_samples_"+key);
+        // Manual values have no firmware sampling-window or definition evidence.
+        edit.remove("manual_r0_samples_"+key)
+            .remove("manual_r0_definition_"+key)
+            .remove("manual_r0_windows_"+key);
         if(deviceId.isEmpty())edit.remove("manual_r0_device_"+key);
         else edit.putString("manual_r0_device_"+key,deviceId);
         // Do not change live ChemCore R0 until durable phone storage has succeeded.
         if(!edit.commit())return false;
         values.put(key,r0);sources.put(key,"manual_device_r0");sessions.put(key,session);utcs.put(key,utc);
         if(deviceId.isEmpty())deviceIds.remove(key);else deviceIds.put(key,deviceId);
-        sampleCounts.remove(key);
+        sampleCounts.remove(key);r0Definitions.remove(key);r0WindowCounts.remove(key);
         loaded=true;
         return true;
     }
@@ -121,6 +124,8 @@ public final class ManualR0Calibration {
             e.putString("manual_r0_session_"+k,session);
             e.putString("manual_r0_utc_"+k,utc);
             e.remove("manual_r0_samples_"+k);
+            e.remove("manual_r0_definition_"+k);
+            e.remove("manual_r0_windows_"+k);
             if(deviceId.isEmpty())e.remove("manual_r0_device_"+k);
             else e.putString("manual_r0_device_"+k,deviceId);
         }
@@ -129,7 +134,7 @@ public final class ManualR0Calibration {
             values.put(k,updated.get(k));sources.put(k,"manual_device_r0");
             sessions.put(k,session);utcs.put(k,utc);
             if(deviceId.isEmpty())deviceIds.remove(k);else deviceIds.put(k,deviceId);
-            sampleCounts.remove(k);
+            sampleCounts.remove(k);r0Definitions.remove(k);r0WindowCounts.remove(k);
         }
         loaded=true;
         return true;
@@ -151,11 +156,15 @@ public final class ManualR0Calibration {
             e.putString("manual_r0_utc_"+k,utc);
             e.remove("manual_r0_device_"+k);
             e.remove("manual_r0_samples_"+k);
+            // Historical phone-side captures do not inherit a firmware protocol claim.
+            e.remove("manual_r0_definition_"+k);
+            e.remove("manual_r0_windows_"+k);
         }
         if(!e.commit())return false;
         for(Map.Entry<String,Double> a:proposed.entrySet()){
             String k=a.getKey();values.put(k,a.getValue());sources.put(k,"automatic_clean_air_field_r0");
             sessions.put(k,session);utcs.put(k,utc);deviceIds.remove(k);sampleCounts.remove(k);
+            r0Definitions.remove(k);r0WindowCounts.remove(k);
         }
         loaded=true;return true;
     }
