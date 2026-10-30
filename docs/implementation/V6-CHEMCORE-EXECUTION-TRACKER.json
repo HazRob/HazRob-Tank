@@ -922,5 +922,58 @@
       "do not reinterpret missing physical G3 as a software packaging blocker"
     ],
     "physical_r0_comparison_deferred_until_after_v6_release": true
+  },
+  "checkpoint_v6_unified_stable_20261030": {
+    "owner_latest": "Complete Android V6 software and unified chemistry catalog, embed ChemCore Stable, configure GitHub-only Stable updates using EXISTING Settings button, no APK before all changes and explicit owner approval",
+    "state": "IN_PROGRESS_NO_APK",
+    "source": "HazRob/HazRob-Tank feature/tank-v6-implementation",
+    "unified_master": {
+      "schema": "SQLite V14",
+      "unique_materials": 734,
+      "profile_schema": "hazrob-tank-unified-chemical-v14-plus-evidence/1",
+      "columns": 97,
+      "mq_source_curves": 49,
+      "external_peer_r0_rs_studies": 25,
+      "source_linked_exposure_limits": true,
+      "source_linked_hazard_classifications": true,
+      "unknown_values_remain_null": true,
+      "emulator_run_id": 41006768825,
+      "emulator_assertions": 118,
+      "g3_validations": 0
+    },
+    "stable_apk_content": {
+      "snapshot": "1.0.0-hr069r1",
+      "source_only_ci_run_id": 41007163886,
+      "source_only_ci_status": "PASS",
+      "molecular_identities": 652,
+      "research_priors": 49,
+      "validated_m4": 0,
+      "payload_sha256": "94f41ba754a1c239122b82081a91e9656012503cebda0eae6473ed8a4e45d7cf",
+      "requires_apk_inclusion_at_final_build": true
+    },
+    "remote_stable": {
+      "reuse_settings_existing_button": true,
+      "manifest": "https://raw.githubusercontent.com/HazRob/HazRob-Tank/main/updates/chemcore-stable/manifest.json",
+      "code_url_configured": true,
+      "public_update_pair_published": false,
+      "reason": "unpublished source-qualified Stable snapshot; avoid fabricating manifest or download",
+      "transport": "GitHub HTTPS read-only verified SHA256 install and rollback",
+      "next": "publish vetted manifest.json + matching chemcore-stable-snapshot.json to main when authorized"
+    },
+    "testing": {
+      "source_test": "research/chemcore_v6/tests/test_v6_stable_update_contract.py",
+      "stable_ci": "chemcore-v6-embedded-stable-source-ci.yml",
+      "android_sqlite_ci": "chemcore-v6-n09-scientific-risk-sqlite-android.yml",
+      "apk_build_mode": "workflow_dispatch with software acceptance gate only"
+    },
+    "remaining": [
+      "scientifically qualify unfilled environmental normal ranges and source hazards as data becomes available",
+      "exercise complete app UI, offline menu and all profiles, lab, reports, sessions on Android device",
+      "validate stable update button end-to-end against published future source pair",
+      "verify latest Code + CI + version signature and APK asset after completion",
+      "complete ChemCore V6 final regression and explicit app owner acceptance"
+    ],
+    "hourly_monitor": "active alert-only automation, not an asynchronous coding worker",
+    "restart": "Read docs/implementation/V6-ANDROID-SOFTWARE-ACCEPTANCE.json and docs/implementation/V6-ANDROID-COMPLETION-GATE-2026-10-30_AR.md, check latest branch head and Actions; continue first open item without APK"
   }
 }
