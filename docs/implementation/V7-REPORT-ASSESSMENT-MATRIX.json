@@ -1,0 +1,1116 @@
+{
+  "schema": "hazrob-tank-v7-report-assessment/1",
+  "baseline": "HZT-V7-RPT-STD-001 rev 1.0",
+  "date": "2026-10-30",
+  "branch": "feature/tank-v7-reports",
+  "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
+  "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
+  "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
+  "assessment_phase": "TEMPLATE_CREATED_NOT_AUDITED",
+  "supported_statuses": [
+    "NOT_AUDITED",
+    "PASS",
+    "FAIL",
+    "NOT_APPLICABLE",
+    "BLOCKED_MISSING_DATA",
+    "BLOCKED_PENDING_APPROVAL"
+  ],
+  "note": "Existing original Android PDFs from V6 provide a baseline but this template must not claim V7 visual audit, correctness or implementation. Rule G04 is scientifically condition-dependent, not universally GHS-applicable.",
+  "rules": [
+    {
+      "id": "G01",
+      "short": "Logo, repeating header and identity"
+    },
+    {
+      "id": "G02",
+      "short": "Unified semantic color palette"
+    },
+    {
+      "id": "G03",
+      "short": "12pt minimum and correct Arabic RTL+Bidi"
+    },
+    {
+      "id": "G04",
+      "short": "Exposure threshold and context-qualified GHS"
+    },
+    {
+      "id": "G05",
+      "short": "No duplicate visual explanations"
+    },
+    {
+      "id": "G06",
+      "short": "Gauges and statistically justified exceedance analyses"
+    },
+    {
+      "id": "G07",
+      "short": "Evidence-based conditional row/field colors"
+    },
+    {
+      "id": "G08",
+      "short": "Scientifically defensible novel 2D/3D charts"
+    },
+    {
+      "id": "G09",
+      "short": "ChemCore executed-method and decision/abstention transparency"
+    },
+    {
+      "id": "G10",
+      "short": "True bilingual Arabic-first content; 0-9 numerals in plots"
+    },
+    {
+      "id": "G11",
+      "short": "Efficient A4 information density without overlaps"
+    },
+    {
+      "id": "G12",
+      "short": "Amber-yellow/black bold table headers and black borders"
+    },
+    {
+      "id": "G13",
+      "short": "Every chart provides new evidence-based interpretive value"
+    }
+  ],
+  "report_records": [
+    {
+      "report_id": "R01",
+      "label_ar": "تقرير تحليل غازات ChemCore الآني",
+      "label_en": "Instant ChemCore Gas Research Report",
+      "generator": "TankInstantReportPdf",
+      "source": "android/app/src/main/java/com/servoc/app/report/TankInstantReportPdf.java",
+      "expected_mq": "MQ and Rs/R0 only when valid",
+      "priority": "HIGH",
+      "special": [
+        "GHS and exposure limits only for a source-qualified identity, otherwise a segregated reference section",
+        "Single snapshot must not imply TWA or temporal distribution",
+        "Evidence tier UNKNOWN and physical G3=0 protected",
+        "Explain executed inference methods rather than listing an unverified number of techniques"
+      ],
+      "candidate_charts": [
+        "sensor response heatmap",
+        "reference-curve overlay with provenance",
+        "candidate evidence matrix",
+        "decision pathway or abstention flow"
+      ],
+      "risk": "Unqualified gas identity or ppm deemed safety measurement",
+      "review_state": "NOT_AUDITED",
+      "original_pdf_verified": false,
+      "approved_design_mockup": false,
+      "android_production_layout_changed": false,
+      "visual_qa_passed": false,
+      "data_integrity_passed": false,
+      "bilingual_qa_passed": false,
+      "pdf_file_sha256": null,
+      "ci_run": null,
+      "code_commit": null,
+      "owner_design_signoff": false,
+      "rule_checklist": {
+        "G01": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G02": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G03": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G04": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G05": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G06": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G07": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G08": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G09": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G10": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G11": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G12": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G13": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        }
+      },
+      "analysis_approach": {
+        "source_code_review": false,
+        "original_pdf_page_review": false,
+        "proposed_chart_mappings_verified": false,
+        "sampling_constraints_evaluated": false,
+        "bilingual_12pt_layout_qa": false,
+        "approval_hash_integrity_verified": null
+      },
+      "required_handover": [
+        "Source generator path and operator UI trigger",
+        "Original Android PDF specimen with labelled synthetic data",
+        "Page-by-page G01-G13 issues with exact page coordinates",
+        "Alternative chart registry with question and minimum samples",
+        "Correct exposure/GHS applicability and provenance",
+        "V7 Android-native PDF after code implementation",
+        "Arabic RTL and font 12pt QA evidence",
+        "Printed-scale page-size and overflow QA",
+        "Source data to PDF checksum/value comparisons",
+        "owner approval and CI run"
+      ]
+    },
+    {
+      "report_id": "R02",
+      "label_ar": "تقرير القياسات الفيزيائية",
+      "label_en": "Physical Measurement Snapshot",
+      "generator": "TankPhysicalSnapshotPdf",
+      "source": "android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java",
+      "expected_mq": "ENV/microphone readings as measured",
+      "priority": "HIGH",
+      "special": [
+        "Gauge beside the appropriate table value",
+        "Reference limit must match sensor calibration, unit and required time exposure",
+        "No dBA claim from MAX4466 voltage absent acoustic calibration",
+        "No timeline or statistics unless actual dated series",
+        "Do not show GHS for physical quantities where not applicable"
+      ],
+      "candidate_charts": [
+        "gauge or bullet chart",
+        "valid measurement-to-reference comparison",
+        "time distribution only if sample series exists"
+      ],
+      "risk": "False exceedance from an uncalibrated or incomparable metric",
+      "review_state": "NOT_AUDITED",
+      "original_pdf_verified": false,
+      "approved_design_mockup": false,
+      "android_production_layout_changed": false,
+      "visual_qa_passed": false,
+      "data_integrity_passed": false,
+      "bilingual_qa_passed": false,
+      "pdf_file_sha256": null,
+      "ci_run": null,
+      "code_commit": null,
+      "owner_design_signoff": false,
+      "rule_checklist": {
+        "G01": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G02": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G03": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G04": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G05": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G06": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G07": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G08": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G09": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G10": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G11": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G12": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G13": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        }
+      },
+      "analysis_approach": {
+        "source_code_review": false,
+        "original_pdf_page_review": false,
+        "proposed_chart_mappings_verified": false,
+        "sampling_constraints_evaluated": false,
+        "bilingual_12pt_layout_qa": false,
+        "approval_hash_integrity_verified": null
+      },
+      "required_handover": [
+        "Source generator path and operator UI trigger",
+        "Original Android PDF specimen with labelled synthetic data",
+        "Page-by-page G01-G13 issues with exact page coordinates",
+        "Alternative chart registry with question and minimum samples",
+        "Correct exposure/GHS applicability and provenance",
+        "V7 Android-native PDF after code implementation",
+        "Arabic RTL and font 12pt QA evidence",
+        "Printed-scale page-size and overflow QA",
+        "Source data to PDF checksum/value comparisons",
+        "owner approval and CI run"
+      ]
+    },
+    {
+      "report_id": "R03",
+      "label_ar": "تقرير الجلسة الميدانية المعتمدة",
+      "label_en": "Approved Field Session",
+      "generator": "FieldSessionReportExporter -> SmartFieldSessionPdfWriter",
+      "source": "android/app/src/main/java/com/servoc/app/report/SmartFieldSessionPdfWriter.java",
+      "expected_mq": "approved cycles and stored MQ series with immutable SHA",
+      "priority": "HIGH",
+      "special": [
+        "Preserve approved cycle and report SHA evidence",
+        "De-duplicate six-panel chart sets",
+        "Introduce traceable ChemCore inference narrative and uncertainty",
+        "Retain original cycle boundaries when calculating any statistics"
+      ],
+      "candidate_charts": [
+        "sensor-by-cycle heatmap",
+        "time-response small multiples",
+        "reference residual plot",
+        "technique evidence matrix",
+        "decision flow",
+        "session summary cards"
+      ],
+      "risk": "Changed approval evidence or inflated number of independent decisions",
+      "review_state": "NOT_AUDITED",
+      "original_pdf_verified": false,
+      "approved_design_mockup": false,
+      "android_production_layout_changed": false,
+      "visual_qa_passed": false,
+      "data_integrity_passed": false,
+      "bilingual_qa_passed": false,
+      "pdf_file_sha256": null,
+      "ci_run": null,
+      "code_commit": null,
+      "owner_design_signoff": false,
+      "rule_checklist": {
+        "G01": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G02": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G03": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G04": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G05": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G06": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G07": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G08": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G09": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G10": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G11": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G12": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G13": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        }
+      },
+      "analysis_approach": {
+        "source_code_review": false,
+        "original_pdf_page_review": false,
+        "proposed_chart_mappings_verified": false,
+        "sampling_constraints_evaluated": false,
+        "bilingual_12pt_layout_qa": false,
+        "approval_hash_integrity_verified": null
+      },
+      "required_handover": [
+        "Source generator path and operator UI trigger",
+        "Original Android PDF specimen with labelled synthetic data",
+        "Page-by-page G01-G13 issues with exact page coordinates",
+        "Alternative chart registry with question and minimum samples",
+        "Correct exposure/GHS applicability and provenance",
+        "V7 Android-native PDF after code implementation",
+        "Arabic RTL and font 12pt QA evidence",
+        "Printed-scale page-size and overflow QA",
+        "Source data to PDF checksum/value comparisons",
+        "owner approval and CI run"
+      ]
+    },
+    {
+      "report_id": "R04",
+      "label_ar": "تقرير الموقع التجميعي",
+      "label_en": "Site Summary",
+      "generator": "SiteSummaryReportExporter",
+      "source": "android/app/src/main/java/com/servoc/app/report/SiteSummaryReportExporter.java",
+      "expected_mq": "only approved field sessions",
+      "priority": "MEDIUM",
+      "special": [
+        "Approved-only scope",
+        "Avoid pooled statistics across incompatible sensors/time units",
+        "Map of spatial dispersion only if real coordinates and sampling metadata exist",
+        "Comparison needs sampling context and reference authority"
+      ],
+      "candidate_charts": [
+        "session-by-sensor heatmap",
+        "grouped comparison",
+        "timeline where dates present",
+        "conditional control chart"
+      ],
+      "risk": "Misleading site summary or fictitious spatial interpolation",
+      "review_state": "NOT_AUDITED",
+      "original_pdf_verified": false,
+      "approved_design_mockup": false,
+      "android_production_layout_changed": false,
+      "visual_qa_passed": false,
+      "data_integrity_passed": false,
+      "bilingual_qa_passed": false,
+      "pdf_file_sha256": null,
+      "ci_run": null,
+      "code_commit": null,
+      "owner_design_signoff": false,
+      "rule_checklist": {
+        "G01": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G02": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G03": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G04": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G05": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G06": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G07": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G08": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G09": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G10": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G11": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G12": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G13": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        }
+      },
+      "analysis_approach": {
+        "source_code_review": false,
+        "original_pdf_page_review": false,
+        "proposed_chart_mappings_verified": false,
+        "sampling_constraints_evaluated": false,
+        "bilingual_12pt_layout_qa": false,
+        "approval_hash_integrity_verified": null
+      },
+      "required_handover": [
+        "Source generator path and operator UI trigger",
+        "Original Android PDF specimen with labelled synthetic data",
+        "Page-by-page G01-G13 issues with exact page coordinates",
+        "Alternative chart registry with question and minimum samples",
+        "Correct exposure/GHS applicability and provenance",
+        "V7 Android-native PDF after code implementation",
+        "Arabic RTL and font 12pt QA evidence",
+        "Printed-scale page-size and overflow QA",
+        "Source data to PDF checksum/value comparisons",
+        "owner approval and CI run"
+      ]
+    },
+    {
+      "report_id": "R05",
+      "label_ar": "تقرير نضارة الفواكه",
+      "label_en": "Fruit Freshness Research",
+      "generator": "FoodFreshnessPdf",
+      "source": "android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodFreshnessPdf.java",
+      "expected_mq": "food-reference protocol and similarity",
+      "priority": "MEDIUM",
+      "special": [
+        "Arabic first bilingual throughout",
+        "Research similarity is not microbiological food safety",
+        "Do not import chemical gas limits/GHS into food score",
+        "Correct fruit study reference day/protocol"
+      ],
+      "candidate_charts": [
+        "similarity reference bar",
+        "source-matched temporal profile",
+        "feature radar when dimensionally appropriate"
+      ],
+      "risk": "Similarity represented as certified food-safety status",
+      "review_state": "NOT_AUDITED",
+      "original_pdf_verified": false,
+      "approved_design_mockup": false,
+      "android_production_layout_changed": false,
+      "visual_qa_passed": false,
+      "data_integrity_passed": false,
+      "bilingual_qa_passed": false,
+      "pdf_file_sha256": null,
+      "ci_run": null,
+      "code_commit": null,
+      "owner_design_signoff": false,
+      "rule_checklist": {
+        "G01": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G02": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G03": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G04": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G05": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G06": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G07": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G08": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G09": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G10": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G11": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G12": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G13": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        }
+      },
+      "analysis_approach": {
+        "source_code_review": false,
+        "original_pdf_page_review": false,
+        "proposed_chart_mappings_verified": false,
+        "sampling_constraints_evaluated": false,
+        "bilingual_12pt_layout_qa": false,
+        "approval_hash_integrity_verified": null
+      },
+      "required_handover": [
+        "Source generator path and operator UI trigger",
+        "Original Android PDF specimen with labelled synthetic data",
+        "Page-by-page G01-G13 issues with exact page coordinates",
+        "Alternative chart registry with question and minimum samples",
+        "Correct exposure/GHS applicability and provenance",
+        "V7 Android-native PDF after code implementation",
+        "Arabic RTL and font 12pt QA evidence",
+        "Printed-scale page-size and overflow QA",
+        "Source data to PDF checksum/value comparisons",
+        "owner approval and CI run"
+      ]
+    },
+    {
+      "report_id": "R06",
+      "label_ar": "تقرير نضارة اللحوم",
+      "label_en": "Meat Freshness Research",
+      "generator": "BeefResearchPdf",
+      "source": "android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchPdf.java",
+      "expected_mq": "beef study reference and similarity",
+      "priority": "HIGH",
+      "special": [
+        "Eliminate English-only report; bilingual Arabic priority",
+        "Study categories and reference identity must remain faithful",
+        "No automatic microbial pathogen/infection claim",
+        "Research similarity chart readable at 12pt"
+      ],
+      "candidate_charts": [
+        "reference-class ranking",
+        "study similarity chart",
+        "feature response heatmap when available"
+      ],
+      "risk": "Language exclusion or food-safety overstatement",
+      "review_state": "NOT_AUDITED",
+      "original_pdf_verified": false,
+      "approved_design_mockup": false,
+      "android_production_layout_changed": false,
+      "visual_qa_passed": false,
+      "data_integrity_passed": false,
+      "bilingual_qa_passed": false,
+      "pdf_file_sha256": null,
+      "ci_run": null,
+      "code_commit": null,
+      "owner_design_signoff": false,
+      "rule_checklist": {
+        "G01": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G02": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G03": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G04": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G05": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G06": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G07": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G08": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G09": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G10": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G11": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G12": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G13": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        }
+      },
+      "analysis_approach": {
+        "source_code_review": false,
+        "original_pdf_page_review": false,
+        "proposed_chart_mappings_verified": false,
+        "sampling_constraints_evaluated": false,
+        "bilingual_12pt_layout_qa": false,
+        "approval_hash_integrity_verified": null
+      },
+      "required_handover": [
+        "Source generator path and operator UI trigger",
+        "Original Android PDF specimen with labelled synthetic data",
+        "Page-by-page G01-G13 issues with exact page coordinates",
+        "Alternative chart registry with question and minimum samples",
+        "Correct exposure/GHS applicability and provenance",
+        "V7 Android-native PDF after code implementation",
+        "Arabic RTL and font 12pt QA evidence",
+        "Printed-scale page-size and overflow QA",
+        "Source data to PDF checksum/value comparisons",
+        "owner approval and CI run"
+      ]
+    }
+  ],
+  "shared_acceptance_criteria": {
+    "no_unsupported_measurement_alarms": true,
+    "no_fabricated_timeseries": true,
+    "approved_session_hash_unchanged": true,
+    "food_vs_gas_isolation": true,
+    "actual_android_pdf_generator_required": true,
+    "owner_mockup_approval_required": true
+  },
+  "next_action": "V7-R01: exhaustive source and UI route inventory; V7-R02: assess R01-R06 without speculative PASS outcomes."
+}
