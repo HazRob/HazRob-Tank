@@ -86,15 +86,16 @@ jobs:
           else
             echo "NO_KVM_DEVICE: software emulator fallback may time out"
           fi
-      - name: Run three real PDF page rasters on Android emulator
+      # aosp_atd minimizes slow Google APIs boot and flaky initial input command.
+      - name: Run three real PDF page rasters on Android ATD emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
-          target: google_apis
+          api-level: 33
+          target: aosp_atd
           arch: x86_64
           profile: pixel_2
-          disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
           script: bash tank/research/chemcore_v6/tests/android/run_v6_pdf_emulator_smoke.sh
       - name: Verify actual PDF and PNG output header, dimensions and SHAs
         shell: bash
