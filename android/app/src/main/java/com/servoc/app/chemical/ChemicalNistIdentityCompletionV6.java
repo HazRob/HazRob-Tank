@@ -116,6 +116,19 @@ public final class ChemicalNistIdentityCompletionV6 {
                     if(!oldCas.isEmpty()&&!cas.equals(oldCas)){
                         rejected++;continue;
                     }
+                    // Strictly idempotent replay: if this EXACT UID/name/
+                    // formula already has the SAME CAS, SAME NIST source
+                    // URL and SAME source mass, it is a trusted no-op.
+                    // Do not re-evaluate post-import duplicate CAS rows:
+                    // other scope-bound authority records may acquire
+                    // the same CAS later from independent OSHA/NIOSH imports.
+                    // Their provenance is preserved and never merged here.
+                    if(committedNist){
+                        if(c.isNull(3)||Math.abs(c.getDouble(3)-mass)>0.000001){
+                            rejected++;continue;
+                        }
+                        matched++;continue;
+                    }
                     // Never collapse distinct scientific UIDs into the
                     // same CAS without an independently qualified crosswalk.
                     try(Cursor other=db.rawQuery(
