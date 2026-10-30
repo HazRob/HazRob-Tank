@@ -2,26 +2,39 @@ name: HazRob Tank V6 gated test and diagnostic APK
 
 # Manual-only; never builds on ordinary commits.
 # A release-gate evidence file is required before the CONDITIONAL owner authorization applies.
+# APK generation is frozen until all software V6 acceptance milestones pass.
+# This workflow MUST NOT run automatically on source commits.
 on:
-  push:
-    branches: [feature/tank-v6-implementation]
-    paths:
-      - '.github/workflows/build-tank-android-v6.yml'
-      - 'android/**'
-      - 'tools/prepare_v5_stable_source.py'
   workflow_dispatch:
+
 
 permissions:
   contents: read
 
 jobs:
-  v5-gated-build:
+  v6-gated-build:
     runs-on: ubuntu-latest
     timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
         with:
           path: tank
+
+      - name: Require V6 software completion and explicit release decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          marker=tank/docs/implementation/V6-ANDROID-SOFTWARE-ACCEPTANCE.json
+          test -f "$marker" || { echo "::error::V6 plan is not complete. APK release build is disabled."; exit 1; }
+          python3 - "$marker" <<'PY'
+          import json,sys
+          doc=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert doc.get('all_software_modifications_complete') is True
+          assert doc.get('all_software_acceptance_tests_passed') is True
+          assert doc.get('owner_approved_apk_build') is True
+          assert doc.get('verified_commit_sha'), 'missing tested commit SHA'
+          print("V6 software completion and APK build approval verified")
+          PY
 
       - name: Package V6 ESP32 and ESP32-CAM Arduino firmware source
         shell: bash
