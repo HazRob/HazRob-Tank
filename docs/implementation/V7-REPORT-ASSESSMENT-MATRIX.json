@@ -6,7 +6,7 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "R01_AND_R02_SOURCE_PDF_REVIEWED_DESIGNS_R02_PENDING_OWNER_REMAINING_R03_R06_UNAUDITED",
+  "assessment_phase": "R01_COMPLETE_R02_OWNER_SCOPE_AND_PLACEHOLDER_APPROVED_LAYOUT_PENDING_R03_R06_NOT_AUDITED",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -372,7 +372,7 @@
         "time distribution only if sample series exists"
       ],
       "risk": "False exceedance from an uncalibrated or incomparable metric",
-      "review_state": "SOURCE_AND_ACTUAL_PDF_AUDITED_REDESIGN_PROPOSAL_PENDING_OWNER",
+      "review_state": "R02_PARTIAL_OWNER_DESIGN_RULES_APPROVED_LAYOUT_PENDING",
       "original_pdf_verified": true,
       "approved_design_mockup": false,
       "android_production_layout_changed": false,
@@ -604,7 +604,12 @@
         "fixture_disclaimer": "SYNTHETIC TEST, NO PHYSICAL DEVICE EVIDENCE",
         "timestamp_export_request_vs_real_sensor_measurement": "requestPhysicalSnapshotPdf uses isoNow at request, not verified sensor sampling timestamp",
         "altitude_formula_in_writer": true
-      }
+      },
+      "owner_approved_design_requirements": [
+        "Value placeholder '-' for absent numeric fields; retain original null and source-quality notes; never 0 default",
+        "All 15 PhysicalCatalog indicators included, including radiation, UV, wind, illuminance and PM",
+        "Physical diagnostic, derived heat and altitude/pressure views from engine only, no new PDF gates"
+      ]
     },
     {
       "report_id": "R03",
