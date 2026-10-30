@@ -27,5 +27,47 @@
     "source_commit": "fe24f5cc15672e6bede562d2443531281cf39d47"
   },
   "g3_physical_tests_deferred_after_release": true,
-  "release_authorization": "NO_RELEASE"
+  "release_authorization": "NO_RELEASE",
+  "latest_checkpoint_date": "2026-10-30",
+  "latest_scope": "COMPLETE_UNIFIED_PROFILE_AND_OFFLINE_STABLE_SOURCE_VERIFIED; PUBLIC_GITHUB_STABLE_FEED_NOT_YET_PUBLISHED",
+  "unified_chemical_v14": {
+    "catalog_material_rows": 734,
+    "sql_view_columns": 97,
+    "source_mq_curves": 49,
+    "external_sensor_r0_rs_studies": 25,
+    "external_study_disputed": 5,
+    "full_uid_evidence_profile": true,
+    "source_confidence": "REFERENCE_ONLY_UNLESS_INDEPENDENTLY_QUALIFIED",
+    "android_emulator_run": 41006768825,
+    "android_assertions": 118,
+    "physical_tank_g3": 0,
+    "status": "SOURCE_AND_EMULATOR_VERIFIED_BUT_FULL_MENU_ACCEPTANCE_STILL_OPEN"
+  },
+  "embedded_stable_v6": {
+    "library_version": "1.0.0-hr069r1",
+    "molecular_identities": 652,
+    "source_research_priors": 49,
+    "device_m4_calibrations": 0,
+    "source_build_run": 41007163886,
+    "source_build_result": "PASS",
+    "payload_sha256": "94f41ba754a1c239122b82081a91e9656012503cebda0eae6473ed8a4e45d7cf",
+    "app_compatibility_version": "6.0",
+    "apk_present": false,
+    "status": "OFFLINE_ASSET_GENERATION_VERIFIED_NOT_YET_EMBEDDED_IN_A_RELEASE_APK"
+  },
+  "github_stable_update": {
+    "existing_settings_button_used": true,
+    "configured_manifest_url": "https://raw.githubusercontent.com/HazRob/HazRob-Tank/main/updates/chemcore-stable/manifest.json",
+    "source_url_policy": "HTTPS_HAZROB_GITHUB_ONLY",
+    "payload_checks": "SIZE_SHA256_SCHEMA_PROVENANCE_APP_AND_SAMPLING_COMPATIBILITY",
+    "atomic_activation_and_rollback": true,
+    "published_manifest_currently_available": false,
+    "remaining": "PUBLISH_APPROVED_SOURCE_MANIFEST_AND_PAYLOAD_PAIR_AFTER_GITHUB_RELEASE_POLICY_ACCEPTANCE",
+    "note": "Not an APK updater; APK release separately gated."
+  },
+  "hourly_progress_monitoring": {
+    "automation_active": true,
+    "scope": "GITHUB_BRANCH_AND_CI_STALL_OR_FAILURE_ALERT",
+    "limit": "MONITORING_ONLY_NOT_CONTINUOUS_CODE_EXECUTION"
+  }
 }
