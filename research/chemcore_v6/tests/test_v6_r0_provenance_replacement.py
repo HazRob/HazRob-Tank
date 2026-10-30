@@ -19,6 +19,15 @@ def method(start: str, end: str) -> str:
 
 
 class CalibrationProvenanceReplacementTest(unittest.TestCase):
+    def test_loading_historical_manual_values_ignores_stale_firmware_attestations(self):
+        s = method("public static synchronized void load(", "public static synchronized boolean isLoaded()")
+        self.assertIn('String source=p.getString("manual_r0_source_"+k,"manual_device_r0")', s)
+        self.assertIn('if("firmware_clean_air_r0".equals(source))', s)
+        block = s.split('if("firmware_clean_air_r0".equals(source))', 1)[1]
+        self.assertIn('r0Definitions.put(k,definition)', block)
+        self.assertIn('r0WindowCounts.put(k,w)', block)
+        self.assertIn('sampleCounts.put(k,n)', block)
+
     def test_manual_single_clears_both_persistent_and_in_memory_protocol_metadata(self):
         s = method("public static synchronized boolean saveForDevice(", "public static synchronized boolean saveAll(")
         self.assertIn('edit.remove("manual_r0_samples_"+key)', s)
