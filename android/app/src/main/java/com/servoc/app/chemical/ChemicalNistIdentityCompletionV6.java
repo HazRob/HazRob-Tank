@@ -89,11 +89,30 @@ public final class ChemicalNistIdentityCompletionV6 {
                     if(!c.moveToFirst()||
                         !name.equals(c.getString(0))||
                         !formula.equals(c.getString(1))||
-                        c.isNull(4)||c.getInt(4)!=Integer.parseInt(uid)-1||
-                        c.isNull(5)||!c.getString(5).startsWith("HazRob legacy")){
+                        c.isNull(4)||c.getInt(4)!=Integer.parseInt(uid)-1){
                         rejected++;continue;
                     }
                     String oldCas=c.isNull(2)?"":c.getString(2).trim();
+                    boolean isOriginalLegacy=c.getString(5)!=null&&
+                        c.getString(5).startsWith("HazRob legacy");
+                    // The OSHA/NIOSH imports run AFTER this NIST completion
+                    // and may augment record_source. On the second startup,
+                    // preserve a verified NIST direct identity even when the
+                    // record_source textual summary has changed.
+                    boolean committedNist=false;
+                    if(cas.equals(oldCas)){
+                        try(Cursor prior=db.rawQuery(
+                                "SELECT 1 FROM chemical_sources WHERE "+
+                                "chemical_uid=? AND source_id='NIST_WEBBOOK' "+
+                                "AND source_key=? AND record_url=? LIMIT 1",
+                                new String[]{uid,"CAS:"+cas,
+                                    "https://webbook.nist.gov/cgi/cbook.cgi?ID="+cas})){
+                            committedNist=prior.moveToFirst();
+                        }
+                    }
+                    if(!isOriginalLegacy&&!committedNist){
+                        rejected++;continue;
+                    }
                     if(!oldCas.isEmpty()&&!cas.equals(oldCas)){
                         rejected++;continue;
                     }
