@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
+import com.servoc.app.chemical.ChemicalIdentityEquivalenceV6;
 import com.servoc.app.chemical.ChemicalMolecularProjectionV6;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.MqDeviceR0LedgerV14;
@@ -225,6 +226,28 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM exposure_limits")==0,
                 "new test SQLite starts without fake numeric exposure limits");
             ChemicalSeedBootstrap.ensureNiosh(this,db);
+            ChemicalIdentityEquivalenceV6.Result synonymAudit=
+                ChemicalIdentityEquivalenceV6.ensure(db);
+            long verifiedSynonyms=num(sql,
+                "SELECT COUNT(*) FROM chemical_identity_equivalence_v6");
+            check(verifiedSynonyms==synonymAudit.verified&&
+                synonymAudit.inserted==0,
+                "source qualified CAS synonym crosswalk repeatable without rekeying");
+            check(verifiedSynonyms==15,
+                "all 15 independently NIOSH-confirmed canonical synonym links present");
+            check(num(sql,"SELECT COUNT(*) FROM chemicals")==734,
+                "legacy synonym reconciliation preserves every source/experiment UID");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_identity_equivalence_v6 "+
+                "WHERE alias_uid=104 AND canonical_uid=499 AND source_cas='64-17-5'")==1,
+                "Ethanol links to official NIOSH ethyl alcohol authority");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_identity_equivalence_v6 "+
+                "WHERE alias_uid=64 AND canonical_uid=557 AND source_cas='75-09-2'")==1,
+                "Dichloromethane links to official NIOSH methylene chloride authority");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_identity_equivalence_v6 "+
+                "WHERE alias_uid=123 AND canonical_uid=280 AND source_cas='123-91-1'")==1,
+                "1,4-Dioxane maps to one NIOSH Dioxane identity and sources");
+            out.put("authoritative_niosh_alias_links",verifiedSynonyms);
+            out.put("niosh_alias_idempotence",synonymAudit.summary());
             ChemicalMolecularProjectionV6.Result projection=
                 ChemicalMolecularProjectionV6.ensure(db);
             check(projection.afterFormula==projection.beforeFormula&&
@@ -429,6 +452,13 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
 
             ChemicalRepository unifiedRepo=new ChemicalRepository(db);
             check(unifiedRepo.count()==materials,"actual UI repository exposes whole catalog");
+            JSONObject ethanolAlias=unifiedRepo.scientificProfile(104);
+            check(ethanolAlias.getJSONArray("source_qualified_identity_aliases")
+                .length()==1,
+                "historical ethanol UID displays one NIOSH source-linked canonical identity");
+            check(ethanolAlias.getJSONArray("source_qualified_identity_aliases")
+                .getJSONObject(0).getLong("canonical_uid")==499,
+                "user sees canonical identity while historical UID stays intact");
             JSONObject benzeneStudyProfile=unifiedRepo.scientificProfile(benzeneUid);
             check(benzeneStudyProfile.getJSONArray("external_mq_r0_rs_sensor_studies")
                 .length()>0,"one unified material profile links relevant external sensor context");
