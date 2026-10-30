@@ -24,6 +24,12 @@ import com.servoc.app.R;
  */
 public final class V7ReportLayoutKit {
     private V7ReportLayoutKit() {}
+    private static volatile Context applicationContext;
+
+    /** Bind only the Android application context; never store an Activity. */
+    public static void bindContext(Context context) {
+        if(context!=null)applicationContext=context.getApplicationContext();
+    }
 
     public static final int INK=0xFF111111;
     public static final int AMBER=0xFFFFBE00;
@@ -112,8 +118,9 @@ public final class V7ReportLayoutKit {
         RectF band=new RectF(mm(5),mm(5),w-mm(5),mm(23));
         fill(c,band,BLACK);
         float logoSide=mm(15);
-        if(context!=null){
-            Drawable logo=context.getDrawable(R.drawable.hazrob_official_report_mark);
+        Context resolved=context!=null?context:applicationContext;
+        if(resolved!=null){
+            Drawable logo=resolved.getDrawable(R.drawable.hazrob_official_report_mark);
             if(logo!=null){
                 float right=band.right-mm(1),top=band.top+mm(1.5f);
                 logo.setBounds((int)(right-logoSide),(int)top,(int)right,(int)(top+logoSide));
