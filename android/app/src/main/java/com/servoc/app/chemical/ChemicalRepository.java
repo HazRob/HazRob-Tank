@@ -1,6 +1,7 @@
 package com.servoc.app.chemical;
 
 import android.database.Cursor;
+import org.json.JSONObject;
 import com.servoc.app.data.ExperimentsDb;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,35 @@ public final class ChemicalRepository {
 
     public Chemical byLegacyId(int id){try(Cursor c=db.getReadableDatabase().rawQuery("SELECT "+COLS+" FROM v11_unified_chemical_catalog WHERE legacy_id=?",new String[]{String.valueOf(id)})){return c.moveToFirst()?read(c):null;}}
     public Chemical byUid(long uid){try(Cursor c=db.getReadableDatabase().rawQuery("SELECT "+COLS+" FROM v11_unified_chemical_catalog WHERE uid=?",new String[]{String.valueOf(uid)})){return c.moveToFirst()?read(c):null;}}
+    /**
+     * Complete source-scoped V13 material profile. Shared by tracking,
+     * candidate details, developer lab and export. Null means UNKNOWN,
+     * never "no hazard"; any ChemCore metric is evidence, not G3 validation.
+     */
+    public JSONObject scientificProfile(long uid){
+        JSONObject out=new JSONObject();
+        if(uid<=0)return out;
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+                "SELECT * FROM v11_unified_chemical_catalog WHERE uid=? LIMIT 1",
+                new String[]{Long.toString(uid)})){
+            if(!c.moveToFirst())return out;
+            for(int i=0;i<c.getColumnCount();i++){
+                Object value;
+                switch(c.getType(i)){
+                    case Cursor.FIELD_TYPE_INTEGER:value=c.getLong(i);break;
+                    case Cursor.FIELD_TYPE_FLOAT:value=c.getDouble(i);break;
+                    case Cursor.FIELD_TYPE_STRING:value=c.getString(i);break;
+                    default:value=JSONObject.NULL;
+                }
+                out.put(c.getColumnName(i),value);
+            }
+        }catch(Exception ex){
+            android.util.Log.w("TankUnifiedChemCatalog",
+                "Cannot read source-qualified hazard profile uid="+uid,ex);
+        }
+        return out;
+    }
+
     public List<String> identifiers(long uid,String scheme){List<String> out=new ArrayList<>();try(Cursor c=db.getReadableDatabase().rawQuery("SELECT DISTINCT value FROM chemical_identifiers WHERE chemical_uid=? AND scheme=? ORDER BY value",new String[]{String.valueOf(uid),scheme})){while(c.moveToNext())out.add(c.getString(0));}return out;}
 
     private Chemical exact(String q){
