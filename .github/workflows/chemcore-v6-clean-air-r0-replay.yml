@@ -1,0 +1,37 @@
+name: ChemCore V6 actual engine clean air R0 replay (research)
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'research/chemcore_v6/tests/java/V6CleanAirSameR0Experiment.java'
+      - '.github/workflows/chemcore-v6-clean-air-r0-replay.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  clean-air-r0-original-v6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile actual standalone V6 engine source and execute R0 clean-air experiment
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v6-clean-air-r0/classes /tmp/v6-clean-air-r0/results
+          javac -d /tmp/v6-clean-air-r0/classes \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/*.java \
+            research/chemcore_v6/tests/java/V6CleanAirSameR0Experiment.java
+          java -cp /tmp/v6-clean-air-r0/classes \
+            com.hazrob.tank.chemcore.v6.V6CleanAirSameR0Experiment \
+            | tee /tmp/v6-clean-air-r0/results/original_engine_clean_air_r0_output.csv
+          grep '^PASS,V6CleanAirSameR0Experiment' /tmp/v6-clean-air-r0/results/original_engine_clean_air_r0_output.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ChemCore-V6-Actual-Engine-Clean-Air-R0-Replay
+          path: /tmp/v6-clean-air-r0/results/
+          retention-days: 30
