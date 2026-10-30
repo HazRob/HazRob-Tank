@@ -115,12 +115,12 @@ public final class V7BeefResearchPdfWriter {
         V7ReportLayoutKit.blankChart(c,rect(L,top,W,243),
             "مؤشر التشابه مع الفئات / Study class similarity",
             "Descriptive similarity index","Class");
-        float base=top+68;
+        float base=top+48;
         for(int i=0;i<CLASSES.length;i++){
             BeefResearchEngine.Match match=null;
             for(BeefResearchEngine.Match q:result.rankedClasses)
                 if(CLASSES[i].equals(q.classCode)){match=q;break;}
-            float y=base+i*40;
+            float y=base+i*36;
             text(c,CLASSES[i],L+19,y,93,28,false,false);
             if(match==null||!Double.isFinite(match.descriptiveSimilarity)) {
                 text(c,"-",L+130,y,50,28,false,false);
