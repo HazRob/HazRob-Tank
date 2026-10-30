@@ -104,25 +104,33 @@ public final class ChemicalExperimentStatusRepository {
 
         // GitHub record synchronization reports scientific evidence AVAILABILITY.
         // These flags are never certified as active on-device MQ calibration.
-        boolean referenceFp=exists("SELECT 1 FROM chemical_reference_updates_v6 "+
-            "WHERE chemical_uid=? AND property_key='fingerprint_reference' AND "+
-            "evidence_status LIKE 'PUBLISHED_LIBRARY_%' LIMIT 1",c.uid);
-        boolean referenceCurve=exists("SELECT 1 FROM chemical_reference_updates_v6 "+
-            "WHERE chemical_uid=? AND property_key='mq_curve_reference' AND "+
-            "evidence_status LIKE 'PUBLISHED_LIBRARY_%' LIMIT 1",c.uid);
-        boolean referencePpm=exists("SELECT 1 FROM chemical_reference_updates_v6 "+
-            "WHERE chemical_uid=? AND property_key='ppm_reference' AND "+
-            "evidence_status LIKE 'PUBLISHED_LIBRARY_%' LIMIT 1",c.uid);
-        boolean referenceM4=exists("SELECT 1 FROM chemical_reference_updates_v6 "+
-            "WHERE chemical_uid=? AND property_key='m4_reference' AND "+
-            "evidence_status LIKE 'PUBLISHED_LIBRARY_%' LIMIT 1",c.uid);
-        boolean publishedM4Qualified=exists(
-            "SELECT 1 FROM chemical_reference_updates_v6 WHERE chemical_uid=? "+
-            "AND property_key='m4_reference' AND "+
-            "evidence_status='PUBLISHED_LIBRARY_QUALIFIED' LIMIT 1",c.uid);
-        boolean fpQualified=publishedQualified(c.uid,"fingerprint_reference");
-        boolean curveQualified=publishedQualified(c.uid,"mq_curve_reference");
-        boolean ppmQualified=publishedQualified(c.uid,"ppm_reference");
+        boolean referenceFp=false,referenceCurve=false,referencePpm=false,
+            referenceM4=false,publishedM4Qualified=false,
+            fpQualified=false,curveQualified=false,ppmQualified=false;
+        // One indexed query per material instead of eight queries for each
+        // row of a 734-item Android list. Mirror published central flags;
+        // never run scientific approval logic on the phone.
+        try(Cursor q=db.getReadableDatabase().rawQuery(
+                "SELECT property_key,evidence_status FROM chemical_reference_updates_v6 "+
+                "WHERE chemical_uid=?",new String[]{Long.toString(c.uid)})){
+            while(q.moveToNext()){
+                String key=q.getString(0),status=q.getString(1);
+                boolean qualified="PUBLISHED_LIBRARY_QUALIFIED".equals(status);
+                boolean available=qualified||
+                    "PUBLISHED_LIBRARY_AVAILABLE".equals(status);
+                if(!available)continue;
+                if("fingerprint_reference".equals(key)){
+                    referenceFp=true;fpQualified=qualified;
+                }else if("mq_curve_reference".equals(key)){
+                    referenceCurve=true;curveQualified=qualified;
+                }else if("ppm_reference".equals(key)){
+                    referencePpm=true;ppmQualified=qualified;
+                }else if("m4_reference".equals(key)){
+                    referenceM4=true;publishedM4Qualified=qualified;
+                }
+            }
+        }catch(Exception ignored){/* offline old DB displays its bundled statuses */}
+
         if(fingerprint==Level.NONE&&referenceFp)fingerprint=Level.PARTIAL;
 
         boolean anyActiveCurve=false,strictM4=false;
@@ -142,15 +150,6 @@ public final class ChemicalExperimentStatusRepository {
             tested||referenceFp||referenceCurve||referencePpm||referenceM4,
             revision,referenceCurve,referenceFp,referencePpm,referenceM4,
             publishedM4Qualified,fpQualified,curveQualified,ppmQualified);
-    }
-
-    private boolean publishedQualified(long uid,String key){
-        try(Cursor c=db.getReadableDatabase().rawQuery(
-            "SELECT 1 FROM chemical_reference_updates_v6 WHERE chemical_uid=? "+
-            "AND property_key=? AND evidence_status='PUBLISHED_LIBRARY_QUALIFIED' LIMIT 1",
-            new String[]{Long.toString(uid),key})){
-            return c.moveToFirst();
-        }catch(Exception ignored){return false;}
     }
 
     /** Revision shown beside the matrix so the developer can verify which active central snapshot drives status. */
