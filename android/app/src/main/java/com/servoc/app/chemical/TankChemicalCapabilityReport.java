@@ -94,6 +94,12 @@ public final class TankChemicalCapabilityReport {
         out.append("\nالكتلة المولية: ")
             .append(chemical.molarMass==null?"غير متاحة":
                 rounded(chemical.molarMass)+" g/mol");
+        JSONObject nist=unified.optJSONObject("nist_direct_cas_source");
+        if(nist!=null){
+            out.append("\nCAS والكتلة المولية مثبتان بمرجع NIST SRD69:")
+               .append("\n").append(nist.optString("source_url","غير متاح"))
+               .append("\nهذه حقائق هوية/كتلة جزيئية، وليست معايرة MQ أو قياس غاز.");
+        }
         JSONArray aliases=unified.optJSONArray("source_qualified_identity_aliases");
         if(aliases!=null&&aliases.length()>0){
             out.append("\nعلاقات أسماء NIOSH المتكافئة (دون دمج بيانات الجلسات): ");
