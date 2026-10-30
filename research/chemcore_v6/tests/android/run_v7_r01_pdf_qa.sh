@@ -14,3 +14,4 @@ cat /tmp/v7-r01-pdf/status.json
 python3 -c 'import json;p=json.load(open("/tmp/v7-r01-pdf/status.json"));assert p["status"]=="PASS",p'
 adb exec-out run-as com.servoc.app cat files/V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf > /tmp/v7-r01-pdf/HazRob_Tank_V7_R01_Actual_Android_Report.pdf
 adb exec-out run-as com.servoc.app cat files/V7_Blank_Layout_Kit_Actual_Android.pdf > /tmp/v7-r01-pdf/V7_Blank_Layout_Kit_Actual_Android.pdf
+adb exec-out run-as com.servoc.app cat files/V7_R02_Actual_Android_Report.pdf > /tmp/v7-r01-pdf/V7_R02_Actual_Android_Report.pdf
