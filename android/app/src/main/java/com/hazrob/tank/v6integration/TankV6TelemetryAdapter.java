@@ -136,6 +136,33 @@ public final class TankV6TelemetryAdapter {
                 sensor.optString("r0_device_id",""));
             row.put("r0_samples",sensor==null?0:
                 sensor.optInt("r0_samples",0));
+            row.put("r0_definition",sensor==null?"UNAVAILABLE":
+                sensor.optString("r0_definition","UNDECLARED"));
+            row.put("r0_window_count",sensor==null?0:
+                sensor.optInt("r0_window_count",0));
+            // Independent per-channel source evidence: one snapshot provides
+            // a resistance ratio and its sign, not a "normal gas ppm" and
+            // not an environmental compliance classification.
+            double rsNow=row.optDouble("rs_as_received",Double.NaN);
+            double r0Now=row.optDouble("r0_as_received",Double.NaN);
+            double ratio=positive(rsNow)&&positive(r0Now)?rsNow/r0Now:Double.NaN;
+            row.put("rs_r0_ratio_research",numberOrNull(ratio));
+            row.put("rs_over_accepted_clean_air_r0",valid?numberOrNull(ratio):
+                JSONObject.NULL);
+            row.put("log10_accepted_clean_air_ratio",
+                valid?numberOrNull(Math.log10(ratio)):JSONObject.NULL);
+            row.put("clean_air_reference_delta_percent",
+                valid?numberOrNull(100.0*(ratio-1.0)):JSONObject.NULL);
+            row.put("sensor_response_state",!valid?
+                "R0_ABSENT_OR_NOT_AIR_RS_MEAN":
+                ratio<=1.0-CleanAirResponseGateV6.DEFAULT_DROP_FRACTION?
+                    "PROVISIONAL_RS_DECREASE":
+                ratio>=1.0+CleanAirResponseGateV6.DEFAULT_DROP_FRACTION?
+                    "PROVISIONAL_RS_INCREASE_OR_DRIFT":
+                    "NEAR_REFERENCE_WITHIN_UNVALIDATED_DEADBAND");
+            row.put("sensor_response_interpretation",
+                "NOT_GAS_IDENTITY_NOT_PPM_NOT_ATMOSPHERIC_SAFETY");
+
             if(valid){
                 accepted++;
                 cleanAirReferences.add(new Engine.Channel(model,
