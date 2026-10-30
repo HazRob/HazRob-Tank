@@ -28,6 +28,14 @@ class CalibrationProvenanceReplacementTest(unittest.TestCase):
         self.assertIn('r0WindowCounts.put(k,w)', block)
         self.assertIn('sampleCounts.put(k,n)', block)
 
+    def test_absent_window_provenance_is_unknown_not_fabricated(self):
+        s = method("public static synchronized int getWindowCount(", "public static synchronized boolean has(")
+        self.assertIn("r0WindowCounts.get(key)", s)
+        self.assertIn("if(c!=null)return c;", s)
+        self.assertIn("return 0;", s)
+        self.assertNotIn('automatic_clean_air_field_r0".equals(getSource(key))?3', s)
+        self.assertNotIn('firmware_clean_air_r0".equals(getSource(key))?1', s)
+
     def test_manual_single_clears_both_persistent_and_in_memory_protocol_metadata(self):
         s = method("public static synchronized boolean saveForDevice(", "public static synchronized boolean saveAll(")
         self.assertIn('edit.remove("manual_r0_samples_"+key)', s)
