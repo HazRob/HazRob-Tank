@@ -4,6 +4,9 @@ on:
     branches: [feature/tank-v6-implementation]
     paths:
       - 'research/chemcore_v6/tests/android/V6CleanAirInstantFixtureActivity.java'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/CleanAirResponseGateV6.java'
+      - 'android/app/src/main/java/com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java'
       - 'research/chemcore_v6/tests/android/run_v6_clean_air_instant.sh'
       - '.github/workflows/chemcore-v6-clean-air-instant-android.yml'
   workflow_dispatch:
@@ -81,13 +84,16 @@ jobs:
           p=Path('/tmp/v6-clean-air-instant')
           d=json.loads((p/'v6_clean_air_instant_result.json').read_text())
           assert d['reported_identity']=='UNKNOWN' and d['ppm_reportable'] is False
-          assert len(d['source_curve_hypotheses'])==49
+          assert len(d['source_curve_hypotheses'])==0
+          assert len(d['source_curve_research_diagnostic_ledger'])==49
+          assert d['gas_response_screening_state']=='WITHIN_CLEAN_AIR_REFERENCE_BAND'
+          assert d['gas_alerts']==[]
           pdf=fitz.open(str(p/'v6_clean_air_instant.pdf'))
           assert pdf.page_count==1
           s=pdf[0].get_text()
           assert 'UNKNOWN' in s
           assert 'ChemCore V6' in s
-          assert '49' in s
+          assert '0' in s
           print('PASS Android API31: visible UNKNOWN / 49 non-certified curves, 1 page PDF')
           PY
       - uses: actions/upload-artifact@v4
