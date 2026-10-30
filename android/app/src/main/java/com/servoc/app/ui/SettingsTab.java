@@ -20,6 +20,7 @@ import com.servoc.app.hardware.HazRobHardwareProfile;
 import com.servoc.app.models.ModelRuntimeRegistry;
 import com.servoc.app.models.MqDataScience76Catalog;
 import com.servoc.app.chemcore.library.ChemCoreLibraryManager;
+import com.servoc.app.chemical.ChemicalReferenceSyncV6;
 import com.servoc.app.chemcore.ChemCoreMolecularSeedImporter;
 import com.servoc.app.chemcore.ChemCoreQsprRuntimeRegistry;
 import com.servoc.app.ReleaseAudit;
@@ -96,7 +97,7 @@ public final class SettingsTab {
         LinearLayout science=UiKit.card(c);science.addView(UiKit.title(c,"المكتبة العلمية"),UiKit.full(c));Button info=UiKit.button(c,"الحالة");science.addView(info,UiKit.full(c));libraryInfo=UiKit.small(c,"");libraryInfo.setBackgroundColor(0xFFFFFFFF);libraryInfo.setVisibility(View.GONE);science.addView(libraryInfo,UiKit.full(c));
         info.setOnClickListener(v->{boolean show=libraryInfo.getVisibility()!=View.VISIBLE;libraryInfo.setVisibility(show?View.VISIBLE:View.GONE);if(show)libraryInfo.setText("Chemicals "+host.database().chemicalCount()+"   •   MQDataScience "+MqDataScience76Catalog.COUNT+"   •   Native "+ModelRuntimeRegistry.nativeCount()+"   •   Verified "+ModelRuntimeRegistry.verifiedCount()+"   •   Pending "+ModelRuntimeRegistry.pendingPortCount());});root.addView(science,UiKit.full(c));
 
-        LinearLayout updates=UiKit.card(c);updates.addView(UiKit.title(c,"تحديثات منظومة التحليل"),UiKit.full(c));analysisUpdateInfo=UiKit.small(c,"");analysisUpdateInfo.setBackgroundColor(0xFFFFFFFF);updates.addView(analysisUpdateInfo,UiKit.full(c));Button checkUpdate=UiKit.button(c,"التحقق من تحديثات منظومة التحليل");checkUpdate.setOnClickListener(v->checkAnalysisUpdate());updates.addView(checkUpdate,UiKit.full(c));root.addView(updates,UiKit.full(c));
+        LinearLayout updates=UiKit.card(c);updates.addView(UiKit.title(c,"مزامنة محتويات المكتبة العلمية"),UiKit.full(c));analysisUpdateInfo=UiKit.small(c,"");analysisUpdateInfo.setBackgroundColor(0xFFFFFFFF);updates.addView(analysisUpdateInfo,UiKit.full(c));Button checkUpdate=UiKit.button(c,"الاستعلام عن تحديثات السجلات والإمكانات");checkUpdate.setOnClickListener(v->checkAnalysisUpdate());updates.addView(checkUpdate,UiKit.full(c));root.addView(updates,UiKit.full(c));
         refreshMicrophoneCalibration();
     }
 
@@ -198,21 +199,22 @@ public final class SettingsTab {
     private void checkAnalysisUpdate(){
         host.io().execute(()->{
             try{
-                ChemCoreLibraryManager.CheckSummary c=libraryManager.check(ReleaseAudit.VERSION);
-                if(!c.updateAvailable){host.showToast("منظومة التحليل محدثة");return;}
-                if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())){host.showToast("أوقف القياس أو التحليل قبل التحديث");return;}
-                com.servoc.app.chemcore.library.ChemCoreLibraryStore.InstallResult r=libraryManager.install(c,ReleaseAudit.VERSION,
-                    ()->ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()));
-                if(r.installed){
-                    ChemCoreMolecularSeedImporter.Result seed=ChemCoreMolecularSeedImporter.importBestAvailable(scroll.getContext().getApplicationContext(),host.database());
-                    ChemCoreQsprRuntimeRegistry.Status qspr=ChemCoreQsprRuntimeRegistry.rebuild(host.database());
-                    host.database().putMeta("tank_v3_chemcore_seed_origin",seed.origin);
-                    host.database().putMeta("tank_v3_chemcore_qspr_status",qspr.summary());
-                    host.database().putMeta("tank_v3_chemcore_bootstrap",seed.available?"READY":"PARTIAL_NO_MOLECULAR_SEED");
-                    host.showToast("تم تحديث ChemCore "+r.version+" • QSPR "+qspr.enabledSensorModels+" نماذج");
-                }else host.showToast("لم يتم تثبيت التحديث: "+r.reason);
+                boolean active=ChemCoreLibraryManager.measurementOrAnalysisActive(
+                    host.latestDiagnostics());
+                if(active){host.showToast("أوقف القياس أو التحليل قبل تحديث السجلات");return;}
+                ChemicalReferenceSyncV6.Result synced=ChemicalReferenceSyncV6.refresh(
+                    host.database(),0,25,active);
+                host.database().putMeta("v6_reference_sync_result",synced.summary());
+                host.showToast(synced.applied>0?
+                    "تم تحديث "+synced.applied+" سجلات: ستظهر الإمكانات الجديدة في جميع القوائم":
+                    "السجلات العلمية محدثة • النسخة "+synced.revision);
+                // Re-query the live status projection after each successful
+                // central update. This does NOT re-qualify any science.
                 host.refreshAllTabs();
-            }catch(Exception e){host.showToast("تعذر تحديث منظومة التحليل: "+e.getClass().getSimpleName());}
+            }catch(Exception e){
+                host.showToast("تعذر الاستعلام عن السجلات المنشورة: "+
+                    e.getClass().getSimpleName());
+            }
         });
     }
 
