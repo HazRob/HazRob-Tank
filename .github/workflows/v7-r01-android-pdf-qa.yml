@@ -6,6 +6,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/report/TankInstantReportPdf.java'
       - 'android/app/src/main/java/com/servoc/app/report/TankInstantV7PdfWriter.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7ReportLayoutKit.java'
+      - 'android/app/src/main/java/com/servoc/app/report/V7ReportPagePlanner.java'
       - 'android/app/src/main/res/drawable/hazrob_official_report_mark.xml'
       - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
       - 'research/chemcore_v6/tests/android/V7R01PdfFixtureActivity.java'
