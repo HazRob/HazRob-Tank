@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 MQ4 strict contiguous 60-minute lag audit (401/401 CI)
+
+- Resumed from `9cd049f0e2b4fe7c8eb959ec2bb02149b88e2c4b`; previous G2 and associated CI runs succeeded. Pinned G2 80-entry catalog and 14 external source slots unchanged; independent physical evidence remains absent.
+- Fixed an endpoint-only 3600-second lag rule in `g2_mq4_temporal_continuity_audit.py`: now every intervening interval must be exactly 60 seconds. Segments split on any non-60-second gap; added segment lengths, count and cross-day span count. Three synthetic regressions include a compensating 30s+90s gap that must NOT count as a continuous 60-minute pair.
+- Independently re-read original user Library ZIP `HazRob_MQ_Reference_Real_Measurements_2026-10-30.zip` (SHA256 `7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9`), member SHA256 `3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d`. Actual 14,186 rows / 10 gaps / 11 continuous segments, lengths [1406,1565,1388,5,1454,2495,675,1367,995,1417,1419]; 9 segments span calendar days and 10 midnight-adjacent pairs. Strict lag60 pairs = 13,581, identical to prior count for THIS source; no change to earlier numerical interpretation.
+- [G2 Actions run 40979161051](https://github.com/HazRob/HazRob-Tank/actions/runs/40979161051), job 123814563468: **401/401 PASS**, deterministic replay and publication guard PASS, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Code `c627981b8a74f2677ec19b95ba5dea4f5f0e55e8`; tests `1ed6e62a05e323680c0eb6a2c3eca93a1ac645f5`.
+- Evidence: `G2_MQ4_STRICT_CONTIGUOUS_SEGMENTS_2026-10-30.json` and `G2_MQ4_STRICT_LAG60_AND_SEGMENT_RECONCILIATION_2026-10-30_AR.md`. Research branch only; no ChemCore Stable, Android, firmware, or main edits. No G2/G3 scientific promotion.
+- Next: verify all CI on documentation checkpoint; source-qualified physical exposure IDs, independent device/session provenance, traceable concentration reference calibration and preregistered blinded grouped holdouts remain required.
+
+---
+
 ## 2026-10-30 — G2 original MQ4 temporal-dependence and catalog-revision audit
 
 - Resumed from 8310a0118c656f94e8346fc243fa76328e388ed1 (20/20 prior CI successes). Central pinned 80-entry blob unchanged; independent evidence records=[]; 0/14 source-ready.
