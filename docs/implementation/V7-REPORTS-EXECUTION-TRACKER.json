@@ -138,6 +138,11 @@
       "id": "D15",
       "text": "G18: light-gray footer with left black bold 14pt Arabic page n/N and right two-color HazRob official wordmark.",
       "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "D16",
+      "text": "Owner supplied official HazRob hexagonal targeting logo and explicitly approved placement at right side of every V7 black report header; use asset hazrob_official_report_mark.xml not old tracked robot icon.",
+      "status": "APPROVED_BY_OWNER"
     }
   ],
   "checkpoints": [
@@ -239,7 +244,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Owner added five mandatory G14-G18 rules (total 18). Design charter rev 1.1, sequential plan, R01 analysis and six-report evaluation matrix synchronized; no Java/PDF production changes or APK created.",
+  "latest_documented_change": "Owner official geometric mark accepted for all V7 right headers, Android VectorDrawable asset committed and R01 P05 closed; PDF production writers remain unchanged.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -253,7 +258,8 @@
     "traceability": "G01-G18",
     "engine_only_science_policy": true,
     "measurement_timestamp_in_header": true,
-    "visual_contract_fixed": true
+    "visual_contract_fixed": true,
+    "official_logo_source_approved": true
   },
   "evaluation_requirements": {
     "document": "docs/implementation/V7-REPORT-ASSESSMENT-MATRIX.json",
@@ -317,9 +323,32 @@
       "P02 evidence matrix and conditional fingerprint",
       "P03 decision rail",
       "P04 OEL and GHS as conditional reference",
-      "P05 official logo",
       "P06 technical annex",
       "P04 graphic placement only, no second analysis gates"
-    ]
+    ],
+    "approved_design_details": {
+      "P05": "Owner logo image supplied; Android vector derivative committed, final rendering QA pending",
+      "official_logo_color": "#FFBE00"
+    }
+  },
+  "logo_approval": {
+    "source": "owner-uploaded 1000797098.png",
+    "source_sha256": "bddf42c56b6e44f68ccaf70ab2a9aafc4b28576199fac353dfd62f3e1933ba5a",
+    "pixel_size": [
+      1024,
+      1024
+    ],
+    "colors": [
+      "#000000",
+      "#FFBE00",
+      "#FFFFFF"
+    ],
+    "outside_transparent": true,
+    "right_header_approved": true,
+    "visual_asset_in_repo": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
+    "vector_derived_from_source": true,
+    "original_binary_embedded_in_repo": false,
+    "provenance_document": "docs/requirements/V7-REPORT-LOGO-ASSET-2026-10-30_AR.md",
+    "pending": "Production PDF integration and Android render visual match"
   }
 }
