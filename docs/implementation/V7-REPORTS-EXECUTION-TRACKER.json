@@ -311,7 +311,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R02 native Android PDF automated QA passed on GitHub Actions 41146719225 (commit 811abddf): real Android PDF, all 15 physical/PM indicator labels, A4 dimensions, 12pt extraction, missing '-' and uploaded artifact ID 13021781146. App context binding for official logo was then added (latest commit 75202941) with fresh CI running. Manual per-page visual inspection and owner signoff are pending. No scientific engine changed.",
+  "latest_documented_change": "R02 native Android PDF automated QA passed on GitHub Actions 41146719225 (commit 811abddf): real Android PDF, all 15 physical/PM indicator labels, A4 dimensions, 12pt extraction, missing '-' and uploaded artifact ID 13021781146. App context binding for official logo was then added (latest commit 75202941) with fresh CI running. Manual per-page visual inspection and owner signoff are pending. No scientific engine changed. Production R02 PDF in successful run had 4 A4 portrait pages, 311561 bytes (synthetic QA input), not fixed-page design cap.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -721,7 +721,10 @@
       ],
       "latest_after_success_ci": "41146906853 in_progress_at_last_check",
       "manual_visual_qa_complete": false,
-      "final_android_commit_tested": false
+      "final_android_commit_tested": false,
+      "output_pdf_pages": 4,
+      "output_pdf_bytes": 311561,
+      "page_count_origin": "Actual Android PdfRenderer fixture status, run 41146719225"
     },
     "signed_off": false,
     "production_code_change": true,
