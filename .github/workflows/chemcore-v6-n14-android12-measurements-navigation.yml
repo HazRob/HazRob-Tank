@@ -1,0 +1,103 @@
+name: HazRob Tank V6 N14 Android 12 five-tab and food selector actual UI
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java'
+      - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
+      - 'research/chemcore_v6/tests/android/V6MeasurementsNavigationFixtureActivity.java'
+      - 'research/chemcore_v6/tests/android/run_n14_measurements_navigation.sh'
+      - '.github/workflows/chemcore-v6-n14-android12-measurements-navigation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-five-tab-operator-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay independent Tank V6 sources and test-only UI Activity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then
+            cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          fi
+          cp tank/research/chemcore_v6/tests/android/V6MeasurementsNavigationFixtureActivity.java \
+            source/app/src/main/java/com/servoc/app/ui/V6MeasurementsNavigationFixtureActivity.java
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("source/app/src/main/AndroidManifest.xml")
+          s=p.read_text()
+          mark='<activity android:name=".MainActivity" android:exported="false"/>'
+          assert mark in s
+          s=s.replace(mark,'<activity android:name=".ui.V6MeasurementsNavigationFixtureActivity" android:exported="true"/>\n        '+mark)
+          p.write_text(s)
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Setup Android SDK
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Temporary emulator-only signing
+        shell: bash
+        run: |
+          mkdir -p source/signing
+          keytool -genkeypair -alias hazrob-prototype -keystore source/signing/hazrob-prototype.jks \
+            -storepass hazrob-prototype -keypass hazrob-prototype -keyalg RSA -keysize 2048 \
+            -validity 1 -dname "CN=N14 CI ONLY, OU=NOT PRODUCTION, O=HazRob TEST" -noprompt
+      - name: Build isolated N14 Android emulator app, not release APK
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Enable Android KVM
+        run: |
+          if test -c /dev/kvm; then sudo chmod a+rw /dev/kvm; fi
+      - name: Click five real buttons and both food protocol options on Android 12
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: false
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
+          script: bash tank/research/chemcore_v6/tests/android/run_n14_measurements_navigation.sh
+      - name: Verify N14 actual Android UI evidence
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('/tmp/v6-n14/navigation.json')
+          d=json.loads(p.read_text())
+          assert d['status']=='PASS',d
+          assert d['main_navigation_tabs']==5,d
+          assert d['food_protocols']==2,d
+          assert d['hardware_connected'] is False,d
+          assert d['assertions']>=14,d
+          print('PASS V6 N14 actual Android 12: five button clicks, meat/fruit selector, offline device-free UI')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HazRob-Tank-V6-N14-Android12-Operator-Navigation
+          path: /tmp/v6-n14/
+          if-no-files-found: warn
+          retention-days: 30
