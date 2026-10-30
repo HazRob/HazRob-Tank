@@ -52,6 +52,18 @@ public final class ChemicalSeedBootstrap {
                 "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
         }
 
+        ExposureSeedBootstrap.ensureNioshIdlh(context,db);
+
+        // Tank V6 scientific risk inventory: load authoritative OSHA Z-1 occupational
+        // limits alongside NIOSH IDLH (same CAS-based identity master). Preserve
+        // source authority, original units, duration and historical provenance.
+        ExposureSeedBootstrap.ensureOshaZ1(context,db);
+        // Import ALL original NIOSH/OSHA identity-bearing rows FIRST.
+        // Enriching an earlier legacy CAS before those seed lookups changes
+        // which UID gets assigned to the final OSHA-linked chemical on a
+        // pristine database, causing fresh-install vs upgrade divergence.
+        // Only AFTER the base identities are frozen can NIST fill the
+        // existing 27 stable rows without renumbering any historical UID.
         // NIST SRD69 independently identifies the remaining 27 historical
         // *single* chemical substances. Verify exact legacy UID, name,
         // formula, CAS checksum, source and non-conflicting identity before
@@ -78,12 +90,7 @@ public final class ChemicalSeedBootstrap {
                 "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
         }
 
-        ExposureSeedBootstrap.ensureNioshIdlh(context,db);
 
-        // Tank V6 scientific risk inventory: load authoritative OSHA Z-1 occupational
-        // limits alongside NIOSH IDLH (same CAS-based identity master). Preserve
-        // source authority, original units, duration and historical provenance.
-        ExposureSeedBootstrap.ensureOshaZ1(context,db);
         // Source qualified hazards must be linked AFTER authoritative identity
         // imports resolve CAS -> stable chemicals.uid, and again safely on
         // subsequent starts; otherwise benzene's legacy CAS may be blank at
