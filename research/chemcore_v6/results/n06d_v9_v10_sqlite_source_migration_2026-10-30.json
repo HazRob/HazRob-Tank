@@ -1,0 +1,49 @@
+{
+  "schema": "hazrob-v6-n06d-Java-exact-v9-to-v10-sql-migration/1",
+  "java_experiments_db_sha256": "13ab8957ae3e0680baa875ecb5f3ee1e4fed316dcf6549d7de61662c1f2a789e",
+  "original_SQL_source_hashes": {
+    "v9": "d984fe4e618dec0a4176958a1056b4d1ae347cc42cdad8ede40c33e0ba28d8b1",
+    "v10": "dfbb0221a1acdceaa5e5e082e47cbc70b575b69673df77f39f2c4241894aad4a",
+    "v9_backfill": "e40ae87b3ff802db0c2f1e4991c42299a6acc4af22e58bc5a721068f5801d9a7"
+  },
+  "source_db_user_version": 9,
+  "upgraded_db_user_version": 10,
+  "v9_historical_measurements": 6,
+  "v9_historical_telemetry_rows": 84,
+  "v9_historical_approved_sessions": 1,
+  "v9_other_unapproved_sessions": 1,
+  "preserved_tables_original_sha256": {
+    "sites": "0a83e0a561093a5cea18b4b1397b7e2cd2a3d6fe6e573314b7b83eec8bcdbda6",
+    "field_sessions": "ac60fa5fae16eb5f4409f4f5f01d662b9691d1ca286718def623e3cdc686cd08",
+    "measurement_sessions": "b9dda6d7084f82b9457e0b3c2d1f21e3a9f19d943d78f3993e861f914917ec28",
+    "telemetry_samples": "6ae419cfe0a38b64891231d8871ad2748526b4c22c5f40031f666b1ca7247bca",
+    "field_session_measurements": "f29607c46d90e5c120efcdfc73745d00cac4cbeb73c9cf496db53ee4f1e02e19"
+  },
+  "preserved_tables_after_sha256": {
+    "sites": "0a83e0a561093a5cea18b4b1397b7e2cd2a3d6fe6e573314b7b83eec8bcdbda6",
+    "field_sessions": "ac60fa5fae16eb5f4409f4f5f01d662b9691d1ca286718def623e3cdc686cd08",
+    "measurement_sessions": "b9dda6d7084f82b9457e0b3c2d1f21e3a9f19d943d78f3993e861f914917ec28",
+    "telemetry_samples": "6ae419cfe0a38b64891231d8871ad2748526b4c22c5f40031f666b1ca7247bca",
+    "field_session_measurements": "f29607c46d90e5c120efcdfc73745d00cac4cbeb73c9cf496db53ee4f1e02e19"
+  },
+  "source_sha_preserved": true,
+  "imported_legacy_approved_without_fabricated_sha": 4,
+  "imported_legacy_other_without_fabricated_sha": 2,
+  "backfill_idempotent": true,
+  "foreign_key_integrity": true,
+  "v6_replay_of_unhashed_legacy_approval_is_forbidden": true,
+  "not_Android_SQLiteOpenHelper_test": true,
+  "not_original_user_personal_database": true,
+  "not_proof_of_physical_R0_or_gas_ppm": true,
+  "tank_g3": 0,
+  "verified_sqlite_files": {
+    "v9_before_approved_fixture.sqlite3": "51c9c32ca5391b709e640bc466c2beb0a9ffe055d4330dd8cc9ef76282697df6",
+    "v10_after_migration_fixture.sqlite3": "93f4bf40db5c76bd543d4dcb1d17934398bc7a76fe184ce155a1adf180f37771"
+  },
+  "ci_run": 40978064395,
+  "artifact_id": 12943401616,
+  "artifact_zip_sha256": "111bc964d05c4e78cddec4549e6609c4ffb9e9321cf4a48b488de0ba7a447bfe",
+  "library_id": "libfile_09bdd257d9e48191b737007220c742af",
+  "fixture_verified": true,
+  "source": ".github/workflows/chemcore-v6-n06d-v9-v10-sqlite-source-migration.yml"
+}
