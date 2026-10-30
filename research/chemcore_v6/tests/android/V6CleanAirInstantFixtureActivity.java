@@ -7,6 +7,7 @@ import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import com.servoc.app.chemcore.TankInstantAnalyzer;
+import com.servoc.app.calibration.TankReferenceR0Gate;
 import com.servoc.app.data.ExperimentsDb;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,13 +35,16 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
     JSONObject mq=new JSONObject();
     for(int i=0;i<keys.length;i++){
       mq.put(keys[i],new JSONObject().put("rs",r0[i]).put("r0",r0[i])
-        .put("ok",true).put("valid",true).put("powered",true)
+        .put("ok",true).put("valid",true).put("powered",true).put("r0_calibrated",true)
         .put("r0_source","automatic_clean_air_field_r0")
         .put("r0_definition","DEVICE_CLEAN_AIR_RS_MEAN")
         .put("r0_window_count",1).put("r0_samples",15)
         .put("r0_device_id","EMULATOR-SYNTHETIC-NOT-A-PHYSICAL-TANK")
         .put("r0_provenance_complete",true).put("scan_cycle",42));
     }
+    require(TankReferenceR0Gate.qualifiedEight(mq,
+        "EMULATOR-SYNTHETIC-NOT-A-PHYSICAL-TANK"),
+        "eight-channel research R0 gate accepts real-window synthetic fixture");
     JSONObject original=new JSONObject().put("mq",mq)
       .put("env",new JSONObject().put("temperature",25.0).put("humidity",48.0));
     long now=1793322000000L;
@@ -217,6 +221,22 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
       JSONObject unboundAutomatic=new JSONObject(original.toString());
       for(String k:keys)
         unboundAutomatic.getJSONObject("mq").getJSONObject(k).remove("r0_device_id");
+      require(!TankReferenceR0Gate.qualifiedEight(
+          legacyAutomatic.getJSONObject("mq"),
+          "EMULATOR-SYNTHETIC-NOT-A-PHYSICAL-TANK"),
+          "eight-channel reference rejects legacy automatic missing samples");
+      require(!TankReferenceR0Gate.qualifiedEight(
+          unboundAutomatic.getJSONObject("mq"),
+          "EMULATOR-SYNTHETIC-NOT-A-PHYSICAL-TANK"),
+          "eight-channel reference rejects unbound automatic R0");
+      JSONObject unverifiedManual=new JSONObject(original.toString());
+      for(String k:keys)
+        unverifiedManual.getJSONObject("mq").getJSONObject(k)
+            .put("r0_source","manual_device_r0");
+      require(!TankReferenceR0Gate.qualifiedEight(
+          unverifiedManual.getJSONObject("mq"),
+          "EMULATOR-SYNTHETIC-NOT-A-PHYSICAL-TANK"),
+          "manually keyed R0 cannot enter eight-channel reference without verification");
       JSONObject unboundResult=TankInstantAnalyzer.analyze(
           db,unboundAutomatic,now+1675).analysis;
       require(unboundResult.getJSONObject("baseline_response_gate")
