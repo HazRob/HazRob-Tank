@@ -213,7 +213,36 @@ public final class ChemicalRepository {
         }catch(Exception e){
             android.util.Log.w("TankUnifiedChemCatalog","Cannot read source hazard classifications",e);
         }
+        // A formula or molar mass imported from the existing offline PubChem
+        // seed must remain traceable to its actual property evidence. It is
+        // not a Tank detection model or R0/Rs for this material.
+        JSONArray molecularIdentity=new JSONArray();
+        try(Cursor p=db.getReadableDatabase().rawQuery(
+                "SELECT property_key,value_numeric,value_text,unit,method,source_id,"+
+                "quality_tier FROM chemcore_properties WHERE chemical_uid=? "+
+                "AND source_id='PUBCHEM' AND quality_tier='A_SOURCE' "+
+                "AND property_key IN ('MolecularFormula','MolecularWeight') "+
+                "ORDER BY property_key,id DESC LIMIT 20",
+                new String[]{Long.toString(uid)})){
+            while(p.moveToNext()){
+                JSONObject fact=new JSONObject();
+                fact.put("property_key",p.getString(0));
+                fact.put("numeric_value",p.isNull(1)?JSONObject.NULL:p.getDouble(1));
+                fact.put("text_value",p.isNull(2)?JSONObject.NULL:p.getString(2));
+                fact.put("unit",p.isNull(3)?JSONObject.NULL:p.getString(3));
+                fact.put("method",p.isNull(4)?JSONObject.NULL:p.getString(4));
+                fact.put("source_id",p.getString(5));
+                fact.put("quality_tier",p.getString(6));
+                fact.put("is_gas_detection_evidence",false);
+                molecularIdentity.put(fact);
+            }
+        }catch(Exception ex){
+            android.util.Log.w("TankUnifiedChemCatalog",
+                "PubChem identity evidence not loaded for uid="+uid,ex);
+        }
         try{
+            out.put("molecular_identity_source_facts",molecularIdentity);
+            out.put("molecular_identity_source_fact_count",molecularIdentity.length());
             out.put("mq_reference_curve_evidence",curves);
             out.put("mq_reference_curve_evidence_count",curves.length());
             out.put("occupational_exposure_source_limits",exposure);
