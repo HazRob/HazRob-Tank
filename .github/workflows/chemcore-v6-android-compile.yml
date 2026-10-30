@@ -15,6 +15,7 @@ on:
       - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
       - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
       - 'android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java'
+      - 'android/app/src/main/java/com/servoc/app/ui/ChemCoreAnalysisTab.java'
       - 'android/app/src/main/java/com/servoc/app/ui/DeveloperR0Tab.java'
       - 'android/app/src/main/java/com/servoc/app/data/MqDeviceR0LedgerV14.java'
       - 'android/app/src/main/java/com/servoc/app/data/MqReferenceCurveSeedV14.java'
