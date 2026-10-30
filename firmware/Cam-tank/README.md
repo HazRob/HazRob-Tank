@@ -1,9 +1,9 @@
-# Cam-tank — HazRob Tank V3 experimental camera firmware
+# Cam-tank — HazRob Tank V6 independent camera firmware (candidate)
 
-**Status:** UNRELEASED camera-controller Arduino sketch for AI-Thinker ESP32-CAM. Version `Cam-tank 0.1.3-v3-dev`. This is independent from the original HazRob-CAM source archived in `firmware/upstream/`.
+**Status:** UNRELEASED camera-controller Arduino sketch for AI-Thinker ESP32-CAM. Version `Cam-tank 0.1.4-v6-candidate`. This is independent from the original HazRob-CAM source archived in `firmware/upstream/`.
 
 ## Open in Arduino IDE
-Extract the separate `HazRob-Tank-V3-ESP32-CAM-Arduino.zip`; open `Cam-tank/Cam-tank.ino` in Arduino IDE. Select **AI Thinker ESP32-CAM**, enable PSRAM, install Espressif `esp32` Arduino core (verified version recorded by CI), and configure the correct serial/USB flashing adapter. This ZIP is a sketch project, **not** an Arduino library for “Add ZIP Library”.
+Extract the separate `HazRob-Tank-V6-Firmware-Arduino.zip`; open `Cam-tank/Cam-tank.ino` in Arduino IDE. Select **AI Thinker ESP32-CAM**, enable PSRAM, install Espressif `esp32` Arduino core (verified version recorded by CI), and configure the correct serial/USB flashing adapter. This ZIP is a sketch project, **not** an Arduino library for “Add ZIP Library”.
 
 ## Network and camera behavior
 - Wi-Fi **STA only** with SSID `HazRob`, static IP `192.168.4.2`, gateway `192.168.4.1`.
@@ -13,7 +13,7 @@ Extract the separate `HazRob-Tank-V3-ESP32-CAM-Arduino.zip`; open `Cam-tank/Cam-
 - The existing Cloud/WSS paths are inherited, and endpoint/credentials must be checked before deployment; no production access token belongs in the Arduino sketch ZIP.
 
 ## Acceptance
-A passing Arduino compile verifies source correctness **only**. Real PSRAM initialization, frame rate, Wi-Fi station connection, flashlight power, signal quality and ESP32/Main controller compatibility still require bench testing. All V3 sketch/Android products are pre-release until the documented release gates are closed.
+A passing Arduino compile verifies source correctness **only**. Real PSRAM initialization, frame rate, Wi-Fi station connection, flashlight power, signal quality and ESP32/Main controller compatibility still require bench testing. All V6 candidate firmware and Android products are pre-release until the documented release gates are closed.
 
 ## Existing implementation details
 
@@ -21,7 +21,7 @@ A passing Arduino compile verifies source correctness **only**. Real PSRAM initi
 
 Hardware target: AI-Thinker-style ESP32-CAM.
 
-Inherited upstream functionality documented here for compatibility reference; this is now Cam-tank V3 candidate.
+Inherited upstream functionality documented here for compatibility reference; this is now a Cam-tank V6 candidate.
 
 ## Network contract
 
@@ -69,6 +69,6 @@ Supported mode values are `off`, `auto`, and `on`. In this firmware `auto` is re
 
 ## Build target
 
-Upstream recommended Arduino-ESP32 core: 3.3.11 (CI for Cam-tank V3 must verify its own pinned build).
+Upstream recommended Arduino-ESP32 core: 3.3.11 (the V6 CI must verify each independent sketch).
 
 Manual board target: AI Thinker ESP32-CAM / `esp32cam`.
