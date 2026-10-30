@@ -132,7 +132,9 @@ public final class TankInstantReportPdf {
             throw new IllegalArgumentException("Completed immutable measurement required");
         if("hazrob-tank-v6-android-telemetry-bridge/1".equals(
                 chemcore.optString("schema",""))){
-            writeResearchV6(out,telemetry,chemcore,id,timestamp);
+            // V7 routes the V6 independent engine payload through the approved
+            // reports-only renderer; engine outcomes remain unchanged.
+            TankInstantV7PdfWriter.write(out,telemetry,chemcore,id,timestamp);
             return;
         }
         PdfDocument doc=new PdfDocument();
