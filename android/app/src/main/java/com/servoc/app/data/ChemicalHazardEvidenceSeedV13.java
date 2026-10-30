@@ -133,8 +133,17 @@ public final class ChemicalHazardEvidenceSeedV13 {
         classify(db,oxygen,"OXIDIZER","CHEMICAL_PHYSICAL_EVIDENCE",
             "pure oxygen gas supports combustion and intensifies ignition",
             "PUBCHEM_DIOXYGEN_977","https://pubchem.ncbi.nlm.nih.gov/compound/977",
-            "OXIDIZING_GAS",null,null,null,
+            "OXIDIZING_GAS",null,"GHS03",null,
             "Oxygen itself is nonflammable: never infer LFL/UFL or mark it flammable.");
+        // Update a previously imported but uncoded OSHA/PubChem classification
+        // without changing the hazard claim or its source/provenance.
+        if(oxygen>0){
+            ContentValues pictogram=new ContentValues();pictogram.put("ghs_pictogram","GHS03");
+            db.update("chemical_hazard_classifications",pictogram,
+                "chemical_uid=? AND hazard_category='OXIDIZER' "+
+                "AND source_id='PUBCHEM_DIOXYGEN_977' AND ghs_pictogram IS NULL",
+                new String[]{Long.toString(oxygen)});
+        }
 
         long methane=chemical(db,"74-82-8");
         classify(db,methane,"ASPHYXIANT","NIOSH_OSHA_HAZARD_ALERT",
