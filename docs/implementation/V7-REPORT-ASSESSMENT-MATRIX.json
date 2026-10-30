@@ -6,7 +6,7 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "R03_COMPOSITE_SCOPE_OWNER_APPROVED_FINAL_LAYOUT_PENDING_R04_R06_NOT_AUDITED",
+  "assessment_phase": "R03_SPECIFIC_CHART_GRID_AND_CANDIDATE_LAYOUT_APPROVED_VISUAL_QA_PENDING_R04_R06_UNAUDITED",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -636,7 +636,7 @@
         "session summary cards"
       ],
       "risk": "Changed approval evidence or inflated number of independent decisions",
-      "review_state": "R03_SCOPE_GFP_CHEMCORE_ADVANCED_AND_HAZARD_REFERENCES_OWNER_APPROVED_LAYOUT_PENDING",
+      "review_state": "R03_2X2_FOUR_CHARTS_AND_3D_COMPENSATION_AND_CANDIDATE_MICROCHART_APPROVED_TEMPLATE_QA_PENDING",
       "original_pdf_verified": true,
       "approved_design_mockup": false,
       "android_production_layout_changed": false,
@@ -932,7 +932,59 @@
           "TankExposureReferenceCatalog top 8 candidates and 32 limits per candidate"
         ],
         "coding_authorization": false
-      }
+      },
+      "approved_layout_choices": {
+        "chart_pages": {
+          "orientation": "A4 landscape",
+          "grid": "2x2_four_equal",
+          "panel_mm": [
+            141.5,
+            79.5
+          ],
+          "gutter_mm": 4,
+          "body_area_mm": [
+            287,
+            163
+          ],
+          "minimum_text_pt": 12
+        },
+        "multidimensional": {
+          "dedicated_page": true,
+          "three_four_d_mm": [
+            287,
+            95
+          ],
+          "compensation_panels_mm": [
+            141.5,
+            64
+          ],
+          "without_data": "axes_only_no_surface_no_plotted_values"
+        },
+        "candidates": {
+          "right_to_left_column_widths_mm": [
+            35,
+            58,
+            40,
+            29,
+            55,
+            70
+          ],
+          "column_meaning": [
+            "Official GHS",
+            "Candidate name and CAS",
+            "Rank/evidence",
+            "PPM and qualification",
+            "Exposure limit source/type/period",
+            "Blank miniature ppm-vs-limit bullet chart"
+          ],
+          "all_candidates_no_display_cap": true,
+          "allow_GHS_red_official_pictograms": true
+        },
+        "layout_phase": "NO_ENGINE_CHANGES",
+        "no_readings": "literal '-' for empty value fields; empty charts still reserve exact area"
+      },
+      "approved_design_specification": "docs/implementation/V7-R03-APPROVED-CHART-GRID-AND-CANDIDATE-TABLE-2026-10-30_AR.md",
+      "candidate_mini_visual_note": "Design-only empty PPM/reference bullet plot with '-' values and official GHS icon placeholder, no fake hazard identity or reference."
     },
     {
       "report_id": "R04",
@@ -1598,7 +1650,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Discuss final R03 page distribution, advanced charts 3D/4D and PM page style, then move to R04; leave production sources untouched for single V7 batch.",
+  "next_action": "Review R03 blank layout mockups to owner signoff if requested; otherwise continue design discussion and move to R04; no functional integration, no output data.",
   "visual_contract": {
     "branding_palette": [
       "black",
