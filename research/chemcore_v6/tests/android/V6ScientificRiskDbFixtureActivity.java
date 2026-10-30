@@ -536,6 +536,15 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 "LEL remains a measurement index, never a fictional CAS chemical");
             check(unifiedRepo.count()==734,
                 "source-linked search has not changed stored master chemical count");
+            JSONObject hydrogenNist=unifiedRepo.scientificProfile(76)
+                .optJSONObject("nist_direct_cas_source");
+            check(hydrogenNist!=null&&
+                "1333-74-0".equals(hydrogenNist.optString("cas",""))&&
+                "NIST_WEBBOOK".equals(hydrogenNist.optString("source_id",""))&&
+                hydrogenNist.optString("source_url","")
+                    .equals("https://webbook.nist.gov/cgi/cbook.cgi?ID=1333-74-0")&&
+                !hydrogenNist.optBoolean("gas_detected",true),
+                "per-substance NIST source visible without fabricating Tank detection");
             JSONObject ethanolAlias=unifiedRepo.scientificProfile(104);
             check(ethanolAlias.getJSONArray("source_qualified_identity_aliases")
                 .length()==1,
