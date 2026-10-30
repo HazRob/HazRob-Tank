@@ -39,6 +39,9 @@ public final class MqDeviceR0LedgerV14 {
                 c.put("device_id",deviceId);c.put("sensor_key",key);
                 c.put("calibration_revision",ManualR0Calibration.getSession(key));
                 c.put("r0_kohm",r0.get(key));c.put("sample_count",counts.get(key));
+                boolean extended=ManualR0Calibration.getWindowCount(key)==3&&
+                    "DEVICE_CLEAN_AIR_RS_MEAN".equals(
+                        ManualR0Calibration.getDefinition(key));
                 c.put("window_count",ManualR0Calibration.getWindowCount(key));
                 c.put("reference_air_context",extended?
                     "OPERATOR_DECLARED_REFERENCE_AIR_UNVERIFIED_EXTERNAL_INSTRUMENT":
@@ -47,9 +50,7 @@ public final class MqDeviceR0LedgerV14 {
                 // manufacturer graph factor. The stored R0 is NOT the same
                 // air Rs mean used by the V6 unity-centered response gate.
                 c.put("r0_definition",ManualR0Calibration.getDefinition(key));
-                boolean extended=ManualR0Calibration.getWindowCount(key)==3&&
-                    "DEVICE_CLEAN_AIR_RS_MEAN".equals(
-                        ManualR0Calibration.getDefinition(key));
+
                 if(extended&&counts.get(key)<30)
                     throw new IllegalArgumentException("V6 R0 missing three windows: "+key);
                 c.put("heater_profile",extended?
