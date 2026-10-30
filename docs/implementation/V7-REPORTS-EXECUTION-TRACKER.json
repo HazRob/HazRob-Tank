@@ -249,7 +249,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R01 original Android A4 PDF with official logo, tables, matrix and radar successfully built and emulator-rendered; original PDF SHA256 7a2d..., CI 41135056334 SUCCESS. R02 original report analyzed for design discussion only. No user-distributed V7 APK or firmware changes.",
+  "latest_documented_change": "Completed verified detailed R02 original 1-page V6 PDF audit (SHA256 4c40...), checked UI/engine policy and authoritative OSHA/ASHRAE noise/thermal context; recorded 18-rule review and redesign options. R02 remains discussion-only, no production Java changes.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -300,6 +300,80 @@
     "commit": "f0744950daca11094f5b9d1dbab6cefce501f380"
   },
   "active_report": {
+    "id": "R02",
+    "name": "Physical Measurement Snapshot PDF",
+    "phase": "ORIGINAL_PDF_AND_ANDROID_SOURCE_DETAILED_AUDIT_COMPLETE_PROPOSAL_PENDING_OWNER",
+    "analysis_document": "docs/implementation/V7-R02-PHYSICAL-REPORT-ANALYSIS-PROPOSAL-2026-10-30_AR.md",
+    "report_source": "android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java",
+    "data_source_entry": "MainActivity.requestPhysicalSnapshotPdf -> latestDiag; pendingPhysicalUtc from isoNow at report request",
+    "original_pdf_sha256": "4c40b7db8aee256036e69490e80b38d6d1a3ce7b54f04473c79cd6504f787572",
+    "standards": "HZT-V7-RPT-STD-001 rev 1.1 G01-G18",
+    "findings": [
+      "No logo/header/footer, misleading old V3 title",
+      "Actual font sizes 9,11,12,19pt; some <12pt",
+      "No gauges, comparative graphs, bordered tables or genuine temporal statistics",
+      "5 measured, 7 unavailable of 12 physical indicators in synthetic QA fixture",
+      "Altimeter estimate computed in the PDF rather than engine",
+      "Instantaneous 90 dBA warning worded as operator threshold; occupational exposure standards require duration/context",
+      "Timestamp uses report request isoNow rather than verified sensor sample time"
+    ],
+    "discussion_decisions": [
+      "R02-D01: 3 primary gauges vs flexible 5 gauges",
+      "R02-D02: compact matrix of unavailable channels vs full table",
+      "R02-D03: include optional time-series statistics page only if engine supplies historic observations",
+      "R02-D04: one-page adaptive A4 layout with overflow, no text under 12pt",
+      "R02-D05: GHS N/A to physical-only measurements; engine-authoritative references"
+    ],
+    "source_code_changed": false,
+    "owner_approved": false,
+    "next_step": "Discuss R02 diagram choices, approve report-specific design, then move to R03 without new production edits"
+  },
+  "logo_approval": {
+    "source": "owner-uploaded 1000797098.png",
+    "source_sha256": "bddf42c56b6e44f68ccaf70ab2a9aafc4b28576199fac353dfd62f3e1933ba5a",
+    "pixel_size": [
+      1024,
+      1024
+    ],
+    "colors": [
+      "#000000",
+      "#FFBE00",
+      "#FFFFFF"
+    ],
+    "outside_transparent": true,
+    "right_header_approved": true,
+    "visual_asset_in_repo": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
+    "vector_derived_from_source": true,
+    "original_binary_embedded_in_repo": false,
+    "provenance_document": "docs/requirements/V7-REPORT-LOGO-ASSET-2026-10-30_AR.md",
+    "pending": "Production PDF integration and Android render visual match"
+  },
+  "next_report": {
+    "id": "R03",
+    "name": "Approved Field Session PDF",
+    "state": "NEXT_SOURCE_AUDIT_AFTER_R02_DISCUSSION"
+  },
+  "workflow_policy": {
+    "id": "V7-RPT-BATCH-PLAN-001",
+    "document": "docs/implementation/V7-REPORTS-BATCH-EXECUTION-PLAN-2026-10-30_AR.md",
+    "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
+    "user_proposed_on": "2026-10-30",
+    "state": "ADOPTED_FOR_NEXT_V7_WORK",
+    "current_phase": "DESIGN_DISCUSSIONS_R02",
+    "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
+    "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
+    "independent_owner_approvals_required": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06"
+    ],
+    "final_apk_authorized": false,
+    "next_step": "Discuss R02 design, record its signoff, then R03-R06."
+  },
+  "r01_prototype": {
     "id": "R01",
     "name": "Instant ChemCore V6 gas research report",
     "phase": "R01_IMPLEMENTED_ANDROID_EMULATOR_QA_PASS_VISUAL_OWNER_REVIEW_OPEN",
@@ -365,51 +439,5 @@
     "production_changes_paused": true,
     "qa_document": "docs/implementation/V7-R01-IMPLEMENTATION-QA-2026-10-30_AR.md",
     "owner_final_visual_acceptance": false
-  },
-  "logo_approval": {
-    "source": "owner-uploaded 1000797098.png",
-    "source_sha256": "bddf42c56b6e44f68ccaf70ab2a9aafc4b28576199fac353dfd62f3e1933ba5a",
-    "pixel_size": [
-      1024,
-      1024
-    ],
-    "colors": [
-      "#000000",
-      "#FFBE00",
-      "#FFFFFF"
-    ],
-    "outside_transparent": true,
-    "right_header_approved": true,
-    "visual_asset_in_repo": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
-    "vector_derived_from_source": true,
-    "original_binary_embedded_in_repo": false,
-    "provenance_document": "docs/requirements/V7-REPORT-LOGO-ASSET-2026-10-30_AR.md",
-    "pending": "Production PDF integration and Android render visual match"
-  },
-  "next_report": {
-    "id": "R02",
-    "phase": "ORIGINAL_PDF_AND_SOURCE_AUDITED_PROPOSAL_AWAITING_OWNER_REVIEW",
-    "document": "docs/implementation/V7-R02-PHYSICAL-REPORT-ANALYSIS-PROPOSAL-2026-10-30_AR.md",
-    "production_changes": 0
-  },
-  "workflow_policy": {
-    "id": "V7-RPT-BATCH-PLAN-001",
-    "document": "docs/implementation/V7-REPORTS-BATCH-EXECUTION-PLAN-2026-10-30_AR.md",
-    "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
-    "user_proposed_on": "2026-10-30",
-    "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_DISCUSSIONS",
-    "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
-    "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
-    "independent_owner_approvals_required": [
-      "R01",
-      "R02",
-      "R03",
-      "R04",
-      "R05",
-      "R06"
-    ],
-    "final_apk_authorized": false,
-    "next_step": "Discuss R02 design, record its signoff, then R03-R06."
   }
 }
