@@ -1,6 +1,7 @@
 package com.servoc.app.chemcore;
 
 import com.servoc.app.data.ExperimentsDb;
+import android.database.Cursor;
 import com.servoc.app.exposure.ExposureRepository;
 
 import org.json.JSONArray;
@@ -20,7 +21,7 @@ import java.util.Set;
  */
 public final class TankExposureReferenceCatalog {
     public static final String KEY="exposure_reference_inventory";
-    public static final String SCHEMA="tank-exposure-reference-inventory/1";
+    public static final String SCHEMA="tank-exposure-reference-inventory/2";
     private static final int MAX_CANDIDATES=8,MAX_LIMITS_PER_CANDIDATE=32;
     private TankExposureReferenceCatalog(){}
 
@@ -48,6 +49,9 @@ public final class TankExposureReferenceCatalog {
                 JSONObject item=new JSONObject();
                 item.put("chemical_uid",uid);item.put("label",q.optString("label","—"));
                 item.put("candidate_rank",q.optInt("rank",i+1));
+                item.put("early_exposure_fraction",profileFraction(db,uid));
+                item.put("normal_air_range_status","NO_SOURCE_QUALIFIED_RANGE");
+                item.put("background_ranges",getBackgroundRanges(db,uid));
                 JSONArray rows=new JSONArray();item.put("limits",rows);
                 try{
                     List<ExposureRepository.Limit> limits=repo.forChemical(uid);
@@ -79,6 +83,41 @@ public final class TankExposureReferenceCatalog {
         }catch(Exception ignored){}
         return out;
     }
+    private static double profileFraction(ExperimentsDb db,long chemicalUid){
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+                "SELECT early_exposure_fraction FROM chemical_risk_profiles WHERE chemical_uid=?",
+                new String[]{Long.toString(chemicalUid)})){
+            if(c.moveToFirst()){
+                double v=c.getDouble(0);
+                if(Double.isFinite(v)&&v>0&&v<=1)return v;
+            }
+        }catch(Exception ignored){}
+        return 0.90;
+    }
+
+    private static JSONArray getBackgroundRanges(ExperimentsDb db,long chemicalUid){
+        JSONArray rows=new JSONArray();
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+                "SELECT environment_type,range_min,range_max,unit,source_id,"+
+                "qualification_status,reference_period,location_scope "+
+                "FROM chemical_background_ranges WHERE chemical_uid=? ORDER BY id DESC LIMIT 24",
+                new String[]{Long.toString(chemicalUid)})){
+            while(c.moveToNext()){
+                JSONObject row=new JSONObject();
+                row.put("environment_type",c.getString(0));
+                row.put("min",c.isNull(1)?JSONObject.NULL:c.getDouble(1));
+                row.put("max",c.isNull(2)?JSONObject.NULL:c.getDouble(2));
+                row.put("unit",c.getString(3));
+                row.put("source_id",c.getString(4));
+                row.put("qualification_status",c.getString(5));
+                row.put("reference_period",c.getString(6));
+                row.put("location_scope",c.getString(7));
+                rows.put(row);
+            }
+        }catch(Exception ignored){}
+        return rows;
+    }
+
     /** Browse limits for an explicitly selected library chemical before any R0 or gas detection. */
     public static JSONObject forSelectedChemical(ExperimentsDb db,long chemicalUid,String label){
         JSONObject input=new JSONObject(),row=new JSONObject(),list=new JSONObject();
