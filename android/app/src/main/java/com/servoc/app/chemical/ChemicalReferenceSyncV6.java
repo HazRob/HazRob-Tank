@@ -130,20 +130,36 @@ public final class ChemicalReferenceSyncV6 {
             JSONObject fact=facts.getJSONObject(i);
             String key=required(fact,"key",40);
             if(!("molar_mass".equals(key)||"formula".equals(key)||
-                 "reference_note".equals(key)))
+                 "reference_note".equals(key)||
+                 "fingerprint_reference".equals(key)||
+                 "mq_curve_reference".equals(key)||
+                 "ppm_reference".equals(key)||
+                 "m4_reference".equals(key)))
                 throw new IllegalArgumentException("unsafe scientific field: "+key);
             String authority=required(fact,"source_id",50);
             if(!("NIST_WEBBOOK".equals(authority)||"PUBCHEM".equals(authority)||
-                 "NIOSH_NPG".equals(authority)))
+                 "NIOSH_NPG".equals(authority)||
+                 "HAZROB_RESEARCH".equals(authority)))
                 throw new IllegalArgumentException("unreviewed authority code");
             String sourceUrl=required(fact,"source_url",300);
             if(!sourceUrl.startsWith("https://webbook.nist.gov/")&&
                !sourceUrl.startsWith("https://pubchem.ncbi.nlm.nih.gov/")&&
-               !sourceUrl.startsWith("https://www.cdc.gov/niosh/"))
+               !sourceUrl.startsWith("https://www.cdc.gov/niosh/")&&
+               !sourceUrl.startsWith("https://github.com/HazRob/")&&
+               !sourceUrl.startsWith("https://doi.org/"))
                 throw new IllegalArgumentException("source URL is not an official authority link");
             double number=Double.NaN;
             String text=null;
             String unit="";
+            // Fingerprint/curve/PPM/M4 entries are evidence *availability* labels,
+            // never actual instrument readings or certified gas alarms.
+            // Records must specify an independently reviewable research link.
+            if(key.endsWith("_reference")&&"HAZROB_RESEARCH".equals(authority)&&
+                !sourceUrl.startsWith("https://github.com/HazRob/")&&
+                !sourceUrl.startsWith("https://doi.org/"))
+                throw new IllegalArgumentException("research evidence source not qualified");
+            if("m4_reference".equals(key)&&!doc.optBoolean("research_only",false))
+                throw new IllegalArgumentException("M4 entry must be explicitly research-only");
             if("molar_mass".equals(key)){
                 number=fact.optDouble("numeric",Double.NaN);
                 if(!Double.isFinite(number)||number<=0||number>=100000)
@@ -216,6 +232,33 @@ public final class ChemicalReferenceSyncV6 {
             applied++;
         }
         return new Result(candidates,unchanged,applied,revision);
+    }
+
+    /**
+     * Fully offline, SHA-checked reference-delta test/import gate, used by the
+     * Android emulator and by future independent record reconciliation.
+     * No actual claimed QA status is inferred from SHA verification.
+     */
+    public static void applyVerifiedRecord(ExperimentsDb repository,byte[] record,
+                                           String expectedSha,String revision)throws Exception{
+        if(repository==null||record==null||record.length==0||
+            record.length>RECORD_LIMIT||expectedSha==null||
+            !expectedSha.matches("[0-9a-f]{64}")||
+            !expectedSha.equals(sha256(record)))
+            throw new IllegalArgumentException("record integrity not verified");
+        SQLiteDatabase db=repository.getWritableDatabase();
+        ensure(db);
+        JSONObject doc=new JSONObject(new String(record,StandardCharsets.UTF_8));
+        long uid=doc.optLong("uid",-1);
+        String cas=required(doc,"cas",40);
+        if(uid<=0||!casValid(cas)||!cas.equals(localCas(db,uid)))
+            throw new IllegalArgumentException("local UID/CAS mismatch");
+        db.beginTransaction();
+        try{
+            applyVerified(db,doc,uid,cas,expectedSha,required(
+                new JSONObject().put("revision",revision),"revision",80));
+            db.setTransactionSuccessful();
+        }finally{db.endTransaction();}
     }
 
     /** Available to the existing compound detail query without network access. */
