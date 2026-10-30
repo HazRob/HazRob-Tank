@@ -120,10 +120,44 @@ public final class V6MeasurementsNavigationFixtureActivity extends Activity {
         require(modeFound,"independent meat/fruit dropdown is visible in operator UI");
         require(findButton(root,"PDF التقرير")!=null,
             "food PDF control exists and is not a gas ChemCore export");
+        // The historic Sessions-tab crash occurred when opening the real
+        // FieldSessionsTab, rather than when exporting a synthetic approved
+        // session through repository tests. Exercise its actual constructor,
+        // screen widgets and report navigation with an offline host.
+        FieldSessionsTab field=new FieldSessionsTab(this,host());
+        setContentView(field.view());
+        require(field.view()!=null&&field.view().getParent()!=null,
+            "FieldSessionsTab constructs and attaches on Android12 without a robot");
+        Button reportNav=findButton(field.view(),"التقارير المعتمدة");
+        require(reportNav!=null&&reportNav.isEnabled(),
+            "approved session report navigation exists in real sessions UI");
+        require(reportNav.performClick(),
+            "approved session report navigation responds without screen crash");
+        List<Spinner> fieldSelectors=new ArrayList<>();
+        spinners(field.view(),fieldSelectors);
+        require(fieldSelectors.size()>=2,
+            "field session UI provides site and session selection controls");
+        field.release();
+
+        ReportsTab reports=new ReportsTab(this,host());
+        setContentView(reports.view());
+        require(reports.view()!=null&&reports.view().getParent()!=null,
+            "real ReportsTab opens on Android12 after leaving SessionsTab");
+        List<Spinner> reportSelectors=new ArrayList<>();
+        spinners(reports.view(),reportSelectors);
+        require(reportSelectors.size()>=3,
+            "report UI provides site, approved session and chart selectors");
+        require(findButton(reports.view(),"PDF")!=null,
+            "actual report UI exposes PDF export control");
+        reports.release();
         JSONObject status=new JSONObject()
             .put("schema","hazrob-tank-v6-n14-navigation/1")
             .put("status","PASS").put("main_navigation_tabs",5)
-            .put("food_protocols",2).put("hardware_connected",false)
+            .put("food_protocols",2)
+            .put("sessions_tab_opened",true)
+            .put("sessions_report_navigation_clicked",true)
+            .put("reports_tab_opened",true)
+            .put("hardware_connected",false)
             .put("gas_chemcore_validation",false)
             .put("assertions",checks);
         try(FileOutputStream o=openFileOutput("n14_measurements_navigation.json",
