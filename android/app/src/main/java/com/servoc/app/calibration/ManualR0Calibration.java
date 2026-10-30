@@ -189,7 +189,7 @@ public final class ManualR0Calibration {
             Double v=proposal.get(key);
             if(v==null||!Double.isFinite(v)||v<=0)return false;
         }
-        long now=System.currentTimeMillis();String utc=iso(now),session="FIRMWARE-R0-"+now;
+        long now=System.currentTimeMillis();String utc=iso(now),session=(windowCount==3?"FIRMWARE-V6-R0-":"FIRMWARE-V5-R0-")+now;
         SharedPreferences.Editor edit=p.edit();
         for(String key:KEYS){
             edit.putString("manual_r0_"+key,Double.toString(proposal.get(key)))
