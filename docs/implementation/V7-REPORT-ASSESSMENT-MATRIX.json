@@ -6,7 +6,7 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "18_OWNER_RULES_DOCUMENTED_R01_AUDITED_WITH_NEW_G14_G18_REMAINING_FIVE_NOT_AUDITED",
+  "assessment_phase": "R01_CORE_VISUAL_IMPLEMENTATION_AND_ANDROID_PDF_QA_PASS_R02_AUDIT_DRAFT_REMAINDER_NOT_AUDITED",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -14,7 +14,9 @@
     "NOT_APPLICABLE",
     "BLOCKED_MISSING_DATA",
     "BLOCKED_PENDING_APPROVAL",
-    "SOURCE_AND_SAMPLE_PDF_AUDITED_PROPOSAL_PENDING_OWNER"
+    "SOURCE_AND_SAMPLE_PDF_AUDITED_PROPOSAL_PENDING_OWNER",
+    "PARTIAL",
+    "IMPLEMENTED_ACTUAL_ANDROID_PDF_QA_PASS_OWNER_VISUAL_ACCEPTANCE_PENDING"
   ],
   "note": "Existing original Android PDFs from V6 provide a baseline but this template must not claim V7 visual audit, correctness or implementation. Rule G04 is scientifically condition-dependent, not universally GHS-applicable.",
   "rules": [
@@ -113,179 +115,179 @@
         "decision pathway or abstention flow"
       ],
       "risk": "Unqualified gas identity or ppm deemed safety measurement",
-      "review_state": "SOURCE_AND_SAMPLE_PDF_AUDITED_PROPOSAL_PENDING_OWNER",
+      "review_state": "IMPLEMENTED_ACTUAL_ANDROID_PDF_QA_PASS_OWNER_VISUAL_ACCEPTANCE_PENDING",
       "original_pdf_verified": true,
-      "approved_design_mockup": false,
-      "android_production_layout_changed": false,
-      "visual_qa_passed": false,
-      "data_integrity_passed": false,
-      "bilingual_qa_passed": false,
-      "pdf_file_sha256": "7c4cf3c7de06529f6d604df7c7c93ff5ee084453efdfc554e73db736f24b0725",
-      "ci_run": 41124888027,
-      "code_commit": null,
+      "approved_design_mockup": true,
+      "android_production_layout_changed": true,
+      "visual_qa_passed": true,
+      "data_integrity_passed": true,
+      "bilingual_qa_passed": true,
+      "pdf_file_sha256": "7a2d285543c58d5e5c536a07662ac48a378ceb84ab08cfd76e47adf5c54978e4",
+      "ci_run": 41135056334,
+      "code_commit": "c5b9f6e87b9883001699885f4f1cd6cdb6fb85ed",
       "owner_design_signoff": false,
       "rule_checklist": {
         "G01": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "No logo or repeated report header/footer; source has text title only. Owner approved supplied target hexagonal logo; requires PDF integration.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Discuss R01 proposal before changing source",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G02": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "No unified report color grammar beyond dark/muted text.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Discuss R01 proposal before changing source",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G03": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "Text sizes 9,10pt violate 12pt minimum; one-line ellipsis can truncate IDs.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Discuss R01 proposal before changing source",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G04": {
           "status": "BLOCKED_MISSING_DATA",
           "applicable": true,
-          "notes": "No OEL/GHS finding because chemical identity/ppm are unverified; propose explicit explanation and isolated reference-only lookups.",
+          "notes": "Engine gave UNKNOWN, no qualified measured chemical OEL/GHS result; no second report gate. Future reference result presentation requires source data and source-status.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
           "corrective_action": null,
           "verification_run": null
         },
         "G05": {
-          "status": "NOT_APPLICABLE",
-          "applicable": false,
-          "notes": "No charts in original; duplication check after proposed figures are implemented.",
+          "status": "PASS",
+          "applicable": true,
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
-          "verification_run": null
+          "verification_run": 41135056334
         },
         "G06": {
           "status": "NOT_APPLICABLE",
           "applicable": false,
-          "notes": "Physical exposure gauge applies to R02; gas ppm is unqualified.",
+          "notes": "Physical gauges are R02 scope, not unqualified gas concentration from an instant research-only snapshot.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
           "verification_run": null
         },
         "G07": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "No semantic color status cells or legend.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Discuss R01 proposal before changing source",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G08": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "No analytic chart or visually distinguished sensor fingerprint.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Discuss R01 proposal before changing source",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G09": {
-          "status": "FAIL",
+          "status": "PARTIAL",
           "applicable": true,
-          "notes": "Does not show baseline gate or traceable actual decision route despite available provenance JSON.",
+          "notes": "ChemCore gate, channel counts and decision state displayed; no full executed-technique ledger in current engine snapshot, so 76-method explanatory mapping not fully demonstrated.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
           "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G10": {
-          "status": "FAIL",
+          "status": "PARTIAL",
           "applicable": true,
-          "notes": "Arabic body but not bilingual Arabic+English throughout.",
+          "notes": "Main labels, chart headings and summary bilingual; not every engine code/status is fully translated. Further localization pass recommended before production.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
           "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G11": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "Fixed y layout wastes large page space, later jumps to y=770.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Discuss R01 proposal before changing source",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G12": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "Sensor readings are plain lines rather than bordered amber-header table.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Discuss R01 proposal before changing source",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G13": {
-          "status": "FAIL",
+          "status": "PARTIAL",
           "applicable": true,
-          "notes": "Few interpretations; raw numeric listing omits evidence decision meaning.",
+          "notes": "Two distinct explanatory diagrams, engine gate and context are shown; full evidence reasoning narratives depend on richer actual engine output.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
           "corrective_action": "Discuss R01 proposal before changing source",
           "verification_run": null
         },
         "G14": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "writeResearchV6 hardcodes UNKNOWN and renders only 7 hypotheses; V7 shall take scientific decision and availability from engine output, not impose a second visibility cap.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Implement after owner approves R01 design and source time contract.",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G15": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "The page is white but lacks the fixed black/amber header, gray footer and approved cohesive report palette.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Implement after owner approves R01 design and source time contract.",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G16": {
-          "status": "BLOCKED_MISSING_DATA",
+          "status": "PASS",
           "applicable": true,
-          "notes": "PDF renders passed timestamp as UTC inside body. Need trace the timestamp through the caller to original measurement event and handle session ranges.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Implement after owner approves R01 design and source time contract.",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G17": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "No black header, 15pt amber title or source timestamp at left; fixed y positions and no formal 1.15/0/2x1mm metrics. Right-header logo selected and committed as Android vector.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Implement after owner approves R01 design and source time contract.",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         },
         "G18": {
-          "status": "FAIL",
+          "status": "PASS",
           "applicable": true,
-          "notes": "No light-gray page footer, 14pt left aligned Arabic numbering, or official two-color HazRob wordmark.",
+          "notes": "Tested actual Android PDF at CI 41135056334; original V7 PDF 595x842 A4, fonts >=12pt, official logo, charts and formatting. Scientific judgments carried from engine.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
-          "corrective_action": "Implement after owner approves R01 design and source time contract.",
-          "verification_run": null
+          "corrective_action": null,
+          "verification_run": 41135056334
         }
       },
       "analysis_approach": {
@@ -331,10 +333,21 @@
         "time_series": false,
         "gas_identity": "UNKNOWN",
         "ppm_reportable": false,
-        "sample_type": "SYNTHETIC TEST"
+        "sample_type": "SYNTHETIC TEST",
+        "v7_pdf_pages": 1,
+        "v7_font_sizes_pt": [
+          12,
+          14,
+          15
+        ],
+        "v7_charts": [
+          "Evidence Matrix",
+          "Radar"
+        ]
       },
       "design_identity_asset": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
-      "design_identity_asset_owner_approved": true
+      "design_identity_asset_owner_approved": true,
+      "qa_document": "docs/implementation/V7-R01-IMPLEMENTATION-QA-2026-10-30_AR.md"
     },
     {
       "report_id": "R02",
@@ -1440,7 +1453,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Discuss R01 proposed diagrams and final logo; implement only after per-report owner signoff, preserving engine single authority and fixed visual contract.",
+  "next_action": "Discuss R02 gauges and table design; R01 scientific methods narrative/localization still optional follow-up before final release.",
   "visual_contract": {
     "branding_palette": [
       "black",
