@@ -3,6 +3,9 @@ package com.servoc.app.chemcore;
 import com.hazrob.tank.v6integration.TankV6TelemetryAdapter;
 import com.hazrob.tank.chemcore.v6.ChemCoreTankV6;
 import com.servoc.app.data.ExperimentsDb;
+import com.servoc.app.chemical.ChemicalRepository;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import com.servoc.app.hardware.HazRobHardwareProfile;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -62,24 +65,52 @@ public final class TankInstantAnalyzer {
         // from the independent new V6 source curve hypothesis ledger.
         JSONArray source=out.optJSONArray("source_curve_hypotheses");
         JSONArray candidates=new JSONArray();
+        ChemicalRepository master=new ChemicalRepository(db);
+        // The V6 source-catalog chemical_reference_id is a 0-based legacy
+        // chemical index, NOT the SQLite chemical UID. Never compare/join them
+        // as identical integers: resolve explicitly through legacy_id.
+        //
+        // Several curves of one candidate must not generate duplicate material
+        // choices in tracking, candidate lists, lab, or downstream reports.
+        Map<Long,JSONObject> distinct=new LinkedHashMap<>();
         if(source!=null)for(int i=0;i<source.length();i++){
-            JSONObject ref=source.optJSONObject(i);
-            if(ref==null)continue;
-            JSONObject item=new JSONObject();
-            item.put("rank",candidates.length()+1);
-            item.put("label",ref.optString("gas_or_class","UNRESOLVED_SOURCE"));
-            item.put("source_curve_id",ref.optString("source_curve_id",""));
-            item.put("source_root",ref.optString("source_root",""));
-            item.put("sensor_model",ref.optString("sensor_model",""));
-            item.put("source_chemical_reference_id",
-                     ref.optString("chemical_reference_id",""));
-            item.put("research_only",true);
-            item.put("reported_identity","UNKNOWN");
-            item.put("evidence_tier","SOURCE_CURVE_RESEARCH_UNVALIDATED");
-            // Deliberately no percentile confidence, no screening_fit_ppm,
-            // no fabricated sensor model calibration/acceptance gate.
-            candidates.put(item);
+            JSONObject curve=source.optJSONObject(i);
+            if(curve==null)continue;
+            long legacyId=curve.optLong("chemical_reference_id",-1);
+            ChemicalRepository.Chemical chemical=legacyId>=0&&legacyId<144?
+                master.byLegacyId((int)legacyId):null;
+            // Unmapped class/source labels are still retained in the
+            // source-curve research ledger, but never become fake master UIDs.
+            if(chemical==null)continue;
+            JSONObject item=distinct.get(chemical.uid);
+            if(item==null){
+                item=new JSONObject();
+                item.put("rank",distinct.size()+1);
+                item.put("chemical_uid",chemical.uid);
+                item.put("legacy_id",legacyId);
+                item.put("label",chemical.label());
+                item.put("cas",chemical.cas==null?JSONObject.NULL:chemical.cas);
+                item.put("unified_catalog_identity_resolved",true);
+                item.put("source_label_not_proof_of_gas_identity",true);
+                item.put("research_only",true);
+                item.put("reported_identity","UNKNOWN");
+                item.put("evidence_tier","SOURCE_CURVE_RESEARCH_UNVALIDATED");
+                item.put("source_curve_count",0);
+                item.put("source_curve_ids",new JSONArray());
+                item.put("source_roots",new JSONArray());
+                distinct.put(chemical.uid,item);
+            }
+            item.put("source_curve_count",item.getInt("source_curve_count")+1);
+            item.getJSONArray("source_curve_ids").put(
+                curve.optString("source_curve_id",""));
+            // Preserve traceability to source labels without silently
+            // promoting a generic gas class to a certified molecule.
+            item.getJSONArray("source_roots").put(curve.optString("source_root",""));
         }
+        for(JSONObject candidate:distinct.values())candidates.put(candidate);
+        out.put("unresolved_research_curves_preserved",
+            Math.max(0,(source==null?0:source.length())-
+                countLinkedSourceCurves(distinct)));
         String id="INSTANT-"+timestamp;
         out.put("candidates",candidates);
         out.put("candidate_count",candidates.length());
@@ -101,4 +132,11 @@ public final class TankInstantAnalyzer {
         out.put("gas_food_isolated",true);
         return new Result(id,timestamp,frozen,out,valid);
     }
+    private static int countLinkedSourceCurves(Map<Long,JSONObject> rows){
+        int count=0;
+        for(JSONObject row:rows.values())
+            count+=row.optInt("source_curve_count",0);
+        return count;
+    }
+
 }
