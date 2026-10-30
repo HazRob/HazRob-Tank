@@ -113,7 +113,7 @@ jobs:
           (p/'n06e_verified_manifest.json').write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
           print('PASS N07A12 FULL V10-APPROVED DB -> REAL PDF 6 PAGES / REAL XLSX 14 SHEETS / ORIGINAL SHA PRESERVED')
           PY
-      - name: Inspect historical V5 and new independent V6 PDF page header text
+      - name: Inspect current Tank V6 report and independent V6 PDF appendix headers
         shell: bash
         run: |
           set -euo pipefail
@@ -126,12 +126,12 @@ jobs:
           assert d.page_count==6
           original=d[0].get_text()
           annex=d[5].get_text()
-          assert 'HazRob 5.0' in original,'original V5 footer intentionally remains historical'
+          assert 'HazRob 6.0' in original and 'HazRob 5.0' not in original,'production PDF must use independent Tank V6 header'
           assert 'HazRob Tank' in annex and 'ChemCore V6' in annex,annex[:400]
-          assert 'HazRob 5.0' not in annex,'V6 annex inherits obsolete wheeled HR069 header'
+          assert 'HazRob 5.0' not in annex,'V6 annex must never inherit obsolete V5 header'
           assert 'UNKNOWN' in annex and 'G3=0' in annex
           assert annex.count('Rs:')==8 and annex.count('R0:')==8
-          print('PASS N07A12: historical V5 footer preserved only on V5 pages, Tank V6 appendix research header isolated and 8 MQ rows present')
+          print('PASS N07A12: V6 application identity verified on all newly rendered pages, Tank V6 appendix research header isolated and 8 MQ rows present')
           d.close()
           PY
       - uses: actions/upload-artifact@v4
