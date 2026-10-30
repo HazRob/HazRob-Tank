@@ -11,7 +11,7 @@ import java.util.List;
 
 /** Offline-first HazRob database for measurements, experiments, calibration and scientific reference data. */
 public final class ExperimentsDb extends SQLiteOpenHelper {
-    public static final int DB_VERSION=10;
+    public static final int DB_VERSION=11;
     public ExperimentsDb(Context c){super(c,"servoc.db",null,DB_VERSION);}
 
     @Override public void onCreate(SQLiteDatabase db){
@@ -19,7 +19,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE fingerprints(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, label TEXT NOT NULL, created_ts TEXT NOT NULL, payload TEXT NOT NULL)");
         db.execSQL("CREATE TABLE captures(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, chemical_uid INTEGER, known_ppm REAL, ts TEXT NOT NULL, session_id TEXT, temp_c REAL, rh REAL, phase TEXT, sensor_payload TEXT NOT NULL, feature_payload TEXT)");
         db.execSQL("CREATE TABLE models(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, model_type TEXT NOT NULL, version TEXT NOT NULL, created_ts TEXT NOT NULL, training_count INTEGER, metrics TEXT, payload TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 0)");
-        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);seedLegacyChemicals(db);seedCoreSources(db);createCaptureUidIndex(db);
+        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);createCaptureUidIndex(db);
     }
 
     @Override public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
@@ -39,6 +39,61 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         }
         if(oldVersion<9)createV9UserFieldTables(db);
         if(oldVersion<10){createV10FieldCycleTables(db);importV9FieldCycleLinks(db);}
+        if(oldVersion<11)createV11ScientificRiskTables(db);
+    }
+
+    /**
+     * V11: science-first reference envelopes for EVERY master chemical, including
+     * identities added after opening SQLite by NIOSH/OSHA/Stable importers.
+     * No universal "normal air" limit or occupational alarm is invented.
+     * A NULL range means no context/source-qualified normal concentration exists.
+     *
+     * The one-to-one profile expresses a configurable early advisory policy;
+     * actual OSHA/NIOSH numeric limits remain exclusively in exposure_limits.
+     */
+    private static void createV11ScientificRiskTables(SQLiteDatabase db){
+        db.execSQL("CREATE TABLE IF NOT EXISTS chemical_risk_profiles("+
+            "chemical_uid INTEGER PRIMARY KEY,"+
+            "early_exposure_fraction REAL NOT NULL DEFAULT 0.90,"+
+            "background_status TEXT NOT NULL DEFAULT 'NO_SOURCE_QUALIFIED_RANGE',"+
+            "occupational_alarm_authorized INTEGER NOT NULL DEFAULT 0,"+
+            "review_status TEXT NOT NULL DEFAULT 'UNREVIEWED',"+
+            "notes TEXT,"+
+            "FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid) ON DELETE CASCADE,"+
+            "CHECK(early_exposure_fraction>0 AND early_exposure_fraction<=1),"+
+            "CHECK(occupational_alarm_authorized=0))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS chemical_background_ranges("+
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,chemical_uid INTEGER NOT NULL,"+
+            "environment_type TEXT NOT NULL,"+
+            "range_min REAL,range_max REAL,unit TEXT NOT NULL,"+
+            "reference_period TEXT,location_scope TEXT,"+
+            "source_id TEXT NOT NULL,revision TEXT,"+
+            "qualification_status TEXT NOT NULL DEFAULT 'RESEARCH_REFERENCE',"+
+            "FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid),"+
+            "FOREIGN KEY(source_id) REFERENCES scientific_sources(source_id),"+
+            "CHECK(range_min IS NULL OR range_min>=0),"+
+            "CHECK(range_max IS NULL OR range_max>=0),"+
+            "CHECK(range_min IS NULL OR range_max IS NULL OR range_min<=range_max))");
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_v11_air_background_target "+
+            "ON chemical_background_ranges(chemical_uid,environment_type,source_id)");
+        // Later NIOSH and OSHA identity imports must not leave gaps in profile coverage.
+        db.execSQL("CREATE TRIGGER IF NOT EXISTS trg_v11_risk_profile_new_chemical "+
+            "AFTER INSERT ON chemicals BEGIN "+
+            "INSERT OR IGNORE INTO chemical_risk_profiles(chemical_uid) VALUES(NEW.uid); END");
+        // Non-destructive V10->V11 migration: no historical measurements or limits rewritten.
+        db.execSQL("INSERT OR IGNORE INTO chemical_risk_profiles(chemical_uid) "+
+            "SELECT uid FROM chemicals");
+        db.execSQL("CREATE VIEW IF NOT EXISTS v11_exposure_early_boundary AS "+
+            "SELECT e.id AS source_limit_id,e.chemical_uid,e.authority,e.jurisdiction,"+
+            "e.limit_type,e.value AS exposure_reference_value,e.unit,e.duration_min,"+
+            "e.source_id,e.revision,p.early_exposure_fraction,"+
+            "CASE WHEN e.value>0 AND e.unit IS NOT NULL "+
+            "THEN e.value*p.early_exposure_fraction ELSE NULL END AS early_exposure_value,"+
+            "p.occupational_alarm_authorized "+
+            "FROM exposure_limits e JOIN chemical_risk_profiles p "+
+            "ON e.chemical_uid=p.chemical_uid "+
+            "WHERE UPPER(e.limit_type) NOT LIKE '%LFL%' "+
+            "AND UPPER(e.limit_type) NOT LIKE '%LEL%'");
     }
 
     private static void createCaptureUidIndex(SQLiteDatabase db){db.execSQL("CREATE INDEX IF NOT EXISTS idx_captures_chemical_uid ON captures(chemical_uid)");}
