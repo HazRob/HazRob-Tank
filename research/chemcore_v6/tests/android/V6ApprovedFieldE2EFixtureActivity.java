@@ -10,6 +10,7 @@ import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import com.servoc.app.data.ExperimentsDb;
+import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 import com.servoc.app.field.FieldCycleRepository;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -119,6 +120,10 @@ public final class V6ApprovedFieldE2EFixtureActivity extends Activity {
         }
         // One intentionally absent analysis result is valid under SmartReport.
         // The canonical SHA includes the exact raw 16 samples and decision table.
+        // ChemCore decision schema is lazily created by its production
+        // repository, not by ExperimentsDb.onCreate. The immutable source
+        // digest always includes this table even when no decision exists.
+        new ChemCoreDecisionRepository(db);
         String device="CI-N06E-TEST-ONLY";
         Method d=FieldCycleRepository.class.getDeclaredMethod("evidenceDigest",
             SQLiteDatabase.class,String.class,String.class,String.class,String.class);
