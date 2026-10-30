@@ -9,6 +9,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/GhsPictograms.java'
       - 'android/app/src/main/res/drawable/ghs_*.xml'
+      - 'docs/licenses/GHS-VECTOR-SOURCE-LICENSE.md'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalSeedBootstrap.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankExposureReferenceCatalog.java'
       - 'research/chemcore_v6/tests/android/V6ScientificRiskDbFixtureActivity.java'
@@ -63,6 +64,11 @@ jobs:
           keytool -genkeypair -alias hazrob-prototype -keystore source/signing/hazrob-prototype.jks \
             -storepass hazrob-prototype -keypass hazrob-prototype -keyalg RSA -keysize 2048 \
             -validity 1 -dname "CN=N09 SQLITE CI ONLY, OU=NOT FOR RELEASE, O=HazRob" -noprompt
+      - name: Check offline asset bundle and source-license placement
+        run: |
+          test "$(find source/app/src/main/res/drawable -maxdepth 1 -name 'ghs_*.xml' | wc -l)" -eq 9
+          test ! -e source/app/src/main/res/drawable/GHS-SOURCE-LICENSE.md
+          test -f tank/docs/licenses/GHS-VECTOR-SOURCE-LICENSE.md
       - name: Build disposable emulator app with V13 seed
         working-directory: source
         run: gradle --no-daemon :app:assembleDebug
