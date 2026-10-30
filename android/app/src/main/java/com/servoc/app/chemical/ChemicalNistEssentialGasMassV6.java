@@ -76,6 +76,13 @@ public final class ChemicalNistEssentialGasMassV6 {
                 evidence.put("record_url",url);
                 db.insertWithOnConflict("chemical_sources",null,evidence,
                     SQLiteDatabase.CONFLICT_IGNORE);
+                ContentValues id=new ContentValues();
+                id.put("chemical_uid",Long.parseLong(uid));
+                id.put("scheme","CAS");
+                id.put("value",cas);
+                id.put("source_id","NIST_WEBBOOK");
+                db.insertWithOnConflict("chemical_identifiers",null,id,
+                    SQLiteDatabase.CONFLICT_IGNORE);
                 verified++;
             }
             db.setTransactionSuccessful();
