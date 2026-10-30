@@ -42,8 +42,8 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(original>=140,"legacy coverage preserved");
             check(num(sql,"SELECT COUNT(*) FROM chemical_risk_profiles")==original,
                 "all legacy chemicals receive profile");
-            check(num(sql,"SELECT COUNT(*) FROM chemical_background_ranges")==0,
-                "no made-up global normal-air ranges");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_background_ranges")>=1,
+                "only source-qualified ambient reference ranges may be preseeded");
             check(num(sql,"SELECT COUNT(*) FROM exposure_limits")==0,
                 "new test SQLite starts without fake numeric exposure limits");
             ChemicalSeedBootstrap.ensureNiosh(this,db);
