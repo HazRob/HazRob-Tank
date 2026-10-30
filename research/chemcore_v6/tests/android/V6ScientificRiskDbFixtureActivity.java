@@ -121,7 +121,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
         JSONObject out=new JSONObject();
         try(ExperimentsDb db=new ExperimentsDb(this)){
             SQLiteDatabase sql=db.getWritableDatabase();
-            check(sql.getVersion()==13,"SQLite V13");
+            check(sql.getVersion()==14,"SQLite V14");
             long original=num(sql,"SELECT COUNT(*) FROM chemicals");
             check(original>=140,"legacy coverage preserved");
             check(num(sql,"SELECT COUNT(*) FROM chemical_risk_profiles")==original,
@@ -143,6 +143,33 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             long legacy=num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog WHERE original_144_member=1");
             check(unified==materials&&unique==materials,"one selectable row per identity, no join duplication");
             check(legacy==144,"original 144 are retained as in-catalog membership flags");
+
+            long v14Rows=num(sql,"SELECT COUNT(*) FROM v14_unified_chemical_catalog");
+            long v14Columns=num(sql,
+                "SELECT COUNT(*) FROM pragma_table_info('v14_unified_chemical_catalog')");
+            long mappedCurves=num(sql,"SELECT COUNT(*) FROM mq_chemical_reference_curves");
+            long unverifiedR0=num(sql,
+                "SELECT COUNT(*) FROM mq_chemical_reference_curves "+
+                "WHERE reference_r0_definition='UNVERIFIED_SOURCE_CONDITION' "+
+                "AND reference_r0_kohm IS NULL AND reference_rs_kohm IS NULL");
+            check(v14Rows==materials,"V14 one chemical identity per view row");
+            check(v14Columns>=96,"V14 adds actual R0/Rs provenance and naturality metadata");
+            check(mappedCurves==49,"all 43 plus six alternate source equations map to one master UID");
+            check(unverifiedR0==mappedCurves,
+                "no historical manufacturer R0 or Rs has been fabricated as a Tank baseline");
+            check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_baselines")==0,
+                "new Tank database does not invent field clean-air R0 readings");
+            check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_envelopes")==0,
+                "sensor specific normal air confidence requires repeated blanks");
+            check(num(sql,"SELECT COUNT(*) FROM v14_unified_chemical_catalog "+
+                "WHERE natural_concentration_coverage_status='NO_QUALIFIED_NATURAL_RANGE'")>700,
+                "unknown ambient concentration is NOT labeled naturally zero");
+            check(num(sql,"SELECT COUNT(*) FROM v14_unified_chemical_catalog "+
+                "WHERE source_r0_kohm_per_chemical IS NOT NULL "+
+                "OR tank_r0_kohm_per_chemical IS NOT NULL "+
+                "OR tank_rs_kohm_per_chemical IS NOT NULL")==0,
+                "sensor R0/Rs not masqueraded as a chemical-identity-wide constant");
+
             // V13 hazard and chemistry metrics are one-to-one projections,
             // never duplicate chemicals or convert UNKNOWN to nonhazardous.
             long columns=num(sql,"SELECT COUNT(*) FROM pragma_table_info('v11_unified_chemical_catalog')");
@@ -231,7 +258,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(reached.sitePotentialHazard&&!reached.regulatoryTwaExceeded,
                 "instant concentration reaching PEL is site warning not TWA proof");
             out.put("status","PASS");
-            out.put("sqlite_version",13).put("legacy_rows",original)
+            out.put("sqlite_version",14).put("legacy_rows",original)
                 .put("post_authority_import_materials",materials)
                 .put("covered_profiles",profiles)
                 .put("unified_chemical_menu_rows",unified)
@@ -246,6 +273,11 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 .put("bundled_ghs_vector_assets",9)
                 .put("ghs_pdf_vector_raster_red_pixels",pdfGhsRedPixels)
                 .put("ghs_pdf_page_count",2)
+                .put("v14_unified_columns",v14Columns)
+                .put("v14_master_uid_rows",v14Rows)
+                .put("v14_linked_source_curves",mappedCurves)
+                .put("v14_unverified_source_r0_curves",unverifiedR0)
+                .put("v14_actual_tank_r0_samples",0)
                 .put("coverage_fraction",profiles/(double)materials)
                 .put("reference_limit_rows",limits)
                 .put("osha_z1_rows",osha).put("niosh_idlh_rows",nioshIdlh)
