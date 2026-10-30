@@ -31,6 +31,5 @@ class RealGitHubQaOnly(unittest.TestCase):
     def test_nonproduction_branch_never_presumes_qualified_g3(self):
         self.assertIn('real_tank_g3_qualified',ACTIVITY)
         self.assertIn("assert r['real_tank_g3_qualified'] is False",RUNNER)
-        self.assertIn('not.download',ACTIVITY.lower().replace(' ','') if False else 'not.download') if False else None
 
 if __name__=='__main__':unittest.main()
