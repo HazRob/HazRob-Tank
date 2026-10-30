@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 MQ4 hypothetical LODO two-way purge and max-lag eligibility
+
+- Resumed from `c8ed513abf9bb760ece24e1b734720b6c26bd4c6`; verified 20/20 prior CI workflow successes, pinned 80 techniques / 14 external source slots. Independent evidence remains `records=[]`, 0/14 qualified sources, 0/80 G2 candidates.
+- Extended research-only `g2_mq4_lodo_fold_audit.py`: exact longest-lag timestamp eligibility within strict 60-second contiguous segments; separate removal of eligible holdout rows using training context and purging of eligible training rows using holdout context; reconciled eligible and ineligible counts per hypothetical calendar-day fold. No actual training or physical independence claim.
+- Added four synthetic regressions in `test_g2_mq4_lodo_fold_audit.py` covering longest-lag history, middle-day two-direction purge, a midnight gap, and explicit nonqualification. Expected synthetic outcomes: 181-minute/120-lag case has 61 eligible rows, 60 excluded and 1 retained on the later-day holdout; three-day/60-lag middle fold retains 1380 holdout rows and 0 training rows after purging. These are NOT real gas-validation metrics.
+- Method note: `G2_MQ4_LODO_TWO_WAY_PURGE_AND_MAX_LAG_ELIGIBILITY_2026-10-30_AR.md`. Original MQ4 archive source hash remains pinned; no new raw archive benchmark claimed for this change.
+- CI must verify full offline test discovery, deterministic replay, and publication guard on the final HEAD; record final run/commit status after completion. No ChemCore Stable, Android, firmware, or main edits; no G2/G3 scientific approval.
+- Next evidence blocker: independently traceable exposure/sample/session/device metadata, calibrated reference concentrations and preregistered blinded physically grouped holdouts.
+
+---
+
 ## 2026-10-30 — G2 MQ4 hypothetical LODO fold-context and reference-leakage guard (419/419 CI)
 
 - Resumed from research checkpoint `15bdd9994cd0ac8d8805dab56761e81ea2805ce7`; verified prior G2 CI and unchanged pinned 80 techniques / 14 external source slots. No independent exposure evidence promotion.
