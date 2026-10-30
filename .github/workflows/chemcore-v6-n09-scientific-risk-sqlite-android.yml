@@ -7,6 +7,8 @@ on:
       - 'android/app/src/main/java/com/servoc/app/data/ChemicalHazardSeedV11.java'
       - 'android/app/src/main/java/com/servoc/app/data/ChemicalHazardEvidenceSeedV13.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/GhsPictograms.java'
+      - 'android/app/src/main/res/drawable/ghs_*.xml'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalSeedBootstrap.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankExposureReferenceCatalog.java'
       - 'research/chemcore_v6/tests/android/V6ScientificRiskDbFixtureActivity.java'
@@ -34,6 +36,9 @@ jobs:
         run: |
           set -euo pipefail
           cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then
+            cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          fi
           cp tank/research/chemcore_v6/tests/android/V6ScientificRiskDbFixtureActivity.java source/app/src/main/java/com/servoc/app/report/
           python3 - <<'PY'
           from pathlib import Path
