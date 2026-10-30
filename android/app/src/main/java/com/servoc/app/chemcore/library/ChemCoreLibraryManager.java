@@ -153,7 +153,20 @@ public final class ChemCoreLibraryManager {
         return new CheckSummary(remote, newer, installed, message);
     }
 
-    public ChemCoreLibraryStore.InstallResult install(CheckSummary checked, String appVersion, boolean measurementActive) throws Exception {
+    /** Legacy call sites retain compatibility, with an internal live session recheck. */
+    public ChemCoreLibraryStore.InstallResult install(CheckSummary checked, String appVersion,
+                                                       boolean measurementActive) throws Exception {
+        return install(checked,appVersion,()->measurementActive);
+    }
+
+    /**
+     * Live guard: the operator may start a field measurement while the HTTPS
+     * payload is being downloaded. Re-evaluate the firmware/phone state
+     * immediately before activation, not only when the update was discovered.
+     */
+    public ChemCoreLibraryStore.InstallResult install(CheckSummary checked, String appVersion,
+                                                       java.util.function.BooleanSupplier liveMeasurementActive) throws Exception {
+        if(liveMeasurementActive==null)throw new IllegalArgumentException("live measurement status supplier required");
         if (checked == null || checked.remote == null) throw new IllegalArgumentException("checked update required");
         if (!checked.updateAvailable) return new ChemCoreLibraryStore.InstallResult(false, "no newer compatible library", store.activeVersion());
         ChemCoreLibraryVerifier.VerificationResult validated =
@@ -164,7 +177,10 @@ public final class ChemCoreLibraryManager {
         if (!staging.exists() && !staging.mkdirs()) throw new IllegalStateException("cannot create ChemCore download staging directory");
         File downloaded = client.downloadPayload(checked.remote, staging);
         try {
-            return store.installVerifiedSnapshot(checked.remote.manifest, downloaded, appVersion, measurementActive, false);
+            boolean activeNow=liveMeasurementActive.getAsBoolean() ||
+                measurementOrAnalysisActive(null);
+            return store.installVerifiedSnapshot(checked.remote.manifest, downloaded,
+                appVersion, activeNow, false);
         } finally {
             //noinspection ResultOfMethodCallIgnored
             downloaded.delete();
