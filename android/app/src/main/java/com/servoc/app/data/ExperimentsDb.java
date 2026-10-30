@@ -11,7 +11,7 @@ import java.util.List;
 
 /** Offline-first HazRob database for measurements, experiments, calibration and scientific reference data. */
 public final class ExperimentsDb extends SQLiteOpenHelper {
-    public static final int DB_VERSION=13;
+    public static final int DB_VERSION=14;
     public ExperimentsDb(Context c){super(c,"servoc.db",null,DB_VERSION);}
 
     @Override public void onCreate(SQLiteDatabase db){
@@ -19,7 +19,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE fingerprints(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, label TEXT NOT NULL, created_ts TEXT NOT NULL, payload TEXT NOT NULL)");
         db.execSQL("CREATE TABLE captures(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, chemical_uid INTEGER, known_ppm REAL, ts TEXT NOT NULL, session_id TEXT, temp_c REAL, rh REAL, phase TEXT, sensor_payload TEXT NOT NULL, feature_payload TEXT)");
         db.execSQL("CREATE TABLE models(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, model_type TEXT NOT NULL, version TEXT NOT NULL, created_ts TEXT NOT NULL, training_count INTEGER, metrics TEXT, payload TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 0)");
-        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);ChemicalHazardSeedV11.ensure(db);createV13ChemicalHazardAndTechniques(db);ChemicalHazardEvidenceSeedV13.ensure(db);createCaptureUidIndex(db);
+        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);ChemicalHazardSeedV11.ensure(db);createV13ChemicalHazardAndTechniques(db);ChemicalHazardEvidenceSeedV13.ensure(db);createV14MqR0AndAmbientView(db);MqReferenceCurveSeedV14.ensure(db);createCaptureUidIndex(db);
     }
 
     @Override public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
@@ -41,6 +41,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         if(oldVersion<10){createV10FieldCycleTables(db);importV9FieldCycleLinks(db);}
         if(oldVersion<12){createV11ScientificRiskTables(db);ChemicalHazardSeedV11.ensure(db);}
         if(oldVersion<13){createV13ChemicalHazardAndTechniques(db);ChemicalHazardEvidenceSeedV13.ensure(db);}
+        if(oldVersion<14){createV14MqR0AndAmbientView(db);MqReferenceCurveSeedV14.ensure(db);}
     }
 
     /**
@@ -320,6 +321,69 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
             "1_SOFTWARE') AS chemcore_g1_evidence_count FROM chemicals c LEFT JOIN chemical_risk_profiles p ON p.chemi"+
             "cal_uid=c.uid WHERE c.active=1"
         );
+    }
+
+    /**
+     * V14 physical observation boundary: clean-air R0/Rs are properties of
+     * a sensor instance, NOT one numerical value per chemical. Source curves
+     * are per-substance evidence only with separate R0 source definition.
+     * The one-row-per-chemical VIEW makes missing science explicit to all
+     * search, tracking, candidate and lab menus.
+     */
+    private static void createV14MqR0AndAmbientView(SQLiteDatabase db){
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS mq_chemical_reference_curves( curve_id TEXT PRIMARY KEY, chemical_uid INTEGER "+
+            "NOT NULL, sensor_model TEXT NOT NULL, source_legacy_id INTEGER, source_label TEXT, ratio_a REAL NOT NULL,"+
+            "ratio_b REAL NOT NULL,output_scale REAL NOT NULL, min_source_ppm REAL,max_source_ppm REAL, source_curve_f"+
+            "ormula TEXT NOT NULL, reference_r0_definition TEXT NOT NULL, tank_r0_equivalence TEXT NOT NULL, reference"+
+            "_r0_kohm REAL,reference_rs_kohm REAL, reference_temperature_c REAL,reference_humidity_pct REAL, heater_pr"+
+            "ofile TEXT,source_id TEXT NOT NULL,source_revision TEXT, evidence_status TEXT NOT NULL DEFAULT 'RESEARCH_"+
+            "REFERENCE_ONLY', FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid), FOREIGN KEY(source_id) REFERENCES s"+
+            "cientific_sources(source_id), CHECK(ratio_a>0 AND ratio_b!=0 AND output_scale>0), CHECK(reference_r0_kohm"+
+            " IS NULL OR reference_r0_kohm>0), CHECK(reference_rs_kohm IS NULL OR reference_rs_kohm>0), CHECK(min_sour"+
+            "ce_ppm IS NULL OR max_source_ppm IS NULL OR min_source_ppm<=max_source_ppm))");
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS idx_v14_source_curve_identity ON mq_chemical_reference_curves(chemical_uid,sen"+
+            "sor_model,source_id)");
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS mq_device_clean_air_baselines( id INTEGER PRIMARY KEY AUTOINCREMENT, device_id"+
+            " TEXT NOT NULL,sensor_key TEXT NOT NULL,calibration_revision TEXT NOT NULL, r0_kohm REAL NOT NULL, baseli"+
+            "ne_rs_min_kohm REAL,baseline_rs_max_kohm REAL, sample_count INTEGER NOT NULL, window_count INTEGER NOT NU"+
+            "LL DEFAULT 3, reference_air_context TEXT NOT NULL, r0_definition TEXT NOT NULL DEFAULT 'CLEAN_AIR_DEVICE_"+
+            "RS_MEAN', heater_profile TEXT, reference_temperature_c REAL,reference_humidity_pct REAL, calibration_star"+
+            "t_utc TEXT,calibration_end_utc TEXT, provenance TEXT NOT NULL, approved INTEGER NOT NULL DEFAULT 0, creat"+
+            "ed_utc TEXT NOT NULL, UNIQUE(device_id,sensor_key,calibration_revision), CHECK(r0_kohm>0 AND sample_count"+
+            ">0 AND window_count>0), CHECK(approved IN (0,1)), CHECK(baseline_rs_min_kohm IS NULL OR baseline_rs_min_k"+
+            "ohm>0), CHECK(baseline_rs_max_kohm IS NULL OR baseline_rs_max_kohm>0))");
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS mq_device_clean_air_envelopes( id INTEGER PRIMARY KEY AUTOINCREMENT, device_id"+
+            " TEXT NOT NULL,sensor_key TEXT NOT NULL,r0_revision TEXT NOT NULL, heater_profile TEXT NOT NULL, median_l"+
+            "og_rs_r0 REAL NOT NULL,mad_log_rs_r0 REAL NOT NULL, lower_log_ratio REAL NOT NULL,upper_log_ratio REAL NO"+
+            "T NULL, number_of_blanks INTEGER NOT NULL,distinct_days INTEGER NOT NULL, reference_temperature_c REAL,re"+
+            "ference_humidity_pct REAL, source_protocol TEXT NOT NULL,source_id TEXT, approved INTEGER NOT NULL DEFAUL"+
+            "T 0, UNIQUE(device_id,sensor_key,r0_revision,heater_profile,source_protocol), CHECK(mad_log_rs_r0>=0 AND "+
+            "lower_log_ratio<upper_log_ratio), CHECK(number_of_blanks>=2 AND distinct_days>=1), CHECK(approved IN (0,1"+
+            ")))");
+        db.execSQL("DROP VIEW IF EXISTS v14_unified_chemical_catalog");
+        db.execSQL(
+            "CREATE VIEW v14_unified_chemical_catalog AS SELECT v13.*, (SELECT COUNT(*) FROM mq_chemical_reference_cur"+
+            "ves m WHERE m.chemical_uid=v13.uid) AS mq_research_response_curve_count, (SELECT GROUP_CONCAT(DISTINCT m."+
+            "sensor_model) FROM mq_chemical_reference_curves m WHERE m.chemical_uid=v13.uid) AS mq_reference_sensor_mo"+
+            "dels, (SELECT GROUP_CONCAT(DISTINCT m.source_id) FROM mq_chemical_reference_curves m WHERE m.chemical_uid"+
+            "=v13.uid) AS mq_reference_source_ids, (SELECT COUNT(*) FROM mq_chemical_reference_curves m WHERE m.chemic"+
+            "al_uid=v13.uid AND m.reference_r0_definition!='UNVERIFIED_SOURCE_CONDITION') AS mq_r0_definition_qualifie"+
+            "d_count, (SELECT COUNT(*) FROM mq_chemical_reference_curves m WHERE m.chemical_uid=v13.uid AND m.referenc"+
+            "e_r0_kohm IS NOT NULL) AS mq_source_r0_numeric_count, (SELECT COUNT(*) FROM mq_chemical_reference_curves "+
+            "m WHERE m.chemical_uid=v13.uid AND m.reference_rs_kohm IS NOT NULL) AS mq_source_rs_numeric_count, CASE W"+
+            "HEN v13.background_range_count>0 AND v13.natural_min IS NOT NULL AND v13.natural_max IS NOT NULL THEN 'SO"+
+            "URCE_QUALIFIED_ENVIRONMENTAL_RANGE' ELSE 'NO_QUALIFIED_NATURAL_RANGE' END AS natural_concentration_covera"+
+            "ge_status, CASE WHEN v13.hazard_boundary_count>0 THEN 'HAS_SCOPE_BOUND_HAZARD_REFERENCE' ELSE 'NO_QUALIFI"+
+            "ED_DANGER_LIMIT' END AS abnormal_concentration_coverage_status, 'DEVICE_SENSOR_ONLY_NOT_CHEMICAL_ATTRIBUT"+
+            "E' AS tank_r0_measurement_scope, 'CURRENT_SENSOR_SNAPSHOT_NOT_CHEMICAL_ATTRIBUTE' AS tank_rs_measurement_"+
+            "scope, CAST(NULL AS REAL) AS source_r0_kohm_per_chemical, CAST(NULL AS REAL) AS source_rs_kohm_per_chemic"+
+            "al, CAST(NULL AS REAL) AS tank_r0_kohm_per_chemical, CAST(NULL AS REAL) AS tank_rs_kohm_per_chemical, 'RA"+
+            "TIO_MQ_SOURCE_MODEL_WITH_UNVERIFIED_R0_DEFINITION' AS mq_research_r0_rs_warning FROM v11_unified_chemical"+
+            "_catalog v13");
     }
 
     private static void createCaptureUidIndex(SQLiteDatabase db){db.execSQL("CREATE INDEX IF NOT EXISTS idx_captures_chemical_uid ON captures(chemical_uid)");}
