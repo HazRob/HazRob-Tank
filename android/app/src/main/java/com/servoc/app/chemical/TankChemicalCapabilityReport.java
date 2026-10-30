@@ -84,6 +84,31 @@ public final class TankChemicalCapabilityReport {
         // V14 scientific material profile: one stable UID, no duplicate
         // 'primary chemical list' or hand-coded entries in the UI.
         JSONObject unified=new ChemicalRepository(db).scientificProfile(chemical.uid);
+        // Pre-approved library capability states are synchronized as
+        // per-material query results, without replacing embedded Stable and
+        // without any secondary post-download scientific qualification.
+        JSONArray changes=unified.optJSONArray("queried_reference_updates");
+        out.append("\n\nمزامنة حالة الإمكانات المنشورة من المكتبة المركزية:");
+        if(changes==null||changes.length()==0){
+            out.append("\nلا توجد تحديثات منشورة إضافية لهذا UID بعد.");
+        }else{
+            for(int i=0;i<Math.min(24,changes.length());i++){
+                JSONObject row=changes.optJSONObject(i);
+                if(row==null)continue;
+                String capability=row.optString("key","?");
+                String state=row.optString("evidence_status","");
+                String shown=state.endsWith("QUALIFIED")?"✓ مكتبة":
+                    state.endsWith("AVAILABLE")?"◐ مكتبة":"—";
+                out.append("\n• ").append(capability).append(" ").append(shown)
+                   .append(" • مصدر ").append(row.optString("source_id",""))
+                   .append(" • مراجعة ").append(row.optString("revision",""))
+                   .append(" • UID ").append(row.optLong("published_for_uid",chemical.uid));
+                if(row.optBoolean("displayed_via_verified_alias",false))
+                    out.append(" (مرادف NIOSH موثق)");
+            }
+            out.append("\nقرار الاعتماد العلمي تتخذه المكتبة قبل النشر. علامة ✓ مكتبة")
+               .append(" ليست شهادة معايرة جديدة للروبوت.");
+        }
         JSONArray curves=unified.optJSONArray("mq_reference_curve_evidence");
         JSONArray exposure=unified.optJSONArray("occupational_exposure_source_limits");
         JSONArray hazard=unified.optJSONArray("source_qualified_hazard_classifications");
