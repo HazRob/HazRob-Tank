@@ -14,6 +14,20 @@ public final class ChemicalHazardEvidenceSeedV13 {
             return c.moveToFirst()?c.getLong(0):-1;
         }
     }
+    private static long canonicalRadon(SQLiteDatabase db){
+        long matched=chemical(db,"10043-92-2");
+        if(matched>0)return matched;
+        try(Cursor c=db.rawQuery(
+                "SELECT uid,cas FROM chemicals WHERE lower(trim(name_en))='radon' LIMIT 1",null)){
+            if(!c.moveToFirst())return -1;
+            long uid=c.getLong(0);
+            if(c.isNull(1)||c.getString(1).trim().isEmpty()){
+                ContentValues v=new ContentValues();v.put("cas","10043-92-2");
+                db.update("chemicals",v,"uid=?",new String[]{Long.toString(uid)});
+            }else if(!"10043-92-2".equals(c.getString(1).trim()))return -1;
+            return uid;
+        }
+    }
     private static void source(SQLiteDatabase db,String id,String title,String authority,String url,String version){
         ContentValues v=new ContentValues();
         v.put("source_id",id);v.put("title",title);v.put("authority",authority);
@@ -63,6 +77,25 @@ public final class ChemicalHazardEvidenceSeedV13 {
             "OSHA NIOSH Hazard Alert: manual tank gauging and sampling, Appendix B",
             "NIOSH/OSHA","https://www.cdc.gov/niosh/docs/2016-108/pdfs/2016-108.pdf",
             "NIOSH 2016-108");
+
+        source(db,"EPA_RADON",
+            "US EPA: naturally occurring radioactive radon gas and lung cancer",
+            "US EPA","https://www.epa.gov/radiation/frequent-questions-radiation-sources",
+            "accessed 2026-10-30");
+        long radon=canonicalRadon(db);
+        classify(db,radon,"RADIOACTIVE","EPA_RADIOLOGICAL_HAZARD",
+            "natural radioactive gas, radon isotopes",
+            "EPA_RADON","https://www.epa.gov/radiation/frequent-questions-radiation-sources",
+            "IONIZING_RADIATION",null,null,null,
+            "Not a GHS class; radiation activity units are Bq/m3 or pCi/L and must not be inferred from MQ.");
+        classify(db,radon,"CARCINOGEN","EPA_LUNG_CANCER_HAZARD",
+            "radon inhalation linked to lung cancer",
+            "EPA_RADON","https://www.epa.gov/radiation/frequent-questions-radiation-sources",
+            "LUNG_CARCINOGEN",null,null,null,
+            "Risk concerns accumulated radon exposure and must be measured with a suitable radon instrument.");
+        property(db,radon,"HEALTH_EFFECTS",null,
+            "Ionizing alpha emission from radon decay products; elevated inhalation exposure increases lung cancer risk",
+            null,"EPA_RADON");
 
         long benzene=chemical(db,"71-43-2");
         classify(db,benzene,"CARCINOGEN","OSHA_HCS","benzene carcinogenicity",
