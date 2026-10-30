@@ -25,6 +25,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalIdentityEquivalenceV6.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalIdentityCategoryV6.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalNistIdentityCompletionV6.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalCasCorrectionV6.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalMolecularProjectionV6.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/TankChemicalCapabilityReport.java'
       - 'research/chemcore_v6/tests/test_v6_stable_update_contract.py'
