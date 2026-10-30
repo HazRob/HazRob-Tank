@@ -110,9 +110,17 @@ public final class ChemicalExperimentStatusRepository {
         // One indexed query per material instead of eight queries for each
         // row of a 734-item Android list. Mirror published central flags;
         // never run scientific approval logic on the phone.
+        long publishedUid=c.uid;
+        try(Cursor link=db.getReadableDatabase().rawQuery(
+                "SELECT canonical_uid FROM chemical_identity_equivalence_v6 "+
+                "WHERE alias_uid=? AND evidence_status='NIOSH_SYNONYM_VERIFIED' LIMIT 1",
+                new String[]{Long.toString(c.uid)})){
+            if(link.moveToFirst())publishedUid=link.getLong(0);
+        }catch(Exception ignored){/* no synonym linkage, use original UID */}
         try(Cursor q=db.getReadableDatabase().rawQuery(
                 "SELECT property_key,evidence_status FROM chemical_reference_updates_v6 "+
-                "WHERE chemical_uid=?",new String[]{Long.toString(c.uid)})){
+                "WHERE chemical_uid=? OR chemical_uid=?",
+                new String[]{Long.toString(c.uid),Long.toString(publishedUid)})){
             while(q.moveToNext()){
                 String key=q.getString(0),status=q.getString(1);
                 boolean qualified="PUBLISHED_LIBRARY_QUALIFIED".equals(status);
