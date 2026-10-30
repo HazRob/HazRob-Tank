@@ -196,6 +196,14 @@ public final class ChemicalRepository {
             out.put("source_qualified_identity_alias_count",identityAliases.length());
             out.put("alias_link_is_not_new_gas_detection_evidence",true);
         }catch(Exception ignored){}
+        // Incremental GitHub reference queries overlay the stable offline
+        // source catalog; they never replace the tested master or certify MQ.
+        try{
+            JSONArray remote=ChemicalReferenceSyncV6.facts(db,uid);
+            out.put("queried_reference_updates",remote);
+            out.put("queried_reference_update_count",remote.length());
+            out.put("queried_reference_updates_safety_qualified",false);
+        }catch(Exception ignored){}
         // These observations are linked via applicable MQ sensor MODELS,
         // never via chemical identity. An external sensor's R0/Rs MUST NOT
         // populate this material's operational R0/ppm or G3 fields.
