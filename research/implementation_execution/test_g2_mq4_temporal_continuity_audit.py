@@ -9,6 +9,7 @@ import unittest
 import warnings
 import zipfile
 from pathlib import Path
+from datetime import datetime, timedelta
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from g2_mq4_temporal_continuity_audit import MEMBER, audit_mq4_temporal_continuity
@@ -88,6 +89,47 @@ class MQ4TemporalAuditTests(unittest.TestCase):
                 z.writestr(MEMBER, b"duplicate")
         with self.assertRaisesRegex(ValueError, "MQ4_RAW_MEMBER_MISSING_OR_DUPLICATED"):
             self.audit(expected_member_sha256=digest)
+
+    def test_gap_segmentation_and_midnight_crossing(self):
+        digest = self.write()
+        r = self.audit(expected_member_sha256=digest)
+        self.assertEqual(r["contiguous_one_minute_segment_count"], 2)
+        self.assertEqual(r["contiguous_one_minute_segment_lengths"], [3, 1])
+        self.assertEqual(r["contiguous_segments_spanning_calendar_days"], 1)
+        self.assertEqual(r["sixty_minute_contiguous_pairs"], 0)
+        self.assertTrue(r["sixty_minute_lag_requires_60_consecutive_minute_steps"])
+
+    def test_exact_sixty_one_minute_sequence_has_one_lag60_pair(self):
+        start = datetime(2021, 7, 21, 23, 30)
+        rows = [
+            [(start + timedelta(minutes=i)).strftime("%Y-%m-%d %H:%M:%S"),
+             2000 + i, 10 + i, 20 + i, 30 + i]
+            for i in range(61)
+        ]
+        digest = self.write(rows=rows)
+        r = self.audit(expected_member_sha256=digest)
+        self.assertEqual(r["contiguous_one_minute_segment_lengths"], [61])
+        self.assertEqual(r["sixty_minute_contiguous_pairs"], 1)
+        self.assertEqual(r["one_minute_pairs_crossing_midnight"], 1)
+        self.assertEqual(r["contiguous_segments_spanning_calendar_days"], 1)
+
+    def test_compensating_short_and_long_intervals_cannot_fake_lag60(self):
+        start = datetime(2021, 7, 21, 12, 0)
+        rows = [
+            [(start + timedelta(minutes=i)).strftime("%Y-%m-%d %H:%M:%S"),
+             2000 + i, 10 + i, 20 + i, 30 + i]
+            for i in range(61)
+        ]
+        # 30 s then 90 s: endpoints are still exactly 60 minutes apart,
+        # but the sixty intervening steps are not all one minute.
+        rows[20][0] = (start + timedelta(minutes=19, seconds=30)).strftime(
+            "%Y-%m-%d %H:%M:%S")
+        digest = self.write(rows=rows)
+        r = self.audit(expected_member_sha256=digest)
+        self.assertEqual(r["non_one_minute_gaps"], 2)
+        self.assertEqual(r["contiguous_one_minute_segment_lengths"], [20, 1, 40])
+        self.assertEqual(r["sixty_minute_contiguous_pairs"], 0)
+        self.assertFalse(r["g2_qualified"])
 
     def test_deterministic_result_for_identical_bytes(self):
         digest = self.write()
