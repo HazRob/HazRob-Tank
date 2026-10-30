@@ -1,3 +1,12 @@
+## 2026-10-31 — G2 MQ4 temporal and fold-complement consistency gate (605/605 CI verified)
+
+- Resumed from `c369cff69598121143a67ec017adf0099b38d242`; independently verified **20/20 prior commit Actions successes**. Source catalog remains 14/14 blocked, independent evidence `records=[]`, scientific G2 0/80 candidates.
+- On research-only implementation commit `105ea471d57be59f6c8ae2ec8d7e6714b3757c48`, hardened `g2_mq4_cross_report_reconciliation.py` to reject impossible ISO calendar days, float/Boolean metadata masquerading as integer counters, incorrect lag-1 pair/segment identity, non-monotonic lag availability, impossible per-day cross-midnight pair counts, and per-fold training/holdout complement violations that can cancel in aggregate totals. Added **eight synthetic regression tests** and Arabic methodology `G2_MQ4_CROSS_REPORT_TEMPORAL_INVARIANTS_2026-10-31_AR.md`.
+- **Verified G2 CI:** [run 41138058771](https://github.com/HazRob/HazRob-Tank/actions/runs/41138058771), job `124345298723`: **605/605 tests PASS**, Python compile PASS, full 80-technique fail-closed audit PASS, byte-identical replay PASS, publication guard PASS (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). **All 21/21 associated workflow runs on implementation commit succeeded**; no CI failures. The later documentation-only commit requires separate CI verification.
+- Pinned MQ4 source summaries still reconcile without alteration. This verifies necessary arithmetic/temporal invariants only, **not original raw bytes**, model performance, physical independence, calibration, G2 or G3 qualification. All changed paths are in `research/implementation_execution/` on the research branch; no ChemCore Stable, Android, firmware or main modifications.
+
+---
+
 ## 2026-10-31 — G2 MQ4 saved-result byte-replay gate (597/597 verified)
 
 - Extended the pinned MQ4 cross-report regression suite with `test_committed_result_is_byte_identical_replay`, checking that the committed `G2_MQ4_CROSS_REPORT_RECONCILIATION_2026-10-31.json` matches fresh deterministic reconciliation of the two pinned source summaries byte for byte.
