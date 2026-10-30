@@ -1,6 +1,7 @@
 """Fail-closed cross-check of two MQ4 research reports; NOT a raw replay or G2/G3 validation."""
 import argparse
 import json
+from datetime import date
 from pathlib import Path
 
 SOURCE = 'MQ-ACQ-2026-06'
@@ -35,6 +36,15 @@ def load_report(path):
                       object_pairs_hook=unique_keys, parse_constant=nonfinite)
 
 
+def valid_iso_day(value):
+    if type(value) is not str or len(value) != 10 or value[4] != '-' or value[7] != '-':
+        return False
+    try:
+        return date.fromisoformat(value).isoformat() == value
+    except ValueError:
+        return False
+
+
 def reconcile(lodo, multi):
     check(type(lodo) is dict and type(multi) is dict, 'NOT_OBJECT')
     check(lodo.get('schema') == 'hazrob.g2.mq4-lodo-two-way-purge-raw-summary.v1' and
@@ -56,28 +66,37 @@ def reconcile(lodo, multi):
           n > 0 and segments > 0 and eligible <= n, 'COUNTS')
     check(multi.get('row_count') == n and
           multi.get('contiguous_one_minute_segment_count') == segments and
+          type(lodo.get('max_lag_minutes')) is int and
           lodo.get('max_lag_minutes') == max(LAGS), 'GLOBAL_COUNTS')
     lr = multi.get('lag_results')
     check(type(lr) is dict and set(lr) == {str(k) for k in LAGS}, 'LAGS')
     folds = lodo.get('folds')
     check(type(folds) is dict and len(folds) >= 2 and
+          type(lodo.get('calendar_dates')) is int and
           lodo.get('calendar_dates') == len(folds), 'FOLDS')
     days = sorted(folds)
-    check(all(type(d) is str and len(d) == 10 and d[4] == '-' and d[7] == '-'
-              for d in days), 'DATES')
+    check(all(valid_iso_day(d) for d in days), 'DATES')
+    previous_available = None
     for lag in LAGS:
         item = lr[str(lag)]
-        check(type(item) is dict and item.get('lag_minutes') == lag, 'LAG_ID')
+        check(type(item) is dict and type(item.get('lag_minutes')) is int and
+              item.get('lag_minutes') == lag, 'LAG_ID')
         a = item.get('same_day_context_rows')
         b = item.get('cross_day_context_rows_requiring_embargo_if_day_holdout')
         c = item.get('lag_context_unavailable_rows')
         available = item.get('contiguous_lag_pairs')
         check(all(integer(v) for v in (a, b, c, available)) and
               a + b == available and available + c == n, 'LAG_ARITHMETIC')
+        if lag == 1:
+            check(available == n - segments, 'SEGMENT_LAG_ONE')
+        if previous_available is not None:
+            check(available <= previous_available, 'LAG_AVAILABLE_MONOTONIC')
+        previous_available = available
         distribution = item.get('cross_day_context_rows_by_later_date')
         check(type(distribution) is dict and set(distribution).issubset(set(days)) and
               all(integer(v) for v in distribution.values()) and
               sum(distribution.values()) == b, 'LAG_DISTRIBUTION')
+        check(all(v <= lag for v in distribution.values()), 'CROSS_DAY_LAG_CAP')
         fraction = item.get('cross_day_fraction_of_available_pairs')
         expected = b / available if available else None
         check((fraction is None and expected is None) or
@@ -97,6 +116,8 @@ def reconcile(lodo, multi):
               f['holdout_remaining'] + f['holdout_excluded_training_context'] == f['holdout_timestamp_eligible'] and
               f['train_remaining'] + f['train_purged_holdout_context'] == f['train_timestamp_eligible'],
               'FOLD_ARITHMETIC')
+        check(f['train_timestamp_eligible'] + f['holdout_timestamp_eligible'] == eligible,
+              'FOLD_TRAIN_COMPLEMENT')
         check(f['holdout_excluded_training_context'] == max_cross.get(day, 0),
               'HOLDOUT_BOUNDARY')
         next_day = days[i + 1] if i + 1 < len(days) else None

@@ -163,5 +163,67 @@ class MQ4CrossReportTests(unittest.TestCase):
                          json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2) + '\n')
 
 
+    def test_reject_float_calendar_count(self):
+        l, m = synthetic()
+        l['calendar_dates'] = 2.0
+        with self.assertRaisesRegex(ValueError, 'FOLDS'):
+            reconcile(l, m)
+
+    def test_reject_float_max_lag(self):
+        l, m = synthetic()
+        l['max_lag_minutes'] = 120.0
+        with self.assertRaisesRegex(ValueError, 'GLOBAL_COUNTS'):
+            reconcile(l, m)
+
+    def test_reject_invalid_iso_calendar_date(self):
+        l, m = synthetic()
+        l['folds']['2021-02-30'] = l['folds'].pop('2021-07-21')
+        with self.assertRaisesRegex(ValueError, 'DATES'):
+            reconcile(l, m)
+
+    def test_reject_boolean_lag_identifier(self):
+        l, m = synthetic()
+        m['lag_results']['1']['lag_minutes'] = True
+        with self.assertRaisesRegex(ValueError, 'LAG_ID'):
+            reconcile(l, m)
+
+    def test_reject_lag_one_segment_identity(self):
+        l, m = synthetic()
+        l['strict_minute_segments'] = 2
+        m['contiguous_one_minute_segment_count'] = 2
+        with self.assertRaisesRegex(ValueError, 'SEGMENT_LAG_ONE'):
+            reconcile(l, m)
+
+    def test_reject_lag_pair_count_increasing_with_lag(self):
+        l, m = synthetic()
+        item = m['lag_results']['15']
+        item['contiguous_lag_pairs'] = 177
+        item['same_day_context_rows'] = 162
+        item['lag_context_unavailable_rows'] = 4
+        with self.assertRaisesRegex(ValueError, 'LAG_AVAILABLE_MONOTONIC'):
+            reconcile(l, m)
+
+    def test_reject_more_cross_midnight_pairs_than_lag(self):
+        l, m = synthetic()
+        item = m['lag_results']['5']
+        item['cross_day_context_rows_requiring_embargo_if_day_holdout'] = 6
+        item['cross_day_context_rows_by_later_date']['2021-07-22'] = 6
+        item['same_day_context_rows'] = 170
+        item['cross_day_fraction_of_available_pairs'] = 6 / 176
+        with self.assertRaisesRegex(ValueError, 'CROSS_DAY_LAG_CAP'):
+            reconcile(l, m)
+
+    def test_reject_per_fold_train_complement_when_global_total_matches(self):
+        l, m = synthetic()
+        first = l['folds']['2021-07-21']
+        second = l['folds']['2021-07-22']
+        first['train_timestamp_eligible'] = 60
+        first['train_remaining'] = 0
+        second['train_timestamp_eligible'] = 1
+        second['train_remaining'] = 1
+        with self.assertRaisesRegex(ValueError, 'FOLD_TRAIN_COMPLEMENT'):
+            reconcile(l, m)
+
+
 if __name__ == '__main__':
     unittest.main()
