@@ -253,8 +253,15 @@ public final class V6ApprovedFieldE2EFixtureActivity extends Activity {
             try{run();}
             catch(Throwable failure){
                 try{
+                    Throwable root=failure;
+                    while(root.getCause()!=null&&root.getCause()!=root)root=root.getCause();
+                    java.io.StringWriter sw=new java.io.StringWriter();
+                    failure.printStackTrace(new java.io.PrintWriter(sw));
                     JSONObject err=new JSONObject().put("status","FAIL")
-                        .put("message",failure.toString());
+                        .put("message",failure.toString())
+                        .put("root_cause",root.toString())
+                        .put("stacktrace",sw.toString())
+                        .put("assertions_before_failure",asserts);
                     try(FileOutputStream out=openFileOutput("n06e_status.json",MODE_PRIVATE)){
                         out.write(err.toString(2).getBytes(StandardCharsets.UTF_8));
                     }
