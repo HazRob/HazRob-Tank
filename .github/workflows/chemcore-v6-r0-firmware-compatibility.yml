@@ -1,0 +1,47 @@
+name: ChemCore Tank V6 R0 firmware compatibility compile
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'firmware/ESP32-Tank/**'
+      - '.github/workflows/chemcore-v6-r0-firmware-compatibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-nonrelease-esp32:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail closed on misleading old R0 reference semantics
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          fw=Path('firmware/ESP32-Tank/Hardware.cpp').read_text()
+          assert 'calSum[i]/calCount[i]/cleanAir[i]' in fw, 'quick V5 R0 calculation has changed; re-audit'
+          assert 'MQ_FACTOR_SCALED_R0_NOT_AIR_RS' in fw, 'firmware must disclose source R0 definition'
+          assert 'legacy_mq_factor_scaled_r0' in fw, 'cannot call source-scaled R0 clean air'
+          assert 'mq_unified_clean_air' not in fw, 'misleading source claim must not return'
+          assert 'r0_window_count' in fw
+          print('PASS: old V5 scale factor is disclosed, not silently reinterpreted as Rs_air')
+          PY
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install pinned Arduino ESP32 board core
+        shell: bash
+        run: |
+          set -euo pipefail
+          INDEX=https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index --additional-urls "$INDEX"
+          arduino-cli core install esp32:esp32@3.3.11 --additional-urls "$INDEX"
+      - name: Compile actual ESP32 Tank source (diagnostic, no flash)
+        shell: bash
+        run: |
+          set -euo pipefail
+          arduino-cli compile --warnings all --fqbn esp32:esp32:esp32 \
+            --output-dir firmware-build firmware/ESP32-Tank
+          test -n "$(find firmware-build -maxdepth 1 -name '*.bin' -print -quit)"
+          echo "PASS: firmware compiles; no hardware gas calibration or safety certification"
