@@ -173,9 +173,8 @@ jobs:
         with:
           gradle-version: '9.6.0'
 
-      - name: Gradle JUnit diagnostic test matrix (record failures, do not mislabel APK release-safe)
+      - name: Mandatory Gradle JUnit V6 acceptance matrix (FAIL CLOSED)
         id: unit_tests
-        continue-on-error: true
         working-directory: source
         run: gradle --no-daemon :app:testDebugUnitTest
 
