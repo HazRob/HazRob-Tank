@@ -106,13 +106,38 @@
     },
     {
       "id": "D09",
-      "text": "Color exact hex codes, mockups and chart count per report remain open for separate evaluation/owner design acceptance.",
-      "status": "PENDING_OWNER_DESIGN_REVIEW"
+      "text": "The color family and report header/footer geometry are owner-approved by G15-G18; exact amber shade, official logo asset and per-report plot/layout prototypes still require design signoff.",
+      "status": "PARTIALLY_SUPERSEDED_BY_G15_G18"
     },
     {
       "id": "D10",
       "text": "Current owner mentions 76 ChemCore techniques while earlier goal was 80; perform repository count and executed-technique registry audit before displaying any counts in PDF.",
       "status": "REQUIRES_SOURCE_AUDIT"
+    },
+    {
+      "id": "D11",
+      "text": "G14: PDF generators must not add independent analytical eligibility gates; use engine decision/metric/reference states as authoritative and preserve output fidelity.",
+      "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "D12",
+      "text": "G15: all report content backgrounds pure white; four brand colors black/white/amber-orange/gray; chart-only supplementary colors must be clear and non-pale.",
+      "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "D13",
+      "text": "G16: document timestamp from original measurement event, never replace with PDF export time; true capture time range when report aggregates sessions.",
+      "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "D14",
+      "text": "G17: fixed black header with logo right, 15pt bold amber-orange bilingual title center, white measurement time left; narrow margins, 1.15 line spacing, zero paragraph spacing, cell padding 2mm LR 1mm TB.",
+      "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "D15",
+      "text": "G18: light-gray footer with left black bold 14pt Arabic page n/N and right two-color HazRob official wordmark.",
+      "status": "APPROVED_BY_OWNER"
     }
   ],
   "checkpoints": [
@@ -143,8 +168,8 @@
     },
     {
       "id": "V7-R04",
-      "name": "Approve unified final hex theme, authentic logo placement, A4 pagination and one mockup for each report (G01-G13 binding)",
-      "status": "R01_DESIGN_PROPOSAL_PENDING_OWNER"
+      "name": "Apply binding G14-G18 baseline and obtain owner signoff for report-specific chart order, actual logo file and precise amber shade",
+      "status": "GLOBAL_STYLE_RULES_APPROVED_R01_DIAGRAMS_PENDING_OWNER"
     },
     {
       "id": "V7-R05",
@@ -214,22 +239,25 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Sequential report-by-report approval process documented. R01 authentic source+sample PDF analyzed; proposed redesign awaits owner. Other 5 reports remain NOT_AUDITED. No production Android changes.",
+  "latest_documented_change": "Owner added five mandatory G14-G18 rules (total 18). Design charter rev 1.1, sequential plan, R01 analysis and six-report evaluation matrix synchronized; no Java/PDF production changes or APK created.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
-    "revision": "1.0",
-    "owner_rules_count": 13,
-    "owner_requirements_status": "RECORDED_APPROVED_AS_DESIGN_FOUNDATION",
+    "revision": "1.1",
+    "owner_rules_count": 18,
+    "owner_requirements_status": "G01-G18_APPROVED_AS_BINDING_DESIGN_FOUNDATION",
     "implementation_status": "NOT_STARTED",
     "mockup_style_approval": "PENDING",
     "science_constraints_count": 10,
-    "commit": "773e36b1a47a26ae9fead1e720675e5c68ad4dc5",
-    "traceability": "G01-G13"
+    "commit": "3908325fdf1dd1f12123587b0eb8fa6b53f61115",
+    "traceability": "G01-G18",
+    "engine_only_science_policy": true,
+    "measurement_timestamp_in_header": true,
+    "visual_contract_fixed": true
   },
   "evaluation_requirements": {
     "document": "docs/implementation/V7-REPORT-ASSESSMENT-MATRIX.json",
-    "status": "TEMPLATE_CREATED_ALL_SIX_NOT_AUDITED",
+    "status": "18_RULE_SCENARIOS_SETUP_R01_PRELIMINARY_SOURCE_PDF_AUDIT_DONE",
     "per_report_score": "No PASS before original Android PDF and source data verified",
     "rule_ids": [
       "G01",
@@ -244,11 +272,16 @@
       "G10",
       "G11",
       "G12",
-      "G13"
+      "G13",
+      "G14",
+      "G15",
+      "G16",
+      "G17",
+      "G18"
     ],
     "report_count": 6,
-    "review_results": "0 assessed / 6 report types",
-    "commit": "60f137d79e0a29dca4653408b058d27219d2bc4f"
+    "review_results": "R01 assessed against 18 rules using original V6 source and one sample PDF; R02–R06 not yet audited",
+    "commit": "a14883da2279965f7bca60c1c40f9a192209d844"
   },
   "sequential_plan": {
     "document": "docs/implementation/V7-REPORTS-SEQUENTIAL-REVIEW-PLAN-2026-10-30_AR.md",
@@ -258,7 +291,7 @@
   "active_report": {
     "id": "R01",
     "name": "Instant ChemCore V6 gas research report",
-    "phase": "ANALYSIS_COMPLETED_PROPOSAL_PENDING_OWNER",
+    "phase": "ANALYSIS_DONE_G14_G18_STYLE_REQUIREMENTS_APPROVED_CHART_DESIGN_PENDING",
     "document": "docs/implementation/V7-R01-INSTANT-GAS-REPORT-ANALYSIS-2026-10-30_AR.md",
     "commit": "96594b4642cd97814d5bd7b84c98febda2e845a6",
     "original_pdf_sha256": "7c4cf3c7de06529f6d604df7c7c93ff5ee084453efdfc554e73db736f24b0725",
@@ -271,6 +304,22 @@
       "P06 technical annex"
     ],
     "owner_approved": false,
-    "production_changes": 0
+    "production_changes": 0,
+    "design_fixed_by_owner": [
+      "G14 engine is sole scientific authority",
+      "G15 4-color report palette plus dark chart additions",
+      "G16 real measurement timestamp",
+      "G17 fixed header and spacing",
+      "G18 footer/wordmark"
+    ],
+    "needs_owner_discussion": [
+      "P01 page adaptation",
+      "P02 evidence matrix and conditional fingerprint",
+      "P03 decision rail",
+      "P04 OEL and GHS as conditional reference",
+      "P05 official logo",
+      "P06 technical annex",
+      "P04 graphic placement only, no second analysis gates"
+    ]
   }
 }
