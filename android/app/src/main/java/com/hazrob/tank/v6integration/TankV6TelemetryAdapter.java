@@ -92,8 +92,12 @@ public final class TankV6TelemetryAdapter {
             // clean-air definition is mandatory to prevent false positives.
             if(!"DEVICE_CLEAN_AIR_RS_MEAN".equals(
                     sensor.optString("r0_definition","")))return false;
-            if(sensor.optInt("r0_samples",0)<30 ||
-               sensor.optInt("r0_window_count",0)!=3)return false;
+            int windows=sensor.optInt("r0_window_count",0);
+            int samples=sensor.optInt("r0_samples",0);
+            // The new V6 QUICK R0 is one genuine 60-second Rs_air window,
+            // while old V6 3-window records remain separately qualified.
+            if(!((windows==1&&samples>=10)||
+                 (windows==3&&samples>=30)))return false;
         }
         boolean complete=sensor.optBoolean("r0_provenance_complete",false)||
             (!sensor.optString("r0_session","").isEmpty()&&
