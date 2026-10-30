@@ -33,9 +33,6 @@ public final class V7PhysicalReportPdfWriter {
         V7ReportLayoutKit.mm(20);
     private static final float CONTENT_WIDTH=V7ReportLayoutKit.A4_PORTRAIT_W-2*M;
     private static final float HEADER_H=41f, ROW_H=62f, CHART_H=320f;
-    private static final String[] ICONS={
-        "T","RH","P","LUX","LM","dB","V","RAD","UV","P1","P2","P10","WS","WD","ALT"
-    };
     private static final String[] KEYS={
         "temperature","humidity","pressure","illuminance","luminous_flux",
         "noise","vibration","ionizing_radiation","uv_index","pm1",
@@ -173,16 +170,10 @@ public final class V7PhysicalReportPdfWriter {
         label(c,GROUPS[index],M+8,y+7,CONTENT_WIDTH-16,HEADER_H-10,
             true,true,V7ReportLayoutKit.BLACK);
     }
-    private static void icon(Canvas c,String icon,float x,float y){
-        Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(V7ReportLayoutKit.INK);
-        p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(1.25f);
-        c.drawCircle(x+18,y+30,18,p);
-        label(c,icon,x+2,y+23,32,20,false,true,V7ReportLayoutKit.INK);
-    }
     private static void sensorRow(Canvas c,int idx,float y,Reading r){
         box(c,M,y,CONTENT_WIDTH,ROW_H,Color.WHITE,V7ReportLayoutKit.BLACK);
         float iconStart=M+CONTENT_WIDTH-47;
-        icon(c,ICONS[idx],iconStart,y);
+        V7PhysicalIcons.draw(c,idx,iconStart,y+12,38f);
         float namesX=M+CONTENT_WIDTH-292;
         label(c,PhysicalCatalog.NAMES_AR[idx],namesX+6,y+5,231,25,
             true,true,V7ReportLayoutKit.INK);
