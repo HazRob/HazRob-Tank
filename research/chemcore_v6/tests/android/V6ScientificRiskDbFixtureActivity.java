@@ -810,7 +810,10 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             // capability: source order must not decide the central status.
             JSONArray multiFacts=new JSONArray();
             for(int i=0;i<capabilities.length();i++)
-                multiFacts.put(capabilities.getJSONObject(i));
+                multiFacts.put(i==0
+                    ?new JSONObject(capabilities.getJSONObject(i).toString())
+                        .put("library_status","QUALIFIED")
+                    :capabilities.getJSONObject(i));
             multiFacts.put(new JSONObject()
                 .put("key","fingerprint_reference")
                 .put("text","additional available publisher (test only)")
