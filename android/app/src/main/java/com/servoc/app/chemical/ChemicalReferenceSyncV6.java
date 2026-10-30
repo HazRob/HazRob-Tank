@@ -143,17 +143,16 @@ public final class ChemicalReferenceSyncV6 {
                  "m4_reference".equals(key)))
                 throw new IllegalArgumentException("unsafe scientific field: "+key);
             String authority=required(fact,"source_id",50);
-            if(!("NIST_WEBBOOK".equals(authority)||"PUBCHEM".equals(authority)||
-                 "NIOSH_NPG".equals(authority)||
-                 "HAZROB_RESEARCH".equals(authority)))
-                throw new IllegalArgumentException("unreviewed authority code");
+            // Central ChemCore has already qualified each publication.
+            // Source ID is metadata, NOT an Android authority allow-list.
+            // New source organizations or methods need no APK upgrade.
             String sourceUrl=required(fact,"source_url",300);
-            if(!sourceUrl.startsWith("https://webbook.nist.gov/")&&
-               !sourceUrl.startsWith("https://pubchem.ncbi.nlm.nih.gov/")&&
-               !sourceUrl.startsWith("https://www.cdc.gov/niosh/")&&
-               !sourceUrl.startsWith("https://github.com/HazRob/")&&
-               !sourceUrl.startsWith("https://doi.org/"))
-                throw new IllegalArgumentException("source URL is not an official authority link");
+            // Only transport URL hygiene. The scientifically approved
+            // provenance is decided by the library before publication.
+            java.net.URL cited=new java.net.URL(sourceUrl);
+            if(!"https".equalsIgnoreCase(cited.getProtocol())||
+                cited.getUserInfo()!=null)
+                throw new IllegalArgumentException("invalid HTTPS source metadata");
             double number=Double.NaN;
             String text=null;
             String unit="";
