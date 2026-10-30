@@ -37,7 +37,7 @@ def create_v12_fixture(conn):
         "CREATE TABLE scientific_sources(source_id TEXT PRIMARY KEY,title TEXT)",
         "CREATE TABLE chemical_risk_profiles(chemical_uid INTEGER PRIMARY KEY,early_exposure_fraction REAL,background_status TEXT,review_status TEXT,FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid))",
         "CREATE TABLE exposure_limits(id INTEGER PRIMARY KEY,chemical_uid INTEGER,authority TEXT,source_id TEXT,limit_type TEXT,unit TEXT,value REAL,FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid))",
-        "CREATE TABLE chemical_background_ranges(id INTEGER PRIMARY KEY,chemical_uid INTEGER,range_min REAL,range_max REAL,environment_type TEXT,source_id TEXT,unit TEXT,FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid))",
+        "CREATE TABLE chemical_background_ranges(id INTEGER PRIMARY KEY,chemical_uid INTEGER,range_min REAL,range_max REAL,environment_type TEXT,source_id TEXT,unit TEXT,qualification_status TEXT NOT NULL DEFAULT 'RESEARCH_REFERENCE',FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid))",
         "CREATE TABLE chemical_hazard_boundaries(id INTEGER PRIMARY KEY,chemical_uid INTEGER,hazard_type TEXT,comparison_operator TEXT,threshold REAL,unit TEXT,FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid))",
         "CREATE TABLE chemical_ambient_benchmarks(id INTEGER PRIMARY KEY,chemical_uid INTEGER,nominal_value REAL,FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid))",
         "CREATE TABLE sensor_evidence(id INTEGER PRIMARY KEY,chemical_uid INTEGER,evidence_type TEXT,equation TEXT,status TEXT,FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid))",
