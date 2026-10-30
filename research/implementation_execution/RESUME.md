@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 declared train/test holdout partition diagnostic (CI verification pending)
+
+- Resumed from research commit `05a5aee1da249c790f59b2e8963f52f4ff2d0df4`, whose previous G2 and associated workflows succeeded. Pinned central catalog: 80 technique entries, 14 external dataset slots, 0/14 source-review-ready; `G2_INDEPENDENT_EVIDENCE.json` still `records=[]`. No physical G2/G3 qualification.
+- Added `g2_declared_holdout_partition_audit.py` (research only): explicit train/test/optional validation partitions; fail-closed when partition/session/batch or train/test coverage is absent; direct and transitive cross-partition group/session/batch connectivity; optional exposure and physical sample identity checks; device reuse does not by itself count as leakage; deterministic semantic input SHA256; no independent physical evidence claim.
+- Added 21 synthetic regressions `test_g2_declared_holdout_partition_audit.py`, including NFKC critical header/optional ID aliases, CSV exact-width, missing metadata, direct/transitive cross-partition overlaps, and Arabic IDs. Arabic method note `G2_DECLARED_TRAIN_TEST_PARTITION_OVERLAP_2026-10-30_AR.md`.
+- Initial G2 CI `41062215543` on test commit `4b56c98eaad0fb0a8dd9041ad91135369d95bded` failed 1/504 due to error-code ordering in a synthetic header-alias assertion (the source was correctly rejected by the shared provenance gate); fixed with early critical-header validation. Additional optional-ID fail-closed improvements added thereafter. Do not erase the failed run from audit history.
+- Latest implementation/test commit `5bdac3c6299c01c8f05b735d9397d1708060fff0`; method-document checkpoint `0c10553a4508faf59a5545bb57e6dcab94a4d3bb`. Verify latest G2 Actions `g2-signal-lineage-v4.yml` and all associated workflows before declaring technical success. **No unverified CI pass claimed.**
+- Only `research/implementation_execution/` changed, research branch only. ChemCore Stable, Android, ESP32 firmware, and main untouched. Independent calibrated exposures, authenticated session/sample/device provenance, preregistered blinded physical-group holdouts and independent review are still prerequisites for scientific G2; `g2_pass_candidates=0`, `g2_blocked=80`.
+
+---
+
 ## 2026-10-30 — G2 transitive declared session/batch group connectivity (487/487 CI)
 
 - Resumed from research HEAD `1930b0afba262ee0f1cd950623951ac153a6517c`; previous 20/20 CI workflows SUCCESS. Confirmed pinned central readiness inventory: 14 external source slots, `source_review_ready=0`; `G2_INDEPENDENT_EVIDENCE.json` still `records=[]`. No new independent physical evidence.
