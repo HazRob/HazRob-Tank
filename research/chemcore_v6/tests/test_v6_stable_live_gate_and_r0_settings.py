@@ -29,7 +29,8 @@ class StableLiveGateAndSettings(unittest.TestCase):
         self.assertIn("ChemicalReferenceSyncV6.refresh(",SETTINGS)
         self.assertIn("host.refreshAllTabs()",SETTINGS)
         self.assertNotIn("libraryManager.install(c,ReleaseAudit.VERSION,false)",SETTINGS)
-        self.assertIn("()->ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())",STATUS)
+        self.assertIn("ChemicalReferenceSyncV6.refresh(",STATUS)
+        self.assertIn("host.refreshAllTabs()",STATUS)
         self.assertNotIn("libraryUpdater.install(checked,ReleaseAudit.VERSION,\n                        ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()))",STATUS)
 
 if __name__=="__main__":
