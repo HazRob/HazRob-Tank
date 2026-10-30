@@ -276,6 +276,19 @@ public final class V6MultiSessionSiteFixtureActivity extends Activity {
         // CI-only disposable emulator database: never load a person's real DB.
         deleteDatabase("servoc.db");
         try(ExperimentsDb db=new ExperimentsDb(this)){
+            SQLiteDatabase v14=db.getWritableDatabase();
+            require(v14.getVersion()==14,
+                "approved field export must run on current V14 database, not stale V10");
+            try(Cursor count=v14.rawQuery(
+                    "SELECT COUNT(*) FROM v14_unified_chemical_catalog",null);
+                Cursor columns=v14.rawQuery(
+                    "SELECT COUNT(*) FROM pragma_table_info('v14_unified_chemical_catalog')",
+                    null)){
+                require(count.moveToFirst()&&count.getInt(0)==144,
+                    "V14 field fixture starts with 144 canonical legacy UIDs");
+                require(columns.moveToFirst()&&columns.getInt(0)==97,
+                    "V14 unified view retains 97 material fields during approved exports");
+            }
             fixture(db);
             addSecondApprovedSession(db);
             SQLiteDatabase original=db.getWritableDatabase();
@@ -375,6 +388,8 @@ public final class V6MultiSessionSiteFixtureActivity extends Activity {
                 .put("site_reportable_ppm",false).put("schema","tank-v6-n06g-android-full-approval/1")
                 .put("production_facade_exercised","FieldSessionReportExporter.writePdf+writeXlsx")
                 .put("real_approved_v10_sqlite_fixture",true)
+                .put("runtime_sqlite_schema_version",14)
+                .put("v14_unified_catalog_columns",97)
                 .put("synthetic_test_rows",16)
                 .put("approved_gas_cycles",1)
                 .put("independent_source_sensor_models",8)
