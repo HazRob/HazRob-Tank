@@ -60,13 +60,10 @@ class DeclaredProvenanceDuplicateRowsTests(unittest.TestCase):
     def test_csv_quoted_fields_and_repeated_rows(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'declared.csv'
-            path.write_text('group_id,session_id,exposure_batch_id,device_id,tag\\n'
-                            'g1,s1,b1,d1,"alpha,beta"\\n'
-                            'g1,s1,b1,d1,"alpha,beta"\\n'
-                            'g2,s2,b2,d1,"alpha,gamma"\\n',
-                            encoding='utf-8')
-            # Construct literal line endings rather than escaped backslash-n.
-            path.write_text(path.read_text(encoding='utf-8').replace('\\\\n', '\\n'),
+            path.write_text('group_id,session_id,exposure_batch_id,device_id,tag\n'
+                            'g1,s1,b1,d1,"alpha,beta"\n'
+                            'g1,s1,b1,d1,"alpha,beta"\n'
+                            'g2,s2,b2,d1,"alpha,gamma"\n',
                             encoding='utf-8')
             out = audit_csv(path)
             self.assertEqual(out['rows'], 3)
