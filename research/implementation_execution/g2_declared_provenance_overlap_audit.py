@@ -52,6 +52,61 @@ def _reject_nfkc_aliases(rows, columns):
             folded_values[folded] = value
 
 
+def _declared_session_batch_connectivity(rows, columns):
+    """Group connected components from shared *declared* sessions or batches.
+
+    Connectivity is a conservative holdout-design diagnostic, not a claim
+    that connected groups share physical exposures or that disconnected
+    groups are physically independent. Device reuse never creates an edge.
+    If either provenance column is absent, the audit is unverified.
+    """
+    result = {
+        'checked': False, 'components': None, 'component_count': None,
+        'multi_group_component_count': None, 'largest_component_groups': None,
+        'requires_holdout_split_protocol_review': None,
+        'device_reuse_does_not_create_edges': True,
+        'not_physical_independence_evidence': True,
+    }
+    if not {'session_id', 'exposure_batch_id'}.issubset(columns):
+        return result
+    groups = sorted({row['group_id'] for row in rows})
+    parent = {group: group for group in groups}
+
+    def root(group):
+        while parent[group] != group:
+            parent[group] = parent[parent[group]]
+            group = parent[group]
+        return group
+
+    def join(first, second):
+        a, b = root(first), root(second)
+        if a != b:
+            parent[max(a, b)] = min(a, b)
+
+    for field in ('session_id', 'exposure_batch_id'):
+        first_group_for_id = {}
+        for row in rows:
+            identifier, group = row[field], row['group_id']
+            if identifier in first_group_for_id:
+                join(first_group_for_id[identifier], group)
+            else:
+                first_group_for_id[identifier] = group
+    connected = defaultdict(list)
+    for group in groups:
+        connected[root(group)].append(group)
+    components = sorted((sorted(members) for members in connected.values()),
+                        key=lambda members: members[0])
+    multi = sum(len(members) > 1 for members in components)
+    result.update({
+        'checked': True, 'components': components,
+        'component_count': len(components),
+        'multi_group_component_count': multi,
+        'largest_component_groups': max(map(len, components)),
+        'requires_holdout_split_protocol_review': bool(multi),
+    })
+    return result
+
+
 def audit_declared_overlap(rows, columns):
     """Return deterministic overlap counts for *declared* provenance only.
 
@@ -122,6 +177,8 @@ def audit_declared_overlap(rows, columns):
     result['declared_rows_per_group'] = dict(sorted(Counter(
         row['group_id'] for row in rows).items()))
     result['duplicate_metadata_is_not_independent_evidence'] = True
+    result['declared_session_batch_connectivity'] = (
+        _declared_session_batch_connectivity(rows, columns))
     result['declared_rows_semantic_sha256'] = hashlib.sha256(
         json.dumps(sorted(payload), ensure_ascii=False,
                    separators=(',', ':')).encode('utf-8')).hexdigest()
