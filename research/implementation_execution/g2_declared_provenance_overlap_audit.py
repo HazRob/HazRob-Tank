@@ -9,7 +9,7 @@ import hashlib
 import io
 import json
 import unicodedata
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 FIELDS = ('session_id', 'exposure_batch_id', 'device_id')
@@ -109,7 +109,19 @@ def audit_declared_overlap(rows, columns):
     if len(relevant_flags) == 2:
         result['potential_session_or_batch_group_overlap'] = any(relevant_flags)
     # Explicitly preserve uncertainty if either relevant provenance column is absent.
+    # Exact repeated *declared* records cannot be counted as independent
+    # physical samples without authenticated sample/exposure provenance.
+    # These diagnostics do not infer whether repetition is legitimate.
     payload = [sorted(row.items()) for row in rows]
+    serialized = [json.dumps(items, ensure_ascii=False,
+                             separators=(',', ':')) for items in payload]
+    frequencies = Counter(serialized)
+    result['unique_declared_rows'] = len(frequencies)
+    result['exact_duplicate_declared_rows'] = sum(n - 1 for n in frequencies.values())
+    result['repeated_declared_row_patterns'] = sum(n > 1 for n in frequencies.values())
+    result['declared_rows_per_group'] = dict(sorted(Counter(
+        row['group_id'] for row in rows).items()))
+    result['duplicate_metadata_is_not_independent_evidence'] = True
     result['declared_rows_semantic_sha256'] = hashlib.sha256(
         json.dumps(sorted(payload), ensure_ascii=False,
                    separators=(',', ':')).encode('utf-8')).hexdigest()
