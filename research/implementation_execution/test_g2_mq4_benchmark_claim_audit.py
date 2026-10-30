@@ -1,5 +1,7 @@
 """Synthetic negative controls; original raw archive is verified locally, not in CI."""
 import io
+import hashlib
+from pathlib import Path
 import json
 import unittest
 import zipfile
@@ -109,6 +111,19 @@ class TestExternalMQ4ClaimReconciliation(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'SCIENTIFIC_BOUNDARY_INVALID'):
             run(a, s)
 
+
+    def test_pinned_raw_replay_report_bytes_and_nonpromotion(self):
+        raw = (Path(__file__).parent /
+               'G2_MQ4_EXTERNAL_BENCHMARK_CLAIM_RECONCILIATION_2026-10-30.json').read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'c984723c246b219877cf9e0fc79357da205d032d1104aaaa18ccc4fa921130fb')
+        report = json.loads(raw)
+        self.assertEqual((report['source_rows'], report['source_days'],
+                          report['source_reference_positive_4ppm']), (14186, 11, 2346))
+        self.assertEqual(len(report['model_claim_arithmetic']), 5)
+        self.assertFalse(report['model_predictions_independently_replayed'])
+        self.assertFalse(report['tank_g2_qualified'])
+        self.assertFalse(report['tank_g3_qualified'])
 
 if __name__ == '__main__':
     unittest.main()
