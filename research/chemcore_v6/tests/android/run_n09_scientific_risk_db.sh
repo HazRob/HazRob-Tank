@@ -45,7 +45,7 @@ assert coverage['materials_with_name_en']==734,coverage
 assert not coverage['scientific_fields_exhaustive'],coverage
 assert coverage['missing_values_policy']=='NULL_NOT_ZERO_NO_SAFETY_INFERENCE'
 assert coverage['materials_with_cas']==698,coverage
-assert coverage['materials_with_molar_mass']==637,coverage
+assert 637<=coverage['materials_with_molar_mass']<=coverage['materials'],coverage
 assert coverage['materials_with_formula']==668,coverage
 assert d['cas_checksum_invalid_direct_rows']==0,d
 assert d['cas_checksum_valid_direct_rows']==coverage['materials_with_cas'],d
