@@ -20,6 +20,8 @@ import json
 p='/tmp/v6-n09-scientific-risk/n09_scientific_risk_db.json'
 d=json.load(open(p));print(json.dumps(d,indent=2))
 assert d['status']=='PASS',d
+assert d['central_published_capability_sync_e2e']==(
+    'PASS_STAGED_FOUR_CAPABILITIES_WITHDRAW_THREE_NO_REQUALIFICATION'),d
 assert d['sqlite_version']==14
 assert d['covered_profiles']==d['post_authority_import_materials']>=652
 assert d['unified_chemical_menu_rows']==d['unique_master_uids']==d['covered_profiles']
