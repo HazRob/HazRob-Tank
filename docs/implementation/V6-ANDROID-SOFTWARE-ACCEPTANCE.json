@@ -30,7 +30,7 @@
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "CONDITIONAL_DELIVERY_AUTHORIZATION_DOCUMENTED; STABLE_N15_30_PASS N14_29_PASS N09_168_PASS; CAM_V6_CANDIDATE_AND_ESP32_CONTROLLER_COMPILE_BOTH_PASS_NO_HW; FULL_GATES_NO_RELEASE",
+  "latest_scope": "V6_GITHUB_N16_ONLINE_QA_EMULATOR_RETEST; ABSOLUTE_MATCHING_V4_OR_V5_SIGNER_ENFORCED_IN_FINAL_APK_WORKFLOW; NO_RELEASE",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -230,5 +230,16 @@
     "esp32_camera_actual_fps": "NOT_MEASURED",
     "ready_for_public_release": false,
     "owner_instruction": "FINAL_ARDUINO_ZIP_AND_FIRMWARE_COMPILATION_AFTER_ALL_V6_GATES"
+  },
+  "release_signing_v6": {
+    "policy": "MATCH_INSTALLED_ANDROID_APK_CERT_OR_ABORT_NO_FRESH_DEBUG_KEY_AS_UPDATE",
+    "known_v4_sha256": "799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6",
+    "known_v5_sample_sha256": "97F0E315449BB369D1C2042CD092E73E422CE9718406D93F8CCB1E40C6921BD1",
+    "target_installed_apk_certificate_sha256": null,
+    "matching_private_key_in_ci_confirmed": false,
+    "final_apk_signer_verified": false,
+    "v5_upgrade_possible": "UNKNOWN_UNTIL_MATCHING_PRIVATE_KEY_IS_AVAILABLE",
+    "status": "BLOCKED_PENDING_INSTALLED_APP_CERT_AND_MATCHING_SIGNING_KEY",
+    "allowed_release": "ONLY_AFTER_MATCHING_CERT_AND_FULL_SOFTWARE_GATE"
   }
 }
