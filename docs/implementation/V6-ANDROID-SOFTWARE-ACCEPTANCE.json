@@ -22,15 +22,15 @@
   ],
   "status": "IN_PROGRESS_RETEST_REQUIRED",
   "last_known_source_compiles": {
-    "run": 41008984933,
+    "run": 41010932844,
     "status": "success",
-    "source_commit": "fb9bc80d4c10dbb7a7259c2be70a01b5bd2950d1",
-    "scope": "FULL_ANDROID_JAVA_COMPILE_NO_APK_NO_HARDWARE"
+    "source_commit": "d31b588537fdbcea06bbf94844e25620645e647d",
+    "scope": "FULL_ANDROID_JAVA_COMPILE_NO_PRODUCTION_APK_NO_HARDWARE"
   },
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "N10D_AND_R0_PERSISTENCE_INTERRUPTED_NVS_AND_UNKNOWN_WINDOW_FIXES_VERIFIED_SOURCE_CI; FULL_UI_AND_STABLE_REMOTE_PENDING",
+  "latest_scope": "V14_PUBCHEM_CAS_MATCHED_FORMULA_MASS_PROJECTED_668_610_UID734; CLEAN_AIR_R0_SOURCE_GATES_RETESTED; A01_A14_STILL_OPEN_NO_RELEASE",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -92,6 +92,39 @@
     "emulator_chemical_library_result": "PASS_BEFORE_FINAL_METADATA_LOAD_PATCH",
     "hardware_test_status": "NOT_PERFORMED",
     "full_v6_ui_acceptance": "OPEN",
-    "firmware_delivery": "NOT_RELEASED"
+    "firmware_delivery": "NOT_RELEASED",
+    "emulator_after_r0_source_gate_run": 41010457166,
+    "emulator_after_r0_source_gate_result": "PASS",
+    "latest_source_gate_commit": "717d9c3248482d04ab143f0be03ef655e73a84d0"
+  },
+  "chemical_field_coverage_v14": {
+    "audit_source": "REAL_ANDROID_12_EMULATOR_SQLITE_V14",
+    "date": "2026-10-30",
+    "canonical_uid_rows": 734,
+    "unique_uids": 734,
+    "cas_present": 671,
+    "english_names_present": 734,
+    "arabic_names_present": 0,
+    "molecular_formula_before": 136,
+    "molecular_formula_after": 668,
+    "molar_mass_before": 0,
+    "molar_mass_after": 610,
+    "materials_with_lfl": 213,
+    "materials_with_ufl": 179,
+    "materials_with_occupational_limit": 473,
+    "materials_with_mq_curve": 13,
+    "source_mq_curve_rows": 49,
+    "source_hazard_classification_materials": 4,
+    "actual_Tank_G3": 0,
+    "known_inapplicable_single_CAS_groups": 9,
+    "research_CAS_individual_missing": 54,
+    "scientific_fields_complete": false,
+    "source_qualifier": "CAS_MATCHED_PUBCHEM_A_SOURCE_ONLY",
+    "full_android_coverage_audit_run": 41010753607,
+    "post_detail_replay_run": 41010820593,
+    "source_tests_run": 41010901832,
+    "android_compile_run": 41010932844,
+    "evidence": "docs/implementation/V6-CATALOG-ENRICHMENT-AND-RELEASE-CHECKPOINT-2026-10-30_AR.md",
+    "release_authorization": "NO_RELEASE"
   }
 }
