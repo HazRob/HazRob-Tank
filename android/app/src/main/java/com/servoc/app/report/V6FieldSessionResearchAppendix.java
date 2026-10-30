@@ -97,10 +97,18 @@ public final class V6FieldSessionResearchAppendix {
         JSONArray entries=new JSONArray();
         // Scan only approved gas-including acquisitions already verified by
         // the report resolver; never include failed, deleted or superseded cycles.
-        int eligibleCycles=0;
+        int eligibleCycles=0,unverifiableLegacyCycles=0;
         FieldCycleRepository verifier=new FieldCycleRepository(db);
         for(FieldCycleRepository.Cycle cycle:approved.cycleLedger){
             if(!cycle.approved()||!cycle.modes.gas)continue;
+            // V9 LEGACY_APPROVED records have no canonical SHA-256.
+            // The legacy verifier returns true by its historical policy,
+            // which MUST NOT be mistaken for physical source provenance G3.
+            // Preserve their V5 reports, but do not replay into new V6.
+            if("LEGACY_APPROVED".equals(cycle.state)){
+                unverifiableLegacyCycles++;
+                continue;
+            }
             String sid=cycle.measurementId;
             if(!approved.measurementSessionIds.contains(sid))
                 throw new IllegalStateException("Approved gas cycle missing from bundle");
@@ -116,6 +124,9 @@ public final class V6FieldSessionResearchAppendix {
             eligibleCycles++;
         }
         root.put("approved_gas_cycles",eligibleCycles);
+        root.put("legacy_approved_gas_cycles_without_sha_skipped",unverifiableLegacyCycles);
+        root.put("legacy_skipped_reason",
+            "V9_LEGACY_APPROVED_HAS_NO_CANONICAL_SHA256_NOT_ELIGIBLE_FOR_NEW_V6_REPLAY");
         root.put("cycles",entries);
         return root;
     }
