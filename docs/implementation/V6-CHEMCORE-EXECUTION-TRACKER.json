@@ -842,5 +842,39 @@
       "KNN/logistic numeric scores are not Tank-calibrated identity probabilities",
       "Food module intentionally excluded"
     ]
+  },
+  "release_v6_hardware_r0_deferral": {
+    "decision_date": "2026-10-30",
+    "decision": "USER_APPROVED_DEFER_ACTUAL_TANK_R0_RS_COMPARISON_UNTIL_AFTER_V6_APP_RELEASE",
+    "scope": [
+      "actual device R0 readings and unknown historical R0 definition",
+      "factory/literature vs actual Tank R0 and Rs comparison",
+      "real clean-air baseline verification with instrumented reference",
+      "sensor-specific empirically learned normal-air envelopes",
+      "physical G3 experimental calibration"
+    ],
+    "does_not_block": [
+      "offline V6 APK source and build tests",
+      "actual Android emulator migrations and software source curve audit",
+      "R0 calibration UI and firmware protocol compile and numerical validation",
+      "version-independent app to ESP32 entry with transport and motion safety",
+      "single canonical 734-chemical source-qualified catalog"
+    ],
+    "release_guardrails": [
+      "missing physical R0 is never imputed from research tables or old firmware",
+      "experimental ChemCore outputs remain research hypotheses, not confirmed identity or certified ppm",
+      "no false oxygen enrichment or GHS report badges inferred from unqualified MQ hypotheses",
+      "gas-specific hazard and safety-grade alarms disabled until separately qualified and authorized",
+      "R0 entry and telemetry retain unqualified/not measured states"
+    ],
+    "after_release_evidence": [
+      "actual device per-sensor Rs and R0 values in kOhm",
+      "firmware calibration definition and revision for measurements",
+      "ambient temperature, relative humidity, heater protocol and sample counts",
+      "clean-air source and independent instrument reference where available"
+    ],
+    "g3_validated_techniques": 0,
+    "gate": "DEFER_HARDWARE_G3_NOT_THE_V6_SOFTWARE_BUILD",
+    "completed": false
   }
 }
