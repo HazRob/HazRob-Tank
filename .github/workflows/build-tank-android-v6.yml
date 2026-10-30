@@ -107,8 +107,9 @@ jobs:
           # give it the official READ-ONLY HazRob GitHub publication channel.
           # No payload is adopted until the manifest and SHA-256 pass checks.
           stable_url="https://raw.githubusercontent.com/HazRob/HazRob-Tank/main/updates/chemcore-stable/manifest.json"
-          pattern="buildConfigField 'String', 'CHEMCORE_LIBRARY_MANIFEST_URL', '\\"\\"'"
-          replacement="buildConfigField 'String', 'CHEMCORE_LIBRARY_MANIFEST_URL', '\\\""+stable_url+"\\\"'"
+          key="buildConfigField 'String', 'CHEMCORE_LIBRARY_MANIFEST_URL', "
+          pattern=key+"'"+chr(34)*2+"'"
+          replacement=key+"'"+chr(34)+stable_url+chr(34)+"'"
           assert pattern in s, 'Pinned Stable channel config changed'
           s=s.replace(pattern,replacement)
           s=s.replace("debug { signingConfig signingConfigs.prototype }","debug { }")
