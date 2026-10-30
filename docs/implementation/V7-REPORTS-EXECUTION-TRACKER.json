@@ -1,0 +1,193 @@
+{
+  "schema": "hazrob-tank-v7-reports-tracker/1",
+  "created_utc": "2026-10-30",
+  "repository": "HazRob/HazRob-Tank",
+  "branch": "feature/tank-v7-reports",
+  "baseline_branch": "feature/tank-v6-implementation",
+  "baseline_commit": "cf818a9e2ea1064da37f0d9fdf6beb0de4847250",
+  "focus": "Android PDF report design, authentic chart/analysis presentation and evidence integrity",
+  "state": "REPORTS_DESIGN_TRACK_OPEN",
+  "app_version_target": "7.0-dev (planned, not changed in source)",
+  "last_packaged_app_version": "6.0 diagnostic",
+  "firmware_change_scope": "NONE",
+  "release": {
+    "apk_built": false,
+    "production_release_authorized": false,
+    "hardware_g3_techniques_validated": 0,
+    "approval_required": true,
+    "ci_quality_gate": "pending",
+    "note": "V6 has not completed production acceptance; V7 branch is report-design work only."
+  },
+  "initial_inventory": [
+    {
+      "id": "R01",
+      "name_ar": "القياس الآني للغازات",
+      "entry": "TankInstantReportPdf.write",
+      "page": "A4 portrait",
+      "family": "gas"
+    },
+    {
+      "id": "R02",
+      "name_ar": "القياسات الفيزيائية",
+      "entry": "TankPhysicalSnapshotPdf.write",
+      "page": "A4 portrait",
+      "family": "physical"
+    },
+    {
+      "id": "R03",
+      "name_ar": "الجلسة الميدانية المعتمدة",
+      "entry": "FieldSessionReportExporter.writePdf -> SmartFieldSessionPdfWriter.writePdf",
+      "page": "A4 landscape, multipage",
+      "family": "field"
+    },
+    {
+      "id": "R04",
+      "name_ar": "التقرير التجميعي للموقع",
+      "entry": "SiteSummaryReportExporter.writePdf",
+      "page": "A4 landscape, multipage",
+      "family": "site"
+    },
+    {
+      "id": "R05",
+      "name_ar": "نضارة الفواكه",
+      "entry": "FoodFreshnessPdf.save",
+      "page": "A4 portrait",
+      "family": "food"
+    },
+    {
+      "id": "R06",
+      "name_ar": "نضارة اللحوم",
+      "entry": "BeefResearchPdf.save",
+      "page": "A4 portrait",
+      "family": "food"
+    }
+  ],
+  "inventory_limitation": "Six V6 overlay production PDF routes confirmed. Original Android baseline and PM-specific pathways require follow-up audit; research appendix is embedded inside R03.",
+  "decisions": [
+    {
+      "id": "D01",
+      "text": "Separate V7 development branch; do not modify V6, main, or original wheeled app.",
+      "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "D02",
+      "text": "Report design and visualization is V7 main focus.",
+      "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "D03",
+      "text": "Preserve source data, reported evidence tier, uncertainty, G3=0 and protected field approvals.",
+      "status": "INHERITED_SCIENTIFIC_SAFETY_CONTRACT"
+    },
+    {
+      "id": "D04",
+      "text": "Use same actual Android report generators for previews and tests; no lookalike templates.",
+      "status": "INHERITED_USER_REQUIREMENT"
+    },
+    {
+      "id": "D05",
+      "text": "No automatic adoption of 4x2/8-per-page infographic layout in field reports.",
+      "status": "AWAITING_OWNER_DESIGN_REVIEW"
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "V7-R00",
+      "name": "Branch / docs / V6 baseline freeze",
+      "status": "DONE",
+      "evidence": [
+        "branch created at cf818a9e2ea1064da37f0d9fdf6beb0de4847250",
+        "docs/implementation/V7-REPORTS-DEVELOPMENT-START-2026-10-30_AR.md commit 74f3cb77e6dbcc41ca1e537c6ca97b40cecf18c5",
+        "README.md commit ad915e5978d1a826443a2e16de781111d0d2bb84"
+      ]
+    },
+    {
+      "id": "V7-R01",
+      "name": "Exhaustive source and UI routing inventory including inherited PM",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R02",
+      "name": "Page-by-page visual/semantic audit of six existing PDFs and any additional discovered",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R03",
+      "name": "Data-provenance and chart eligibility registry for relevant analytical diagrams",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R04",
+      "name": "Owner review and decision on A4 layout/theme/typography/chart density",
+      "status": "PENDING_OWNER_REVIEW"
+    },
+    {
+      "id": "V7-R05",
+      "name": "Evidence semantics and safe scientific report content contract",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R06",
+      "name": "New V7 instant and physical PDF production layouts",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R07",
+      "name": "New V7 approved field session PDF production layout",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R08",
+      "name": "New V7 site comparison PDF production layout",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R09",
+      "name": "New V7 fruit/meat PDF production layouts preserving separate food engine",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R10",
+      "name": "Immutable database / matching report XLSX evidence validation",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R11",
+      "name": "Android 12 PDF render QA; RTL legibility; multipage stress",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R12",
+      "name": "Six or more authentic Android PDF sample outputs and ZIP, after source approval",
+      "status": "TODO"
+    },
+    {
+      "id": "V7-R13",
+      "name": "Release acceptance and explicit owner APK authorization",
+      "status": "BLOCKED"
+    }
+  ],
+  "sources": [
+    {
+      "kind": "production_code",
+      "ref": "android/app/src/main/java/com/servoc/app/report/"
+    },
+    {
+      "kind": "production_code",
+      "ref": "android/app/src/main/java/com/hazrob/tank/foodfreshness/"
+    },
+    {
+      "kind": "qa",
+      "run": 41124888027,
+      "status": "SUCCESS",
+      "description": "Six V6 original Android PDF production writers exercised with clearly synthetic fixture"
+    },
+    {
+      "kind": "baseline",
+      "ref": "docs/implementation/V6-ANDROID-SOFTWARE-ACCEPTANCE.json",
+      "state": "NO_RELEASE"
+    }
+  ],
+  "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
+  "latest_documented_change": "V7-R00 established, no production Java changes, no APK built."
+}
