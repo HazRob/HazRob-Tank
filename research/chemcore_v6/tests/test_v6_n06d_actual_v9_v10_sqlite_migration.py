@@ -125,6 +125,22 @@ def fixture():
     return conn, hashes, initial_counts, v9, v10, backfill, java_sha
 
 class ActualV9ToV10Migrator(unittest.TestCase):
+    def test_archived_source_tampering_is_detectable_without_mutation(self):
+        conn, before, counts, v9, v10, backfill, java_sha=fixture()
+        original=before["telemetry_samples"]
+        self.assertEqual(counts["telemetry_samples"],84)
+        # A single tampered Rs stored in V9 must change its source hash.
+        conn.execute("UPDATE telemetry_samples SET mq_payload=? WHERE id=1",
+                     ('{"mq4":{"scan_cycle":0,"rs":999999,"ok":true}}',))
+        self.assertNotEqual(original,digest_rows(conn,"telemetry_samples"))
+        conn.rollback()
+        # Recreate a pristine source instead of pretending rollback restores
+        # fixture data which was committed before deliberate mutation.
+        conn.close()
+        pristine, original_hashes, _, _, _, _, _=fixture()
+        self.assertEqual(original, digest_rows(pristine,"telemetry_samples"))
+        pristine.close()
+
     def test_actual_canonical_Java_SQL_and_no_destructive_changes(self):
         conn, before, counts, v9, v10, backfill, java_sha=fixture()
         self.assertEqual(conn.execute("PRAGMA user_version").fetchone()[0],9)
