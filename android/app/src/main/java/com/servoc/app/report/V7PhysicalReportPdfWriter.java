@@ -32,7 +32,7 @@ public final class V7PhysicalReportPdfWriter {
     private static final float CONTENT_BOTTOM=V7ReportLayoutKit.A4_PORTRAIT_H-
         V7ReportLayoutKit.mm(20);
     private static final float CONTENT_WIDTH=V7ReportLayoutKit.A4_PORTRAIT_W-2*M;
-    private static final float HEADER_H=41f, ROW_H=62f, CHART_H=194f;
+    private static final float HEADER_H=41f, ROW_H=62f, CHART_H=320f;
     private static final String[] ICONS={
         "T","RH","P","LUX","LM","dB","V","RAD","UV","P1","P2","P10","WS","WD","ALT"
     };
@@ -245,7 +245,7 @@ public final class V7PhysicalReportPdfWriter {
                     } else if(e.itemId.startsWith("chart-")){
                         int i=Integer.parseInt(e.itemId.substring(6));
                         V7ReportLayoutKit.blankChart(canvas,
-                            new RectF(M,e.topPt,M+CONTENT_WIDTH,e.topPt+e.heightPt),
+                            new RectF(M,e.topPt+4,M+CONTENT_WIDTH,e.topPt+e.heightPt-4),
                             CHART_TITLES[i],CHART_X[i],CHART_Y[i]);
                     }
                 }
