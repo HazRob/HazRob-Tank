@@ -66,6 +66,18 @@ public final class ChemicalSeedBootstrap {
                 "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
         }
 
+        // Source-checked correction of TWO malformed CAS tokens from the
+        // imported scientific seed. Keep the invalid originals in an audit
+        // table and never reintroduce them into identifier/search indices.
+        try{
+            ChemicalCasCorrectionV6.Result repairs=
+                ChemicalCasCorrectionV6.ensure(db);
+            db.putMeta("v6_invalid_cas_source_repairs",repairs.summary());
+        }catch(Exception e){
+            db.putMeta("v6_invalid_cas_source_repairs",
+                "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
+        }
+
         ExposureSeedBootstrap.ensureNioshIdlh(context,db);
 
         // Tank V6 scientific risk inventory: load authoritative OSHA Z-1 occupational
