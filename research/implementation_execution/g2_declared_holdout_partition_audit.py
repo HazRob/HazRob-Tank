@@ -13,7 +13,7 @@ from pathlib import Path
 
 from g2_declared_provenance_overlap_audit import audit_declared_overlap, _valid_id
 
-PARTITIONS = frozenset(('train', 'validation', 'test'))
+PARTITIONS = frozenset(('train', 'validation', 'calibration', 'test'))
 KEYS = ('group_id', 'session_id', 'exposure_batch_id',
         'exposure_id', 'physical_sample_id', 'device_id')
 
@@ -54,6 +54,12 @@ def audit_declared_holdout(rows, columns):
         'checked': False,
         'reason': None,
         'partition_labels': None,
+        'declared_rows_per_partition': None,
+        'declared_groups_per_partition': None,
+        'calibration_partition_declared': None,
+        'calibration_partition_absent_requires_g2_protocol_review': None,
+        'test_has_two_declared_groups_for_cluster_uncertainty': None,
+        'declared_group_counts_do_not_verify_physical_independence': True,
         'cross_partition_ids': None,
         'cross_partition_components': None,
         'potential_partition_overlap': None,
@@ -71,6 +77,22 @@ def audit_declared_holdout(rows, columns):
         raise ValueError('G2_HOLDOUT_PARTITION_LABEL_INVALID')
     labels = sorted({row['partition'] for row in rows})
     out['partition_labels'] = labels
+    # Calibration/threshold selection must not be silently folded into train
+    # or test. Counts are of *declared* groups, not authenticated exposures.
+    out['declared_rows_per_partition'] = {
+        label: sum(r['partition'] == label for r in rows) for label in labels
+    }
+    out['declared_groups_per_partition'] = {
+        label: len({r['group_id'] for r in rows if r['partition'] == label})
+        for label in labels
+    }
+    out['calibration_partition_declared'] = 'calibration' in labels
+    out['calibration_partition_absent_requires_g2_protocol_review'] = (
+        'calibration' not in labels
+    )
+    out['test_has_two_declared_groups_for_cluster_uncertainty'] = (
+        out['declared_groups_per_partition'].get('test', 0) >= 2
+    )
     if not {'session_id', 'exposure_batch_id'}.issubset(columns):
         out['reason'] = 'SESSION_OR_BATCH_PROVENANCE_ABSENT'
         return out
