@@ -229,8 +229,8 @@ void measureUpdate(){if(stage!=MEASURE)return;uint32_t n=millis();measureElapsed
 constexpr float cleanAir[Cfg::MQ_N]={9.83f,4.4f,6.5f,70.0f,60.0f,27.5f,9.6f,3.6f};
 enum CalState:uint8_t{CAL_IDLE,CAL_WARM,CAL_SAMPLE,CAL_READY,CAL_ERROR,CAL_CANCEL,CAL_PENDING,CAL_REST};
 CalState calState=CAL_IDLE;
-uint32_t calAt=0,calLastCycle=0,calWarmMs=300000,calWindowMs=60000;
-bool calV6ThreeWindow=false,r0LoadedV6=false;
+uint32_t calAt=0,calLastCycle=0,calWarmMs=180000,calWindowMs=60000;
+bool calV6ThreeWindow=false,calV6SingleWindow=false,r0LoadedV6=false,r0LoadedV6Quick=false;
 uint8_t calV6Window=0;
 constexpr uint32_t CAL_V6_REST_MS=180000UL,CAL_V6_WINDOW_MS=180000UL;
 double calV6Sums[Cfg::MQ_N][3]={};
@@ -242,6 +242,7 @@ struct R0Record{uint32_t magic;float values[Cfg::MQ_N];uint32_t counts[Cfg::MQ_N
 R0Record pendingR0={};bool pendingR0Valid=false;
 constexpr uint32_t R0_MAGIC=0x52305634UL;
 constexpr uint32_t R0_MAGIC_V6=0x52305636UL;
+constexpr uint32_t R0_MAGIC_V6_QUICK=0x52305637UL;
 uint32_t r0Checksum(const R0Record& rec){
  const uint8_t* p=(const uint8_t*)&rec;uint32_t h=2166136261UL;
  for(size_t i=0;i<sizeof(rec)-sizeof(rec.checksum);i++){h^=p[i];h*=16777619UL;}return h;
@@ -250,13 +251,14 @@ uint32_t r0Checksum(const R0Record& rec){
 // the last complete slot. Legacy V4 NVS is read-only fallback for migration.
 constexpr uint32_t R0_SLOT_MAGIC=0x52305335UL;
 constexpr uint32_t R0_SLOT_MAGIC_V6=0x52305336UL;
+constexpr uint32_t R0_SLOT_MAGIC_V6_QUICK=0x52305337UL;
 struct R0Slot{uint32_t magic;uint32_t generation;R0Record record;uint32_t checksum;};
 uint32_t r0SlotChecksum(const R0Slot& slot){
  const uint8_t* b=(const uint8_t*)&slot;uint32_t h=2166136261UL;
  for(size_t i=0;i<sizeof(slot)-sizeof(slot.checksum);i++){h^=b[i];h*=16777619UL;}return h;
 }
 bool validR0Record(const R0Record& r){
- if((r.magic!=R0_MAGIC&&r.magic!=R0_MAGIC_V6)||
+ if((r.magic!=R0_MAGIC&&r.magic!=R0_MAGIC_V6&&r.magic!=R0_MAGIC_V6_QUICK)||
     r.checksum!=r0Checksum(r))return false;
  for(uint8_t i=0;i<Cfg::MQ_N;i++)
   if(r.counts[i]<(r.magic==R0_MAGIC_V6?30U:10U)||!ff(r.values[i])||r.values[i]<=0)return false;
@@ -265,11 +267,13 @@ bool validR0Record(const R0Record& r){
 bool loadR0Slot(const char* key,R0Slot& slot){
  if(nv.getBytesLength(key)!=sizeof(slot))return false;
  if(nv.getBytes(key,&slot,sizeof(slot))!=sizeof(slot))return false;
+ const bool v6Quick=strcmp(key,"r0_v6q_a")==0||strcmp(key,"r0_v6q_b")==0;
  const bool v6=strcmp(key,"r0_v6_a")==0||strcmp(key,"r0_v6_b")==0;
- return slot.magic==(v6?R0_SLOT_MAGIC_V6:R0_SLOT_MAGIC)&&
+ return slot.magic==(v6Quick?R0_SLOT_MAGIC_V6_QUICK:
+                      v6?R0_SLOT_MAGIC_V6:R0_SLOT_MAGIC)&&
         slot.generation>0&&slot.checksum==r0SlotChecksum(slot)&&
         validR0Record(slot.record)&&
-        (v6==(slot.record.magic==R0_MAGIC_V6));
+        slot.record.magic==(v6Quick?R0_MAGIC_V6_QUICK:v6?R0_MAGIC_V6:R0_MAGIC);
 }
 bool newerR0Generation(uint32_t a,uint32_t b){
  return (int32_t)(a-b)>0;
@@ -277,6 +281,13 @@ bool newerR0Generation(uint32_t a,uint32_t b){
 bool loadR0Record(R0Record& rec){
  // New V6 storage: mean Rs in the device's declared reference air. It is
  // intentionally NOT compatible with older (Rs_air/factory_factor) records.
+ R0Slot q1={},q2={};
+ bool vq1=loadR0Slot("r0_v6q_a",q1),vq2=loadR0Slot("r0_v6q_b",q2);
+ if(vq1||vq2){
+  rec=vq1&&(!vq2||!newerR0Generation(q2.generation,q1.generation))?
+      q1.record:q2.record;
+  return true;
+ }
  R0Slot c={},d={};
  bool vc=loadR0Slot("r0_v6_a",c),vd=loadR0Slot("r0_v6_b",d);
  if(vc||vd){
@@ -299,9 +310,10 @@ bool loadR0Record(R0Record& rec){
 }
 bool saveR0Record(const R0Record& rec){
  if(!validR0Record(rec))return false;
+ const bool quick=rec.magic==R0_MAGIC_V6_QUICK;
  const bool v6=rec.magic==R0_MAGIC_V6;
- const char* aKey=v6?"r0_v6_a":"r0_v5_a";
- const char* bKey=v6?"r0_v6_b":"r0_v5_b";
+ const char* aKey=quick?"r0_v6q_a":v6?"r0_v6_a":"r0_v5_a";
+ const char* bKey=quick?"r0_v6q_b":v6?"r0_v6_b":"r0_v5_b";
  R0Slot a={},b={};
  bool va=loadR0Slot(aKey,a),vb=loadR0Slot(bKey,b);
  bool latestA=va&&(!vb||!newerR0Generation(b.generation,a.generation));
@@ -309,7 +321,7 @@ bool saveR0Record(const R0Record& rec){
    (latestA?a.generation:b.generation)+1:1;
  if(generation==0)generation=1;
  const char* target=latestA?bKey:aKey;
- R0Slot next={};next.magic=v6?R0_SLOT_MAGIC_V6:R0_SLOT_MAGIC;
+ R0Slot next={};next.magic=quick?R0_SLOT_MAGIC_V6_QUICK:v6?R0_SLOT_MAGIC_V6:R0_SLOT_MAGIC;
  next.generation=generation;
  next.record=rec;next.checksum=r0SlotChecksum(next);
  if(nv.putBytes(target,&next,sizeof(next))!=sizeof(next))return false;
@@ -352,12 +364,17 @@ void calibrationUpdate(){
  if(calV6ThreeWindow&&calV6Window<2){
   calV6Window++;calState=CAL_REST;calAt=now;return;
  }
- R0Record rec={};rec.magic=calV6ThreeWindow?R0_MAGIC_V6:R0_MAGIC;
+ R0Record rec={};rec.magic=calV6SingleWindow?R0_MAGIC_V6_QUICK:calV6ThreeWindow?R0_MAGIC_V6:R0_MAGIC;
  bool complete=true;
  for(uint8_t i=0;i<Cfg::MQ_N;i++){
   if(!adsOK(Cfg::mq[i].ads)){complete=false;break;}
   float value=NAN;
-  if(calV6ThreeWindow){
+  if(calV6SingleWindow){
+   // Exact new operator protocol: 3-minute warmup + ONE 1-minute Rs_air
+   // window, no cycle rest, and no manufacturer factor conversion.
+   if(calCount[i]<10){complete=false;break;}
+   value=(float)(calSum[i]/calCount[i]);
+  }else if(calV6ThreeWindow){
    double windowMeans=0;
    for(uint8_t window=0;window<3;window++){
     if(calV6Counts[i][window]<10){
@@ -390,10 +407,10 @@ bool linkArmed=false;uint32_t linkAt=0;
 
 /* JSON */
 String num(float v,uint8_t d=2){return ff(v)?String(v,(unsigned)d):"null";}const char* bj(bool v){return v?"true":"false";}
-void loadSettings(){nv.begin(Cfg::NVS,false);R0Record stored={};bool haveStored=loadR0Record(stored);r0LoadedV6=haveStored&&stored.magic==R0_MAGIC_V6;for(uint8_t i=0;i<Cfg::MQ_N;i++){float v=haveStored?stored.values[i]:nv.getFloat(("mq_r0_"+String(i)).c_str(),NAN);activeR0[i]=ff(v)&&v>0?v:NAN;r0Samples[i]=ff(activeR0[i])?(uint16_t)min(haveStored?stored.counts[i]:(uint32_t)nv.getUShort(("mq_n_"+String(i)).c_str(),0),(uint32_t)UINT16_MAX):0;}settings.cam=nv.getString("camIP",Cfg::CAM);settings.speed=constrain(nv.getInt("speed",100),20,100);uint32_t w=nv.getUInt("warmup",Cfg::OPERATIONAL_WARMUP_SEC),m=nv.getUInt("measure",Cfg::ANALYSIS_WINDOW_SEC);settings.warm=(uint16_t)min(w,(uint32_t)3600);settings.measure=(uint16_t)constrain(m,5UL,600UL);}
+void loadSettings(){nv.begin(Cfg::NVS,false);R0Record stored={};bool haveStored=loadR0Record(stored);r0LoadedV6=haveStored&&(stored.magic==R0_MAGIC_V6||stored.magic==R0_MAGIC_V6_QUICK);r0LoadedV6Quick=haveStored&&stored.magic==R0_MAGIC_V6_QUICK;for(uint8_t i=0;i<Cfg::MQ_N;i++){float v=haveStored?stored.values[i]:nv.getFloat(("mq_r0_"+String(i)).c_str(),NAN);activeR0[i]=ff(v)&&v>0?v:NAN;r0Samples[i]=ff(activeR0[i])?(uint16_t)min(haveStored?stored.counts[i]:(uint32_t)nv.getUShort(("mq_n_"+String(i)).c_str(),0),(uint32_t)UINT16_MAX):0;}settings.cam=nv.getString("camIP",Cfg::CAM);settings.speed=constrain(nv.getInt("speed",100),20,100);uint32_t w=nv.getUInt("warmup",Cfg::OPERATIONAL_WARMUP_SEC),m=nv.getUInt("measure",Cfg::ANALYSIS_WINDOW_SEC);settings.warm=(uint16_t)min(w,(uint32_t)3600);settings.measure=(uint16_t)constrain(m,5UL,600UL);}
 String envJson(){uint32_t age=envLastOkAt?millis()-envLastOkAt:0;String j="{\"ok\":"+String(bj(envOk()))+",\"t\":"+num(temp,2)+",\"h\":"+num(hum,2)+",\"p\":"+num(press,1);j+=",\"type\":"+String(envType)+",\"addr\":"+String(envAddr)+",\"chip_id\":"+String(envId)+",\"status\":\""+String(envStatus)+"\",\"ack_0x76\":"+String(bj(envAck76))+",\"ack_0x77\":"+String(bj(envAck77))+",\"last_addr\":"+String(envLastAddr)+",\"last_chip_id\":"+String(envLastId)+",\"read_failures\":"+String(envReadFails)+",\"last_ok_age_ms\":"+String(age)+",\"reprobe_ms\":"+String(ENV_REPROBE_MS)+",\"total_read_errors\":"+String(envReadErrorTotal)+",\"bus_recoveries\":"+String(envBusRecoveries)+",\"i2c_timeout_ms\":25"+",\"bus\":{\"sda\":"+String(Cfg::ENV_SDA)+",\"scl\":"+String(Cfg::ENV_SCL)+",\"hz\":"+String(Cfg::ENV_I2C_HZ)+"}}";return j;}
 String acquisitionJson(){return "{\"model\":\"ADS1115\",\"rate_sps\":"+String(Cfg::ADS_RATE_SPS)+",\"gain\":\"GAIN_TWOTHIRDS\",\"full_scale_v\":"+num(Cfg::ADS_FULL_SCALE_V,3)+",\"supply_v\":"+num(Cfg::ADS_SUPPLY_V,3)+",\"conversions_per_channel\":"+String(Cfg::ADC_SAMPLES)+",\"scan_period_ms\":"+String(Cfg::MQ_PERIOD)+",\"channels\":"+String(Cfg::MQ_N)+",\"sequential\":true,\"bus_sda\":"+String(Cfg::SDA)+",\"bus_scl\":"+String(Cfg::SCL)+"}";}
-String mqJson(bool avg){bool powered=avg?measurePower:mqPowerOn;String j="{";uint32_t nowUs=micros();for(uint8_t i=0;i<Cfg::MQ_N;i++){if(i)j+=",";const auto&c=Cfg::mq[i];j+="\""+String(c.name)+"\":{";if(avg){if(!cnt[i])j+="\"ok\":false";else{float n=cnt[i],rs=rsSum[i]/n;j+="\"ok\":true,\"raw\":"+num(rawSum[i]/n,1)+",\"adc\":"+num(adcSum[i]/n,3)+",\"ao\":"+num(aoSum[i]/n,3)+",\"rs\":"+num(rs,3)+",\"ratio\":"+num(ff(activeR0[i])&&activeR0[i]>0?rs/activeR0[i]:NAN,3);}}else{j+="\"ok\":"+String(bj(mq[i].ok))+",\"raw\":"+String(mq[i].raw)+",\"adc\":"+num(mq[i].adc,3)+",\"ao\":"+num(mq[i].ao,3)+",\"rs\":"+num(mq[i].rs,3)+",\"ratio\":"+num(mq[i].ratio,3);if(mq[i].sampleUs)j+=",\"sample_us\":"+String(mq[i].sampleUs)+",\"scan_cycle\":"+String(mq[i].scanCycle)+",\"channel_offset_us\":"+String(mq[i].channelOffsetUs)+",\"age_us\":"+String(nowUs-mq[i].sampleUs);}j+=",\"powered\":"+String(bj(powered))+",\"relay\":1,\"row\":1,\"ads\":"+String(c.ads)+",\"ch\":"+String(c.ch)+",\"r0\":"+num(activeR0[i],3)+",\"r0_calibrated\":"+String(bj(ff(activeR0[i])&&activeR0[i]>0))+",\"r0_source\":\""+(r0Samples[i]?(r0LoadedV6?"firmware_clean_air_r0":"legacy_mq_factor_scaled_r0"):"uncalibrated")+"\",\"r0_definition\":\""+String(r0LoadedV6?"DEVICE_CLEAN_AIR_RS_MEAN":"MQ_FACTOR_SCALED_R0_NOT_AIR_RS")+"\",\"r0_window_count\":"+String(r0LoadedV6?3:1)+",\"r0_reference_validated\":"+String(bj(Cfg::R0_REFERENCE_GAS_VALIDATED))+",\"r0_session\":\""+String(Cfg::R0_SESSION)+"\",\"r0_samples\":"+String(r0Samples[i])+",\"r0_environment_compensated\":"+String(bj(Cfg::R0_ENVIRONMENT_COMPENSATED))+"}";}return j+"}";}
+String mqJson(bool avg){bool powered=avg?measurePower:mqPowerOn;String j="{";uint32_t nowUs=micros();for(uint8_t i=0;i<Cfg::MQ_N;i++){if(i)j+=",";const auto&c=Cfg::mq[i];j+="\""+String(c.name)+"\":{";if(avg){if(!cnt[i])j+="\"ok\":false";else{float n=cnt[i],rs=rsSum[i]/n;j+="\"ok\":true,\"raw\":"+num(rawSum[i]/n,1)+",\"adc\":"+num(adcSum[i]/n,3)+",\"ao\":"+num(aoSum[i]/n,3)+",\"rs\":"+num(rs,3)+",\"ratio\":"+num(ff(activeR0[i])&&activeR0[i]>0?rs/activeR0[i]:NAN,3);}}else{j+="\"ok\":"+String(bj(mq[i].ok))+",\"raw\":"+String(mq[i].raw)+",\"adc\":"+num(mq[i].adc,3)+",\"ao\":"+num(mq[i].ao,3)+",\"rs\":"+num(mq[i].rs,3)+",\"ratio\":"+num(mq[i].ratio,3);if(mq[i].sampleUs)j+=",\"sample_us\":"+String(mq[i].sampleUs)+",\"scan_cycle\":"+String(mq[i].scanCycle)+",\"channel_offset_us\":"+String(mq[i].channelOffsetUs)+",\"age_us\":"+String(nowUs-mq[i].sampleUs);}j+=",\"powered\":"+String(bj(powered))+",\"relay\":1,\"row\":1,\"ads\":"+String(c.ads)+",\"ch\":"+String(c.ch)+",\"r0\":"+num(activeR0[i],3)+",\"r0_calibrated\":"+String(bj(ff(activeR0[i])&&activeR0[i]>0))+",\"r0_source\":\""+(r0Samples[i]?(r0LoadedV6?"firmware_clean_air_r0":"legacy_mq_factor_scaled_r0"):"uncalibrated")+"\",\"r0_definition\":\""+String(r0LoadedV6?"DEVICE_CLEAN_AIR_RS_MEAN":"MQ_FACTOR_SCALED_R0_NOT_AIR_RS")+"\",\"r0_window_count\":"+String(r0LoadedV6&& !r0LoadedV6Quick?3:1)+",\"r0_reference_validated\":"+String(bj(Cfg::R0_REFERENCE_GAS_VALIDATED))+",\"r0_session\":\""+String(Cfg::R0_SESSION)+"\",\"r0_samples\":"+String(r0Samples[i])+",\"r0_environment_compensated\":"+String(bj(Cfg::R0_ENVIRONMENT_COMPENSATED))+"}";}return j+"}";}
 String driveJson(){return "{\"driver\":\"dual_continuous_servo\",\"left\":"+String(ri(curL))+",\"right\":"+String(ri(curR))+",\"target_left\":"+String(ri(targetL))+",\"target_right\":"+String(ri(targetR))+",\"stale_stop\":"+String(bj(staleStop))+",\"pins\":{\"left\":"+String(Cfg::SERVO_L_PIN)+",\"right\":"+String(Cfg::SERVO_R_PIN)+"}}";}
 String healthJson(){return "{\"battery\":{\"v\":"+num(batteryV,2)+",\"raw\":"+String(batteryRaw)+",\"estimated\":true},\"internal_temp\":{\"installed\":false,\"c\":null,\"gpio\":null},\"proximity\":{\"cm\":"+num(ultraCm,1)+",\"raw_cm\":"+num(ultraRawCm,1)+",\"valid\":"+String(bj(ff(ultraCm)&&ultraCm>0))+",\"pulse_us\":"+String(ultraLastPulseUs)+",\"timeouts\":"+String(ultraTimeoutCount)+",\"status\":\""+String(ultraStatus)+"\""+",\"echo_level\":"+String(digitalRead(Cfg::ULTRA_ECHO_PIN))+",\"no_rise\":"+String(ultraNoRiseCount)+",\"no_fall\":"+String(ultraNoFallCount)+",\"stuck_high\":"+String(ultraStuckHighCount)+",\"invalid_pulse\":"+String(ultraInvalidPulseCount)+",\"last_ok_age_ms\":"+(ultraLastOkAt?String(millis()-ultraLastOkAt):String("null"))+",\"warning\":"+String(bj(ultraWarning))+",\"warning_cm\":"+num(Cfg::ULTRA_WARN_CM,1)+",\"trig\":"+String(Cfg::ULTRA_TRIG_PIN)+",\"echo\":"+String(Cfg::ULTRA_ECHO_PIN)+"},\"energy_basis\":{\"uptime_ms\":"+String(millis())+",\"drive_eq_ms\":"+String(driveEqMs)+",\"mq_on_ms\":"+String(mqOnTotalMs)+"}}";}
 String lightJson(){return "{\"installed\":true,\"gpio\":"+String(Cfg::LDR_PIN)+",\"mode\":\"lm393_threshold\",\"level\":"+String(ldrLevel)+",\"quantitative_lux\":false,\"lux\":null}";}
@@ -416,13 +433,15 @@ String dataJson(){String j="{\"env\":"+envJson()+",\"device\":"+healthJson()+",\
 String diagJson(){String j="{\"device_id\":\""+WiFi.softAPmacAddress()+"\",\"fw\":\""+String(Cfg::FW)+"\",\"build_revision\":\""+String(Cfg::ENGINEERING_REVISION)+"\",\"api\":"+String(Cfg::API)+",\"hardware_profile\":\""+String(Cfg::HW_PROFILE)+"\",\"heap\":"+String(ESP.getFreeHeap())+",\"clients\":"+String(WiFi.softAPgetStationNum())+",\"device\":"+healthJson()+",\"drive\":"+driveJson()+",\"relay\":{\"mask\":"+String(mqPowerOn?1:0)+",\"on\":"+String(bj(mqPowerOn))+",\"gpio\":"+String(Cfg::RELAY_MQ)+",\"power_ms\":"+String(mqPowerMs())+",\"channels\":1},\"adc\":{\"ads1\":"+String(bj(ads1ok))+",\"ads2\":"+String(bj(ads2ok))+",\"acquisition\":"+acquisitionJson()+"},\"link\":{\"armed\":"+String(bj(linkArmed))+",\"heartbeat_age_ms\":"+String(linkArmed?millis()-linkAt:0)+"},\"env\":"+envJson()+",\"envType\":"+String(envType)+",\"envAddr\":"+String(envAddr)+",\"envId\":"+String(envId)+",\"envStatus\":\""+String(envStatus)+"\",\"envAck76\":"+String(bj(envAck76))+",\"envAck77\":"+String(bj(envAck77))+",\"envReadFailures\":"+String(envReadFails)+",\"ldr\":"+lightJson()+",\"alert\":"+Alerts::json()+",\"mqPowerManual\":true,\"warmupManual\":true}";return j;}
 
 bool calibrationStart(uint16_t warmSeconds,uint16_t sampleSeconds){
- // Android V6 uses 300+3x(180s capture)+2x(180s powered rest)=20m.
- // Legacy V5 (300+60) remains explicitly supported but source-scaled.
+ // V6 quick = exactly 180 s heat + 60 s single sample (4 minutes).
+ // Existing 300/60 V5 and 300/180 V6-three-window are separate protocols.
  if(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_REST||
-    stage==MEASURE||!mqPowerOn||warmSeconds!=300||
-    (sampleSeconds!=60&&sampleSeconds!=180))return false;
+    stage==MEASURE||!mqPowerOn||
+    !((warmSeconds==180&&sampleSeconds==60)||
+      (warmSeconds==300&&(sampleSeconds==60||sampleSeconds==180))))return false;
  if(!ads1ok||!ads2ok)return false;
- calV6ThreeWindow=sampleSeconds==180;
+ calV6SingleWindow=warmSeconds==180&&sampleSeconds==60;
+ calV6ThreeWindow=warmSeconds==300&&sampleSeconds==180;
  calV6Window=0;
  calWarmMs=(uint32_t)warmSeconds*1000UL;
  calWindowMs=(uint32_t)sampleSeconds*1000UL;
@@ -449,7 +468,8 @@ bool calibrationAccept(){
   activeR0[i]=candidate.values[i];
   r0Samples[i]=(uint16_t)min(candidate.counts[i],(uint32_t)UINT16_MAX);
  }
- r0LoadedV6=candidate.magic==R0_MAGIC_V6;
+ r0LoadedV6=candidate.magic==R0_MAGIC_V6||candidate.magic==R0_MAGIC_V6_QUICK;
+ r0LoadedV6Quick=candidate.magic==R0_MAGIC_V6_QUICK;
  pendingR0Valid=false;pendingR0=R0Record();calError="";calState=CAL_READY;
  return true;
 }
@@ -459,8 +479,13 @@ String calibrationJson(){
  bool storedOK=loadR0Record(stored);
  bool pending=calState==CAL_PENDING&&pendingR0Valid;
  bool committed=storedOK&&(calState==CAL_READY||calState==CAL_IDLE);
- bool v6=pending?pendingR0.magic==R0_MAGIC_V6:
-   (calV6ThreeWindow||(storedOK&&stored.magic==R0_MAGIC_V6));
+ bool quick=pending?pendingR0.magic==R0_MAGIC_V6_QUICK:
+   (calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_REST?
+       calV6SingleWindow:(storedOK&&stored.magic==R0_MAGIC_V6_QUICK));
+ bool three=pending?pendingR0.magic==R0_MAGIC_V6:
+   (calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_REST?
+       calV6ThreeWindow:(storedOK&&stored.magic==R0_MAGIC_V6));
+ bool v6=quick||three;
  const char* reported=committed?"ready":names[(uint8_t)calState];
  uint32_t elapsed=(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_REST)?
     millis()-calAt:0;
@@ -469,15 +494,15 @@ String calibrationJson(){
  String j="{\"device_id\":\""+WiFi.softAPmacAddress()+"\",\"state\":\""+
    String(reported)+"\",\"committed\":"+(committed?"true":"false")+
    ",\"pending\":"+(pending?"true":"false")+
-   ",\"schema\":\""+String(v6?"tank-r0-fw-v6/1":"tank-r0-fw-v5/2")+
+   ",\"schema\":\""+String(quick?"tank-r0-fw-v6/2":three?"tank-r0-fw-v6/1":"tank-r0-fw-v5/2")+
    "\",\"warmup_ms\":"+String(calWarmMs)+
    ",\"error\":\""+String(calError)+"\",\"elapsed_ms\":"+String(elapsed)+
    ",\"duration_ms\":"+String(duration)+
    ",\"r0_definition\":\""+String(v6?"DEVICE_CLEAN_AIR_RS_MEAN":
                                     "MQ_FACTOR_SCALED_R0_NOT_AIR_RS")+
-   "\",\"window_count\":"+String(v6?3:1)+
-   ",\"window_index\":"+String(v6?(uint8_t)(calV6Window+1):1)+
-   ",\"protocol\":\""+String(v6?"V6_5M_WARM_3X3M_MEASURE_2X3M_POWERED_REST":
+   "\",\"window_count\":"+String(three?3:1)+
+   ",\"window_index\":"+String(three?(uint8_t)(calV6Window+1):1)+
+   ",\"protocol\":\""+String(quick?"V6_180S_WARM_60S_SINGLE_RS_AIR":three?"V6_5M_WARM_3X3M_MEASURE_2X3M_POWERED_REST":
                                   "V5_ONE_WINDOW_SOURCE_SCALED")+
    "\",\"channels\":{";
  for(uint8_t i=0;i<Cfg::MQ_N;i++){
