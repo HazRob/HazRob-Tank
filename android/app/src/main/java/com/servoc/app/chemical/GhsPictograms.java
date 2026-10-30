@@ -120,12 +120,35 @@ public final class GhsPictograms {
      * identity, quantitative measurement and alarm authorization gate.
      * These gates are FALSE for all current Tank V6 MQ research candidates.
      */
+    /**
+     * Backward compatibility deliberately fails closed: without a certified
+     * threshold evaluation for EACH pictogram no reported hazard icon may
+     * appear, even if the identity is known and GHS-classified.
+     */
+    @Deprecated
     public static List<String> forQualifiedAlarm(ExperimentsDb db,long uid,
             boolean identityVerified,boolean quantitativeMeasurementVerified,
             boolean alarmAuthorized){
-        if(!identityVerified||!quantitativeMeasurementVerified||!alarmAuthorized)
+        return Collections.emptyList();
+    }
+
+    /**
+     * Future safety-grade alert integration must supply the independent,
+     * source-scoped, time-qualified exceedance for each icon. A flammability
+     * result never automatically activates an oxidizer/carcinogen symbol.
+     * Without G3 calibration and an authorized operator alarm, returns none.
+     */
+    public static List<String> forQualifiedAlarm(ExperimentsDb db,long uid,
+            boolean identityVerified,boolean quantitativeMeasurementVerified,
+            boolean alarmAuthorized,Map<String,Boolean> exceededPictograms){
+        if(!identityVerified||!quantitativeMeasurementVerified||
+           !alarmAuthorized||exceededPictograms==null)
             return Collections.emptyList();
-        return forChemical(db,uid);
+        List<String> verified=forChemical(db,uid);
+        List<String> selected=new ArrayList<>();
+        for(String code:verified)
+            if(Boolean.TRUE.equals(exceededPictograms.get(code)))selected.add(code);
+        return Collections.unmodifiableList(selected);
     }
 
     public static JSONArray asJson(List<String> codes){
