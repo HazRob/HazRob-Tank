@@ -64,6 +64,113 @@ public final class TankV6TelemetryAdapter {
             channels,features,temp,humidity,sec));
     }
 
+
+    private static boolean positive(double x){return Double.isFinite(x)&&x>0;}
+
+    /** A laboratory/factory source R0 or a unitless default is not a Tank
+     * clean-air baseline, even if a numeric R0 appears in telemetry.
+     * An unproven R0 retains raw Rs + research math for audit only.
+     */
+    private static boolean acceptedCleanAirR0(JSONObject sensor){
+        if(sensor==null)return false;
+        double rs=sensor.optDouble("rs",Double.NaN);
+        double r0=sensor.optDouble("r0",Double.NaN);
+        if(!positive(rs)||!positive(r0))return false;
+        String source=sensor.optString("r0_source","");
+        boolean sourceEligible="manual_device_r0".equals(source)||
+            "automatic_clean_air_field_r0".equals(source)||
+            "firmware_clean_air_r0".equals(source);
+        if(!sourceEligible)return false;
+        // Firmware variants must have their independent sampling evidence.
+        if("firmware_clean_air_r0".equals(source)&&
+            sensor.has("r0_samples")&&sensor.optInt("r0_samples",0)<10)
+            return false;
+        boolean complete=sensor.optBoolean("r0_provenance_complete",false)||
+            (!sensor.optString("r0_session","").isEmpty()&&
+             !sensor.optString("r0_utc","").isEmpty());
+        return complete;
+    }
+
+    /**
+     * V14 operator audit uses provenance to qualify normalization.
+     * Pure mathematical source inversions remain available for reproducible
+     * research, but never pass into operator candidate lists when their
+     * R0 is not an accepted clean-air baseline for this device.
+     */
+    public static JSONObject toJson(ChemCoreTankV6.Result data,JSONObject original)
+            throws Exception {
+        JSONObject root=toJson(data);
+        JSONObject mq=original==null?null:original.optJSONObject("mq");
+        JSONArray observed=root.optJSONArray("original_mq_channel_evidence");
+        List<Engine.Channel> cleanAirReferences=new ArrayList<>();
+        int accepted=0,rejected=0,missing=0;
+        if(observed!=null)for(int i=0;i<observed.length();i++){
+            JSONObject row=observed.optJSONObject(i);
+            if(row==null)continue;
+            String model=row.optString("sensor_model","");
+            JSONObject sensor=mq==null?null:mq.optJSONObject(model.toLowerCase(Locale.ROOT));
+            boolean valid=acceptedCleanAirR0(sensor);
+            String source=sensor==null?"MISSING":"".equals(sensor.optString("r0_source",""))?
+                "UNDECLARED":sensor.optString("r0_source","");
+            row.put("rs_unit","kOhm_as_received_not_independently_verified");
+            row.put("r0_unit","kOhm_as_received_not_independently_verified");
+            row.put("r0_source",source);
+            row.put("r0_provenance_complete",sensor!=null&&
+                sensor.optBoolean("r0_provenance_complete",false));
+            row.put("r0_clean_air_device_evidence_qualified",valid);
+            row.put("r0_reference_type",valid?"DEVICE_CLEAN_AIR":
+                "UNQUALIFIED_OR_SOURCE_SPECIFIC");
+            row.put("r0_session",sensor==null?"":
+                sensor.optString("r0_session",""));
+            row.put("r0_device_id",sensor==null?"":
+                sensor.optString("r0_device_id",""));
+            row.put("r0_samples",sensor==null?0:
+                sensor.optInt("r0_samples",0));
+            if(valid){
+                accepted++;
+                cleanAirReferences.add(new Engine.Channel(model,
+                    row.optString("sensor_instance",model),
+                    row.optDouble("rs_as_received",Double.NaN),
+                    row.optDouble("r0_as_received",Double.NaN)));
+            }else{
+                double r0=row.optDouble("r0_as_received",Double.NaN);
+                if(positive(r0))rejected++;else missing++;
+            }
+        }
+        CleanAirResponseGateV6.Decision baseline=CleanAirResponseGateV6.assess(cleanAirReferences);
+        JSONObject gate=root.getJSONObject("baseline_response_gate");
+        boolean show=baseline.showGasHypotheses;
+        gate.put("state",accepted==0?"NO_ACCEPTED_DEVICE_CLEAN_AIR_R0":
+            baseline.state);
+        gate.put("accepted_device_r0_channels",accepted);
+        gate.put("unqualified_r0_channels",rejected);
+        gate.put("missing_r0_channels",missing);
+        gate.put("response_threshold_basis","PROVISIONAL_10PCT_NOT_EMPIRICAL_SENSOR_NOISE");
+        gate.put("awaiting_empirical_clean_air_envelopes",true);
+        gate.put("reference_condition","R0_EQUALS_DEVICE_CLEAN_AIR_RS_MEAN_ONLY");
+        gate.put("visible_gas_hypotheses",show);
+        gate.put("occupational_gas_alarm_authorized",false);
+        gate.put("clean_air_certified",false);
+        gate.put("interpretation",show?
+            "SOURCE_HYPOTHESES_AFTER_PROVENANCED_R0_CHANGE_NOT_GAS_IDENTITY":
+            "NO_OPERATOR_GAS_FINDING_WITHOUT_REPRODUCIBLE_DEVICE_R0_CHANGE");
+        root.put("baseline_response_gate",gate);
+        root.put("gas_response_screening_state",gate.getString("state"));
+        root.put("gas_response_detected_research_only",show);
+        if(!show){
+            root.put("source_curve_hypotheses",new JSONArray());
+            root.put("source_curve_disagreements",new JSONArray());
+            root.put("fingerprint_feature_spaces",new JSONArray());
+            root.put("chemical_evidence_ledger",new JSONArray());
+        }
+        // Do not discard source_curve_research_diagnostic_ledger.
+        root.put("candidate_count",0);
+        root.put("gas_alerts",new JSONArray());
+        root.put("alarm_eligible",false);
+        root.put("clean_air_proven",false);
+        return root;
+    }
+
     private static Object numberOrNull(double v){
         return Double.isFinite(v)?v:JSONObject.NULL;
     }
