@@ -69,7 +69,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             "uid,cas,name_en,name_ar,formula,molar_mass,chemical_class,record_source,"+
             "lfl_vol_pct,ufl_vol_pct,mq_curve_count,natural_range_status,"+
             "source_hazard_count,exposure_limit_count,hazard_class_count,"+
-            "qualified_background_range_count\\n");
+            "qualified_background_range_count\n");
         int rows=0,cas=0,english=0,arabic=0,formula=0,molarMass=0;
         int lfl=0,ufl=0,mq=0,exposure=0,hazard=0,background=0;
         int duplicateUids=0;
@@ -97,7 +97,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                         csv.append(c.getString(k));
                     else csv.append(csv(c.getString(k)));
                 }
-                csv.append('\\n');
+                csv.append('\n');
             }
         }
         try(FileOutputStream out=openFileOutput(
