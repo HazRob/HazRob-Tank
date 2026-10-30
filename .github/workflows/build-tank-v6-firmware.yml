@@ -1,0 +1,96 @@
+name: Build HazRob Tank V6 ESP32 and CAM firmware binaries
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'firmware/ESP32-Tank/**'
+      - 'firmware/Cam-tank/**'
+      - '.github/workflows/build-tank-v6-firmware.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-v6-arduino:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sketch: ESP32-Tank
+            fqbn: esp32:esp32:esp32
+          - sketch: Cam-tank
+            fqbn: esp32:esp32:esp32cam
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm Tank V6 calibration and stop contract
+        if: matrix.sketch == 'ESP32-Tank'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          src=Path('firmware/ESP32-Tank/Hardware.cpp').read_text()
+          cfg=Path('firmware/ESP32-Tank/Config.h').read_text()
+          api=Path('firmware/ESP32-Tank/ESP32-Tank.ino').read_text()
+          assert 'warmSeconds==180&&sampleSeconds==60' in src
+          assert 'calV6SingleWindow' in src and 'calSum[i]/calCount[i]' in src
+          assert 'R0_MAGIC_V6_QUICK' in src and 'r0_v6q_a' in src
+          assert 'DEVICE_CLEAN_AIR_RS_MEAN' in src
+          assert 'CONTROL_COMMAND_TIMEOUT_MS=500' in cfg
+          assert 'web.on("/r0"' in api
+          print('PASS: final 180s+60s independent R0 firmware and 500ms motor timeout')
+          PY
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install ESP32 Arduino core 3.3.11
+        shell: bash
+        run: |
+          set -euo pipefail
+          INDEX=https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index --additional-urls "$INDEX"
+          arduino-cli core install esp32:esp32@3.3.11 --additional-urls "$INDEX"
+      - name: Compile actual V6 source to flashable BIN
+        shell: bash
+        run: |
+          set -euo pipefail
+          arduino-cli compile --warnings all --fqbn ${{ matrix.fqbn }} \
+              --output-dir compiled firmware/${{ matrix.sketch }}
+          test -n "$(find compiled -name '*.bin' -print -quit)"
+      - name: ZIP Arduino source and verified binaries
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,zipfile,json
+          name='${{ matrix.sketch }}'
+          root=Path('firmware')/name
+          out=Path('v6-firmware')
+          out.mkdir(exist_ok=True)
+          source_zip=out/('HazRob-Tank-V6-'+name+'-Arduino.zip')
+          included=[p for p in root.iterdir() if p.is_file() and p.suffix.lower() in
+                    {'.ino','.cpp','.h','.md'} and not p.name.endswith('Secrets.h')]
+          assert (root/(name+'.ino')).is_file()
+          with zipfile.ZipFile(source_zip,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              for p in sorted(included): z.write(p,arcname=name+'/'+p.name)
+          bins=sorted(Path('compiled').glob('*.bin'))
+          assert bins, 'missing firmware binary'
+          for p in bins: (out/p.name).write_bytes(p.read_bytes())
+          metadata={'branch':'feature/tank-v6-implementation','commit':'${{ github.sha }}',
+                    'sketch':name,'fqbn':'${{ matrix.fqbn }}','esp32_core':'3.3.11',
+                    'r0_protocol':('180s_warm_plus_one_60s_Rs_air' if name=='ESP32-Tank' else 'camera_only'),
+                    'flash_test_performed':False,'hardware_G3_passed':False}
+          (out/'BUILD-MANIFEST.json').write_text(json.dumps(metadata,indent=2)+'\n')
+          (out/'SHA256SUMS.txt').write_text(''.join(
+             hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n'
+             for p in sorted(out.iterdir()) if p.is_file() and p.name!='SHA256SUMS.txt'))
+          print('V6 Arduino:',source_zip,'firmware binaries:',[p.name for p in bins])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V6-${{ matrix.sketch }}-Firmware-Arduino-BIN
+          path: v6-firmware/
+          if-no-files-found: error
+          retention-days: 30
