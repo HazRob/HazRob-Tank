@@ -107,6 +107,17 @@ public final class ChemicalReferenceSyncV6 {
             return c.moveToFirst()&&!c.isNull(0)?c.getString(0):"";
         }
     }
+    /** Only the preverified NIOSH alias table may resolve a historical UID. */
+    private static long canonicalForQuery(SQLiteDatabase db,long uid){
+        if(uid<=0)return uid;
+        try(Cursor c=db.rawQuery(
+            "SELECT canonical_uid FROM chemical_identity_equivalence_v6 "+
+            "WHERE alias_uid=? AND evidence_status='NIOSH_SYNONYM_VERIFIED' LIMIT 1",
+            new String[]{Long.toString(uid)})){
+            return c.moveToFirst()?c.getLong(0):uid;
+        }catch(Exception ignored){return uid;}
+    }
+
     private static String currentSha(SQLiteDatabase db,long uid){
         try(Cursor c=db.rawQuery(
                 "SELECT sha256 FROM chemical_reference_sync_receipts_v6 WHERE chemical_uid=?",
@@ -199,6 +210,9 @@ public final class ChemicalReferenceSyncV6 {
         if(analysisActive)throw new IllegalStateException("synchronization paused during analysis");
         SQLiteDatabase db=repository.getWritableDatabase();
         ensure(db);
+        // A legacy UID may use a proven NIOSH synonym of a canonical CAS-
+        // bearing UID. Query the canonical record without rewriting sessions.
+        requestedUid=canonicalForQuery(db,requestedUid);
         URL indexUrl=new URL(DEFAULT_INDEX);
         JSONObject index=new JSONObject(new String(fetch(indexUrl,INDEX_LIMIT),StandardCharsets.UTF_8));
         if(!SCHEMA.equals(index.optString("schema")))throw new IllegalArgumentException("unknown index schema");
