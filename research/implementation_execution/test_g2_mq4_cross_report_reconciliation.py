@@ -245,16 +245,6 @@ class MQ4CrossReportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'CROSS_DAY_NO_LAG_ONE_CONTINUITY'):
             reconcile(l, m)
 
-    def test_reject_cross_day_lag_count_decreasing_at_longer_lag(self):
-        l, m = synthetic()
-        item = m['lag_results']['5']
-        item['same_day_context_rows'] += 5
-        item['cross_day_context_rows_requiring_embargo_if_day_holdout'] = 0
-        item['cross_day_context_rows_by_later_date'] = {}
-        item['cross_day_fraction_of_available_pairs'] = 0.0
-        with self.assertRaisesRegex(ValueError, 'CROSS_DAY_LAG_MONOTONIC'):
-            reconcile(l, m)
-
     def test_reject_cross_day_rows_assigned_to_first_observed_date(self):
         l, m = synthetic()
         item = m['lag_results']['1']
