@@ -30,7 +30,7 @@
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "V6_GITHUB_N16_ONLINE_QA_EMULATOR_RETEST; ABSOLUTE_MATCHING_V4_OR_V5_SIGNER_ENFORCED_IN_FINAL_APK_WORKFLOW; NO_RELEASE",
+  "latest_scope": "V6_CENTRAL_LIBRARY_PER_RECORD_QUERY_WITH_PREQUALIFIED_FINGERPRINT_CURVE_PPM_M4_SYNC; CENTRAL_AUTHORITY_OWNED_NO_SECOND_PHONE_APPROVAL; N09_FINAL_ALIAS_TEST_PENDING; NO_RELEASE",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -241,5 +241,54 @@
     "v5_upgrade_possible": "UNKNOWN_UNTIL_MATCHING_PRIVATE_KEY_IS_AVAILABLE",
     "status": "BLOCKED_PENDING_INSTALLED_APP_CERT_AND_MATCHING_SIGNING_KEY",
     "allowed_release": "ONLY_AFTER_MATCHING_CERT_AND_FULL_SOFTWARE_GATE"
+  },
+  "central_record_sync_v6": {
+    "user_instruction_dates_utc": [
+      "2026-10-30T17:07:09Z",
+      "2026-10-30T17:11:49Z",
+      "2026-10-30T17:15:08Z"
+    ],
+    "mode": "QUERY_SMALL_CHANGED_CHEMICAL_RECORDS_BY_UID_CAS_SHA256_NOT_FULL_STABLE_REPLACEMENT",
+    "index_path": "updates/chemcore-records/v6/index.json",
+    "schema": "hazrob-tank-reference-delta-v6/1",
+    "index_publication": "INITIAL_EMPTY_DEV_BRANCH_NOT_LIVE_MAIN",
+    "max_changes_per_query": 25,
+    "allow_single_uid_query": true,
+    "verified_niosh_synonym_status_propagation": true,
+    "published_statuses": [
+      "AVAILABLE",
+      "QUALIFIED"
+    ],
+    "capability_columns": [
+      "fingerprint_reference",
+      "mq_curve_reference",
+      "ppm_reference",
+      "m4_reference"
+    ],
+    "central_qualification_reapplied_by_android": false,
+    "technical_integrity_only": [
+      "HTTPS",
+      "SHA256",
+      "UID_CAS_MATCH",
+      "JSON_SCHEMA"
+    ],
+    "withdrawn_capability_is_removed_on_next_query": true,
+    "source_details_in_material_profile": true,
+    "android_ui_paths": [
+      "SettingsTab",
+      "StatusTab",
+      "CentralLibraryDashboardTab",
+      "DeveloperExperimentsTab",
+      "ChemicalExperimentMatrixDialog"
+    ],
+    "last_successful_scientific_source_run": 41099460522,
+    "latest_merged_java_compile_run": 41099398842,
+    "latest_merged_java_compile_status": "PASS_OLDER_THAN_FINAL_CANONICAL_ALIAS_DETAIL_FIX",
+    "latest_android_api31_complete_source_run": 41098652783,
+    "latest_android_api31_result": "PASS_OLDER_THAN_LATEST_UI_AND_ALIAS_CHANGES",
+    "pending_current_android_run": 41099592302,
+    "pending_current_source_run": 41099592091,
+    "implementation_doc": "docs/implementation/V6-INCREMENTAL-CENTRAL-LIBRARY-SYNC-2026-10-30_AR.md",
+    "source_publication_required_before_operator_online_use": true
   }
 }
