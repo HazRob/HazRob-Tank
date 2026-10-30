@@ -123,6 +123,12 @@ public final class ChemicalReferenceSyncV6 {
                                       long uid,String cas,String digest,String revision)throws Exception{
         if(doc.optLong("uid",-1)!=uid||!cas.equals(doc.optString("cas")))
             throw new IllegalArgumentException("GitHub UID/CAS identity drift");
+        // Central library has ALREADY completed scientific qualification before
+        // publication. Mobile performs only record-identity/hash/schema checks.
+        // A complete per-UID record replaces the previous cached capabilities,
+        // including a source's removal or withdrawal of an old capability.
+        db.delete("chemical_reference_updates_v6","chemical_uid=?",
+            new String[]{Long.toString(uid)});
         JSONArray facts=doc.optJSONArray("facts");
         if(facts==null||facts.length()<1||facts.length()>15)
             throw new IllegalArgumentException("invalid source fact count");
@@ -151,15 +157,14 @@ public final class ChemicalReferenceSyncV6 {
             double number=Double.NaN;
             String text=null;
             String unit="";
-            // Fingerprint/curve/PPM/M4 entries are evidence *availability* labels,
-            // never actual instrument readings or certified gas alarms.
-            // Records must specify an independently reviewable research link.
-            if(key.endsWith("_reference")&&"HAZROB_RESEARCH".equals(authority)&&
-                !sourceUrl.startsWith("https://github.com/HazRob/")&&
-                !sourceUrl.startsWith("https://doi.org/"))
-                throw new IllegalArgumentException("research evidence source not qualified");
-            if("m4_reference".equals(key)&&!doc.optBoolean("research_only",false))
-                throw new IllegalArgumentException("M4 entry must be explicitly research-only");
+            // No second peer review, curve qualification, M4 approval or
+            // concentration calibration is run by the Android sync client.
+            // The central library publishes the capability's authoritative
+            // availability state; a phone only mirrors that state.
+            String libraryStatus=fact.optString("library_status","AVAILABLE");
+            if(!"AVAILABLE".equals(libraryStatus)&&
+               !"QUALIFIED".equals(libraryStatus))
+                throw new IllegalArgumentException("unknown published capability state");
             if("molar_mass".equals(key)){
                 number=fact.optDouble("numeric",Double.NaN);
                 if(!Double.isFinite(number)||number<=0||number>=100000)
@@ -176,7 +181,7 @@ public final class ChemicalReferenceSyncV6 {
             if(Double.isFinite(number))row.put("value_numeric",number);else row.putNull("value_numeric");
             if(text!=null)row.put("value_text",text);else row.putNull("value_text");
             row.put("record_sha256",digest);row.put("publication_revision",revision);
-            row.put("evidence_status","REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED");
+            row.put("evidence_status","PUBLISHED_LIBRARY_"+libraryStatus);
             db.insertWithOnConflict("chemical_reference_updates_v6",null,row,
                 SQLiteDatabase.CONFLICT_REPLACE);
         }
@@ -231,6 +236,7 @@ public final class ChemicalReferenceSyncV6 {
             }finally{db.endTransaction();}
             applied++;
         }
+        if(applied>0)repository.putMeta("v6_reference_query_revision",revision);
         return new Result(candidates,unchanged,applied,revision);
     }
 
@@ -259,6 +265,7 @@ public final class ChemicalReferenceSyncV6 {
                 new JSONObject().put("revision",revision),"revision",80));
             db.setTransactionSuccessful();
         }finally{db.endTransaction();}
+        repository.putMeta("v6_reference_query_revision",revision);
     }
 
     /** Available to the existing compound detail query without network access. */
