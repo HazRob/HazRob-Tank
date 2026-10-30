@@ -6,7 +6,7 @@
   "baseline_branch": "feature/tank-v6-implementation",
   "baseline_commit": "cf818a9e2ea1064da37f0d9fdf6beb0de4847250",
   "focus": "Android PDF report design, authentic chart/analysis presentation and evidence integrity",
-  "state": "REPORTS_DESIGN_TRACK_OPEN",
+  "state": "V7_DISCUSS_ALL_REPORTS_BEFORE_UNIFIED_IMPLEMENTATION",
   "app_version_target": "7.0-dev (planned, not changed in source)",
   "last_packaged_app_version": "6.0 diagnostic",
   "firmware_change_scope": "NONE",
@@ -143,6 +143,11 @@
       "id": "D16",
       "text": "Owner supplied official HazRob hexagonal targeting logo and explicitly approved placement at right side of every V7 black report header; use asset hazrob_official_report_mark.xml not old tracked robot icon.",
       "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "D17",
+      "text": "User-proposed more efficient workflow adopted: review and approve R01-R06 report specs individually first, then implement all reports together using shared PDF components; test each exporter during integrated build.",
+      "status": "WORKFLOW_ADOPTED_NO_RELEASE_APPROVAL"
     }
   ],
   "checkpoints": [
@@ -244,7 +249,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R01 Java production PDF writer and approved matrix+radar diagrams committed, linked to Android app; first CI Java build PASS but emulator launch failed dash shell, Bash script fixed and second CI running. R02 original PDF analysis draft documented without code changes.",
+  "latest_documented_change": "Switched to all-report design discussions then shared-batch implementation. R01 source prototype frozen, R02 proposal ready to discuss, no more production PDF updates until six specs reviewed and signed off; per-report CI still required.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -297,7 +302,7 @@
   "active_report": {
     "id": "R01",
     "name": "Instant ChemCore V6 gas research report",
-    "phase": "PRODUCTION_JAVA_IMPLEMENTED_ANDROID_COMPILED_EMULATOR_PDF_QA_IN_PROGRESS",
+    "phase": "R01_PROTO_CODE_EXISTS_FROZEN_PENDING_COLLECTIVE_IMPLEMENTATION",
     "document": "docs/implementation/V7-R01-INSTANT-GAS-REPORT-ANALYSIS-2026-10-30_AR.md",
     "commit": "96594b4642cd97814d5bd7b84c98febda2e845a6",
     "original_pdf_sha256": "7c4cf3c7de06529f6d604df7c7c93ff5ee084453efdfc554e73db736f24b0725",
@@ -349,7 +354,10 @@
       "qa_fix_commit": "097660ae2ee80917505936a7f8c1262dc8adf83e",
       "rerun": 41134124841,
       "status": "IN_PROGRESS"
-    }
+    },
+    "preliminary_android_pdf_QA_run": 41134485012,
+    "note": "Actual Android R01 PDF produced and CI QA passed for pre-refinement commit. Subsequent Radar/text refinements need a final fresh QA run after implementation consolidation. No R01 release acceptance asserted.",
+    "production_changes_paused": true
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -373,8 +381,30 @@
   },
   "next_report": {
     "id": "R02",
-    "phase": "ORIGINAL_SOURCE_AND_PDF_ANALYZED_DESIGN_PROPOSAL_AWAITING_OWNER",
+    "phase": "DISCUSSION_READY_NOT_APPROVED",
     "document": "docs/implementation/V7-R02-PHYSICAL-REPORT-ANALYSIS-PROPOSAL-2026-10-30_AR.md",
-    "production_changes": 0
+    "production_changes": 0,
+    "source_analysis": "docs/implementation/V7-R02-PHYSICAL-REPORT-ANALYSIS-PROPOSAL-2026-10-30_AR.md",
+    "source_modifications_allowed_now": false
+  },
+  "workflow_policy": {
+    "id": "V7-RPT-BATCH-PLAN-001",
+    "document": "docs/implementation/V7-REPORTS-BATCH-EXECUTION-PLAN-2026-10-30_AR.md",
+    "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
+    "user_proposed_on": "2026-10-30",
+    "state": "ADOPTED_FOR_NEXT_V7_WORK",
+    "current_phase": "DESIGN_DISCUSSIONS",
+    "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
+    "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
+    "independent_owner_approvals_required": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06"
+    ],
+    "final_apk_authorized": false,
+    "next_step": "Discuss R02 design, record its signoff, then R03-R06."
   }
 }
