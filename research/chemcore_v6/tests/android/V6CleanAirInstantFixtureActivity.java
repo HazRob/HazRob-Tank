@@ -52,21 +52,37 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
       JSONArray curves=result.optJSONArray("source_curve_hypotheses");
       JSONArray candidates=result.optJSONArray("candidates");
       JSONArray ledger=result.optJSONArray("chemical_evidence_ledger");
-      require(curves!=null&&curves.length()==49,"49 source curve fits for clean air");
-      require(candidates!=null&&candidates.length()==49,"UI candidate projection counts 49 per-curve rows");
-      require(result.optInt("candidate_count",-1)==49,"candidate_count computed as source rows");
-      require(ledger!=null&&ledger.length()==13,"13 chemical reference groups NOT physical presence");
+      require(curves!=null&&curves.length()==0,"no operator-visible gas curves in same air");
+      require(candidates!=null&&candidates.length()==0,"no UI false-positive gas candidate");
+      require(result.optInt("candidate_count",-1)==0,"no reported candidate at clean-air baseline");
+      require(ledger!=null&&ledger.length()==0,"chemical research groups not presented as detected gases");
       require("UNKNOWN".equals(result.optString("reported_identity")),"actual result UNKNOWN");
       require(!result.optBoolean("ppm_reportable",true),"certified ppm not available");
       require(!result.optBoolean("reportable_ppm",true),"research bridge never certifies ppm");
       require(result.optBoolean("report_research_only",false),"result marked research only");
+      JSONArray diagnostic=result.optJSONArray("source_curve_research_diagnostic_ledger");
+      JSONArray diagnosticChemical=result.optJSONArray("chemical_unfiltered_research_diagnostic_ledger");
+      JSONObject gate=result.optJSONObject("baseline_response_gate");
+      require(diagnostic!=null&&diagnostic.length()==49,
+        "all raw numeric inversions remain accessible in isolated research ledger");
+      require(diagnosticChemical!=null&&diagnosticChemical.length()==13,
+        "all 13 source identity groups retained as diagnostic-only");
+      require(gate!=null&&!gate.optBoolean("visible_gas_hypotheses",true),
+        "same air suppresses operator findings");
+      require("WITHIN_CLEAN_AIR_REFERENCE_BAND".equals(gate.optString("state")),
+        "same-air state is reference-equivalent, not claimed air safety");
+      require(!gate.optBoolean("occupational_gas_alarm_authorized",true),
+        "physical G3 required for occupational alarm");
+      require(result.optJSONArray("gas_alerts")!=null&&
+        result.optJSONArray("gas_alerts").length()==0,"never signal false gas alert");
+
       require(!result.optBoolean("legacy_inference_fallback_used",true),"new engine only");
       require(!result.optBoolean("gas_food_isolated",false)==false,"freshness never attached");
       require(result.optJSONArray("fingerprint_feature_spaces")!=null&&
         result.optJSONArray("fingerprint_feature_spaces").length()==0,
         "single snapshot does not invent time series");
-      for(int i=0;i<curves.length();i++){
-        JSONObject fit=curves.getJSONObject(i);
+      for(int i=0;i<diagnostic.length();i++){
+        JSONObject fit=diagnostic.getJSONObject(i);
         require(Math.abs(fit.getDouble("rs_over_r0")-1.0)<1e-12,
           "clean-air ratio unity for curve "+i);
       }
@@ -98,10 +114,14 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
         .put("genuine_tank_exposure",false).put("original_production_analyzer_used",true)
         .put("observed_mq",output.channels).put("ratio_ready",8).put("source_curves",curves.length())
         .put("ui_candidates",candidates.length()).put("distinct_chemical_groups",ledger.length())
+        .put("diagnostic_curves",diagnostic.length())
+        .put("diagnostic_chemical_groups",diagnosticChemical.length())
+        .put("response_gate_state",gate.optString("state"))
         .put("reported_identity",result.optString("reported_identity"))
         .put("certified_ppm",result.optBoolean("ppm_reportable",true))
         .put("pdf_pages",pages).put("check_count",checks)
-        .put("research_ppm_example_mq2_lpg",curves.getJSONObject(0).optDouble("source_estimate_ppm_research"));
+        .put("research_ppm_example_mq2_lpg_not_operator_visible",
+          diagnostic.getJSONObject(0).optDouble("source_estimate_ppm_research"));
       write("v6_clean_air_instant_status.json",
         summary.toString(2).getBytes(StandardCharsets.UTF_8));
       write("v6_clean_air_instant_result.json",
