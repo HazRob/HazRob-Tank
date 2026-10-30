@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
 import com.servoc.app.chemical.ChemicalIdentityEquivalenceV6;
+import com.servoc.app.chemical.ChemicalIdentityCategoryV6;
 import com.servoc.app.chemical.ChemicalMolecularProjectionV6;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.MqDeviceR0LedgerV14;
@@ -226,6 +227,21 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM exposure_limits")==0,
                 "new test SQLite starts without fake numeric exposure limits");
             ChemicalSeedBootstrap.ensureNiosh(this,db);
+            ChemicalIdentityCategoryV6.Result categoryAudit=
+                ChemicalIdentityCategoryV6.ensure(db);
+            check(categoryAudit.proposed==9&&categoryAudit.already==9&&
+                categoryAudit.tagged==0&&categoryAudit.refused==0,
+                "nine distinct non-single-substance categories persist exactly once");
+            check(num(sql,"SELECT COUNT(*) FROM chemicals "+
+                "WHERE chemical_class IN ('MIXTURE_FUEL','MIXTURE_COMPLEX_AEROSOL',"+
+                "'AGGREGATE_VOC_METRIC','AGGREGATE_REACTIVE_GAS_FAMILY',"+
+                "'MEASUREMENT_INDEX_NOT_CHEMICAL','MIXTURE_REFRIGERANT')")==9,
+                "no fake CAS: all nine conceptual legacy source labels typed");
+            check(num(sql,"SELECT COUNT(*) FROM chemicals "+
+                "WHERE uid IN (136,137,138,139,140,141,142,143,144) "+
+                "AND cas IS NOT NULL AND TRIM(cas)<>''")==0,
+                "mixtures, NOx family, TVOC and LEL do not receive fictitious CAS");
+            out.put("non_single_substance_classification",categoryAudit.summary());
             ChemicalIdentityEquivalenceV6.Result synonymAudit=
                 ChemicalIdentityEquivalenceV6.ensure(db);
             long verifiedSynonyms=num(sql,
