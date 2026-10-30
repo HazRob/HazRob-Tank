@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/v6-n06d
-          python3 -m unittest -v \
+          N06D_EVIDENCE_DIR=/tmp/v6-n06d python3 -m unittest -v \
             research/chemcore_v6/tests/test_v6_n06d_actual_v9_v10_sqlite_migration.py
           cp research/chemcore_v6/results/n06d_v9_v10_sqlite_source_migration_2026-10-30.json \
             /tmp/v6-n06d/
@@ -47,6 +47,13 @@ jobs:
           assert d["imported_legacy_other_without_fabricated_sha"]==2
           assert d["backfill_idempotent"] and d["foreign_key_integrity"]
           assert d["v6_replay_of_unhashed_legacy_approval_is_forbidden"] and d["tank_g3"]==0
+          import sqlite3
+          for fname,recorded in d["verified_sqlite_files"].items():
+            db=pathlib.Path("/tmp/v6-n06d")/fname
+            assert hashlib.sha256(db.read_bytes()).hexdigest()==recorded
+            with sqlite3.connect(db) as q:
+              assert q.execute("PRAGMA integrity_check").fetchone()[0]=="ok"
+          assert len(d["verified_sqlite_files"])==2
           print("PASS N06D REAL JAVA SQLITE V9-V10 SCHEMA/BACKFILL AND IMMUTABLE APPROVED V9 TELEMETRY")
           print("ORIGINAL JAVA SHA",d["java_experiments_db_sha256"])
           print("MANIFEST SHA",hashlib.sha256(p.read_bytes()).hexdigest())
