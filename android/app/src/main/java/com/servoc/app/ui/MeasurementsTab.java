@@ -733,7 +733,7 @@ public final class MeasurementsTab {
             JSONObject sd=d.optJSONObject("sensor_power");if(sd==null)sd=LiveSensorDiagnostic.evaluate(relay,adc,mq).toJson();int valid=sd.optInt("valid_channels",0),available=sd.optInt("available_channels",0),unstable=0;
             for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){SensorHealthEngine.Snapshot h=host.sensorHealth(hw.key);if(h!=null&&(h.state==SensorHealthEngine.State.UNSTABLE||h.state==SensorHealthEngine.State.DRIFT_WARNING))unstable++;}
             arrayCard.setText("المصفوفة "+valid+"/"+available+"\nغير مستقرة "+unstable);colorState(arrayCard,valid>=6&&unstable==0,valid>=4);
-            LiveGasStateEngine.Snapshot gas=host.liveGasState();String gs=gas==null?"غير متاح":liveGasStateAr(gas.state);gasCard.setText("الاستجابة\n"+gs+(gas==null?"":" • "+gas.respondingChannels+" قنوات"));boolean gasNormal=gas!=null&&gas.state==LiveGasStateEngine.State.NORMAL;boolean gasWatch=gas!=null&&(gas.state==LiveGasStateEngine.State.WARMING_UP||gas.state==LiveGasStateEngine.State.BASELINE_REQUIRED);colorState(gasCard,gasNormal,gasWatch);
+            LiveGasStateEngine.Snapshot gas=host.liveGasState();String gs=gas==null?"غير متاح":liveGasStateAr(gas.state);gasCard.setText("استجابة إشارات MQ (بحثية فقط)\n"+gs+(gas==null?"":" • "+gas.respondingChannels+" قنوات"));boolean gasNormal=false; // No laboratory-grade normal atmosphere certification at V6.boolean gasWatch=gas!=null&&(gas.state==LiveGasStateEngine.State.WARMING_UP||gas.state==LiveGasStateEngine.State.BASELINE_REQUIRED);colorState(gasCard,gasNormal,gasWatch);
             TankInstantAnalyzer.Result completed=currentOperation;
             if(active){sessionCard.setText("العملية • جارٍ القياس");progress.setProgress(500);}
             else if(completed!=null){sessionCard.setText("العملية مكتملة\n"+completed.channels+" قنوات MQ");progress.setProgress(1000);}
@@ -744,7 +744,7 @@ public final class MeasurementsTab {
         }
     }
 
-    private String liveGasStateAr(LiveGasStateEngine.State s){if(s==null)return "غير متاح";switch(s){case INSTANT_RESPONSE:return "استجابة فورية";case RESPONSE_WATCH:return "استجابة متعددة";case RESPONSE_ALERT:return "استجابة قوية";case WARMING_UP:return "تسخين";case BASELINE_REQUIRED:return "خط أساس مطلوب";case DEGRADED:return "قياس متدهور";case NORMAL:return "طبيعي";default:return "غير متاح";}}
+    private String liveGasStateAr(LiveGasStateEngine.State s){if(s==null)return "غير متاح";switch(s){case INSTANT_RESPONSE:return "تغير لحظي";case RESPONSE_WATCH:return "تغير متعدد";case RESPONSE_ALERT:return "تغير كبير (غير معتمد)";case WARMING_UP:return "تسخين";case BASELINE_REQUIRED:return "خط أساس مطلوب";case DEGRADED:return "قياس متدهور";case NORMAL:return "بلا تغير ملحوظ (غير معتمد)";default:return "غير متاح";}}
 
     private final class SensorCard {
         final HazRobHardwareProfile.Channel hw;final LinearLayout root;final TextView head,data;final AlphaAnimation pulse;
