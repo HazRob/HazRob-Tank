@@ -99,6 +99,16 @@ def audit_mq4_temporal_continuity(archive, *, expected_member_sha256=PINNED_SHA2
         (i - 60, i) for i in range(60, len(timestamps))
         if segment_ids[i] == segment_ids[i - 60]
     ]
+    # Day-based splits can reuse the preceding day's observations when
+    # a strict 60-minute lag feature crosses midnight. This is a feature
+    # lineage/embargo diagnostic, NOT a proof of shared physical exposures.
+    cross_day_lag60 = [
+        (i, j) for i, j in lag60_pairs
+        if timestamps[i].date() != timestamps[j].date()
+    ]
+    cross_day_lag60_by_later_date = dict(sorted(Counter(
+        timestamps[j].date().isoformat() for _, j in cross_day_lag60
+    ).items()))
     dates = Counter(t.date().isoformat() for t in timestamps)
     if len(minute_pairs) + gap_count != len(rows) - 1:
         raise ValueError("MQ4_PAIR_RECONCILIATION_INVALID")
@@ -136,6 +146,13 @@ def audit_mq4_temporal_continuity(archive, *, expected_member_sha256=PINNED_SHA2
             for i, j in lag60_pairs
         ]),
         "sixty_minute_contiguous_pairs": len(lag60_pairs),
+        "sixty_minute_contiguous_pairs_crossing_calendar_days": len(cross_day_lag60),
+        "sixty_minute_lag_cross_day_pairs_by_later_date": cross_day_lag60_by_later_date,
+        "sixty_minute_lag_cross_day_test_rows_requiring_prior_day_context": len({
+            j for _, j in cross_day_lag60
+        }),
+        "calendar_day_split_window_overlap_detected": bool(cross_day_lag60),
+        "calendar_day_split_physical_independence_verified": False,
         "sixty_minute_lag_requires_60_consecutive_minute_steps": True,
         "reference_concentration_unit": "ppb",
         "mq4_channel_unit": "ohm",

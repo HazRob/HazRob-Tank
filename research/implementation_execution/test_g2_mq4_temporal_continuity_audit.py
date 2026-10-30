@@ -138,5 +138,67 @@ class MQ4TemporalAuditTests(unittest.TestCase):
         self.assertEqual(before, after)
 
 
+    def test_day_split_strict_lag60_has_sixty_cross_midnight_windows(self):
+        start = datetime(2021, 7, 21, 23, 0)
+        rows = [
+            [(start + timedelta(minutes=i)).strftime("%Y-%m-%d %H:%M:%S"),
+             2000 + i, 10 + i, 20 + i, 30 + i]
+            for i in range(121)
+        ]
+        digest = self.write(rows=rows)
+        r = self.audit(expected_member_sha256=digest)
+        self.assertEqual(r["sixty_minute_contiguous_pairs"], 61)
+        self.assertEqual(r["sixty_minute_contiguous_pairs_crossing_calendar_days"], 60)
+        self.assertEqual(r["sixty_minute_lag_cross_day_pairs_by_later_date"],
+                         {"2021-07-22": 60})
+        self.assertEqual(
+            r["sixty_minute_lag_cross_day_test_rows_requiring_prior_day_context"], 60)
+        self.assertTrue(r["calendar_day_split_window_overlap_detected"])
+        self.assertFalse(r["calendar_day_split_physical_independence_verified"])
+        self.assertFalse(r["g2_qualified"])
+
+    def test_midnight_61_row_window_has_exactly_one_cross_day_pair(self):
+        start = datetime(2021, 7, 21, 23, 30)
+        rows = [
+            [(start + timedelta(minutes=i)).strftime("%Y-%m-%d %H:%M:%S"),
+             2000 + i, 10 + i, 20 + i, 30 + i]
+            for i in range(61)
+        ]
+        digest = self.write(rows=rows)
+        r = self.audit(expected_member_sha256=digest)
+        self.assertEqual(r["sixty_minute_contiguous_pairs_crossing_calendar_days"], 1)
+        self.assertEqual(r["sixty_minute_lag_cross_day_pairs_by_later_date"],
+                         {"2021-07-22": 1})
+
+    def test_nonminute_midnight_gap_breaks_cross_day_lag_context(self):
+        start = datetime(2021, 7, 21, 23, 0)
+        rows = [
+            [(start + timedelta(minutes=i)).strftime("%Y-%m-%d %H:%M:%S"),
+             2000 + i, 10 + i, 20 + i, 30 + i]
+            for i in range(121)
+        ]
+        rows[60][0] = "2021-07-22 00:00:30"
+        digest = self.write(rows=rows)
+        r = self.audit(expected_member_sha256=digest)
+        self.assertEqual(r["sixty_minute_contiguous_pairs_crossing_calendar_days"], 0)
+        self.assertEqual(r["sixty_minute_lag_cross_day_pairs_by_later_date"], {})
+        self.assertFalse(r["calendar_day_split_window_overlap_detected"])
+
+    def test_two_midnight_boundaries_accounted_independently(self):
+        start = datetime(2021, 7, 21, 23, 0)
+        rows = [
+            [(start + timedelta(minutes=i)).strftime("%Y-%m-%d %H:%M:%S"),
+             2000 + i, 10 + i, 20 + i, 30 + i]
+            for i in range(1501)
+        ]
+        digest = self.write(rows=rows)
+        r = self.audit(expected_member_sha256=digest)
+        self.assertEqual(r["sixty_minute_contiguous_pairs_crossing_calendar_days"], 120)
+        self.assertEqual(r["sixty_minute_lag_cross_day_pairs_by_later_date"],
+                         {"2021-07-22": 60, "2021-07-23": 60})
+        self.assertEqual(
+            r["sixty_minute_lag_cross_day_test_rows_requiring_prior_day_context"], 120)
+
+
 if __name__ == "__main__":
     unittest.main()
