@@ -8,28 +8,39 @@ import java.util.Map;
 /** V5 staged R0 protocol: compute eight candidates, then explicitly approve before NVS write. */
 public final class FirmwareR0Contract {
     public static final String SCHEMA="tank-r0-fw-v5/2";
+    public static final String V6_SCHEMA="tank-r0-fw-v6/1";
     private FirmwareR0Contract(){}
 
     public static final class Progress {
-        public final String state,error;
-        public final int elapsedMs,durationMs,warmupMs;
+        public final String state,error,r0Definition,protocol;
+        public final int elapsedMs,durationMs,warmupMs,windowCount,windowIndex;
         public final boolean committed,pending;
         public final Map<String,Integer> counts;
         private Progress(String state,String error,int elapsedMs,int durationMs,int warmupMs,
+                         int windowCount,int windowIndex,String definition,String protocol,
                          boolean committed,boolean pending,Map<String,Integer> counts){
             this.state=state;this.error=error;this.elapsedMs=elapsedMs;this.durationMs=durationMs;
-            this.warmupMs=warmupMs;this.committed=committed;this.pending=pending;
+            this.warmupMs=warmupMs;this.windowCount=windowCount;this.windowIndex=windowIndex;
+            r0Definition=definition;this.protocol=protocol;
+            this.committed=committed;this.pending=pending;
             this.counts=Collections.unmodifiableMap(counts);
         }
-        public boolean active(){return "warmup".equals(state)||"sampling".equals(state);}
+        public boolean active(){return "warmup".equals(state)||"sampling".equals(state)||"resting".equals(state);}
     }
 
     public static Progress progress(JSONObject response){
-        if(response==null||!SCHEMA.equals(response.optString("schema","")))
+        if(response==null)throw new IllegalArgumentException("Missing firmware R0 API");
+        String schema=response.optString("schema","");
+        boolean v6=V6_SCHEMA.equals(schema);
+        if(!v6&&!SCHEMA.equals(schema))
             throw new IllegalArgumentException("Unsupported firmware R0 API schema");
+        int windows=response.optInt("window_count",v6?0:1);
+        String definition=response.optString("r0_definition","");
+        if(v6&&(windows!=3||!"DEVICE_CLEAN_AIR_RS_MEAN".equals(definition)))
+            throw new IllegalArgumentException("V6 requires explicit three-window Rs-air baseline");
         String state=response.optString("state","");
         if(!("idle".equals(state)||"warmup".equals(state)||"sampling".equals(state)
-             ||"ready".equals(state)||"pending".equals(state)||"error".equals(state)||"cancelled".equals(state)))
+             ||"ready".equals(state)||"pending".equals(state)||"resting".equals(state)||"error".equals(state)||"cancelled".equals(state)))
             throw new IllegalArgumentException("Unknown R0 state");
         Map<String,Integer> counts=new LinkedHashMap<>();
         JSONObject channels=response.optJSONObject("channels");
@@ -49,7 +60,10 @@ public final class FirmwareR0Contract {
             throw new IllegalArgumentException("R0 committed flag contradicts state");
         return new Progress(state,response.optString("error",""),
                 Math.max(0,response.optInt("elapsed_ms",0)),Math.max(0,response.optInt("duration_ms",0)),
-                Math.max(0,response.optInt("warmup_ms",0)),committed,pending,counts);
+                Math.max(0,response.optInt("warmup_ms",0)),windows,
+                Math.max(1,response.optInt("window_index",1)),definition,
+                response.optString("protocol",v6?"V6_THREE_WINDOW":"V5_LEGACY"),
+                committed,pending,counts);
     }
 
     /** Only an uncommitted PENDING result can be presented for user approval. */
@@ -76,7 +90,7 @@ public final class FirmwareR0Contract {
         for(String key:ManualR0Calibration.keys()){
             JSONObject q=channels.optJSONObject(key);
             double value=q.optDouble("r0",Double.NaN);
-            if(p.counts.get(key)<10||!Double.isFinite(value)||value<=0)
+            if(p.counts.get(key)<(p.windowCount==3?30:10)||!Double.isFinite(value)||value<=0)
                 throw new IllegalStateException("Invalid firmware R0: "+key);
             values.put(key,value);
         }
