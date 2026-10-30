@@ -128,7 +128,7 @@
         "G01": {
           "status": "FAIL",
           "applicable": true,
-          "notes": "No logo or repeated report header/footer; source has text title only.",
+          "notes": "No logo or repeated report header/footer; source has text title only. Owner approved supplied target hexagonal logo; requires PDF integration.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
           "corrective_action": "Discuss R01 proposal before changing source",
@@ -272,7 +272,7 @@
         "G17": {
           "status": "FAIL",
           "applicable": true,
-          "notes": "No black header, 15pt amber title or source timestamp at left; fixed y positions and no formal 1.15/0/2x1mm metrics.",
+          "notes": "No black header, 15pt amber title or source timestamp at left; fixed y positions and no formal 1.15/0/2x1mm metrics. Right-header logo selected and committed as Android vector.",
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
           "corrective_action": "Implement after owner approves R01 design and source time contract.",
@@ -332,7 +332,9 @@
         "gas_identity": "UNKNOWN",
         "ppm_reportable": false,
         "sample_type": "SYNTHETIC TEST"
-      }
+      },
+      "design_identity_asset": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
+      "design_identity_asset_owner_approved": true
     },
     {
       "report_id": "R02",
@@ -370,7 +372,7 @@
         "G01": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Owner approved supplied target hexagonal logo; requires PDF integration.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -514,7 +516,7 @@
         "G17": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Right-header logo selected and committed as Android vector.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -549,7 +551,9 @@
         "Printed-scale page-size and overflow QA",
         "Source data to PDF checksum/value comparisons",
         "owner approval and CI run"
-      ]
+      ],
+      "design_identity_asset": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
+      "design_identity_asset_owner_approved": true
     },
     {
       "report_id": "R03",
@@ -589,7 +593,7 @@
         "G01": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Owner approved supplied target hexagonal logo; requires PDF integration.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -733,7 +737,7 @@
         "G17": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Right-header logo selected and committed as Android vector.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -768,7 +772,9 @@
         "Printed-scale page-size and overflow QA",
         "Source data to PDF checksum/value comparisons",
         "owner approval and CI run"
-      ]
+      ],
+      "design_identity_asset": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
+      "design_identity_asset_owner_approved": true
     },
     {
       "report_id": "R04",
@@ -806,7 +812,7 @@
         "G01": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Owner approved supplied target hexagonal logo; requires PDF integration.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -950,7 +956,7 @@
         "G17": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Right-header logo selected and committed as Android vector.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -985,7 +991,9 @@
         "Printed-scale page-size and overflow QA",
         "Source data to PDF checksum/value comparisons",
         "owner approval and CI run"
-      ]
+      ],
+      "design_identity_asset": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
+      "design_identity_asset_owner_approved": true
     },
     {
       "report_id": "R05",
@@ -1022,7 +1030,7 @@
         "G01": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Owner approved supplied target hexagonal logo; requires PDF integration.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -1166,7 +1174,7 @@
         "G17": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Right-header logo selected and committed as Android vector.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -1201,7 +1209,9 @@
         "Printed-scale page-size and overflow QA",
         "Source data to PDF checksum/value comparisons",
         "owner approval and CI run"
-      ]
+      ],
+      "design_identity_asset": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
+      "design_identity_asset_owner_approved": true
     },
     {
       "report_id": "R06",
@@ -1238,7 +1248,7 @@
         "G01": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Owner approved supplied target hexagonal logo; requires PDF integration.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -1382,7 +1392,7 @@
         "G17": {
           "status": "NOT_AUDITED",
           "applicable": null,
-          "notes": "",
+          "notes": " Right-header logo selected and committed as Android vector.",
           "evidence_pdf_page": null,
           "evidence_source_line": null,
           "corrective_action": null,
@@ -1417,7 +1427,9 @@
         "Printed-scale page-size and overflow QA",
         "Source data to PDF checksum/value comparisons",
         "owner approval and CI run"
-      ]
+      ],
+      "design_identity_asset": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
+      "design_identity_asset_owner_approved": true
     }
   ],
   "shared_acceptance_criteria": {
@@ -1476,5 +1488,20 @@
     },
     "body_text_min_pt": 12
   },
-  "report_boundary": "NO_SECOND_ANALYTICAL_GATES_IN_PDF; engine supplies decisions and science; PDF provides presentation only."
+  "report_boundary": "NO_SECOND_ANALYTICAL_GATES_IN_PDF; engine supplies decisions and science; PDF provides presentation only.",
+  "approved_logo_asset": {
+    "source_sha256": "bddf42c56b6e44f68ccaf70ab2a9aafc4b28576199fac353dfd62f3e1933ba5a",
+    "raster_size": [
+      1024,
+      1024
+    ],
+    "source_colors": [
+      "#000000",
+      "#FFBE00",
+      "#FFFFFF"
+    ],
+    "android_vector_resource": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
+    "original_image_exact": true,
+    "vector_trace_needs_visual_qa": true
+  }
 }
