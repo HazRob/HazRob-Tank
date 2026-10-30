@@ -1,3 +1,13 @@
+## 2026-10-30 — G2 exact repeated declared-provenance row diagnostics (477/477 CI)
+
+- Resumed from research HEAD `070a4ffaf03bb8ad87d87a8feb54da0a313620d9`; verified all 20/20 previous branch-head workflows SUCCESS. Central pinned scope remains 80 techniques / 14 source slots; no independent source provenance `records=[]`, 0/14 qualified sources, 0/80 G2 candidates.
+- Research-only extension to `g2_declared_provenance_overlap_audit.py`: count unique full declared rows, exact duplicate excess rows, repeated row patterns, and declared row counts per group. Do **not** equate rows or duplicate metadata with independent physical exposures; do not automatically reject legitimate repeated measurements. Preserve existing full-row semantic SHA256, row-order invariance, NFKC alias fail-closed checks, and source/nonpromotion flags.
+- Seven synthetic regressions in `test_g2_declared_provenance_duplicate_rows.py`; implementation commit `417b6ff3dd1b87a6f2eaf0988c5a47178d2b12fa`, test fixture correction `0169255726fc57c14ab59d18906e083569ea6106`. [G2 Actions run 41047379807](https://github.com/HazRob/HazRob-Tank/actions/runs/41047379807), job `124034670324`: **477/477 PASS**, deterministic audit and triage replay PASS, publication guard PASS, 0 candidates / 80 blocked / 14 source-blocked. No G2/G3 qualification.
+- Arabic methodology: `G2_DECLARED_PROVENANCE_EXACT_DUPLICATE_ROWS_2026-10-30_AR.md`, documentation commit `fb393dadb0b65796730620b2cd44fcea8663e030`. All changes limited to `research/implementation_execution/` on research branch; ChemCore Stable, Android, firmware, and main unchanged. Verify final documentation-checkpoint CI before declaring technical closure.
+- Scientific blocker unchanged: authenticated physical sample/exposure/session/device IDs, traceable concentration-reference calibration and preregistered blinded physically grouped holdouts. No scientific G2/G3 promotion without independent evidence.
+
+---
+
 ## 2026-10-30 — G2 declared provenance CSV exact-width fail-closed (470/470 CI)
 
 - Resumed from research HEAD `b8bb8bf7983660ab9f2a1e710861ef3518ebc2cc`, prior G2 workflow successful; pinned 80 techniques, 14 source slots, independent evidence `records=[]`.
