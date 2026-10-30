@@ -26,7 +26,8 @@ class StableLiveGateAndSettings(unittest.TestCase):
         self.assertLess(MANAGER.index("client.downloadPayload(checked.remote, staging)"),
                         MANAGER.index("boolean activeNow=liveMeasurementActive.getAsBoolean()"))
         self.assertIn("appVersion, activeNow, false",MANAGER)
-        self.assertIn("()->ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())",SETTINGS)
+        self.assertIn("ChemicalReferenceSyncV6.refresh(",SETTINGS)
+        self.assertIn("host.refreshAllTabs()",SETTINGS)
         self.assertNotIn("libraryManager.install(c,ReleaseAudit.VERSION,false)",SETTINGS)
         self.assertIn("()->ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())",STATUS)
         self.assertNotIn("libraryUpdater.install(checked,ReleaseAudit.VERSION,\n                        ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()))",STATUS)
