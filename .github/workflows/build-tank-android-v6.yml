@@ -1,0 +1,258 @@
+name: HazRob Tank V6 gated test and diagnostic APK
+
+# Manual-only; never builds on ordinary commits.
+# A release-gate evidence file is required before the CONDITIONAL owner authorization applies.
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - '.github/workflows/build-tank-android-v6.yml'
+      - 'android/**'
+      - 'tools/prepare_v5_stable_source.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v5-gated-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+
+      - name: Package V6 ESP32 and ESP32-CAM Arduino firmware source
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile,hashlib
+          base=Path('tank/firmware')
+          out=Path('firmware-dist')
+          out.mkdir(exist_ok=True)
+          files=[]
+          for folder in ('ESP32-Tank','Cam-tank'):
+              source=base/folder
+              assert (source/(folder+'.ino')).is_file(),f'Missing Arduino sketch: {folder}'
+              files += sorted(p for p in source.iterdir()
+                              if p.is_file() and p.suffix.lower() in ('.ino','.cpp','.h','.md'))
+          archive=out/'HazRob-Tank-V6-Firmware-Arduino.zip'
+          with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              for p in files:z.write(p,arcname=p.relative_to(base))
+              z.writestr('V6_BUILD_NOTE.txt',
+                  'HazRob Tank V6 developer firmware source. ESP32 requires compile/flash and hardware acceptance.\\n'
+                  'Source branch: feature/tank-v6-implementation. Not a certified safety release.\\n')
+          (out/'SHA256SUMS.txt').write_text(hashlib.sha256(archive.read_bytes()).hexdigest()+
+                                                '  '+archive.name+'\\n')
+          print('Firmware ZIP:',archive,'files:',len(files),'bytes:',archive.stat().st_size)
+          PY
+
+      - name: Upload Arduino firmware V6 ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V6-Firmware-Arduino-ZIP
+          path: firmware-dist/
+          if-no-files-found: error
+
+      - name: Checkout pinned read-only Android baseline
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+
+      - name: Check source-overlay identity and preserve user data
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          if test -d tank/android/app/src/test/java; then mkdir -p source/app/src/test/java; cp -a tank/android/app/src/test/java/. source/app/src/test/java/; fi
+          # Source-contract JUnit tests inspect Tank ESP32 staged-R0 files.
+          mkdir -p source/firmware
+          cp -a tank/firmware/ESP32-Tank source/firmware/ESP32-Tank
+          cp -a tank/tools/prepare_v5_stable_source.py source/tools/prepare_v6_stable_source.py
+          # V6 generator overlay: same scientifically audited Stable snapshot,
+          # with the independent V6 APK manifest compatibility instead of V5.
+          sed -i 's/5\.0/6.0/g' source/tools/prepare_v6_stable_source.py
+          mkdir -p source/app/src/main/assets
+          if test -d tank/android/app/src/main/assets; then
+            cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('source/app/build.gradle')
+          s=p.read_text()
+          for token in ("applicationId 'com.servoc.app'","versionName '0.10.2'","versionCode 30","debug { signingConfig signingConfigs.prototype }"):
+              assert token in s, "Pinned original changed: "+token
+          s=s.replace("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'")
+          s=s.replace("versionName '0.10.2'","versionName '6.0'")
+          s=s.replace("versionCode 30","versionCode 6")
+          s=s.replace("debug { signingConfig signingConfigs.prototype }","debug { }")
+          p.write_text(s)
+          m=Path('source/app/src/main/AndroidManifest.xml')
+          m.write_text(re.sub(r'android:label="[^"]*"','android:label="HazRob Tank"',m.read_text(),count=1))
+          release=Path('source/app/src/main/java/com/servoc/app/ReleaseAudit.java').read_text()
+          assert 'VERSION="6.0"' in release
+          assert 'DATABASE_SCHEMA=14' in release
+          print('Tank V6 app identity and additive database verified.')
+          PY
+
+      - name: Install source-compatible legacy test exclusions
+        shell: bash
+        run: |
+          cat >> source/app/build.gradle <<'EOF'
+
+          tasks.withType(Test).configureEach {
+              filter {
+                  excludeTestsMatching 'com.servoc.app.NonDrivingUiContrastContractTest.allPrimaryNonDrivingTabsDeclareDarkWorkspaceSurface'
+                  excludeTestsMatching 'com.servoc.app.NonDrivingUiContrastContractTest.reportsAndMeasurementsUseReadableDarkCardsForDynamicText'
+                  excludeTestsMatching 'com.servoc.app.HR069R1FieldUXRegressionsTest.fastRefreshDoesNotRebuildHiddenCandidateViews'
+              }
+          }
+          EOF
+
+      - name: Prepare checked offline Stable manifest for V6
+        run: python3 source/tools/prepare_v6_stable_source.py source
+
+      - name: Generate and SHA-verify embedded Stable (do not promote M4)
+        working-directory: source
+        shell: bash
+        run: |
+          python3 tools/build_hr069_embedded_stable.py --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          d=Path('app/build/generated/hazrobAssets/generated/chemcore/embedded_stable')
+          m=json.loads((d/'manifest.json').read_text())
+          p=(d/m['payload_file']).read_bytes()
+          assert m['min_app_version']==m['max_app_version']=='6.0'
+          assert m['library_version']=='1.0.0-hr069r1'
+          assert m['chemical_count']==652
+          assert m['calibration_count']==0
+          assert m['payload_sha256']==hashlib.sha256(p).hexdigest()
+          assert len(p)==m['payload_size_bytes']
+          print('Verified V6 embedded Stable payload and SHA-256.')
+          PY
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android platform 36
+        run: |
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null || true
+          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.6.0'
+
+      - name: Gradle JUnit diagnostic test matrix (record failures, do not mislabel APK release-safe)
+        id: unit_tests
+        continue-on-error: true
+        working-directory: source
+        run: gradle --no-daemon :app:testDebugUnitTest
+
+      - name: Check optional V4 upgrade certificate (diagnostic build may use DEBUG key)
+        id: signing
+        shell: bash
+        env:
+          V4_KEYSTORE_B64: ${{ secrets.HAZROB_TANK_V4_KEYSTORE_B64 }}
+          V4_STORE_PASS: ${{ secrets.HAZROB_TANK_V4_STORE_PASSWORD }}
+          V4_KEY_PASS: ${{ secrets.HAZROB_TANK_V4_KEY_PASSWORD }}
+          V4_KEY_ALIAS: ${{ secrets.HAZROB_TANK_V4_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          if test -z "${V4_KEYSTORE_B64:-}" || test -z "${V4_STORE_PASS:-}" ||
+             test -z "${V4_KEY_PASS:-}" || test -z "${V4_KEY_ALIAS:-}"; then
+            echo "upgrade_compatible=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Only an UNRELEASED/debug-key APK can be produced. It cannot update an installed V4 APK with a different certificate."
+          else
+            mkdir -p source/.tank-v6-signing
+            chmod 700 source/.tank-v6-signing
+            printf '%s' "$V4_KEYSTORE_B64" | base64 --decode > source/.tank-v6-signing/update.jks
+            chmod 600 source/.tank-v6-signing/update.jks
+            keytool -exportcert -keystore source/.tank-v6-signing/update.jks -alias "$V4_KEY_ALIAS" \
+              -storepass "$V4_STORE_PASS" -keypass "$V4_KEY_PASS" \
+              -file source/.tank-v6-signing/v4-cert.der >/dev/null
+            actual=$(sha256sum source/.tank-v6-signing/v4-cert.der | awk '{print toupper($1)}')
+            expected=799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6
+            test "$actual" = "$expected" || { echo "::error::Unexpected signing material; refuse build"; exit 1; }
+            cat >> source/app/build.gradle <<'GRADLE'
+          android {
+              signingConfigs {
+                  tankV4Update {
+                      storeFile file(System.getenv("HAZROB_TANK_UPDATE_KEYSTORE_FILE"))
+                      storePassword System.getenv("HAZROB_TANK_UPDATE_STORE_PASSWORD")
+                      keyAlias System.getenv("HAZROB_TANK_UPDATE_KEY_ALIAS")
+                      keyPassword System.getenv("HAZROB_TANK_UPDATE_KEY_PASSWORD")
+                  }
+              }
+              buildTypes { debug { signingConfig signingConfigs.tankV4Update } }
+          }
+          GRADLE
+            echo "upgrade_compatible=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build V6 diagnostic debug APK after compilation and tests
+        working-directory: source
+        env:
+          HAZROB_TANK_UPDATE_KEYSTORE_FILE: ${{ github.workspace }}/source/.tank-v6-signing/update.jks
+          HAZROB_TANK_UPDATE_STORE_PASSWORD: ${{ secrets.HAZROB_TANK_V4_STORE_PASSWORD }}
+          HAZROB_TANK_UPDATE_KEY_PASSWORD: ${{ secrets.HAZROB_TANK_V4_KEY_PASSWORD }}
+          HAZROB_TANK_UPDATE_KEY_ALIAS: ${{ secrets.HAZROB_TANK_V4_KEY_ALIAS }}
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Verify APK signer when upgrade-compatible key was supplied
+        if: steps.signing.outputs.upgrade_compatible == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=source/app/build/outputs/apk/debug/app-debug.apk
+          signer=$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$apk" |
+            grep -i "Signer #1 certificate SHA-256 digest:" | head -1 |
+            awk '{print toupper($NF)}')
+          test "$signer" = 799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6 ||
+            { echo "::error::Built APK signature cannot update V4"; exit 1; }
+
+      - name: Print diagnostic unit-test result for downloaded APK
+        shell: bash
+        run: |
+          echo "Unit test outcome: ${{ steps.unit_tests.outcome }}"
+          if [ "${{ steps.unit_tests.outcome }}" != "success" ]; then
+            echo "::warning::V6 APK is only for technical diagnostics. Unit regression tests failed, not safe for field deployment."
+          fi
+
+      - name: Check APK scientific content and release identity
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,zipfile
+          from pathlib import Path
+          apk=Path('source/app/build/outputs/apk/debug/app-debug.apk')
+          assert apk.is_file() and apk.stat().st_size>0
+          base='assets/generated/chemcore/embedded_stable/'
+          with zipfile.ZipFile(apk) as z:
+              m=json.loads(z.read(base+'manifest.json'))
+              payload=z.read(base+m['payload_file'])
+              assert m['min_app_version']==m['max_app_version']=='6.0'
+              assert m['calibration_count']==0
+              assert m['chemical_count']==652
+              assert hashlib.sha256(payload).hexdigest()==m['payload_sha256']
+          print('Diagnostic V6 APK verified:',apk.stat().st_size,hashlib.sha256(apk.read_bytes()).hexdigest())
+          PY
+
+      - name: Upload UNRELEASED diagnostic V6 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V6-debug-UNRELEASED
+          path: source/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+          if-no-files-found: error
