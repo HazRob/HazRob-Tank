@@ -45,11 +45,11 @@ assert coverage['materials_with_name_en']==734,coverage
 assert not coverage['scientific_fields_exhaustive'],coverage
 assert coverage['missing_values_policy']=='NULL_NOT_ZERO_NO_SAFETY_INFERENCE'
 assert coverage['materials_with_cas']==671,coverage
-assert coverage['materials_with_niosh_cas_equivalence']==15,coverage
-assert coverage['materials_with_direct_or_linked_cas']==686,coverage
-assert coverage['materials_without_direct_or_linked_cas']==48,coverage
+assert coverage['materials_with_niosh_cas_equivalence']==21,coverage
+assert coverage['materials_with_direct_or_linked_cas']==692,coverage
+assert coverage['materials_without_direct_or_linked_cas']==42,coverage
 assert coverage['non_single_substance_labels']==9,coverage
-assert coverage['individual_materials_without_linked_cas']==39,coverage
+assert coverage['individual_materials_without_linked_cas']==33,coverage
 import csv
 with open('/tmp/v6-n09-scientific-risk/v6_chemical_catalog_coverage.csv',newline='') as stream:
     records=list(csv.DictReader(stream))
