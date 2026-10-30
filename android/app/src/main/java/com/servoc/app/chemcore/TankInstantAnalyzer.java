@@ -4,6 +4,8 @@ import com.hazrob.tank.v6integration.TankV6TelemetryAdapter;
 import com.hazrob.tank.chemcore.v6.ChemCoreTankV6;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.chemical.ChemicalRepository;
+import com.servoc.app.chemical.GhsPictograms;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.servoc.app.hardware.HazRobHardwareProfile;
@@ -66,6 +68,7 @@ public final class TankInstantAnalyzer {
         JSONArray source=out.optJSONArray("source_curve_hypotheses");
         JSONArray candidates=new JSONArray();
         ChemicalRepository master=new ChemicalRepository(db);
+        Map<Long,List<String>> ghs=GhsPictograms.allQualified(db);
         // The V6 source-catalog chemical_reference_id is a 0-based legacy
         // chemical index, NOT the SQLite chemical UID. Never compare/join them
         // as identical integers: resolve explicitly through legacy_id.
@@ -90,6 +93,11 @@ public final class TankInstantAnalyzer {
                 item.put("legacy_id",legacyId);
                 item.put("label",chemical.label());
                 item.put("cas",chemical.cas==null?JSONObject.NULL:chemical.cas);
+                // Source-qualified known-material hazard only, NEVER evidence
+                // of identifying the gas from the current MQ snapshot.
+                item.put("ghs_pictograms",GhsPictograms.asJson(ghs.get(chemical.uid)));
+                item.put("ghs_pictogram_scope","CLASSIFICATION_IF_IDENTITY_CONFIRMED");
+                item.put("ghs_is_detection_evidence",false);
                 item.put("unified_catalog_identity_resolved",true);
                 item.put("source_label_not_proof_of_gas_identity",true);
                 item.put("research_only",true);
