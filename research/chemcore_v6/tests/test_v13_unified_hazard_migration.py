@@ -12,7 +12,7 @@ METHOD="createV13ChemicalHazardAndTechniques"
 
 def source_sql():
     source=SOURCE.read_text(encoding="utf8")
-    assert "DB_VERSION=13;" in source
+    assert re.search(r"DB_VERSION=1[3-9];",source), "schema must retain V13 migrations"
     m=re.search(r"private static void "+METHOD+r"\s*\(SQLiteDatabase db\)\s*\{",source)
     if m is None:raise AssertionError("missing V13 Java migration method")
     start=m.end()-1;level=0;end=None
