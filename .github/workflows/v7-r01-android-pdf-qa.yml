@@ -130,7 +130,7 @@ jobs:
           assert r02file.is_file() and r02file.stat().st_size>5000
           physical=fitz.open(r02file)
           assert len(physical)>=2,('dynamic-page count',len(physical))
-          fulltext=' '.join(page.get_text().replace('\\n',' ').split() for page in physical)
+          fulltext=' '.join(' '.join(page.get_text().split()) for page in physical)
           expected=['Temperature','Humidity','Pressure','Illuminance',
                     'Luminous Flux','Noise','Vibration','Ionizing Radiation',
                     'UV Index','PM1','PM2.5','PM10','Wind Speed',
