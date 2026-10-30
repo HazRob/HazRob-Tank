@@ -33,7 +33,7 @@ public final class MqExternalR0RsSeedV14 {
     }
     private static void source(SQLiteDatabase db,JSONObject source){
         ContentValues v=new ContentValues();
-        v.put("source_id",source.getClass()==null?"":source.optString("id",""));
+        v.put("source_id",source.optString("id",""));
         v.put("title",source.optString("title","Peer MQ R0 study"));
         v.put("authority","EXTERNAL_STUDY_RESEARCH_NOT_MANUFACTURER_CALIBRATION");
         v.put("url",source.optString("url",""));
