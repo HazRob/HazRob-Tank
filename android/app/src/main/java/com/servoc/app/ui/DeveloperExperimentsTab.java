@@ -18,6 +18,8 @@ import com.servoc.app.analytics.LibraryStatus;
 import com.servoc.app.calibration.ManualR0Calibration;
 import com.servoc.app.calibration.TankReferenceR0Gate;
 import com.servoc.app.chemical.ChemicalExperimentStatusRepository;
+import com.servoc.app.chemical.ChemicalReferenceSyncV6;
+import com.servoc.app.chemcore.library.ChemCoreLibraryManager;
 import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.data.ExperimentQueries;
 import com.servoc.app.data.ReferenceLineageGuard;
@@ -73,7 +75,11 @@ public final class DeveloperExperimentsTab {
         LinearLayout chooser=UiKit.card(context);chooser.addView(UiKit.title(context,"اختيار المادة وحالة المكتبة"),UiKit.full(context));
         Button choose=UiKit.button(context,"فتح قائمة المواد • بحث وفرز");choose.setOnClickListener(v->openChemicalMatrix());chooser.addView(choose,UiKit.full(context));
         selectedMaterial=UiKit.text(context,"لم يتم اختيار مادة");selectedMaterial.setBackgroundColor(0xFFEDEFF2);chooser.addView(selectedMaterial,UiKit.full(context));
-        statusLine=UiKit.small(context,"بصمة —   PPM —   M4 —");statusLine.setBackgroundColor(0xFFEDEFF2);chooser.addView(statusLine,UiKit.full(context));root.addView(chooser,UiKit.full(context));
+        statusLine=UiKit.small(context,"بصمة —   PPM —   M4 —");statusLine.setBackgroundColor(0xFFEDEFF2);chooser.addView(statusLine,UiKit.full(context));
+        Button querySelected=UiKit.button(context,"استعلام GitHub عن إمكانات المادة المحددة");
+        querySelected.setOnClickListener(v->querySelectedChemical());
+        chooser.addView(querySelected,UiKit.full(context));
+        root.addView(chooser,UiKit.full(context));
 
         LinearLayout power=UiKit.card(context);power.addView(UiKit.title(context,"طاقة وحالة MQ"),UiKit.full(context));LinearLayout pb=UiKit.hbox(context);Button off=UiKit.button(context,"MQ OFF");off.setOnClickListener(v->mqPower(false));pb.addView(off,UiKit.weight(1));Button on=UiKit.button(context,"MQ ON — 8");on.setOnClickListener(v->mqPower(true));pb.addView(on,UiKit.weight(1));power.addView(pb,UiKit.full(context));powerStatus=UiKit.small(context,"—");powerStatus.setBackgroundColor(0xFFEDEFF2);power.addView(powerStatus,UiKit.full(context));root.addView(power,UiKit.full(context));
 
@@ -105,6 +111,25 @@ public final class DeveloperExperimentsTab {
     private void openChemicalMatrix(){new ChemicalExperimentMatrixDialog(context,statusRepo,this::selectChemical).show();}
     private void selectChemical(ChemicalRepository.Chemical c,ChemicalExperimentStatusRepository.Row s){selectedChemical=c;selectedChemicalStatus=s;selectedMaterial.setText(ChemicalExperimentStatusRepository.displayName(c));statusLine.setText(s.capabilityLine()+"   • "+recommendation(s));statusLine.setTextColor(s.m4?0xFF167443:s.ppm==ChemicalExperimentStatusRepository.Level.PARTIAL?0xFF9A5A00:Color.BLACK);}
     private static String recommendation(ChemicalExperimentStatusRepository.Row s){if(s.fingerprint==ChemicalExperimentStatusRepository.Level.NONE)return"الأولوية: بناء بصمة";if(s.ppm==ChemicalExperimentStatusRepository.Level.NONE)return"الأولوية: تجارب كمية";if(!s.m4)return"الأولوية: استكمال M4";return"التغطية التشغيلية مكتملة";}
+
+    private void querySelectedChemical(){
+        final long uid=selectedChemical==null?0:selectedChemical.uid;
+        if(uid<=0){host.showToast("حدد المادة المراد الاستعلام عنها أولاً");return;}
+        host.io().execute(()->{
+            try{
+                ChemicalReferenceSyncV6.Result data=ChemicalReferenceSyncV6.refresh(
+                    host.database(),uid,1,
+                    ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()));
+                host.database().putMeta("v6_reference_sync_result",data.summary());
+                host.showToast(data.applied>0?
+                    "تم تحديث إمكانات المادة من المكتبة المركزية":
+                    "إمكانات المادة محدّثة: "+data.revision);
+                host.refreshAllTabs();
+            }catch(Exception e){
+                host.showToast("تعذر الاستعلام عن المادة: "+e.getClass().getSimpleName());
+            }
+        });
+    }
 
     private void mqPower(boolean on){host.io().execute(()->{try{host.robotApi().mqPower(on);host.showToast(on?"تم تشغيل مجموعة MQ الثمانية":"تم إيقاف مجموعة MQ");host.refreshAllTabs();}catch(Exception e){host.showToast("تعذر التحكم بطاقة MQ");}});}
     private void measurement(boolean start){if(start&&r0Count()<8){host.showToast("يجب إتمام واعتماد R0 للثمانية حساسات قبل تنفيذ تجربة مرجعية");return;}host.io().execute(()->{try{if(start){MeasurementSessionRegistry.markDeveloperMqCycle();host.robotApi().startMeasurement();}else{MeasurementSessionRegistry.clearDeveloperMqCycle();host.robotApi().cancelMeasurement();}host.showToast(start?"بدأ averaging":"أُلغي averaging");}catch(Exception e){MeasurementSessionRegistry.clearDeveloperMqCycle();host.showToast("تعذر إرسال الأمر");}});}
