@@ -35,13 +35,13 @@ class RestrictedConnect(socketserver.BaseRequestHandler):
                 client.sendall(b"HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n")
                 return
             remote=socket.create_connection(ALLOWED,timeout=18)
-            remote.setblocking(False)
+            remote.settimeout(TIMEOUT)
             client.sendall(b"HTTP/1.1 200 Connection Established\r\n\r\n")
             # Additional buffered data may be part of the TLS handshake.
             if b"\r\n\r\n" in first:
                 tail=first.split(b"\r\n\r\n",1)[1]
                 if tail: remote.sendall(tail)
-            client.setblocking(False)
+            client.settimeout(TIMEOUT)
             for _ in range(10000):
                 readable,_,_=select.select([client,remote],[],[],TIMEOUT)
                 if not readable:break
