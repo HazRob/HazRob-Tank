@@ -26,7 +26,19 @@ public final class TankReferenceR0Gate {
             // A legacy unbound manual R0 can be studied as exploratory evidence,
             // never silently associated with another physical sensor array.
             if(!controllerId.equals(q.optString("r0_device_id","")))return false;
-            if("firmware_clean_air_r0".equals(source)&&q.optInt("r0_samples",0)<10)
+            // Same evidence contract as the V6 instantaneous clean-air
+            // screen: source labels never substitute for measured windows.
+            if("firmware_clean_air_r0".equals(source)||
+                    "automatic_clean_air_field_r0".equals(source)){
+                if(!"DEVICE_CLEAN_AIR_RS_MEAN".equals(
+                        q.optString("r0_definition","")))return false;
+                int windows=q.optInt("r0_window_count",0);
+                int samples=q.optInt("r0_samples",0);
+                if(!((windows==1&&samples>=10)||
+                        (windows==3&&samples>=30)))return false;
+            }
+            if("manual_device_r0".equals(source)&&
+                    !q.optBoolean("r0_clean_air_reference_independently_verified",false))
                 return false;
         }
         return true;
