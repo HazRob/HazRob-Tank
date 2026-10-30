@@ -1,3 +1,12 @@
+## 2026-10-31 — G2 MQ4 cross-midnight day adjacency and lag-one continuity (CI pending)
+
+- Resumed from `6857c83a9330885ff5cd629ed277a16fcf7b3844`; verified **20/20 prior HEAD Actions successes** and preserved 605-test baseline. Research-only updates to `g2_mq4_cross_report_reconciliation.py` and `test_g2_mq4_cross_report_reconciliation.py` add fail-closed checks for **nonadjacent calendar-day crossings** and **positive longer-lag midnight crossing without a lag-one contiguous crossing**. Added **three synthetic regression cases** and Arabic methodology `G2_MQ4_CROSS_DAY_CONTIGUITY_2026-10-31_AR.md`. Expected test count is **608**, but **do not claim 608/608 PASS before G2 CI finishes**.
+- Explicitly rejected an initially considered cross-day-count monotonicity rule: short contiguous segments can yield fewer long-lag pairs; removed that incorrect check and its test before the final checkpoint. The remaining checks are necessary report-consistency constraints, not raw replay or scientific qualification.
+- Code/tests final commit `004bc4421a76317174e81d86d63c091152c2f2d7`; documentation correction `8c889fc7ca430867dced9eaff4fef2f32b0b916c`. The G2 Actions run `41144282084` and associated workflows were queued at last check. Recheck CI and repair any failures; validate 80-technique fail-closed gate, deterministic replay and publication guard before calling this checkpoint verified.
+- `G2_INDEPENDENT_EVIDENCE.json` still contains `records=[]`; 0/80 scientific G2 candidates and 14/14 source slots blocked at last verified gate. No ChemCore Stable, Android, firmware or main changes. Missing independently measured physical exposures, traceable reference calibrations, blinded holdouts and external scientific review still block scientific promotion.
+
+---
+
 ## 2026-10-31 — G2 MQ4 temporal and fold-complement consistency gate (605/605 CI verified)
 
 - Resumed from `c369cff69598121143a67ec017adf0099b38d242`; independently verified **20/20 prior commit Actions successes**. Source catalog remains 14/14 blocked, independent evidence `records=[]`, scientific G2 0/80 candidates.
