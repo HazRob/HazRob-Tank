@@ -198,6 +198,12 @@
       "id": "R05-D01-06-FRUIT-TWO-PAGE-OWNER",
       "text": "Owner approves R05 fruit PDF redesign: fixed RTL first column with actual fruit or mixture photograph for all 18 selectable food-family rows; only chosen family displays its later engine-derived results, other rows show literal '-', with all-family selection able to populate more than one; two A4 portrait pages, nine fruit rows per page, 12pt minimum, reserved empty chart regions; 54 fruit profiles, five mushroom profiles excluded. No gas ppm, food safety certification, Java source changes or invented sample readings.",
       "status": "APPROVED_BY_OWNER_AS_DESIGN_REQUIREMENT"
+    },
+    {
+      "id": "R06-D01-07-THREE-PAGES-OWNER",
+      "text": "Owner approves R06 complete beef-only research PDF design with three A4 portrait pages (not two): page1 specimen/7-MQ/four study classes, page2 three distinct sensor/reference/180s/class-similarity blank chart slots, mandatory page3 4x4 held-out study confusion matrix, source-only 36h timeline and model provenance/limitations. No values if missing ('-'), no invented plots. Food safety/TVC not claimed, gas GHS/OEL/PPM not imported. Code DOI metadata correction later, not now.",
+      "status": "APPROVED_BY_OWNER_DESIGN",
+      "decision_utc": "2026-10-30T23:24:52Z"
     }
   ],
   "checkpoints": [
@@ -299,7 +305,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R06 original 1-page 213267-byte PDF (SHA 053d78...), 48/54 text spans below 12pt and no owner identity; audited BeefResearchPdf/Engine/Catalog/source JSON and verified 2018 source DOI mismatch (.075 wrong, .091 correct). Proposed research-only A4 portrait two-page layout and 3 distinct blank chart slots, 7-MQ table, 4 study classes and source validity block. No code changed; owner approval pending. All six original PDFs now audited, but owner design signoffs are not uniformly complete.",
+  "latest_documented_change": "R06 owner explicitly approved 3 portrait pages at 2026-10-30T23:24:52Z, superseding 2-page proposal; third page required for 4x4 source confusion matrix, source 36h timeline, research provenance and caution. First page specimen/7MQ/4 classes, second three distinct plot placeholders; '-' missing values; charts no plotted data. R06 doc/assessment updated; Java writer/engine unchanged; visual PDF QA and unified build not performed.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -352,7 +358,7 @@
   "active_report": {
     "id": "R06",
     "name": "Independent Beef / Meat Freshness Research PDF",
-    "phase": "ORIGINAL_ONE_PAGE_PDF_AND_BEEF_ENGINE_AUDITED_DESIGN_PROPOSAL_AWAITING_OWNER",
+    "phase": "OWNER_APPROVED_THREE_A4_PORTRAIT_DESIGN_FINAL_VISUAL_PDF_QA_PENDING",
     "original_pdf_file": "06_V6_Meat_Freshness_Original.pdf",
     "original_pdf_pages": 1,
     "pdf_sha256": "053d78db6133e2b519146ddd7ad85335d39c74a202fccbc47494d246319d2366",
@@ -399,10 +405,24 @@
       "R06-D06 '-' missing and blank chart spaces",
       "R06-D07 optional research-only confusion matrix and external 36h figure"
     ],
-    "owner_design_signoff": false,
+    "owner_design_signoff": true,
     "source_code_changed": false,
     "production_changes": 0,
-    "actual_v7_pdf_preview_passed": false
+    "actual_v7_pdf_preview_passed": false,
+    "owner_approved_document": "docs/implementation/V7-R06-OWNER-APPROVED-THREE-PAGE-MEAT-REPORT-DESIGN-2026-10-30_AR.md",
+    "approved_layout": {
+      "pages_target": 3,
+      "orientation": "A4 portrait",
+      "minimum_font_pt": 12,
+      "page_one": "Beef specimen, 7 MQ reading rows, all 4 reference class rows",
+      "page_two": "Source-v-measured fingerprint, authentic Tank 180s signal, 4-class descriptive similarity — empty plots without data",
+      "page_three": "Required study provenance, 4x4 source TS5 confusion matrix, external source 36h time-course placeholder and validation/limitations",
+      "absent_values": "-",
+      "no_fake_chart_values": true,
+      "research_only": true,
+      "no_food_safety_certification": true,
+      "future_source_correction": "Correct wrong study article DOI from 10.1016/j.dib.2018.11.075 to 10.1016/j.dib.2018.11.091 in dedicated later production metadata update"
+    }
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -426,8 +446,8 @@
   },
   "next_report": {
     "id": "R01-R06",
-    "name": "Final six-report design signoffs then unified production implementation",
-    "state": "DO_NOT_START_UNTIL_OWNER_APPROVAL_ALL"
+    "name": "Freeze six report visual specifications and authorize one unified implementation batch",
+    "state": "FINAL_VISUAL_SPEC_RECONCILIATION_REQUIRED_BEFORE_IMPLEMENTATION"
   },
   "workflow_policy": {
     "id": "V7-RPT-BATCH-PLAN-001",
@@ -435,7 +455,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_ONLY_R06_SOURCE_AND_PDF_REVIEW_COMPLETE_AWAITING_OWNER",
+    "current_phase": "DESIGN_ONLY_ALL_SIX_ORIGINAL_REPORTS_AUDITED_R06_OWNER_APPROVED_VISUAL_SPEC_RECONCILIATION",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -447,7 +467,7 @@
       "R06"
     ],
     "final_apk_authorized": false,
-    "next_step": "Discuss R02 design, record its signoff, then R03-R06.",
+    "next_step": "Reconcile owner design decisions for all 6 and their blank-data A4 visual templates. Obtain any outstanding visual signoff. Then unified PDF renderer production changes, Android-generated PDFs, per-report QA, build; no engine changes during design.",
     "layout_empty_data_policy": "docs/requirements/V7-REPORTS-DESIGN-FIRST-PLACEHOLDER-POLICY-2026-10-30_AR.md"
   },
   "r01_prototype": {
