@@ -83,7 +83,7 @@ public final class StatusTab {
             if(checked.updateAvailable){
                 scroll.post(()->updateButton.setText("جار تحديث مكتبة ChemCore..."));
                 ChemCoreLibraryStore.InstallResult r=libraryUpdater.install(checked,ReleaseAudit.VERSION,
-                        ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()));
+                        ()->ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()));
                 if(r.installed){
                     libraryUpdated=true;libraryVersion=r.version;
                     host.database().putMeta("tank_v5_library_last_check_status","INSTALLED");
