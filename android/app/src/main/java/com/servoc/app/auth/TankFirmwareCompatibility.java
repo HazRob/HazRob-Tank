@@ -34,35 +34,41 @@ public final class TankFirmwareCompatibility {
     public static boolean looksLikeTank(String banner){
         if(banner==null)return false;
         String s=banner.trim();
-        return s.startsWith(FIRMWARE_PREFIX)&&s.length()>FIRMWARE_PREFIX.length()
-                &&s.length()<=100 &&s.indexOf('\n')<0 &&s.indexOf('\r')<0;
+        // Release number and suffix are display metadata, never admission tokens.
+        return (s.equals("ESP32-Tank")||s.startsWith(FIRMWARE_PREFIX)||
+                s.startsWith("ESP32-Tank/")||s.startsWith("ESP32-Tank-"))
+                &&s.length()<=120 &&s.indexOf('\n')<0 &&s.indexOf('\r')<0;
     }
 
+    /**
+     * Direct compatibility is independent from versionName, firmware FW,
+     * API version numbers, and build labels. The main ESP32 identity and
+     * physical motor configuration remain independently inspected.
+     * Firmware endpoint-level safety / command support is not bypassed.
+     */
     public static Result verify(String banner,JSONObject diag){
         if(!looksLikeTank(banner))
-            return reject("هوية 192.168.4.1 غير معروفة: الاستجابة لا تخص ESP32-Tank الرئيسي.");
+            return reject("الاستجابة لا تخص متحكم ESP32-Tank الرئيسي.");
         if(diag==null)
-            return reject("الروبوت متصل لكن استجابة /diag غير متوفرة؛ لم يُسمح بالتحكم.");
-        String shown=banner.trim(),reported=diag.optString("fw","").trim();
-        if(!shown.equals(reported))
-            return reject("تعارض هوية ESP32 بين / و /diag؛ لم يُسمح بالتحكم.");
-        if(!diag.has("api")||diag.optInt("api",-1)!=SUPPORTED_API)
-            return reject("بروتوكول ESP32 غير متوافق: المطلوب API"+SUPPORTED_API+
-                    " والمستلم "+diag.optString("api","غير معروف")+".");
-        String profile=diag.optString("hardware_profile","").trim();
-        if(!HARDWARE_PROFILE.equals(profile))
-            return reject("ملف عتاد ESP32 غير متوافق: "+profile);
+            return reject("لم يستجب المتحكم الرئيسي لاستعلام التشخيص.");
+        String profile=diag.optString("hardware_profile","");
+        if(!profile.isEmpty()&&!HARDWARE_PROFILE.equals(profile))
+            return reject("ملف عتاد ESP32 غير متوافق مع قيادة HazRob Tank.");
         JSONObject drive=diag.optJSONObject("drive");
-        JSONObject pins=drive==null?null:drive.optJSONObject("pins");
-        if(drive==null||!DRIVE_DRIVER.equals(drive.optString("driver",""))
-                ||pins==null||pins.optInt("left",-1)!=16||pins.optInt("right",-1)!=17)
-            return reject("تكوين قيادة الجنازير غير مطابق لمتحكم Tank (سيرفو 16/17).");
-        JSONObject connection=diag.optJSONObject("connection");
-        if(connection==null||!"direct".equalsIgnoreCase(connection.optString("radio_profile","")))
-            return reject("ESP32 ليس في وضع Direct؛ لا يمكن فتح التحكم المباشر.");
+        if(drive!=null){
+            String driver=drive.optString("driver","");
+            if(!driver.isEmpty()&&!DRIVE_DRIVER.equals(driver))
+                return reject("نوع محرك الحركة غير مدعوم؛ لن تُفتح قيادة غير آمنة.");
+            JSONObject pins=drive.optJSONObject("pins");
+            if(pins!=null&&(pins.has("left")&&pins.optInt("left",-1)!=16||
+                pins.has("right")&&pins.optInt("right",-1)!=17))
+                return reject("أطراف السيرفو لا تطابق إعدادات قيادة Tank.");
+        }
         String deviceId=diag.optString("device_id","").trim();
-        if(!deviceId.matches("(?i)[0-9a-f]{2}(:[0-9a-f]{2}){5}"))
-            return reject("معرّف ESP32 الرئيسي غير صالح في /diag.");
-        return new Result(true,"تم قبول ESP32-Tank عبر عقد API4، الفيرموير "+shown,shown,deviceId);
+        String shown=banner.trim();
+        return new Result(true,
+            "اتصال ESP32-Tank متاح بصرف النظر عن إصدار التطبيق/الفيرموير/API؛ "+
+            "الأوامر غير المدعومة وسلامة المحركات تخضع للفيرموير.",
+            shown,deviceId);
     }
 }
