@@ -1,5 +1,7 @@
 package com.servoc.app.chemcore;
 
+import com.hazrob.tank.chemcore.v6.V6ScientificThresholdPolicy;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,7 +19,7 @@ import java.util.Locale;
  */
 public final class TankScreeningExposureWarning {
     public static final String KEY="screening_exposure_warnings";
-    public static final String SCHEMA="tank-instant-exposure-screening/1";
+    public static final String SCHEMA="tank-instant-exposure-screening/2";
     private TankScreeningExposureWarning(){}
 
     public static JSONObject evaluate(JSONObject analysis){
@@ -30,6 +32,9 @@ public final class TankScreeningExposureWarning {
             out.put("identity_unconfirmed",true);
             out.put("occupational_compliance_determination","NOT_MADE");
             out.put("time_weighted_average_evaluated",false);
+            out.put("default_early_exposure_fraction",V6ScientificThresholdPolicy.DEFAULT_EARLY_EXPOSURE_FRACTION);
+            out.put("qualified_occupational_alarm_authorized",false);
+            out.put("site_hazard_semantics","POTENTIAL_SITE_HAZARD_IF_INDEPENDENTLY_VERIFIED_NOT_TWA_EXCEEDANCE");
             out.put("no_safety_clearance",true);
             JSONArray warnings=new JSONArray();out.put("warnings",warnings);
             if(analysis==null){out.put("status","NO_ANALYSIS");return out;}
@@ -65,9 +70,14 @@ public final class TankScreeningExposureWarning {
                     }
                     if(!Double.isFinite(referencePpm)||referencePpm<=0)continue;
                     compared++;
-                    double fraction=ppm/referencePpm;
-                    // 10% LFL is an early precaution, NOT proof of ignition at that fraction.
-                    if(fraction<("LFL".equals(role)?0.10:1.0))continue;
+                    double earlyFraction=matching.optDouble("early_exposure_fraction",
+                        V6ScientificThresholdPolicy.DEFAULT_EARLY_EXPOSURE_FRACTION);
+                    V6ScientificThresholdPolicy.Decision decision;
+                    try{decision=V6ScientificThresholdPolicy.compare(
+                        ppm,referencePpm,role,earlyFraction);}
+                    catch(IllegalArgumentException invalidProfile){continue;}
+                    if("BELOW_ADVISORY".equals(decision.state))continue;
+                    double fraction=decision.observedFraction;
                     JSONObject hit=new JSONObject();
                     hit.put("chemical_uid",uid);
                     hit.put("label",candidate.optString("label",matching.optString("label","—")));
@@ -77,6 +87,11 @@ public final class TankScreeningExposureWarning {
                     hit.put("reference_unit",limit.optString("unit",""));
                     hit.put("reference_ppm",referencePpm);
                     hit.put("ratio_to_reference",fraction);
+                    hit.put("screening_level",decision.state);
+                    hit.put("early_warning_fraction",decision.thresholdFraction);
+                    hit.put("early_warning_ppm",decision.thresholdPpm);
+                    hit.put("potential_site_hazard_if_verified",decision.sitePotentialHazard);
+                    hit.put("occupational_alarm_authorized",false);
                     hit.put("authority",authority);
                     hit.put("reference_type",limit.optString("limit_type",""));
                     hit.put("reference_role",role);
@@ -89,6 +104,8 @@ public final class TankScreeningExposureWarning {
                         if(!Double.isFinite(period)||period<=0)period="TWA".equals(role)?480.0:15.0;
                         hit.put("reference_duration_min",period);
                         hit.put("warning_kind","SUSTAINED_EXPOSURE_HYPOTHETICAL");
+                        hit.put("instantaneous_concentration_only",true);
+                        hit.put("time_weighted_exceedance_proven",false);
                     }else if("LFL".equals(role)){
                         hit.put("percent_lfl",fraction*100.0);
                         hit.put("warning_kind",fraction>=1.0?"POSSIBLE_LFL_REACHED":"PRECAUTIONARY_LFL_APPROACH");
@@ -101,6 +118,14 @@ public final class TankScreeningExposureWarning {
             out.put("numeric_candidates",validFits);
             out.put("compared_references",compared);
             out.put("warning_count",warnings.length());
+            int earlyCount=0,referenceCount=0;
+            for(int i=0;i<warnings.length();i++){
+                String level=warnings.optJSONObject(i).optString("screening_level","");
+                if("EARLY_WARNING".equals(level)||"LFL_PRECAUTIONARY".equals(level))earlyCount++;
+                else referenceCount++;
+            }
+            out.put("early_warning_count",earlyCount);
+            out.put("at_or_above_reference_count",referenceCount);
             out.put("status",warnings.length()>0?"CONDITIONAL_WARNING":
                 validFits==0?"NO_VALID_PPM_FIT":compared==0?"NO_COMPARABLE_REFERENCE":"NO_SCREENING_THRESHOLD_HIT");
         }catch(Exception ignored){try{out.put("status","EVALUATION_ERROR");}catch(Exception ignoredAgain){}}
@@ -133,7 +158,7 @@ public final class TankScreeningExposureWarning {
                 +"هذا لا يثبت خلو الهواء من الخطر أو دقة تحديد الغاز. الحالة: "
                 +result.optString("status","—");
         }
-        StringBuilder text=new StringBuilder("⚠ تحذير مبكر استناداً إلى PPM تقديري — هوية الغاز والتركيز غير مؤكدين");
+        StringBuilder text=new StringBuilder("⚠ تحذير استكشافي مشروط — هوية الغاز وتركيزه غير مؤكدين");
         text.append("\nهذه مقارنة استدلالية مشروطة، وليست قياس تعرض معتمداً أو إثبات امتثال.");
         for(int i=0;i<entries.length()&&i<Math.max(1,maxWarnings);i++){
             JSONObject w=entries.optJSONObject(i);if(w==null)continue;
@@ -146,6 +171,9 @@ public final class TankScreeningExposureWarning {
                 .append(number(r)).append(" ").append(w.optString("reference_unit",""));
             if("TWA".equals(role)||"STEL".equals(role)){
                 double mins=w.optDouble("reference_duration_min",Double.NaN);
+                text.append(w.optDouble("ratio_to_reference",0)>=1.0?
+                    "\n☠ بلغ التقدير اللحظي حد التعرض: موقع محتمل الخطورة يتطلب قياسًا مرجعيًا.":
+                    "\n⚠ إنذار استكشافي مبكر قبل بلوغ حد التعرض المرجعي.");
                 text.append("\n☠ مقارنة تقديرية افتراضية — لو استمر هذا التركيز نحو ").append(number(mins))
                     .append(" دقيقة فقد يتجاوز متوسط التعرض الحد المرجعي؛ لا يوجد متوسط زمني مقاس.");
             }else if("LFL".equals(role)){
