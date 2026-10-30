@@ -294,7 +294,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Owner approved four equal charts per landscape A4 chart page, separate large 3D/4D plus compensation page, complete candidate GHS/toxicity reference details and per-row PPM-vs-limit microchart. All blank without data, values '-'. Documented dimensions and no Android production report changes.",
+  "latest_documented_change": "R04 V6 original site PDF reviewed visually (5 A4 landscape, SHA 644a6b..., 921498 bytes); audited generator, SiteReportIntelligence, SiteReportCharts and XLSX; documented 13 FAIL/5 PARTIAL and site-level dynamic redesign (2x2 plots, full 144, candidate GHS/OEL, physical/PM, source SHA); all display values '-' and charts blank during design; no Java changes.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -345,87 +345,37 @@
     "commit": "f0744950daca11094f5b9d1dbab6cefce501f380"
   },
   "active_report": {
-    "id": "R03",
-    "name": "Approved Field Session PDF",
-    "phase": "R03_2X2_GRID_3D_AND_CANDIDATE_DETAIL_APPROVED_FINAL_VISUAL_TEMPLATE_PENDING",
-    "analysis_document": "docs/implementation/V7-R03-APPROVED-FIELD-SESSION-PDF-AUDIT-AND-REDESIGN-2026-10-30_AR.md",
+    "id": "R04",
+    "name": "Site Summary PDF",
+    "phase": "ORIGINAL_FIVE_PAGE_PDF_AND_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+    "analysis_document": "docs/implementation/V7-R04-SITE-SUMMARY-ORIGINAL-AUDIT-AND-DESIGN-PROPOSAL-2026-10-30_AR.md",
+    "report_source": "android/app/src/main/java/com/servoc/app/report/SiteSummaryReportExporter.java",
+    "pdf_file_sha256": "644a6bf0cfc446dad1da2667bc4a60456151d643e12ce238742762bb89ac575e",
+    "original_pdf_pages": 5,
+    "audit_result": "13 FAIL, 5 PARTIAL_APPLICABILITY against G01–G18; V6 sample only",
     "issues": [
-      "2 fully empty 6-panel analysis pages in synthetic QA due absent legacy ChemCore decision",
-      "fonts mostly less than 12pt; page2 as low as 4.7pt",
-      "fixed four/five base pages + pagination annex; excess whitespace and chart crowding",
-      "up to seven technical sessions shown on executive page only; rest delegated to XLSX",
-      "SHA-256 and timestamps truncated in PDF",
-      "no fixed approved logo/bilingual header/footer",
-      "need true engine execution decision and source explanation"
+      "No official header/footer, nonconforming theme",
+      "Text as small as 6.3pt; all five pages fail >=12pt",
+      "Sparse session and cycle tables with truncation of original time/source SHA",
+      "144 grid squeezed into half page; legend tiny",
+      "Summary top-recurring list limited to 15; hazard contexts limited to 12",
+      "Period uses field-session starts rather than original measurement capture range",
+      "No comparative physical or particle analytics across site's G/P/F modes",
+      "critical/hazard score derived inside PDF reporter, not only source engine"
     ],
-    "proposal": "Dynamic composite G+F+P approved-cycle report; reuse exact R02 physical page renderer with original A4 portrait within single multi-orientation PDF, add particle report pages, 4D and T/RH correction and candidate GHS OEL highlight, all engine outputs unrestricted",
-    "design_approved": false,
+    "discussion_decisions": [
+      "R04-D01: 2x2 equal chart gallery like R03 for cross-session figures",
+      "R04-D02: full-page 144 grid and complete indexed material annex",
+      "R04-D03: full GHS/OEL candidate table and per-session ppm reference miniature",
+      "R04-D04: separate physical and particle cross-session chapter",
+      "R04-D05: site 3D/4D reserved page versus charts gallery only",
+      "R04-D06: all session and cycle timestamps and full SHA without caps",
+      "R04-D07: reserve empty plot canvases and '-' for missing data"
+    ],
+    "source_code_changed": false,
     "production_changes": 0,
-    "approved_scope": [
-      "R03-A09",
-      "R03-A10",
-      "R03-A11",
-      "R03-A12"
-    ],
-    "archive_contract": "telemetry_samples.env_payload and telemetry_samples.motion_payload.particles, per approved measurement session; never live latestDiag",
-    "engine_contract_note": "The current technique coverage document records partial implementations, e.g. 3D/4D. Do not claim they ran unless engine execution trace identifies actual outputs.",
-    "current_source_caps_to_address": [
-      "SmartFieldSessionPdfWriter: executive list only 7 sessions",
-      "TankExposureReferenceCatalog: MAX_CANDIDATES=8, MAX_LIMITS_PER_CANDIDATE=32",
-      "SmartReport charts fixed 6-panel pages"
-    ],
-    "approved_layout_choices": {
-      "chart_pages": {
-        "orientation": "A4 landscape",
-        "grid": "2x2_four_equal",
-        "panel_mm": [
-          141.5,
-          79.5
-        ],
-        "gutter_mm": 4,
-        "body_area_mm": [
-          287,
-          163
-        ],
-        "minimum_text_pt": 12
-      },
-      "multidimensional": {
-        "dedicated_page": true,
-        "three_four_d_mm": [
-          287,
-          95
-        ],
-        "compensation_panels_mm": [
-          141.5,
-          64
-        ],
-        "without_data": "axes_only_no_surface_no_plotted_values"
-      },
-      "candidates": {
-        "right_to_left_column_widths_mm": [
-          35,
-          58,
-          40,
-          29,
-          55,
-          70
-        ],
-        "column_meaning": [
-          "Official GHS",
-          "Candidate name and CAS",
-          "Rank/evidence",
-          "PPM and qualification",
-          "Exposure limit source/type/period",
-          "Blank miniature ppm-vs-limit bullet chart"
-        ],
-        "all_candidates_no_display_cap": true,
-        "allow_GHS_red_official_pictograms": true
-      },
-      "layout_phase": "NO_ENGINE_CHANGES",
-      "no_readings": "literal '-' for empty value fields; empty charts still reserve exact area"
-    },
     "owner_design_signoff": false,
-    "design_specification": "docs/implementation/V7-R03-APPROVED-CHART-GRID-AND-CANDIDATE-TABLE-2026-10-30_AR.md"
+    "layout_phase": "DESIGN_ONLY; all charts blank and values '-', no fabricated results"
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -448,9 +398,9 @@
     "pending": "Production PDF integration and Android render visual match"
   },
   "next_report": {
-    "id": "R04",
-    "name": "Site Summary PDF",
-    "phase": "TO_REVIEW_AFTER_R03_DISCUSSION"
+    "id": "R05",
+    "name": "Fruit Freshness PDF",
+    "state": "AFTER_R04_DISCUSSION"
   },
   "workflow_policy": {
     "id": "V7-RPT-BATCH-PLAN-001",
@@ -458,7 +408,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_ONLY_R03_GEOMETRY_APPROVED_IMPLEMENTATION_DEFERRED",
+    "current_phase": "DESIGN_ONLY_R04_SOURCE_AND_PDF_AUDIT_COMPLETED_AWAITING_OWNER",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -561,5 +511,11 @@
       "approved_cycle_integrity_guards_preserved": true,
       "production_code_changed": false
     }
+  },
+  "r03_checkpoint": {
+    "id": "R03",
+    "state": "R03_2X2_GRID_3D_AND_CANDIDATE_DETAIL_APPROVED_FINAL_VISUAL_TEMPLATE_PENDING",
+    "document": "docs/implementation/V7-R03-APPROVED-CHART-GRID-AND-CANDIDATE-TABLE-2026-10-30_AR.md",
+    "production_changes": 0
   }
 }
