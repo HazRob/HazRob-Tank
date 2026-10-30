@@ -1,3 +1,11 @@
+## 2026-10-31 — G2 MQ4 saved-result byte-replay gate (597/597 verified)
+
+- Extended the pinned MQ4 cross-report regression suite with `test_committed_result_is_byte_identical_replay`, checking that the committed `G2_MQ4_CROSS_REPORT_RECONCILIATION_2026-10-31.json` matches fresh deterministic reconciliation of the two pinned source summaries byte for byte.
+- **Verified G2 CI on test commit `dd26cdfd77411afc4c02989a85bf16cc023dcbde`**: [run 41131075501](https://github.com/HazRob/HazRob-Tank/actions/runs/41131075501), job `124321825635`: **597/597 tests PASS** (including committed-output replay), Python compilation, 80-technique fail-closed evidence audit, deterministic triage/audit replay, and publication guard all PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Documentation-only commits may have queued CI; verify separately before claiming all latest-commit runs complete.
+- Output-only reconciliation confirms 14,186 rows, 11 days, 11 strict-minute segments, 12,981 eligible max-lag rows, and 1,200 excluded holdout contexts plus 1,200 purged training contexts. It does **not** replay the original ZIP, verify model accuracy or establish independent physical exposure groups. No G2/G3 promotion or Stable/Android/firmware/main changes.
+
+---
+
 ## 2026-10-31 — G2 MQ4 pinned cross-report reconciliation (596/596 G2 CI verified)
 
 - Reviewed research HEAD and prior G2 checkpoint: 583/583 G2 CI, 80 catalog techniques, 14 source slots, independent evidence `records=[]`. Verified latest pre-change research workflows on SHA `5ec1b81d26e2c1dd853cb4054a847c3f04c56b15` successful.
