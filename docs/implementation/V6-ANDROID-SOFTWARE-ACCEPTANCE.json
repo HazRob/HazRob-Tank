@@ -22,15 +22,15 @@
   ],
   "status": "IN_PROGRESS_RETEST_REQUIRED",
   "last_known_source_compiles": {
-    "run": 41010932844,
+    "run": 41044133981,
     "status": "success",
-    "source_commit": "d31b588537fdbcea06bbf94844e25620645e647d",
-    "scope": "FULL_ANDROID_JAVA_COMPILE_NO_PRODUCTION_APK_NO_HARDWARE"
+    "source_commit": "6326997122d900cdda2bfcf2f136462ace00eac7",
+    "scope": "FULL_ANDROID_JAVA_COMPILE_NO_PRODUCTION_APK_OR_DEVICE"
   },
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "V14_PUBCHEM_CAS_MATCHED_FORMULA_MASS_PROJECTED_668_610_UID734; CLEAN_AIR_R0_SOURCE_GATES_RETESTED; A01_A14_STILL_OPEN_NO_RELEASE",
+  "latest_scope": "V14_21_NIOSH_VERIFIED_CAS_LINKS_9_NON_SINGLE_LABELS; AMBIENT_CONTEXT_NOT_SAFETY; PDF_A12_API31_AND_TAMPER_PASS; V5_UPGRADE_KEY_MISSING; NO_RELEASE",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -42,7 +42,14 @@
     "android_emulator_run": 41006768825,
     "android_assertions": 118,
     "physical_tank_g3": 0,
-    "status": "SOURCE_AND_EMULATOR_VERIFIED_BUT_FULL_MENU_ACCEPTANCE_STILL_OPEN"
+    "status": "SOURCE_AND_EMULATOR_VERIFIED_21_NIOSH_ALIASES_PENDING_LATEST_CSV_REPLAY",
+    "proven_synonym_links": 15,
+    "latest_synonym_proposed": 21,
+    "non_single_substance_labels": 9,
+    "latest_coverage_run": "41044188586_PENDING",
+    "last_verified_coverage_run": 41043662257,
+    "last_verified_coverage_direct_plus_linked_cas": 686,
+    "last_verified_individual_unlinked_cas": 39
   },
   "embedded_stable_v6": {
     "library_version": "1.0.0-hr069r1",
@@ -126,5 +133,33 @@
     "android_compile_run": 41010932844,
     "evidence": "docs/implementation/V6-CATALOG-ENRICHMENT-AND-RELEASE-CHECKPOINT-2026-10-30_AR.md",
     "release_authorization": "NO_RELEASE"
+  },
+  "ambient_source_qualification_v6": {
+    "natural_range_status": "NO_QUALIFIED_NATURAL_RANGE",
+    "descriptive_noaa_oxygen_is_hazard_limit": false,
+    "strict_source_status": "SOURCE_QUALIFIED",
+    "android_emulator_run": 41042087842,
+    "result": "PASS",
+    "sql_migration_run": 41042184182,
+    "status": "PASS",
+    "source_research_run": 41042184234
+  },
+  "android_reports_evidence_v14": {
+    "two_approved_site_sessions_pdf_xlsx": 41042508777,
+    "approved_report_android12_api31": 41042518337,
+    "approved_field_pdf_xlsx": 41042527540,
+    "tamper_negative_sha_and_export": 41042925882,
+    "all_four_results": "PASS_SYNTHETIC_EMULATOR_ONLY",
+    "full_ui_acceptance": "OPEN"
+  },
+  "installed_v5_signing_preflight": {
+    "sample_artifact_name": "HazRob-Tank-V5-debug.apk",
+    "actual_certificate_sha256": "97F0E315449BB369D1C2042CD092E73E422CE9718406D93F8CCB1E40C6921BD1",
+    "v4_workflow_certificate_sha256": "799BED750710DC02EE09B3976E07EEE407776CEA225F7BF438E92DB6428B0DF6",
+    "matches_v4": false,
+    "v5_private_key_recovered": false,
+    "v5_in_place_upgrade_verified": false,
+    "release_signing_blocked": true,
+    "evidence": "docs/implementation/V6-V5-APK-SIGNER-PREFLIGHT-2026-10-30_AR.md"
   }
 }
