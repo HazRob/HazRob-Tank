@@ -71,13 +71,17 @@ def _identity_component_test_support(rows, columns):
     test_components = []
     test_only = []
     cross_partition = []
-    calibration_test_shared = False
-    calibration_present = any('calibration' in labels
-                              for labels in partitions_by_group.values())
+    # Separate train/test, validation/test and calibration/test connectivity.
+    # A detected connection remains true even when optional ID columns are
+    # missing; a negative claim requires complete declared identity fields.
+    test_overlap = {p: False for p in ('train', 'validation', 'calibration')}
+    present_partitions = set().union(*partitions_by_group.values())
     for members in components:
         labels = set().union(*(partitions_by_group[g] for g in members))
-        if {'calibration', 'test'}.issubset(labels):
-            calibration_test_shared = True
+        if 'test' in labels:
+            for partition in test_overlap:
+                if partition in labels:
+                    test_overlap[partition] = True
         if 'test' in labels:
             test_components.append(members)
             if labels == {'test'}:
@@ -93,6 +97,21 @@ def _identity_component_test_support(rows, columns):
     # apparently disconnected test components. The component counts remain
     # descriptive upper bounds; positive support must fail closed.
     identity_complete = not missing_identity_fields
+
+    def overlap_status(partition):
+        if test_overlap[partition]:
+            return True
+        if identity_complete and partition in present_partitions:
+            return False
+        return None
+
+    def any_non_test_overlap_status():
+        if any(test_overlap.values()):
+            return True
+        if identity_complete and (present_partitions - {'test'}):
+            return False
+        return None
+
     return {
         'declared_identity_fields_used': [
             k for k in identity_fields if k in columns
@@ -109,8 +128,16 @@ def _identity_component_test_support(rows, columns):
         # with all identity fields and a declared calibration partition.
         # Missing IDs or missing calibration remain unknown (None).
         'calibration_test_declared_identity_component_overlap': (
-            True if calibration_test_shared else
-            False if identity_complete and calibration_present else None
+            overlap_status('calibration')
+        ),
+        'train_test_declared_identity_component_overlap': (
+            overlap_status('train')
+        ),
+        'validation_test_declared_identity_component_overlap': (
+            overlap_status('validation')
+        ),
+        'test_non_test_declared_identity_component_overlap': (
+            any_non_test_overlap_status()
         ),
         'test_has_two_disconnected_test_only_declared_identity_components': (
             len(test_only) >= 2 if identity_complete else None
@@ -160,6 +187,9 @@ def audit_declared_holdout(rows, columns):
         'declared_identity_test_component_counts_are_upper_bounds_when_incomplete': None,
         'declared_identity_test_cross_partition_components': None,
         'calibration_test_declared_identity_component_overlap': None,
+        'train_test_declared_identity_component_overlap': None,
+        'validation_test_declared_identity_component_overlap': None,
+        'test_non_test_declared_identity_component_overlap': None,
         'test_has_two_disconnected_test_only_declared_identity_components': None,
         'declared_identity_components_are_not_authenticated_experiments': True,
         'declared_group_counts_do_not_verify_physical_independence': True,
