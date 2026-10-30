@@ -207,6 +207,10 @@ public final class MeasurementsTab {
         content.setPadding(UiKit.dp(c,10),UiKit.dp(c,12),UiKit.dp(c,10),UiKit.dp(c,18));
         scroll.addView(content);
         content.addView(UiKit.title(c,"🔎 البحث والتتبع"),UiKit.full(c));
+        TextView ghsLegend=UiKit.small(c,
+            "♦ رموز GHS تعرّف أخطار المادة من مصدر موثق، وليست دليلًا على اكتشافها.");
+        ghsLegend.setTextColor(0xFF4A5568);
+        content.addView(ghsLegend,UiKit.full(c));
         content.addView(card("اختر مادة من المكتبة أو مرشحي ChemCore. البصمات والمنحنيات والمعادلات والخوارزميات المتاحة تظل فعالة للحساب والتقدير؛ اضغط على المادة لمعرفة الأساليب المتوفرة. تختلف درجة الاعتماد وفق مصدر البيانات."),UiKit.full(c));
         chemicalSearch=UiKit.input(c,"");
         chemicalSearch.setHint("بحث بالاسم أو رقم CAS أو الصيغة");
