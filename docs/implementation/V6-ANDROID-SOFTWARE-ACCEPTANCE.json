@@ -30,7 +30,7 @@
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "V14_734_CAS_SOURCE_725_CAS_NOT_APPLICABLE_9_FORMULAS_668_MOLAR_MASSES_666_N09_API31_PASS_168_ASSERTIONS; N14_SESSION_REPORT_UI_EXTENDED_RETEST; STABLE_SIGNING_FULL_UI_OPEN",
+  "latest_scope": "N09_168_ASSERTIONS_CATALOG_PASS_734_UID_725_CAS_IDENTITIES_666_MASSES; N14_ANDROID12_21PLUS_CHECKS_FIVE_MEASUREMENTS_FOOD_SESSIONS_REPORTS_PASS; A01_A14_STABLE_SIGNING_HW_OPEN",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -184,8 +184,9 @@
     "baseline_five_tabs_meat_fruit_run": 41088996880,
     "baseline_result": "PASS_ANDROID12",
     "extended_sessions_and_reports_tabs_latest_run": 41089409108,
-    "extended_sessions_and_reports_result": "PENDING_NOT_ACCEPTED",
+    "extended_sessions_and_reports_result": "PASS_ANDROID12_API31_21_OR_MORE_ASSERTIONS_REAL_TAB_CONSTRUCT_NAV_CLICK",
     "live_robot_ui_soak": "NOT_PERFORMED",
-    "full_app_software_acceptance": "OPEN"
+    "full_app_software_acceptance": "OPEN",
+    "emulator_scope": "OFFLINE_UI_NO_REAL_ESP32"
   }
 }
