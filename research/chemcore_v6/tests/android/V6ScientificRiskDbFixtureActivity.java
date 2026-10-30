@@ -806,6 +806,30 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 "SELECT COUNT(*) FROM chemical_reference_updates_v6 "+
                 "WHERE chemical_uid=77")==4,
                 "damaged transport is rejected before changing material statuses");
+            // A second AVAILABLE publisher cannot downgrade an already QUALIFIED
+            // capability: source order must not decide the central status.
+            JSONArray multiFacts=new JSONArray();
+            for(int i=0;i<capabilities.length();i++)
+                multiFacts.put(capabilities.getJSONObject(i));
+            multiFacts.put(new JSONObject()
+                .put("key","fingerprint_reference")
+                .put("text","additional available publisher (test only)")
+                .put("source_id","SECONDARY_TEST_SOURCE")
+                .put("source_url","https://github.com/HazRob/HazRob-Tank")
+                .put("library_status","AVAILABLE"));
+            JSONObject refMulti=new JSONObject().put("uid",77).put("cas","74-82-8")
+                .put("facts",multiFacts);
+            byte[] multiBytes=refMulti.toString().getBytes(
+                java.nio.charset.StandardCharsets.UTF_8);
+            h=java.security.MessageDigest.getInstance("SHA-256").digest(multiBytes);
+            hex=new StringBuilder();
+            for(byte b:h)hex.append(String.format(java.util.Locale.US,"%02x",b&0xff));
+            ChemicalReferenceSyncV6.applyVerifiedRecord(
+                db,multiBytes,hex.toString(),"N17-TWO-SOURCES");
+            check(readiness.status(unifiedRepo.byUid(77)).publishedFingerprintQualified &&
+                num(sql,"SELECT COUNT(*) FROM chemical_reference_updates_v6 "+
+                    "WHERE chemical_uid=77")==5,
+                "secondary available source never downgrades qualified fingerprint");
             JSONObject ref2=new JSONObject().put("uid",77).put("cas","74-82-8")
                 .put("facts",new JSONArray().put(capabilities.getJSONObject(0)));
             byte[] after=ref2.toString().getBytes(
@@ -824,6 +848,24 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM chemical_reference_updates_v6 "+
                 "WHERE chemical_uid=77")==1,
                 "per-UID replacement removes withdrawn capabilities, never stale flags");
+            // An empty, SHA-verified central record is a legitimate withdrawal
+            // of ALL published capabilities for this UID, not a malformed record.
+            JSONObject refEmpty=new JSONObject().put("uid",77).put("cas","74-82-8")
+                .put("facts",new JSONArray());
+            byte[] emptyBytes=refEmpty.toString().getBytes(
+                java.nio.charset.StandardCharsets.UTF_8);
+            h=java.security.MessageDigest.getInstance("SHA-256").digest(emptyBytes);
+            hex=new StringBuilder();
+            for(byte b:h)hex.append(String.format(java.util.Locale.US,"%02x",b&0xff));
+            ChemicalReferenceSyncV6.applyVerifiedRecord(
+                db,emptyBytes,hex.toString(),"N17-ALL-WITHDRAWN");
+            ChemicalExperimentStatusRepository.Row allWithdrawn=
+                readiness.status(unifiedRepo.byUid(77));
+            check(!allWithdrawn.referenceFingerprint&&!allWithdrawn.referenceCurve&&
+                !allWithdrawn.referencePpm&&!allWithdrawn.referenceM4 &&
+                num(sql,"SELECT COUNT(*) FROM chemical_reference_updates_v6 "+
+                    "WHERE chemical_uid=77")==0,
+                "empty central publication withdraws all four capabilities");
             check(num(sql,"SELECT COUNT(*) FROM chemicals")==734 &&
                 num(sql,"SELECT COUNT(*) FROM chemical_risk_profiles "+
                 "WHERE occupational_alarm_authorized!=0")==0,
@@ -857,7 +899,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM chemicals")==734,
                 "synonym status propagation never creates duplicate master records");
             out.put("central_published_capability_sync_e2e",
-                "PASS_STAGED_FOUR_CAPABILITIES_WITHDRAW_THREE_NO_REQUALIFICATION");
+                "PASS_FOUR_CAPABILITIES_TWO_SOURCES_WITHDRAW_ALL_NO_REQUALIFICATION");
             out.put("material_field_coverage_audit",coverage);
             out.put("status","PASS");
             out.put("sqlite_version",14).put("legacy_rows",original)
