@@ -11,7 +11,7 @@ import java.util.List;
 
 /** Offline-first HazRob database for measurements, experiments, calibration and scientific reference data. */
 public final class ExperimentsDb extends SQLiteOpenHelper {
-    public static final int DB_VERSION=11;
+    public static final int DB_VERSION=12;
     public ExperimentsDb(Context c){super(c,"servoc.db",null,DB_VERSION);}
 
     @Override public void onCreate(SQLiteDatabase db){
@@ -39,7 +39,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         }
         if(oldVersion<9)createV9UserFieldTables(db);
         if(oldVersion<10){createV10FieldCycleTables(db);importV9FieldCycleLinks(db);}
-        if(oldVersion<11){createV11ScientificRiskTables(db);ChemicalHazardSeedV11.ensure(db);}
+        if(oldVersion<12){createV11ScientificRiskTables(db);ChemicalHazardSeedV11.ensure(db);}
     }
 
     /**
