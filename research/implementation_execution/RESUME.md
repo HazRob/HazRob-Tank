@@ -1,3 +1,12 @@
+## 2026-10-30 — G2 strict all-test contamination coverage diagnostic (CI pending)
+
+- Resumed from `98cd852179710aa6fdbe11c544ca8b9d854d2add` and independently verified **20/20 Actions successes** including the G2 source/R0 gate. Central pinned inventory: 80 entries, 14 external datasets, **0/14 source-review-ready**; `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`. MQ raw archive intake is research-only, not independent qualified evidence.
+- Added strict tri-state all-test clean coverage and two-clean-with-no-contamination indicators plus contaminated declared test-group count. Legacy descriptive two-test-component flag preserved. Known direct/transitive train/validation/calibration contamination is negative even when optional IDs are absent; absent IDs never establish a positive clean result. Device reuse alone is not contamination.
+- Added 12 synthetic regressions and `G2_DECLARED_TEST_CONTAMINATION_COVERAGE_2026-10-30_AR.md`. **CI verification pending** on this commit; do not infer 570/570 success before Actions completes. Full 80-technique fail-closed audit, deterministic replay, and publication guard still required.
+- Changes only under `research/implementation_execution/` on research branch. No Stable, Android, firmware, main, G2/G3 promotion. Independent traceable reference-gas exposures, preregistered blinded physical holdouts and external review remain unavailable.
+
+---
+
 ## 2026-10-30 — G2 train/validation/test declared-identity overlap diagnostics (558/558 verified)
 
 - Resumed from research HEAD `cf1e690adc7f2b7b5c229fab4bf24d023d8d3d3e`. Independently rechecked **20/20 workflow successes** on that commit, including the G2 source/R0 gate. Central readiness matrix remains 80 catalog entries, 14 external datasets, **0/14 source-review-ready**; `G2_INDEPENDENT_EVIDENCE.json` still has `records=[]`.

@@ -97,6 +97,21 @@ def _identity_component_test_support(rows, columns):
     # apparently disconnected test components. The component counts remain
     # descriptive upper bounds; positive support must fail closed.
     identity_complete = not missing_identity_fields
+    # A detected test/non-test link remains negative even with missing IDs.
+    # Missing optional fields may only merge, not split, observed components.
+    contaminated_test_groups = sorted({
+        group for component in cross_partition
+        for group in component['groups']
+        if 'test' in partitions_by_group[group]
+    })
+    all_test_only = (
+        False if cross_partition else
+        True if identity_complete and test_components else None
+    )
+    two_clean_without_contamination = (
+        False if cross_partition or len(test_only) < 2 else
+        True if identity_complete else None
+    )
 
     def overlap_status(partition):
         if test_overlap[partition]:
@@ -124,6 +139,13 @@ def _identity_component_test_support(rows, columns):
         'declared_identity_test_component_count': len(test_components),
         'declared_identity_test_only_component_count': len(test_only),
         'declared_identity_test_cross_partition_components': cross_partition,
+        'declared_identity_test_cross_partition_test_group_count': (
+            len(contaminated_test_groups)
+        ),
+        'test_all_declared_identity_components_test_only': all_test_only,
+        'test_has_two_clean_declared_components_without_any_test_contamination': (
+            two_clean_without_contamination
+        ),
         # True is a detected declared-ID connection. False is defensible only
         # with all identity fields and a declared calibration partition.
         # Missing IDs or missing calibration remain unknown (None).
@@ -186,6 +208,9 @@ def audit_declared_holdout(rows, columns):
         'declared_identity_test_support_complete': None,
         'declared_identity_test_component_counts_are_upper_bounds_when_incomplete': None,
         'declared_identity_test_cross_partition_components': None,
+        'declared_identity_test_cross_partition_test_group_count': None,
+        'test_all_declared_identity_components_test_only': None,
+        'test_has_two_clean_declared_components_without_any_test_contamination': None,
         'calibration_test_declared_identity_component_overlap': None,
         'train_test_declared_identity_component_overlap': None,
         'validation_test_declared_identity_component_overlap': None,
