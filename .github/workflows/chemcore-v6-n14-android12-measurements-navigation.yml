@@ -97,8 +97,10 @@ jobs:
           assert d['sessions_tab_opened'] is True,d
           assert d['sessions_report_navigation_clicked'] is True,d
           assert d['reports_tab_opened'] is True,d
+          assert d['settings_r0_v6_single_window_visible'] is True,d
+          assert d['settings_stable_update_control_present'] is True,d
           assert d['hardware_connected'] is False,d
-          assert d['assertions']>=21,d
+          assert d['assertions']>=26,d
           print('PASS V6 N14 actual Android 12: five button clicks, meat/fruit selector, offline device-free UI')
           PY
       - uses: actions/upload-artifact@v4
