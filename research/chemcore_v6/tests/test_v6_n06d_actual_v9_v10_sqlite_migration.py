@@ -70,7 +70,7 @@ def digest_rows(connection, table):
     data = json.dumps(rows, separators=(',', ':'), ensure_ascii=False)
     return hashlib.sha256(data.encode("utf8")).hexdigest()
 
-def fixture():
+def fixture(save_source=True):
     measurement, telemetry, v9, v10, backfill, java_sha = source_sql()
     conn = sqlite3.connect(":memory:")
     conn.execute("PRAGMA foreign_keys=ON")
@@ -118,7 +118,7 @@ def fixture():
     initial_counts={table:conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
                     for table in hashes}
     export_dir=Path(__import__("os").environ.get("N06D_EVIDENCE_DIR","")).resolve() if __import__("os").environ.get("N06D_EVIDENCE_DIR") else None
-    if export_dir:
+    if export_dir and save_source:
         export_dir.mkdir(parents=True,exist_ok=True)
         with sqlite3.connect(str(export_dir/"v9_before_approved_fixture.sqlite3")) as stored:
             conn.backup(stored)
@@ -126,7 +126,7 @@ def fixture():
 
 class ActualV9ToV10Migrator(unittest.TestCase):
     def test_archived_source_tampering_is_detectable_without_mutation(self):
-        conn, before, counts, v9, v10, backfill, java_sha=fixture()
+        conn, before, counts, v9, v10, backfill, java_sha=fixture(save_source=False)
         original=before["telemetry_samples"]
         self.assertEqual(counts["telemetry_samples"],84)
         # A single tampered Rs stored in V9 must change its source hash.
@@ -137,7 +137,7 @@ class ActualV9ToV10Migrator(unittest.TestCase):
         # Recreate a pristine source instead of pretending rollback restores
         # fixture data which was committed before deliberate mutation.
         conn.close()
-        pristine, original_hashes, _, _, _, _, _=fixture()
+        pristine, original_hashes, _, _, _, _, _=fixture(save_source=False)
         self.assertEqual(original, digest_rows(pristine,"telemetry_samples"))
         pristine.close()
 
