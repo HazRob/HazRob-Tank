@@ -45,8 +45,8 @@ assert coverage['materials_with_name_en']==734,coverage
 assert not coverage['scientific_fields_exhaustive'],coverage
 assert coverage['missing_values_policy']=='NULL_NOT_ZERO_NO_SAFETY_INFERENCE'
 assert coverage['materials_with_cas']==698,coverage
-assert coverage['materials_with_molar_mass']==638,coverage
-assert coverage['materials_with_formula']==669,coverage
+assert coverage['materials_with_molar_mass']==637,coverage
+assert coverage['materials_with_formula']==668,coverage
 assert d['cas_checksum_invalid_direct_rows']==0,d
 assert d['cas_checksum_valid_direct_rows']==coverage['materials_with_cas'],d
 assert 'confirmed=2:rejected=0' in d['cas_correction_idempotence'],d
@@ -58,6 +58,13 @@ assert coverage['materials_with_direct_or_linked_cas']==725,coverage
 assert coverage['materials_without_direct_or_linked_cas']==9,coverage
 assert coverage['non_single_substance_labels']==9,coverage
 assert coverage['individual_materials_without_linked_cas']==0,coverage
+# Identity completeness and scientific-property completeness are distinct:
+# 725 source-linked CAS + 9 inapplicable group/mixture/index labels do not
+# entitle a fabricated formula or molecular weight for the other rows.
+assert coverage['materials_with_formula']<coverage['materials'],coverage
+assert coverage['materials_with_molar_mass']<coverage['materials'],coverage
+assert coverage['materials_with_formula']>=668
+assert coverage['materials_with_molar_mass']>=637
 import csv
 with open('/tmp/v6-n09-scientific-risk/v6_chemical_catalog_coverage.csv',newline='') as stream:
     records=list(csv.DictReader(stream))
