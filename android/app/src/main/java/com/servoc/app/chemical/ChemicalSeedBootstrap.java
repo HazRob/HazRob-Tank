@@ -29,6 +29,18 @@ public final class ChemicalSeedBootstrap {
             }
         }catch(Exception e){db.putMeta("chemical_seed_niosh_last_error",e.getClass().getSimpleName()+": "+String.valueOf(e.getMessage()));}
 
+        // Establish traceable links between historical Tank labels and
+        // the matching CAS-bearing NIOSH source identities. Keep both original
+        // UIDs/FKs intact; a naming alias never overwrites old session rows.
+        try{
+            ChemicalIdentityEquivalenceV6.Result equivalent=
+                ChemicalIdentityEquivalenceV6.ensure(db);
+            db.putMeta("v6_chemical_niosh_alias_crosswalk",equivalent.summary());
+        }catch(Exception e){
+            db.putMeta("v6_chemical_niosh_alias_crosswalk",
+                "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
+        }
+
         ExposureSeedBootstrap.ensureNioshIdlh(context,db);
 
         // Tank V6 scientific risk inventory: load authoritative OSHA Z-1 occupational
