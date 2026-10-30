@@ -7,6 +7,8 @@ on:
       - 'android/app/src/main/java/com/servoc/app/data/ChemicalHazardSeedV11.java'
       - 'android/app/src/main/java/com/servoc/app/data/ChemicalHazardEvidenceSeedV13.java'
       - 'android/app/src/main/java/com/servoc/app/data/MqReferenceCurveSeedV14.java'
+      - 'android/app/src/main/java/com/servoc/app/data/MqDeviceR0LedgerV14.java'
+      - 'android/app/src/main/java/com/servoc/app/ui/DeveloperR0Tab.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/GhsPictograms.java'
       - 'android/app/src/main/res/drawable/ghs_*.xml'
