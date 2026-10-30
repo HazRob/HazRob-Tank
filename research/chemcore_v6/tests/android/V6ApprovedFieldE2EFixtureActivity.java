@@ -148,6 +148,15 @@ public final class V6ApprovedFieldE2EFixtureActivity extends Activity {
         // CI-only disposable emulator database: never load a person's real DB.
         deleteDatabase("servoc.db");
         try(ExperimentsDb db=new ExperimentsDb(this)){
+            SQLiteDatabase v14=db.getWritableDatabase();
+            require(v14.getVersion()==14,
+                "Android12 approved sessions must use current V14 not historical V10");
+            try(Cursor cols=v14.rawQuery(
+                "SELECT COUNT(*) FROM pragma_table_info('v14_unified_chemical_catalog')",
+                null)){
+                require(cols.moveToFirst()&&cols.getInt(0)==97,
+                    "V14 source-qualified chemical view available during field export");
+            }
             fixture(db);
             SQLiteDatabase original=db.getWritableDatabase();
             FieldCycleRepository cycles=new FieldCycleRepository(db);
@@ -241,6 +250,8 @@ public final class V6ApprovedFieldE2EFixtureActivity extends Activity {
                 .put("status","PASS").put("schema","tank-v6-n06e-android-full-approval/1")
                 .put("production_facade_exercised","FieldSessionReportExporter.writePdf+writeXlsx")
                 .put("real_approved_v10_sqlite_fixture",true)
+                .put("runtime_sqlite_schema_version",14)
+                .put("v14_unified_catalog_columns",97)
                 .put("synthetic_test_rows",16)
                 .put("approved_gas_cycles",1)
                 .put("independent_source_sensor_models",8)
