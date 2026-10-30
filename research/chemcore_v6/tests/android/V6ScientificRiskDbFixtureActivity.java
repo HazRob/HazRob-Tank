@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
+import com.servoc.app.chemical.ChemicalMolecularProjectionV6;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.MqDeviceR0LedgerV14;
 import com.servoc.app.data.MqExternalR0RsSeedV14;
@@ -224,6 +225,13 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM exposure_limits")==0,
                 "new test SQLite starts without fake numeric exposure limits");
             ChemicalSeedBootstrap.ensureNiosh(this,db);
+            ChemicalMolecularProjectionV6.Result projection=
+                ChemicalMolecularProjectionV6.ensure(db);
+            check(projection.afterFormula==projection.beforeFormula&&
+                projection.afterMass==projection.beforeMass,
+                "restarting official molecular identity projection is idempotent");
+            out.put("pubchem_molecular_projection_idempotence",
+                projection.summary());
             long peerR0=num(sql,
                 "SELECT COUNT(*) FROM sensor_evidence "+
                 "WHERE evidence_type='EXTERNAL_PEER_R0_RS' AND chemical_uid IS NULL");
