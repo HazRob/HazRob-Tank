@@ -46,11 +46,12 @@ public final class ChemicalIdentityCategoryV6 {
         sql.beginTransaction();
         try{
             for(String[] term:TERMS){
-                String uid=term[0],name=term[1],type=term[2];
+                String uid=term[0],legacyId=Integer.toString(Integer.parseInt(uid)-1),
+                    name=term[1],type=term[2];
                 try(Cursor c=sql.rawQuery(
                         "SELECT name_en,cas,chemical_class FROM chemicals "+
                         "WHERE uid=? AND legacy_id=? AND active=1",
-                        new String[]{uid,uid})){
+                        new String[]{uid,legacyId})){
                     if(!c.moveToFirst()||!name.equals(c.getString(0))||
                         !c.isNull(1)&&!c.getString(1).trim().isEmpty()){
                         refused++;continue;
@@ -63,7 +64,7 @@ public final class ChemicalIdentityCategoryV6 {
                 v.put("chemical_class",type);
                 int n=sql.update("chemicals",v,
                     "uid=? AND legacy_id=? AND (chemical_class IS NULL "+
-                    "OR TRIM(chemical_class)='')",new String[]{uid,uid});
+                    "OR TRIM(chemical_class)='')",new String[]{uid,legacyId});
                 if(n==1)tagged++;else refused++;
             }
             sql.setTransactionSuccessful();
