@@ -18,6 +18,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalSeedBootstrap.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalIdentityEquivalenceV6.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalIdentityCategoryV6.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalNistIdentityCompletionV6.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankExposureReferenceCatalog.java'
       - 'research/chemcore_v6/tests/android/V6ScientificRiskDbFixtureActivity.java'
       - 'research/chemcore_v6/tests/android/run_n09_scientific_risk_db.sh'
