@@ -128,6 +128,102 @@ public final class ChemicalRepository {
             out.put("external_mq_r0_rs_study_count",peers.length());
             out.put("external_r0_rs_not_material_constants",true);
         }catch(Exception ignored){}
+        // Canonical per-material curve evidence is *joined* by UID. R0 from a
+        // source curve can never replace a particular Tank MQ device baseline.
+        JSONArray curves=new JSONArray();
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+                "SELECT m.curve_id,m.sensor_model,m.ratio_a,m.ratio_b,m.output_scale,"+
+                "m.min_source_ppm,m.max_source_ppm,m.reference_r0_definition,"+
+                "m.reference_r0_kohm,m.reference_rs_kohm,m.source_id,"+
+                "s.url,m.evidence_status,m.heater_profile "+
+                "FROM mq_chemical_reference_curves m JOIN scientific_sources s "+
+                "ON s.source_id=m.source_id WHERE m.chemical_uid=? "+
+                "ORDER BY m.sensor_model,m.curve_id LIMIT 120",
+                new String[]{Long.toString(uid)})){
+            while(c.moveToNext()){
+                JSONObject item=new JSONObject();
+                item.put("curve_id",c.getString(0));
+                item.put("sensor_model",c.getString(1));
+                item.put("ratio_a",c.getDouble(2));
+                item.put("ratio_b",c.getDouble(3));
+                item.put("output_scale",c.getDouble(4));
+                item.put("source_min_ppm",c.isNull(5)?JSONObject.NULL:c.getDouble(5));
+                item.put("source_max_ppm",c.isNull(6)?JSONObject.NULL:c.getDouble(6));
+                item.put("r0_definition",c.getString(7));
+                item.put("source_r0_kohm",c.isNull(8)?JSONObject.NULL:c.getDouble(8));
+                item.put("source_rs_kohm",c.isNull(9)?JSONObject.NULL:c.getDouble(9));
+                item.put("source_id",c.getString(10));
+                item.put("source_url",c.isNull(11)?JSONObject.NULL:c.getString(11));
+                item.put("evidence_status",c.getString(12));
+                item.put("heater_profile",c.isNull(13)?JSONObject.NULL:c.getString(13));
+                item.put("can_calibrate_tank_r0",false);
+                item.put("can_certify_gas_ppm",false);
+                curves.put(item);
+            }
+        }catch(Exception e){
+            android.util.Log.w("TankUnifiedChemCatalog","Cannot read referenced MQ curves",e);
+        }
+        JSONArray exposure=new JSONArray();
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+                "SELECT e.authority,e.limit_type,e.value,e.unit,e.duration_min,"+
+                "e.source_id,e.jurisdiction,e.notation,s.url "+
+                "FROM exposure_limits e LEFT JOIN scientific_sources s "+
+                "ON s.source_id=e.source_id WHERE e.chemical_uid=? "+
+                "ORDER BY e.authority,e.limit_type,e.id LIMIT 200",
+                new String[]{Long.toString(uid)})){
+            while(c.moveToNext()){
+                JSONObject item=new JSONObject();
+                item.put("authority",c.getString(0));
+                item.put("limit_type",c.getString(1));
+                item.put("value",c.isNull(2)?JSONObject.NULL:c.getDouble(2));
+                item.put("unit",c.isNull(3)?JSONObject.NULL:c.getString(3));
+                item.put("duration_minutes",c.isNull(4)?JSONObject.NULL:c.getDouble(4));
+                item.put("source_id",c.isNull(5)?JSONObject.NULL:c.getString(5));
+                item.put("jurisdiction",c.isNull(6)?JSONObject.NULL:c.getString(6));
+                item.put("notation",c.isNull(7)?JSONObject.NULL:c.getString(7));
+                item.put("source_url",c.isNull(8)?JSONObject.NULL:c.getString(8));
+                item.put("is_background_normality_band",false);
+                exposure.put(item);
+            }
+        }catch(Exception e){
+            android.util.Log.w("TankUnifiedChemCatalog","Cannot read source exposure limits",e);
+        }
+        JSONArray hazards=new JSONArray();
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+                "SELECT h.hazard_category,h.classification_system,h.classification_detail,"+
+                "h.ghs_pictogram,h.ghs_h_codes,h.source_id,h.evidence_status,s.url "+
+                "FROM chemical_hazard_classifications h JOIN scientific_sources s "+
+                "ON s.source_id=h.source_id WHERE h.chemical_uid=? "+
+                "ORDER BY h.hazard_category,h.source_id,h.id LIMIT 120",
+                new String[]{Long.toString(uid)})){
+            while(c.moveToNext()){
+                JSONObject item=new JSONObject();
+                item.put("hazard_category",c.getString(0));
+                item.put("classification_system",c.getString(1));
+                item.put("classification_detail",c.getString(2));
+                item.put("ghs_pictogram",c.isNull(3)?JSONObject.NULL:c.getString(3));
+                item.put("ghs_h_codes",c.isNull(4)?JSONObject.NULL:c.getString(4));
+                item.put("source_id",c.getString(5));
+                item.put("evidence_status",c.getString(6));
+                item.put("source_url",c.isNull(7)?JSONObject.NULL:c.getString(7));
+                item.put("gas_detected",false);
+                item.put("hazard_threshold_exceeded",false);
+                hazards.put(item);
+            }
+        }catch(Exception e){
+            android.util.Log.w("TankUnifiedChemCatalog","Cannot read source hazard classifications",e);
+        }
+        try{
+            out.put("mq_reference_curve_evidence",curves);
+            out.put("mq_reference_curve_evidence_count",curves.length());
+            out.put("occupational_exposure_source_limits",exposure);
+            out.put("occupational_exposure_source_limit_count",exposure.length());
+            out.put("source_qualified_hazard_classifications",hazards);
+            out.put("source_qualified_hazard_classification_count",hazards.length());
+            out.put("qualified_tank_g3",false);
+            out.put("derived_hazard_notifications",false);
+            out.put("source_profile_schema","hazrob-tank-unified-chemical-v14-plus-evidence/1");
+        }catch(Exception ignored){}
         return out;
     }
 
