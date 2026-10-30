@@ -295,8 +295,13 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 "source qualified CAS synonym crosswalk repeatable without rekeying");
             check(verifiedSynonyms==27,
                 "all 27 independently NIOSH-confirmed canonical synonym links present");
-            check(num(sql,"SELECT COUNT(*) FROM chemicals")==734,
-                "legacy synonym reconciliation preserves every source/experiment UID");
+            long actualMasterRows=num(sql,"SELECT COUNT(*) FROM chemicals");
+            check(actualMasterRows==734,
+                "legacy identity count expected 734, actual="+actualMasterRows+
+                "; bootstrap NIST="+db.getMeta("v6_chemical_nist_cas_completion","missing")+
+                "; additional="+
+                scalarText(sql,"SELECT GROUP_CONCAT(uid||':'||name_en||':'||COALESCE(cas,'')) "+
+                    "FROM chemicals WHERE uid>734"));
             check(num(sql,"SELECT COUNT(*) FROM chemical_identity_equivalence_v6 "+
                 "WHERE alias_uid=104 AND canonical_uid=499 AND source_cas='64-17-5'")==1,
                 "Ethanol links to official NIOSH ethyl alcohol authority");
