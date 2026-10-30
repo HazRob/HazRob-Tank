@@ -73,6 +73,16 @@ public final class V6MeasurementsNavigationFixtureActivity extends Activity {
             for(int i=0;i<group.getChildCount();i++)spinners(group.getChildAt(i),found);
         }
     }
+    private static boolean hasText(View v,String token){
+        if(v instanceof TextView && ((TextView)v).getText()!=null &&
+                ((TextView)v).getText().toString().contains(token))return true;
+        if(v instanceof ViewGroup){
+            ViewGroup g=(ViewGroup)v;
+            for(int i=0;i<g.getChildCount();i++)
+                if(hasText(g.getChildAt(i),token))return true;
+        }
+        return false;
+    }
     private Button findButton(View view,String term){
         ArrayList<Button> options=new ArrayList<>();
         buttons(view,options);
@@ -150,6 +160,24 @@ public final class V6MeasurementsNavigationFixtureActivity extends Activity {
         require(findButton(reports.view(),"PDF")!=null,
             "actual report UI exposes PDF export control");
         reports.release();
+
+        // Exercise the actual V6 Settings screen and operator R0 reference.
+        // Historical wording claimed a V4 three-hundred-second protocol,
+        // which would contradict the single 180+60s ESP32 V6 contract.
+        SettingsTab settings=new SettingsTab(this,host());
+        setContentView(settings.view());
+        require(hasText(settings.view(),"180 ثانية تسخين ثم 60 ثانية قراءة فعلية في نافذة واحدة"),
+            "operator Settings shows the actual 180+60 single-window V6 R0 protocol");
+        require(!hasText(settings.view(),"300 ثانية إحماء"),
+            "obsolete V4 warmup does not appear in the user R0 screen");
+        require(hasText(settings.view(),"أزمنة"),
+            "Settings differentiates operational measurement durations from R0");
+        require(findButton(settings.view(),"فتح معايرة R0")!=null,
+            "operator R0 calibration page remains accessible via the correct button");
+        require(findButton(settings.view(),"التحقق من تحديثات منظومة التحليل")!=null,
+            "Settings exposes the existing ChemCore Stable update control");
+        settings.release();
+
         JSONObject status=new JSONObject()
             .put("schema","hazrob-tank-v6-n14-navigation/1")
             .put("status","PASS").put("main_navigation_tabs",5)
@@ -157,6 +185,8 @@ public final class V6MeasurementsNavigationFixtureActivity extends Activity {
             .put("sessions_tab_opened",true)
             .put("sessions_report_navigation_clicked",true)
             .put("reports_tab_opened",true)
+            .put("settings_r0_v6_single_window_visible",true)
+            .put("settings_stable_update_control_present",true)
             .put("hardware_connected",false)
             .put("gas_chemcore_validation",false)
             .put("assertions",checks);
