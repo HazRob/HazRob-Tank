@@ -22,6 +22,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalSeedBootstrap.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalAliasMolecularProjectionV6.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalIdentityEquivalenceV6.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalIdentityCategoryV6.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalNistIdentityCompletionV6.java'
