@@ -38,11 +38,18 @@ public final class FirmwareR0Contract {
             throw new IllegalArgumentException("Unsupported firmware R0 API schema");
         int windows=response.optInt("window_count",(v6Three||v6Quick)?0:1);
         String definition=response.optString("r0_definition","");
+        String state=response.optString("state","");
+        int stageDuration=response.optInt("duration_ms",-1);
+        // V6 operator protocol is exactly 180s warmup and ONE 60s sample.
+        // Do not accept a modified duration just because the schema label says V6.
+        boolean wrongQuickDuration=v6Quick&&(
+            ("warmup".equals(state)&&stageDuration!=180000)||
+            (("sampling".equals(state)||"pending".equals(state)||"ready".equals(state))
+                &&stageDuration!=60000));
         if((v6Three&&(windows!=3||!"DEVICE_CLEAN_AIR_RS_MEAN".equals(definition)))||
             (v6Quick&&(windows!=1||!"DEVICE_CLEAN_AIR_RS_MEAN".equals(definition)||
-              response.optInt("warmup_ms",-1)!=180000)))
+              response.optInt("warmup_ms",-1)!=180000||wrongQuickDuration)))
             throw new IllegalArgumentException("V6 R0 schema and physical timing disagree");
-        String state=response.optString("state","");
         if(!("idle".equals(state)||"warmup".equals(state)||"sampling".equals(state)
              ||"ready".equals(state)||"pending".equals(state)||"resting".equals(state)||"error".equals(state)||"cancelled".equals(state)))
             throw new IllegalArgumentException("Unknown R0 state");
