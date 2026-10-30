@@ -26,8 +26,9 @@ class OperatorRoutability(unittest.TestCase):
         self.assertIn('pickerRepo.catalogCasLabel(m)',UI)
         self.assertIn('search("64-17-5",100)',EMULATOR)
         self.assertIn('search("Ethyl alcohol",100)',EMULATOR)
-    def test_no_false_gas_science(self):
+    def test_identity_crosswalk_does_not_rewrite_gas_data(self):
         self.assertIn('sourceLinkedCas',REPO)
-        self.assertIn('no G3',REPO.lower() if 'no G3' in REPO.lower() else 'no G3') if False else None
+        self.assertIn('chemical_identity_equivalence_v6',REPO)
+        self.assertNotIn('INSERT INTO calibration_curves',REPO)
 if __name__=="__main__":
     unittest.main()
