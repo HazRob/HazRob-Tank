@@ -488,6 +488,15 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 "one UID-based material profile carries original source evidence");
 
                         JSONObject oxygenProfile=unifiedRepo.scientificProfile(oxygenUid);
+            check("NO_QUALIFIED_NATURAL_RANGE".equals(
+                oxygenProfile.optString("natural_concentration_coverage_status","")),
+                "descriptive NOAA 20.11-20.947% O2 context cannot be declared a "+
+                "source-qualified clean-air safety range");
+            check(num(sql,"SELECT COUNT(*) FROM v14_unified_chemical_catalog "+
+                "WHERE natural_concentration_coverage_status="+
+                "'SOURCE_QUALIFIED_ENVIRONMENTAL_RANGE'")==0,
+                "no chemical has a safety-authorized normal-atmosphere range in "+
+                "the current dataset");
             JSONObject benzeneProfile=unifiedRepo.scientificProfile(benzeneUid);
             check(oxygenProfile.length()>=75 && oxygenProfile.optInt("is_oxidizer",0)==1,
                 "whole unified profile is accessible to operator/lab by master UID");
