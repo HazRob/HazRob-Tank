@@ -54,9 +54,45 @@ public final class ChemicalRepository {
         String q=query==null?"":query.trim();int n=Math.max(1,Math.min(limit,5000));List<Chemical> out=new ArrayList<>();
         String sql;String[] args;
         if(q.isEmpty()){sql="SELECT "+COLS+" FROM v14_unified_chemical_catalog ORDER BY name_en LIMIT "+n;args=null;}
-        else{sql="SELECT DISTINCT c.uid,c.legacy_id,c.cas,c.pubchem_cid,c.name_en,c.name_ar,c.formula,c.molar_mass,c.chemical_class,c.record_source FROM v14_unified_chemical_catalog c LEFT JOIN chemical_synonyms s ON s.chemical_uid=c.uid LEFT JOIN chemical_identifiers i ON i.chemical_uid=c.uid WHERE (c.name_en LIKE ? OR c.name_ar LIKE ? OR c.cas LIKE ? OR c.formula LIKE ? OR s.synonym LIKE ? OR i.value LIKE ?) ORDER BY c.name_en LIMIT "+n;String x="%"+q+"%";args=new String[]{x,x,x,x,x,x};}
+        else{sql="SELECT DISTINCT c.uid,c.legacy_id,c.cas,c.pubchem_cid,c.name_en,c.name_ar,c.formula,c.molar_mass,c.chemical_class,c.record_source "+
+            "FROM v14_unified_chemical_catalog c "+
+            "LEFT JOIN chemical_synonyms s ON s.chemical_uid=c.uid "+
+            "LEFT JOIN chemical_identifiers i ON i.chemical_uid=c.uid "+
+            "LEFT JOIN chemical_identity_equivalence_v6 e ON e.alias_uid=c.uid "+
+            "LEFT JOIN chemicals ni ON ni.uid=e.canonical_uid "+
+            "WHERE (c.name_en LIKE ? OR c.name_ar LIKE ? OR c.cas LIKE ? "+
+            "OR c.formula LIKE ? OR s.synonym LIKE ? OR i.value LIKE ? "+
+            "OR e.source_cas LIKE ? OR ni.name_en LIKE ?) "+
+            "ORDER BY c.name_en LIMIT "+n;
+            String x="%"+q+"%";args=new String[]{x,x,x,x,x,x,x,x};}
         try(Cursor c=db.getReadableDatabase().rawQuery(sql,args)){while(c.moveToNext())out.add(read(c));}
         return out;
+    }
+
+    /**
+     * Read-only authority CAS for a historical alias whose master row does
+     * not itself have CAS. The value is NOT assigned to the original row.
+     * Show the qualification label whenever a UI surfaces it.
+     */
+    public String sourceLinkedCas(long uid){
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+                "SELECT e.source_cas FROM chemical_identity_equivalence_v6 e "+
+                "JOIN chemical_sources src ON src.chemical_uid=e.canonical_uid "+
+                "AND src.source_id=e.source_id AND src.record_url=e.source_url "+
+                "WHERE e.alias_uid=? AND e.evidence_status='NIOSH_SYNONYM_VERIFIED' "+
+                "LIMIT 1",new String[]{Long.toString(uid)})){
+            return c.moveToFirst()?c.getString(0):null;
+        }
+    }
+
+    /** No fake CAS for mixtures or unverified compounds; source is explicit. */
+    public String catalogCasLabel(Chemical chemical){
+        if(chemical==null)return "—";
+        if(chemical.cas!=null&&!chemical.cas.trim().isEmpty())
+            return chemical.cas;
+        String qualified=sourceLinkedCas(chemical.uid);
+        return qualified==null||qualified.isEmpty()?
+            "—":"CAS مرجعي NIOSH: "+qualified;
     }
 
     /** Exact UID/CAS/name/synonym first; one unique fuzzy result is accepted as a convenience. */
