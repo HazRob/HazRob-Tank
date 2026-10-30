@@ -6,7 +6,7 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "R01_R06_ORIGINAL_SOURCES_REVIEWED_R06_DESIGN_PROPOSAL_PENDING_OWNER_UNIFIED_BATCH_NOT_AUTHORIZED",
+  "assessment_phase": "ALL_SIX_ORIGINAL_REPORTS_AUDITED_R06_THREE_PAGE_OWNER_DESIGN_APPROVED_VISUAL_LAYOUT_QA_AND_OTHER_SIGNOFFS_PENDING",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -24,7 +24,8 @@
     "R04_ORIGINAL_FIVE_PAGE_SITE_PDF_AUDITED_LAYOUT_PROPOSED_AWAITING_OWNER",
     "R05_ORIGINAL_ONE_PAGE_AND_FRUIT_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
     "R05_OWNER_APPROVED_2_PAGE_18_FRUIT_PHOTO_MATRIX_DESIGN_PREVIEW_PENDING",
-    "R06_ORIGINAL_BEEF_ONE_PAGE_AND_ENGINE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER"
+    "R06_ORIGINAL_BEEF_ONE_PAGE_AND_ENGINE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+    "R06_OWNER_APPROVED_THREE_PAGE_MEAT_REPORT_DESIGN_VISUAL_QA_PENDING"
   ],
   "note": "Existing original Android PDFs from V6 provide a baseline but this template must not claim V7 visual audit, correctness or implementation. Rule G04 is scientifically condition-dependent, not universally GHS-applicable.",
   "rules": [
@@ -1589,7 +1590,7 @@
         "feature response heatmap when available"
       ],
       "risk": "Language exclusion or food-safety overstatement",
-      "review_state": "R06_ORIGINAL_BEEF_ONE_PAGE_AND_ENGINE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+      "review_state": "R06_OWNER_APPROVED_THREE_PAGE_MEAT_REPORT_DESIGN_VISUAL_QA_PENDING",
       "original_pdf_verified": true,
       "approved_design_mockup": false,
       "android_production_layout_changed": false,
@@ -1599,7 +1600,7 @@
       "pdf_file_sha256": "053d78db6133e2b519146ddd7ad85335d39c74a202fccbc47494d246319d2366",
       "ci_run": 41124888027,
       "code_commit": null,
-      "owner_design_signoff": false,
+      "owner_design_signoff": true,
       "rule_checklist": {
         "G01": {
           "status": "FAIL",
@@ -1822,12 +1823,12 @@
         "direct_TVC_measurement": false
       },
       "proposed_layout": {
-        "pages_target": 2,
+        "pages_target": 3,
         "orientation": "A4 portrait",
         "extend_pages_when_text_cannot_fit_12pt": true,
         "page_one": "Beef sample and period identification, 7 MQ observation table and four study source labels comparative rows",
-        "page_two": "Observed vs 7MQ source fingerprint, true 180s response plot, four-class similarity rank and model provenance footnote",
-        "optional_appendix": "Source-only 4x4 heldout confusion matrix and external-study 36-hour time series, never Tank history",
+        "page_two": "Three separate reserved figure areas: observed-v-reference seven-MQ shape, authentic Tank 180s response, four-class descriptive similarity",
+        "optional_appendix": "No longer optional; third source study page is obligatory under 2026-10-30T23:24:52Z owner decision",
         "charts_blank_without_data": true,
         "missing_numeric_value": "-",
         "minimum_font_pt": 12,
@@ -1835,7 +1836,8 @@
         "real_capture_start_end_unavailable_in_writer": true,
         "GHS_OEL_PPM_not_applicable": true,
         "model_not_validated_for_Tank": true,
-        "owner_approved": false
+        "owner_approved": true,
+        "page_three": "Mandatory full-page source study validation: held-out four-by-four confusion matrix, clearly source-only 36h curve placeholder, citation and methodological limitations"
       },
       "source_correction_pending": {
         "field": "BeefResearchCatalog.STUDY_PAPER and research JSON provenance.original_paper_doi",
@@ -1843,6 +1845,27 @@
         "correct_article_doi": "10.1016/j.dib.2018.11.091",
         "keep_dataset_doi": "10.17632/mwmhh766fc.3",
         "not_executed": true
+      },
+      "owner_approved_design_document": "docs/implementation/V7-R06-OWNER-APPROVED-THREE-PAGE-MEAT-REPORT-DESIGN-2026-10-30_AR.md",
+      "owner_approved_design": {
+        "decision_utc": "2026-10-30T23:24:52Z",
+        "pages_target": 3,
+        "media": "A4 portrait",
+        "page_one": "Genuine sample metadata, seven MQ observations and all four study-category rows",
+        "page_two": "Blank reserved areas for seven-MQ observed-v-reference fingerprint, real 180s Tank MQ series and study-class similarity ranking",
+        "page_three": "Required reference-research page: 4×4 held-out TS5 confusion matrix and separately marked source-only 36-hour timeline, source provenance, model limitations, accuracy placeholders",
+        "values_if_missing": "-",
+        "charts_no_data": "axes/grid/labels only, no plotted values",
+        "font_min_pt": 12,
+        "color_theme": "white black amber #FFBE00 gray; legends dark, no fabricated food safety status",
+        "photo": "optional static representative beef image clearly not a photo of tested cut",
+        "engine_independence": "MEAT separate from FRUIT and ChemCore gas",
+        "safety_status": "research class similarity; no TVC from Tank and no food safety certification",
+        "article_doi_correct": "10.1016/j.dib.2018.11.091",
+        "article_doi_code_correction_pending": true,
+        "pages_may_expand_only_if_text_cannot_fit": "yes, without dropping evidence or reducing font",
+        "production_changes": "none",
+        "actual_android_pdf_render_approved": false
       }
     }
   ],
@@ -1854,7 +1877,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Discuss and sign off R06 design options D01-D07, then revisit any remaining R01–R05 visual template signoffs before unified V7 implementation. Keep production Java frozen.",
+  "next_action": "Check R01–R06 owner requirements versus final visual signoff status, close any outstanding designs, render original Android PDF layouts and begin unified implementation only after full authorization. R06 design approved for 3 portrait pages, no functional code changed.",
   "visual_contract": {
     "branding_palette": [
       "black",
