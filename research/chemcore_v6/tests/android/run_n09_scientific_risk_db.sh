@@ -44,12 +44,16 @@ assert coverage['duplicate_uids']==0,coverage
 assert coverage['materials_with_name_en']==734,coverage
 assert not coverage['scientific_fields_exhaustive'],coverage
 assert coverage['missing_values_policy']=='NULL_NOT_ZERO_NO_SAFETY_INFERENCE'
-assert coverage['materials_with_cas']==671,coverage
+assert coverage['materials_with_cas']==698,coverage
+assert coverage['materials_with_molar_mass']==637,coverage
+assert d['nist_27_cas_identity_idempotence'].find('matched=27')>=0,d
+assert d['nist_27_cas_identity_idempotence'].find('cas_filled=0')>=0,d
+assert d['nist_27_cas_identity_idempotence'].find('rejected=0')>=0,d
 assert coverage['materials_with_niosh_cas_equivalence']==27,coverage
-assert coverage['materials_with_direct_or_linked_cas']==698,coverage
-assert coverage['materials_without_direct_or_linked_cas']==36,coverage
+assert coverage['materials_with_direct_or_linked_cas']==725,coverage
+assert coverage['materials_without_direct_or_linked_cas']==9,coverage
 assert coverage['non_single_substance_labels']==9,coverage
-assert coverage['individual_materials_without_linked_cas']==27,coverage
+assert coverage['individual_materials_without_linked_cas']==0,coverage
 import csv
 with open('/tmp/v6-n09-scientific-risk/v6_chemical_catalog_coverage.csv',newline='') as stream:
     records=list(csv.DictReader(stream))
@@ -59,6 +63,10 @@ assert all(row['name_en'] for row in records)
 assert all(row['mq_curve_count'].isdigit() for row in records)
 et=next(x for x in records if x['uid']=='104')
 assert not et['cas'] and et['canonical_uid_niosh']=='499'
+h2=next(x for x in records if x['uid']=='76')
+assert h2['cas']=='1333-74-0' and float(h2['molar_mass'])>2.0
+assert next(x for x in records if x['uid']=='131')['cas']=='754-12-1'
+assert next(x for x in records if x['uid']=='132')['cas']=='29118-24-9'
 assert et['niosh_equivalent_cas']=='64-17-5'
 assert next(x for x in records if x['uid']=='143')['chemical_class']=='MEASUREMENT_INDEX_NOT_CHEMICAL'
 print('V14 734 master UID coverage fields:',json.dumps(coverage,sort_keys=True))
