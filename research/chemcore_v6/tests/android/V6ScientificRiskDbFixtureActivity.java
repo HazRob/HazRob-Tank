@@ -10,6 +10,7 @@ import com.servoc.app.chemical.ChemicalIdentityCategoryV6;
 import com.servoc.app.chemical.ChemicalMolecularProjectionV6;
 import com.servoc.app.chemical.ChemicalAliasMolecularProjectionV6;
 import com.servoc.app.chemical.ChemicalNistIdentityCompletionV6;
+import com.servoc.app.chemical.ChemicalNistEssentialGasMassV6;
 import com.servoc.app.chemical.ChemicalCasCorrectionV6;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.MqDeviceR0LedgerV14;
@@ -260,6 +261,24 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(num(sql,"SELECT COUNT(*) FROM exposure_limits")==0,
                 "new test SQLite starts without fake numeric exposure limits");
             ChemicalSeedBootstrap.ensureNiosh(this,db);
+            ChemicalNistEssentialGasMassV6.Result essentialGasReplay=
+                ChemicalNistEssentialGasMassV6.ensure(db);
+            check(essentialGasReplay.verified==2&&
+                essentialGasReplay.filled==0&&
+                essentialGasReplay.rejected==0,
+                "NIST oxygen/methane mass import is source backed and idempotent");
+            check(Math.abs(Double.parseDouble(scalarText(sql,
+                "SELECT molar_mass FROM chemicals WHERE uid=23"))-31.9988)<0.0001,
+                "NIST pure oxygen O2 molecular weight 31.9988 g/mol retained");
+            check(Math.abs(Double.parseDouble(scalarText(sql,
+                "SELECT molar_mass FROM chemicals WHERE uid=77"))-16.0425)<0.0001,
+                "NIST methane CH4 molecular weight 16.0425 g/mol retained");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_sources "+
+                "WHERE source_id='NIST_WEBBOOK' AND source_key IN "+
+                "('MASS_CAS:7782-44-7','MASS_CAS:74-82-8')")==2,
+                "both official NIST source links retained for essential gases");
+            out.put("nist_essential_gas_mass_idempotence",
+                essentialGasReplay.summary());
             ChemicalNistIdentityCompletionV6.Result nistAudit=
                 ChemicalNistIdentityCompletionV6.ensure(db);
             check(nistAudit.proposed==27&&nistAudit.matched==27&&
