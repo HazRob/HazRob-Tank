@@ -22,15 +22,15 @@
   ],
   "status": "IN_PROGRESS_RETEST_REQUIRED",
   "last_known_source_compiles": {
-    "run": 41044133981,
+    "run": 41088582427,
     "status": "success",
-    "source_commit": "6326997122d900cdda2bfcf2f136462ace00eac7",
-    "scope": "FULL_ANDROID_JAVA_COMPILE_NO_PRODUCTION_APK_OR_DEVICE"
+    "source_commit": "30adc2be0a7201d4620f50259b74b644fdc1ad83",
+    "scope": "FULL_ANDROID_JAVA_COMPILE_NO_PRODUCTION_APK_NO_HARDWARE"
   },
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "27_SOURCE_VERIFIED_NIOSH_EQUIVALENCE_LINKS_698_CAS_COVERED_9_TYPED_MIXTURES_REPLAY_PASS; V5_SIGNATURE_IN_PLACE_UPGRADE_BLOCKED; STABLE_GITHUB_UNPUBLISHED; NO_RELEASE",
+  "latest_scope": "V14_734_CAS_SOURCE_725_CAS_NOT_APPLICABLE_9_FORMULAS_668_MOLAR_MASSES_666_N09_API31_PASS_168_ASSERTIONS; N14_SESSION_REPORT_UI_EXTENDED_RETEST; STABLE_SIGNING_FULL_UI_OPEN",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -111,13 +111,13 @@
     "date": "2026-10-30",
     "canonical_uid_rows": 734,
     "unique_uids": 734,
-    "cas_present": 671,
+    "cas_present": 698,
     "english_names_present": 734,
     "arabic_names_present": 0,
     "molecular_formula_before": 136,
     "molecular_formula_after": 668,
     "molar_mass_before": 0,
-    "molar_mass_after": 610,
+    "molar_mass_after": 666,
     "materials_with_lfl": 213,
     "materials_with_ufl": 179,
     "materials_with_occupational_limit": 473,
@@ -136,13 +136,21 @@
     "evidence": "docs/implementation/V6-CATALOG-ENRICHMENT-AND-RELEASE-CHECKPOINT-2026-10-30_AR.md",
     "release_authorization": "NO_RELEASE",
     "niosh_source_verified_synonym_links": 27,
-    "cas_direct_or_niosh_linked": 698,
-    "total_cas_unresolved": 36,
+    "cas_direct_or_niosh_linked": 725,
+    "total_cas_unresolved": 9,
     "conceptual_non_single_cas_labels": 9,
-    "individual_materials_without_qualified_cas": 27,
+    "individual_materials_without_qualified_cas": 0,
     "latest_android12_coverage_run": 41044802357,
-    "latest_scientific_source_tests": 41044830613,
-    "last_confirmed_android_compile": 41044748497
+    "latest_scientific_source_tests": 41088827386,
+    "last_confirmed_android_compile": 41088582427,
+    "last_source_qualified_mass_completeness_run": 41088827543,
+    "last_source_qualified_mass_completeness_result": "PASS_ANDROID12_API31_168_ASSERTIONS",
+    "source_qualified_masses_nist_essential_gases": {
+      "oxygen_g_mol": 31.9988,
+      "methane_g_mol": 16.0425
+    },
+    "molecular_mass_policy": "NO_SYNTHETIC_MASS_PUBCHEM_A_SOURCE_LINKED_NIOSH_OR_NIST_SRD69_ONLY",
+    "last_confirmed_evidence_doc": "docs/implementation/V6-RESUME-SOURCE-QUALIFIED-MOLECULAR-AND-N14-2026-10-30_AR.md"
   },
   "ambient_source_qualification_v6": {
     "natural_range_status": "NO_QUALIFIED_NATURAL_RANGE",
@@ -171,5 +179,13 @@
     "v5_in_place_upgrade_verified": false,
     "release_signing_blocked": true,
     "evidence": "docs/implementation/V6-V5-APK-SIGNER-PREFLIGHT-2026-10-30_AR.md"
+  },
+  "android_ui_n14_actual_emulator": {
+    "baseline_five_tabs_meat_fruit_run": 41088996880,
+    "baseline_result": "PASS_ANDROID12",
+    "extended_sessions_and_reports_tabs_latest_run": 41089409108,
+    "extended_sessions_and_reports_result": "PENDING_NOT_ACCEPTED",
+    "live_robot_ui_soak": "NOT_PERFORMED",
+    "full_app_software_acceptance": "OPEN"
   }
 }
