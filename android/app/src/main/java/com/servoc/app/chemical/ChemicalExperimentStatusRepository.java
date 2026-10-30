@@ -64,6 +64,7 @@ public final class ChemicalExperimentStatusRepository {
     public ChemicalExperimentStatusRepository(ExperimentsDb db){
         if(db==null)throw new IllegalArgumentException("database required");
         this.db=db;this.chemicals=new ChemicalRepository(db);
+        ChemicalReferenceSyncV6.ensure(db.getWritableDatabase());
     }
 
     public List<Row> search(String query,int limit){
