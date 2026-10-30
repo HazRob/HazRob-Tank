@@ -1,7 +1,8 @@
 # HazRob Tank V7 — R06 | اعتماد التصميم النهائي من حيث بنية الصفحات: ثلاث صفحات
 **Decision ID:** `V7-R06-DESIGN-OWNER-001`  
 **قرار المالك:** `2026-10-30T23:24:52Z` — «٣ صفحات، واعتمد التصميم».  
-**حالة متطلبات التصميم:** `OWNER_APPROVED_THREE_PAGE_LAYOUT_REQUIREMENTS`.  
+**حالة متطلبات التصميم:** `OWNER_APPROVED_THREE_PAGE_LAYOUT_REQUIREMENTS`.
+**تحديث لاحق 2026-10-30 23:36:27 UTC:** وافق المالك على زيادة أو تقليل عدد الصفحات وفق ملاءمة العرض. الصفحات الثلاث هنا تقسيم موضوعي مبدئي، وليست حدًا إلزاميًا؛ يبقى كل المحتوى البحثي والمصفوفة والرسوم واجب العرض. [سياسة عدد الصفحات المتغير](../../requirements/V7-REPORTS-DESIGN-FIRST-PLACEHOLDER-POLICY-2026-10-30_AR.md).  
 **حالة التحقق:** `VISUAL_PDF_PREVIEW_PENDING / PRODUCTION_IMPLEMENTATION_NOT_STARTED`.  
 **المستودع:** `HazRob/HazRob-Tank`، الفرع `feature/tank-v7-reports`.
 
