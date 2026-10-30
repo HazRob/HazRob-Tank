@@ -189,7 +189,7 @@ class MQ4TemporalAuditTests(unittest.TestCase):
         rows = [
             [(start + timedelta(minutes=i)).strftime("%Y-%m-%d %H:%M:%S"),
              2000 + i, 10 + i, 20 + i, 30 + i]
-            for i in range(1501)
+            for i in range(1561)
         ]
         digest = self.write(rows=rows)
         r = self.audit(expected_member_sha256=digest)
