@@ -311,7 +311,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Central owner page flexibility decision now applied to V7 report policy, assessment of R01-R06, R03-R06 docs and tracker. Added real Java V7ReportPagePlanner preserving all source rows with repeated headings and dynamic pages and Android fixture for 18/45-row stress; latest CI run 41145706319 in progress. Existing production PDF writers are not replaced, no engine modified, no release APK claimed.",
+  "latest_documented_change": "First production V7 report after R01 started: R02 uses new V7PhysicalReportPdfWriter via stable TankPhysicalSnapshotPdf.write entrypoint. All 15 source catalog items including 3 PM kept; source-only heat/altitude; no PDF-side exposure or scientific gates; 4 blank plots; dynamic pages. Android fixture/CI modified to assert all 15 labels and 12pt. Run 41146719225 in progress; report not QA-certified nor release-ready.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -464,7 +464,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DYNAMIC_PAGE_COUNT_OWNER_APPROVED_ANDROID_PDF_KIT_AND_PAGE_PLANNER_QA_IN_PROGRESS",
+    "current_phase": "R02_PHYSICAL_NATIVE_PDF_INTEGRATED_ANDROID_QA_RUNNING_NEXT_R03_R04_R05_R06",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -686,5 +686,33 @@
       "state": "in_progress_at_last_check",
       "previous_compile_success_run_id": 41145229233
     }
+  },
+  "r02_native_integration_checkpoint": {
+    "state": "PRODUCTION_WRITER_ROUTED_TO_V7__ANDROID_R02_QA_RUNNING",
+    "document": "docs/implementation/V7-R02-NATIVE-ANDROID-INTEGRATION-AND-QA-GATE-2026-10-31_AR.md",
+    "files": [
+      "android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java",
+      "android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java",
+      "research/chemcore_v6/tests/android/V7R01PdfFixtureActivity.java",
+      "research/chemcore_v6/tests/android/run_v7_r01_pdf_qa.sh",
+      ".github/workflows/v7-r01-android-pdf-qa.yml"
+    ],
+    "sources_reported": "all 15 PhysicalCatalog indicators plus 3 optional thermal values, missing '-', four chart placeholders",
+    "no_secondary_science_calculation": true,
+    "scan_is_original_Android_writer": true,
+    "qa": {
+      "run": 41146719225,
+      "status": "in_progress_at_last_check",
+      "includes_real_android_r02_pdf": true,
+      "verify": "A4 portrait, >=12pt, all 15 source labels, missing entries '-'"
+    },
+    "signed_off": false,
+    "production_code_change": true,
+    "pending": [
+      "R02 Android CI success and page image review",
+      "R01 final writer QA",
+      "R03–R06 production integration",
+      "full visual owner acceptance"
+    ]
   }
 }
