@@ -1,0 +1,182 @@
+name: HazRob Tank V6 N16 real HTTPS GitHub Stable QA Android12
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/chemcore/library/**'
+      - 'research/chemcore_v6/tests/android/V6StableOnlineGithubActivity.java'
+      - 'research/chemcore_v6/tests/android/run_n16_stable_real_github_https.sh'
+      - '.github/workflows/chemcore-v6-n16-stable-https-qa-android12.yml'
+      - 'tools/prepare_v6_stable_source.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-real-android12-online-github:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout independent Tank V6
+        uses: actions/checkout@v4
+        with:
+          path: tank
+      - name: Checkout pinned historical scientific Android source
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          persist-credentials: false
+          path: source
+      - name: Overlay Tank V6 read-only updater and test Activity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          mkdir -p source/app/src/main/java/com/servoc/app/chemcore/library
+          cp tank/research/chemcore_v6/tests/android/V6StableOnlineGithubActivity.java \
+             source/app/src/main/java/com/servoc/app/chemcore/library/V6StableUpdateEmulatorActivity.java
+          mkdir -p source/tools source/app/src/main/assets
+          cp tank/tools/prepare_v6_stable_source.py source/tools/prepare_v6_stable_source.py
+          if test -d tank/android/app/src/main/assets; then
+            cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/
+          fi
+          if test -d tank/android/app/src/main/res; then
+            cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          gradle=Path('source/app/build.gradle')
+          s=gradle.read_text(encoding='utf-8')
+          for a,b in (("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'"),
+                      ("versionName '0.10.2'","versionName '6.0'"),
+                      ("versionCode 30","versionCode 6")):
+              assert a in s, a
+              s=s.replace(a,b)
+          gradle.write_text(s,encoding='utf-8')
+          manifest=Path('source/app/src/main/AndroidManifest.xml')
+          x=manifest.read_text(encoding='utf-8')
+          key='<activity android:name=".MainActivity" android:exported="false"/>'
+          assert key in x, 'missing pinned Android activity anchor'
+          x=x.replace(key,
+              '<activity android:name="com.servoc.app.chemcore.library.V6StableUpdateEmulatorActivity" android:exported="true"/>\n        '+key)
+          manifest.write_text(x,encoding='utf-8')
+          PY
+          python3 source/tools/prepare_v6_stable_source.py source
+      - name: Build source-qualified test Stable and stage isolated ephemeral QA branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd source && python3 tools/build_hr069_embedded_stable.py \
+            --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable)
+          python3 - <<'PY'
+          import os,hashlib,json
+          from pathlib import Path
+          source=Path('source/app/build/generated/hazrobAssets/generated/chemcore/embedded_stable')
+          manifest=json.loads((source/'manifest.json').read_text(encoding='utf-8'))
+          raw=(source/'chemcore-stable-snapshot.json').read_bytes()
+          assert manifest['payload_sha256']==hashlib.sha256(raw).hexdigest()
+          assert manifest['payload_size_bytes']==len(raw)==1744726
+          assert manifest['min_app_version']==manifest['max_app_version']=='6.0'
+          assert manifest['chemical_count']==652 and manifest['calibration_count']==0
+          assert json.loads(raw)['content_counts']['response_priors']==49
+          manifest['library_version']='1.0.1-hr069r1'
+          dest=Path('tank/updates/chemcore-stable')
+          dest.mkdir(parents=True,exist_ok=True)
+          (dest/'manifest.json').write_text(
+              json.dumps(manifest,sort_keys=True,separators=(',',':'))+'\n',encoding='utf-8')
+          (dest/'chemcore-stable-snapshot.json').write_bytes(raw)
+          qa='qa/v6-stable-online-'+os.environ['GITHUB_RUN_ID']
+          fixture=Path('source/app/src/main/java/com/servoc/app/chemcore/library/V6StableOnlineGithubActivity.java')
+          code=fixture.read_text(encoding='utf-8')
+          assert code.count('__QA_BRANCH__')==2
+          fixture.write_text(code.replace('__QA_BRANCH__',qa),encoding='utf-8')
+          print('Prepared ephemeral QA Stable candidate only, never main:',qa)
+          PY
+      - name: Publish only isolated per-run QA branch — no main changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          qa="qa/v6-stable-online-$GITHUB_RUN_ID"
+          git -C tank config user.name "HazRob V6 QA"
+          git -C tank config user.email "hazrob-v6-qa@users.noreply.github.com"
+          git -C tank switch -c "$qa"
+          git -C tank add updates/chemcore-stable/manifest.json updates/chemcore-stable/chemcore-stable-snapshot.json
+          git -C tank commit -m "test-only N16 source-qualified HTTPS Stable snapshot; never merge to main"
+          git -C tank push origin "HEAD:refs/heads/$qa"
+      - name: Confirm real HTTPS pair on GitHub raw before emulator test
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://raw.githubusercontent.com/HazRob/HazRob-Tank/qa/v6-stable-online-$GITHUB_RUN_ID/updates/chemcore-stable"
+          curl --fail --location --silent --show-error --retry 8 --retry-delay 3 --output /tmp/v6-n16-manifest.json "$base/manifest.json"
+          curl --fail --location --silent --show-error --retry 8 --retry-delay 3 --output /tmp/v6-n16-payload.json "$base/chemcore-stable-snapshot.json"
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          m=json.loads(Path('/tmp/v6-n16-manifest.json').read_text())
+          content=Path('/tmp/v6-n16-payload.json').read_bytes()
+          assert m['channel']=='stable'
+          assert m['library_version']=='1.0.1-hr069r1'
+          assert m['payload_size_bytes']==len(content)==1744726
+          assert m['payload_sha256']==hashlib.sha256(content).hexdigest()
+          assert m['calibration_count']==0
+          print('PASS real GitHub raw HTTPS QA origin manifest + stable payload, SHA-256 verified')
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android API36
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Temporary emulator-only signing
+        shell: bash
+        run: |
+          mkdir -p source/signing
+          keytool -genkeypair -alias hazrob-prototype \
+            -keystore source/signing/hazrob-prototype.jks \
+            -storepass hazrob-prototype -keypass hazrob-prototype \
+            -keyalg RSA -keysize 2048 -validity 1 \
+            -dname "CN=N16 CI ONLINE ONLY, OU=NOT PRODUCTION, O=HazRob TEST" -noprompt
+      - name: Build disposable emulator-only Android test app (NOT V6 APK release)
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Enable KVM
+        run: |
+          if test -c /dev/kvm; then sudo chmod a+rw /dev/kvm; fi
+      - name: Exercise Android12 real HTTPS GitHub QA Stable update
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
+          script: bash tank/research/chemcore_v6/tests/android/run_n16_stable_real_github_https.sh
+      - name: Remove ephemeral public QA branch after evidence collection
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          qa="qa/v6-stable-online-$GITHUB_RUN_ID"
+          case "$qa" in qa/v6-stable-online-[0-9]*) ;; *) exit 2 ;; esac
+          if git -C tank ls-remote --exit-code --heads origin "$qa" >/dev/null; then
+            git -C tank push origin --delete "$qa"
+          fi
+      - name: Upload verified QA HTTPS evidence only — never touch main or release an APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V6-N16-GitHub-HTTPS-QA-Android12
+          path: /tmp/v6-n16/
+          if-no-files-found: warn
+          retention-days: 30
