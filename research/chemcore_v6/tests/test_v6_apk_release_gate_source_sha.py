@@ -29,6 +29,9 @@ class ReleaseGate(unittest.TestCase):
         self.assertIn("unaudited changes since tested commit",FLOW)
         self.assertLess(FLOW.index("tested commit is not ancestor"),FLOW.index("Package V6 ESP32"))
     def test_signing_cannot_pretend_v4_certificate_updates_v5(self):
-        self.assertIn("v5_upgrade_compatible=false",FLOW)
+        self.assertIn("V5_KEYSTORE_B64",FLOW)
+        self.assertIn("target_installed_apk_certificate_sha256",FLOW)
+        self.assertIn("test \"$actual\" = \"$target\"",FLOW)
+        self.assertIsNone(ACCEPT["release_signing_v6"]["target_installed_apk_certificate_sha256"])
         self.assertIn("97F0E315449BB369D1C2042CD092E73E422CE9718406D93F8CCB1E40C6921BD1",FLOW)
 if __name__=='__main__':unittest.main()
