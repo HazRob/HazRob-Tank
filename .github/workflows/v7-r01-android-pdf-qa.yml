@@ -8,6 +8,8 @@ on:
       - 'android/app/src/main/java/com/servoc/app/report/V7ReportLayoutKit.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7ReportPagePlanner.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java'
+      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/V7BeefResearchPdfWriter.java'
+      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchPdf.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalIcons.java'
       - 'android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java'
       - 'android/app/src/main/res/drawable/hazrob_official_report_mark.xml'
@@ -160,6 +162,36 @@ jobs:
                        'data':'Synthetic test fixture; not a Tank exposure assessment',
                        'scientific_claim':'No recalculated altitude, heat, PM or exposure limits'}
           (p.parent/'r02_manifest.json').write_text(json.dumps(r02manifest,indent=2))
+          r06path=p.parent/'V7_R06_Actual_Android_Report.pdf'
+          assert r06path.is_file() and r06path.stat().st_size>5000
+          beef_pdf=fitz.open(r06path)
+          assert len(beef_pdf)>=3,('R06 research pages',len(beef_pdf))
+          beef_text=' '.join(' '.join(page.get_text().split()) for page in beef_pdf)
+          for label in ['MQ2','MQ3','MQ4','MQ5','MQ8','MQ9','MQ135',
+                        'excellent','good','acceptable','spoiled',
+                        '10.17632/mwmhh766fc.3','10.1016/j.dib.2018.11.091',
+                        '43.9','38.9','TS5','36h']:
+              assert label in beef_text,('R06 source label missing',label)
+          beef_pages=[]
+          for i,page in enumerate(beef_pdf):
+              assert abs(page.rect.width-595)<1 and abs(page.rect.height-842)<1
+              spans=[sp for block in page.get_text('dict')['blocks']
+                     if 'lines' in block for line in block['lines']
+                     for sp in line['spans'] if sp.get('text','').strip()]
+              assert spans,('empty R06 page',i)
+              minpt=min(sp['size'] for sp in spans)
+              assert minpt>=11.5,('small R06 text',i,minpt)
+              image=page.get_pixmap(matrix=fitz.Matrix(1.5,1.5),alpha=False)
+              pic=p.parent/f'V7_R06_Page_{i+1:02d}.png';image.save(pic)
+              beef_pages.append({'page':i+1,'min_font_pt':minpt,'image':pic.name})
+          assert '317' in beef_text and '540' in beef_text and '359' in beef_text
+          beef_manifest={'format':'hazrob-v7-r06-original-android-pdf-qa/1',
+                         'pages':beef_pages,
+                         'sha256':hashlib.sha256(r06path.read_bytes()).hexdigest(),
+                         'source':'Real BeefResearchPdf.save MediaStore facade -> V7BeefResearchPdfWriter',
+                         'study_confusion':'Published external TS5 source-derived, NOT Tank TVC',
+                         'input':'Explicit synthetic CI fixture, not physical meat sample'}
+          (p.parent/'r06_manifest.json').write_text(json.dumps(beef_manifest,indent=2))
           status=json.loads((p.parent/'status.json').read_text())
           assert status['scientific_status']=='UNKNOWN_G3_ZERO_NO_CERTIFIED_PPM'
           manifest={'format':'hazrob-v7-r01-original-android-pdf-qa/1','pages':data,
