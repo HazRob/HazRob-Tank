@@ -84,20 +84,27 @@ public final class TankV6TelemetryAdapter {
             ("manual_device_r0".equals(source)&&
              sensor.optBoolean("r0_clean_air_reference_independently_verified",false));
         if(!sourceEligible)return false;
-        // Firmware variants must have their independent sampling evidence.
-        if("firmware_clean_air_r0".equals(source)){
-            // V5 firmware divides Rs(clean air) by MQ model's approximate
-            // R0 factor. That legacy R0 gives Rs/R0~3.6..70 in clean air,
-            // NOT the ~1 baseline assumed by V6. Explicit versioned
-            // clean-air definition is mandatory to prevent false positives.
+        // Both firmware and historical phone-side automatic R0 need actual
+        // measured-window metadata. An automatic source label + a timestamp
+        // alone cannot attest that clean-air Rs was sampled on this device.
+        // Legacy automatic captures without this evidence remain raw/research
+        // observations and MUST NOT create operator gas hypotheses.
+        if("firmware_clean_air_r0".equals(source)||
+                "automatic_clean_air_field_r0".equals(source)){
+            // V5 firmware factor-normalizes clean-air Rs. Its scaled R0
+            // cannot serve as the Rs_air unity reference assumed by V6.
             if(!"DEVICE_CLEAN_AIR_RS_MEAN".equals(
                     sensor.optString("r0_definition","")))return false;
             int windows=sensor.optInt("r0_window_count",0);
             int samples=sensor.optInt("r0_samples",0);
-            // The new V6 QUICK R0 is one genuine 60-second Rs_air window,
-            // while old V6 3-window records remain separately qualified.
             if(!((windows==1&&samples>=10)||
                  (windows==3&&samples>=30)))return false;
+            // Automatic phone-side values have historically lacked ESP32
+            // identity binding. Do not promote them until independently
+            // attested by the real sensor controller.
+            if("automatic_clean_air_field_r0".equals(source)&&
+                    sensor.optString("r0_device_id","").trim().isEmpty())
+                return false;
         }
         boolean complete=sensor.optBoolean("r0_provenance_complete",false)||
             (!sensor.optString("r0_session","").isEmpty()&&
