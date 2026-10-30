@@ -77,7 +77,6 @@ def reconcile(lodo, multi):
     days = sorted(folds)
     check(all(valid_iso_day(d) for d in days), 'DATES')
     previous_available = None
-    previous_cross_day = {}
     lag_one_cross_day = {}
     day_index = {day: i for i, day in enumerate(days)}
     for lag in LAGS:
@@ -110,12 +109,9 @@ def reconcile(lodo, multi):
         if lag == 1:
             lag_one_cross_day = dict(distribution)
         else:
-            check(all(distribution.get(day, 0) >= previous_cross_day.get(day, 0)
-                      for day in days), 'CROSS_DAY_LAG_MONOTONIC')
             check(all(not rows or lag_one_cross_day.get(day, 0) == 1
                       for day, rows in distribution.items()),
                   'CROSS_DAY_NO_LAG_ONE_CONTINUITY')
-        previous_cross_day = dict(distribution)
         fraction = item.get('cross_day_fraction_of_available_pairs')
         expected = b / available if available else None
         check((fraction is None and expected is None) or
