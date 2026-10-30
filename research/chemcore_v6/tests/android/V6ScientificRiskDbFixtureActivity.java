@@ -66,15 +66,20 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             "(SELECT COUNT(*) FROM exposure_limits e WHERE e.chemical_uid=c.uid),"+
             "(SELECT COUNT(*) FROM chemical_hazard_classifications h WHERE h.chemical_uid=c.uid),"+
             "(SELECT COUNT(*) FROM chemical_background_ranges b WHERE "+
-                "b.chemical_uid=c.uid AND b.qualification_status='SOURCE_QUALIFIED') "+
+                "b.chemical_uid=c.uid AND b.qualification_status='SOURCE_QUALIFIED'),"+
+            "(SELECT x.canonical_uid FROM chemical_identity_equivalence_v6 x "+
+            "WHERE x.alias_uid=c.uid),"+
+            "(SELECT x.source_cas FROM chemical_identity_equivalence_v6 x "+
+            "WHERE x.alias_uid=c.uid) "+
             "FROM v14_unified_chemical_catalog c ORDER BY c.uid";
         StringBuilder csv=new StringBuilder(
             "uid,cas,name_en,name_ar,formula,molar_mass,chemical_class,record_source,"+
             "lfl_vol_pct,ufl_vol_pct,mq_curve_count,natural_range_status,"+
             "source_hazard_count,exposure_limit_count,hazard_class_count,"+
-            "qualified_background_range_count\n");
+            "qualified_background_range_count,canonical_uid_niosh,niosh_equivalent_cas\n");
         int rows=0,cas=0,english=0,arabic=0,formula=0,molarMass=0;
         int lfl=0,ufl=0,mq=0,exposure=0,hazard=0,background=0;
+        int equivalentCas=0,conceptualNonSingle=0;
         int duplicateUids=0;
         java.util.HashSet<Long> seen=new java.util.HashSet<>();
         try(Cursor c=sql.rawQuery(query,null)){
@@ -93,6 +98,12 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 if(c.getInt(13)>0)exposure++;
                 if(c.getInt(14)>0||c.getInt(12)>0)hazard++;
                 if(c.getInt(15)>0)background++;
+                if(!c.isNull(16)&&!c.isNull(17))equivalentCas++;
+                String category=c.isNull(6)?"":c.getString(6);
+                if(category.startsWith("MIXTURE_")||
+                    category.startsWith("AGGREGATE_")||
+                    "MEASUREMENT_INDEX_NOT_CHEMICAL".equals(category))
+                    conceptualNonSingle++;
                 for(int k=0;k<c.getColumnCount();k++){
                     if(k>0)csv.append(',');
                     if(c.isNull(k))continue;
@@ -112,6 +123,12 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             .put("materials",rows).put("unique_uids",seen.size())
             .put("duplicate_uids",duplicateUids)
             .put("materials_with_cas",cas)
+            .put("materials_with_niosh_cas_equivalence",equivalentCas)
+            .put("materials_with_direct_or_linked_cas",cas+equivalentCas)
+            .put("materials_without_direct_or_linked_cas",rows-cas-equivalentCas)
+            .put("non_single_substance_labels",conceptualNonSingle)
+            .put("individual_materials_without_linked_cas",
+                rows-cas-equivalentCas-conceptualNonSingle)
             .put("materials_with_name_en",english)
             .put("materials_with_name_ar",arabic)
             .put("materials_with_formula",formula)
@@ -316,6 +333,13 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 coverage.getInt("unique_uids")==materials&&
                 coverage.getInt("duplicate_uids")==0,
                 "734 rows each have exactly one stable canonical UID");
+            check(coverage.getInt("materials_with_cas")==671 &&
+                coverage.getInt("materials_with_niosh_cas_equivalence")==15 &&
+                coverage.getInt("materials_with_direct_or_linked_cas")==686,
+                "direct CAS plus original NIOSH synonym identity covers 686 entries");
+            check(coverage.getInt("non_single_substance_labels")==9 &&
+                coverage.getInt("individual_materials_without_linked_cas")==39,
+                "9 non-CAS mixture/index labels separated from 39 unresolved individual CAS cases");
             check(coverage.getInt("materials_with_name_en")==materials,
                 "no unnamed material silently appears as a complete identity");
             check(!coverage.getBoolean("scientific_fields_exhaustive"),
