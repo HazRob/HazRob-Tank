@@ -88,6 +88,15 @@ public final class TankChemicalCapabilityReport {
         JSONArray exposure=unified.optJSONArray("occupational_exposure_source_limits");
         JSONArray hazard=unified.optJSONArray("source_qualified_hazard_classifications");
         out.append("\n\nالمكتبة الكيميائية الموحدة V14:");
+        out.append("\nالصيغة الجزيئية: ")
+            .append(chemical.formula==null||chemical.formula.trim().isEmpty()?
+                "غير متاحة":chemical.formula);
+        out.append("\nالكتلة المولية: ")
+            .append(chemical.molarMass==null?"غير متاحة":
+                rounded(chemical.molarMass)+" g/mol");
+        out.append("\nحقائق PubChem الجزيئية ذات أصل موثق: ")
+            .append(unified.optInt("molecular_identity_source_fact_count",0))
+            .append(" (ليست بصمات غاز أو معايرة MQ)");
         out.append("\nمعرّف المادة UID: ").append(chemical.uid);
         out.append("\nمراجع MQ المرتبطة: ").append(curves==null?0:curves.length());
         out.append("\nحدود تعرض مهنية موثقة: ").append(exposure==null?0:exposure.length());
