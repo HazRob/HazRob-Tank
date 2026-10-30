@@ -91,6 +91,20 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
 
             ChemicalRepository unifiedRepo=new ChemicalRepository(db);
             check(unifiedRepo.count()==materials,"actual UI repository exposes whole catalog");
+            JSONObject oxygenProfile=unifiedRepo.scientificProfile(oxygenUid);
+            JSONObject benzeneProfile=unifiedRepo.scientificProfile(benzeneUid);
+            check(oxygenProfile.length()>=75 && oxygenProfile.optInt("is_oxidizer",0)==1,
+                "whole unified profile is accessible to operator/lab by master UID");
+            check(benzeneProfile.optInt("is_carcinogen",0)==1 &&
+                "1".equals(benzeneProfile.optString("iarc_group","")),
+                "source-coded IARC Group 1 preserved by shared repository");
+            check(oxygenProfile.has("lfl_vol_pct") &&
+                oxygenProfile.isNull("lfl_vol_pct"),
+                "nonflammable oxygen has UNKNOWN/not-applicable LFL, never numeric 0");
+            check(oxygenProfile.has("chemcore_m4_status") &&
+                "NOT_G3_VALIDATED".equals(oxygenProfile.optString("chemcore_m4_status","")),
+                "M4 disclosure same in all menus");
+
             check(unifiedRepo.search("",5000).size()==materials,
                 "default unfiltered menu returns all master identities");
             check(unifiedRepo.byLegacyId(23)!=null &&
