@@ -305,7 +305,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R06 owner explicitly approved 3 portrait pages at 2026-10-30T23:24:52Z, superseding 2-page proposal; third page required for 4x4 source confusion matrix, source 36h timeline, research provenance and caution. First page specimen/7MQ/4 classes, second three distinct plot placeholders; '-' missing values; charts no plotted data. R06 doc/assessment updated; Java writer/engine unchanged; visual PDF QA and unified build not performed.",
+  "latest_documented_change": "Created and QA-checked six external Arabic RTL blank design preview PDFs totaling 20 A4 pages, min text size 12pt, no out-of-page text; R03 expanded to include 2 physical pages and a particle page plus candidate microchart spaces. Added unused Android V7ReportLayoutKit.java and CI path filter, with Android QA in progress run 41145229233. Preflight doc V7-SIX-REPORT-DESIGN-PREFLIGHT-2026-10-31_AR.md. Photos R05 pending; no changed scientific or production writers; APK not built.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -455,7 +455,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_ONLY_ALL_SIX_ORIGINAL_REPORTS_AUDITED_R06_OWNER_APPROVED_VISUAL_SPEC_RECONCILIATION",
+    "current_phase": "SHARED_LAYOUT_KIT_ADDED_EXTERNAL_BLANK_PDF_PREFLIGHT_20_PAGES_ANDROID_CI_PENDING",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -467,7 +467,7 @@
       "R06"
     ],
     "final_apk_authorized": false,
-    "next_step": "Reconcile owner design decisions for all 6 and their blank-data A4 visual templates. Obtain any outstanding visual signoff. Then unified PDF renderer production changes, Android-generated PDFs, per-report QA, build; no engine changes during design.",
+    "next_step": "Inspect Android-native CI run 41145229233 for layout kit compile; close exceptions; then integrate approved report templates without changing science engines, render actual Android source PDFs for QA and require owner visual acceptance.",
     "layout_empty_data_policy": "docs/requirements/V7-REPORTS-DESIGN-FIRST-PLACEHOLDER-POLICY-2026-10-30_AR.md"
   },
   "r01_prototype": {
@@ -579,5 +579,57 @@
     "owner_document": "docs/implementation/V7-R05-OWNER-APPROVED-TWO-PAGE-FRUIT-IMAGE-MATRIX-2026-10-30_AR.md",
     "source_code_changed": false,
     "visual_qa_passed": false
+  },
+  "design_preflight": {
+    "document": "docs/implementation/V7-SIX-REPORT-DESIGN-PREFLIGHT-2026-10-31_AR.md",
+    "state": "SIX_EXTERNAL_BLANK_LAYOUT_PDFS_PRODUCED_ANDROID_SOURCE_QA_IN_PROGRESS",
+    "report_preview_page_counts": {
+      "R01": 2,
+      "R02": 2,
+      "R03": 7,
+      "R04": 4,
+      "R05": 2,
+      "R06": 3
+    },
+    "pages_total": 20,
+    "pdf_page_formats": "A4 portrait R01 R02 R05 R06; landscape R03 R04",
+    "font_qa": "all text spans >=12 pt across all 20 external preview pages",
+    "rtl_text_pdf_extracted": true,
+    "off_page_spans": 0,
+    "fixture": "BLANK_DESIGN_ONLY; no reading, detection, calibration, or chart series fabricated",
+    "external_pdfs_in_current_chat": true,
+    "external_pdfs_committed_to_repo": false,
+    "verified_zip_sha256": "6b13ce808cc3e3018b84c7fd616bc139c0c9d8576a09f5dd6dd5b9b7a9f58edc",
+    "remaining": [
+      "R05 real licensed photographs for 18 source families",
+      "Android-native original writer rendering and source fidelity",
+      "Detailed data contracts, all final visual signoffs",
+      "All six writers production integration"
+    ]
+  },
+  "shared_layout_kit": {
+    "source": "android/app/src/main/java/com/servoc/app/report/V7ReportLayoutKit.java",
+    "added": true,
+    "not_wired_to_existing_writers": true,
+    "features": [
+      "A4 5mm margin",
+      "Owner official header logo and footer",
+      "Android StaticLayout for RTL and >=12pt",
+      "Amber table headers and borders",
+      "No-data empty chart plotting",
+      "Engine-provided red background+white bold exceedance cells",
+      "Layout fit-check without rendering"
+    ],
+    "source_integration_verified": false,
+    "build_qas": [
+      {
+        "run_id": 41145072208,
+        "state": "in_progress_as_of_check"
+      },
+      {
+        "run_id": 41145229233,
+        "state": "in_progress_as_of_check"
+      }
+    ]
   }
 }
