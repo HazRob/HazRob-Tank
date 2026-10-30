@@ -19,7 +19,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE fingerprints(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, label TEXT NOT NULL, created_ts TEXT NOT NULL, payload TEXT NOT NULL)");
         db.execSQL("CREATE TABLE captures(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, chemical_uid INTEGER, known_ppm REAL, ts TEXT NOT NULL, session_id TEXT, temp_c REAL, rh REAL, phase TEXT, sensor_payload TEXT NOT NULL, feature_payload TEXT)");
         db.execSQL("CREATE TABLE models(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, model_type TEXT NOT NULL, version TEXT NOT NULL, created_ts TEXT NOT NULL, training_count INTEGER, metrics TEXT, payload TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 0)");
-        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);createCaptureUidIndex(db);
+        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);ChemicalHazardSeedV11.ensure(db);createCaptureUidIndex(db);
     }
 
     @Override public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
@@ -39,7 +39,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         }
         if(oldVersion<9)createV9UserFieldTables(db);
         if(oldVersion<10){createV10FieldCycleTables(db);importV9FieldCycleLinks(db);}
-        if(oldVersion<11)createV11ScientificRiskTables(db);
+        if(oldVersion<11){createV11ScientificRiskTables(db);ChemicalHazardSeedV11.ensure(db);}
     }
 
     /**
@@ -74,6 +74,17 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
             "CHECK(range_min IS NULL OR range_min>=0),"+
             "CHECK(range_max IS NULL OR range_max>=0),"+
             "CHECK(range_min IS NULL OR range_max IS NULL OR range_min<=range_max))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS chemical_hazard_boundaries("+
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,chemical_uid INTEGER NOT NULL,"+
+            "hazard_type TEXT NOT NULL,comparison_operator TEXT NOT NULL,"+
+            "threshold REAL NOT NULL,unit TEXT NOT NULL,regulatory_scope TEXT NOT NULL,"+
+            "source_id TEXT NOT NULL,source_revision TEXT,qualification_status TEXT NOT NULL,"+
+            "requires_confirmed_analyte_measurement INTEGER NOT NULL DEFAULT 1,"+
+            "FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid),"+
+            "FOREIGN KEY(source_id) REFERENCES scientific_sources(source_id),"+
+            "CHECK(threshold>=0),CHECK(comparison_operator IN ('<','>','<=','>=')))");
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS uq_v11_hazard_ref "+
+            "ON chemical_hazard_boundaries(chemical_uid,hazard_type,comparison_operator,source_id,regulatory_scope)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_v11_air_background_target "+
             "ON chemical_background_ranges(chemical_uid,environment_type,source_id)");
         // Later NIOSH and OSHA identity imports must not leave gaps in profile coverage.
