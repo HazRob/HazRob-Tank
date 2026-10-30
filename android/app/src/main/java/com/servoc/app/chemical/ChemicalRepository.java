@@ -22,7 +22,7 @@ public final class ChemicalRepository {
 
     public int count(){
         try(Cursor c=db.getReadableDatabase().rawQuery(
-                "SELECT COUNT(*) FROM v11_unified_chemical_catalog",null)){
+                "SELECT COUNT(*) FROM v14_unified_chemical_catalog",null)){
             return c.moveToFirst()?c.getInt(0):0;
         }
     }
@@ -52,8 +52,8 @@ public final class ChemicalRepository {
     public List<Chemical> search(String query,int limit){
         String q=query==null?"":query.trim();int n=Math.max(1,Math.min(limit,5000));List<Chemical> out=new ArrayList<>();
         String sql;String[] args;
-        if(q.isEmpty()){sql="SELECT "+COLS+" FROM v11_unified_chemical_catalog ORDER BY name_en LIMIT "+n;args=null;}
-        else{sql="SELECT DISTINCT c.uid,c.legacy_id,c.cas,c.pubchem_cid,c.name_en,c.name_ar,c.formula,c.molar_mass,c.chemical_class,c.record_source FROM v11_unified_chemical_catalog c LEFT JOIN chemical_synonyms s ON s.chemical_uid=c.uid LEFT JOIN chemical_identifiers i ON i.chemical_uid=c.uid WHERE (c.name_en LIKE ? OR c.name_ar LIKE ? OR c.cas LIKE ? OR c.formula LIKE ? OR s.synonym LIKE ? OR i.value LIKE ?) ORDER BY c.name_en LIMIT "+n;String x="%"+q+"%";args=new String[]{x,x,x,x,x,x};}
+        if(q.isEmpty()){sql="SELECT "+COLS+" FROM v14_unified_chemical_catalog ORDER BY name_en LIMIT "+n;args=null;}
+        else{sql="SELECT DISTINCT c.uid,c.legacy_id,c.cas,c.pubchem_cid,c.name_en,c.name_ar,c.formula,c.molar_mass,c.chemical_class,c.record_source FROM v14_unified_chemical_catalog c LEFT JOIN chemical_synonyms s ON s.chemical_uid=c.uid LEFT JOIN chemical_identifiers i ON i.chemical_uid=c.uid WHERE (c.name_en LIKE ? OR c.name_ar LIKE ? OR c.cas LIKE ? OR c.formula LIKE ? OR s.synonym LIKE ? OR i.value LIKE ?) ORDER BY c.name_en LIMIT "+n;String x="%"+q+"%";args=new String[]{x,x,x,x,x,x};}
         try(Cursor c=db.getReadableDatabase().rawQuery(sql,args)){while(c.moveToNext())out.add(read(c));}
         return out;
     }
@@ -66,8 +66,8 @@ public final class ChemicalRepository {
         List<Chemical> rows=search(q,3);return rows.size()==1?rows.get(0):null;
     }
 
-    public Chemical byLegacyId(int id){try(Cursor c=db.getReadableDatabase().rawQuery("SELECT "+COLS+" FROM v11_unified_chemical_catalog WHERE legacy_id=?",new String[]{String.valueOf(id)})){return c.moveToFirst()?read(c):null;}}
-    public Chemical byUid(long uid){try(Cursor c=db.getReadableDatabase().rawQuery("SELECT "+COLS+" FROM v11_unified_chemical_catalog WHERE uid=?",new String[]{String.valueOf(uid)})){return c.moveToFirst()?read(c):null;}}
+    public Chemical byLegacyId(int id){try(Cursor c=db.getReadableDatabase().rawQuery("SELECT "+COLS+" FROM v14_unified_chemical_catalog WHERE legacy_id=?",new String[]{String.valueOf(id)})){return c.moveToFirst()?read(c):null;}}
+    public Chemical byUid(long uid){try(Cursor c=db.getReadableDatabase().rawQuery("SELECT "+COLS+" FROM v14_unified_chemical_catalog WHERE uid=?",new String[]{String.valueOf(uid)})){return c.moveToFirst()?read(c):null;}}
     /**
      * Complete source-scoped V13 material profile. Shared by tracking,
      * candidate details, developer lab and export. Null means UNKNOWN,
@@ -77,7 +77,7 @@ public final class ChemicalRepository {
         JSONObject out=new JSONObject();
         if(uid<=0)return out;
         try(Cursor c=db.getReadableDatabase().rawQuery(
-                "SELECT * FROM v11_unified_chemical_catalog WHERE uid=? LIMIT 1",
+                "SELECT * FROM v14_unified_chemical_catalog WHERE uid=? LIMIT 1",
                 new String[]{Long.toString(uid)})){
             if(!c.moveToFirst())return out;
             for(int i=0;i<c.getColumnCount();i++){
@@ -100,7 +100,7 @@ public final class ChemicalRepository {
     public List<String> identifiers(long uid,String scheme){List<String> out=new ArrayList<>();try(Cursor c=db.getReadableDatabase().rawQuery("SELECT DISTINCT value FROM chemical_identifiers WHERE chemical_uid=? AND scheme=? ORDER BY value",new String[]{String.valueOf(uid),scheme})){while(c.moveToNext())out.add(c.getString(0));}return out;}
 
     private Chemical exact(String q){
-        String sql="SELECT DISTINCT c.uid,c.legacy_id,c.cas,c.pubchem_cid,c.name_en,c.name_ar,c.formula,c.molar_mass,c.chemical_class,c.record_source FROM v11_unified_chemical_catalog c LEFT JOIN chemical_synonyms s ON s.chemical_uid=c.uid LEFT JOIN chemical_identifiers i ON i.chemical_uid=c.uid WHERE (c.cas=? OR i.value=? OR lower(trim(c.name_en))=lower(trim(?)) OR lower(trim(c.name_ar))=lower(trim(?)) OR lower(trim(s.synonym))=lower(trim(?))) ORDER BY c.uid";
+        String sql="SELECT DISTINCT c.uid,c.legacy_id,c.cas,c.pubchem_cid,c.name_en,c.name_ar,c.formula,c.molar_mass,c.chemical_class,c.record_source FROM v14_unified_chemical_catalog c LEFT JOIN chemical_synonyms s ON s.chemical_uid=c.uid LEFT JOIN chemical_identifiers i ON i.chemical_uid=c.uid WHERE (c.cas=? OR i.value=? OR lower(trim(c.name_en))=lower(trim(?)) OR lower(trim(c.name_ar))=lower(trim(?)) OR lower(trim(s.synonym))=lower(trim(?))) ORDER BY c.uid";
         try(Cursor x=db.getReadableDatabase().rawQuery(sql,new String[]{q,q,q,q,q})){Chemical one=null;int n=0;while(x.moveToNext()){one=read(x);n++;}return n==1?one:null;}
     }
 
