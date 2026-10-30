@@ -1,3 +1,13 @@
+## 2026-10-30 — G2 MQ4 multiscale lag-context embargo (411/411 CI)
+
+- Resumed from research checkpoint `ff7106e21bdb5de6d5e45dd9f79e28faee143651`; verified preceding 20/20 CI successes and original pinned 80-technique/14-source scope. Independent evidence remains `records=[]`, source-ready 0/14, `g2_pass_candidates=0`, `g2_blocked=80`.
+- SHA256-verified original Library archive `HazRob_MQ_Reference_Real_Measurements_2026-10-30.zip` (`7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9`) and original raw member (`3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d`); 14,186 rows, 11 continuous one-minute segments. No source promotion.
+- Added research-only `g2_mq4_multiscale_embargo_audit.py`, six synthetic tests, pinned result `G2_MQ4_MULTISCALE_DAY_CONTEXT_EMBARGO_2026-10-30.json`, and Arabic methods note `G2_MQ4_MULTISCALE_DAY_CONTEXT_EMBARGO_2026-10-30_AR.md`. Exact consecutive one-minute lag features 1/5/15/30/60/120 yield respectively 10/50/150/300/600/1200 cross-calendar-day context rows; valid lag-pair totals 14175/14131/14031/13881/13581/12981. All rows reconciled, byte-identical local raw replay. Conditional feature-context diagnostics, NOT actual train/test leakage proof or independent physical group evidence.
+- [G2 Actions run 40991230087](https://github.com/HazRob/HazRob-Tank/actions/runs/40991230087) on `85db2fa4fd2fda0c34c0f70008a45e3dec99ae95`: **411/411 PASS**, deterministic audit/triage replay PASS, research publication guard PASS, 80 blocked, 0 candidates, 14 sources blocked. Artifact `12948688780`, SHA256 `93d761039335f6298cad0db634356cf6eacbb6f0199a78fc96c55d74f8e5d202`.
+- Changes limited to `research/implementation_execution/` on research branch; no ChemCore Stable, Android, firmware or main modifications. No G2/G3 scientific approval. Pending: independent original exposure/sample/session/device provenance, traceable reference calibration, and preregistered blinded physically grouped holdouts. Verify documentation-checkpoint CI on final HEAD.
+
+---
+
 ## 2026-10-30 — G2 MQ4 calendar-day lag60 feature-lineage / embargo diagnostic (405/405 CI)
 
 - Resumed from `576bf612ddc3b828d7839385d816b1aa49457a07`; verified 20/20 preceding CI runs successful. Central pinned 80 techniques and 14 external source slots unchanged; independent evidence records=[].
