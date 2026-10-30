@@ -78,8 +78,8 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(osha>=500,"OSHA Z-1 verified packaged seed is loaded");
             check(nioshIdlh>=300,"NIOSH IDLH reference imported");
             check(limits>=osha+nioshIdlh,"all authority-specific entries retained");
-            check(num(sql,"SELECT COUNT(*) FROM chemical_background_ranges")==0,
-                "unknown natural boundaries explicitly stay null");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_background_ranges")>=1,
+                "only provenance-bound natural ranges; unlisted materials have NULL limits");
             long co2Uid=num(sql,"SELECT uid FROM chemicals WHERE cas='124-38-9' LIMIT 1");
             check(co2Uid>0,"CO2 CAS identity linked, no name-based guessing");
             double co2Pel=amount(sql,"SELECT exposure_reference_value FROM "+
