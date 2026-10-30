@@ -193,6 +193,11 @@
       "id": "R03-D22",
       "text": "Owner approves rich unlimited candidate table: candidate identity CAS/UID, evidence rank, candidate-specific official GHS toxicity/hazard pictograms, visually distinct presentation and miniature PPM-vs-authoritative-exposure-reference chart per candidate. During layout phase missing values are '-' and the chart is completely empty.",
       "status": "APPROVED_BY_OWNER_DESIGN"
+    },
+    {
+      "id": "R05-D01-06-FRUIT-TWO-PAGE-OWNER",
+      "text": "Owner approves R05 fruit PDF redesign: fixed RTL first column with actual fruit or mixture photograph for all 18 selectable food-family rows; only chosen family displays its later engine-derived results, other rows show literal '-', with all-family selection able to populate more than one; two A4 portrait pages, nine fruit rows per page, 12pt minimum, reserved empty chart regions; 54 fruit profiles, five mushroom profiles excluded. No gas ppm, food safety certification, Java source changes or invented sample readings.",
+      "status": "APPROVED_BY_OWNER_AS_DESIGN_REQUIREMENT"
     }
   ],
   "checkpoints": [
@@ -294,7 +299,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R05 reviewed original 1-page 215125-byte A4 portrait PDF and fruit FoodFreshnessPdf/FoodFreshnessEngine/food reference manifest; 10 fail/4 partial/3 not applicable/1 pass. Proposed A4 portrait 3 layout sections + unlimited appendix, distinct actual 180s MQ response vs D1-D5 study-day source similarity, all 54 active fruit profiles, blank charts and '-' values. R04 approved additions separately; no Java source changed.",
+  "latest_documented_change": "Owner approved R05 two-page portrait design with permanent photo first column for all 18 fruit/mixture selectable source families, nine rows per page, results for selected row only and '-' for all unselected; a truly all-families selection may later populate returned categories. Chart regions remain blank. Designed with 12pt min and documented source image licensing; photos and final PDF visual QA not yet produced; no Android/engine code changed.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -347,7 +352,7 @@
   "active_report": {
     "id": "R05",
     "name": "Fruit Freshness Research PDF",
-    "phase": "ONE_PAGE_ORIGINAL_PDF_AND_FOOD_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+    "phase": "R05_OWNER_APPROVED_TWO_PAGE_18_FAMILY_PHOTO_MATRIX_LAYOUT_PREVIEW_PENDING",
     "analysis_document": "docs/implementation/V7-R05-FRUIT-FRESHNESS-ORIGINAL-PDF-AUDIT-AND-DESIGN-2026-10-30_AR.md",
     "pdf_file_sha256": "21e97701f8d4f1fff9f67d83ee57ee0ca7f8568ba5ce04d66c9c75b7e6002a1c",
     "source_pdf_pages": 1,
@@ -374,10 +379,37 @@
       "R05-D05: '-' for missing cells and blank chart canvases without mock data",
       "R05-D06: two large portrait charts rather than 2x2 landscape in fruit report"
     ],
-    "owner_design_signoff": false,
+    "owner_design_signoff": true,
     "design_scope_only": true,
     "source_code_changed": false,
-    "production_changes": 0
+    "production_changes": 0,
+    "approved_design_specification": "docs/implementation/V7-R05-OWNER-APPROVED-TWO-PAGE-FRUIT-IMAGE-MATRIX-2026-10-30_AR.md",
+    "approved_layout": {
+      "printed_pages_target": 2,
+      "media": "A4 portrait",
+      "categories": "18 selectable source families; nine rows per page",
+      "first_RTL_column": "Photo (static per fruit/mixture, not a live photo of sample)",
+      "photo_thumbnail_mm": [
+        22,
+        14
+      ],
+      "columns_mm": [
+        25,
+        56,
+        31,
+        28,
+        26,
+        34
+      ],
+      "selected_only_results": true,
+      "nonselected": "-",
+      "all_families_selection": "engine supplied matches per category",
+      "two_chart_placeholders": "40mm x200mm bottom of each page; no plot values",
+      "image_assets": "not yet packaged",
+      "allow_overflow": "additional pages if needed; never truncate source",
+      "minimum_font_pt": 12
+    },
+    "owner_pdf_visual_acceptance": false
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -402,7 +434,7 @@
   "next_report": {
     "id": "R06",
     "name": "Meat Freshness Research PDF",
-    "state": "NEXT_AFTER_R05_DESIGN_DISCUSSION"
+    "state": "NEXT_FOR_REVIEW_ON_OWNER_REQUEST"
   },
   "workflow_policy": {
     "id": "V7-RPT-BATCH-PLAN-001",
@@ -410,7 +442,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_ONLY_R05_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+    "current_phase": "DESIGN_ONLY_R05_REQUIREMENTS_APPROVED_PENDING_VISUAL_ASSET_AND_QA",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
