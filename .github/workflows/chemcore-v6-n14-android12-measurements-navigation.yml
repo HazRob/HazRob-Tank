@@ -6,6 +6,10 @@ on:
     paths:
       - 'android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java'
       - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalSeedBootstrap.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalAliasMolecularProjectionV6.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalNistEssentialGasMassV6.java'
       - 'research/chemcore_v6/tests/android/V6MeasurementsNavigationFixtureActivity.java'
       - 'research/chemcore_v6/tests/android/run_n14_measurements_navigation.sh'
       - '.github/workflows/chemcore-v6-n14-android12-measurements-navigation.yml'
