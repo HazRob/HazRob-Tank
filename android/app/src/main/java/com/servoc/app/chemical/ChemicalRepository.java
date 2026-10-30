@@ -341,9 +341,43 @@ public final class ChemicalRepository {
             android.util.Log.w("TankUnifiedChemCatalog",
                 "PubChem identity evidence not loaded for uid="+uid,ex);
         }
+        // This is a source-backed identity PROPERTY of an exactly matched
+        // NIOSH CAS synonym, not an independent historical MQ response model.
+        JSONArray linkedAliasMolecularMass=new JSONArray();
+        try(Cursor p=db.getReadableDatabase().rawQuery(
+                "SELECT x.canonical_uid,x.source_cas,x.source_url,"+
+                "p.value_numeric,p.unit,p.method,p.source_id,p.quality_tier "+
+                "FROM chemical_identity_equivalence_v6 x "+
+                "JOIN chemicals c ON c.uid=x.canonical_uid "+
+                "JOIN chemcore_properties p ON p.chemical_uid=c.uid "+
+                "WHERE x.alias_uid=? AND x.evidence_status='NIOSH_SYNONYM_VERIFIED' "+
+                "AND c.cas=x.source_cas AND p.property_key='MolecularWeight' "+
+                "AND p.source_id='PUBCHEM' AND p.quality_tier='A_SOURCE' "+
+                "AND p.value_numeric>0 AND p.value_numeric<100000 "+
+                "ORDER BY p.id DESC LIMIT 15",
+                new String[]{Long.toString(uid)})){
+            while(p.moveToNext()){
+                JSONObject item=new JSONObject();
+                item.put("canonical_uid",p.getLong(0));
+                item.put("niosh_cas",p.getString(1));
+                item.put("niosh_source_url",p.getString(2));
+                item.put("molecular_weight",p.getDouble(3));
+                item.put("unit",p.isNull(4)?"g/mol":p.getString(4));
+                item.put("method",p.isNull(5)?JSONObject.NULL:p.getString(5));
+                item.put("source_id",p.getString(6));
+                item.put("quality_tier",p.getString(7));
+                item.put("property_scope","IDENTICAL_SUBSTANCE_ONLY_NOT_TANK_GAS_DETECTION");
+                linkedAliasMolecularMass.put(item);
+            }
+        }catch(Exception err){
+            android.util.Log.w("TankUnifiedChemCatalog",
+                "Canonical alias molecular property evidence missing uid="+uid,err);
+        }
         try{
             out.put("molecular_identity_source_facts",molecularIdentity);
             out.put("molecular_identity_source_fact_count",molecularIdentity.length());
+            out.put("niosh_alias_pubchem_mass_sources",linkedAliasMolecularMass);
+            out.put("niosh_alias_pubchem_mass_source_count",linkedAliasMolecularMass.length());
             out.put("mq_reference_curve_evidence",curves);
             out.put("mq_reference_curve_evidence_count",curves.length());
             out.put("occupational_exposure_source_limits",exposure);
