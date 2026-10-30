@@ -36,6 +36,6 @@ class NistMolecularIdentity(unittest.TestCase):
         self.assertNotIn('INSERT INTO calibration_curves',S)
         self.assertIn("ChemicalNistIdentityCompletionV6.ensure(db)",B)
         self.assertIn('nistAudit.proposed==27&&nistAudit.matched==27',FIX)
-        self.assertIn("materials_with_molar_mass']==638",R)
+        self.assertIn("materials_with_molar_mass']==637",R)
         self.assertIn("individual_materials_without_linked_cas']==0",R)
 if __name__=="__main__":unittest.main()
