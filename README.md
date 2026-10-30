@@ -1,5 +1,8 @@
 # HazRob Tank — آخر بناء للتطبيق والفريمويرين: V6 / Latest development builds V6
 
+> **V7 development track is now open (2026-10-30):** [`feature/tank-v7-reports`](https://github.com/HazRob/HazRob-Tank/tree/feature/tank-v7-reports) is a **reports-first Android development branch**, forked from V6 source at `cf818a9e2ea1064da37f0d9fdf6beb0de4847250`. V7 is **not** the latest built APK, has **not** been released, and does **not** supersede the V6 firmware or approved results. Consult [V7 report baseline and design plan](docs/implementation/V7-REPORTS-DEVELOPMENT-START-2026-10-30_AR.md) and [V7 execution tracker](docs/implementation/V7-REPORTS-EXECUTION-TRACKER.json) before work. No report-template change may silently change measurement evidence, ChemCore decisions or field approval data.
+
+
 > **تحديث موثّق: 30 أكتوبر 2026.** أحدث تطبيق Android تم بناؤه، وأحدث فيرموير للتحكم ESP32-Tank، وأحدث فيرموير للكاميرا Cam-tank في هذا المشروع هي جميعًا **الإصدار السادس V6**. المقصود أحدث **حزم تطوير مجمّعة وقابلة للاختبار**، وليس اعتماد إصدار إنتاجي أو إثبات سلامة القياسات على الروبوت الحقيقي. الفرع المعتمد للتطوير: [`feature/tank-v6-implementation`](https://github.com/HazRob/HazRob-Tank/tree/feature/tank-v6-implementation). أما `main` فهو فرع المستودع الافتراضي وليس دليلًا على دمج جميع ملفات V6 إليه.
 
 ## سجل أحدث الإصدارات / Current version register
