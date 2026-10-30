@@ -53,6 +53,12 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
         check(oxygen.contains("GHS03") && !oxygen.contains("GHS02"),
             "O2 displays oxidizer, never flammable");
         check(!GhsPictograms.valid("GHS10"),"radiation not a fabricated GHS code");
+        check(GhsPictograms.forQualifiedAlarm(db,benzeneUid,false,false,false).isEmpty(),
+            "unqualified MQ research result cannot receive gas alarm GHS badge");
+        check(GhsPictograms.forQualifiedAlarm(db,benzeneUid,true,false,false).isEmpty(),
+            "identity alone cannot authorize gas alarm");
+        check(GhsPictograms.forQualifiedAlarm(db,benzeneUid,true,true,false).isEmpty(),
+            "operator hazard alarm not certified until independent authorization");
         for(int n=1;n<=9;n++){
             String id=String.format(java.util.Locale.US,"ghs_%02d",n);
             int res=getResources().getIdentifier(id,"drawable",getPackageName());
