@@ -13,6 +13,7 @@ if [[ "$ready" != 1 ]];then
   exit 1
 fi
 adb exec-out run-as com.servoc.app cat files/n09_scientific_risk_db.json >/tmp/v6-n09-scientific-risk/n09_scientific_risk_db.json
+adb exec-out run-as com.servoc.app cat files/v6_chemical_catalog_coverage.csv >/tmp/v6-n09-scientific-risk/v6_chemical_catalog_coverage.csv
 adb exec-out run-as com.servoc.app cat files/n09_ghs_report.pdf >/tmp/v6-n09-scientific-risk/n09_ghs_report.pdf
 python3 - <<'PY'
 import json
@@ -37,6 +38,20 @@ assert d['bundled_ghs_vector_assets']==9
 assert d['ghs_pdf_page_count']==1
 assert d['ghs_pdf_vector_raster_red_pixels']==0
 assert d['coverage_fraction']==1
+coverage=d['material_field_coverage_audit']
+assert coverage['materials']==coverage['unique_uids']==734,coverage
+assert coverage['duplicate_uids']==0,coverage
+assert coverage['materials_with_name_en']==734,coverage
+assert not coverage['scientific_fields_exhaustive'],coverage
+assert coverage['missing_values_policy']=='NULL_NOT_ZERO_NO_SAFETY_INFERENCE'
+import csv
+with open('/tmp/v6-n09-scientific-risk/v6_chemical_catalog_coverage.csv',newline='') as stream:
+    records=list(csv.DictReader(stream))
+assert len(records)==734,len(records)
+assert len(set(row['uid'] for row in records))==734
+assert all(row['name_en'] for row in records)
+assert all(row['mq_curve_count'].isdigit() for row in records)
+print('V14 734 master UID coverage fields:',json.dumps(coverage,sort_keys=True))
 assert d['osha_z1_rows']>=500 and d['niosh_idlh_rows']>=300
 assert d['co2_source_pel_ppm']==5000 and d['co2_early_warn_ppm']==4500
 assert d['normal_ranges_with_source']>=1 and d['physical_tank_g3']==0
