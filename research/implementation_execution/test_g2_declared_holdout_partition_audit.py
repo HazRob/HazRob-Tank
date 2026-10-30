@@ -140,6 +140,25 @@ class HoldoutPartitionTests(unittest.TestCase):
         self.assertIsNone(result['cross_partition_ids']['exposure_id'])
         self.assertFalse(result['optional_physical_sample_id_checked'])
 
+    def test_empty_optional_exposure_id_rejected(self):
+        rows = self.clean()
+        rows[1]['exposure_id'] = ''
+        with self.assertRaisesRegex(ValueError, 'G2_HOLDOUT_OPTIONAL_ID_INVALID'):
+            self.audit(rows)
+
+    def test_nfkc_alias_optional_exposure_id_rejected(self):
+        rows = self.clean()
+        rows[1]['exposure_id'] = 'ｅ1'
+        rows[0]['exposure_id'] = 'e1'
+        with self.assertRaisesRegex(ValueError, 'G2_HOLDOUT_OPTIONAL_ID_ALIAS_NFKC'):
+            self.audit(rows)
+
+    def test_nfkc_alias_optional_sample_id_rejected(self):
+        rows = self.clean()
+        rows[1]['physical_sample_id'] = 'ｐ1'
+        with self.assertRaisesRegex(ValueError, 'G2_HOLDOUT_OPTIONAL_ID_ALIAS_NFKC'):
+            self.audit(rows)
+
     def test_csv_strict_width_and_roundtrip(self):
         header = ','.join(COLUMNS) + '\n'
         valid = header + 'g1,s1,b1,d1,train,e1,p1\ng2,s2,b2,d1,test,e2,p2\n'
