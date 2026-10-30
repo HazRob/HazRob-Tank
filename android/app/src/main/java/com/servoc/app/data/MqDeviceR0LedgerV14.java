@@ -39,17 +39,27 @@ public final class MqDeviceR0LedgerV14 {
                 c.put("device_id",deviceId);c.put("sensor_key",key);
                 c.put("calibration_revision",ManualR0Calibration.getSession(key));
                 c.put("r0_kohm",r0.get(key));c.put("sample_count",counts.get(key));
-                c.put("window_count",1);
-                c.put("reference_air_context",
+                c.put("window_count",ManualR0Calibration.getWindowCount(key));
+                c.put("reference_air_context",extended?
+                    "OPERATOR_DECLARED_REFERENCE_AIR_UNVERIFIED_EXTERNAL_INSTRUMENT":
                     "OPERATOR_DECLARED_AIR_SOURCE_SCALED_R0_NOT_AIR_RS");
                 // Legacy V5 firmware divides observed clean-air Rs by a
                 // manufacturer graph factor. The stored R0 is NOT the same
                 // air Rs mean used by the V6 unity-centered response gate.
-                c.put("r0_definition","LEGACY_MQ_FACTOR_SCALED_R0_NOT_AIR_RS");
-                c.put("heater_profile",FIRMWARE_PROFILE);
+                c.put("r0_definition",ManualR0Calibration.getDefinition(key));
+                boolean extended=ManualR0Calibration.getWindowCount(key)==3&&
+                    "DEVICE_CLEAN_AIR_RS_MEAN".equals(
+                        ManualR0Calibration.getDefinition(key));
+                if(extended&&counts.get(key)<30)
+                    throw new IllegalArgumentException("V6 R0 missing three windows: "+key);
+                c.put("heater_profile",extended?
+                    "V6_FIRMWARE_300S_HEAT_3X180S_MEASURE_2X180S_POWERED_REST":
+                    FIRMWARE_PROFILE);
                 c.put("provenance",
                     "ESP32_NVS_READBACK_AND_PHONE_ACCEPTED_NO_TANK_G3"+
-                    ";LEGACY_MQ_FACTOR_NORMALIZATION_NOT_RS_AIR_MEAN;QUICK_PROTOCOL_NOT_EXTENDED_THREE_WINDOW_STANDARD");
+                    (extended?
+                        ";V6_DEVICE_RS_AIR_MEAN_3_WINDOWS_NOT_CERTIFIED_CLEAN_AIR":
+                        ";LEGACY_MQ_FACTOR_NORMALIZATION_NOT_RS_AIR_MEAN;QUICK_PROTOCOL_NOT_EXTENDED_THREE_WINDOW_STANDARD"));
                 c.put("created_utc",ManualR0Calibration.getUtc(key));
                 c.put("calibration_end_utc",ManualR0Calibration.getUtc(key));
                 c.put("approved",1);
