@@ -72,7 +72,10 @@ public final class ChemicalIdentityEquivalenceV6 {
                 if(!expectedName.equalsIgnoreCase(c.getString(1)))return 0;
                 // Only genuine NIOSH-imported master identities are eligible.
                 String provenance=c.isNull(2)?"":c.getString(2);
-                if(!"NIOSH_NPG".equals(provenance))return 0;
+                // Later OSHA/NIOSH limit importers append authority names to
+                // record_source; the NIOSH identity must remain the FIRST source
+                // and an original chemical_sources NIOSH URL is required below.
+                if(!provenance.startsWith("NIOSH_NPG"))return 0;
                 found=c.getLong(0);
             }
             return found;
