@@ -11,7 +11,7 @@ import java.util.List;
 
 /** Offline-first HazRob database for measurements, experiments, calibration and scientific reference data. */
 public final class ExperimentsDb extends SQLiteOpenHelper {
-    public static final int DB_VERSION=12;
+    public static final int DB_VERSION=13;
     public ExperimentsDb(Context c){super(c,"servoc.db",null,DB_VERSION);}
 
     @Override public void onCreate(SQLiteDatabase db){
@@ -19,7 +19,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE fingerprints(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, label TEXT NOT NULL, created_ts TEXT NOT NULL, payload TEXT NOT NULL)");
         db.execSQL("CREATE TABLE captures(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, chemical_uid INTEGER, known_ppm REAL, ts TEXT NOT NULL, session_id TEXT, temp_c REAL, rh REAL, phase TEXT, sensor_payload TEXT NOT NULL, feature_payload TEXT)");
         db.execSQL("CREATE TABLE models(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, model_type TEXT NOT NULL, version TEXT NOT NULL, created_ts TEXT NOT NULL, training_count INTEGER, metrics TEXT, payload TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 0)");
-        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);ChemicalHazardSeedV11.ensure(db);createCaptureUidIndex(db);
+        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);ChemicalHazardSeedV11.ensure(db);createV13ChemicalHazardAndTechniques(db);createCaptureUidIndex(db);
     }
 
     @Override public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
@@ -40,6 +40,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         if(oldVersion<9)createV9UserFieldTables(db);
         if(oldVersion<10){createV10FieldCycleTables(db);importV9FieldCycleLinks(db);}
         if(oldVersion<12){createV11ScientificRiskTables(db);ChemicalHazardSeedV11.ensure(db);}
+        if(oldVersion<13)createV13ChemicalHazardAndTechniques(db);
     }
 
     /**
@@ -139,6 +140,186 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
             "ON e.chemical_uid=p.chemical_uid "+
             "WHERE UPPER(e.limit_type) NOT LIKE '%LFL%' "+
             "AND UPPER(e.limit_type) NOT LIKE '%LEL%'");
+    }
+
+    /** V13 append-only hazard and ChemCore research evidence. Unknown != safe. */
+    private static void createV13ChemicalHazardAndTechniques(SQLiteDatabase db){
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS chemical_hazard_classifications(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical"+
+            "_uid INTEGER NOT NULL, hazard_category TEXT NOT NULL, classification_system TEXT NOT NULL, classification"+
+            "_detail TEXT NOT NULL DEFAULT '', severity_level TEXT, ghs_h_codes TEXT, ghs_pictogram TEXT, signal_word "+
+            "TEXT, iarc_group TEXT, source_id TEXT NOT NULL, source_url TEXT, source_revision TEXT, evidence_status TE"+
+            "XT NOT NULL DEFAULT 'SOURCE_QUALIFIED', notes TEXT, FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid) O"+
+            "N DELETE CASCADE, FOREIGN KEY(source_id) REFERENCES scientific_sources(source_id), CHECK(hazard_category "+
+            "IN ('OXIDIZER','ASPHYXIANT','IRRITANT','HARMFUL','CORROSIVE','RADIOACTIVE','TOXIC','CARCINOGEN','FLAMMABL"+
+            "E','EXPLOSIVE','SENSITIZER','REPRODUCTIVE_TOXIC','ENVIRONMENTAL_HAZARD','NEUROTOXIC','MUTAGEN','ORGAN_TOX"+
+            "IC')), CHECK(evidence_status IN ('SOURCE_QUALIFIED','PROVISIONAL','DISPUTED')))"
+        );
+        db.execSQL(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_v13_hazard_classification ON chemical_hazard_classifications(chemica"+
+            "l_uid,hazard_category,classification_system,source_id,classification_detail)"
+        );
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS idx_v13_hazard_category ON chemical_hazard_classifications(hazard_category,che"+
+            "mical_uid)"
+        );
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS chemical_hazard_properties(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_uid "+
+            "INTEGER NOT NULL, property_key TEXT NOT NULL, value_real REAL, value_text TEXT, unit TEXT, environment_sc"+
+            "ope TEXT NOT NULL DEFAULT 'GENERAL', source_id TEXT NOT NULL, source_revision TEXT, evidence_status TEXT "+
+            "NOT NULL DEFAULT 'SOURCE_QUALIFIED', FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid) ON DELETE CASCAD"+
+            "E, FOREIGN KEY(source_id) REFERENCES scientific_sources(source_id), CHECK(value_real IS NOT NULL OR value"+
+            "_text IS NOT NULL))"
+        );
+        db.execSQL(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_v13_hazard_property ON chemical_hazard_properties(chemical_uid,prope"+
+            "rty_key,environment_scope,source_id)"
+        );
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS chemcore_technique_evidence(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_uid"+
+            " INTEGER NOT NULL, technique_key TEXT NOT NULL, evidence_type TEXT, evidence_status TEXT NOT NULL, valida"+
+            "tion_gate TEXT NOT NULL DEFAULT 'RESEARCH_ONLY', source_id TEXT NOT NULL, artifact_ref TEXT, model_versio"+
+            "n TEXT, notes TEXT, FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid) ON DELETE CASCADE, FOREIGN KEY(so"+
+            "urce_id) REFERENCES scientific_sources(source_id), CHECK(validation_gate IN ('RESEARCH_ONLY','G1_SOFTWARE"+
+            "','G2_EXTERNAL','G3_PHYSICAL_PASSED','REJECTED')))"
+        );
+        db.execSQL(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_v13_technique ON chemcore_technique_evidence(chemical_uid,technique_"+
+            "key,source_id,validation_gate)"
+        );
+        // A VIEW is a projection, not duplicate storage. Re-create to append
+        // source-qualified fields and preserve one master chemical UID per row.
+        db.execSQL("DROP VIEW IF EXISTS v11_unified_chemical_catalog");
+        db.execSQL(
+            "CREATE VIEW v11_unified_chemical_catalog AS SELECT c.uid, c.uid AS chemical_uid, c.legacy_id, c.cas, c.pu"+
+            "bchem_cid, c.name_en, c.name_ar, c.formula, c.molar_mass, c.chemical_class, c.record_source, c.active, CA"+
+            "SE WHEN c.legacy_id IS NOT NULL THEN 1 ELSE 0 END AS original_144_member, COALESCE(p.early_exposure_fract"+
+            "ion,0.90) AS early_exposure_fraction, COALESCE(p.background_status,'NO_SOURCE_QUALIFIED_RANGE') AS backgr"+
+            "ound_status, COALESCE(p.review_status,'UNREVIEWED') AS review_status, (SELECT COUNT(*) FROM exposure_limi"+
+            "ts e WHERE e.chemical_uid=c.uid) AS exposure_limit_count, (SELECT COUNT(*) FROM chemical_background_range"+
+            "s b WHERE b.chemical_uid=c.uid) AS background_range_count, (SELECT COUNT(*) FROM chemical_ambient_benchma"+
+            "rks b WHERE b.chemical_uid=c.uid) AS ambient_benchmark_count, (SELECT COUNT(*) FROM chemical_hazard_bound"+
+            "aries b WHERE b.chemical_uid=c.uid) AS hazard_boundary_count, (SELECT COUNT(*) FROM sensor_evidence e WHE"+
+            "RE e.chemical_uid=c.uid) AS source_sensor_evidence_count, (SELECT e.value FROM exposure_limits e WHERE e."+
+            "chemical_uid=c.uid AND UPPER(e.limit_type) IN ('LFL','LEL') AND LOWER(e.unit) IN ('%vol','vol%') AND e.va"+
+            "lue>0 ORDER BY CASE WHEN e.source_id='NIOSH_NPG_FLAMMABILITY' THEN 0 ELSE 1 END,e.id DESC LIMIT 1) AS lfl"+
+            "_vol_pct, (SELECT e.source_id FROM exposure_limits e WHERE e.chemical_uid=c.uid AND UPPER(e.limit_type) I"+
+            "N ('LFL','LEL') AND LOWER(e.unit) IN ('%vol','vol%') AND e.value>0 ORDER BY CASE WHEN e.source_id='NIOSH_"+
+            "NPG_FLAMMABILITY' THEN 0 ELSE 1 END,e.id DESC LIMIT 1) AS lfl_source_id, (SELECT e.value FROM exposure_li"+
+            "mits e WHERE e.chemical_uid=c.uid AND UPPER(e.limit_type) IN ('UFL','UEL') AND LOWER(e.unit) IN ('%vol','"+
+            "vol%') AND e.value>0 ORDER BY CASE WHEN e.source_id='NIOSH_NPG_FLAMMABILITY' THEN 0 ELSE 1 END,e.id DESC "+
+            "LIMIT 1) AS ufl_vol_pct, (SELECT e.source_id FROM exposure_limits e WHERE e.chemical_uid=c.uid AND UPPER("+
+            "e.limit_type) IN ('UFL','UEL') AND LOWER(e.unit) IN ('%vol','vol%') AND e.value>0 ORDER BY CASE WHEN e.so"+
+            "urce_id='NIOSH_NPG_FLAMMABILITY' THEN 0 ELSE 1 END,e.id DESC LIMIT 1) AS ufl_source_id, (SELECT e.value *"+
+            " 0.10 FROM exposure_limits e WHERE e.chemical_uid=c.uid AND UPPER(e.limit_type) IN ('LFL','LEL') AND LOWE"+
+            "R(e.unit) IN ('%vol','vol%') AND e.value>0 ORDER BY CASE WHEN e.source_id='NIOSH_NPG_FLAMMABILITY' THEN 0"+
+            " ELSE 1 END,e.id DESC LIMIT 1) AS flammable_precaution_10pct_lfl_vol, (SELECT b.range_min FROM chemical_b"+
+            "ackground_ranges b WHERE b.chemical_uid=c.uid ORDER BY b.id DESC LIMIT 1) AS natural_min, (SELECT b.range"+
+            "_max FROM chemical_background_ranges b WHERE b.chemical_uid=c.uid ORDER BY b.id DESC LIMIT 1) AS natural_"+
+            "max, (SELECT b.environment_type FROM chemical_background_ranges b WHERE b.chemical_uid=c.uid ORDER BY b.i"+
+            "d DESC LIMIT 1) AS natural_environment_type, (SELECT b.source_id FROM chemical_background_ranges b WHERE "+
+            "b.chemical_uid=c.uid ORDER BY b.id DESC LIMIT 1) AS natural_range_source_id, (SELECT b.unit FROM chemical"+
+            "_background_ranges b WHERE b.chemical_uid=c.uid ORDER BY b.id DESC LIMIT 1) AS natural_range_unit, (SELEC"+
+            "T h.threshold FROM chemical_hazard_boundaries h WHERE h.chemical_uid=c.uid AND h.hazard_type='ABOVE_NATUR"+
+            "AL' ORDER BY h.id DESC LIMIT 1) AS above_natural_limit, (SELECT h.threshold FROM chemical_hazard_boundari"+
+            "es h WHERE h.chemical_uid=c.uid AND h.comparison_operator IN ('<','<=') ORDER BY h.id DESC LIMIT 1) AS da"+
+            "nger_lower_limit, (SELECT h.threshold FROM chemical_hazard_boundaries h WHERE h.chemical_uid=c.uid AND h."+
+            "comparison_operator IN ('>','>=') AND h.hazard_type!='VENTILATION_SCREENING_ADVISORY' ORDER BY h.id DESC "+
+            "LIMIT 1) AS danger_upper_limit, (SELECT h.unit FROM chemical_hazard_boundaries h WHERE h.chemical_uid=c.u"+
+            "id ORDER BY h.id DESC LIMIT 1) AS danger_limit_unit, (SELECT e.value FROM exposure_limits e WHERE e.chemi"+
+            "cal_uid=c.uid AND e.authority='NIOSH' AND UPPER(e.limit_type) IN ('REL','REL_TWA','REL_CEILING','REL_STEL"+
+            "') ORDER BY e.id DESC LIMIT 1) AS recommended_limit_niosh, (SELECT e.value FROM exposure_limits e WHERE e"+
+            ".chemical_uid=c.uid AND e.source_id='OSHA_Z1' AND UPPER(e.limit_type)='TWA' AND e.unit='ppm' ORDER BY e.i"+
+            "d DESC LIMIT 1) AS osha_pel_twa_ppm, (SELECT e.value FROM exposure_limits e WHERE e.chemical_uid=c.uid AN"+
+            "D UPPER(e.limit_type)='IDLH' AND e.unit='ppm' AND e.source_id='NIOSH_IDLH' ORDER BY e.id DESC LIMIT 1) AS"+
+            " niosh_idlh_ppm, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid="+
+            "c.uid AND hc.hazard_category='OXIDIZER' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END A"+
+            "S is_oxidizer, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c."+
+            "uid AND hc.hazard_category='ASPHYXIANT' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END A"+
+            "S is_asphyxiant, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid="+
+            "c.uid AND hc.hazard_category='IRRITANT' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END A"+
+            "S is_irritant, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c."+
+            "uid AND hc.hazard_category='HARMFUL' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END AS i"+
+            "s_harmful, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c.uid "+
+            "AND hc.hazard_category='CORROSIVE' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END AS is_"+
+            "corrosive, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c.uid "+
+            "AND hc.hazard_category='RADIOACTIVE' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END AS i"+
+            "s_radioactive, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c."+
+            "uid AND hc.hazard_category='TOXIC' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END AS is_"+
+            "toxic, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c.uid AND "+
+            "hc.hazard_category='CARCINOGEN' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END AS is_car"+
+            "cinogen, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c.uid AN"+
+            "D hc.hazard_category='FLAMMABLE' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END AS is_fl"+
+            "ammable, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c.uid AN"+
+            "D hc.hazard_category='EXPLOSIVE' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END AS is_ex"+
+            "plosive, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c.uid AN"+
+            "D hc.hazard_category='SENSITIZER' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL END AS is_s"+
+            "ensitizer, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c.uid "+
+            "AND hc.hazard_category='REPRODUCTIVE_TOXIC' AND hc.evidence_status='SOURCE_QUALIFIED') THEN 1 ELSE NULL E"+
+            "ND AS is_reproductive_toxic, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classifications hc WHERE hc.c"+
+            "hemical_uid=c.uid AND hc.hazard_category='ENVIRONMENTAL_HAZARD' AND hc.evidence_status='SOURCE_QUALIFIED'"+
+            ") THEN 1 ELSE NULL END AS is_environmental_hazard, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classif"+
+            "ications hc WHERE hc.chemical_uid=c.uid AND hc.hazard_category='NEUROTOXIC' AND hc.evidence_status='SOURC"+
+            "E_QUALIFIED') THEN 1 ELSE NULL END AS is_neurotoxic, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_class"+
+            "ifications hc WHERE hc.chemical_uid=c.uid AND hc.hazard_category='MUTAGEN' AND hc.evidence_status='SOURCE"+
+            "_QUALIFIED') THEN 1 ELSE NULL END AS is_mutagen, CASE WHEN EXISTS(SELECT 1 FROM chemical_hazard_classific"+
+            "ations hc WHERE hc.chemical_uid=c.uid AND hc.hazard_category='ORGAN_TOXIC' AND hc.evidence_status='SOURCE"+
+            "_QUALIFIED') THEN 1 ELSE NULL END AS is_organ_toxic, (SELECT hc.iarc_group FROM chemical_hazard_classific"+
+            "ations hc WHERE hc.chemical_uid=c.uid AND hc.hazard_category='CARCINOGEN' AND hc.iarc_group IS NOT NULL A"+
+            "ND hc.evidence_status='SOURCE_QUALIFIED' ORDER BY hc.id DESC LIMIT 1) AS iarc_group, (SELECT GROUP_CONCAT"+
+            "(DISTINCT hc.ghs_h_codes) FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c.uid AND hc.ghs_"+
+            "h_codes IS NOT NULL AND hc.evidence_status='SOURCE_QUALIFIED') AS ghs_h_codes, (SELECT GROUP_CONCAT(DISTI"+
+            "NCT hc.ghs_pictogram) FROM chemical_hazard_classifications hc WHERE hc.chemical_uid=c.uid AND hc.ghs_pict"+
+            "ogram IS NOT NULL AND hc.evidence_status='SOURCE_QUALIFIED') AS ghs_pictograms, (SELECT COUNT(*) FROM che"+
+            "mical_hazard_classifications hc WHERE hc.chemical_uid=c.uid AND hc.evidence_status='SOURCE_QUALIFIED') AS"+
+            " source_qualified_hazard_count, (SELECT hp.value_real FROM chemical_hazard_properties hp WHERE hp.chemica"+
+            "l_uid=c.uid AND hp.property_key='FLASH_POINT_C' AND hp.evidence_status='SOURCE_QUALIFIED' ORDER BY hp.id "+
+            "DESC LIMIT 1) AS flash_point_c, (SELECT hp.value_real FROM chemical_hazard_properties hp WHERE hp.chemica"+
+            "l_uid=c.uid AND hp.property_key='AUTOIGNITION_C' AND hp.evidence_status='SOURCE_QUALIFIED' ORDER BY hp.id"+
+            " DESC LIMIT 1) AS autoignition_c, (SELECT hp.value_real FROM chemical_hazard_properties hp WHERE hp.chemi"+
+            "cal_uid=c.uid AND hp.property_key='BOILING_POINT_C' AND hp.evidence_status='SOURCE_QUALIFIED' ORDER BY hp"+
+            ".id DESC LIMIT 1) AS boiling_point_c, (SELECT hp.value_real FROM chemical_hazard_properties hp WHERE hp.c"+
+            "hemical_uid=c.uid AND hp.property_key='VAPOR_DENSITY_AIR' AND hp.evidence_status='SOURCE_QUALIFIED' ORDER"+
+            " BY hp.id DESC LIMIT 1) AS vapor_density_air, (SELECT hp.value_real FROM chemical_hazard_properties hp WH"+
+            "ERE hp.chemical_uid=c.uid AND hp.property_key='DUST_MEC_G_M3' AND hp.evidence_status='SOURCE_QUALIFIED' O"+
+            "RDER BY hp.id DESC LIMIT 1) AS dust_mec_g_m3, (SELECT hp.value_real FROM chemical_hazard_properties hp WH"+
+            "ERE hp.chemical_uid=c.uid AND hp.property_key='EXPLOSION_PRESSURE_KPA' AND hp.evidence_status='SOURCE_QUA"+
+            "LIFIED' ORDER BY hp.id DESC LIMIT 1) AS explosion_pressure_kpa, (SELECT hp.value_text FROM chemical_hazar"+
+            "d_properties hp WHERE hp.chemical_uid=c.uid AND hp.property_key='HEALTH_EFFECTS' AND hp.evidence_status='"+
+            "SOURCE_QUALIFIED' ORDER BY hp.id DESC LIMIT 1) AS health_effects, (SELECT hp.value_text FROM chemical_haz"+
+            "ard_properties hp WHERE hp.chemical_uid=c.uid AND hp.property_key='EXPOSURE_ROUTES' AND hp.evidence_statu"+
+            "s='SOURCE_QUALIFIED' ORDER BY hp.id DESC LIMIT 1) AS exposure_routes, (SELECT hp.value_text FROM chemical"+
+            "_hazard_properties hp WHERE hp.chemical_uid=c.uid AND hp.property_key='TARGET_ORGANS' AND hp.evidence_sta"+
+            "tus='SOURCE_QUALIFIED' ORDER BY hp.id DESC LIMIT 1) AS target_organs, (SELECT hp.value_text FROM chemical"+
+            "_hazard_properties hp WHERE hp.chemical_uid=c.uid AND hp.property_key='INCOMPATIBILITIES' AND hp.evidence"+
+            "_status='SOURCE_QUALIFIED' ORDER BY hp.id DESC LIMIT 1) AS incompatibilities, (SELECT hp.value_text FROM "+
+            "chemical_hazard_properties hp WHERE hp.chemical_uid=c.uid AND hp.property_key='HEALTH_EFFECT_SEVERITY' AN"+
+            "D hp.evidence_status='SOURCE_QUALIFIED' ORDER BY hp.id DESC LIMIT 1) AS health_effect_severity, (SELECT h"+
+            "p.value_text FROM chemical_hazard_properties hp WHERE hp.chemical_uid=c.uid AND hp.property_key='SDS_URL'"+
+            " AND hp.evidence_status='SOURCE_QUALIFIED' ORDER BY hp.id DESC LIMIT 1) AS sds_url, (SELECT hp.value_text"+
+            " FROM chemical_hazard_properties hp WHERE hp.chemical_uid=c.uid AND hp.property_key='RADIATION_ISOTOPE' A"+
+            "ND hp.evidence_status='SOURCE_QUALIFIED' ORDER BY hp.id DESC LIMIT 1) AS radioisotope, (SELECT COUNT(*) F"+
+            "ROM reference_artifacts ra WHERE ra.chemical_uid=c.uid AND ra.kind='fingerprint' AND ra.active=1) AS chem"+
+            "core_fingerprint_artifact_count, (SELECT COUNT(*) FROM fingerprints f WHERE f.chemical_id=c.legacy_id) AS"+
+            " chemcore_legacy_fingerprint_count, (SELECT COUNT(*) FROM sensor_evidence se WHERE se.chemical_uid=c.uid "+
+            "AND (LOWER(se.evidence_type) LIKE '%fingerprint%' OR LOWER(se.evidence_type) LIKE '%identity%') AND UPPER"+
+            "(se.status) NOT LIKE 'REJECT%') AS chemcore_source_fingerprint_count, (SELECT COUNT(*) FROM sensor_eviden"+
+            "ce se WHERE se.chemical_uid=c.uid AND (LOWER(se.evidence_type) LIKE '%curve%' OR LOWER(se.evidence_type) "+
+            "LIKE '%response%' OR LOWER(se.equation) LIKE '%log%') AND UPPER(se.status) NOT LIKE 'REJECT%') AS chemcor"+
+            "e_source_curve_count, (SELECT COUNT(*) FROM calibration_curves cc WHERE cc.chemical_id=c.legacy_id AND cc"+
+            ".active=1) AS chemcore_local_calibration_curve_count, (SELECT COUNT(*) FROM models m WHERE m.chemical_id="+
+            "c.legacy_id AND m.active=1 AND (LOWER(m.model_type) LIKE '%log%' OR LOWER(m.model_type) LIKE '%power%')) "+
+            "AS chemcore_logarithmic_model_count, (SELECT COUNT(*) FROM chemcore_technique_evidence ce WHERE ce.chemic"+
+            "al_uid=c.uid) AS chemcore_technique_evidence_count, (SELECT COUNT(*) FROM chemcore_technique_evidence ce "+
+            "WHERE ce.chemical_uid=c.uid AND ce.technique_key='M4' AND ce.validation_gate='G3_PHYSICAL_PASSED') AS che"+
+            "mcore_m4_g3_validation_count, CASE WHEN EXISTS (SELECT 1 FROM chemcore_technique_evidence ce WHERE ce.che"+
+            "mical_uid=c.uid AND ce.technique_key='M4' AND ce.validation_gate='G3_PHYSICAL_PASSED') THEN 'G3_PHYSICAL_"+
+            "PASSED' ELSE 'NOT_G3_VALIDATED' END AS chemcore_m4_status, (SELECT COUNT(*) FROM chemcore_technique_evide"+
+            "nce ce WHERE ce.chemical_uid=c.uid AND ce.validation_gate='G2_EXTERNAL') AS chemcore_g2_evidence_count, ("+
+            "SELECT COUNT(*) FROM chemcore_technique_evidence ce WHERE ce.chemical_uid=c.uid AND ce.validation_gate='G"+
+            "1_SOFTWARE') AS chemcore_g1_evidence_count FROM chemicals c LEFT JOIN chemical_risk_profiles p ON p.chemi"+
+            "cal_uid=c.uid WHERE c.active=1"
+        );
     }
 
     private static void createCaptureUidIndex(SQLiteDatabase db){db.execSQL("CREATE INDEX IF NOT EXISTS idx_captures_chemical_uid ON captures(chemical_uid)");}
