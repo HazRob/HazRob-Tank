@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.servoc.app.BuildConfig;
 import com.servoc.app.ReleaseAudit;
 import com.servoc.app.chemical.ChemicalExperimentStatusRepository;
+import com.servoc.app.chemical.ChemicalReferenceSyncV6;
 import com.servoc.app.chemcore.ChemCoreMolecularSeedImporter;
 import com.servoc.app.chemcore.library.ChemCoreLibraryManager;
 import com.servoc.app.chemcore.library.ChemCoreLibraryManifest;
@@ -59,9 +60,9 @@ public final class CentralLibraryDashboardTab {
 
         ScrollView dashboard=scroll(context);LinearLayout d=(LinearLayout)dashboard.getChildAt(0);d.addView(UiKit.title(context,"المكتبة المركزية • HazRob"),UiKit.full(context));TextView canon=UiKit.small(context,"المصدر العلمي المرجعي: HazRob/build-harness • التحديث للمستخدم قراءة فقط • R0 معايرة جهاز محلية ولا تدخل في المعرفة المركزية.");canon.setTextColor(0xFF167443);canon.setBackgroundColor(0xFFE8F5E9);d.addView(canon,UiKit.full(context));LinearLayout vcard=UiKit.card(context);vcard.addView(UiKit.title(context,"الإصدار والمراجعات"),UiKit.full(context));versionText=box(context);vcard.addView(versionText,UiKit.full(context));d.addView(vcard,UiKit.full(context));LinearLayout ccard=UiKit.card(context);ccard.addView(UiKit.title(context,"تغطية المكتبة"),UiKit.full(context));coverageText=box(context);ccard.addView(coverageText,UiKit.full(context));d.addView(ccard,UiKit.full(context));dashboardView=dashboard;
 
-        ScrollView distribution=scroll(context);LinearLayout u=(LinearLayout)distribution.getChildAt(0);u.addView(UiKit.title(context,"التحديث والتوزيع"),UiKit.full(context));distributionText=box(context);u.addView(distributionText,UiKit.full(context));Button check=UiKit.button(context,"فحص قناة GitHub للقراءة");check.setOnClickListener(v->checkDistribution());u.addView(check,UiKit.full(context));Button rollback=UiKit.button(context,"الرجوع للنسخة السابقة المتحققة");rollback.setOnClickListener(v->rollback());u.addView(rollback,UiKit.full(context));updateTelemetryText=box(context);u.addView(updateTelemetryText,UiKit.full(context));operationText=UiKit.small(context,"جاهز");operationText.setBackgroundColor(0xFFF1F3F6);u.addView(operationText,UiKit.full(context));distributionView=distribution;
+        ScrollView distribution=scroll(context);LinearLayout u=(LinearLayout)distribution.getChildAt(0);u.addView(UiKit.title(context,"التحديث والتوزيع"),UiKit.full(context));distributionText=box(context);u.addView(distributionText,UiKit.full(context));Button check=UiKit.button(context,"استعلام GitHub عن إمكانات المواد الجديدة");check.setOnClickListener(v->checkDistribution());u.addView(check,UiKit.full(context));Button rollback=UiKit.button(context,"الرجوع للنسخة السابقة المتحققة");rollback.setOnClickListener(v->rollback());u.addView(rollback,UiKit.full(context));updateTelemetryText=box(context);u.addView(updateTelemetryText,UiKit.full(context));operationText=UiKit.small(context,"جاهز");operationText.setBackgroundColor(0xFFF1F3F6);u.addView(operationText,UiKit.full(context));distributionView=distribution;
 
-        ScrollView platforms=scroll(context);LinearLayout p=(LinearLayout)platforms.getChildAt(0);p.addView(UiKit.title(context,"المنصات والبنية السحابية"),UiKit.full(context));TextView note=UiKit.small(context,"هذه الصفحة للقراءة فقط. لا تُخزن مفاتيح Railway/Cloudflare/MQTT/Render/GitHub داخل APK؛ الأرصدة تُستورد من Admin Metrics API عندما تتوفر.");note.setTextColor(0xFF985000);p.addView(note,UiKit.full(context));platformText=box(context);p.addView(platformText,UiKit.full(context));Button refresh=UiKit.button(context,"تحديث العرض المحلي");refresh.setOnClickListener(v->refresh());p.addView(refresh,UiKit.full(context));platformsView=platforms;
+        ScrollView platforms=scroll(context);LinearLayout p=(LinearLayout)platforms.getChildAt(0);p.addView(UiKit.title(context,"المنصات والبنية السحابية"),UiKit.full(context));TextView note=UiKit.small(context,"هذه الصفحة للقراءة فقط. مصدر المكتبة هو البيانات المركزية المنشورة؛ لا تحتاج عملية المزامنة إلى إعادة تأهيل.");note.setTextColor(0xFF985000);p.addView(note,UiKit.full(context));platformText=box(context);p.addView(platformText,UiKit.full(context));Button refresh=UiKit.button(context,"تحديث العرض المحلي");refresh.setOnClickListener(v->refresh());p.addView(refresh,UiKit.full(context));platformsView=platforms;
 
         ScrollView changes=scroll(context);LinearLayout ch=(LinearLayout)changes.getChildAt(0);ch.addView(UiKit.title(context,"سجل تغييرات المكتبة"),UiKit.full(context));changelogText=box(context);changelogText.setTextIsSelectable(true);ch.addView(changelogText,UiKit.full(context));changelogView=changes;
 
@@ -107,6 +108,8 @@ public final class CentralLibraryDashboardTab {
                 "بصمة READY: "+fpReady+" ("+pct(fpReady,total)+")\n"+
                 "بيانات PPM/منحنى — تشمل Transfer: "+ppm+" ("+pct(ppm,total)+")\n"+
                 "M4 مرجعي قابل للتقرير: "+m4+" ("+pct(m4,total)+")\n"+
+                "منحنيات منشورة ضمن تحديثات السجلات: "+statusRepo.countRemoteResearchCurveMaterials()+"\n"+
+                "M4 منشور في المكتبة المركزية (منفصل عن اعتماد الجهاز): "+statusRepo.countRemoteResearchM4Materials()+"\n"+
                 "مواد لها حدود تعرض: "+exposure+" ("+pct(exposure,total)+")\n"+
                 "التجارب المعتمدة محليًا: "+host.database().approvedCount()+"\n"+
                 "المراجع المشتقة محليًا: "+host.database().referenceArtifactCount()+"\n"+
@@ -114,13 +117,35 @@ public final class CentralLibraryDashboardTab {
                 "Evidence revision: "+blank(statusRepo.libraryRevision()));
 
         String endpoint=manager.manifestUrl()==null?"":manager.manifestUrl().trim();
-        distributionText.setText("مصدر التطوير العلمي المركزي: HazRob/build-harness (خاص)\nقناة تحديث المستخدم: "+(endpoint.isEmpty()?"غير مهيأة — Fail closed":"GitHub • "+endpoint)+"\nالسياسة: GitHub-only • لا Render في مسار تحديث المكتبة • لا Token للمستخدم\nSampling profile: "+ChemCoreLibraryManager.REQUIRED_SAMPLING_PROFILE);
+        distributionText.setText("مصدر التطوير العلمي المركزي: HazRob/build-harness (خاص)\nمزامنة محتويات المواد من GitHub (حسب UID/CAS والتغيير): "+ChemicalReferenceSyncV6.DEFAULT_INDEX+"\nآخر مزامنة: "+host.database().getMeta("v6_reference_sync_result","لم تنفذ")+
+                "\nقناة استعادة حزمة Stable كاملة — للمطور فقط: "+(endpoint.isEmpty()?"غير مهيأة":endpoint)+
+                "\nالتأهيل يتم في المكتبة المركزية قبل النشر، ولا يعاد عند الاستعلام.");
         updateTelemetryText.setText(formatUpdateTelemetry(host.database().getMeta("chemcore_update_telemetry_json","")));
         platformText.setText(formatPlatforms(host.database().getMeta("hazrob_platform_metrics_json","")));
         changelogText.setText(formatChangelog(host.database().getMeta("chemcore_changelog_summary",""),s));
     }
 
-    private void checkDistribution(){operationText.setText("جارٍ فحص قناة GitHub...");String endpoint=manager.manifestUrl();if(endpoint==null||endpoint.trim().isEmpty()){operationText.setText("قناة القراءة العامة على GitHub لم تُنشر بعد؛ التحديث Fail-closed ولا يوجد fallback إلى Render.");return;}host.io().execute(()->{try{ChemCoreLibraryManager.CheckSummary c=manager.check(ReleaseAudit.VERSION);ChemCoreLibraryManifest m=c.remote.manifest;main.post(()->{operationText.setText("GitHub OK • "+m.libraryVersion+" • chemicals "+m.chemicalCount+" • models "+m.modelCount+" • calibrations "+m.calibrationCount+(c.updateAvailable?" • تحديث متاح":" • النسخة الحالية محدثة"));refresh();});}catch(Exception e){main.post(()->operationText.setText("تعذر فحص قناة GitHub: "+safe(e)));}});}
+    private void checkDistribution(){
+        operationText.setText("جارٍ الاستعلام عن حالة السجلات العلمية...");
+        host.io().execute(()->{
+            try{
+                ChemicalReferenceSyncV6.Result result=ChemicalReferenceSyncV6.refresh(
+                    host.database(),0,25,
+                    ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()));
+                host.database().putMeta("v6_reference_sync_result",result.summary());
+                main.post(()->{
+                    operationText.setText("GitHub • تمت مزامنة "+result.applied+
+                        " سجلات • بدون تغيير "+result.unchanged+
+                        " • المراجعة "+result.revision);
+                    refresh();
+                    if(result.applied>0)host.refreshAllTabs();
+                });
+            }catch(Exception e){
+                main.post(()->operationText.setText(
+                    "تعذر الاستعلام عن محتويات المكتبة المنشورة: "+safe(e)));
+            }
+        });
+    }
 
     private void rollback(){
         operationText.setText("جارٍ التحقق والرجوع للمكتبة السابقة...");
