@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
 import com.servoc.app.data.ExperimentsDb;
+import com.servoc.app.chemical.ChemicalRepository;
 import com.hazrob.tank.chemcore.v6.V6ScientificThresholdPolicy;
 import org.json.JSONObject;
 import java.io.FileOutputStream;
@@ -36,7 +37,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
         JSONObject out=new JSONObject();
         try(ExperimentsDb db=new ExperimentsDb(this)){
             SQLiteDatabase sql=db.getWritableDatabase();
-            check(sql.getVersion()==11,"SQLite V11");
+            check(sql.getVersion()==12,"SQLite V12");
             long original=num(sql,"SELECT COUNT(*) FROM chemicals");
             check(original>=140,"legacy coverage preserved");
             check(num(sql,"SELECT COUNT(*) FROM chemical_risk_profiles")==original,
@@ -53,6 +54,27 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             long nioshIdlh=num(sql,"SELECT COUNT(*) FROM exposure_limits WHERE source_id='NIOSH_IDLH'");
             check(materials>=652,"NIOSH 652 official records imported + legacy");
             check(profiles==materials,"trigger covers 100% chemical identities");
+            long unified=num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog");
+            long unique=num(sql,"SELECT COUNT(DISTINCT uid) FROM v11_unified_chemical_catalog");
+            long legacy=num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog WHERE original_144_member=1");
+            check(unified==materials&&unique==materials,"one selectable row per identity, no join duplication");
+            check(legacy==144,"original 144 are retained as in-catalog membership flags");
+            ChemicalRepository unifiedRepo=new ChemicalRepository(db);
+            check(unifiedRepo.count()==materials,"actual UI repository exposes whole catalog");
+            check(unifiedRepo.search("",5000).size()==materials,
+                "default unfiltered menu returns all master identities");
+            check(unifiedRepo.byLegacyId(23)!=null &&
+                unifiedRepo.byLegacyId(23).uid>0,"old index maps to SAME master UID");
+            check(unifiedRepo.search("124-38-9",20).size()==1,
+                "CAS search returns one CO2 row");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_hazard_boundaries "+
+                "WHERE hazard_type='OXYGEN_DEFICIENCY'")>=1,
+                "OSHA low oxygen reference is preserved");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_hazard_boundaries "+
+                "WHERE hazard_type='OXYGEN_ENRICHMENT'")>=1,
+                "OSHA high oxygen reference is preserved");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_ambient_benchmarks")>=1,
+                "natural ambient benchmark separate from safety limit");
             check(osha>=500,"OSHA Z-1 verified packaged seed is loaded");
             check(nioshIdlh>=300,"NIOSH IDLH reference imported");
             check(limits>=osha+nioshIdlh,"all authority-specific entries retained");
@@ -77,15 +99,19 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(reached.sitePotentialHazard&&!reached.regulatoryTwaExceeded,
                 "instant concentration reaching PEL is site warning not TWA proof");
             out.put("status","PASS");
-            out.put("sqlite_version",11).put("legacy_rows",original)
+            out.put("sqlite_version",12).put("legacy_rows",original)
                 .put("post_authority_import_materials",materials)
                 .put("covered_profiles",profiles)
+                .put("unified_chemical_menu_rows",unified)
+                .put("unique_master_uids",unique)
+                .put("original_144_members",legacy)
                 .put("coverage_fraction",profiles/(double)materials)
                 .put("reference_limit_rows",limits)
                 .put("osha_z1_rows",osha).put("niosh_idlh_rows",nioshIdlh)
                 .put("co2_source_pel_ppm",co2Pel)
                 .put("co2_early_warn_ppm",co2Early)
-                .put("normal_ranges_with_source",0)
+                .put("normal_ranges_with_source",num(sql,
+                    "SELECT COUNT(*) FROM chemical_background_ranges"))
                 .put("physical_tank_g3",0)
                 .put("certified_gas_alerts",false)
                 .put("assertions",assertions);
