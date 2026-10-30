@@ -37,13 +37,15 @@ jobs:
           p=Path('source/app/src/main/AndroidManifest.xml')
           s=p.read_text();n='<activity android:name=".MainActivity" android:exported="false"/>'
           assert n in s
-          p.write_text(s.replace(n,'<activity android:name=".report.V6ScientificRiskDbFixtureActivity" android:exported="true"/>\\n        '+n))
+          p.write_text(s.replace(n,'<activity android:name=".report.V6ScientificRiskDbFixtureActivity" android:exported="true"/>\n        '+n))
           PY
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - run: "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - name: SDK setup
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.5.0'
