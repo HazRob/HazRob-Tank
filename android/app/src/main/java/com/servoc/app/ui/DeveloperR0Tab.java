@@ -371,15 +371,16 @@ public final class DeveloperR0Tab {
                 // certification of clean-air purity, extended 3-window
                 // calibration or G3 gas ppm. Never relabel an already saved
                 // firmware result as a total failure if the ledger fails.
-                final String scientificLedgerStatus;
+                String ledgerMessage;
                 try{
                     int saved=MqDeviceR0LedgerV14.recordFirmwareApproved(
                         host.database(),deviceId,actual,actualProgress.counts);
-                    scientificLedgerStatus=" • مرجع V14: "+saved+" سجلات R0 تشغيلية";
+                    ledgerMessage=" • مرجع V14: "+saved+" سجلات R0 تشغيلية";
                 }catch(Exception ledgerError){
                     android.util.Log.e("TankR0V14","Device R0 ledger sync failed",ledgerError);
-                    scientificLedgerStatus=" • تعذر توثيق R0 في سجل V14 (مع بقائها محفوظة على الهاتف وESP32)";
+                    ledgerMessage=" • تعذر توثيق R0 في سجل V14 (مع بقائها محفوظة على الهاتف وESP32)";
                 }
+                final String scientificLedgerStatus=ledgerMessage;
                 scroll.post(()->{
                     if(disposed)return;
                     pendingFirmwareResult=null;automaticActive=false;
