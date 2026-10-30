@@ -138,8 +138,48 @@ public final class MeasurementsTab {
         analysisPage=new FrameLayout(c);
         analysisShell.addView(analysisPage,new LinearLayout.LayoutParams(-1,0,1f));
         views=new View[]{searchView,analysisShell,physical.view,particlesView,foodFreshness.view()};
+        ensureUnifiedTrackingIdentity();
         showAnalysisSection(0);
         show(1);
+    }
+
+    /**
+     * Migration of saved tracking preferences from the former 0-based
+     * 144 legacy indices to stable chemicals.uid. The persisted integer must
+     * never be silently reinterpreted as a master UID.
+     * Historical tracking without unambiguous identity is cleared, not guessed.
+     */
+    private void ensureUnifiedTrackingIdentity(){
+        android.content.SharedPreferences prefs=host.preferences();
+        if(prefs.getInt("tracking_uid_semantics_version",0)>=12)return;
+        int oldId=host.trackingTargetId();
+        if(oldId>=0){
+            ChemicalRepository repo=new ChemicalRepository(host.database());
+            ChemicalRepository.Chemical asUid=repo.byUid(oldId);
+            ChemicalRepository.Chemical asLegacy=oldId<144?repo.byLegacyId(oldId):null;
+            String oldLabel=host.trackingTargetName();
+            boolean uidMatch=asUid!=null&&oldLabel.equals(asUid.label());
+            if(uidMatch){
+                // The previous candidate-picker already saved master UIDs.
+                host.setTrackingTarget(oldId,asUid.label());
+            }else if(asLegacy!=null&&asLegacy.uid<=Integer.MAX_VALUE){
+                host.setTrackingTarget((int)asLegacy.uid,asLegacy.label());
+            }else{
+                // Never point to a different material by ID reinterpretation.
+                host.setTrackingTarget(-1,"");
+            }
+        }
+        prefs.edit().putInt("tracking_uid_semantics_version",12).apply();
+    }
+
+    /** All new targeting is against the same master UID used by the lab. */
+    private void setUnifiedTrackingTarget(long uid,String name){
+        if(uid>Integer.MAX_VALUE||uid< -1){
+            host.showToast("معرف المادة خارج النطاق المدعوم");
+            return;
+        }
+        host.setTrackingTarget((int)uid,name);
+        host.preferences().edit().putInt("tracking_uid_semantics_version",12).apply();
     }
 
     private ScrollView buildSearchLanding(){
@@ -197,7 +237,7 @@ public final class MeasurementsTab {
             final ChemicalRepository.Chemical chemical=visibleChemicals.get(position);
             final String label=(chemical.arabicName!=null&&!chemical.arabicName.isEmpty()
                 ?chemical.arabicName:chemical.name);
-            final int legacyId=chemical.legacyId==null?-1:chemical.legacyId.intValue();
+            final long masterUid=chemical.uid;
             // The verified Stable snapshot is read from a file: never block UI.
             host.io().execute(()->{
                 final String description;
@@ -216,10 +256,10 @@ public final class MeasurementsTab {
                             "\nالصيغة: "+(chemical.formula==null?"—":chemical.formula)+
                             "\nالمصدر: "+(chemical.source==null?"—":chemical.source)+
                             "\n\nالإمكانات المتاحة ومصدرها:\n"+description+
-                            "\n\nالتتبع: "+(legacyId>=0?"متاح":"غير متاح لهذه المادة"))
-                        .setPositiveButton(legacyId>=0?"تتبع المادة":"إغلاق",
-                            (d,w)->{if(legacyId>=0){
-                                chosenChemical=label;host.setTrackingTarget(legacyId,label);
+                            "\n\nالتتبع: "+(masterUid<=Integer.MAX_VALUE?"اختيار المادة من الفهرس الموحد":"معرف غير مدعوم"))
+                        .setPositiveButton(masterUid<=Integer.MAX_VALUE?"تتبع المادة":"إغلاق",
+                            (d,w)->{if(masterUid<=Integer.MAX_VALUE){
+                                chosenChemical=label;setUnifiedTrackingTarget(masterUid,chemical.label());
                             }})
                         .show();
                 });
@@ -798,7 +838,7 @@ public final class MeasurementsTab {
             tracking=card("التتبع: لا يوجد");box.addView(tracking,UiKit.full(c));selected=card("المرشح المحدد: لا يوجد");box.addView(selected,UiKit.full(c));
             TextView ch=UiKit.small(c,"المرشحون الديناميكيون • اللون ترتيب تحليلي وليس مستوى خطورة");ch.setTextColor(MUTED);box.addView(ch,UiKit.full(c));
             candidateList=UiKit.vbox(c);box.addView(candidateList,UiKit.full(c));
-            LinearLayout actions=UiKit.hbox(c);startTracking=UiKit.button(c,"بدء التتبع");startTracking.setEnabled(false);startTracking.setOnClickListener(v->{if(selectedCandidateId<0){host.showToast("اختر مرشحًا أولًا");return;}host.setTrackingTarget(selectedCandidateId,selectedCandidateName);host.showToast("بدأ تتبع: "+selectedCandidateName);refresh();});actions.addView(startTracking,UiKit.weight(1));Button pick=UiKit.button(c,"اختيار غاز من المكتبة");pick.setOnClickListener(v->chooseTrackingChemical());actions.addView(pick,UiKit.weight(1.15f));Button stop=UiKit.button(c,"إيقاف التتبع");stop.setOnClickListener(v->{host.setTrackingTarget(-1,"");host.showToast("تم إيقاف التتبع");refresh();});actions.addView(stop,UiKit.weight(1));box.addView(actions,UiKit.full(c));
+            LinearLayout actions=UiKit.hbox(c);startTracking=UiKit.button(c,"بدء التتبع");startTracking.setEnabled(false);startTracking.setOnClickListener(v->{if(selectedCandidateId<0){host.showToast("اختر مرشحًا أولًا");return;}setUnifiedTrackingTarget(selectedCandidateId,selectedCandidateName);host.showToast("بدأ تتبع: "+selectedCandidateName);refresh();});actions.addView(startTracking,UiKit.weight(1));Button pick=UiKit.button(c,"اختيار غاز من المكتبة");pick.setOnClickListener(v->chooseTrackingChemical());actions.addView(pick,UiKit.weight(1.15f));Button stop=UiKit.button(c,"إيقاف التتبع");stop.setOnClickListener(v->{setUnifiedTrackingTarget(-1,"");host.showToast("تم إيقاف التتبع");refresh();});actions.addView(stop,UiKit.weight(1));box.addView(actions,UiKit.full(c));
             Button showLimits=UiKit.button(c,"📘 حدود التعرض للمادة المحددة");
             showLimits.setOnClickListener(v->showSelectedExposureReferences());
             box.addView(showLimits,UiKit.full(c));
@@ -815,11 +855,14 @@ public final class MeasurementsTab {
          * occupational exposure alerts or automatic target tracking.
          */
         private void renderResearchOnlyV6(JSONObject p){
-            selectedCandidateId=-1;
-            selectedCandidateName="";
-            startTracking.setEnabled(false);
+            // Manual selection remains permitted for exploratory gradient
+            // tracking; never promote a source hypothesis to confirmed gas.
+            startTracking.setEnabled(selectedCandidateId>=0);
             screeningToggle.setEnabled(false);
-            selected.setText("المرشح المحدد • لا توجد هوية غاز معتمدة للتتبع الآلي");
+            selected.setText(selectedCandidateId>=0?
+                "مادة محددة من الفهرس الموحد • "+selectedCandidateName+
+                " • تتبع استدلالي وليس رصد هوية":
+                "المرشح المحدد • لا توجد هوية غاز معتمدة للتتبع الآلي");
             decisionCard.setText("ChemCore Tank V6 • نتيجة بحثية فقط\n"+
                 "الهوية: UNKNOWN • لم تثبت المعايرة الفيزيائية G3\n"+
                 "لا يوجد تركيز ppm معتمد أو احتمال كشف موثوق");
@@ -836,26 +879,43 @@ public final class MeasurementsTab {
                 "\nلا إثبات للغاز أو تركيزه ولا حكم بغياب الخطر");
             referenceInventory.setText("حدود التعرض: تُراجع مستقلة عن هذه النتيجة"+
                 "\nلا توجد قياسات ppm أو تجاوزات مثبتة");
+            // Operator candidates come ONLY from the unified master UIDs;
+            // source-curve labels/legacy indices are retained separately
+            // as research evidence, never as duplicate selectable chemicals.
             JSONArray source=p.optJSONArray("source_curve_hypotheses");
+            JSONArray masterCandidates=p.optJSONArray("candidates");
             int n=source==null?0:source.length();
-            if(n==0){
-                candidateList.addView(card("لا توجد فرضيات منحنيات مؤهلة للحساب"+
-                    "\nاحتُفظ بالقراءات الأصلية عند غياب R0"),UiKit.full(c));
+            int count=masterCandidates==null?0:masterCandidates.length();
+            if(count==0){
+                candidateList.addView(card(n==0?
+                    "لا توجد مرشحات كيميائية: استجابة الهواء ضمن المرجع أو غير مؤكدة"+
+                    "\nاحتُفظ بالقراءات الأصلية ومعادلات المصادر للتدقيق":
+                    "منحنيات مصدرية بحثية متاحة لكن لا يوجد مرشح مرتبط بهوية موحدة"+
+                    "\nتراجع أدلة المصادر دون إنشاء مادة وهمية"),UiKit.full(c));
             }else{
-                for(int i=0;i<Math.min(n,12);i++){
-                    JSONObject q=source.optJSONObject(i);
+                for(int i=0;i<Math.min(count,12);i++){
+                    JSONObject q=masterCandidates.optJSONObject(i);
                     if(q==null)continue;
-                    String line="#"+(i+1)+" • "+q.optString("gas_or_class","—")+
-                        " • "+q.optString("sensor_model","—")+
-                        "\nمرجع البحث: "+q.optString("source_curve_id","—")+
-                        " • المصدر: "+q.optString("source_root","—")+
-                        "\nفرضية بحثية غير معتمدة؛ ليست غازًا مثبتًا";
-                    TextView row=card(line);
-                    row.setTextColor(TEXT);
+                    long uid=q.optLong("chemical_uid",-1);
+                    if(uid<0||uid>Integer.MAX_VALUE)continue;
+                    String name=q.optString("label","—");
+                    String line="#"+q.optInt("rank",i+1)+" • "+name+
+                        "\nمنحنيات مصدرية: "+q.optInt("source_curve_count",0)+
+                        " • الهوية والـPPM غير معتمدين؛ يمكن اختيار المادة للتتبع اليدوي";
+                    Button row=UiKit.button(c,line);
+                    row.setTextColor(Color.BLACK);
+                    row.setBackground(UiKit.outline(c,CARD,0xFF8994A3));
+                    row.setOnClickListener(v->{
+                        selectedCandidateId=(int)uid;
+                        selectedCandidateName=name;
+                        selected.setText("مادة مختارة من الفهرس الموحد • "+name+
+                            "\nهذا الاختيار ليس إثباتًا لوجود الغاز");
+                        startTracking.setEnabled(true);
+                    });
                     candidateList.addView(row,UiKit.full(c));
                 }
-                if(n>12)candidateList.addView(
-                    card("توجد "+(n-12)+" فرضيات إضافية محفوظة في نتيجة المصدر"),
+                if(count>12)candidateList.addView(
+                    card("توجد "+(count-12)+" مواد إضافية في مرشحي البحث"),
                     UiKit.full(c));
             }
             JSONArray raw=p.optJSONArray("original_mq_channel_evidence");
