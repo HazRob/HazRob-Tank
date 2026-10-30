@@ -14,7 +14,9 @@ import com.servoc.app.chemcore.ChemCoreDecision;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 import com.servoc.app.chemcore.ChemCoreDeepSessionResult;
 import com.servoc.app.chemcore.ChemCoreFeaturePipeline;
-import com.servoc.app.chemcore.ChemCoreInferenceEngine;
+import com.hazrob.tank.chemcore.v6.ChemCoreTankV6;
+import com.hazrob.tank.chemcore.v6.Engine;
+import com.hazrob.tank.v6integration.TankV6TelemetryAdapter;
 import com.servoc.app.chemcore.ChemCoreLabQuality;
 import com.servoc.app.chemcore.ChemCoreLiveStabilityMonitor;
 import com.servoc.app.chemcore.ChemCoreOpenSetGate;
@@ -131,37 +133,64 @@ public final class ChemCoreAnalysisTab {
     private void tryFinalizePrimary(){
         if(!pendingPrimaryFinalize||attachedSessionId.isEmpty())return;if(!MeasurementSessionRegistry.activeSessionId().isEmpty())return;if(!attachedSessionId.equals(MeasurementSessionRegistry.lastCompletedSessionId()))return;pendingPrimaryFinalize=false;long computeStarted=SystemClock.elapsedRealtime();
         try{
+            JSONObject v6LabResearch=null;
             ChemCoreSessionFeatureAdapter.Extraction x=ChemCoreSessionFeatureAdapter.extract(host.database(),attachedSessionId);
             if(runtime.snapshot().state==ChemCoreSessionController.State.REPORT)lastResult=new ChemCoreResultEnvelope(attachedSessionId,ChemCoreDecision.Outcome.INSUFFICIENT_EVIDENCE,ChemCoreDecision.EvidenceTier.M0_CATALOG_ONLY,null,"",Double.NaN,Double.NaN,Double.NaN,Double.NaN,Double.NaN,Double.NaN,runtime.profile().profileId,ChemCoreFeaturePipeline.SCHEMA_VERSION,"","response stability gate failed",java.util.Collections.emptyList());
             else if(!x.usable()){runtime.advance(ChemCoreSessionController.Event.EVIDENCE_INSUFFICIENT,true,"{\"reason\":\"feature_extraction_unusable\"}");lastResult=new ChemCoreResultEnvelope(attachedSessionId,ChemCoreDecision.Outcome.INVALID_MEASUREMENT,ChemCoreDecision.EvidenceTier.M0_CATALOG_ONLY,null,"",Double.NaN,Double.NaN,Double.NaN,Double.NaN,Double.NaN,Double.NaN,runtime.profile().profileId,ChemCoreFeaturePipeline.SCHEMA_VERSION,"","canonical feature extraction unusable",java.util.Collections.emptyList());}
             else{
                 runtime.advance(ChemCoreSessionController.Event.FEATURES_READY,true,
                     "{\"feature_sha256\":\""+x.featurePayloadSha256+"\"}");
+                // The OLD V5 inference engine is deliberately NOT used.
+                // Input feature[i,2] is a dimensionless stored Rs/R0 ratio.
+                // Preserve this as algebraic R_s(feature)/1.0 for V6 research
+                // only; 1.0 here is not a physically measured device R0.
                 Map<String,Double> ratios=steadyRatios(x.features);
-                com.servoc.app.chemcore.TankStableScreeningModelRegistry.LoadResult models=
-                    com.servoc.app.chemcore.TankStableRuntimeCatalog.responseModels(scroll.getContext(),host.database());
-                ChemCoreStableKnowledgeReader.OpenSetArtifact openArtifact=
-                    com.servoc.app.chemcore.TankStableRuntimeCatalog.validatedOpenSet(scroll.getContext(),runtime.profile());
-                ChemCoreOpenSetGate.Result openResult=openArtifact==null?
-                    null:openArtifact.gate.evaluate(x.features.vector);
-                String modelVersion=models.status.startsWith("ACTIVE_STABLE")?
-                    "tank-v5-stable:"+models.version:"tank-v5-source-backed-fallback";
-                if(openArtifact!=null)modelVersion+="+"+openArtifact.modelVersion;
-                ChemCoreInferenceEngine.Context ctx=new ChemCoreInferenceEngine.Context(
-                    attachedSessionId,runtime.profile().profileId,modelVersion,
-                    x.meanTemperatureC,x.meanRh,openResult);
-                lastResult=ChemCoreInferenceEngine.analyze(
-                    ratios,models.candidates,runtime.profile(),ctx);
-                advanceEvidenceState(lastResult,openArtifact,openResult);
+                java.util.List<Engine.Channel> sourceFeatures=
+                    new java.util.ArrayList<>();
+                for(Map.Entry<String,Double> entry:ratios.entrySet()){
+                    double value=entry.getValue()==null?Double.NaN:entry.getValue();
+                    if(Double.isFinite(value)&&value>0)
+                        sourceFeatures.add(new Engine.Channel(entry.getKey(),
+                            entry.getKey()+"-session-normalized-feature-not-physical-R0",
+                            value,1.0));
+                }
+                ChemCoreTankV6.Result v6=ChemCoreTankV6.analyze(
+                    new ChemCoreTankV6.Request(sourceFeatures,null,
+                        x.meanTemperatureC,x.meanRh,x.durationSeconds));
+                v6LabResearch=TankV6TelemetryAdapter.toJson(v6);
+                v6LabResearch.put("reference_semantics",
+                    "ALGEBRAIC_FEATURE_RATIO_NOT_PHYSICAL_RS_R0_PAIR");
+                v6LabResearch.put("feature_sha256",x.featurePayloadSha256);
+                v6LabResearch.put("physical_r0_reference_proven",false);
+                v6LabResearch.put("gas_identity_verified",false);
+                v6LabResearch.put("ppm_reportable",false);
+                v6LabResearch.put("alarm_authorized",false);
+                v6LabResearch.put("research_model_provenance",
+                    "CHEMCORE_V6_SOURCE_CURVE_ONLY_NOT_DEVICE_G3");
+                lastResult=new ChemCoreResultEnvelope(attachedSessionId,
+                    ChemCoreDecision.Outcome.INSUFFICIENT_EVIDENCE,
+                    ChemCoreDecision.EvidenceTier.M0_CATALOG_ONLY,
+                    null,"",Double.NaN,Double.NaN,Double.NaN,
+                    Double.NaN,Double.NaN,Double.NaN,
+                    runtime.profile().profileId,ChemCoreFeaturePipeline.SCHEMA_VERSION,
+                    ChemCoreTankV6.SCHEMA,
+                    "V6 session: research-only source response, no qualified gas identity or ppm",
+                    java.util.Collections.emptyList());
+                runtime.advance(ChemCoreSessionController.Event.EVIDENCE_INSUFFICIENT,
+                    true,"{\"reason\":\"v6_research_source_only_no_tank_g3\"}");
             }
             ChemCoreLibraryManager.Status lib=libraries.status();
-            // Only tag the analyzed result with Stable provenance when the
-            // verified response-source actually entered this inference.
-            lastResult=lastResult.withLibraryProvenance(lib.version,lib.sha256,lib.sourceCommit);
-            ChemCoreLabQuality lab=ChemCoreLabQuality.evaluate(host.latestDiagnostics(),host.driveLeft(),host.driveRight(),host.database());
+            ChemCoreLabQuality lab=ChemCoreLabQuality.evaluate(host.latestDiagnostics(),
+                host.driveLeft(),host.driveRight(),host.database());
             org.json.JSONObject labEvidence=lab.toJson();
-            labEvidence.put(com.servoc.app.chemcore.TankFingerprintScreening.KEY,
-                com.servoc.app.chemcore.TankFingerprintScreening.evaluate(steadyRatios(x.features)));
+            labEvidence.put("v6_session_research",
+                v6LabResearch==null?JSONObject.NULL:v6LabResearch);
+            labEvidence.put("legacy_stable_version_installed_not_used_for_inference",
+                lib.version);
+            labEvidence.put("v6_lab_inference_only",true);
+            labEvidence.put("qualified_gas_identity",false);
+            labEvidence.put("quantitative_ppm_reportable",false);
+            labEvidence.put("gas_alarm_authorized",false);
             lastResult=lastResult.withLabQuality(labEvidence);
             ChemCoreDecisionRepository decisionRepo=new ChemCoreDecisionRepository(host.database());decisionRepo.save(Math.max(0,Math.round(x.durationSeconds*1000.0)),lastResult);ChemCoreP10SessionFinalizer.finalizeAndAttach(host.database(),attachedSessionId,lastResult,libraries.activePayload(),runtime.profile());persistAnalyticalExperiment(lastResult,lab);
             runtime.finish(lastResult);if(runtime.snapshot().state==ChemCoreSessionController.State.REPORT)runtime.advance(ChemCoreSessionController.Event.REPORT_SAVED,true,"{\"saved\":true}");primaryAnalysisElapsedMs=Math.max(0,SystemClock.elapsedRealtime()-computeStarted);
@@ -188,7 +217,10 @@ public final class ChemCoreAnalysisTab {
             JSONObject r0=quality==null?null:quality.toJson().optJSONObject("r0_standard");
             String campaign=r0==null?"unknown_device_r0":r0.optString("campaign","unknown_device_r0");
             String source=r0==null?"unavailable":r0.optString("source","unavailable");
-            a.put("analysis_version","chemcore-v4-deep-session");
+            a.put("analysis_version","chemcore-v6-research-only-session/1");
+            a.put("confirmed_chemical_identity",false);
+            a.put("reportable_ppm",false);
+            a.put("alarm_authorized",false);
             a.put("chemcore_schema",ChemCoreResultEnvelope.SCHEMA);
             a.put("session_dynamics_schema",ChemCoreSessionDynamics.SCHEMA);
             a.put("r0_campaign",campaign);a.put("r0_source",source);
@@ -207,7 +239,8 @@ public final class ChemCoreAnalysisTab {
 
     private void advanceEvidenceState(ChemCoreResultEnvelope result,ChemCoreStableKnowledgeReader.OpenSetArtifact artifact,ChemCoreOpenSetGate.Result openResult){if(result==null){runtime.advance(ChemCoreSessionController.Event.EVIDENCE_INSUFFICIENT,true,"{\"reason\":\"missing_result\"}");return;}if(artifact==null||openResult==null){runtime.advance(ChemCoreSessionController.Event.EVIDENCE_INSUFFICIENT,true,"{\"reason\":\"validated_open_set_model_not_bound\"}");return;}if(result.outcome==ChemCoreDecision.Outcome.INVALID_MEASUREMENT||result.outcome==ChemCoreDecision.Outcome.INSUFFICIENT_EVIDENCE){runtime.advance(ChemCoreSessionController.Event.EVIDENCE_INSUFFICIENT,true,"{\"reason\":\"inference_evidence_insufficient\"}");return;}runtime.advance(ChemCoreSessionController.Event.IDENTITY_READY,true,"{\"identity_model\":\"stable\"}");if(!openResult.accepted||result.outcome==ChemCoreDecision.Outcome.UNKNOWN){runtime.advance(ChemCoreSessionController.Event.OPEN_SET_REJECTED,true,"{\"distance\":"+openResult.distance+",\"threshold\":"+openResult.threshold+"}");return;}runtime.advance(ChemCoreSessionController.Event.OPEN_SET_ACCEPTED,true,"{\"distance\":"+openResult.distance+",\"threshold\":"+openResult.threshold+"}");runtime.advance(ChemCoreSessionController.Event.QUANTIFICATION_READY,true,"{\"quantitative_outcome\":\""+result.outcome.name()+"\"}");if(result.outcome==ChemCoreDecision.Outcome.POSSIBLE_MIXTURE_OR_INTERFERENCE)runtime.advance(ChemCoreSessionController.Event.MIXTURE_SUSPECTED,true,"{\"guard\":\"residual\"}");else runtime.advance(ChemCoreSessionController.Event.CONSISTENCY_ACCEPTED,true,"{\"guard\":\"passed_or_nonquantitative\"}");}
 
-    private void renderResult(ChemCoreSessionFeatureAdapter.Extraction x,ChemCoreResultEnvelope r){JSONObject p=new ChemCoreDecisionRepository(host.database()).latestPayloadForSession(r.sessionId);if(p==null)p=r.toJson();StringBuilder s=new StringBuilder(ChemCoreAnalysisPresenter.summary(p));s.append("\n\nCapture: ").append(x.persistedSamples).append(" samples • ").append(String.format(Locale.US,"%.1f s",x.durationSeconds));s.append("\nR0 normalization: ").append(x.r0Source).append(" • ").append(x.r0Campaign).append(" • accepted points ").append(x.acceptedR0Samples).append(" • telemetry fallback ").append(x.telemetryRatioFallbackSamples);s.append("\nFeature SHA: ").append(shortId(x.featurePayloadSha256));s.append("\nPrimary compute: ").append(primaryAnalysisElapsedMs).append(" ms");s.append("\n\n").append(ChemCoreAnalysisPresenter.gasExposurePpm(p,8));s.append("\n\n").append(ChemCoreAnalysisPresenter.candidates(p,8));s.append("\n\n").append(ChemCoreAnalysisPresenter.equationsAndResiduals(p,4));resultText.setText(s.toString());}
+    private void renderResult(ChemCoreSessionFeatureAdapter.Extraction x,ChemCoreResultEnvelope r){JSONObject p=new ChemCoreDecisionRepository(host.database()).latestPayloadForSession(r.sessionId);if(p==null)p=r.toJson();StringBuilder s=new StringBuilder(ChemCoreAnalysisPresenter.summary(p));s.append("\n\nCapture: ").append(x.persistedSamples).append(" samples • ").append(String.format(Locale.US,"%.1f s",x.durationSeconds));s.append("\nR0 normalization: ").append(x.r0Source).append(" • ").append(x.r0Campaign).append(" • accepted points ").append(x.acceptedR0Samples).append(" • telemetry fallback ").append(x.telemetryRatioFallbackSamples);s.append("\nFeature SHA: ").append(shortId(x.featurePayloadSha256));s.append("\nPrimary compute: ").append(primaryAnalysisElapsedMs).append(" ms");s.append("\n\nChemCore V6 • استدلال بحثي غير مؤهل للتعرف المؤكد على الغاز أو قياس ppm.");
+        s.append("\n\n").append(ChemCoreAnalysisPresenter.gasExposurePpm(p,8));s.append("\n\n").append(ChemCoreAnalysisPresenter.candidates(p,8));s.append("\n\n").append(ChemCoreAnalysisPresenter.equationsAndResiduals(p,4));resultText.setText(s.toString());}
     private static Map<String,Double> steadyRatios(ChemCoreFeaturePipeline.Result f){Map<String,Double> out=new LinkedHashMap<>();if(f==null)return out;for(int i=0;i<ChemCoreSessionFeatureAdapter.SENSOR_ORDER.length;i++){double y=f.feature(i,2);if(Double.isFinite(y))out.put(ChemCoreSessionFeatureAdapter.SENSOR_ORDER[i],Math.pow(10.0,y));}return out;}
 
     private void abortProtocol(String reason){if(MeasurementSessionRegistry.chemCoreCaptureRequested())MeasurementSessionRegistry.requestChemCoreStop(reason);if(active)runtime.abort("{\"reason\":\""+reason+"\"}");active=false;pendingPowerStart=false;awaitingSample=false;sampleConfirmed=false;awaitingRecoveryRemoval=false;recoveryConfirmed=false;pendingPrimaryFinalize=false;pendingRecoveryFinalize=false;recoverySessionId="";finalDeepResult=null;status.setText("تم إلغاء الجلسة بأمان.");render();}
