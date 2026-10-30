@@ -79,6 +79,18 @@ public final class ChemicalSeedBootstrap {
         ChemCoreIdentityCurationRepository.ImportResult curation=ChemCoreIdentityCurationRepository.importIfPresent(context,db);
         db.putMeta("chemcore_identity_curation_status",curation.available?("available:"+curation.records+":"+curation.sha256):curation.message);
 
+        // Fill only missing identity fields from previously imported, CAS-matched
+        // and source-retained PubChem A_SOURCE observations. This cannot create
+        // chemical R0/Rs, a gas identity, an exposure alarm, or a new master UID.
+        try{
+            ChemicalMolecularProjectionV6.Result projection=
+                ChemicalMolecularProjectionV6.ensure(db);
+            db.putMeta("v6_chemical_molecular_projection",projection.summary());
+        }catch(Exception e){
+            db.putMeta("v6_chemical_molecular_projection",
+                "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
+        }
+
         // PubChem/QSPR is rebuilt only after the molecular seed and the negative curation layer
         // are installed. It remains an M1 ranking/screening prior and cannot create M3/M4 alone.
         try{
