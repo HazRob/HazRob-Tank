@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 MQ4 calendar-day lag60 feature-lineage / embargo diagnostic (405/405 CI)
+
+- Resumed from `576bf612ddc3b828d7839385d816b1aa49457a07`; verified 20/20 preceding CI runs successful. Central pinned 80 techniques and 14 external source slots unchanged; independent evidence records=[].
+- Independently SHA256-verified original user Library ZIP `HazRob_MQ_Reference_Real_Measurements_2026-10-30.zip` (archive `7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9`, raw member `3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d`). Recomputed 14,186 rows, 11 continuous one-minute segments, 13,581 strict lag60 pairs. Of these, **600 pairs cross calendar-day boundaries**, 60 for each of 2021-07-22 through 2021-07-31; 600 distinct later-day rows would require previous-day context IF lag60 features were used.
+- Research-only `g2_mq4_temporal_continuity_audit.py` now emits cross-day lag60 counts, per-day breakdown, later-day context count, and overlap flag. Added four synthetic regressions including 30s/90s discontinuity and two full midnight boundaries. Initial CI test failure was a short synthetic fixture (1501 vs required 1561 rows), fixed in `b81db0eefcb5581f809112f75808c2333c5e023e`.
+- [G2 Actions run 40985855043](https://github.com/HazRob/HazRob-Tank/actions/runs/40985855043), job `123836580618`: **405/405 PASS**, byte-identical audit/triage replay PASS, publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12947460368`, ZIP SHA256 `568b4e73acb921c771fbe1672bf77f82283d46ddbc5b4b8827e10f4df0d391f9`. All 21/21 CI runs on the corrected test commit succeeded.
+- Research-only evidence: `G2_MQ4_CALENDAR_DAY_LAG60_EMBARGO_2026-10-30.json` and `G2_MQ4_DAY_BOUNDARY_LAG60_FEATURE_LEAKAGE_2026-10-30_AR.md`. No ChemCore Stable, Android, firmware, or main changes. This is a potential **feature-context** overlap diagnostic, NOT evidence that a trained model used lag60, that exposures are physically identical, or that G2/G3 is qualified.
+- Next: verify CI on documentation checkpoint; obtain independent original exposure/sample/session/device provenance, traceable methane reference calibration, and preregistered blinded physically grouped holdouts before any scientific promotion.
+
+---
+
 ## 2026-10-30 — G2 MQ4 strict contiguous 60-minute lag audit (401/401 CI)
 
 - Resumed from `9cd049f0e2b4fe7c8eb959ec2bb02149b88e2c4b`; previous G2 and associated CI runs succeeded. Pinned G2 80-entry catalog and 14 external source slots unchanged; independent physical evidence remains absent.
