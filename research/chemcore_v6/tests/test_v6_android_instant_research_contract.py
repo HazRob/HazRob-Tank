@@ -63,7 +63,14 @@ class N06AndroidV6GasReportSafety(unittest.TestCase):
         self.assertLess(v6,old)
         self.assertIn("renderResearchOnlyV6(p)",self.u)
         helper=self.u[self.u.index("private void renderResearchOnlyV6("):v6]
-        self.assertIn("startTracking.setEnabled(false)",helper)
+        # The user can manually select a research candidate from the unified
+        # master catalog for exploratory gradient tracking, but the V6
+        # engine must never select a target or start driving automatically.
+        self.assertIn("startTracking.setEnabled(selectedCandidateId>=0)",helper)
+        self.assertIn('p.optJSONArray("candidates")',helper)
+        self.assertIn("selectedCandidateId=(int)uid;",helper)
+        self.assertNotIn("setUnifiedTrackingTarget(",helper)
+        self.assertNotIn("host.setTrackingTarget(",helper)
         self.assertNotIn("TankPpmEstimate.from",helper)
         self.assertNotIn("screening_fit_ppm",helper)
         self.assertNotIn("TankCandidateHazardBadges",helper)
