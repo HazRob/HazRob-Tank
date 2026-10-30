@@ -227,15 +227,21 @@ void measureUpdate(){if(stage!=MEASURE)return;uint32_t n=millis();measureElapsed
 
 // Time-window R0 collection; one mean per sensor, no early sample-count stop.
 constexpr float cleanAir[Cfg::MQ_N]={9.83f,4.4f,6.5f,70.0f,60.0f,27.5f,9.6f,3.6f};
-enum CalState:uint8_t{CAL_IDLE,CAL_WARM,CAL_SAMPLE,CAL_READY,CAL_ERROR,CAL_CANCEL,CAL_PENDING};
+enum CalState:uint8_t{CAL_IDLE,CAL_WARM,CAL_SAMPLE,CAL_READY,CAL_ERROR,CAL_CANCEL,CAL_PENDING,CAL_REST};
 CalState calState=CAL_IDLE;
 uint32_t calAt=0,calLastCycle=0,calWarmMs=300000,calWindowMs=60000;
+bool calV6ThreeWindow=false,r0LoadedV6=false;
+uint8_t calV6Window=0;
+constexpr uint32_t CAL_V6_REST_MS=180000UL,CAL_V6_WINDOW_MS=180000UL;
+double calV6Sums[Cfg::MQ_N][3]={};
+uint32_t calV6Counts[Cfg::MQ_N][3]={};
 double calSum[Cfg::MQ_N]={};
 uint32_t calCount[Cfg::MQ_N]={};
 const char* calError="";
 struct R0Record{uint32_t magic;float values[Cfg::MQ_N];uint32_t counts[Cfg::MQ_N];uint32_t checksum;};
 R0Record pendingR0={};bool pendingR0Valid=false;
 constexpr uint32_t R0_MAGIC=0x52305634UL;
+constexpr uint32_t R0_MAGIC_V6=0x52305636UL;
 uint32_t r0Checksum(const R0Record& rec){
  const uint8_t* p=(const uint8_t*)&rec;uint32_t h=2166136261UL;
  for(size_t i=0;i<sizeof(rec)-sizeof(rec.checksum);i++){h^=p[i];h*=16777619UL;}return h;
@@ -243,27 +249,43 @@ uint32_t r0Checksum(const R0Record& rec){
 // Two-slot, generation-numbered V5 R0 storage. A torn update cannot overwrite
 // the last complete slot. Legacy V4 NVS is read-only fallback for migration.
 constexpr uint32_t R0_SLOT_MAGIC=0x52305335UL;
+constexpr uint32_t R0_SLOT_MAGIC_V6=0x52305336UL;
 struct R0Slot{uint32_t magic;uint32_t generation;R0Record record;uint32_t checksum;};
 uint32_t r0SlotChecksum(const R0Slot& slot){
  const uint8_t* b=(const uint8_t*)&slot;uint32_t h=2166136261UL;
  for(size_t i=0;i<sizeof(slot)-sizeof(slot.checksum);i++){h^=b[i];h*=16777619UL;}return h;
 }
 bool validR0Record(const R0Record& r){
- if(r.magic!=R0_MAGIC||r.checksum!=r0Checksum(r))return false;
+ if((r.magic!=R0_MAGIC&&r.magic!=R0_MAGIC_V6)||
+    r.checksum!=r0Checksum(r))return false;
  for(uint8_t i=0;i<Cfg::MQ_N;i++)
-  if(r.counts[i]<10||!ff(r.values[i])||r.values[i]<=0)return false;
+  if(r.counts[i]<(r.magic==R0_MAGIC_V6?30U:10U)||!ff(r.values[i])||r.values[i]<=0)return false;
  return true;
 }
 bool loadR0Slot(const char* key,R0Slot& slot){
  if(nv.getBytesLength(key)!=sizeof(slot))return false;
  if(nv.getBytes(key,&slot,sizeof(slot))!=sizeof(slot))return false;
- return slot.magic==R0_SLOT_MAGIC&&slot.generation>0&&
-        slot.checksum==r0SlotChecksum(slot)&&validR0Record(slot.record);
+ const bool v6=strcmp(key,"r0_v6_a")==0||strcmp(key,"r0_v6_b")==0;
+ return slot.magic==(v6?R0_SLOT_MAGIC_V6:R0_SLOT_MAGIC)&&
+        slot.generation>0&&slot.checksum==r0SlotChecksum(slot)&&
+        validR0Record(slot.record)&&
+        (v6==(slot.record.magic==R0_MAGIC_V6));
 }
 bool newerR0Generation(uint32_t a,uint32_t b){
  return (int32_t)(a-b)>0;
 }
 bool loadR0Record(R0Record& rec){
+ // New V6 storage: mean Rs in the device's declared reference air. It is
+ // intentionally NOT compatible with older (Rs_air/factory_factor) records.
+ R0Slot c={},d={};
+ bool vc=loadR0Slot("r0_v6_a",c),vd=loadR0Slot("r0_v6_b",d);
+ if(vc||vd){
+  rec=vc&&(!vd||!newerR0Generation(d.generation,c.generation))?
+      c.record:d.record;
+  return true;
+ }
+ // Older V5/V4 NVS stays intact for audit and historical readings, but the
+ // app MUST NOT use this factor-scaled R0 as a unity clean-air baseline.
  R0Slot a={},b={};
  bool va=loadR0Slot("r0_v5_a",a),vb=loadR0Slot("r0_v5_b",b);
  if(va||vb){
@@ -271,21 +293,24 @@ bool loadR0Record(R0Record& rec){
       a.record:b.record;
   return true;
  }
- // Preserve already-approved V4 calibrations without rewriting their NVS key.
  if(nv.getBytesLength("r0_v4")!=sizeof(rec))return false;
  if(nv.getBytes("r0_v4",&rec,sizeof(rec))!=sizeof(rec))return false;
- return validR0Record(rec);
+ return validR0Record(rec)&&rec.magic==R0_MAGIC;
 }
 bool saveR0Record(const R0Record& rec){
  if(!validR0Record(rec))return false;
+ const bool v6=rec.magic==R0_MAGIC_V6;
+ const char* aKey=v6?"r0_v6_a":"r0_v5_a";
+ const char* bKey=v6?"r0_v6_b":"r0_v5_b";
  R0Slot a={},b={};
- bool va=loadR0Slot("r0_v5_a",a),vb=loadR0Slot("r0_v5_b",b);
+ bool va=loadR0Slot(aKey,a),vb=loadR0Slot(bKey,b);
  bool latestA=va&&(!vb||!newerR0Generation(b.generation,a.generation));
  uint32_t generation=(va||vb)?
    (latestA?a.generation:b.generation)+1:1;
  if(generation==0)generation=1;
- const char* target=latestA?"r0_v5_b":"r0_v5_a";
- R0Slot next={};next.magic=R0_SLOT_MAGIC;next.generation=generation;
+ const char* target=latestA?bKey:aKey;
+ R0Slot next={};next.magic=v6?R0_SLOT_MAGIC_V6:R0_SLOT_MAGIC;
+ next.generation=generation;
  next.record=rec;next.checksum=r0SlotChecksum(next);
  if(nv.putBytes(target,&next,sizeof(next))!=sizeof(next))return false;
  R0Slot check={};
