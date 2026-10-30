@@ -6,7 +6,7 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "ALL_SIX_ORIGINAL_REPORTS_AUDITED_R06_THREE_PAGE_OWNER_DESIGN_APPROVED_VISUAL_LAYOUT_QA_AND_OTHER_SIGNOFFS_PENDING",
+  "assessment_phase": "R02_V7_NATIVE_IMPLEMENTATION_IN_PROGRESS_ALL_SIX_ORIGINALS_AUDITED_VISUAL_QA_PENDING",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -25,7 +25,8 @@
     "R05_ORIGINAL_ONE_PAGE_AND_FRUIT_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
     "R05_OWNER_APPROVED_2_PAGE_18_FRUIT_PHOTO_MATRIX_DESIGN_PREVIEW_PENDING",
     "R06_ORIGINAL_BEEF_ONE_PAGE_AND_ENGINE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
-    "R06_OWNER_APPROVED_THREE_PAGE_MEAT_REPORT_DESIGN_VISUAL_QA_PENDING"
+    "R06_OWNER_APPROVED_THREE_PAGE_MEAT_REPORT_DESIGN_VISUAL_QA_PENDING",
+    "R02_V7_NATIVE_PDF_WRITER_SOURCE_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING"
   ],
   "note": "Existing original Android PDFs from V6 provide a baseline but this template must not claim V7 visual audit, correctness or implementation. Rule G04 is scientifically condition-dependent, not universally GHS-applicable.",
   "rules": [
@@ -382,10 +383,10 @@
         "time distribution only if sample series exists"
       ],
       "risk": "False exceedance from an uncalibrated or incomparable metric",
-      "review_state": "R02_PARTIAL_OWNER_DESIGN_RULES_APPROVED_LAYOUT_PENDING",
+      "review_state": "R02_V7_NATIVE_PDF_WRITER_SOURCE_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING",
       "original_pdf_verified": true,
       "approved_design_mockup": false,
-      "android_production_layout_changed": false,
+      "android_production_layout_changed": true,
       "visual_qa_passed": false,
       "data_integrity_passed": false,
       "bilingual_qa_passed": false,
@@ -622,7 +623,23 @@
       ],
       "page_count_is_target_only": true,
       "page_count_can_increase_or_decrease": true,
-      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section."
+      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section.",
+      "new_v7_pdf_writer": "android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java",
+      "new_production_entrypoint": "android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java",
+      "new_qa_document": "docs/implementation/V7-R02-NATIVE-ANDROID-INTEGRATION-AND-QA-GATE-2026-10-31_AR.md",
+      "current_qa_run": 41146719225,
+      "implemented_features": [
+        "All 15 PhysicalCatalog values including PM1/PM2.5/PM10 not suppressed",
+        "Stable TankPhysicalSnapshotPdf.write signature delegates to V7PhysicalReportPdfWriter",
+        "Dynamic page planner and repeated section headers",
+        "Heat Index, Dew Point, Thermal Burden placeholders requiring actual engine source",
+        "Altitude displays source-only: never calculate from pressure in PDF",
+        "Four conceptual charts reserved without fabricated time-series",
+        "Native G17/G18 header/footer and logo, Arabic/English 12pt",
+        "Red/white bold cell only for explicit engine-origin exceeded state",
+        "Input null values display ASCII '-'"
+      ],
+      "qa_status": "ACTUAL_ANDROID_PDF_QA_PENDING_RUN_41146719225"
     },
     {
       "report_id": "R03",
@@ -1899,7 +1916,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Continue Android-native blank report QA and dynamic pagination testing, then unify six production PDF writers. Owner explicitly permits variable number of pages. Visual acceptance and sensor/food scientific verification remain separate gates.",
+  "next_action": "Check run 41146719225 (R01+R02 actual Android PDF QA). Fix any compile/render/font/15-category failures. After QA, continue R03/R04/R05/R06 writers with exact design content and source trace.",
   "visual_contract": {
     "branding_palette": [
       "black",
