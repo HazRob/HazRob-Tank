@@ -22,6 +22,8 @@ class V6OperatorReleaseContract(unittest.TestCase):
         cls.fwapi=(FW/"ESP32-Tank.ino").read_text()
         cls.gateway=(ANDROID/"auth/TankFirmwareCompatibility.java").read_text()
         cls.release=(ANDROID/"ReleaseAudit.java").read_text()
+        cls.control=(ANDROID/"ui/ControlTab.java").read_text()
+        cls.measurements=(ANDROID/"ui/MeasurementsTab.java").read_text()
 
     def test_user_calibration_exact_180_plus_60(self):
         self.assertIn("calibrationStart(180,60)",self.cal)
@@ -50,6 +52,15 @@ class V6OperatorReleaseContract(unittest.TestCase):
         self.assertIn('diagnostic.put("safety_grade_gas_alarm",false)',self.alarm)
         self.assertIn('Math.max(level,hazard?GasAlertCoordinator.WARNING',self.main)
         self.assertIn('if(!isOffline())',self.main)
+
+    def test_operator_ui_does_not_call_unverified_gas_normal_or_danger(self):
+        self.assertNotIn("غازات ● طبيعي",self.control)
+        self.assertNotIn("⛔ استجابة غاز قوية",self.control)
+        self.assertIn("إشارات MQ",self.control)
+        self.assertIn("غير معتمد",self.control)
+        self.assertIn("استجابة إشارات MQ (بحثية فقط)",self.measurements)
+        self.assertIn("boolean gasNormal=false;",self.measurements)
+        self.assertIn("بلا تغير ملحوظ (غير معتمد)",self.measurements)
 
     def test_v6_android_independence_and_database(self):
         self.assertIn('VERSION="6.0"',self.release)
