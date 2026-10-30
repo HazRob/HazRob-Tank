@@ -1,0 +1,101 @@
+name: HazRob Tank V6 six ORIGINAL Android PDF types QA (non-release)
+on:
+  push:
+    branches: [qa/v6-original-pdf-fixtures-20261030]
+    paths:
+      - 'research/chemcore_v6/tests/android/V6AllOriginalPdfFixtureActivity.java'
+      - 'research/chemcore_v6/tests/android/run_v6_all_original_pdf_qa.sh'
+      - '.github/workflows/v6-original-pdf-fixtures-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  run-real-android-pdf-exporters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay unchanged production V6 generators; inject QA-only activities
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          cp tank/research/chemcore_v6/tests/android/V6AllOriginalPdfFixtureActivity.java source/app/src/main/java/com/servoc/app/report/
+          cp tank/research/chemcore_v6/tests/android/V6ApprovedFieldE2EFixtureActivity.java source/app/src/main/java/com/servoc/app/report/
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("source/app/src/main/AndroidManifest.xml")
+          s=p.read_text()
+          marker='<activity android:name=".MainActivity" android:exported="false"/>'
+          assert marker in s
+          inject=('<activity android:name=".report.V6AllOriginalPdfFixtureActivity" android:exported="true"/>\n        '
+                  '<activity android:name=".report.V6ApprovedFieldE2EFixtureActivity" android:exported="true"/>\n        ')
+          p.write_text(s.replace(marker,inject+marker))
+          test=Path("source/app/src/main/java/com/servoc/app/report/V6ApprovedFieldE2EFixtureActivity.java")
+          source=test.read_text()
+          needle='require(pdf.size()>5500,"full PDF bytes written by approved session facade");'
+          assert needle in source
+          add=('ByteArrayOutputStream sitePdf=new ByteArrayOutputStream();\n'
+               '            SiteSummaryReportExporter.writePdf(sitePdf,db,"SITE-N06E");\n'
+               '            try(FileOutputStream out=new FileOutputStream(new File(getFilesDir(),"v6_qa_site.pdf"))){\n'
+               '                out.write(sitePdf.toByteArray());\n'
+               '            }\n'
+               '            require(sitePdf.size()>4000,"real production site report produced");\n'
+               '            ')
+          test.write_text(source.replace(needle,add+needle))
+          print("Original production sources untouched; only E2E fixture copy patched to test site writer")
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Disposable emulator only signing
+        shell: bash
+        run: |
+          mkdir -p source/signing
+          keytool -genkeypair -alias hazrob-prototype -keystore source/signing/hazrob-prototype.jks -storepass hazrob-prototype -keypass hazrob-prototype -keyalg RSA -keysize 2048 -validity 1 -dname "CN=V6 PDF QA ONLY, OU=Disposable, O=HazRob" -noprompt
+      - name: Build temporary TEST DEBUG Android APK
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Enable KVM
+        run: |
+          if test -c /dev/kvm; then sudo chmod a+rw /dev/kvm; fi
+      - name: Execute six ACTUAL Android production PDF writers and retrieve PDFs
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
+          script: bash tank/research/chemcore_v6/tests/android/run_v6_all_original_pdf_qa.sh
+      - name: Inspect PDF page counts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for p in /tmp/v6-full-original-reports/*.pdf; do pdfinfo "$p" | grep Pages; done
+      - name: Upload individual PDF types; original Android producer only
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V6-Six-Original-PDF-Reports-QA
+          path: /tmp/v6-full-original-reports/
+          if-no-files-found: error
+          retention-days: 14
