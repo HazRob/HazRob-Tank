@@ -36,6 +36,7 @@ import com.servoc.app.calibration.ManualR0Calibration;
 import com.servoc.app.calibration.FieldR0Baseline;
 import com.servoc.app.calibration.SqliteCalibrationProvider;
 import com.servoc.app.chemical.ChemicalRepository;
+import com.servoc.app.chemical.GhsPictograms;
 import com.servoc.app.chemical.TankChemicalEvidence;
 import com.servoc.app.chemical.TankChemicalCapabilityReport;
 import com.servoc.app.chemcore.ChemCoreAnalysisPresenter;
@@ -93,6 +94,7 @@ public final class MeasurementsTab {
     private TextView chemicalCount;
     private ArrayAdapter<String> chemicalAdapter;
     private final List<ChemicalRepository.Chemical> visibleChemicals=new java.util.ArrayList<>();
+    private final java.util.Map<Long,java.util.List<String>> ghsByChemical=new java.util.HashMap<>();
     private Spinner familySpinner;
     private Spinner sortSpinner;
     private EditText chemicalSearch;
@@ -103,6 +105,7 @@ public final class MeasurementsTab {
 
     public MeasurementsTab(Context c,HazRobHost host){
         this.c=c;this.host=host;
+        GhsPictograms.bindContext(c);
         root=UiKit.vbox(c);root.setBackgroundColor(BG);
         root.setPadding(UiKit.dp(c,5),UiKit.dp(c,5),UiKit.dp(c,5),UiKit.dp(c,5));
         LinearLayout bar=UiKit.hbox(c);
@@ -182,6 +185,18 @@ public final class MeasurementsTab {
         host.preferences().edit().putInt("tracking_uid_semantics_version",12).apply();
     }
 
+
+    /** Material classification icons; NOT a detection / alarm badge. */
+    private View ghsDetailTitle(ChemicalRepository.Chemical chemical,String title){
+        LinearLayout row=UiKit.hbox(c);
+        row.setPadding(UiKit.dp(c,14),UiKit.dp(c,10),UiKit.dp(c,10),UiKit.dp(c,6));
+        android.widget.TextView label=UiKit.title(c,title);
+        label.setTextColor(Color.BLACK);
+        row.addView(label,new LinearLayout.LayoutParams(0,-2,1f));
+        GhsPictograms.addImages(row,c,ghsByChemical.get(chemical.uid),38,4);
+        return row;
+    }
+
     private ScrollView buildSearchLanding(){
         ScrollView scroll=new ScrollView(c);
         scroll.setVerticalScrollBarEnabled(true);
@@ -228,7 +243,18 @@ public final class MeasurementsTab {
         content.addView(horizontal,UiKit.full(c));
         chemicalAdapter=new ArrayAdapter<String>(c,android.R.layout.simple_list_item_1,new java.util.ArrayList<String>()){
             @Override public View getView(int position,View reused,android.view.ViewGroup parent){
-                View row=super.getView(position,reused,parent);UiKit.ensureLightRow(row);return row;
+                View label=super.getView(position,null,parent);
+                UiKit.ensureLightRow(label);
+                LinearLayout wrapper=new LinearLayout(c);
+                wrapper.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                wrapper.setBackgroundColor(Color.WHITE);
+                wrapper.addView(label,new LinearLayout.LayoutParams(0,-2,1f));
+                if(position>=0&&position<visibleChemicals.size()){
+                    ChemicalRepository.Chemical chemical=visibleChemicals.get(position);
+                    java.util.List<String> icons=ghsByChemical.get(chemical.uid);
+                    GhsPictograms.addImages(wrapper,c,icons,26,4);
+                }
+                return wrapper;
             }
         };
         chemicalRows.setAdapter(chemicalAdapter);
@@ -249,7 +275,7 @@ public final class MeasurementsTab {
                     return;
                 }
                 scroll.post(()->{
-                    new AlertDialog.Builder(c).setTitle(label)
+                    new AlertDialog.Builder(c).setCustomTitle(ghsDetailTitle(chemical,label))
                         .setMessage("CAS: "+(chemical.cas==null?"—":chemical.cas)+
                             "\nالفئة: "+(chemical.chemicalClass==null?"—":chemical.chemicalClass)+
                             "\nالاسم: "+chemical.name+
@@ -306,6 +332,8 @@ public final class MeasurementsTab {
         try{
             ChemicalRepository repo=new ChemicalRepository(host.database());
             List<ChemicalRepository.Chemical> results=repo.search(query,5000);
+            ghsByChemical.clear();
+            ghsByChemical.putAll(GhsPictograms.allQualified(host.database()));
             visibleChemicals.clear();
             java.util.ArrayList<String> labels=new java.util.ArrayList<>();
             for(ChemicalRepository.Chemical chemical:results){
@@ -912,7 +940,12 @@ public final class MeasurementsTab {
                             "\nهذا الاختيار ليس إثباتًا لوجود الغاز");
                         startTracking.setEnabled(true);
                     });
-                    candidateList.addView(row,UiKit.full(c));
+                    LinearLayout resultRow=UiKit.hbox(c);
+                    resultRow.addView(row,new LinearLayout.LayoutParams(0,-2,1f));
+                    java.util.List<String> codes=GhsPictograms.fromJson(
+                        q.optJSONArray("ghs_pictograms"));
+                    GhsPictograms.addImages(resultRow,c,codes,38,3);
+                    candidateList.addView(resultRow,UiKit.full(c));
                 }
                 if(count>12)candidateList.addView(
                     card("توجد "+(count-12)+" مواد إضافية في مرشحي البحث"),
