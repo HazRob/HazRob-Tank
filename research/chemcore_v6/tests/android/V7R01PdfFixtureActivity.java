@@ -72,6 +72,45 @@ public final class V7R01PdfFixtureActivity extends Activity {
         x.put("r0_source","CI_TEST_FIXTURE_NOT_DEVICE_CALIBRATION");
         return x;
     }
+    /** Verify unlimited pagination and full source row preservation. */
+    private void exerciseV7FlexiblePagination()throws Exception {
+        List<V7ReportPagePlanner.Item> rows=new ArrayList<>();
+        for(int i=0;i<18;i++)
+            rows.add(new V7ReportPagePlanner.Item("fruit-family-"+i,38f));
+        V7ReportPagePlanner.Section section=
+            new V7ReportPagePlanner.Section("all-18-fruit-options",30f,rows);
+        List<V7ReportPagePlanner.Page> pages=V7ReportPagePlanner.plan(
+            100f,500f,Collections.singletonList(section));
+        if(pages.size()!=2)
+            throw new IllegalStateException("R05 dynamic pages != 2: "+pages.size());
+        int rowCount=0,headingCount=0;
+        for(V7ReportPagePlanner.Page page:pages)
+            for(V7ReportPagePlanner.Element item:page.elements){
+                if(item.sectionHeader)headingCount++;
+                else rowCount++;
+            }
+        if(rowCount!=18 || headingCount!=2)
+            throw new IllegalStateException("source rows dropped: "+rowCount);
+        rows.clear();
+        for(int i=0;i<45;i++)
+            rows.add(new V7ReportPagePlanner.Item("arbitrary-extra-"+i,38f));
+        List<V7ReportPagePlanner.Page> grown=V7ReportPagePlanner.plan(
+            100f,500f,Collections.singletonList(
+                new V7ReportPagePlanner.Section("arbitrary-extra-table",30f,rows)));
+        if(grown.size()<=pages.size())
+            throw new IllegalStateException("page planner uses a fixed cap");
+        int largeRows=0;
+        for(V7ReportPagePlanner.Page page:grown)
+            for(V7ReportPagePlanner.Element item:page.elements)
+                if(!item.sectionHeader)largeRows++;
+        if(largeRows!=45)throw new IllegalStateException("overflow rows truncated");
+        status.put("v7_dynamic_pagination",
+            new JSONObject().put("R05_18_rows_pages",pages.size())
+                .put("R05_18_rows_preserved",rowCount)
+                .put("stress_45_rows_pages",grown.size())
+                .put("stress_45_rows_preserved",largeRows));
+    }
+
     /** Explicitly blank, nonclinical design fixture: exercises V7 shared kit in Android Skia. */
     private void exerciseV7BlankLayoutKit()throws Exception {
         PdfDocument pdf=new PdfDocument();
@@ -136,6 +175,7 @@ public final class V7R01PdfFixtureActivity extends Activity {
             throw new IllegalStateException("Not V6 production scientific boundary");
         ByteArrayOutputStream bytes=new ByteArrayOutputStream();
         TankInstantReportPdf.write(bytes,telemetry,actual,"CI-DEMO-V6-ONE-SHOT",1793376000000L);
+        exerciseV7FlexiblePagination();
         exerciseV7BlankLayoutKit();
         store("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf",bytes);
         verify("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf");
