@@ -22,6 +22,7 @@ class V6OperatorReleaseContract(unittest.TestCase):
         cls.fwapi=(FW/"ESP32-Tank.ino").read_text()
         cls.gateway=(ANDROID/"auth/TankFirmwareCompatibility.java").read_text()
         cls.release=(ANDROID/"ReleaseAudit.java").read_text()
+        cls.lab=(ANDROID/"ui/ChemCoreAnalysisTab.java").read_text()
         cls.control=(ANDROID/"ui/ControlTab.java").read_text()
         cls.measurements=(ANDROID/"ui/MeasurementsTab.java").read_text()
 
@@ -61,6 +62,16 @@ class V6OperatorReleaseContract(unittest.TestCase):
         self.assertIn("استجابة إشارات MQ (بحثية فقط)",self.measurements)
         self.assertIn("boolean gasNormal=false;",self.measurements)
         self.assertIn("بلا تغير ملحوظ (غير معتمد)",self.measurements)
+
+    def test_laboratory_uses_v6_source_engine_not_old_v5_gas_inference(self):
+        self.assertNotIn("ChemCoreInferenceEngine.analyze(",self.lab)
+        self.assertNotIn("TankStableRuntimeCatalog.responseModels(",self.lab)
+        self.assertIn("ChemCoreTankV6.analyze(",self.lab)
+        self.assertIn("v6_session_research",self.lab)
+        self.assertIn('labEvidence.put("gas_alarm_authorized",false)',self.lab)
+        self.assertIn('labEvidence.put("quantitative_ppm_reportable",false)',self.lab)
+        self.assertIn('labEvidence.put("qualified_gas_identity",false)',self.lab)
+        self.assertIn('analysis_version","chemcore-v6-research-only-session/1"',self.lab)
 
     def test_v6_android_independence_and_database(self):
         self.assertIn('VERSION="6.0"',self.release)
