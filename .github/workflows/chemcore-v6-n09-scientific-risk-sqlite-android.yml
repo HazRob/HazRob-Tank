@@ -1,10 +1,11 @@
-name: ChemCore V6 N09 unified V12 catalog and scientific hazard references Android emulator
+name: ChemCore V6 N09 unified V13 hazard and ChemCore catalog and scientific hazard references Android emulator
 on:
   push:
     branches: [feature/tank-v6-implementation]
     paths:
       - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
       - 'android/app/src/main/java/com/servoc/app/data/ChemicalHazardSeedV11.java'
+      - 'android/app/src/main/java/com/servoc/app/data/ChemicalHazardEvidenceSeedV13.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalSeedBootstrap.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/TankExposureReferenceCatalog.java'
@@ -29,7 +30,7 @@ jobs:
           token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
           persist-credentials: false
           path: source
-      - name: Overlay Tank V12 unified catalog and temporary database fixture
+      - name: Overlay Tank V13 unified catalog and temporary database fixture
         run: |
           set -euo pipefail
           cp -a tank/android/app/src/main/java/. source/app/src/main/java/
@@ -57,7 +58,7 @@ jobs:
           keytool -genkeypair -alias hazrob-prototype -keystore source/signing/hazrob-prototype.jks \
             -storepass hazrob-prototype -keypass hazrob-prototype -keyalg RSA -keysize 2048 \
             -validity 1 -dname "CN=N09 SQLITE CI ONLY, OU=NOT FOR RELEASE, O=HazRob" -noprompt
-      - name: Build disposable emulator app with V12 seed
+      - name: Build disposable emulator app with V13 seed
         working-directory: source
         run: gradle --no-daemon :app:assembleDebug
       - run: if test -c /dev/kvm; then sudo chmod a+rw /dev/kvm; fi
@@ -73,6 +74,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: ChemCore-V6-V11-Actual-Chemical-Exposure-Reference-Inventory
+          name: ChemCore-V6-V13-Actual-Chemical-Exposure-Reference-Inventory
           path: /tmp/v6-n09-scientific-risk/
           retention-days: 30
