@@ -77,13 +77,16 @@ public final class TankV6TelemetryAdapter {
         double r0=sensor.optDouble("r0",Double.NaN);
         if(!positive(rs)||!positive(r0))return false;
         String source=sensor.optString("r0_source","");
-        boolean sourceEligible="manual_device_r0".equals(source)||
-            "automatic_clean_air_field_r0".equals(source)||
-            "firmware_clean_air_r0".equals(source);
+        // User-entered manual R0 is a numeric override, not evidence that
+        // it was actually measured in clean air on this sensor.
+        boolean sourceEligible="automatic_clean_air_field_r0".equals(source)||
+            "firmware_clean_air_r0".equals(source)||
+            ("manual_device_r0".equals(source)&&
+             sensor.optBoolean("r0_clean_air_reference_independently_verified",false));
         if(!sourceEligible)return false;
         // Firmware variants must have their independent sampling evidence.
         if("firmware_clean_air_r0".equals(source)&&
-            sensor.has("r0_samples")&&sensor.optInt("r0_samples",0)<10)
+            sensor.optInt("r0_samples",0)<10)
             return false;
         boolean complete=sensor.optBoolean("r0_provenance_complete",false)||
             (!sensor.optString("r0_session","").isEmpty()&&
