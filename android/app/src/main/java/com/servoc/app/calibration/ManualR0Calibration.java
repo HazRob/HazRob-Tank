@@ -27,17 +27,23 @@ public final class ManualR0Calibration {
                 try{
                     double v=Double.parseDouble(s);
                     if(Double.isFinite(v)&&v>0){
-                        values.put(k,v);sources.put(k,p.getString("manual_r0_source_"+k,"manual_device_r0"));
+                        String source=p.getString("manual_r0_source_"+k,"manual_device_r0");
+                        values.put(k,v);sources.put(k,source);
                         String session=p.getString("manual_r0_session_"+k,"");if(!session.isEmpty())sessions.put(k,session);
                         String utc=p.getString("manual_r0_utc_"+k,"");if(!utc.isEmpty())utcs.put(k,utc);
                         String device=p.getString("manual_r0_device_"+k,"");if(!device.isEmpty())deviceIds.put(k,device);
-                        try{int n=Integer.parseInt(p.getString("manual_r0_samples_"+k,"0"));if(n>0)sampleCounts.put(k,n);}catch(NumberFormatException ignored){}
-                        String definition=p.getString("manual_r0_definition_"+k,"");
-                        if(!definition.isEmpty())r0Definitions.put(k,definition);
-                        try{
-                            int w=Integer.parseInt(p.getString("manual_r0_windows_"+k,"0"));
-                            if(w>0)r0WindowCounts.put(k,w);
-                        }catch(NumberFormatException ignored){}
+                        // On upgrade, ignore stale firmware metadata left in preferences
+                        // by older manual-entry code. Only a firmware-origin revision
+                        // may attest ESP32 sample counts, R0 definition and windows.
+                        if("firmware_clean_air_r0".equals(source)){
+                            try{int n=Integer.parseInt(p.getString("manual_r0_samples_"+k,"0"));if(n>0)sampleCounts.put(k,n);}catch(NumberFormatException ignored){}
+                            String definition=p.getString("manual_r0_definition_"+k,"");
+                            if(!definition.isEmpty())r0Definitions.put(k,definition);
+                            try{
+                                int w=Integer.parseInt(p.getString("manual_r0_windows_"+k,"0"));
+                                if(w>0)r0WindowCounts.put(k,w);
+                            }catch(NumberFormatException ignored){}
+                        }
                     }
                 }catch(Exception ignored){}
             }
