@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 declared session/batch/device cross-group overlap audit (451/451 CI)
+
+- Resumed from research HEAD `aeb7c0baeeca684d49caa24a2a1871cd7bc7b0d8`, 11/11 previous GitHub Actions successful. Central pinned 80 techniques and 14 source slots unchanged; independent physical evidence still `records=[]`.
+- New research-only `g2_declared_provenance_overlap_audit.py` audits optional `session_id`, `exposure_batch_id`, and `device_id` across declared `group_id` values in CSV. It reports deterministic cross-group identifier overlaps, a row-order-invariant full-row semantic SHA256, and explicit null/unverified when session/batch provenance is incomplete. Device reuse is **not** automatically leakage; same session/batch spanning groups requires independent protocol review, not automatic rejection.
+- Added eight synthetic tests `test_g2_declared_provenance_overlap_audit.py`; local **8/8 PASS**. On implementation commit `9d8c170c4e3d7f3a49277b61665c36c8b0db2d17`, G2 [Actions run 41025818714](https://github.com/HazRob/HazRob-Tank/actions/runs/41025818714), job `123963558299`, **451/451 PASS**, deterministic G2 audit/triage replay PASS, publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Artifact `12963666738`, SHA256 `d503067f6835cff5afe9c36cb1e03efa8173cdb623c0a4ab9001a0ef787ee3e8`.
+- Arabic scientific note: `G2_DECLARED_SESSION_BATCH_DEVICE_OVERLAP_2026-10-30_AR.md`, documentation commit `3d4b39d45061570a2a215ba75793b7331dda131e`. At last check, remaining non-G2 batch workflows for implementation/documentation commits were queued/in progress, without observed failures; recheck final HEAD CI.
+- All changes restricted to `research/implementation_execution/` on research branch; no ChemCore Stable, Android, firmware, or main modifications. This diagnostic is NOT authenticated source provenance, physical independence, ppm calibration, G2 or G3 approval.
+- Next: obtain authenticated physical exposure/sample/session/device IDs, independently calibrated concentration references, preregistered blinded physically grouped holdouts; only then run empirical G2 qualification. Source-ready 0/14 and G2 qualified 0/80 remain unchanged.
+
+---
+
 ## 2026-10-30 — G2 declared physical sample ID / true-class ambiguity audit (443/443 CI)
 
 - Resumed from `953e7650403b5c8dffddbc99e7148edcc0e217af`, whose prior 438-test G2 run and associated CI succeeded. Existing 80-technique G2 gate and 14 external-source slots remain pinned.
