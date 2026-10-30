@@ -181,8 +181,14 @@ public final class V7R01PdfFixtureActivity extends Activity {
         verify("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf");
         bytes=new ByteArrayOutputStream();
         TankPhysicalSnapshotPdf.write(bytes,telemetry,"2026-10-30 20:45:00 UTC");
-        store("02_V6_Physical_Snapshot_Original.pdf",bytes);
-        verify("02_V6_Physical_Snapshot_Original.pdf");
+        store("V7_R02_Actual_Android_Report.pdf",bytes);
+        int physicalPages=verify("V7_R02_Actual_Android_Report.pdf");
+        if(physicalPages<2)throw new IllegalStateException(
+            "V7 physical report must paginate complete 15-MQ-independent indicators");
+        status.put("v7_r02",new JSONObject()
+            .put("pages",physicalPages)
+            .put("indicators_expected",15)
+            .put("snapshot","EXPLICIT_SYNTHETIC_TEST_FIXTURE_NOT_TANK_MEASUREMENT"));
 
         // Fruit values are an illustrative copy of one published source pattern multiplied
         // by a common gain. They are NOT a real Tank observation.
