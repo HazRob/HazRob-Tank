@@ -11,7 +11,7 @@ import unicodedata
 from collections import defaultdict
 from pathlib import Path
 
-from g2_declared_provenance_overlap_audit import audit_declared_overlap
+from g2_declared_provenance_overlap_audit import audit_declared_overlap, _valid_id
 
 PARTITIONS = frozenset(('train', 'validation', 'test'))
 KEYS = ('group_id', 'session_id', 'exposure_batch_id',
@@ -34,6 +34,19 @@ def audit_declared_holdout(rows, columns):
            for c in columns):
         raise ValueError('G2_HOLDOUT_PARTITION_HEADER_ALIAS')
     base = audit_declared_overlap(rows, columns)
+    # Optional physical IDs are evidence-bearing: reject empty and
+    # compatibility-equivalent aliases instead of silently conflating them.
+    for field in ('exposure_id', 'physical_sample_id'):
+        if field in columns:
+            folded_ids = {}
+            for row in rows:
+                value = row[field]
+                if not _valid_id(value):
+                    raise ValueError('G2_HOLDOUT_OPTIONAL_ID_INVALID:' + field)
+                folded = unicodedata.normalize('NFKC', value)
+                if folded in folded_ids and folded_ids[folded] != value:
+                    raise ValueError('G2_HOLDOUT_OPTIONAL_ID_ALIAS_NFKC:' + field)
+                folded_ids[folded] = value
     out = {
         'schema': 'hazrob.g2.declared-holdout-partition.v1',
         'checked': False,
