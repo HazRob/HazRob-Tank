@@ -1,4 +1,4 @@
-name: HazRob Tank V7 R01+R02 Android PDF QA (non-release)
+name: HazRob Tank V7 R01+R02+R03 Geometry Android PDF QA (non-release)
 on:
   push:
     branches: [feature/tank-v7-reports]
@@ -11,6 +11,7 @@ on:
       - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/V7BeefResearchPdfWriter.java'
       - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchPdf.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalIcons.java'
+      - 'android/app/src/main/java/com/servoc/app/report/V7FieldChartLayout.java'
       - 'android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java'
       - 'android/app/src/main/res/drawable/hazrob_official_report_mark.xml'
       - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
@@ -192,6 +193,33 @@ jobs:
                          'study_confusion':'Published external TS5 source-derived, NOT Tank TVC',
                          'input':'Explicit synthetic CI fixture, not physical meat sample'}
           (p.parent/'r06_manifest.json').write_text(json.dumps(beef_manifest,indent=2))
+          r03path=p.parent/'V7_R03_Blank_Layout_Actual_Android.pdf'
+          assert r03path.is_file() and r03path.stat().st_size>4000
+          r03=fitz.open(r03path)
+          assert len(r03)==3,('R03 native layout page count',len(r03))
+          all_r03=' '.join(pg.get_text() for pg in r03)
+          for token in ['R0/Rs','3D/4D','PPM','Candidate']:
+              assert token in all_r03,('R03 geometry missing',token)
+          r03pages=[]
+          for i,page in enumerate(r03):
+              assert abs(page.rect.width-842)<1 and abs(page.rect.height-595)<1
+              spans=[sp for block in page.get_text('dict')['blocks'] if 'lines' in block
+                     for line in block['lines'] for sp in line['spans']
+                     if sp.get('text','').strip()]
+              assert spans
+              minpt=min(sp['size'] for sp in spans)
+              assert minpt>=11.5,('R03 chart label font too small',i,minpt)
+              page.get_pixmap(matrix=fitz.Matrix(1.6,1.6),alpha=False).save(
+                  p.parent/f'V7_R03_Layout_Page_{i+1:02d}.png')
+              r03pages.append({'page':i+1,'min_font_pt':minpt})
+          (p.parent/'r03_geometry_qa.json').write_text(json.dumps({
+              'stage':'geometry-only, NOT production R03',
+              'pages':r03pages,
+              'sha256':hashlib.sha256(r03path.read_bytes()).hexdigest(),
+              'forms':'four equal 2x2 chart slots, dedicated 3D/4D/compensation, PPM blank micro slot',
+              'data':'none',
+              'scientific_claim':'no chemical identity, ppm, or sensor measurement'
+          },indent=2))
           status=json.loads((p.parent/'status.json').read_text())
           assert status['scientific_status']=='UNKNOWN_G3_ZERO_NO_CERTIFIED_PPM'
           manifest={'format':'hazrob-v7-r01-original-android-pdf-qa/1','pages':data,
@@ -204,7 +232,7 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: HazRob-Tank-V7-R01-R02-Original-Android-PDF-QA
+          name: HazRob-Tank-V7-R01-R02-R03-Geometry-Android-PDF-QA
           path: /tmp/v7-r01-pdf/
           if-no-files-found: error
           retention-days: 30
