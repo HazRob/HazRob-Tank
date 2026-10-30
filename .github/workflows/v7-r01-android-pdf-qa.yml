@@ -1,4 +1,4 @@
-name: HazRob Tank V7 R01 ORIGINAL Android PDF QA (non-release)
+name: HazRob Tank V7 R01+R02 Android PDF QA (non-release)
 on:
   push:
     branches: [feature/tank-v7-reports]
@@ -7,6 +7,8 @@ on:
       - 'android/app/src/main/java/com/servoc/app/report/TankInstantV7PdfWriter.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7ReportLayoutKit.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7ReportPagePlanner.java'
+      - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java'
+      - 'android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java'
       - 'android/app/src/main/res/drawable/hazrob_official_report_mark.xml'
       - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
       - 'research/chemcore_v6/tests/android/V7R01PdfFixtureActivity.java'
@@ -124,6 +126,39 @@ jobs:
                      if 'lines' in block for line in block['lines']
                      for sp in line['spans'] if sp.get('text','').strip())}
           (p.parent/'blank_layout_kit_qa.json').write_text(json.dumps(kit_qa,indent=2))
+          r02file=p.parent/'V7_R02_Actual_Android_Report.pdf'
+          assert r02file.is_file() and r02file.stat().st_size>5000
+          physical=fitz.open(r02file)
+          assert len(physical)>=2,('dynamic-page count',len(physical))
+          fulltext=' '.join(page.get_text().replace('\\n',' ').split() for page in physical)
+          expected=['Temperature','Humidity','Pressure','Illuminance',
+                    'Luminous Flux','Noise','Vibration','Ionizing Radiation',
+                    'UV Index','PM1','PM2.5','PM10','Wind Speed',
+                    'Wind Direction','Altitude']
+          for name in expected:
+              assert name in fulltext,('R02 missing indicator',name)
+          r02_pages=[]
+          for i,page in enumerate(physical):
+              assert abs(page.rect.width-595)<1 and abs(page.rect.height-842)<1
+              spans=[sp for block in page.get_text('dict')['blocks'] if 'lines' in block
+                     for line in block['lines'] for sp in line['spans'] if sp.get('text','').strip()]
+              assert spans,('R02 blank page',i)
+              minpt=min(sp['size'] for sp in spans)
+              assert minpt>=11.5,('R02 text smaller than 12pt',i,minpt)
+              pix=page.get_pixmap(matrix=fitz.Matrix(1.5,1.5),alpha=False)
+              dest=p.parent/f'V7_R02_Page_{i+1:02d}.png'
+              pix.save(dest)
+              r02_pages.append({'page':i+1,'min_font_pt':minpt,'image':dest.name})
+          # Data is a synthetic QA fixture. No PM measurements or altitude
+          # are part of its frozen source, and PDF may not manufacture them.
+          assert fulltext.count('-')>=8,('R02 absent inputs not preserved')
+          r02manifest={'format':'hazrob-v7-r02-original-android-pdf-qa/1',
+                       'pages':r02_pages,'indicators_found':expected,
+                       'sha256':hashlib.sha256(r02file.read_bytes()).hexdigest(),
+                       'source':'Production TankPhysicalSnapshotPdf adapter + V7PhysicalReportPdfWriter',
+                       'data':'Synthetic test fixture; not a Tank exposure assessment',
+                       'scientific_claim':'No recalculated altitude, heat, PM or exposure limits'}
+          (p.parent/'r02_manifest.json').write_text(json.dumps(r02manifest,indent=2))
           status=json.loads((p.parent/'status.json').read_text())
           assert status['scientific_status']=='UNKNOWN_G3_ZERO_NO_CERTIFIED_PPM'
           manifest={'format':'hazrob-v7-r01-original-android-pdf-qa/1','pages':data,
@@ -136,7 +171,7 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: HazRob-Tank-V7-R01-Original-Android-PDF-QA
+          name: HazRob-Tank-V7-R01-R02-Original-Android-PDF-QA
           path: /tmp/v7-r01-pdf/
           if-no-files-found: error
           retention-days: 30
