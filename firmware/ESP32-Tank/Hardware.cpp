@@ -319,31 +319,70 @@ bool saveR0Record(const R0Record& rec){
 }
 
 void calibrationUpdate(){
- if(calState!=CAL_WARM&&calState!=CAL_SAMPLE)return;
+ if(calState!=CAL_WARM&&calState!=CAL_SAMPLE&&calState!=CAL_REST)return;
  if(!mqPowerOn){calState=CAL_ERROR;calError="power_off";return;}
  uint32_t now=millis();
- if(calState==CAL_WARM){if(now-calAt>=calWarmMs&&mqPowerMs()>=calWarmMs){calState=CAL_SAMPLE;calAt=now;calLastCycle=mqScanCycle;}return;}
+ if(calState==CAL_WARM){
+  if(now-calAt>=calWarmMs&&mqPowerMs()>=calWarmMs){
+   calState=CAL_SAMPLE;calAt=now;calLastCycle=mqScanCycle;
+  }
+  return;
+ }
+ if(calState==CAL_REST){
+  // MQ heaters stay powered; the rest interval is NOT a relay-off period.
+  if(now-calAt>=CAL_V6_REST_MS){
+   calState=CAL_SAMPLE;calAt=now;calLastCycle=mqScanCycle;
+  }
+  return;
+ }
  if(now-calAt<calWindowMs&&mqScanCycle!=calLastCycle&&mqIndex==0){
   calLastCycle=mqScanCycle;
   for(uint8_t i=0;i<Cfg::MQ_N;i++){
-   if(!mq[i].ok||mq[i].scanCycle!=mqScanCycle||!ff(mq[i].rs)||mq[i].rs<=0)continue;
+   if(!mq[i].ok||mq[i].scanCycle!=mqScanCycle||
+      !ff(mq[i].rs)||mq[i].rs<=0)continue;
    if(calCount[i]<UINT32_MAX){calSum[i]+=mq[i].rs;calCount[i]++;}
+   if(calV6ThreeWindow&&calV6Window<3&&
+      calV6Counts[i][calV6Window]<UINT32_MAX){
+    calV6Sums[i][calV6Window]+=mq[i].rs;
+    calV6Counts[i][calV6Window]++;
+   }
   }
  }
  if(now-calAt<calWindowMs)return;
- R0Record rec={};rec.magic=R0_MAGIC;
+ if(calV6ThreeWindow&&calV6Window<2){
+  calV6Window++;calState=CAL_REST;calAt=now;return;
+ }
+ R0Record rec={};rec.magic=calV6ThreeWindow?R0_MAGIC_V6:R0_MAGIC;
  bool complete=true;
  for(uint8_t i=0;i<Cfg::MQ_N;i++){
-  if(calCount[i]<10||!cleanAir[i]||!adsOK(Cfg::mq[i].ads)){complete=false;break;}
-  float v=(float)(calSum[i]/calCount[i]/cleanAir[i]);
-  if(!ff(v)||v<=0){complete=false;break;}
-  rec.values[i]=v;rec.counts[i]=calCount[i];
+  if(!adsOK(Cfg::mq[i].ads)){complete=false;break;}
+  float value=NAN;
+  if(calV6ThreeWindow){
+   double windowMeans=0;
+   for(uint8_t window=0;window<3;window++){
+    if(calV6Counts[i][window]<10){
+     complete=false;break;
+    }
+    windowMeans+=calV6Sums[i][window]/
+        (double)calV6Counts[i][window];
+   }
+   if(!complete)break;
+   // This NEW R0 equals the average CLEAN-AIR SENSOR RESISTANCE;
+   // NEVER divide by legacy graph-factor `cleanAir[i]`.
+   value=(float)(windowMeans/3.0);
+  }else{
+   // Legacy one-window V5: still supported only to preserve old clients.
+   // This value is a source-scaled reference, NOT clean-air Rs mean.
+   if(calCount[i]<10||!cleanAir[i]){complete=false;break;}
+   value=(float)(calSum[i]/calCount[i]/cleanAir[i]);
+  }
+  if(!ff(value)||value<=0){complete=false;break;}
+  rec.values[i]=value;rec.counts[i]=calCount[i];
  }
  if(!complete){calState=CAL_ERROR;calError="insufficient_or_invalid_samples";return;}
  rec.checksum=r0Checksum(rec);
- // V5: calculations stay in volatile RAM until the user approves.
- pendingR0=rec;pendingR0Valid=true;
- calState=CAL_PENDING;
+ // Pending result remains in RAM until explicit operator approval.
+ pendingR0=rec;pendingR0Valid=true;calState=CAL_PENDING;
 }
 
 /* link health: diagnostic only; it never changes drive, measurement or MQ power */
@@ -366,8 +405,8 @@ void hwBegin(){loadSettings();Alerts::begin();pinMode(Cfg::RELAY_MQ,OUTPUT);rela
 void hwUpdate(){driveUpdate();energyUpdate();adsHealthUpdate();mqUpdate();calibrationUpdate();envUpdate();soundUpdate();ldrUpdate();batteryUpdate();ultraUpdate();measureUpdate();Alerts::update();}
 void driveSet(int l,int r){if(transportLost){motionStopImmediate();staleStop=true;return;}targetL=lim(l);targetR=lim(r);cmdAt=millis();staleStop=false;}
 void motionStop(){motionStopInternal();}void emergencyStop(){motionStopImmediate();resetMeasurement();calibrationCancel();relayRaw(false);Alerts::emergencyStop();}
-bool relaySetMask(uint8_t on){if(on>1)return false;if(!on&&(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_PENDING))calibrationCancel();if(stage==MEASURE||stage==WARM)resetMeasurement();relayRaw(on);return true;}void sensorPowerOff(){resetMeasurement();calibrationCancel();relayRaw(false);}
-bool measureStart(){if(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_PENDING)return false;clearSums();measureError=ME_NONE;measureElapsedSec=0;measurePower=mqPowerOn;stageAt=sampleAt=millis();if(!measurePower){measureError=ME_POWER_OFF;stage=ERROR;return false;}if(!ads1ok&&!ads2ok){measureError=ME_ADS_MISSING;stage=ERROR;return false;}stage=MEASURE;return true;}void measureCancel(){resetMeasurement();Alerts::setGas(0);}
+bool relaySetMask(uint8_t on){if(on>1)return false;if(!on&&(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_REST||calState==CAL_PENDING))calibrationCancel();if(stage==MEASURE||stage==WARM)resetMeasurement();relayRaw(on);return true;}void sensorPowerOff(){resetMeasurement();calibrationCancel();relayRaw(false);}
+bool measureStart(){if(calState==CAL_WARM||calState==CAL_SAMPLE||calState==CAL_REST||calState==CAL_PENDING)return false;clearSums();measureError=ME_NONE;measureElapsedSec=0;measurePower=mqPowerOn;stageAt=sampleAt=millis();if(!measurePower){measureError=ME_POWER_OFF;stage=ERROR;return false;}if(!ads1ok&&!ads2ok){measureError=ME_ADS_MISSING;stage=ERROR;return false;}stage=MEASURE;return true;}void measureCancel(){resetMeasurement();Alerts::setGas(0);}
 bool alertSet(uint8_t s,uint32_t ttl){if(s>2)return false;Alerts::setGas(s,ttl);return true;}void alertTest(){Alerts::test();}
 void linkHeartbeat(){linkArmed=true;linkAt=millis();transportLost=false;Alerts::setLink(false);}void transportLinkState(bool lost){if(lost&&linkArmed){if(!transportLost){transportLost=true;motionStopImmediate();staleStop=true;}}else if(!lost)transportLost=false;}
 void linkSetArmed(bool a){if(!a){motionStopImmediate();staleStop=true;}linkArmed=a;linkAt=a?millis():0;Alerts::setLink(false);}
