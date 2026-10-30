@@ -56,3 +56,10 @@
 ## الاستئناف
 
 راجع `docs/implementation/V6-ANDROID-SOFTWARE-ACCEPTANCE.json` مع هذا الملف وملف `V6-CATALOG-ENRICHMENT-AND-RELEASE-CHECKPOINT-2026-10-30_AR.md`. لا تعتبر الاختبارات على commits أقدم دليلاً لملفات جديدة دون فحص أثر التعديلات. حالة الإصدار يجب أن تبقى `NO_RELEASE`.
+
+## تحديث توسعة المرادفات الرسمية — نقاط التحقق التاريخية 21 ثم 27
+
+- ثُبتت الدفعة الثانية بستة أسماء ترادفية رسمية: `Methanethiol ↔ Methyl mercaptan` (CAS 74-93-1)، `Ethanethiol ↔ Ethyl mercaptan` (75-08-1)، `1,2-Dichloropropane ↔ Propylene dichloride` (78-87-5)، `MEK ↔ 2-Butanone` (78-93-3)، `Diethyl Ether ↔ Ethyl ether` (60-29-7)، `R22 ↔ Chlorodifluoromethane` (75-45-6). تحققت على محاكي Android 12 في [CI 41044188586](https://github.com/HazRob/HazRob-Tank/actions/runs/41044188586) PASS: **21 علاقة/0 مرفوضة**، **692 سجلًا له CAS مباشر أو رابط**، **33 فرديًا مجهول CAS**، و9 تسميات غير مفردة.
+- أُدرجت الدفعة الثالثة ذات الستة أدلة NIOSH الأصلية: `Silane ↔ Silicon tetrahydride` (7803-62-5)، `n-Octane ↔ Octane` (111-65-9)، `n-Nonane ↔ Nonane` (111-84-2)، `Mesitylene ↔ 1,3,5-Trimethylbenzene` (108-67-8)، `MIBK ↔ Hexone` (108-10-1)، `Propyl Acetate ↔ n-Propyl acetate` (109-60-4). لها صفوف موثقة بمصدر CAS في أرشيف NIOSH الأصلي المضمن، ولا تُخترع قيم مقاومة أو إنذار. مصدر الشيفرة [commit 137d8aadd474d2f30b2710310a92afb3efe3df53](https://github.com/HazRob/HazRob-Tank/commit/137d8aadd474d2f30b2710310a92afb3efe3df53).
+- النتائج المتوقع التحقق منها في اختبار Android N09 الأخير: **27 مرادفًا، 698 CAS مباشر/مرتبط، 36 بدون CAS منها 9 فئات و27 مادة فردية**. إلى حين اكتمال [N09 CI 41044802357](https://github.com/HazRob/HazRob-Tank/actions/runs/41044802357) لا تُدرج النتيجة بوصفها قبولًا على الجهاز. اجتاز تجميع Android [41044748497](https://github.com/HazRob/HazRob-Tank/actions/runs/41044748497) وCI المصدر العلمي [41044830613](https://github.com/HazRob/HazRob-Tank/actions/runs/41044830613) بنجاح.
+- تبقى أي قضية أسماء لم تتوفر لها مرجعية CAS أصلية أو خليط حقيقي من مصدر مستقل `UNKNOWN`، مع الحفاظ على 734 UID، دون تغيير معرّفات تقارير الجلسات.
