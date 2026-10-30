@@ -13,6 +13,7 @@ if [[ "$ready" != 1 ]];then
   exit 1
 fi
 adb exec-out run-as com.servoc.app cat files/n09_scientific_risk_db.json >/tmp/v6-n09-scientific-risk/n09_scientific_risk_db.json
+adb exec-out run-as com.servoc.app cat files/n09_ghs_report.pdf >/tmp/v6-n09-scientific-risk/n09_ghs_report.pdf
 python3 - <<'PY'
 import json
 p='/tmp/v6-n09-scientific-risk/n09_scientific_risk_db.json'
@@ -26,6 +27,9 @@ assert d['unified_view_columns']>=75
 assert d['materials_with_lfl']>=50 and d['materials_with_ufl']>=50
 assert d['hazard_source_classification_rows']>=7
 assert d['chemcore_g3_techniques']==0
+assert d['bundled_ghs_vector_assets']==9
+assert d['ghs_pdf_page_count']==2
+assert d['ghs_pdf_vector_raster_red_pixels']>40
 assert d['coverage_fraction']==1
 assert d['osha_z1_rows']>=500 and d['niosh_idlh_rows']>=300
 assert d['co2_source_pel_ppm']==5000 and d['co2_early_warn_ppm']==4500
