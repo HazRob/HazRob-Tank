@@ -94,6 +94,21 @@ public final class TankChemicalCapabilityReport {
         out.append("\nالكتلة المولية: ")
             .append(chemical.molarMass==null?"غير متاحة":
                 rounded(chemical.molarMass)+" g/mol");
+        JSONArray aliases=unified.optJSONArray("source_qualified_identity_aliases");
+        if(aliases!=null&&aliases.length()>0){
+            out.append("\nعلاقات أسماء NIOSH المتكافئة (دون دمج بيانات الجلسات): ");
+            for(int i=0;i<Math.min(aliases.length(),8);i++){
+                JSONObject equivalence=aliases.optJSONObject(i);
+                if(equivalence==null)continue;
+                out.append("\n• ").append(equivalence.optString("historical_name",""))
+                    .append(" ↔ ").append(equivalence.optString("canonical_name",""))
+                    .append(" • CAS ").append(equivalence.optString("cas",""))
+                    .append(" • UID ").append(equivalence.optLong("canonical_uid",0))
+                    .append(" • مصدر ").append(equivalence.optString("source_id",""));
+            }
+            out.append("\nهذا إثبات ترادف أسماء فقط؛ لا يعيد كتابة النتائج القديمة")
+               .append(" ولا يثبت رصد غاز أو تجاوز حد تعرض.");
+        }
         out.append("\nحقائق PubChem الجزيئية ذات أصل موثق: ")
             .append(unified.optInt("molecular_identity_source_fact_count",0))
             .append(" (ليست بصمات غاز أو معايرة MQ)");
