@@ -117,12 +117,26 @@ def audit_declared_overlap(rows, columns):
 
 
 def audit_csv(path):
+    """Read exact-width CSV; never silently pad or discard provenance cells.
+
+    DictReader fills missing trailing fields with None and places surplus cells
+    under a None key. Both can hide incomplete or misaligned evidence rows.
+    """
     raw = Path(path).read_bytes()
     try:
         with io.StringIO(raw.decode('utf-8-sig'), newline='') as handle:
-            reader = csv.DictReader(handle, strict=True)
-            columns = reader.fieldnames
-            rows = list(reader)
+            reader = csv.reader(handle, strict=True)
+            columns = next(reader, None)
+            if not columns:
+                raise ValueError('G2_PROVENANCE_HEADER_INVALID')
+            rows = []
+            for record_number, values in enumerate(reader, start=2):
+                if len(values) != len(columns):
+                    raise ValueError(
+                        'G2_PROVENANCE_CSV_ROW_WIDTH_INVALID:'
+                        f'record={record_number}:expected={len(columns)}:'
+                        f'actual={len(values)}')
+                rows.append(dict(zip(columns, values)))
     except (UnicodeError, csv.Error) as exc:
         raise ValueError('G2_PROVENANCE_CSV_INVALID') from exc
     return audit_declared_overlap(rows, columns)
