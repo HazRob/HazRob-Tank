@@ -48,3 +48,8 @@
   4. الحجب عن تنبيه غاز غير مؤهل G3،
   5. سلامة عدد المواد 734 والمخطط V13.
 - تقرير الإخراج: `n09_ghs_report.pdf` مرفق بأثر CI عند نجاح الاختبار.
+
+## نتيجة تنفيذ موثقة بتاريخ 2026-10-30
+- **PASS**: [Android API31 / GHS vector + PDF actual raster integration](https://github.com/HazRob/HazRob-Tank/actions/runs/40996429712).
+- **78 assertion checks** passed; bundled vector resources = **9/9**, PDF page count = **2**, GHS actual rasterized red pixels = **656**, one-to-one chemical view = **734/734**.
+- Android source build successful. No physical robot G3 certification, no proven gas detector alarm.
