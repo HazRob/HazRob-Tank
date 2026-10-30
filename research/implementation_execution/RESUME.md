@@ -1,3 +1,13 @@
+## 2026-10-30 — G2 train/validation/test declared-identity overlap diagnostics (558/558 verified)
+
+- Resumed from research HEAD `cf1e690adc7f2b7b5c229fab4bf24d023d8d3d3e`. Independently rechecked **20/20 workflow successes** on that commit, including the G2 source/R0 gate. Central readiness matrix remains 80 catalog entries, 14 external datasets, **0/14 source-review-ready**; `G2_INDEPENDENT_EVIDENCE.json` still has `records=[]`.
+- Added tri-state `train_test_declared_identity_component_overlap`, `validation_test_declared_identity_component_overlap`, and `test_non_test_declared_identity_component_overlap` to `g2_declared_holdout_partition_audit.py`. These detect direct/transitive links through declared session, exposure batch, exposure and physical sample IDs; device reuse alone does not link groups. A detected link is true even with incomplete optional identity columns; no detected link is false only with all four identity fields and the relevant partition; otherwise null. Metadata is not authenticated physical evidence.
+- Implementation commit `410c0eb57013b341af30f1307ba397606c63f582`; ten synthetic regressions commit `8b9685db24dbb9353efbf879f5f51f6742673202`; Arabic methodology `G2_TRAIN_VALIDATION_TEST_DECLARED_IDENTITY_CONNECTIVITY_2026-10-30_AR.md` commit `4941da5f3da925e276613b996d01a7cc4c086205`.
+- **Verified G2 CI** on test commit: [run 41106367890](https://github.com/HazRob/HazRob-Tank/actions/runs/41106367890), job `124237139375`: **558/558 tests PASS**, compile PASS, full 80-technique fail-closed audit PASS, deterministic replay PASS, publication guard PASS (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`), artifact `13001930153`. Documentation-checkpoint and subsequent CI must be independently checked; no claim of complete latest-commit CI before it finishes.
+- Only research implementation/test/methodology/RESUME paths on the research branch. No ChemCore Stable, Android, firmware or main changes. No G2/G3 promotion. Authenticated independent exposures, traceable physical reference concentration, preregistered blinded holdouts, and independent scientific review remain unavailable.
+
+---
+
 ## 2026-10-30 — G2 calibration/test declared-identity connectivity (548/548 implementation CI)
 
 - Resumed from research HEAD `a2e5afa347f284515c243018a86aafb25fdbbdb2`; independently rechecked its **20/20 GitHub Actions workflow successes** (including G2 source/R0 gate). Last verified G2 offline suite was **538/538**. Central source matrix remains **0/14 source-review-ready**, independent evidence `records=[]`, and scientific G2 candidates **0/80**.
