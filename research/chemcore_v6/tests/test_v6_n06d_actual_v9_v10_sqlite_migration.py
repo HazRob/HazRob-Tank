@@ -117,6 +117,11 @@ def fixture():
         "field_session_measurements")}
     initial_counts={table:conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
                     for table in hashes}
+    export_dir=Path(__import__("os").environ.get("N06D_EVIDENCE_DIR","")).resolve() if __import__("os").environ.get("N06D_EVIDENCE_DIR") else None
+    if export_dir:
+        export_dir.mkdir(parents=True,exist_ok=True)
+        with sqlite3.connect(str(export_dir/"v9_before_approved_fixture.sqlite3")) as stored:
+            conn.backup(stored)
     return conn, hashes, initial_counts, v9, v10, backfill, java_sha
 
 class ActualV9ToV10Migrator(unittest.TestCase):
@@ -171,6 +176,15 @@ class ActualV9ToV10Migrator(unittest.TestCase):
         self.assertEqual(before,{table:digest_rows(conn,table) for table in before})
         self.assertEqual(conn.execute("PRAGMA integrity_check").fetchone()[0],"ok")
         self.assertEqual(conn.execute("PRAGMA foreign_key_check").fetchall(),[])
+        export_dir=Path(__import__("os").environ.get("N06D_EVIDENCE_DIR","")).resolve() if __import__("os").environ.get("N06D_EVIDENCE_DIR") else None
+        if export_dir:
+            with sqlite3.connect(str(export_dir/"v10_after_migration_fixture.sqlite3")) as stored:
+                conn.backup(stored)
+            for fname in ("v9_before_approved_fixture.sqlite3",
+                          "v10_after_migration_fixture.sqlite3"):
+                check=sqlite3.connect(str(export_dir/fname))
+                self.assertEqual(check.execute("PRAGMA integrity_check").fetchone()[0],"ok")
+                check.close()
         # V6 is explicitly gated from inventing G3 for legacy V9 cycles without SHA.
         v6=V6_APPENDIX.read_text(encoding="utf8")
         self.assertIn('if("LEGACY_APPROVED".equals(cycle.state))',v6)
@@ -197,7 +211,12 @@ class ActualV9ToV10Migrator(unittest.TestCase):
           "not_Android_SQLiteOpenHelper_test":True,
           "not_original_user_personal_database":True,
           "not_proof_of_physical_R0_or_gas_ppm":True,
-          "tank_g3":0
+          "tank_g3":0,
+          "verified_sqlite_files":{
+              name:hashlib.sha256((export_dir/name).read_bytes()).hexdigest()
+              for name in ("v9_before_approved_fixture.sqlite3",
+                           "v10_after_migration_fixture.sqlite3")
+          } if export_dir else None
         }
         output=Path("research/chemcore_v6/results/n06d_v9_v10_sqlite_source_migration_2026-10-30.json")
         # CI will pass an explicit output destination; never overwrite
