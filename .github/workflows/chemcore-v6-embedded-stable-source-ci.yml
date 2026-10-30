@@ -1,0 +1,97 @@
+name: ChemCore Tank V6 embedded Stable and GitHub updater source audit
+
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'tools/prepare_v6_stable_source.py'
+      - 'android/app/src/main/java/com/servoc/app/ReleaseAudit.java'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/library/**'
+      - 'android/app/src/main/java/com/servoc/app/ui/CentralLibraryDashboardTab.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
+      - 'research/chemcore_v6/tests/test_v6_stable_update_contract.py'
+      - '.github/workflows/chemcore-v6-embedded-stable-source-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stable-v6-offline-package-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout Tank V6 source
+        uses: actions/checkout@v4
+        with:
+          path: tank
+      - name: Checkout pinned Android scientific snapshot source
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Compose Android identity and read-only GitHub updater config without APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp tank/android/app/src/main/java/com/servoc/app/ReleaseAudit.java source/app/src/main/java/com/servoc/app/ReleaseAudit.java
+          cp tank/tools/prepare_v6_stable_source.py source/tools/prepare_v6_stable_source.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('source/app/build.gradle');s=p.read_text()
+          for old,new in (("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'"),
+                          ("versionName '0.10.2'","versionName '6.0'"),
+                          ("versionCode 30","versionCode 6")):
+              assert old in s, old
+              s=s.replace(old,new)
+          p.write_text(s)
+          PY
+          python3 source/tools/prepare_v6_stable_source.py source
+      - name: Construct offline Stable payload and verify true scientific provenance
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/build_hr069_embedded_stable.py --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          root=Path('app/build/generated/hazrobAssets/generated/chemcore/embedded_stable')
+          manifest=json.loads((root/'manifest.json').read_text())
+          raw=(root/'chemcore-stable-snapshot.json').read_bytes()
+          stable=json.loads(raw)
+          assert manifest['library_version']=='1.0.0-hr069r1'
+          assert manifest['min_app_version']==manifest['max_app_version']=='6.0'
+          assert manifest['schema_version']==2
+          assert manifest['payload_sha256']==hashlib.sha256(raw).hexdigest()
+          assert manifest['payload_size_bytes']==len(raw)
+          assert manifest['chemical_count']==stable['content_counts']['chemical_identities']==652
+          assert stable['content_counts']['response_priors']==49
+          assert manifest['model_count']==manifest['calibration_count']==0
+          assert stable['policy']['m4_requires_device_specific_validation'] is True
+          assert stable['policy']['external_research_packaging_does_not_promote_m4'] is True
+          report={'status':'PASS','app':'6.0','database_schema':14,
+                  'embedded_stable':'1.0.0-hr069r1','molecular_identities':652,
+                  'mq_research_response_priors':49,'device_M4_calibrations':0,
+                  'payload_sha256':manifest['payload_sha256'],
+                  'actual_payload_bytes':len(raw),
+                  'software_only':True,'apk_produced':False,
+                  'github_stable_manifest_published_by_this_job':False}
+          (root/'V6-SCIENTIFIC-AUDIT.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('PASS EMBEDDED STABLE V6',json.dumps(report))
+          PY
+      - name: Run unified Stable updater and 734-material catalog source contracts
+        working-directory: tank
+        run: python3 -m unittest research/chemcore_v6/tests/test_v6_stable_update_contract.py -v
+      - name: Preserve audit proof only, not an APK or unapproved Stable publication
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V6-Embedded-Stable-Source-Audit
+          path: |
+            source/app/build/generated/hazrobAssets/generated/chemcore/embedded_stable/manifest.json
+            source/app/build/generated/hazrobAssets/generated/chemcore/embedded_stable/V6-SCIENTIFIC-AUDIT.json
+          retention-days: 30
+          if-no-files-found: error
