@@ -102,6 +102,13 @@ public final class ChemicalCasCorrectionV6 {
                         rejected++;reasons.append(uid).append(":mass_conflict;");
                         continue;
                     }
+                    // Quarantine only the exact two known-invalid CAS
+                    // identifiers from the user-facing secondary search
+                    // index; original imported tokens remain in the audit
+                    // table and are never interpreted as valid identities.
+                    db.delete("chemical_identifiers",
+                        "chemical_uid=? AND scheme='CAS' AND value=?",
+                        new String[]{uid,bad});
                     if(initial){
                         ContentValues cv=new ContentValues();
                         cv.put("cas",cas);
