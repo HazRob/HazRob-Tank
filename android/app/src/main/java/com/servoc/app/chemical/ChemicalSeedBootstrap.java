@@ -52,6 +52,20 @@ public final class ChemicalSeedBootstrap {
                 "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
         }
 
+        // NIST SRD69 independently identifies the remaining 27 historical
+        // *single* chemical substances. Verify exact legacy UID, name,
+        // formula, CAS checksum, source and non-conflicting identity before
+        // filling ONLY missing CAS/molecular-weight data. All nine mixtures
+        // and measurement indices remain correctly CAS-not-applicable.
+        try{
+            ChemicalNistIdentityCompletionV6.Result nist=
+                ChemicalNistIdentityCompletionV6.ensure(db);
+            db.putMeta("v6_chemical_nist_cas_completion",nist.summary());
+        }catch(Exception e){
+            db.putMeta("v6_chemical_nist_cas_completion",
+                "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
+        }
+
         ExposureSeedBootstrap.ensureNioshIdlh(context,db);
 
         // Tank V6 scientific risk inventory: load authoritative OSHA Z-1 occupational
