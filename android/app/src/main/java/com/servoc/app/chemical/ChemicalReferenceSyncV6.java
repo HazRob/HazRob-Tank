@@ -120,7 +120,7 @@ public final class ChemicalReferenceSyncV6 {
         return s;
     }
     private static void applyVerified(SQLiteDatabase db,JSONObject doc,
-                                      long uid,String cas,String digest,String revision){
+                                      long uid,String cas,String digest,String revision)throws Exception{
         if(doc.optLong("uid",-1)!=uid||!cas.equals(doc.optString("cas")))
             throw new IllegalArgumentException("GitHub UID/CAS identity drift");
         JSONArray facts=doc.optJSONArray("facts");
