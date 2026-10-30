@@ -29,6 +29,10 @@ def _spanning(rows, key):
 def audit_declared_holdout(rows, columns):
     """Inspect declared partition overlap; do not infer physical independence."""
     rows = list(rows)
+    # Reject compatibility aliases before the shared provenance header gate.
+    if any(c != 'partition' and unicodedata.normalize('NFKC', c) == 'partition'
+           for c in columns):
+        raise ValueError('G2_HOLDOUT_PARTITION_HEADER_ALIAS')
     base = audit_declared_overlap(rows, columns)
     out = {
         'schema': 'hazrob.g2.declared-holdout-partition.v1',
@@ -48,10 +52,6 @@ def audit_declared_holdout(rows, columns):
     if 'partition' not in columns:
         out['reason'] = 'PARTITION_COLUMN_ABSENT'
         return out
-    # Never accept a compatibility-alias of the critical partition header.
-    if any(c != 'partition' and unicodedata.normalize('NFKC', c) == 'partition'
-           for c in columns):
-        raise ValueError('G2_HOLDOUT_PARTITION_HEADER_ALIAS')
     if any(row['partition'] not in PARTITIONS for row in rows):
         raise ValueError('G2_HOLDOUT_PARTITION_LABEL_INVALID')
     labels = sorted({row['partition'] for row in rows})
