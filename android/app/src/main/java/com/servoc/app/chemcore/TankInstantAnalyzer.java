@@ -62,7 +62,7 @@ public final class TankInstantAnalyzer {
         // Sole chemical inference path. Exceptions intentionally propagate,
         // never replaced by old ChemCore/legacy analytics and never certified.
         ChemCoreTankV6.Result analyzed=TankV6TelemetryAdapter.analyzeSnapshot(frozen);
-        JSONObject out=TankV6TelemetryAdapter.toJson(analyzed);
+        JSONObject out=TankV6TelemetryAdapter.toJson(analyzed,frozen);
         // Candidate list is a *compatibility display projection* only, derived
         // from the independent new V6 source curve hypothesis ledger.
         JSONArray source=out.optJSONArray("source_curve_hypotheses");
