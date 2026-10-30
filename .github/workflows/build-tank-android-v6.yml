@@ -88,10 +88,7 @@ jobs:
           # Source-contract JUnit tests inspect Tank ESP32 staged-R0 files.
           mkdir -p source/firmware
           cp -a tank/firmware/ESP32-Tank source/firmware/ESP32-Tank
-          cp -a tank/tools/prepare_v5_stable_source.py source/tools/prepare_v6_stable_source.py
-          # V6 generator overlay: same scientifically audited Stable snapshot,
-          # with the independent V6 APK manifest compatibility instead of V5.
-          sed -i 's/5\.0/6.0/g' source/tools/prepare_v6_stable_source.py
+          cp -a tank/tools/prepare_v6_stable_source.py source/tools/prepare_v6_stable_source.py
           mkdir -p source/app/src/main/assets
           if test -d tank/android/app/src/main/assets; then
             cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/
@@ -106,6 +103,14 @@ jobs:
           s=s.replace("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'")
           s=s.replace("versionName '0.10.2'","versionName '6.0'")
           s=s.replace("versionCode 30","versionCode 6")
+          # The Stable updater was already present in SettingsTab; here we
+          # give it the official READ-ONLY HazRob GitHub publication channel.
+          # No payload is adopted until the manifest and SHA-256 pass checks.
+          stable_url="https://raw.githubusercontent.com/HazRob/HazRob-Tank/main/updates/chemcore-stable/manifest.json"
+          pattern="buildConfigField 'String', 'CHEMCORE_LIBRARY_MANIFEST_URL', '\\"\\"'"
+          replacement="buildConfigField 'String', 'CHEMCORE_LIBRARY_MANIFEST_URL', '\\\""+stable_url+"\\\"'"
+          assert pattern in s, 'Pinned Stable channel config changed'
+          s=s.replace(pattern,replacement)
           s=s.replace("debug { signingConfig signingConfigs.prototype }","debug { }")
           p.write_text(s)
           m=Path('source/app/src/main/AndroidManifest.xml')
