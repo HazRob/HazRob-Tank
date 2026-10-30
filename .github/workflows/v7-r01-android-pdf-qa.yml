@@ -103,6 +103,26 @@ jobs:
               assert amber>200,(i,amber)
               data.append(dict(page=i+1,font_min_pt=min(sizes),font_max_pt=max(sizes),dark_pixels=dark,amber_pixels=amber,
                                image=dest.name))
+          kit_path=p.parent/'V7_Blank_Layout_Kit_Actual_Android.pdf'
+          assert kit_path.is_file() and kit_path.stat().st_size>4000
+          kit=fitz.open(kit_path)
+          assert len(kit)==2,len(kit)
+          assert abs(kit[0].rect.width-595)<1 and abs(kit[0].rect.height-842)<1
+          assert abs(kit[1].rect.width-842)<1 and abs(kit[1].rect.height-595)<1
+          for i,page in enumerate(kit):
+              spans=[sp for block in page.get_text('dict')['blocks'] if 'lines' in block
+                     for line in block['lines'] for sp in line['spans'] if sp['text'].strip()]
+              assert spans,(i,'empty')
+              assert min(sp['size'] for sp in spans)>=11.5,(i,min(sp['size'] for sp in spans))
+              assert '-' in page.get_text(),(i,'missing placeholder')
+              pic=page.get_pixmap(matrix=fitz.Matrix(1.5,1.5),alpha=False)
+              pic.save(p.parent/f'V7_Blank_Kit_Android_Page_{i+1:02d}.png')
+          kit_qa={'pages':len(kit),'page_formats':['A4 portrait','A4 landscape'],
+                  'data':'blank placeholders only','font_min_pt':min(
+                     sp['size'] for page in kit for block in page.get_text('dict')['blocks']
+                     if 'lines' in block for line in block['lines']
+                     for sp in line['spans'] if sp.get('text','').strip())}
+          (p.parent/'blank_layout_kit_qa.json').write_text(json.dumps(kit_qa,indent=2))
           status=json.loads((p.parent/'status.json').read_text())
           assert status['scientific_status']=='UNKNOWN_G3_ZERO_NO_CERTIFIED_PPM'
           manifest={'format':'hazrob-v7-r01-original-android-pdf-qa/1','pages':data,
