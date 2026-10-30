@@ -456,3 +456,12 @@ ESP32 Tank / session replays / research adapters (separate provenance)
 - `research/chemcore_v6/tests/android/V6ApprovedFieldE2EFixtureActivity.java`: Fixture SQLite V10 مع دورة APPROVED وبصمة source approval حقيقية ناتجة من `FieldCycleRepository.evidenceDigest`، وحسّاسات MQ الثمانية كقراءات اختبارية واضحة، ودورة FAILED/جلسة غير معتمدة، وتصدير PDF/XLSX كامل ومقارنة بصمات الجداول قبل/بعد.
 - `.github/workflows/chemcore-v6-n06e-approved-field-e2e-ci.yml`: يبني APK مؤقتًا للـemulator فقط، وليس نسخة المستخدم أو إصدار APK V6؛ لا بيانات حقيقية، ولا اختبار عتاد، ولا G3.
 يُعتمد نجاح N06-E فقط إذا نجح تشغيل المحاكي وأرفق ملفات PDF وXLSX وإثبات SHA. **الحالة العلمية: 78 بحثية جزئية/2 غير منقولتين/G3=0**، ومحرك الأغذية مستقل.
+
+
+### Checkpoint 23 — N06-E تصدير جلسة معتمدة من V10 على محاكي Android (30 أكتوبر)
+
+**أنجزت تجربة N06-E فعليًا بعد تأجيل تجربة منحنيات المصنع كما طلب المستخدم**: [CI النهائي 40985626965](https://github.com/HazRob/HazRob-Tank/actions/runs/40985626965) **SUCCESS**، بعينة اختبارية وليست بيانات المستخدم: SQLite V10 مع `APPROVED` وبصمة SHA معتمدة مولّدة من `FieldCycleRepository.evidenceDigest`، 16 سجلاً لثمانية نماذج MQ، دورة FAILED وجلسة غير معتمدة. استدعيت `FieldSessionReportExporter.resolve/writePdf/writeXlsx` داخل المحاكي، ونجح إخراج **PDF حقيقي 6 صفحات** و**Excel حقيقي 14 ورقة** و**67 تأكيدًا**؛ صدقت SHA الأصلية قبل التصدير وبعده `a0d3941f18f86d7715e8a7342b7eafc59c9a2316235ee02949006fd9487eeb92`، ورفض جلسة غير معتمدة.
+
+عُزلت الترويسة البحثية الجديدة `HazRob Tank • ChemCore V6` عن صفحات V5 التاريخية؛ [Android compile 40985588474](https://github.com/HazRob/HazRob-Tank/actions/runs/40985588474) ناجح. PDF النهائي SHA256 `6047500e30c58dc5d237d20806e0b201eed82670e1156ccf527d57535103517a`، XLSX `defa58c8d9a5cf8f629ce72d39d3ee08d26eb2faf22f62436475154ff09cff0e`، Artifact ZIP ID `12946528755`، SHA `97397a9084401e60cb8c6eddbb610199a1517b7f9572548dd06872b37fe59a0e`، Library `libfile_4f3f443035208191a64790a2f4a52b31`. [Checkpoint23 الموثق](V6-CHEMCORE-NEW-ENGINE-CHECKPOINT-23-N06E-APPROVED-END2END-2026-10-30_AR.md).
+
+لا يُثبت ذلك صحة غاز أو معايرة/ppm أو G3. **78 تقنية بحثية جزئية، تقنيتان غير منقولتين، G3 صفر، ولا APK V6 إنتاجي**، والأغذية مستقلة. مسار N06-F: فحوص الإخفاق/العبث بالمصدر، تقارير مواقع متعددة، الترقية والتوقيع قبل إصدار APK، ثم تحقق Tank الفيزيائي. تجربة مقارنة منحنيات المصنع **مؤجلة**.
