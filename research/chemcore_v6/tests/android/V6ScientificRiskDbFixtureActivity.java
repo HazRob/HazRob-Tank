@@ -44,6 +44,84 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
     private static double amount(SQLiteDatabase db,String sql){
         try(Cursor c=db.rawQuery(sql,null)){return c.moveToFirst()?c.getDouble(0):Double.NaN;}
     }
+    /**
+     * Material-by-material inventory, not a misleading claim that 734/734
+     * substances have complete toxicity, ambient or sensor-response data.
+     * One CSV row per canonical UID; missing source values remain explicitly
+     * absent, never converted to zero, nonhazardous or clean air.
+     */
+    private static String csv(String s){
+        if(s==null)return "";
+        return "\"" + s.replace("\"","\"\"")
+            .replace("\r"," ").replace("\n"," ") + "\"";
+    }
+    private JSONObject writeCoverageAudit(SQLiteDatabase sql)throws Exception {
+        String query="SELECT c.uid,c.cas,c.name_en,c.name_ar,c.formula,"+
+            "c.molar_mass,c.chemical_class,c.record_source,c.lfl_vol_pct,"+
+            "c.ufl_vol_pct,c.mq_research_response_curve_count,"+
+            "c.natural_concentration_coverage_status,c.source_qualified_hazard_count,"+
+            "(SELECT COUNT(*) FROM exposure_limits e WHERE e.chemical_uid=c.uid),"+
+            "(SELECT COUNT(*) FROM chemical_hazard_classifications h WHERE h.chemical_uid=c.uid),"+
+            "(SELECT COUNT(*) FROM chemical_background_ranges b WHERE "+
+                "b.chemical_uid=c.uid AND b.qualification_status='SOURCE_QUALIFIED') "+
+            "FROM v14_unified_chemical_catalog c ORDER BY c.uid";
+        StringBuilder csv=new StringBuilder(
+            "uid,cas,name_en,name_ar,formula,molar_mass,chemical_class,record_source,"+
+            "lfl_vol_pct,ufl_vol_pct,mq_curve_count,natural_range_status,"+
+            "source_hazard_count,exposure_limit_count,hazard_class_count,"+
+            "qualified_background_range_count\\n");
+        int rows=0,cas=0,english=0,arabic=0,formula=0,molarMass=0;
+        int lfl=0,ufl=0,mq=0,exposure=0,hazard=0,background=0;
+        int duplicateUids=0;
+        java.util.HashSet<Long> seen=new java.util.HashSet<>();
+        try(Cursor c=sql.rawQuery(query,null)){
+            while(c.moveToNext()){
+                rows++;
+                long uid=c.getLong(0);
+                if(!seen.add(uid))duplicateUids++;
+                if(!c.isNull(1)&&!c.getString(1).trim().isEmpty())cas++;
+                if(!c.isNull(2)&&!c.getString(2).trim().isEmpty())english++;
+                if(!c.isNull(3)&&!c.getString(3).trim().isEmpty())arabic++;
+                if(!c.isNull(4)&&!c.getString(4).trim().isEmpty())formula++;
+                if(!c.isNull(5))molarMass++;
+                if(!c.isNull(8))lfl++;
+                if(!c.isNull(9))ufl++;
+                if(c.getInt(10)>0)mq++;
+                if(c.getInt(13)>0)exposure++;
+                if(c.getInt(14)>0||c.getInt(12)>0)hazard++;
+                if(c.getInt(15)>0)background++;
+                for(int k=0;k<c.getColumnCount();k++){
+                    if(k>0)csv.append(',');
+                    if(c.isNull(k))continue;
+                    if(k==0||k==5||k>=8&&k!=11)
+                        csv.append(c.getString(k));
+                    else csv.append(csv(c.getString(k)));
+                }
+                csv.append('\\n');
+            }
+        }
+        try(FileOutputStream out=openFileOutput(
+                "v6_chemical_catalog_coverage.csv",MODE_PRIVATE)){
+            out.write(csv.toString().getBytes(StandardCharsets.UTF_8));
+        }
+        return new JSONObject()
+            .put("schema","hazrob-tank-v6-material-coverage-audit/1")
+            .put("materials",rows).put("unique_uids",seen.size())
+            .put("duplicate_uids",duplicateUids)
+            .put("materials_with_cas",cas)
+            .put("materials_with_name_en",english)
+            .put("materials_with_name_ar",arabic)
+            .put("materials_with_formula",formula)
+            .put("materials_with_molar_mass",molarMass)
+            .put("materials_with_lfl",lfl).put("materials_with_ufl",ufl)
+            .put("materials_with_mq_curve",mq)
+            .put("materials_with_occupational_limit",exposure)
+            .put("materials_with_hazard_classification",hazard)
+            .put("materials_with_qualified_ambient_range",background)
+            .put("scientific_fields_exhaustive",false)
+            .put("g3_validated_tank_measurements",0)
+            .put("missing_values_policy","NULL_NOT_ZERO_NO_SAFETY_INFERENCE");
+    }
     private void writeStatus(JSONObject d)throws Exception{
         try(FileOutputStream s=openFileOutput("n09_scientific_risk_db.json",MODE_PRIVATE)){
             s.write(d.toString(2).getBytes(StandardCharsets.UTF_8));
@@ -186,6 +264,15 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(unified==materials&&unique==materials,"one selectable row per identity, no join duplication");
             check(legacy==144,"original 144 are retained as in-catalog membership flags");
 
+            JSONObject coverage=writeCoverageAudit(sql);
+            check(coverage.getInt("materials")==materials&&
+                coverage.getInt("unique_uids")==materials&&
+                coverage.getInt("duplicate_uids")==0,
+                "734 rows each have exactly one stable canonical UID");
+            check(coverage.getInt("materials_with_name_en")==materials,
+                "no unnamed material silently appears as a complete identity");
+            check(!coverage.getBoolean("scientific_fields_exhaustive"),
+                "identity coverage must never claim complete chemical science");
             long v14Rows=num(sql,"SELECT COUNT(*) FROM v14_unified_chemical_catalog");
             long v14Columns=num(sql,
                 "SELECT COUNT(*) FROM pragma_table_info('v14_unified_chemical_catalog')");
@@ -416,6 +503,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 V6ScientificThresholdPolicy.compare(5000,co2Pel,"TWA",0.90);
             check(reached.sitePotentialHazard&&!reached.regulatoryTwaExceeded,
                 "instant concentration reaching PEL is site warning not TWA proof");
+            out.put("material_field_coverage_audit",coverage);
             out.put("status","PASS");
             out.put("sqlite_version",14).put("legacy_rows",original)
                 .put("post_authority_import_materials",materials)
