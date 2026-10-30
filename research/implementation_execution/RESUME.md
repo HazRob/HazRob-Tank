@@ -1,3 +1,13 @@
+## 2026-10-30 — G2 missing optional identity provenance fail-closed diagnostic (CI pending)
+
+- Resumed from verified checkpoint `0032f1d775a708487950fe73b662a462c4706ee6` (11/11 associated workflows successful); central source matrix remains 0/14 independently qualified and `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
+- Fixed a research diagnostic overstatement: previously, two disconnected declared test components could return a positive structural-support flag even when `exposure_id` or `physical_sample_id` was absent. Such missing identities can conceal transitive connectivity. The descriptive component counts now explicitly carry upper-bound/incomplete-provenance flags; the positive two-cluster support result is `null` if either optional identity field is absent. Required session/batch absence continues to fail closed.
+- Implementation commit `f3730b876bac2c9ebbebd4ef039afa83d0ade842`; eight synthetic regression tests in `test_g2_declared_identity_missing_fields_fail_closed.py`, commit `98975929da42b1466268f7ddb574dcd6a0de1bce`; Arabic methods `G2_DECLARED_TEST_IDENTITY_MISSING_FIELDS_FAIL_CLOSED_2026-10-30_AR.md`, commit `bfaa555755086ecd2f408164b770424f5cf379ef`.
+- **CI pending verification on final documentation checkpoint.** Do not claim passing tests until GitHub Actions completes. Expected test count is 538 (prior 530 plus eight), but only CI can confirm. Full 80-technique G2 audit and publication guard must still be checked.
+- Research branch and `research/implementation_execution/` only. No Stable/Android/firmware/main changes; no G2/G3 scientific promotion. Independent physical exposures, authenticated session/sample/device identifiers, traceable reference concentration, preregistered blinded group holdouts, and independent review remain outstanding.
+
+---
+
 ## 2026-10-30 — G2 conservative effective declared test-identity cluster audit (530/530 G2 CI)
 
 - Continued from verified research documentation checkpoint `93a1ee4f7ab2341b60ae62f15baef0eabbe43c8b` (11/11 associated workflows successful). Central source matrix still has 14 external source slots, 0 independently review-ready; `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
