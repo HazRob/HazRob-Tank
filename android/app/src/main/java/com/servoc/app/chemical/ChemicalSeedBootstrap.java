@@ -78,6 +78,17 @@ public final class ChemicalSeedBootstrap {
                 "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
         }
 
+        // NIST SRD69 Oxygen 7782-44-7 and Methane 74-82-8: fill only
+        // missing g/mol identity properties. Never treat as an ambient range.
+        try{
+            ChemicalNistEssentialGasMassV6.Result atmosphere=
+                ChemicalNistEssentialGasMassV6.ensure(db);
+            db.putMeta("v6_nist_essential_gas_molecular_weight",atmosphere.summary());
+        }catch(Exception e){
+            db.putMeta("v6_nist_essential_gas_molecular_weight",
+                "error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));
+        }
+
         // Source-checked correction of TWO malformed CAS tokens from the
         // imported scientific seed. Keep the invalid originals in an audit
         // table and never reintroduce them into identifier/search indices.
