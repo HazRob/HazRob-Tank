@@ -7,6 +7,8 @@ on:
       - 'android/app/src/main/java/com/servoc/app/data/ChemicalHazardSeedV11.java'
       - 'android/app/src/main/java/com/servoc/app/data/ChemicalHazardEvidenceSeedV13.java'
       - 'android/app/src/main/java/com/servoc/app/data/MqReferenceCurveSeedV14.java'
+      - 'android/app/src/main/java/com/servoc/app/data/MqExternalR0RsSeedV14.java'
+      - 'android/app/src/main/assets/chemcore_v6/reference/mq_external_r0_rs_peer_evidence_v14.json'
       - 'android/app/src/main/java/com/servoc/app/data/MqDeviceR0LedgerV14.java'
       - 'android/app/src/main/java/com/servoc/app/ui/DeveloperR0Tab.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
@@ -40,6 +42,8 @@ jobs:
         run: |
           set -euo pipefail
           cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          mkdir -p source/app/src/main/assets
+          cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/
           if test -d tank/android/app/src/main/res; then
             cp -a tank/android/app/src/main/res/. source/app/src/main/res/
           fi
