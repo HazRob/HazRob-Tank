@@ -492,6 +492,22 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
 
             ChemicalRepository unifiedRepo=new ChemicalRepository(db);
             check(unifiedRepo.count()==materials,"actual UI repository exposes whole catalog");
+            check("CAS مرجعي NIOSH: 64-17-5".equals(
+                    unifiedRepo.catalogCasLabel(unifiedRepo.byUid(104))),
+                "historical ethanol displays qualified NIOSH CAS without modifying its master row");
+            check(unifiedRepo.sourceLinkedCas(104).equals("64-17-5"),
+                "ethanol CAS sourced from verified NIOSH identity crosswalk");
+            check(unifiedRepo.search("64-17-5",100).stream().anyMatch(q->q.uid==104),
+                "search by authority CAS also finds the historical ethanol alias");
+            check(unifiedRepo.search("Ethyl alcohol",100).stream().anyMatch(q->q.uid==104),
+                "search by official NIOSH primary name reaches historical ethanol alias");
+            check(unifiedRepo.search("Methanol",100).stream().anyMatch(q->q.uid==103),
+                "search by legacy compound name still resolves original UID");
+            check(unifiedRepo.sourceLinkedCas(143)==null &&
+                "—".equals(unifiedRepo.catalogCasLabel(unifiedRepo.byUid(143))),
+                "LEL remains a measurement index, never a fictional CAS chemical");
+            check(unifiedRepo.count()==734,
+                "source-linked search has not changed stored master chemical count");
             JSONObject ethanolAlias=unifiedRepo.scientificProfile(104);
             check(ethanolAlias.getJSONArray("source_qualified_identity_aliases")
                 .length()==1,
