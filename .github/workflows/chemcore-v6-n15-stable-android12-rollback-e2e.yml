@@ -71,8 +71,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 source/tools/build_hr069_embedded_stable.py \
-            --out-dir source/app/build/generated/hazrobAssets/generated/chemcore/embedded_stable
+          (cd source && python3 tools/build_hr069_embedded_stable.py \
+            --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable)
           python3 - <<'PY'
           import hashlib,json
           from pathlib import Path
