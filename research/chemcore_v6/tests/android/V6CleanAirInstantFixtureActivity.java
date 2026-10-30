@@ -154,6 +154,35 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
       JSONObject firmwareOut=TankInstantAnalyzer.analyze(db,firmwareMissing,now+1500).analysis;
       require(firmwareOut.getJSONArray("candidates").length()==0,
           "unproven firmware R0 with zero NVS samples cannot detect gas");
+      // A legacy V5 firmware calibration has a valid NVS count but
+      // its R0=Rs_air/factory_clean_air_factor. This CANNOT serve as a
+      // Rs_air normalization anchor in a unity-centered clean-air gate.
+      JSONObject legacyScaled=new JSONObject(unqualified.toString());
+      for(String k:keys){
+          JSONObject v=legacyScaled.getJSONObject("mq").getJSONObject(k);
+          v.put("r0_source","firmware_clean_air_r0");
+          v.put("r0_samples",90);
+          v.put("r0_window_count",3);
+          v.put("r0_provenance_complete",true);
+          v.put("r0_definition","MQ_FACTOR_NORMALIZED_REFERENCE_GAS_R0");
+      }
+      JSONObject legacyScaledOut=TankInstantAnalyzer.analyze(
+          db,legacyScaled,now+1600).analysis;
+      require(legacyScaledOut.getJSONArray("candidates").length()==0,
+          "legacy source-scaled R0 cannot create false gas candidates");
+      require(legacyScaledOut.getJSONObject("baseline_response_gate")
+          .optInt("accepted_device_r0_channels",-1)==0,
+          "manufacturer-factor R0 must not be treated as clean-air Rs mean");
+      JSONObject explicitThreeWindow=new JSONObject(legacyScaled.toString());
+      for(String k:keys){
+          explicitThreeWindow.getJSONObject("mq").getJSONObject(k)
+              .put("r0_definition","DEVICE_CLEAN_AIR_RS_MEAN");
+      }
+      JSONObject explicitResult=TankInstantAnalyzer.analyze(
+          db,explicitThreeWindow,now+1700).analysis;
+      require(explicitResult.getJSONObject("baseline_response_gate")
+          .optInt("accepted_device_r0_channels",-1)==8,
+          "versioned three-window clean-air firmware R0 has usable provenance");
       JSONObject approvedChange=new JSONObject(original.toString());
       for(int i=0;i<keys.length;i++){
           JSONObject q=approvedChange.getJSONObject("mq").getJSONObject(keys[i]);
