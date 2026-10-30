@@ -356,7 +356,10 @@
       },
       "design_identity_asset": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
       "design_identity_asset_owner_approved": true,
-      "qa_document": "docs/implementation/V7-R01-IMPLEMENTATION-QA-2026-10-30_AR.md"
+      "qa_document": "docs/implementation/V7-R01-IMPLEMENTATION-QA-2026-10-30_AR.md",
+      "page_count_is_target_only": true,
+      "page_count_can_increase_or_decrease": true,
+      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section."
     },
     {
       "report_id": "R02",
@@ -616,7 +619,10 @@
         "Value placeholder '-' for absent numeric fields; retain original null and source-quality notes; never 0 default",
         "All 15 PhysicalCatalog indicators included, including radiation, UV, wind, illuminance and PM",
         "Physical diagnostic, derived heat and altitude/pressure views from engine only, no new PDF gates"
-      ]
+      ],
+      "page_count_is_target_only": true,
+      "page_count_can_increase_or_decrease": true,
+      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section."
     },
     {
       "report_id": "R03",
@@ -989,7 +995,10 @@
         "no_readings": "literal '-' for empty value fields; empty charts still reserve exact area"
       },
       "approved_design_specification": "docs/implementation/V7-R03-APPROVED-CHART-GRID-AND-CANDIDATE-TABLE-2026-10-30_AR.md",
-      "candidate_mini_visual_note": "Design-only empty PPM/reference bullet plot with '-' values and official GHS icon placeholder, no fake hazard identity or reference."
+      "candidate_mini_visual_note": "Design-only empty PPM/reference bullet plot with '-' values and official GHS icon placeholder, no fake hazard identity or reference.",
+      "page_count_is_target_only": true,
+      "page_count_can_increase_or_decrease": true,
+      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section."
     },
     {
       "report_id": "R04",
@@ -1255,7 +1264,10 @@
         "empty_chart_values": true,
         "minimum_font_pt": 12,
         "standalone_144": true
-      }
+      },
+      "page_count_is_target_only": true,
+      "page_count_can_increase_or_decrease": true,
+      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section."
     },
     {
       "report_id": "R05",
@@ -1521,7 +1533,9 @@
         "no_gas_ghs_or_ppm_by_assumption": true,
         "no_fake_freshness_quality_grade": true,
         "minimum_text_point": 12,
-        "owner_approved": false
+        "owner_approved": false,
+        "page_count_soft_target": true,
+        "flexible_pages_owner_approved": true
       },
       "owner_approved_design_document": "docs/implementation/V7-R05-OWNER-APPROVED-TWO-PAGE-FRUIT-IMAGE-MATRIX-2026-10-30_AR.md",
       "owner_approved_design": {
@@ -1568,7 +1582,10 @@
         "no_gas_chemcore_reinterpretation": true,
         "owner_requirement_approved": true,
         "visual_final_pdf_approved": false
-      }
+      },
+      "page_count_is_target_only": true,
+      "page_count_can_increase_or_decrease": true,
+      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section."
     },
     {
       "report_id": "R06",
@@ -1837,7 +1854,9 @@
         "GHS_OEL_PPM_not_applicable": true,
         "model_not_validated_for_Tank": true,
         "owner_approved": true,
-        "page_three": "Mandatory full-page source study validation: held-out four-by-four confusion matrix, clearly source-only 36h curve placeholder, citation and methodological limitations"
+        "page_three": "Mandatory full-page source study validation: held-out four-by-four confusion matrix, clearly source-only 36h curve placeholder, citation and methodological limitations",
+        "page_count_soft_target": true,
+        "flexible_pages_owner_approved": true
       },
       "source_correction_pending": {
         "field": "BeefResearchCatalog.STUDY_PAPER and research JSON provenance.original_paper_doi",
@@ -1866,7 +1885,10 @@
         "pages_may_expand_only_if_text_cannot_fit": "yes, without dropping evidence or reducing font",
         "production_changes": "none",
         "actual_android_pdf_render_approved": false
-      }
+      },
+      "page_count_is_target_only": true,
+      "page_count_can_increase_or_decrease": true,
+      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section."
     }
   ],
   "shared_acceptance_criteria": {
@@ -1877,7 +1899,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Check R01–R06 owner requirements versus final visual signoff status, close any outstanding designs, render original Android PDF layouts and begin unified implementation only after full authorization. R06 design approved for 3 portrait pages, no functional code changed.",
+  "next_action": "Continue Android-native blank report QA and dynamic pagination testing, then unify six production PDF writers. Owner explicitly permits variable number of pages. Visual acceptance and sensor/food scientific verification remain separate gates.",
   "visual_contract": {
     "branding_palette": [
       "black",
@@ -1940,5 +1962,12 @@
     "android_vector_resource": "android/app/src/main/res/drawable/hazrob_official_report_mark.xml",
     "original_image_exact": true,
     "vector_trace_needs_visual_qa": true
+  },
+  "owner_pagination_rule": {
+    "decision_utc": "2026-10-30T23:36:27Z",
+    "all_six_reports": "number of pages may increase or decrease freely",
+    "page_counts_are_baselines_only": true,
+    "mandatory": "all owner-approved sections and sources stay; use 12pt minimum and true pagination, not top-N truncation",
+    "governing_document": "docs/requirements/V7-REPORTS-DESIGN-FIRST-PLACEHOLDER-POLICY-2026-10-30_AR.md"
   }
 }
