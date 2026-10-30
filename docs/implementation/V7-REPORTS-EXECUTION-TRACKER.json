@@ -294,7 +294,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R04 V6 original site PDF reviewed visually (5 A4 landscape, SHA 644a6b..., 921498 bytes); audited generator, SiteReportIntelligence, SiteReportCharts and XLSX; documented 13 FAIL/5 PARTIAL and site-level dynamic redesign (2x2 plots, full 144, candidate GHS/OEL, physical/PM, source SHA); all display values '-' and charts blank during design; no Java changes.",
+  "latest_documented_change": "R05 reviewed original 1-page 215125-byte A4 portrait PDF and fruit FoodFreshnessPdf/FoodFreshnessEngine/food reference manifest; 10 fail/4 partial/3 not applicable/1 pass. Proposed A4 portrait 3 layout sections + unlimited appendix, distinct actual 180s MQ response vs D1-D5 study-day source similarity, all 54 active fruit profiles, blank charts and '-' values. R04 approved additions separately; no Java source changed.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -345,37 +345,39 @@
     "commit": "f0744950daca11094f5b9d1dbab6cefce501f380"
   },
   "active_report": {
-    "id": "R04",
-    "name": "Site Summary PDF",
-    "phase": "ORIGINAL_FIVE_PAGE_PDF_AND_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
-    "analysis_document": "docs/implementation/V7-R04-SITE-SUMMARY-ORIGINAL-AUDIT-AND-DESIGN-PROPOSAL-2026-10-30_AR.md",
-    "report_source": "android/app/src/main/java/com/servoc/app/report/SiteSummaryReportExporter.java",
-    "pdf_file_sha256": "644a6bf0cfc446dad1da2667bc4a60456151d643e12ce238742762bb89ac575e",
-    "original_pdf_pages": 5,
-    "audit_result": "13 FAIL, 5 PARTIAL_APPLICABILITY against G01–G18; V6 sample only",
-    "issues": [
-      "No official header/footer, nonconforming theme",
-      "Text as small as 6.3pt; all five pages fail >=12pt",
-      "Sparse session and cycle tables with truncation of original time/source SHA",
-      "144 grid squeezed into half page; legend tiny",
-      "Summary top-recurring list limited to 15; hazard contexts limited to 12",
-      "Period uses field-session starts rather than original measurement capture range",
-      "No comparative physical or particle analytics across site's G/P/F modes",
-      "critical/hazard score derived inside PDF reporter, not only source engine"
+    "id": "R05",
+    "name": "Fruit Freshness Research PDF",
+    "phase": "ONE_PAGE_ORIGINAL_PDF_AND_FOOD_SOURCE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
+    "analysis_document": "docs/implementation/V7-R05-FRUIT-FRESHNESS-ORIGINAL-PDF-AUDIT-AND-DESIGN-2026-10-30_AR.md",
+    "pdf_file_sha256": "21e97701f8d4f1fff9f67d83ee57ee0ca7f8568ba5ce04d66c9c75b7e6002a1c",
+    "source_pdf_pages": 1,
+    "source_pdf_font_min_pt": 8,
+    "spans_under_12pt": "50/56",
+    "source_code": "android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodFreshnessPdf.java",
+    "food_engine": "android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodFreshnessEngine.java",
+    "source_manifest": "research/food_freshness/source_manifest.json",
+    "audit_result": "10 FAIL / 4 PARTIAL / 3 NOT_APPLICABLE / 1 PASS against G01–G18",
+    "scientifically_important": [
+      "Fruit source is separate from gas ChemCore and meat branch",
+      "Original research bank has 59 profiles; active fruit comparison has 54; five mushroom patterns excluded from fruit choice",
+      "D1-D5 are study-day reference labels 24h apart, not a longitudinal Tank measurement",
+      "180s Tank headspace single-shot study similarity is not food safety or quantified ppm",
+      "UI has average ambient T/RH and sensor signalHistory but fruit PDF function currently does not receive them",
+      "PDF only shows first seven source matches, with some labels clipped",
+      "No original measurement start/end UTC stored in current R05 PDF"
     ],
-    "discussion_decisions": [
-      "R04-D01: 2x2 equal chart gallery like R03 for cross-session figures",
-      "R04-D02: full-page 144 grid and complete indexed material annex",
-      "R04-D03: full GHS/OEL candidate table and per-session ppm reference miniature",
-      "R04-D04: separate physical and particle cross-session chapter",
-      "R04-D05: site 3D/4D reserved page versus charts gallery only",
-      "R04-D06: all session and cycle timestamps and full SHA without caps",
-      "R04-D07: reserve empty plot canvases and '-' for missing data"
+    "design_questions": [
+      "R05-D01: A4 portrait multi-section layout F01–F03 plus full rank appendix",
+      "R05-D02: separate actual 180s sensor response from 24h reference-day similarity",
+      "R05-D03: all engine-returned pattern matches, normalized fingerprint vs source overlay and full ranking",
+      "R05-D04: measurement context, sensor status and scientific source block in Arabic+English",
+      "R05-D05: '-' for missing cells and blank chart canvases without mock data",
+      "R05-D06: two large portrait charts rather than 2x2 landscape in fruit report"
     ],
-    "source_code_changed": false,
-    "production_changes": 0,
     "owner_design_signoff": false,
-    "layout_phase": "DESIGN_ONLY; all charts blank and values '-', no fabricated results"
+    "design_scope_only": true,
+    "source_code_changed": false,
+    "production_changes": 0
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -398,9 +400,9 @@
     "pending": "Production PDF integration and Android render visual match"
   },
   "next_report": {
-    "id": "R05",
-    "name": "Fruit Freshness PDF",
-    "state": "AFTER_R04_DISCUSSION"
+    "id": "R06",
+    "name": "Meat Freshness Research PDF",
+    "state": "NEXT_AFTER_R05_DESIGN_DISCUSSION"
   },
   "workflow_policy": {
     "id": "V7-RPT-BATCH-PLAN-001",
@@ -408,7 +410,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_ONLY_R04_SOURCE_AND_PDF_AUDIT_COMPLETED_AWAITING_OWNER",
+    "current_phase": "DESIGN_ONLY_R05_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -516,6 +518,14 @@
     "id": "R03",
     "state": "R03_2X2_GRID_3D_AND_CANDIDATE_DETAIL_APPROVED_FINAL_VISUAL_TEMPLATE_PENDING",
     "document": "docs/implementation/V7-R03-APPROVED-CHART-GRID-AND-CANDIDATE-TABLE-2026-10-30_AR.md",
+    "production_changes": 0
+  },
+  "r04_checkpoint": {
+    "id": "R04",
+    "review_state": "ORIGINAL_AUDITED_PARTIAL_OWNER_REQUIREMENTS_APPROVED_FINAL_VISUAL_LAYOUT_PENDING",
+    "audit_document": "docs/implementation/V7-R04-SITE-SUMMARY-ORIGINAL-AUDIT-AND-DESIGN-PROPOSAL-2026-10-30_AR.md",
+    "owner_approved_additions": "docs/implementation/V7-R04-OWNER-APPROVED-EXECUTIVE-AND-MATRIX-DESIGN-2026-10-30_AR.md",
+    "owner_signoff": false,
     "production_changes": 0
   }
 }
