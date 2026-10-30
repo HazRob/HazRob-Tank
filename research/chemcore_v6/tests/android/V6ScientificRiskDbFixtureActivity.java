@@ -8,6 +8,7 @@ import com.servoc.app.chemical.ChemicalSeedBootstrap;
 import com.servoc.app.chemical.ChemicalIdentityEquivalenceV6;
 import com.servoc.app.chemical.ChemicalIdentityCategoryV6;
 import com.servoc.app.chemical.ChemicalMolecularProjectionV6;
+import com.servoc.app.chemical.ChemicalAliasMolecularProjectionV6;
 import com.servoc.app.chemical.ChemicalNistIdentityCompletionV6;
 import com.servoc.app.chemical.ChemicalCasCorrectionV6;
 import com.servoc.app.data.ExperimentsDb;
@@ -377,6 +378,21 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 "restarting official molecular identity projection is idempotent");
             out.put("pubchem_molecular_projection_idempotence",
                 projection.summary());
+            int totalMassBeforeAliasReplay=(int)num(sql,
+                "SELECT COUNT(*) FROM chemicals WHERE molar_mass>0");
+            ChemicalAliasMolecularProjectionV6.Result aliasMassReplay=
+                ChemicalAliasMolecularProjectionV6.ensure(db);
+            check(aliasMassReplay.filled==0&&aliasMassReplay.eligibleAfter==0,
+                "verified historical aliases receive PubChem mass at bootstrap, "+
+                "not later through an unproven fallback");
+            check(aliasMassReplay.totalWithMass==totalMassBeforeAliasReplay,
+                "repeating CAS-linked alias mass projection never overwrites stored properties");
+            check(num(sql,"SELECT COUNT(*) FROM chemicals WHERE uid IN "+
+                "(SELECT alias_uid FROM chemical_identity_equivalence_v6) "+
+                "AND molar_mass>0")>0,
+                "at least one NIOSH synonym is enriched by PubChem molecular evidence");
+            out.put("niosh_pubchem_mass_projection_idempotence",
+                aliasMassReplay.summary());
             long peerR0=num(sql,
                 "SELECT COUNT(*) FROM sensor_evidence "+
                 "WHERE evidence_type='EXTERNAL_PEER_R0_RS' AND chemical_uid IS NULL");
@@ -609,6 +625,12 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 !hydrogenNist.optBoolean("gas_detected",true),
                 "per-substance NIST source visible without fabricating Tank detection");
             JSONObject ethanolAlias=unifiedRepo.scientificProfile(104);
+            check(ethanolAlias.getJSONArray("niosh_alias_pubchem_mass_sources")
+                .length()>0,
+                "ethanol historical UID exposes NIOSH CAS-linked PubChem source evidence");
+            check(ethanolAlias.getJSONArray("niosh_alias_pubchem_mass_sources")
+                .getJSONObject(0).getLong("canonical_uid")==499,
+                "transferred ethanol molecular weight retains canonical authority identity");
             check(ethanolAlias.getJSONArray("source_qualified_identity_aliases")
                 .length()==1,
                 "historical ethanol UID displays one NIOSH source-linked canonical identity");
