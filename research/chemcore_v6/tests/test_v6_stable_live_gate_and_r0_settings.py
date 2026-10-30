@@ -9,6 +9,7 @@ import unittest
 ROOT=Path(__file__).resolve().parents[3]
 SETTINGS=(ROOT/"android/app/src/main/java/com/servoc/app/ui/SettingsTab.java").read_text(encoding="utf-8")
 MANAGER=(ROOT/"android/app/src/main/java/com/servoc/app/chemcore/library/ChemCoreLibraryManager.java").read_text(encoding="utf-8")
+STATUS=(ROOT/"android/app/src/main/java/com/servoc/app/ui/StatusTab.java").read_text(encoding="utf-8")
 class StableLiveGateAndSettings(unittest.TestCase):
     def test_user_r0_says_exact_firmware_protocol_not_old_versions(self):
         self.assertIn("180 ثانية تسخين ثم 60 ثانية قراءة فعلية في نافذة واحدة",SETTINGS)
@@ -27,6 +28,8 @@ class StableLiveGateAndSettings(unittest.TestCase):
         self.assertIn("appVersion, activeNow, false",MANAGER)
         self.assertIn("()->ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())",SETTINGS)
         self.assertNotIn("libraryManager.install(c,ReleaseAudit.VERSION,false)",SETTINGS)
+        self.assertIn("()->ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())",STATUS)
+        self.assertNotIn("libraryUpdater.install(checked,ReleaseAudit.VERSION,\n                        ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()))",STATUS)
 
 if __name__=="__main__":
     unittest.main()
