@@ -109,6 +109,59 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
           bmp.recycle();
         }
       }
+      // V14 negative controls: arithmetic Rs/R0 alone must not become
+      // an operator claim if the source was a manufacturer R0 or absent.
+      JSONObject unqualified=new JSONObject(original.toString());
+      JSONObject wrongMq=unqualified.getJSONObject("mq");
+      for(String k:keys){
+        JSONObject q=wrongMq.getJSONObject(k);
+        q.put("rs",q.getDouble("r0")*0.45);
+        q.put("r0_source","unverified_research_source_r0");
+        q.put("r0_provenance_complete",false);
+      }
+      TankInstantAnalyzer.Result unqualifiedOut=TankInstantAnalyzer.analyze(
+          db,unqualified,now+1000);
+      JSONObject unqualifiedResult=unqualifiedOut.analysis;
+      require(unqualifiedResult.optInt("observed_mq_channels")==8,
+          "original Rs from unqualified reference still retained");
+      require(unqualifiedResult.getJSONArray("source_curve_research_diagnostic_ledger").length()==49,
+          "source curve mathematics retained even for unqualified R0");
+      require(unqualifiedResult.getJSONArray("source_curve_hypotheses").length()==0,
+          "unqualified manufacturer R0 cannot surface gas hypotheses");
+      require(unqualifiedResult.getJSONArray("candidates").length()==0,
+          "unqualified manufacturer R0 cannot create operator candidates");
+      require(unqualifiedResult.getJSONArray("gas_alerts").length()==0,
+          "unqualified R0 cannot trigger gas alarm");
+      require("NO_ACCEPTED_DEVICE_CLEAN_AIR_R0".equals(
+              unqualifiedResult.getJSONObject("baseline_response_gate").optString("state")),
+          "unqualified source never interpreted as deviation from clean Tank air");
+      JSONObject approvedChange=new JSONObject(original.toString());
+      for(int i=0;i<keys.length;i++){
+          JSONObject q=approvedChange.getJSONObject("mq").getJSONObject(keys[i]);
+          q.put("rs",r0[i]*(i<2?0.55:1.00));
+      }
+      JSONObject changedResult=TankInstantAnalyzer.analyze(
+          db,approvedChange,now+2000).analysis;
+      require(changedResult.getJSONObject("baseline_response_gate")
+          .optInt("accepted_device_r0_channels",-1)==8,
+          "all eight accepted Tank baseline values counted with provenance");
+      require(changedResult.getJSONObject("baseline_response_gate")
+          .optBoolean("visible_gas_hypotheses",false),
+          "two independent provenanced sensor changes allow research-only hypotheses");
+      require(changedResult.getJSONArray("candidates").length()>0,
+          "provenanced deviation can create explicitly unverified research candidates");
+      require(!changedResult.optBoolean("alarm_eligible",true)&&
+          !changedResult.optBoolean("ppm_reportable",true),
+          "even two sensors never certify gas ppm or alarm");
+      JSONObject drift=new JSONObject(original.toString());
+      for(int i=0;i<keys.length;i++){
+          drift.getJSONObject("mq").getJSONObject(keys[i])
+               .put("rs",r0[i]*(i<2?1.40:1.00));
+      }
+      JSONObject driftResult=TankInstantAnalyzer.analyze(db,drift,now+3000).analysis;
+      require(driftResult.getJSONArray("candidates").length()==0,
+          "opposite Rs change is unassigned drift, not toxic identity");
+
       JSONObject summary=new JSONObject().put("status","PASS")
         .put("case","R0_CLEAN_AIR_REMEASURE_SAME_CLEAN_AIR_SIMULATED")
         .put("genuine_tank_exposure",false).put("original_production_analyzer_used",true)
@@ -120,6 +173,12 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
         .put("reported_identity",result.optString("reported_identity"))
         .put("certified_ppm",result.optBoolean("ppm_reportable",true))
         .put("pdf_pages",pages).put("check_count",checks)
+        .put("unqualified_r0_operator_candidates",
+            unqualifiedResult.getJSONArray("candidates").length())
+        .put("provenanced_two_model_research_candidates",
+            changedResult.getJSONArray("candidates").length())
+        .put("opposite_direction_candidates",
+            driftResult.getJSONArray("candidates").length())
         .put("research_ppm_example_mq2_lpg_not_operator_visible",
           diagnostic.getJSONObject(0).optDouble("source_estimate_ppm_research"));
       write("v6_clean_air_instant_status.json",
