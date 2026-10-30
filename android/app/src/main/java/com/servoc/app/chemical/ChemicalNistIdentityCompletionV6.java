@@ -100,9 +100,24 @@ public final class ChemicalNistIdentityCompletionV6 {
                     // Never collapse distinct scientific UIDs into the
                     // same CAS without an independently qualified crosswalk.
                     try(Cursor other=db.rawQuery(
-                            "SELECT uid FROM chemicals WHERE cas=? AND uid<>?",
-                            new String[]{cas,uid})){
-                        if(other.moveToFirst()){rejected++;continue;}
+                            "SELECT uid,name_en,record_source FROM chemicals "+
+                            "WHERE cas=? AND uid<>?",new String[]{cas,uid})){
+                        if(other.moveToFirst()){
+                            // NIOSH's broader "Aniline (and homologs)"
+                            // occupational reference uses the CAS of its
+                            // Aniline index substance, while the historical
+                            // pure Aniline row deserves that same NIST CAS.
+                            // Retain both UIDs: one is a scope-bound group
+                            // reference, not proof that homologs are one CAS.
+                            boolean sharedAnilineIndex="53".equals(uid)&&
+                                "62-53-3".equals(cas)&&
+                                other.getLong(0)==486L&&
+                                "Aniline (and homologs)".equals(other.getString(1))&&
+                                other.getString(2)!=null&&
+                                other.getString(2).startsWith("NIOSH_NPG")&&
+                                !other.moveToNext();
+                            if(!sharedAnilineIndex){rejected++;continue;}
+                        }
                     }
                     matched++;
                     ContentValues values=new ContentValues();
