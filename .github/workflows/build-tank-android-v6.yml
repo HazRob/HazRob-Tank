@@ -179,7 +179,7 @@ jobs:
         working-directory: source
         run: gradle --no-daemon :app:testDebugUnitTest
 
-      - name: Check optional V4 upgrade certificate (diagnostic build may use DEBUG key)
+      - name: Check optional V4 upgrade certificate (NOT interchangeable with installed V5 signer)
         id: signing
         shell: bash
         env:
@@ -189,10 +189,17 @@ jobs:
           V4_KEY_ALIAS: ${{ secrets.HAZROB_TANK_V4_KEY_ALIAS }}
         run: |
           set -euo pipefail
+          # The user's actual HazRob-Tank-V5-debug.apk was independently
+          # inspected at the APK v2 signing block: SHA-256(cert) below.
+          # A V4 key can update V4 only, NEVER this V5 build. Its private key
+          # cannot be reconstructed from a certificate or the APK.
+          actual_v5_signer=97F0E315449BB369D1C2042CD092E73E422CE9718406D93F8CCB1E40C6921BD1
+          echo "v5_upgrade_compatible=false" >> "$GITHUB_OUTPUT"
+          echo "v5_signer_sha256=$actual_v5_signer" >> "$GITHUB_OUTPUT"
           if test -z "${V4_KEYSTORE_B64:-}" || test -z "${V4_STORE_PASS:-}" ||
              test -z "${V4_KEY_PASS:-}" || test -z "${V4_KEY_ALIAS:-}"; then
             echo "upgrade_compatible=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Only an UNRELEASED/debug-key APK can be produced. It cannot update an installed V4 APK with a different certificate."
+            echo "::warning::No verified upgrade signer. Any APK from this path is UNRELEASED and cannot claim an in-place V5 update. The installed V5 signing certificate is $actual_v5_signer."
           else
             mkdir -p source/.tank-v6-signing
             chmod 700 source/.tank-v6-signing
@@ -218,6 +225,7 @@ jobs:
           }
           GRADLE
             echo "upgrade_compatible=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::V4-key signing is verified for V4 ONLY. V5 certificate $actual_v5_signer is different, so V5 in-place upgrade is NOT verified."
           fi
 
       - name: Build V6 diagnostic debug APK after compilation and tests
@@ -229,7 +237,7 @@ jobs:
           HAZROB_TANK_UPDATE_KEY_ALIAS: ${{ secrets.HAZROB_TANK_V4_KEY_ALIAS }}
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Verify APK signer when upgrade-compatible key was supplied
+      - name: Verify V4 signer ONLY (not an upgrade certificate for installed V5)
         if: steps.signing.outputs.upgrade_compatible == 'true'
         shell: bash
         run: |
@@ -245,6 +253,9 @@ jobs:
         shell: bash
         run: |
           echo "Unit test outcome: ${{ steps.unit_tests.outcome }}"
+          echo "Actual V5 signer certificate SHA-256: ${{ steps.signing.outputs.v5_signer_sha256 }}"
+          echo "V5 in-place upgrade supported by this build: ${{ steps.signing.outputs.v5_upgrade_compatible }}"
+          echo "::warning::No V5 in-place upgrade can be certified without the actual V5 signing private key, irrespective of V4 compatibility."
           if [ "${{ steps.unit_tests.outcome }}" != "success" ]; then
             echo "::warning::V6 APK is only for technical diagnostics. Unit regression tests failed, not safe for field deployment."
           fi
