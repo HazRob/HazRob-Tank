@@ -353,14 +353,30 @@ public final class DeveloperR0Tab {
                 Map<String,Double> requested="pending".equals(proposal.state)?
                     FirmwareR0Contract.pendingValues(proposed):
                     FirmwareR0Contract.committedValues(proposed);
-                JSONObject committed="pending".equals(proposal.state)?
-                    host.robotApi().calibrationAccept():host.robotApi().calibrationStatus();
-                // The V5 firmware only reports COMMITTED after NVS read-back.
+                // An earlier /r0 accept can succeed on ESP32 NVS while its HTTP reply
+                // is lost. Read current firmware state first: on retry, reuse that
+                // exact committed result instead of sending a second accept blindly.
+                JSONObject observed=host.robotApi().calibrationStatus();
+                FirmwareR0Contract.Progress observedProgress=FirmwareR0Contract.progress(observed);
+                if(!expected.equals(observed.optString("device_id","").trim()))
+                    throw new IllegalStateException("ESP32 identity changed during acceptance");
+                JSONObject committed;
+                if("ready".equals(observedProgress.state)&&observedProgress.committed){
+                    committed=observed;
+                }else if("pending".equals(observedProgress.state)&&observedProgress.pending){
+                    committed=host.robotApi().calibrationAccept();
+                }else{
+                    throw new IllegalStateException("ESP32 calibration is neither staged nor verified committed");
+                }
+                // Firmware declares COMMITTED only after NVS read-back.
                 FirmwareR0Contract.Progress actualProgress=FirmwareR0Contract.progress(committed);
                 Map<String,Double> actual=FirmwareR0Contract.committedValues(committed);
                 String deviceId=committed.optString("device_id","").trim();
                 if(!expected.equals(deviceId))
                     throw new IllegalStateException("ESP32 identity changed during acceptance");
+                if(!proposal.r0Definition.equals(actualProgress.r0Definition)||
+                        proposal.windowCount!=actualProgress.windowCount)
+                    throw new IllegalStateException("ESP32 R0 protocol changed during acceptance");
                 for(String sensor:keys)
                     if(Math.abs(requested.get(sensor)-actual.get(sensor))>
                         Math.max(0.00001,requested.get(sensor)*0.00001))
