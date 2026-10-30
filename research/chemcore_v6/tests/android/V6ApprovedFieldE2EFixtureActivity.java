@@ -192,8 +192,19 @@ public final class V6ApprovedFieldE2EFixtureActivity extends Activity {
                 for(int i=0;i<pages;i++){
                     try(PdfRenderer.Page page=renderer.openPage(i)){
                         Bitmap bitmap=Bitmap.createBitmap(842,595,Bitmap.Config.ARGB_8888);
+                        bitmap.eraseColor(Color.WHITE);
                         page.render(bitmap,null,null,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-                        require(bitmap.getPixel(20,20)!=Color.TRANSPARENT,"page rasterized");
+                        int visible=0;
+                        // PDF margins/corners can legitimately be transparent.
+                        // Measure actual content in the main page rather than
+                        // expecting a painted pixel at (20,20).
+                        for(int yy=40;yy<550;yy+=6)
+                            for(int xx=40;xx<805;xx+=6){
+                                int pixel=bitmap.getPixel(xx,yy);
+                                if(Color.red(pixel)<225||Color.green(pixel)<225||
+                                   Color.blue(pixel)<225)visible++;
+                            }
+                        require(visible>=25,"page "+i+" almost blank: "+visible);
                         bitmap.recycle();
                     }
                 }
