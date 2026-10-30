@@ -27,13 +27,26 @@ jobs:
           marker=tank/docs/implementation/V6-ANDROID-SOFTWARE-ACCEPTANCE.json
           test -f "$marker" || { echo "::error::V6 plan is not complete. APK release build is disabled."; exit 1; }
           python3 - "$marker" <<'PY'
-          import json,sys
+          import json,sys,re,subprocess
           doc=json.load(open(sys.argv[1],encoding='utf-8'))
-          assert doc.get('all_software_modifications_complete') is True
-          assert doc.get('all_software_acceptance_tests_passed') is True
-          assert doc.get('owner_approved_apk_build') is True
-          assert doc.get('verified_commit_sha'), 'missing tested commit SHA'
-          print("V6 software completion and APK build approval verified")
+          assert doc.get('all_software_modifications_complete') is True, 'source modifications incomplete'
+          assert doc.get('all_software_acceptance_tests_passed') is True, 'V6 software acceptance incomplete'
+          assert doc.get('owner_approved_apk_build') is True, 'owner has not authorized APK production'
+          assert doc.get('release_authorization')=='OWNER_APPROVED_RELEASE', 'explicit owner release decision missing'
+          verified=doc.get('verified_commit_sha') or ''
+          assert re.fullmatch('[0-9a-f]{40}',verified), 'tested full Git SHA required'
+          head=subprocess.check_output(['git','-C','tank','rev-parse','HEAD'],text=True).strip()
+          assert subprocess.run(['git','-C','tank','merge-base','--is-ancestor',verified,head],
+                                check=False).returncode==0,'tested commit is not ancestor of checkout'
+          # Approval modifies the acceptance JSON AFTER verifying the code;
+          # do not demand a self-referential SHA of that file. Disallow every
+          # source/CI/firmware/data edit between tested commit and release.
+          changed=set(subprocess.check_output(
+              ['git','-C','tank','diff','--name-only',verified,head],
+              text=True).splitlines())
+          allowed={'docs/implementation/V6-ANDROID-SOFTWARE-ACCEPTANCE.json'}
+          assert changed<=allowed,'unaudited changes since tested commit: '+', '.join(sorted(changed-allowed))
+          print('V6 software completion, tested source ancestry and explicit owner APK approval verified')
           PY
 
       - name: Package V6 ESP32 and ESP32-CAM Arduino firmware source
