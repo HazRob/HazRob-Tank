@@ -2,6 +2,7 @@ package com.servoc.app.chemical;
 
 import android.database.Cursor;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import com.servoc.app.data.ExperimentsDb;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,6 +95,39 @@ public final class ChemicalRepository {
             android.util.Log.w("TankUnifiedChemCatalog",
                 "Cannot read source-qualified hazard profile uid="+uid,ex);
         }
+        // These observations are linked via applicable MQ sensor MODELS,
+        // never via chemical identity. An external sensor's R0/Rs MUST NOT
+        // populate this material's operational R0/ppm or G3 fields.
+        JSONArray peers=new JSONArray();
+        try(Cursor study=db.getReadableDatabase().rawQuery(
+                "SELECT se.coefficients,se.source_id,se.sensor_key,se.status,ss.url "+
+                "FROM sensor_evidence se JOIN scientific_sources ss ON "+
+                "ss.source_id=se.source_id WHERE se.chemical_uid IS NULL "+
+                "AND se.evidence_type='EXTERNAL_PEER_R0_RS' "+
+                "AND EXISTS(SELECT 1 FROM mq_chemical_reference_curves mc "+
+                "WHERE mc.chemical_uid=? AND mc.sensor_model=se.sensor_key) "+
+                "ORDER BY se.sensor_key,se.source_id,se.id LIMIT 100",
+                new String[]{Long.toString(uid)})){
+            while(study.moveToNext()){
+                JSONObject evidence=new JSONObject(study.getString(0));
+                evidence.put("source_id",study.getString(1));
+                evidence.put("sensor_model",study.getString(2));
+                evidence.put("evidence_status",study.getString(3));
+                evidence.put("source_url",study.isNull(4)?JSONObject.NULL:study.getString(4));
+                evidence.put("scope","OTHER_DEVICE_SENSOR_RESEARCH_ONLY");
+                evidence.put("is_material_specific_r0",false);
+                evidence.put("usable_as_tank_r0",false);
+                peers.put(evidence);
+            }
+        }catch(Exception err){
+            android.util.Log.w("TankUnifiedChemCatalog",
+                "Peer sensor R0/Rs research references not readable",err);
+        }
+        try{
+            out.put("external_mq_r0_rs_sensor_studies",peers);
+            out.put("external_mq_r0_rs_study_count",peers.length());
+            out.put("external_r0_rs_not_material_constants",true);
+        }catch(Exception ignored){}
         return out;
     }
 
