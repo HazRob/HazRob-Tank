@@ -81,5 +81,58 @@ class MQ4LODOFoldContextTests(unittest.TestCase):
         self.assertFalse(a['lag_features_used_by_a_model_verified'])
 
 
+    def test_two_way_purge_requires_full_longest_lag_history(self):
+        times = [datetime(2021, 7, 21, 23) + timedelta(minutes=i)
+                 for i in range(181)]
+        r = lodo_context(times, lags=(1, 60, 120))
+        self.assertEqual(r['max_lag_minutes'], 120)
+        self.assertEqual(r['timestamp_eligible_rows_all_lags'], 61)
+        late = r['lodo_folds']['2021-07-22']
+        self.assertEqual(late['timestamp_eligible_holdout_rows_all_lags'], 61)
+        self.assertEqual(late['holdout_rows_with_training_context_excluded'], 60)
+        self.assertEqual(late['holdout_rows_remaining_after_context_exclusion'], 1)
+        early = r['lodo_folds']['2021-07-21']
+        self.assertEqual(early['training_rows_with_holdout_context_purged'], 60)
+        self.assertEqual(early['training_rows_remaining_after_context_purge'], 1)
+        self.assertFalse(r['actual_purged_split_verified'])
+
+    def test_middle_day_both_directions_are_separate(self):
+        times = [datetime(2021, 7, 21, 23) + timedelta(minutes=i)
+                 for i in range(60 + 1440 + 60)]
+        r = lodo_context(times, lags=(60,))
+        self.assertEqual(r['timestamp_eligible_rows_all_lags'], 1500)
+        middle = r['lodo_folds']['2021-07-22']
+        self.assertEqual(middle['timestamp_eligible_holdout_rows_all_lags'], 1440)
+        self.assertEqual(middle['timestamp_eligible_training_rows_all_lags'], 60)
+        self.assertEqual(middle['holdout_rows_with_training_context_excluded'], 60)
+        self.assertEqual(middle['training_rows_with_holdout_context_purged'], 60)
+        self.assertEqual(middle['holdout_rows_remaining_after_context_exclusion'], 1380)
+        self.assertEqual(middle['training_rows_remaining_after_context_purge'], 0)
+
+    def test_discontinuous_midnight_context_does_not_trigger_purge(self):
+        times = [datetime(2021, 7, 21, 23, 58),
+                 datetime(2021, 7, 21, 23, 59),
+                 datetime(2021, 7, 22, 0, 2),
+                 datetime(2021, 7, 22, 0, 3)]
+        r = lodo_context(times, lags=(1,))
+        self.assertEqual(r['timestamp_eligible_rows_all_lags'], 2)
+        for fold in r['lodo_folds'].values():
+            self.assertEqual(fold['holdout_rows_with_training_context_excluded'], 0)
+            self.assertEqual(fold['training_rows_with_holdout_context_purged'], 0)
+            self.assertEqual(fold['holdout_rows_remaining_after_context_exclusion'], 1)
+            self.assertEqual(fold['training_rows_remaining_after_context_purge'], 1)
+
+    def test_timestamp_eligibility_not_independent_evidence(self):
+        times = [datetime(2021, 7, 21, 23, 59) + timedelta(minutes=i)
+                 for i in range(5)]
+        r = lodo_context(times, lags=(1,))
+        self.assertTrue(r['hypothetical_two_way_purge_plan'])
+        self.assertFalse(r['actual_train_test_split_verified'])
+        self.assertFalse(r['calendar_day_physical_independence_verified'])
+        self.assertFalse(r['g2_qualified'])
+        self.assertFalse(r['g3_tank_qualified'])
+
+
+
 if __name__ == '__main__':
     unittest.main()
