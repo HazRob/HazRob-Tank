@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 pinned MQ4 numeric integrity and plateau audit
+
+- Resumed from `531eb31897852f636f6aa0ff8528490c2bbff770`; previous G2 CI 20/20 successful. Research scope remains pinned 80 techniques/14 external source slots, 0/80 candidates, 0/14 source-qualified, independent evidence records=[].
+- Independently materialized original user Library archive and SHA256-verified ZIP `7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9` and raw CSV `3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d`. 14,186/14,186 rows passed finite/positive MQ4, nonnegative reference methane, valid RH and strict monotonic timestamp checks; 8 new synthetic tests passed locally.
+- MQ4_1/MQ4_2/MQ4_3 distinct values: 10716/10691/**119**; identical adjacent pairs: 7/13/**5906** (41.64% of MQ4_3 consecutive pairs), longest MQ4_3 plateau 15. Possible different measurement discretization; hardware cause unknown.
+- Added `g2_mq4_numeric_integrity_audit.py`, `test_g2_mq4_numeric_integrity_audit.py`, pinned raw replay `G2_MQ4_PINNED_NUMERIC_INTEGRITY_2026-10-30.json`, and Arabic methods note `G2_MQ4_NUMERIC_INTEGRITY_AND_PLATEAU_AUDIT_2026-10-30_AR.md`.
+- CI must confirm all G2 tests, deterministic audit replay and publication guard at final HEAD. Numeric source integrity is NOT reference calibration traceability, physical exposure independence, model generalization or G2/G3 qualification. No ChemCore Stable, Android, firmware or main edits.
+- Next: source calibration certificates, authenticated exposure/sample/session/device IDs, preregistered blinded physically grouped holdouts; test channel plateau impact only under research constraints.
+
+---
+
 ## 2026-10-30 — G2 MQ4 hypothetical LODO two-way purge and max-lag eligibility
 
 - Resumed from `c8ed513abf9bb760ece24e1b734720b6c26bd4c6`; verified 20/20 prior CI workflow successes, pinned 80 techniques / 14 external source slots. Independent evidence remains `records=[]`, 0/14 qualified sources, 0/80 G2 candidates.
