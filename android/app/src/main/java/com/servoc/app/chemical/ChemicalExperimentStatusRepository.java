@@ -27,25 +27,40 @@ public final class ChemicalExperimentStatusRepository {
         public final ChemicalRepository.Chemical chemical;
         public final Level fingerprint, ppm;
         public final boolean m4, tested, referenceCurve, referenceFingerprint,
-                referencePpm, referenceM4, publishedM4Qualified;
+                referencePpm, referenceM4, publishedM4Qualified,
+                publishedFingerprintQualified, publishedCurveQualified, publishedPpmQualified;
         public final String evidenceRevision;
 
         Row(ChemicalRepository.Chemical chemical, Level fingerprint, Level ppm,
             boolean m4, boolean tested, String evidenceRevision,
             boolean curveRef, boolean fingerprintRef, boolean ppmRef, boolean m4Ref,
-            boolean m4Qualified) {
+            boolean m4Qualified, boolean fpQualified, boolean curveQualified,
+            boolean ppmQualified) {
             this.chemical=chemical;this.fingerprint=fingerprint;this.ppm=ppm;
             this.m4=m4;this.tested=tested;
             this.referenceCurve=curveRef;this.referenceFingerprint=fingerprintRef;
             this.referencePpm=ppmRef;this.referenceM4=m4Ref;this.publishedM4Qualified=m4Qualified;
+            this.publishedFingerprintQualified=fpQualified;
+            this.publishedCurveQualified=curveQualified;
+            this.publishedPpmQualified=ppmQualified;
             this.evidenceRevision=evidenceRevision==null?"":evidenceRevision;
         }
 
-        public String fingerprintMark(){return mark(fingerprint);}
-        public String ppmMark(){return mark(ppm);}
+        public String fingerprintMark(){
+            return fingerprint==Level.READY?"✓ جهاز":
+                publishedFingerprintQualified?"✓ مكتبة":
+                referenceFingerprint?"◐ مكتبة":mark(fingerprint);
+        }
+        public String ppmMark(){
+            return ppm==Level.READY?"✓ جهاز":
+                publishedPpmQualified?"✓ مكتبة":
+                referencePpm?"◐ مكتبة":mark(ppm);
+        }
         public String m4Mark(){return m4?"✓ جهاز":publishedM4Qualified?"✓ مكتبة":
                 referenceM4?"◐ مكتبة":"—";}
-        public String curveMark(){return referenceCurve?"◐ مكتبة":ppm==Level.READY?"✓ منحنى":"—";}
+        public String curveMark(){return ppm==Level.READY?"✓ منحنى":
+                publishedCurveQualified?"✓ مكتبة":
+                referenceCurve?"◐ مكتبة":"—";}
         public String capabilityLine(){
             return "بصمة "+fingerprintMark()+" • منحنى "+curveMark()+
                 " • PPM "+ppmMark()+" • M4 "+m4Mark();
@@ -105,6 +120,9 @@ public final class ChemicalExperimentStatusRepository {
             "SELECT 1 FROM chemical_reference_updates_v6 WHERE chemical_uid=? "+
             "AND property_key='m4_reference' AND "+
             "evidence_status='PUBLISHED_LIBRARY_QUALIFIED' LIMIT 1",c.uid);
+        boolean fpQualified=publishedQualified(c.uid,"fingerprint_reference");
+        boolean curveQualified=publishedQualified(c.uid,"mq_curve_reference");
+        boolean ppmQualified=publishedQualified(c.uid,"ppm_reference");
         if(fingerprint==Level.NONE&&referenceFp)fingerprint=Level.PARTIAL;
 
         boolean anyActiveCurve=false,strictM4=false;
@@ -123,7 +141,16 @@ public final class ChemicalExperimentStatusRepository {
         return new Row(c,fingerprint,ppm,strictM4,
             tested||referenceFp||referenceCurve||referencePpm||referenceM4,
             revision,referenceCurve,referenceFp,referencePpm,referenceM4,
-            publishedM4Qualified);
+            publishedM4Qualified,fpQualified,curveQualified,ppmQualified);
+    }
+
+    private boolean publishedQualified(long uid,String key){
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+            "SELECT 1 FROM chemical_reference_updates_v6 WHERE chemical_uid=? "+
+            "AND property_key=? AND evidence_status='PUBLISHED_LIBRARY_QUALIFIED' LIMIT 1",
+            new String[]{Long.toString(uid),key})){
+            return c.moveToFirst();
+        }catch(Exception ignored){return false;}
     }
 
     /** Revision shown beside the matrix so the developer can verify which active central snapshot drives status. */
