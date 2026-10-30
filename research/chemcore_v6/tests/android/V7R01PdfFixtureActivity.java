@@ -154,6 +154,44 @@ public final class V7R01PdfFixtureActivity extends Activity {
         status.put("v7_shared_layout_kit","ANDROID_2_PAGE_PORTRAIT_LANDSCAPE_BLANK_RENDER");
     }
 
+    /** R03 geometry-only Android proof: no sampled curves or candidate hazards. */
+    private void exerciseR03ChartGeometry()throws Exception {
+        PdfDocument pdf=new PdfDocument();
+        try {
+            for(int index=1;index<=3;index++){
+                PdfDocument.Page page=V7ReportLayoutKit.open(pdf,index,true);
+                Canvas c=page.getCanvas();c.drawColor(Color.WHITE);
+                V7ReportLayoutKit.drawHeader(c,this,true,
+                    "تقرير الجلسة الميدانية", "R03 Field Session Geometry", "-");
+                if(index==1)V7FieldChartLayout.drawFirstFour(c);
+                else if(index==2)V7FieldChartLayout.drawAdvancedPage(c);
+                else {
+                    float x=V7FieldChartLayout.MM*5f;
+                    float y=V7FieldChartLayout.MM*27f;
+                    float w=V7FieldChartLayout.MM*287f;
+                    V7ReportLayoutKit.tableHeader(c,
+                        new RectF(x,y,x+w,y+V7FieldChartLayout.MM*16f),
+                        "المرشحون، GHS، المرجع، مقارنة PPM / Candidate columns",
+                        true);
+                    float m=V7FieldChartLayout.MM;
+                    V7FieldChartLayout.blankPpmMicro(c,new RectF(
+                        x,y+16*m,x+70*m,y+48*m));
+                    V7ReportLayoutKit.tableValue(c,new RectF(
+                        x+70*m,y+16*m,x+w,y+48*m),"-",true);
+                }
+                V7ReportLayoutKit.drawFooter(c,true,index,3);
+                pdf.finishPage(page);
+            }
+            ByteArrayOutputStream out=new ByteArrayOutputStream();
+            pdf.writeTo(out);
+            store("V7_R03_Blank_Layout_Actual_Android.pdf",out);
+        }finally{pdf.close();}
+        int p=verify("V7_R03_Blank_Layout_Actual_Android.pdf");
+        if(p!=3)throw new IllegalStateException("R03 geometry page count "+p);
+        status.put("v7_r03_geometry",
+            "3 PAGE ANDROID BLANK DESIGN ONLY; NO REPORT OR MEASUREMENT");
+    }
+
     private void execute()throws Exception {
         com.servoc.app.chemical.GhsPictograms.bindContext(this);
         TankInstantV7PdfWriter.bindContext(this);
@@ -177,6 +215,7 @@ public final class V7R01PdfFixtureActivity extends Activity {
         TankInstantReportPdf.write(bytes,telemetry,actual,"CI-DEMO-V6-ONE-SHOT",1793376000000L);
         exerciseV7FlexiblePagination();
         exerciseV7BlankLayoutKit();
+        exerciseR03ChartGeometry();
         store("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf",bytes);
         verify("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf");
         bytes=new ByteArrayOutputStream();
