@@ -1,3 +1,43 @@
+# HazRob Tank — آخر بناء للتطبيق والفريمويرين: V6 / Latest development builds V6
+
+> **تحديث موثّق: 30 أكتوبر 2026.** أحدث تطبيق Android تم بناؤه، وأحدث فيرموير للتحكم ESP32-Tank، وأحدث فيرموير للكاميرا Cam-tank في هذا المشروع هي جميعًا **الإصدار السادس V6**. المقصود أحدث **حزم تطوير مجمّعة وقابلة للاختبار**، وليس اعتماد إصدار إنتاجي أو إثبات سلامة القياسات على الروبوت الحقيقي. الفرع المعتمد للتطوير: [`feature/tank-v6-implementation`](https://github.com/HazRob/HazRob-Tank/tree/feature/tank-v6-implementation). أما `main` فهو فرع المستودع الافتراضي وليس دليلًا على دمج جميع ملفات V6 إليه.
+
+## سجل أحدث الإصدارات / Current version register
+
+| المنتج | آخر إصدار V6 | ملفات المصدر / الحزمة | دليل البناء |
+| --- | --- | --- | --- |
+| **تطبيق الدبابة Android APK** | **V6** — `versionName=6.0`, `versionCode=6`, `applicationId=com.hazrob.tank`; Android 12 | [تحميل Artifact واستخراج `HazRob-Tank-V6-Diagnostic.apk`](https://github.com/HazRob/HazRob-Tank/actions/runs/41102976044/artifacts/12999965690) | [Actions 41102976044 — SUCCESS](https://github.com/HazRob/HazRob-Tank/actions/runs/41102976044)، عند `213f3bf89288fcdde76eebdbc7ee0d2973eeb139`؛ توقيع **Debug** وليس توقيع ترقية مثبتًا |
+| **فيرموير ESP32-Tank** | **V6** — `ESP32-Tank 0.1.6-v6-quickr0-dev`؛ API 4 | [حزمة ESP32-Tank V6، مشروع Arduino + BIN](https://github.com/HazRob/HazRob-Tank/actions/runs/41093126933/artifacts/12995795016)؛ افتح `ESP32-Tank/ESP32-Tank.ino` | [Actions 41093126933 — SUCCESS](https://github.com/HazRob/HazRob-Tank/actions/runs/41093126933)، تجميع Arduino-ESP32 **3.3.11** للوحة `esp32:esp32:esp32` |
+| **فيرموير Cam-tank (ESP32-CAM)** | **V6** — `Cam-tank 0.1.4-v6-candidate` | [حزمة Cam-tank V6، مشروع Arduino + BIN](https://github.com/HazRob/HazRob-Tank/actions/runs/41093126933/artifacts/12994304170)؛ افتح `Cam-tank/Cam-tank.ino` | [Actions 41093126933 — SUCCESS](https://github.com/HazRob/HazRob-Tank/actions/runs/41093126933)، تجميع Arduino-ESP32 **3.3.11** للوحة `esp32:esp32:esp32cam` / AI Thinker |
+
+**مهم لتنزيل الملفات:** ملفات GitHub Actions من نوع Artifact تصل كأرشيف ZIP. حزمة التطبيق تحتوي **ملف APK مستقل** بعد فك الضغط، وليست تطبيقًا بصيغة ZIP. حزم الفريموير تحتوي ملفات مصدر Arduino، بما فيها `.ino` و`.h` و`.cpp`، بالإضافة إلى ملفات BIN وملف معلومات البناء. يجب فتح مشروع `.ino` من مجلده داخل Arduino IDE؛ **لا تستخدم Add .ZIP Library**.
+
+## التغييرات المنجزة في مسار V6 / V6 change log
+
+1. **Android وواجهات المشغّل:** هوية `HazRob Tank` مستقلة عن HazRob رباعي العجلات؛ الدخول إلى التطبيق لا يشترط تساوي نص رقم نسخة Android وفيرموير ESP32. جرى تطوير واجهات القياسات، المختبر، البحث الكيميائي، حالات المواد، المواقع والجلسات والتقارير، مع بقاء اختبارات الاستخدام الفعلية منفصلة عن نجاح التجميع.
+2. **ChemCore V6:** إنشاء مسار استدلال مستقل `com.hazrob.tank.chemcore.v6` بدل تحويل نتائج محرك HazRob القديم إلى نتائج مؤكدة. تستخدم البصمات ومنحنيات MQ وميزات القياس والاستدلال المرجعي لأغراض بحثية؛ **لا يثبت ذلك هوية غاز أو ppm معتمدًا**. حالات الهواء النظيف، غياب R0 الموثوق، وعيوب القياس لا تطلق إنذارات غاز وهمية. يبقى تحذير Echo وإيقاف الحركة المستقلين عن بوابة ادعاء الغازات.
+3. **معايرة R0 V6 موحّدة:** **180 ثانية تسخين + نافذة قياس واحدة 60 ثانية**، مع قبول منفصل وبيانات مصدر ومعالجة NVS؛ لا يُستخدم R0 منشور من دراسة أخرى كمعايرة لروبوت الدبابة. لا توجد قيمة R0 ميدانية مصطنعة داخل نسخة V6.
+4. **المكتبة الكيميائية الموحدة SQLite V14:** **734 مادة بمعرّفات UID مستقلة** (منها 725 لها CAS مباشر أو رابط مرادف موثق و9 مسميات غير مفردة)، و**49 منحنى/مرجع MQ بحثي** و**25 ملاحظة R0/Rs خارجية** محفوظة مع سياق المصدر. القيم الناقصة تبقى `NULL`، والتصنيف المرجعي GHS لا يُرقّى تلقائيًا إلى إنذار تشغيلي.
+5. **Stable دون اتصال:** تضمين Stable `1.0.0-hr069r1` بــ **652 هوية جزيئية** و49 سابقة استجابة بحثية و**صفر معايرات M4 مثبتة على الدبابة**، مع فحص SHA-256 داخل بناء APK؛ طبقة Stable لا تحل محل سجل المواد الموحد ذي 734 UID.
+6. **تحديث سجلات المكتبة بالاستعلام، لا تنزيل المكتبة كاملة:** `ChemicalReferenceSyncV6` يستعلم عن فهرس السجلات المعدلة حسب UID/CAS وSHA-256 ويجلب عند الحاجة السجل الصغير المتغير (حتى 25 سجلًا في الطلب)، دون استبدال Stable الكامل في عملية التحديث المعتادة. تتحدث قوائم المواد وحالات **البصمة | منحنى MQ | PPM مرجعي | M4 مرجعي** مباشرة بعد التطبيق. قبول حالة `AVAILABLE` أو `QUALIFIED` المنشورة مسؤولية المكتبة المركزية؛ الهاتف يتحقق فقط من سلامة النقل والهوية والبنية، ولا يعيد التأهيل العلمي.
+7. **إصلاحات آخر اللمسات:** سحب خاصية منشورة يُزيلها من جميع القوائم؛ السجل المنشور الخالي من الخصائص يسحب **القدرات الأربع كلها**؛ وجود مصدر إضافي بحالة `AVAILABLE` لا يُنزل حالة `QUALIFIED` لمصدر آخر. أضيفت اختبارات مصدر ومحاكي لهذه الحالات. [اختبار المصدر العلمي 41102007946 — SUCCESS](https://github.com/HazRob/HazRob-Tank/actions/runs/41102007946).
+8. **المواقع والجلسات ونتائج الفحص:** تدقيق ترحيل قاعدة البيانات، اعتماد الجلسات والحذف، تقارير PDF/Excel، فصل الملاحق البحثية عن النتائج المؤهلة، وتصنيف GHS. وظيفة **نضارة الأغذية (اللحوم/الفواكه)** مستقلة عن ChemCore المخصص للغازات.
+9. **فيرموير ESP32-Tank:** سيرفوان مستمران للجنزير، حد مهلة أمر القيادة **500 ms**، قياسات MQ عبر ADS1115، BME على I²C مستقل، Echo للتحذير فقط، وإجراءات R0 الجديدة. **Cam-tank:** مشروع كاميرا AI-Thinker مستقل، عرض MJPEG محلي؛ معدل الإطارات والاتصال البعيد لم يُثبتا بعد على الجهاز الحقيقي.
+
+## حالة القبول وحدود V6 / Verification and release status
+
+- **PASS برمجي:** بناء APK تجريبي ووجود Stable المدمجة وتوقيع APK التجريبي، وتجميع الفريمويرين، واختبارات مصدر علمي محددة. أحدث APK هو **V6 diagnostic**؛ لا يساوي `production release`.
+- **ليس PASS ميدانيًا:** تفليش وحدتي ESP32 وESP32-CAM على العتاد، اتجاه المحركات وإيقاف الطوارئ وسلامة الاتصال، المعايرة بالغازات المرجعية، معدل FPS الفعلي، وتأكيد دقة هوية الغاز وppm. **G3 للروبوت الحقيقي = 0/80** حسب سجل المشروع.
+- **توقيع Android:** شهادة V5 المثبتة لم يثبت تطابقها مع مفتاح APK التجريبي V6؛ قد يرفض Android التحديث المباشر. **لا تحذف التطبيق السابق قبل حفظ بياناته وجلساته**.
+- **قناة نشر تحديثات المواد:** الفهرس `updates/chemcore-records/v6/index.json` الموجود بفرع التطوير بدأ فارغًا؛ لا يوجد إثبات نشر سجلات مؤهلة إنتاجية على `main`. لا يُشترط اختبار **تنزيل Stable الكامل عبر HTTPS** لإثبات طريقة **الاستعلام الجزئي** المتفق عليها؛ يلزم اختبار استعلام بيانات منشورة فعلًا عند توافرها.
+- **بوابة الإنتاج:** `docs/implementation/V6-ANDROID-SOFTWARE-ACCEPTANCE.json` ما زالت `NO_RELEASE`؛ إذن تسليم نسخ التطوير لا يعني إغلاق جميع بوابات إصدار إنتاجي معتمد. لا تُرفع أعلام القبول دون أدلة.
+
+**سجل الاستكمال:** [خطة قبول Android V6](https://github.com/HazRob/HazRob-Tank/blob/feature/tank-v6-implementation/docs/implementation/V6-ANDROID-COMPLETION-GATE-2026-10-30_AR.md) · [ملف القبول](https://github.com/HazRob/HazRob-Tank/blob/feature/tank-v6-implementation/docs/implementation/V6-ANDROID-SOFTWARE-ACCEPTANCE.json) · [تحديث السجلات الصغيرة](https://github.com/HazRob/HazRob-Tank/blob/feature/tank-v6-implementation/docs/implementation/V6-INCREMENTAL-CENTRAL-LIBRARY-SYNC-2026-10-30_AR.md) · [GitHub Actions](https://github.com/HazRob/HazRob-Tank/actions).
+
+---
+
+> **أرشيف الإصدارات السابقة:** الأقسام التالية تخص نقاط التقدم V2–V4 في وقت كتابتها. أرقام النسخ والعبارات من نوع "current" و"latest" فيها **تاريخية وليست الحالة الحالية**؛ سجل V6 أعلاه هو المرجع للأحدث.
+
 ## V4 engineering checkpoint — 2026-10-24 (UNRELEASED)
 
 - **Working branch:** [feature/tank-v4-implementation](https://github.com/HazRob/HazRob-Tank/tree/feature/tank-v4-implementation). Owner has authorized implementation. Canonical [V4 requirements](docs/requirements/V4-UPDATE-BACKLOG-2026-10-24.md), [execution plan](docs/implementation/V4-EXECUTION-PLAN-2026-10-24.md), and [durable progress log](docs/implementation/V4-PROGRESS-LOG-2026-10-24.md) govern continuation.
