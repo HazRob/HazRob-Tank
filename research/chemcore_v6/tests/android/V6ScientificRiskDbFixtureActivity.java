@@ -37,7 +37,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
         JSONObject out=new JSONObject();
         try(ExperimentsDb db=new ExperimentsDb(this)){
             SQLiteDatabase sql=db.getWritableDatabase();
-            check(sql.getVersion()==12,"SQLite V12");
+            check(sql.getVersion()==13,"SQLite V13");
             long original=num(sql,"SELECT COUNT(*) FROM chemicals");
             check(original>=140,"legacy coverage preserved");
             check(num(sql,"SELECT COUNT(*) FROM chemical_risk_profiles")==original,
@@ -59,6 +59,36 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             long legacy=num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog WHERE original_144_member=1");
             check(unified==materials&&unique==materials,"one selectable row per identity, no join duplication");
             check(legacy==144,"original 144 are retained as in-catalog membership flags");
+            // V13 hazard and chemistry metrics are one-to-one projections,
+            // never duplicate chemicals or convert UNKNOWN to nonhazardous.
+            long columns=num(sql,"SELECT COUNT(*) FROM pragma_table_info('v11_unified_chemical_catalog')");
+            check(columns>=75,"V13 scientific columns exposed in all chemical menus");
+            long lfl=num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog WHERE lfl_vol_pct IS NOT NULL");
+            long ufl=num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog WHERE ufl_vol_pct IS NOT NULL");
+            long unknown=num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog "+
+                "WHERE source_qualified_hazard_count=0");
+            check(unknown>0,"missing safety sources remain UNKNOWN, never forced false");
+            long oxygenUid=num(sql,"SELECT uid FROM chemicals WHERE cas='7782-44-7' LIMIT 1");
+            long benzeneUid=num(sql,"SELECT uid FROM chemicals WHERE cas='71-43-2' LIMIT 1");
+            long methaneUid=num(sql,"SELECT uid FROM chemicals WHERE cas='74-82-8' LIMIT 1");
+            check(oxygenUid>0&&benzeneUid>0&&methaneUid>0,"source-qualified example CAS found");
+            check(num(sql,"SELECT is_oxidizer FROM v11_unified_chemical_catalog WHERE uid="+oxygenUid)==1,
+                "oxygen documented oxidizer");
+            check(num(sql,"SELECT is_carcinogen FROM v11_unified_chemical_catalog WHERE uid="+benzeneUid)==1,
+                "benzene documented carcinogen");
+            check(num(sql,"SELECT is_asphyxiant FROM v11_unified_chemical_catalog WHERE uid="+methaneUid)==1,
+                "methane documented oxygen displacement hazard");
+            check(Math.abs(amount(sql,"SELECT flash_point_c FROM v11_unified_chemical_catalog WHERE uid="+benzeneUid)+11)<0.001,
+                "OSHA benzene flash point -11 C sourced");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_hazard_classifications WHERE evidence_status='SOURCE_QUALIFIED'")>=7,
+                "curated scientific hazard classifications imported");
+            check(num(sql,"SELECT COUNT(*) FROM chemcore_technique_evidence WHERE validation_gate='G3_PHYSICAL_PASSED'")==0,
+                "no G3 scientific technique promoted");
+            check(num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog WHERE chemcore_m4_status='G3_PHYSICAL_PASSED'")==0,
+                "no fictitious M4 successes");
+            check(num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog WHERE original_144_member=1")==144,
+                "V13 keeps 144 original identities exactly once");
+
             ChemicalRepository unifiedRepo=new ChemicalRepository(db);
             check(unifiedRepo.count()==materials,"actual UI repository exposes whole catalog");
             check(unifiedRepo.search("",5000).size()==materials,
@@ -75,6 +105,9 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 "OSHA high oxygen reference is preserved");
             check(num(sql,"SELECT COUNT(*) FROM chemical_ambient_benchmarks")>=1,
                 "natural ambient benchmark separate from safety limit");
+            check(lfl>=50&&ufl>=50,"existing pinned NIOSH LFL/UFL imported into unified view");
+            check(num(sql,"SELECT COUNT(*) FROM v11_unified_chemical_catalog WHERE lfl_vol_pct IS NULL")>0,
+                "nonflammable or missing LFL is NULL rather than false 0");
             check(osha>=500,"OSHA Z-1 verified packaged seed is loaded");
             check(nioshIdlh>=300,"NIOSH IDLH reference imported");
             check(limits>=osha+nioshIdlh,"all authority-specific entries retained");
@@ -99,12 +132,18 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(reached.sitePotentialHazard&&!reached.regulatoryTwaExceeded,
                 "instant concentration reaching PEL is site warning not TWA proof");
             out.put("status","PASS");
-            out.put("sqlite_version",12).put("legacy_rows",original)
+            out.put("sqlite_version",13).put("legacy_rows",original)
                 .put("post_authority_import_materials",materials)
                 .put("covered_profiles",profiles)
                 .put("unified_chemical_menu_rows",unified)
                 .put("unique_master_uids",unique)
                 .put("original_144_members",legacy)
+                .put("unified_view_columns",columns)
+                .put("materials_with_lfl",lfl)
+                .put("materials_with_ufl",ufl)
+                .put("hazard_source_classification_rows",num(sql,
+                    "SELECT COUNT(*) FROM chemical_hazard_classifications"))
+                .put("chemcore_g3_techniques",0)
                 .put("coverage_fraction",profiles/(double)materials)
                 .put("reference_limit_rows",limits)
                 .put("osha_z1_rows",osha).put("niosh_idlh_rows",nioshIdlh)
