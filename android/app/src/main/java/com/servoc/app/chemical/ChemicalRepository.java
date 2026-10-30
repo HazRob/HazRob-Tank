@@ -131,6 +131,33 @@ public final class ChemicalRepository {
             android.util.Log.w("TankUnifiedChemCatalog",
                 "Cannot read source-qualified hazard profile uid="+uid,ex);
         }
+        // Direct CAS and molecular-weight enrichment from NIST is independent
+        // of historical NIOSH synonyms and of unverified Tank gas detection.
+        // The exact row remains named and identified by its original UID.
+        try(Cursor nist=db.getReadableDatabase().rawQuery(
+                "SELECT c.cas,c.molar_mass,s.record_url FROM chemical_sources s "+
+                "JOIN chemicals c ON c.uid=s.chemical_uid "+
+                "JOIN chemical_identifiers i ON i.chemical_uid=c.uid "+
+                "AND i.source_id=s.source_id AND i.scheme='CAS' "+
+                "AND i.value=c.cas "+
+                "WHERE s.chemical_uid=? AND s.source_id='NIST_WEBBOOK' "+
+                "AND s.record_url='https://webbook.nist.gov/cgi/cbook.cgi?ID='||c.cas "+
+                "LIMIT 1",new String[]{Long.toString(uid)})){
+            if(nist.moveToFirst()){
+                JSONObject source=new JSONObject();
+                source.put("cas",nist.getString(0));
+                source.put("molecular_weight_g_per_mol",
+                    nist.isNull(1)?JSONObject.NULL:nist.getDouble(1));
+                source.put("source_id","NIST_WEBBOOK");
+                source.put("source_url",nist.getString(2));
+                source.put("identity_authority_only",true);
+                source.put("gas_detected",false);
+                out.put("nist_direct_cas_source",source);
+            }
+        }catch(Exception error){
+            android.util.Log.w("TankUnifiedChemCatalog",
+                "NIST direct CAS source query failed for uid="+uid,error);
+        }
         // A synonym pair from the NIOSH Pocket Guide points to the same
         // substance but does NOT erase the legacy UID or transplant exposure
         // evidence into old approved experiments. Surface both directions of
