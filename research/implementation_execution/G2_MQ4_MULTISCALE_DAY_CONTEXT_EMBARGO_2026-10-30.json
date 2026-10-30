@@ -1,0 +1,140 @@
+{
+  "calendar_day_split_physical_independence_verified": false,
+  "contiguous_one_minute_segment_count": 11,
+  "g2_qualified": false,
+  "g3_tank_qualified": false,
+  "lag_results": {
+    "1": {
+      "contiguous_lag_pairs": 14175,
+      "cross_day_context_rows_by_later_date": {
+        "2021-07-22": 1,
+        "2021-07-23": 1,
+        "2021-07-24": 1,
+        "2021-07-25": 1,
+        "2021-07-26": 1,
+        "2021-07-27": 1,
+        "2021-07-28": 1,
+        "2021-07-29": 1,
+        "2021-07-30": 1,
+        "2021-07-31": 1
+      },
+      "cross_day_context_rows_requiring_embargo_if_day_holdout": 10,
+      "cross_day_fraction_of_available_pairs": 0.0007054673721340388,
+      "lag_context_unavailable_rows": 11,
+      "lag_minutes": 1,
+      "same_day_context_rows": 14165
+    },
+    "5": {
+      "contiguous_lag_pairs": 14131,
+      "cross_day_context_rows_by_later_date": {
+        "2021-07-22": 5,
+        "2021-07-23": 5,
+        "2021-07-24": 5,
+        "2021-07-25": 5,
+        "2021-07-26": 5,
+        "2021-07-27": 5,
+        "2021-07-28": 5,
+        "2021-07-29": 5,
+        "2021-07-30": 5,
+        "2021-07-31": 5
+      },
+      "cross_day_context_rows_requiring_embargo_if_day_holdout": 50,
+      "cross_day_fraction_of_available_pairs": 0.003538320005661312,
+      "lag_context_unavailable_rows": 55,
+      "lag_minutes": 5,
+      "same_day_context_rows": 14081
+    },
+    "15": {
+      "contiguous_lag_pairs": 14031,
+      "cross_day_context_rows_by_later_date": {
+        "2021-07-22": 15,
+        "2021-07-23": 15,
+        "2021-07-24": 15,
+        "2021-07-25": 15,
+        "2021-07-26": 15,
+        "2021-07-27": 15,
+        "2021-07-28": 15,
+        "2021-07-29": 15,
+        "2021-07-30": 15,
+        "2021-07-31": 15
+      },
+      "cross_day_context_rows_requiring_embargo_if_day_holdout": 150,
+      "cross_day_fraction_of_available_pairs": 0.010690613641223007,
+      "lag_context_unavailable_rows": 155,
+      "lag_minutes": 15,
+      "same_day_context_rows": 13881
+    },
+    "30": {
+      "contiguous_lag_pairs": 13881,
+      "cross_day_context_rows_by_later_date": {
+        "2021-07-22": 30,
+        "2021-07-23": 30,
+        "2021-07-24": 30,
+        "2021-07-25": 30,
+        "2021-07-26": 30,
+        "2021-07-27": 30,
+        "2021-07-28": 30,
+        "2021-07-29": 30,
+        "2021-07-30": 30,
+        "2021-07-31": 30
+      },
+      "cross_day_context_rows_requiring_embargo_if_day_holdout": 300,
+      "cross_day_fraction_of_available_pairs": 0.02161227577263886,
+      "lag_context_unavailable_rows": 305,
+      "lag_minutes": 30,
+      "same_day_context_rows": 13581
+    },
+    "60": {
+      "contiguous_lag_pairs": 13581,
+      "cross_day_context_rows_by_later_date": {
+        "2021-07-22": 60,
+        "2021-07-23": 60,
+        "2021-07-24": 60,
+        "2021-07-25": 60,
+        "2021-07-26": 60,
+        "2021-07-27": 60,
+        "2021-07-28": 60,
+        "2021-07-29": 60,
+        "2021-07-30": 60,
+        "2021-07-31": 60
+      },
+      "cross_day_context_rows_requiring_embargo_if_day_holdout": 600,
+      "cross_day_fraction_of_available_pairs": 0.04417936823503424,
+      "lag_context_unavailable_rows": 605,
+      "lag_minutes": 60,
+      "same_day_context_rows": 12981
+    },
+    "120": {
+      "contiguous_lag_pairs": 12981,
+      "cross_day_context_rows_by_later_date": {
+        "2021-07-22": 120,
+        "2021-07-23": 120,
+        "2021-07-24": 120,
+        "2021-07-25": 120,
+        "2021-07-26": 120,
+        "2021-07-27": 120,
+        "2021-07-28": 120,
+        "2021-07-29": 120,
+        "2021-07-30": 120,
+        "2021-07-31": 120
+      },
+      "cross_day_context_rows_requiring_embargo_if_day_holdout": 1200,
+      "cross_day_fraction_of_available_pairs": 0.09244280101687082,
+      "lag_context_unavailable_rows": 1205,
+      "lag_minutes": 120,
+      "same_day_context_rows": 11781
+    }
+  },
+  "limitations": "No claim of actual model lag usage, physical independence, calibrated Tank ppm, blind holdout, or scientific G2/G3 promotion. Raw timestamps lack independently verified timezone and exposure IDs.",
+  "method": "Each lag requires every intervening interval to equal 60 seconds. Rows with prior-day lag context would require embargo or same-day-only feature construction if calendar-day holdouts and that lag feature were used.",
+  "model_use_of_lag_features_verified": false,
+  "mq4_channel_unit": "ohm",
+  "reference_concentration_unit": "ppb",
+  "row_count": 14186,
+  "schema": "hazrob.g2.mq4-multiscale-day-context-embargo.v1",
+  "source_archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_id": "MQ-ACQ-2026-06",
+  "source_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "source_member_sha256_verified": true,
+  "source_raw_member": "raw/MQ-ACQ-2026-06_umn_10ppm_data_csv.csv"
+}
