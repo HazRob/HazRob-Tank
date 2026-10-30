@@ -9,6 +9,7 @@ import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.MqDeviceR0LedgerV14;
 import com.servoc.app.data.MqExternalR0RsSeedV14;
 import com.servoc.app.calibration.ManualR0Calibration;
+import com.servoc.app.calibration.FirmwareR0Contract;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.servoc.app.chemical.ChemicalRepository;
@@ -241,6 +242,43 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             int threeWindowRows=MqDeviceR0LedgerV14.recordFirmwareApproved(
                 db,simulatorDevice,syntheticR0,simulatedThreeWindowCounts);
             check(threeWindowRows==8,"eight V6 3-window Rs-air records stored atomically");
+
+            JSONObject v6Pending=new JSONObject().put("schema",FirmwareR0Contract.V6_SCHEMA)
+                .put("state","resting").put("pending",false).put("committed",false)
+                .put("warmup_ms",300000).put("duration_ms",180000)
+                .put("window_count",3).put("window_index",2)
+                .put("r0_definition","DEVICE_CLEAN_AIR_RS_MEAN")
+                .put("protocol","V6_5M_WARM_3X3M_MEASURE_2X3M_POWERED_REST");
+            JSONObject v6Channels=new JSONObject();
+            for(String key:ManualR0Calibration.keys())
+                v6Channels.put(key,new JSONObject().put("samples",15)
+                    .put("r0",JSONObject.NULL));
+            v6Pending.put("channels",v6Channels);
+            FirmwareR0Contract.Progress rest=FirmwareR0Contract.progress(v6Pending);
+            check(rest.active()&&"resting".equals(rest.state)&&
+                rest.windowCount==3&&rest.windowIndex==2,
+                "V6 powered-rest phase recognized, with three-window progress");
+            JSONObject v6Committed=new JSONObject(v6Pending.toString());
+            v6Committed.put("state","ready").put("committed",true);
+            for(String key:ManualR0Calibration.keys())
+                v6Committed.getJSONObject("channels").getJSONObject(key)
+                    .put("samples",45).put("r0",syntheticR0.get(key));
+            check(FirmwareR0Contract.committedValues(v6Committed).size()==8,
+                "V6 NVS readback requires 8 channels with complete source definition");
+            boolean rejectedWrongDefinition=false;
+            try{
+                JSONObject bad=new JSONObject(v6Committed.toString());
+                bad.put("r0_definition","MQ_FACTOR_SCALED_R0_NOT_AIR_RS");
+                FirmwareR0Contract.committedValues(bad);
+            }catch(IllegalArgumentException expected){rejectedWrongDefinition=true;}
+            check(rejectedWrongDefinition,
+                "V6 schema cannot smuggle legacy V5 factor-scaled R0 under clean-air label");
+            ManualR0Calibration.load(
+                getSharedPreferences("N09_V14_SIMULATED_FIRMWARE_TEST",MODE_PRIVATE));
+            check("DEVICE_CLEAN_AIR_RS_MEAN".equals(ManualR0Calibration.getDefinition("mq2"))&&
+                ManualR0Calibration.getWindowCount("mq2")==3,
+                "phone reboot reload preserves explicit V6 clean-air R0 definition");
+
             check(num(sql,"SELECT COUNT(*) FROM mq_device_clean_air_baselines "+
                 "WHERE device_id='EMULATOR-NOT-A-PHYSICAL-TANK' AND "+
                 "r0_definition='DEVICE_CLEAN_AIR_RS_MEAN' AND "+
