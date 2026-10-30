@@ -268,8 +268,14 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                     "; bootstrap="+db.getMeta("v6_chemical_nist_cas_completion","missing"));
             check(num(sql,"SELECT COUNT(*) FROM chemical_sources "+
                 "WHERE source_id='NIST_WEBBOOK' AND "+
+                "source_key LIKE 'CAS:%' AND "+
                 "record_url LIKE 'https://webbook.nist.gov/cgi/cbook.cgi?ID=%'")==27,
-                "all 27 historical single substances carry permanent NIST SRD69 URLs");
+                "27 original pure substances retain dedicated permanent NIST CAS source URLs");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_sources "+
+                "WHERE source_id='NIST_WEBBOOK' AND "+
+                "source_key='V6_INVALID_CAS_REPAIR_UID:715' AND "+
+                "record_url='https://webbook.nist.gov/cgi/cbook.cgi?ID=100-47-0'")==1,
+                "Benzonitrile repair has independent 28th NIST SRD69 citation");
             check(num(sql,"SELECT COUNT(*) FROM chemicals WHERE "+
                 "uid IN (38,41,42,45,46,47,53,57,58,76,78,83,84,89,90,"+
                 "91,93,121,124,126,127,128,129,131,132,133,134) "+
