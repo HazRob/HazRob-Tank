@@ -30,7 +30,7 @@
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "N09_168_PASS_N14_SESSIONS_PASS_STABLE_N15_REAL_ANDROID_30_PASS_LIVE_GUARD_R0_TEXT_FIX_STABLE_CANDIDATE_ARTIFACT_READY_NO_PUBLICATION; SIGNING_AND_FULL_UI_OPEN",
+  "latest_scope": "V6_OWNER_CONDITIONAL_FINAL_APK_AND_ESP32_CAM_FIRMWARE_DELIVERY_AUTHORIZED_AFTER_PLAN_COMPLETE; N09_168_PASS N14_29_PASS N15_30_PASS; NO_RELEASE_UNTIL_FINISHED",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -85,7 +85,8 @@
     "corrupt_rollback_refused_without_pointer_swap": true,
     "live_measurement_status_recheck_after_download": true,
     "actual_https_download_from_public_main_tested": false,
-    "release_gate": "PENDING_PUBLIC_MANIFEST_PAYLOAD_PAIR_AND_ONLINE_VERIFIED_DOWNLOAD; NO_RELEASE"
+    "release_gate": "PENDING_PUBLIC_MANIFEST_PAYLOAD_PAIR_AND_ONLINE_VERIFIED_DOWNLOAD; NO_RELEASE",
+    "real_android_offline_rollback_confirmed": true
   },
   "hourly_progress_monitoring": {
     "automation_active": true,
@@ -201,6 +202,17 @@
     "extended_sessions_and_reports_result": "PASS_ANDROID12_API31_21_OR_MORE_ASSERTIONS_REAL_TAB_CONSTRUCT_NAV_CLICK",
     "live_robot_ui_soak": "NOT_PERFORMED",
     "full_app_software_acceptance": "OPEN",
-    "emulator_scope": "OFFLINE_UI_NO_REAL_ESP32"
+    "emulator_scope": "OFFLINE_UI_NO_REAL_ESP32",
+    "settings_r0_and_stable_update_control_run": 41091932120,
+    "settings_r0_and_stable_update_control_result": "PASS_ANDROID12_29_ASSERTIONS"
+  },
+  "owner_delivery_authorization": {
+    "instruction_date_utc": "2026-10-30T16:44:50Z",
+    "instruction": "AFTER_FULL_PLAN_COMPLETION_PRODUCE_ANDROID_V6_APK_AND_ESP32_PLUS_ESP32_CAM_V6_FIRMWARE",
+    "approval_type": "CONDITIONAL_ON_ALL_TESTS_AND_RELEASE_GATES",
+    "explicit_build_request_received": true,
+    "may_waive_scientific_or_software_acceptance": false,
+    "build_activated_now": false,
+    "operator_will_not_be_asked_to_repeat_same_authorization_after_pass": true
   }
 }
