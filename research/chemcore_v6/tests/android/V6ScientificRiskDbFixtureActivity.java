@@ -7,6 +7,17 @@ import android.os.Bundle;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.chemical.ChemicalRepository;
+import com.servoc.app.chemical.GhsPictograms;
+import com.servoc.app.report.TankInstantReportPdf;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.graphics.pdf.PdfRenderer;
+import android.os.ParcelFileDescriptor;
+import org.json.JSONArray;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import com.hazrob.tank.chemcore.v6.V6ScientificThresholdPolicy;
 import org.json.JSONObject;
 import java.io.FileOutputStream;
@@ -32,6 +43,73 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             s.write(d.toString(2).getBytes(StandardCharsets.UTF_8));
         }
     }
+    private int checkRealOfflineGhsGraphics(ExperimentsDb db,long benzeneUid,long oxygenUid)
+        throws Exception {
+        GhsPictograms.bindContext(this);
+        List<String> benzene=GhsPictograms.forChemical(db,benzeneUid);
+        List<String> oxygen=GhsPictograms.forChemical(db,oxygenUid);
+        check(benzene.contains("GHS02") && benzene.contains("GHS08"),
+            "benzene has original verified flame and chronic health pictograms");
+        check(oxygen.contains("GHS03") && !oxygen.contains("GHS02"),
+            "O2 displays oxidizer, never flammable");
+        check(!GhsPictograms.valid("GHS10"),"radiation not a fabricated GHS code");
+        for(int n=1;n<=9;n++){
+            String id=String.format(java.util.Locale.US,"ghs_%02d",n);
+            int res=getResources().getIdentifier(id,"drawable",getPackageName());
+            check(res!=0,"all 9 bundled offline GHS drawables exist: "+id);
+            Drawable drawable=getDrawable(res);
+            check(drawable!=null,"vector parses: "+id);
+            Bitmap b=Bitmap.createBitmap(128,128,Bitmap.Config.ARGB_8888);
+            Canvas canvas=new Canvas(b);
+            canvas.drawColor(0xFFFFFFFF);
+            drawable.setBounds(0,0,128,128);
+            drawable.draw(canvas);
+            int red=0,black=0;
+            for(int y=0;y<128;y+=2)for(int x=0;x<128;x+=2){
+                int pixel=b.getPixel(x,y);
+                int rr=(pixel>>16)&255,gg=(pixel>>8)&255,bb=pixel&255;
+                if(rr>145&&rr>gg*1.35&&rr>bb*1.35)red++;
+                if(rr<115&&gg<115&&bb<115)black++;
+            }
+            check(red>50&&black>20,"nonblank red diamond and black hazard glyph "+id+
+                " red="+red+" black="+black);
+            b.recycle();
+        }
+        JSONObject report=new JSONObject();
+        report.put("schema","hazrob-tank-v6-android-telemetry-bridge/1");
+        report.put("candidates",new JSONArray().put(new JSONObject()
+            .put("chemical_uid",benzeneUid).put("label","Benzene")
+            .put("ghs_pictograms",GhsPictograms.asJson(benzene))));
+        report.put("source_curve_hypotheses",new JSONArray());
+        File file=new File(getFilesDir(),"n09_ghs_report.pdf");
+        try(FileOutputStream out=new FileOutputStream(file)){
+            TankInstantReportPdf.write(out,new JSONObject().put("mq",new JSONObject()),
+                report,"INSTANT-GHS-TEST",1761782400000L);
+        }
+        int red=0,black=0;
+        try(ParcelFileDescriptor descriptor=ParcelFileDescriptor.open(file,
+                ParcelFileDescriptor.MODE_READ_ONLY);
+            PdfRenderer pdf=new PdfRenderer(descriptor)){
+            check(pdf.getPageCount()==2,
+                "GHS source-qualified candidate creates 2nd report page");
+            try(PdfRenderer.Page p=pdf.openPage(1)){
+                Bitmap page=Bitmap.createBitmap(595,842,Bitmap.Config.ARGB_8888);
+                page.eraseColor(0xFFFFFFFF);
+                p.render(page,null,null,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+                for(int y=140;y<280;y++)for(int x=40;x<230;x++){
+                    int pixel=page.getPixel(x,y);
+                    int rr=(pixel>>16)&255,gg=(pixel>>8)&255,bb=pixel&255;
+                    if(rr>145&&rr>gg*1.35&&rr>bb*1.35)red++;
+                    if(rr<100&&gg<100&&bb<100)black++;
+                }
+                page.recycle();
+            }
+        }
+        check(red>40&&black>40,
+            "actual PDF page contains rasterized official GHS vector artwork");
+        return red;
+    }
+
     private void execute()throws Exception {
         deleteDatabase("servoc.db");
         JSONObject out=new JSONObject();
@@ -72,6 +150,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             long benzeneUid=num(sql,"SELECT uid FROM chemicals WHERE cas='71-43-2' LIMIT 1");
             long methaneUid=num(sql,"SELECT uid FROM chemicals WHERE cas='74-82-8' LIMIT 1");
             check(oxygenUid>0&&benzeneUid>0&&methaneUid>0,"source-qualified example CAS found");
+            int pdfGhsRedPixels=checkRealOfflineGhsGraphics(db,benzeneUid,oxygenUid);
             check(num(sql,"SELECT is_oxidizer FROM v11_unified_chemical_catalog WHERE uid="+oxygenUid)==1,
                 "oxygen documented oxidizer");
             check(num(sql,"SELECT is_carcinogen FROM v11_unified_chemical_catalog WHERE uid="+benzeneUid)==1,
@@ -158,6 +237,9 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 .put("hazard_source_classification_rows",num(sql,
                     "SELECT COUNT(*) FROM chemical_hazard_classifications"))
                 .put("chemcore_g3_techniques",0)
+                .put("bundled_ghs_vector_assets",9)
+                .put("ghs_pdf_vector_raster_red_pixels",pdfGhsRedPixels)
+                .put("ghs_pdf_page_count",2)
                 .put("coverage_fraction",profiles/(double)materials)
                 .put("reference_limit_rows",limits)
                 .put("osha_z1_rows",osha).put("niosh_idlh_rows",nioshIdlh)
