@@ -119,11 +119,11 @@ public final class ChemicalHazardSeedV11 {
         nominal(db,co2,"GLOBAL_MARINE_SURFACE_DRY_AIR_MONTHLY_MEAN",426.10,"ppm",
             "2026-07","NOAA_GML_2026_07_CO2","OBSERVED_MEAN_NOT_ACCEPTABLE_MAXIMUM",
             "Dynamic location/season correction needed before using as ambient background.");
-        // Outdoor air already contains CO2; modest occupant-related increases
-        // cannot be classified automatically as toxic exposure or hazard.
-        hazard(db,co2,"VENTILATION_SCREENING_ADVISORY",">",1000.0,"ppm",
-            "INDOOR_AIR_ONLY_NOT_SAFETY_LIMIT","OSHA_OTM_IAQ_CO2",
-            "OSHA Technical Manual Section III Chapter 2");
+        // NIST/Persily shows no universal 1,000 ppm CO2 hazard or ASHRAE
+        // indoor limit. A ventilation reference must be site/occupancy-specific.
+        // Deliberately DO NOT create a chemical_hazard_boundaries row for
+        // exhaled CO2 or indoor 1,000 ppm; only valid risk thresholds belong there.
+        // The OSHA/NIST evidence is retained as provenance, not an operator alarm.
 
         // Other NOAA atmospheric gas values are mean composition, not a
         // scientifically established normal minimum or maximum for a site.
