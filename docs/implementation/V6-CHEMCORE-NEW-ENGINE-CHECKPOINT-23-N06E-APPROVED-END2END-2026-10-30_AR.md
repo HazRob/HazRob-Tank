@@ -39,7 +39,15 @@
 
 ## إصلاح بصري إضافي قبل اعتماد حزمة الإصدار الأخيرة
 
-في `SmartFieldSessionPdfWriter.java` commit `57ac2299eac1ed5664821663ad394258412fcfa5`، وُضع `v6ResearchChrome` خاص بالملحق فقط يعرض `HazRob Tank • ChemCore V6`، مع بقاء `chrome` التاريخي كما هو على صفحات V5 القديمة. ونُقل عنوان الصفحة البحثية 12 نقطة لأسفل لتجنب التداخل مع الترويسة. [Android compilation](https://github.com/HazRob/HazRob-Tank/actions/runs/40985588474) **SUCCESS**، و[اختبار إعادة التصدير المتكامل](https://github.com/HazRob/HazRob-Tank/actions/runs/40985626965) يتحقق من الترويسة بعد استخراج PDF؛ يُوثَّق نجاحه عند انتهاء هذا التشغيل فقط.
+في `SmartFieldSessionPdfWriter.java` commit `57ac2299eac1ed5664821663ad394258412fcfa5`، وُضع `v6ResearchChrome` خاص بالملحق فقط يعرض `HazRob Tank • ChemCore V6`، مع بقاء `chrome` التاريخي كما هو على صفحات V5 القديمة. ونُقل عنوان الصفحة البحثية 12 نقطة لأسفل لتجنب التداخل مع الترويسة. [Android compilation](https://github.com/HazRob/HazRob-Tank/actions/runs/40985588474) **SUCCESS**، و[اختبار إعادة التصدير المتكامل 40985626965](https://github.com/HazRob/HazRob-Tank/actions/runs/40985626965) **SUCCESS**: تحقق من أن صفحة V6 تحتوي `HazRob Tank • ChemCore V6` ولا تحتوي `HazRob 5.0`، وأن الترويسة التاريخية لا تزال موجودة فقط ضمن صفحات V5. اجتاز الاختبار كامل شروط الـ67 تأكيدًا و6 صفحات PDF و14 ورقة XLSX، وأثبت أن SHA-256 لبيانات الاعتماد لم يتغير.
+
+**الحزمة النهائية بعد إصلاح الترويسة (المعتمدة):**
+- [CI 40985626965](https://github.com/HazRob/HazRob-Tank/actions/runs/40985626965) ناجح، Artifact `12946528755`، ZIP SHA256 `97397a9084401e60cb8c6eddbb610199a1517b7f9572548dd06872b37fe59a0e`.
+- PDF 6 صفحات SHA256 `6047500e30c58dc5d237d20806e0b201eed82670e1156ccf527d57535103517a`.
+- XLSX 14 ورقة SHA256 `defa58c8d9a5cf8f629ce72d39d3ee08d26eb2faf22f62436475154ff09cff0e`.
+- نسخة Library `/HazRob/MQ_Reference_Measurements_2026/HazRob_Tank_V6_N06E_Full_Approved_PDF_XLSX_Final_2026-10-30.zip` معرف `libfile_4f3f443035208191a64790a2f4a52b31`.
+- فتحتُ الحزمة بعد تنزيلها، وتحققتُ مستقلًا من عدد PDF وCRC لـXLSX، ووجود `HazRob Tank` دون `HazRob 5.0` في الصفحة السادسة، مع بقاء الترويسة التاريخية في الصفحة الأولى فقط.
+- الحزمة الأولى قبل إصلاح الترويسة (`12946766119`) مؤرشفة للمقارنة **وليست الحزمة النهائية**.
 
 ## الأعطال التي عولجت أثناء اختبار N06-E
 
@@ -58,4 +66,4 @@
 
 **Next:** N06-F اختبارات حالات رفض/تلاعب الجهاز بعد مصدر SQLite، تقارير موقع متعدد الجلسات والملفات، التوافق مع APK المستخدم وتوقيعه، ثم اختبارات الجهاز الفعلية ومعايرة G3 لاحقًا. لا إعادة لملف منحنيات المصنع قبل إعادة إعطاء الأولوية له.
 
-**Resume token:** `V6_CHECKPOINT23_N06E_FULL_APPROVED_ANDROID_REPORT_PASS_40985046869 / 6_PDF_PAGES_14_XLSX_SHEETS / 67_ANDROID_ASSERTIONS / ACTUAL_APPROVAL_SHA_UNCHANGED / 16_SYNTHETIC_SAMPLE_ROWS_EIGHT_MQ / ORIGINAL_V5_PRESERVED / V6_UNKNOWN_NO_PPM / MANUFACTURER_CURVE_EXPERIMENT_DEFERRED / N06E_V6_HEADER_RERUN_40985626965_PENDING / G3_0 / NO_PRODUCTION_APK`.
+**Resume token:** `V6_CHECKPOINT23_N06E_FULL_APPROVED_ANDROID_REPORT_PASS_40985046869 / 6_PDF_PAGES_14_XLSX_SHEETS / 67_ANDROID_ASSERTIONS / ACTUAL_APPROVAL_SHA_UNCHANGED / 16_SYNTHETIC_SAMPLE_ROWS_EIGHT_MQ / ORIGINAL_V5_PRESERVED / V6_UNKNOWN_NO_PPM / MANUFACTURER_CURVE_EXPERIMENT_DEFERRED / N06E_V6_HEADER_RERUN_40985626965_SUCCESS_FINAL / G3_0 / NO_PRODUCTION_APK`.
