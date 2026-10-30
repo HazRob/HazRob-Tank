@@ -1,0 +1,77 @@
+{
+  "schema": "hazrob-v6-n06c-android-PdfRenderer-production-annex-real-output/1",
+  "date": "2026-10-30",
+  "scope": "Actual production SmartFieldSessionPdfWriter.v6ResearchAppendixPage invoked by disposable Android Activity on API35 emulator; 7 SYNTHETIC cycles, 8 MQ models each, 3 physical PDF/PNG page outputs. Not a real approved Tank session.",
+  "source_commit": "bc344d4859a76257d3cad23da9f6399223be152e",
+  "ci": {
+    "run_id": 40978812570,
+    "conclusion": "success",
+    "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/40978812570",
+    "emulator_android_api": 35,
+    "pdf_backing": "android.graphics.pdf.PdfDocument",
+    "rasterizer": "android.graphics.pdf.PdfRenderer",
+    "ephemeral_debug_apk_only": true,
+    "ephemeral_keystore_only": true,
+    "release_signature_not_compatible": true,
+    "source_test_activity": "research/chemcore_v6/tests/android/V6ResearchPdfSmokeFixtureActivity.java",
+    "source_script": "research/chemcore_v6/tests/android/run_v6_pdf_emulator_smoke.sh"
+  },
+  "input_fixture": {
+    "synthetic": true,
+    "approved_field_db_consumed": false,
+    "source_gas_cycles": 7,
+    "sensor_models_per_cycle": 8,
+    "physical_tank_g3": 0,
+    "reportable_ppm": false,
+    "identity": "UNKNOWN"
+  },
+  "output": {
+    "pdf_pages": 3,
+    "pdf_page_size_points": [
+      842,
+      595
+    ],
+    "pdf_bytes": 178744,
+    "pdf_sha256": "9416101a1ad4560e6dae2cee20b4cadda11479bb2f2ea374c506de404132cbbc",
+    "pngs": [
+      {
+        "name": "v6_pdf_fixture_page_1.png",
+        "bytes": 100407,
+        "sha256": "2127a124ab7d7fe51627a6517f3ffcfa6681ffb9d9d6c8e1407bb5863b18224c"
+      },
+      {
+        "name": "v6_pdf_fixture_page_2.png",
+        "bytes": 100509,
+        "sha256": "6b797abc5fa877d66ac38179c15cc07678c3fa9825c3c96"
+      },
+      {
+        "name": "v6_pdf_fixture_page_3.png",
+        "bytes": 48468,
+        "sha256": "a469156a62649360a64fabc98b4024f42013a6175104845a31f77fb03c199eb2"
+      }
+    ],
+    "android_pdf_renderer_all_three_pages_pass": true,
+    "host_pdf_info_three_pages": true,
+    "visual_inspection_done": true,
+    "arabic_visible": true,
+    "known_layout_issue": "Small details at approximately 6.9 pt, RTL and Latin token spacing (Rs/R0) require refinement before final release"
+  },
+  "artifact": {
+    "id": 12944101188,
+    "zip_sha256": "467627e50babd08768ae6832fa3ba5359cc9aae28ca9190599d55ab5683188b1",
+    "library_path": "/HazRob/MQ_Reference_Measurements_2026/HazRob_Tank_V6_N06C_Android_PDF_Raster_Proof_2026-10-30.zip",
+    "library_id": "libfile_27a5671b735081919b189397e31b7b77"
+  },
+  "gates": {
+    "source_report_full_approved_db_end_to_end": false,
+    "android_phone_tested": false,
+    "tank_reference_calibration": false,
+    "gas_identity_proven": false,
+    "ppm_reportable": false,
+    "physical_tank_g3_validated_techniques": 0,
+    "technical_research_techniques_partial": 78,
+    "not_yet_ported_techniques": 2,
+    "food_gas_mixed": false,
+    "new_production_apk": false
+  }
+}
