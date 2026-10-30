@@ -25,12 +25,12 @@ import json
 p="/tmp/v6-n06c-pdf/v6_pdf_status.json"
 d=json.load(open(p))
 assert d["status"]=="PASS",d
-assert d["pages_created"]==3 and d["pages_rasterized_with_android_pdf_renderer"]==3
+assert d["pages_created"]==4 and d["pages_rasterized_with_android_pdf_renderer"]==4
 assert d["reportable_ppm"] is False and d["physical_tank_g3"]==0
-print("PASS ANDROID_EMULATOR_PDF_RENDERER THREE_PAGES")
+print("PASS ANDROID_EMULATOR_PDF_RENDERER FOUR_PAGES")
 PY
 adb exec-out run-as com.servoc.app cat files/v6_pdf_fixture.pdf > /tmp/v6-n06c-pdf/v6_pdf_fixture.pdf
-for i in 1 2 3; do
+for i in 1 2 3 4; do
   adb exec-out run-as com.servoc.app cat files/v6_pdf_fixture_page_$i.png > /tmp/v6-n06c-pdf/v6_pdf_fixture_page_$i.png
 done
-echo "PASS V6 REAL Android PdfRenderer exported three PNGs and PDF fixture"
+echo "PASS V6 REAL Android PdfRenderer exported four PNGs and PDF fixture"
