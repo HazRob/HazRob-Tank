@@ -1,0 +1,74 @@
+name: ChemCore V6 N09 actual V11 scientific chemical coverage Android emulator
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalSeedBootstrap.java'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/TankExposureReferenceCatalog.java'
+      - 'research/chemcore_v6/tests/android/V6ScientificRiskDbFixtureActivity.java'
+      - 'research/chemcore_v6/tests/android/run_n09_scientific_risk_db.sh'
+      - '.github/workflows/chemcore-v6-n09-scientific-risk-sqlite-android.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  actual-scientific-reference-v11:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          persist-credentials: false
+          path: source
+      - name: Overlay Tank V11 and temporary database fixture
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          cp tank/research/chemcore_v6/tests/android/V6ScientificRiskDbFixtureActivity.java source/app/src/main/java/com/servoc/app/report/
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('source/app/src/main/AndroidManifest.xml')
+          s=p.read_text();n='<activity android:name=".MainActivity" android:exported="false"/>'
+          assert n in s
+          p.write_text(s.replace(n,'<activity android:name=".report.V6ScientificRiskDbFixtureActivity" android:exported="true"/>\\n        '+n))
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Ephemeral test-only signing
+        run: |
+          mkdir -p source/signing
+          keytool -genkeypair -alias hazrob-prototype -keystore source/signing/hazrob-prototype.jks \
+            -storepass hazrob-prototype -keypass hazrob-prototype -keyalg RSA -keysize 2048 \
+            -validity 1 -dname "CN=N09 SQLITE CI ONLY, OU=NOT FOR RELEASE, O=HazRob" -noprompt
+      - name: Build disposable emulator app with V11 seed
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+      - run: if test -c /dev/kvm; then sudo chmod a+rw /dev/kvm; fi
+      - name: Execute actual source DB on Android API31 emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
+          script: bash tank/research/chemcore_v6/tests/android/run_n09_scientific_risk_db.sh
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: ChemCore-V6-V11-Actual-Chemical-Exposure-Reference-Inventory
+          path: /tmp/v6-n09-scientific-risk/
+          retention-days: 30
