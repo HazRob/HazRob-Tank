@@ -848,6 +848,12 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(readiness.status(unifiedRepo.byUid(104)).publishedFingerprintQualified &&
                 readiness.status(unifiedRepo.byUid(499)).publishedFingerprintQualified,
                 "verified historical NIOSH alias sees central published canonical capabilities");
+            check(unifiedRepo.scientificProfile(104)
+                .getJSONArray("queried_reference_updates").length()==1 &&
+                unifiedRepo.scientificProfile(104)
+                .getJSONArray("queried_reference_updates").getJSONObject(0)
+                .optLong("published_for_uid")==499,
+                "historical ethanol material details show original canonical NIOSH source UID");
             check(num(sql,"SELECT COUNT(*) FROM chemicals")==734,
                 "synonym status propagation never creates duplicate master records");
             out.put("central_published_capability_sync_e2e",
