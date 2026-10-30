@@ -21,6 +21,8 @@ on:
       - 'android/app/src/main/java/com/servoc/app/data/MqReferenceCurveSeedV14.java'
       - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/TankChemicalCapabilityReport.java'
+      - 'research/chemcore_v6/tests/test_v6_stable_update_contract.py'
       - 'android/app/src/main/java/com/servoc/app/report/TankInstantReportPdf.java'
       - 'android/app/src/main/java/com/servoc/app/report/V6FieldSessionResearchAppendix.java'
       - 'android/app/src/main/java/com/servoc/app/report/SmartFieldSessionPdfWriter.java'
