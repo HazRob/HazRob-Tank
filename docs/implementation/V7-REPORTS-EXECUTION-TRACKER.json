@@ -244,7 +244,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Owner official geometric mark accepted for all V7 right headers, Android VectorDrawable asset committed and R01 P05 closed; PDF production writers remain unchanged.",
+  "latest_documented_change": "R01 Java production PDF writer and approved matrix+radar diagrams committed, linked to Android app; first CI Java build PASS but emulator launch failed dash shell, Bash script fixed and second CI running. R02 original PDF analysis draft documented without code changes.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -297,7 +297,7 @@
   "active_report": {
     "id": "R01",
     "name": "Instant ChemCore V6 gas research report",
-    "phase": "ANALYSIS_DONE_G14_G18_STYLE_REQUIREMENTS_APPROVED_CHART_DESIGN_PENDING",
+    "phase": "PRODUCTION_JAVA_IMPLEMENTED_ANDROID_COMPILED_EMULATOR_PDF_QA_IN_PROGRESS",
     "document": "docs/implementation/V7-R01-INSTANT-GAS-REPORT-ANALYSIS-2026-10-30_AR.md",
     "commit": "96594b4642cd97814d5bd7b84c98febda2e845a6",
     "original_pdf_sha256": "7c4cf3c7de06529f6d604df7c7c93ff5ee084453efdfc554e73db736f24b0725",
@@ -309,8 +309,8 @@
       "P05 official logo",
       "P06 technical annex"
     ],
-    "owner_approved": false,
-    "production_changes": 0,
+    "owner_approved": true,
+    "production_changes": 3,
     "design_fixed_by_owner": [
       "G14 engine is sole scientific authority",
       "G15 4-color report palette plus dark chart additions",
@@ -329,6 +329,26 @@
     "approved_design_details": {
       "P05": "Owner logo image supplied; Android vector derivative committed, final rendering QA pending",
       "official_logo_color": "#FFBE00"
+    },
+    "code_paths": [
+      "android/app/src/main/java/com/servoc/app/report/TankInstantV7PdfWriter.java",
+      "android/app/src/main/java/com/servoc/app/report/TankInstantReportPdf.java",
+      "android/app/src/main/java/com/servoc/app/MainActivity.java"
+    ],
+    "chart_types": [
+      "Evidence Calibration Matrix",
+      "Radar Research Fingerprint"
+    ],
+    "production_code_commit": "4dfb99118234e8c2d2fa8029905699be27bd79b9",
+    "route_commit": "8ef02aa2083aa845fb3c5c6a7f065962f7a830ec",
+    "app_binding_commit": "323004ee20f2660100284202ff4014b0ff7cc8e2",
+    "build_test": {
+      "run": 41133733032,
+      "java_compile": "PASS",
+      "android_pdf_emulator": "NOT_EXECUTED_DUE_CI_SHELL_PIPEFAIL",
+      "qa_fix_commit": "097660ae2ee80917505936a7f8c1262dc8adf83e",
+      "rerun": 41134124841,
+      "status": "IN_PROGRESS"
     }
   },
   "logo_approval": {
@@ -350,5 +370,11 @@
     "original_binary_embedded_in_repo": false,
     "provenance_document": "docs/requirements/V7-REPORT-LOGO-ASSET-2026-10-30_AR.md",
     "pending": "Production PDF integration and Android render visual match"
+  },
+  "next_report": {
+    "id": "R02",
+    "phase": "ORIGINAL_SOURCE_AND_PDF_ANALYZED_DESIGN_PROPOSAL_AWAITING_OWNER",
+    "document": "docs/implementation/V7-R02-PHYSICAL-REPORT-ANALYSIS-PROPOSAL-2026-10-30_AR.md",
+    "production_changes": 0
   }
 }
