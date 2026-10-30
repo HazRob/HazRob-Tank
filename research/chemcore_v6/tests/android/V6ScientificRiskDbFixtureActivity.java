@@ -266,8 +266,8 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(verifiedSynonyms==synonymAudit.verified&&
                 synonymAudit.inserted==0,
                 "source qualified CAS synonym crosswalk repeatable without rekeying");
-            check(verifiedSynonyms==21,
-                "all 21 independently NIOSH-confirmed canonical synonym links present");
+            check(verifiedSynonyms==27,
+                "all 27 independently NIOSH-confirmed canonical synonym links present");
             check(num(sql,"SELECT COUNT(*) FROM chemicals")==734,
                 "legacy synonym reconciliation preserves every source/experiment UID");
             check(num(sql,"SELECT COUNT(*) FROM chemical_identity_equivalence_v6 "+
@@ -334,12 +334,12 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 coverage.getInt("duplicate_uids")==0,
                 "734 rows each have exactly one stable canonical UID");
             check(coverage.getInt("materials_with_cas")==671 &&
-                coverage.getInt("materials_with_niosh_cas_equivalence")==21 &&
-                coverage.getInt("materials_with_direct_or_linked_cas")==692,
-                "direct CAS plus NIOSH synonym identity covers 692 entries");
+                coverage.getInt("materials_with_niosh_cas_equivalence")==27 &&
+                coverage.getInt("materials_with_direct_or_linked_cas")==698,
+                "direct CAS plus NIOSH synonym identity covers 698 entries");
             check(coverage.getInt("non_single_substance_labels")==9 &&
-                coverage.getInt("individual_materials_without_linked_cas")==33,
-                "9 non-CAS labels separated from 33 unresolved individual CAS cases");
+                coverage.getInt("individual_materials_without_linked_cas")==27,
+                "9 non-CAS labels separated from 27 unresolved individual CAS cases");
             check(coverage.getInt("materials_with_name_en")==materials,
                 "no unnamed material silently appears as a complete identity");
             check(!coverage.getBoolean("scientific_fields_exhaustive"),
