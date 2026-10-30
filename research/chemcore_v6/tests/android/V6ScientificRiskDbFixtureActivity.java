@@ -45,6 +45,11 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
     private static long num(SQLiteDatabase db,String sql){
         try(Cursor c=db.rawQuery(sql,null)){return c.moveToFirst()?c.getLong(0):-1;}
     }
+    private static String scalarText(SQLiteDatabase db,String sql){
+        try(Cursor c=db.rawQuery(sql,null)){
+            return c.moveToFirst()&&!c.isNull(0)?c.getString(0):null;
+        }
+    }
     private static double amount(SQLiteDatabase db,String sql){
         try(Cursor c=db.rawQuery(sql,null)){return c.moveToFirst()?c.getDouble(0):Double.NaN;}
     }
@@ -260,9 +265,9 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 "91,93,121,124,126,127,128,129,131,132,133,134) "+
                 "AND cas IS NOT NULL AND molar_mass>0")==27,
                 "all formerly missing single-molecule CAS rows now qualify by NIST");
-            check("1333-74-0".equals(text(sql,"SELECT cas FROM chemicals WHERE uid=76")),
+            check("1333-74-0".equals(scalarText(sql,"SELECT cas FROM chemicals WHERE uid=76")),
                 "hydrogen CAS and mole fraction not confused with a gas calibration");
-            check("29118-24-9".equals(text(sql,"SELECT cas FROM chemicals WHERE uid=132")),
+            check("29118-24-9".equals(scalarText(sql,"SELECT cas FROM chemicals WHERE uid=132")),
                 "trans R1234ze(E) is not conflated with isomer R1234yf");
             out.put("nist_27_cas_identity_idempotence",nistAudit.summary());
             ChemicalIdentityCategoryV6.Result categoryAudit=
