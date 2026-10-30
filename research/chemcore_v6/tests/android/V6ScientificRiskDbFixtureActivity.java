@@ -97,27 +97,36 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             TankInstantReportPdf.write(out,new JSONObject().put("mq",new JSONObject()),
                 report,"INSTANT-GHS-TEST",1761782400000L);
         }
-        int red=0,black=0;
+        // The user requires more than CAS identity: an independently
+        // calibrated concentration must exceed the appropriate sourced
+        // hazard limit before a GHS icon appears in a FINDING report.
+        // This fixture explicitly supplies unverified research candidates,
+        // therefore it MUST NOT print ANY warning pictograms.
+        int red=0;
         try(ParcelFileDescriptor descriptor=ParcelFileDescriptor.open(file,
                 ParcelFileDescriptor.MODE_READ_ONLY);
             PdfRenderer pdf=new PdfRenderer(descriptor)){
-            check(pdf.getPageCount()==2,
-                "GHS source-qualified candidate creates 2nd report page");
-            try(PdfRenderer.Page p=pdf.openPage(1)){
+            check(pdf.getPageCount()==1,
+                "unverified candidate MUST NOT generate GHS report appendix");
+            try(PdfRenderer.Page p=pdf.openPage(0)){
                 Bitmap page=Bitmap.createBitmap(595,842,Bitmap.Config.ARGB_8888);
                 page.eraseColor(0xFFFFFFFF);
                 p.render(page,null,null,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-                for(int y=140;y<280;y++)for(int x=40;x<230;x++){
+                for(int y=0;y<842;y+=2)for(int x=0;x<595;x+=2){
                     int pixel=page.getPixel(x,y);
                     int rr=(pixel>>16)&255,gg=(pixel>>8)&255,bb=pixel&255;
                     if(rr>145&&rr>gg*1.35&&rr>bb*1.35)red++;
-                    if(rr<100&&gg<100&&bb<100)black++;
                 }
                 page.recycle();
             }
         }
-        check(red>40&&black>40,
-            "actual PDF page contains rasterized official GHS vector artwork");
+        check(red==0,"GHS icon red diamond absent from unconfirmed report");
+        check(GhsPictograms.forQualifiedAlarm(db,benzeneUid,true,true,true).isEmpty(),
+            "legacy boolean-only alarm API cannot bypass pictogram threshold");
+        java.util.Map<String,Boolean> failed=new java.util.HashMap<>();
+        failed.put("GHS02",false);failed.put("GHS08",false);
+        check(GhsPictograms.forQualifiedAlarm(db,benzeneUid,true,true,true,failed).isEmpty(),
+            "known toxic substance with no exceeded exposure threshold has no report icon");
         return red;
     }
 
@@ -328,7 +337,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 .put("chemcore_g3_techniques",0)
                 .put("bundled_ghs_vector_assets",9)
                 .put("ghs_pdf_vector_raster_red_pixels",pdfGhsRedPixels)
-                .put("ghs_pdf_page_count",2)
+                .put("ghs_pdf_page_count",1)
                 .put("v14_unified_columns",v14Columns)
                 .put("external_peer_r0_rs_observations",peerR0)
                 .put("external_peer_r0_rs_disputed",disputedPeerR0)
