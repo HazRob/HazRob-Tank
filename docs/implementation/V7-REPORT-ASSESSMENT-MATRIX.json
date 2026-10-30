@@ -1,12 +1,12 @@
 {
   "schema": "hazrob-tank-v7-report-assessment/1",
-  "baseline": "HZT-V7-RPT-STD-001 rev 1.0",
+  "baseline": "HZT-V7-RPT-STD-001 rev 1.1",
   "date": "2026-10-30",
   "branch": "feature/tank-v7-reports",
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "R01_BASELINE_COMPLETE_OWNER_DISCUSSION_PENDING_R02_R06_UNAUDITED",
+  "assessment_phase": "18_OWNER_RULES_DOCUMENTED_R01_AUDITED_WITH_NEW_G14_G18_REMAINING_FIVE_NOT_AUDITED",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -69,6 +69,26 @@
     {
       "id": "G13",
       "short": "Every chart provides new evidence-based interpretive value"
+    },
+    {
+      "id": "G14",
+      "short": "Engine decisions are authoritative; PDF performs no second scientific eligibility gating."
+    },
+    {
+      "id": "G15",
+      "short": "White page content; black, white, orange-yellow, gray brand; only dark clear additional chart colors."
+    },
+    {
+      "id": "G16",
+      "short": "Report header uses original measurement date and time or authentic date range, never export time substitution."
+    },
+    {
+      "id": "G17",
+      "short": "Black header: logo right, bilingual 15pt bold amber title center, white capture timestamp left; tight margins, line 1.15, paragraph 0, cell padding 2mm x 1mm."
+    },
+    {
+      "id": "G18",
+      "short": "Light gray footer: Arabic page n/N left black 14pt bold and two-color HazRob wordmark right."
     }
   ],
   "report_records": [
@@ -220,6 +240,51 @@
           "evidence_pdf_page": 1,
           "evidence_source_line": null,
           "corrective_action": "Discuss R01 proposal before changing source",
+          "verification_run": null
+        },
+        "G14": {
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "writeResearchV6 hardcodes UNKNOWN and renders only 7 hypotheses; V7 shall take scientific decision and availability from engine output, not impose a second visibility cap.",
+          "evidence_pdf_page": 1,
+          "evidence_source_line": null,
+          "corrective_action": "Implement after owner approves R01 design and source time contract.",
+          "verification_run": null
+        },
+        "G15": {
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "The page is white but lacks the fixed black/amber header, gray footer and approved cohesive report palette.",
+          "evidence_pdf_page": 1,
+          "evidence_source_line": null,
+          "corrective_action": "Implement after owner approves R01 design and source time contract.",
+          "verification_run": null
+        },
+        "G16": {
+          "status": "BLOCKED_MISSING_DATA",
+          "applicable": true,
+          "notes": "PDF renders passed timestamp as UTC inside body. Need trace the timestamp through the caller to original measurement event and handle session ranges.",
+          "evidence_pdf_page": 1,
+          "evidence_source_line": null,
+          "corrective_action": "Implement after owner approves R01 design and source time contract.",
+          "verification_run": null
+        },
+        "G17": {
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "No black header, 15pt amber title or source timestamp at left; fixed y positions and no formal 1.15/0/2x1mm metrics.",
+          "evidence_pdf_page": 1,
+          "evidence_source_line": null,
+          "corrective_action": "Implement after owner approves R01 design and source time contract.",
+          "verification_run": null
+        },
+        "G18": {
+          "status": "FAIL",
+          "applicable": true,
+          "notes": "No light-gray page footer, 14pt left aligned Arabic numbering, or official two-color HazRob wordmark.",
+          "evidence_pdf_page": 1,
+          "evidence_source_line": null,
+          "corrective_action": "Implement after owner approves R01 design and source time contract.",
           "verification_run": null
         }
       },
@@ -418,6 +483,51 @@
           "evidence_source_line": null,
           "corrective_action": null,
           "verification_run": null
+        },
+        "G14": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G15": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G16": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G17": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G18": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
         }
       },
       "analysis_approach": {
@@ -585,6 +695,51 @@
           "verification_run": null
         },
         "G13": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G14": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G15": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G16": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G17": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G18": {
           "status": "NOT_AUDITED",
           "applicable": null,
           "notes": "",
@@ -764,6 +919,51 @@
           "evidence_source_line": null,
           "corrective_action": null,
           "verification_run": null
+        },
+        "G14": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G15": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G16": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G17": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G18": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
         }
       },
       "analysis_approach": {
@@ -928,6 +1128,51 @@
           "verification_run": null
         },
         "G13": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G14": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G15": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G16": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G17": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G18": {
           "status": "NOT_AUDITED",
           "applicable": null,
           "notes": "",
@@ -1106,6 +1351,51 @@
           "evidence_source_line": null,
           "corrective_action": null,
           "verification_run": null
+        },
+        "G14": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G15": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G16": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G17": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
+        },
+        "G18": {
+          "status": "NOT_AUDITED",
+          "applicable": null,
+          "notes": "",
+          "evidence_pdf_page": null,
+          "evidence_source_line": null,
+          "corrective_action": null,
+          "verification_run": null
         }
       },
       "analysis_approach": {
@@ -1138,5 +1428,53 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Discuss R01 proposal P01-P06 with owner, implement only after approval; review R02 next."
+  "next_action": "Discuss R01 proposed diagrams and final logo; implement only after per-report owner signoff, preserving engine single authority and fixed visual contract.",
+  "visual_contract": {
+    "branding_palette": [
+      "black",
+      "white",
+      "orange-yellow",
+      "gray"
+    ],
+    "page_content_background": "#FFFFFF",
+    "chart_extra_colors": "dark or mid-tone only, not pale",
+    "header": {
+      "background": "black",
+      "logo": "right",
+      "title": "center",
+      "title_pt": 15,
+      "title_weight": "bold",
+      "title_color": "orange-yellow",
+      "timestamp": "left",
+      "timestamp_color": "white",
+      "timestamp_source": "original_measurement_time_or_authentic_range"
+    },
+    "footer": {
+      "background": "light-gray",
+      "page_number_position": "left",
+      "page_number_template": "صفحة 2 من 4",
+      "page_number_pt": 14,
+      "page_number_weight": "bold",
+      "page_number_color": "black",
+      "hazrob_wordmark_position": "right",
+      "hazrob_wordmark_colors": "from official wordmark"
+    },
+    "paragraph": {
+      "line_spacing_factor": 1.15,
+      "spacing_before_pt": 0,
+      "spacing_after_pt": 0
+    },
+    "table_cell_padding_mm": {
+      "left": 2,
+      "right": 2,
+      "top": 1,
+      "bottom": 1
+    },
+    "page_margins_mm": {
+      "target": 5,
+      "qualification": "printer safe zone to be tested"
+    },
+    "body_text_min_pt": 12
+  },
+  "report_boundary": "NO_SECOND_ANALYTICAL_GATES_IN_PDF; engine supplies decisions and science; PDF provides presentation only."
 }
