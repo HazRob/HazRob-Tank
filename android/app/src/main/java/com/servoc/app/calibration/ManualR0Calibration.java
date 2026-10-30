@@ -177,7 +177,7 @@ public final class ManualR0Calibration {
      */
     public static synchronized boolean saveFirmware(SharedPreferences p,Map<String,Double> proposal,
                     String deviceId,Map<String,Integer> samples,String definition,int windowCount){
-        if(!("DEVICE_CLEAN_AIR_RS_MEAN".equals(definition)&&windowCount==3||
+        if(!("DEVICE_CLEAN_AIR_RS_MEAN".equals(definition)&&(windowCount==1||windowCount==3)||
              "LEGACY_MQ_FACTOR_SCALED_R0_NOT_AIR_RS".equals(definition)&&windowCount==1))
             return false;
         if(p==null||proposal==null||proposal.size()!=KEYS.length||deviceId==null||deviceId.trim().isEmpty())return false;
@@ -189,7 +189,9 @@ public final class ManualR0Calibration {
             Double v=proposal.get(key);
             if(v==null||!Double.isFinite(v)||v<=0)return false;
         }
-        long now=System.currentTimeMillis();String utc=iso(now),session=(windowCount==3?"FIRMWARE-V6-R0-":"FIRMWARE-V5-R0-")+now;
+        long now=System.currentTimeMillis();String utc=iso(now),session=("DEVICE_CLEAN_AIR_RS_MEAN".equals(definition)?
+            (windowCount==1?"FIRMWARE-V6-QUICK-R0-":"FIRMWARE-V6-R0-"):
+            "FIRMWARE-V5-R0-")+now;
         SharedPreferences.Editor edit=p.edit();
         for(String key:KEYS){
             edit.putString("manual_r0_"+key,Double.toString(proposal.get(key)))
