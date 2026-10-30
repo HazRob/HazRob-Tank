@@ -44,6 +44,12 @@ assert coverage['duplicate_uids']==0,coverage
 assert coverage['materials_with_name_en']==734,coverage
 assert not coverage['scientific_fields_exhaustive'],coverage
 assert coverage['missing_values_policy']=='NULL_NOT_ZERO_NO_SAFETY_INFERENCE'
+assert coverage['materials_with_cas']==671,coverage
+assert coverage['materials_with_niosh_cas_equivalence']==15,coverage
+assert coverage['materials_with_direct_or_linked_cas']==686,coverage
+assert coverage['materials_without_direct_or_linked_cas']==48,coverage
+assert coverage['non_single_substance_labels']==9,coverage
+assert coverage['individual_materials_without_linked_cas']==39,coverage
 import csv
 with open('/tmp/v6-n09-scientific-risk/v6_chemical_catalog_coverage.csv',newline='') as stream:
     records=list(csv.DictReader(stream))
@@ -51,6 +57,10 @@ assert len(records)==734,len(records)
 assert len(set(row['uid'] for row in records))==734
 assert all(row['name_en'] for row in records)
 assert all(row['mq_curve_count'].isdigit() for row in records)
+et=next(x for x in records if x['uid']=='104')
+assert not et['cas'] and et['canonical_uid_niosh']=='499'
+assert et['niosh_equivalent_cas']=='64-17-5'
+assert next(x for x in records if x['uid']=='143')['chemical_class']=='MEASUREMENT_INDEX_NOT_CHEMICAL'
 print('V14 734 master UID coverage fields:',json.dumps(coverage,sort_keys=True))
 assert d['osha_z1_rows']>=500 and d['niosh_idlh_rows']>=300
 assert d['co2_source_pel_ppm']==5000 and d['co2_early_warn_ppm']==4500
