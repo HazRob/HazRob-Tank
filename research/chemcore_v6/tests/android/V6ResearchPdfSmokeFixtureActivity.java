@@ -34,8 +34,8 @@ public final class V6ResearchPdfSmokeFixtureActivity extends Activity {
                 result.put("gas_identity_certified",false);
                 result.put("reportable_ppm",false);
                 result.put("physical_tank_g3",0);
-                result.put("pages_created",3);
-                result.put("pages_rasterized_with_android_pdf_renderer",3);
+                result.put("pages_created",4);
+                result.put("pages_rasterized_with_android_pdf_renderer",4);
             }catch(Throwable e){
                 try{result.put("status","FAIL");result.put("error",e.toString());}
                 catch(Exception ignored){}
@@ -86,7 +86,7 @@ public final class V6ResearchPdfSmokeFixtureActivity extends Activity {
             "v6ResearchAppendixPage",Canvas.class,
             FieldSessionReportExporter.Bundle.class,JSONObject.class,int.class);
         page.setAccessible(true);
-        for(int i=0;i<3;i++){
+        for(int i=0;i<4;i++){
             PdfDocument.Page p=output.startPage(
                 new PdfDocument.PageInfo.Builder(842,595,i+1).create());
             p.getCanvas().drawColor(Color.WHITE);
@@ -100,8 +100,8 @@ public final class V6ResearchPdfSmokeFixtureActivity extends Activity {
         try(ParcelFileDescriptor descriptor=ParcelFileDescriptor.open(
                 pdf,ParcelFileDescriptor.MODE_READ_ONLY);
             PdfRenderer renderer=new PdfRenderer(descriptor)){
-            if(renderer.getPageCount()!=3)
-                throw new IllegalStateException("PDF expected exactly three pages");
+            if(renderer.getPageCount()!=4)
+                throw new IllegalStateException("PDF expected exactly four pages");
             for(int i=0;i<renderer.getPageCount();i++){
                 try(PdfRenderer.Page p=renderer.openPage(i)){
                     Bitmap b=Bitmap.createBitmap(842,595,Bitmap.Config.ARGB_8888);
