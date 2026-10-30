@@ -30,7 +30,7 @@
   "g3_physical_tests_deferred_after_release": true,
   "release_authorization": "NO_RELEASE",
   "latest_checkpoint_date": "2026-10-30",
-  "latest_scope": "V6_OWNER_CONDITIONAL_FINAL_APK_AND_ESP32_CAM_FIRMWARE_DELIVERY_AUTHORIZED_AFTER_PLAN_COMPLETE; N09_168_PASS N14_29_PASS N15_30_PASS; NO_RELEASE_UNTIL_FINISHED",
+  "latest_scope": "CONDITIONAL_DELIVERY_AUTHORIZATION_DOCUMENTED; STABLE_N15_30_PASS N14_29_PASS N09_168_PASS; CAM_V6_CANDIDATE_AND_ESP32_CONTROLLER_COMPILE_BOTH_PASS_NO_HW; FULL_GATES_NO_RELEASE",
   "unified_chemical_v14": {
     "catalog_material_rows": 734,
     "sql_view_columns": 97,
@@ -214,5 +214,21 @@
     "may_waive_scientific_or_software_acceptance": false,
     "build_activated_now": false,
     "operator_will_not_be_asked_to_repeat_same_authorization_after_pass": true
+  },
+  "firmware_v6_pre_release": {
+    "esp32_controller_identity": "ESP32-Tank 0.1.6-v6-quickr0-dev",
+    "esp32_camera_identity": "Cam-tank 0.1.4-v6-candidate",
+    "arduino_esp32_core": "3.3.11",
+    "boards": [
+      "esp32:esp32:esp32",
+      "esp32:esp32:esp32cam"
+    ],
+    "software_build_verified_run": 41093126933,
+    "software_build_result": "PASS_BOTH_SKETCHES_DIAGNOSTIC_COMPILE",
+    "hardware_flash_test": "NOT_PERFORMED",
+    "motor_servo_direction_bench": "NOT_PERFORMED",
+    "esp32_camera_actual_fps": "NOT_MEASURED",
+    "ready_for_public_release": false,
+    "owner_instruction": "FINAL_ARDUINO_ZIP_AND_FIRMWARE_COMPILATION_AFTER_ALL_V6_GATES"
   }
 }
