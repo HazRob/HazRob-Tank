@@ -8,6 +8,7 @@ import com.servoc.app.chemcore.ChemCoreQsprRuntimeRegistry;
 import com.servoc.app.chemcore.library.ChemCoreEmbeddedStableInstaller;
 import com.servoc.app.chemcore.library.ChemCoreLibraryStore;
 import com.servoc.app.data.ExperimentsDb;
+import com.servoc.app.data.ChemicalHazardEvidenceSeedV13;
 import com.servoc.app.exposure.ExposureSeedBootstrap;
 import com.servoc.app.exposure.GasFlammabilitySeedBootstrap;
 
@@ -33,6 +34,14 @@ public final class ChemicalSeedBootstrap {
         // limits alongside NIOSH IDLH (same CAS-based identity master). Preserve
         // source authority, original units, duration and historical provenance.
         ExposureSeedBootstrap.ensureOshaZ1(context,db);
+        // Source qualified hazards must be linked AFTER authoritative identity
+        // imports resolve CAS -> stable chemicals.uid, and again safely on
+        // subsequent starts; otherwise benzene's legacy CAS may be blank at
+        // database creation time and its OSHA/IARC classifications lost.
+        try{ChemicalHazardEvidenceSeedV13.ensure(db.getWritableDatabase());}
+        catch(Exception ex){db.putMeta("chemical_v13_hazard_seed_error",
+            ex.getClass().getSimpleName()+": "+String.valueOf(ex.getMessage()));}
+
         GasFlammabilitySeedBootstrap.ensure(context,db);
 
         try{AnalyticalResearchBootstrap.ensure(db.getWritableDatabase());db.putMeta("analytical_research_seed_status","available:"+AnalyticalResearchBootstrap.SEED_VERSION);}catch(Exception e){db.putMeta("analytical_research_seed_status","error:"+e.getClass().getSimpleName()+":"+String.valueOf(e.getMessage()));}
