@@ -204,6 +204,12 @@
       "text": "Owner approves R06 complete beef-only research PDF design with three A4 portrait pages (not two): page1 specimen/7-MQ/four study classes, page2 three distinct sensor/reference/180s/class-similarity blank chart slots, mandatory page3 4x4 held-out study confusion matrix, source-only 36h timeline and model provenance/limitations. No values if missing ('-'), no invented plots. Food safety/TVC not claimed, gas GHS/OEL/PPM not imported. Code DOI metadata correction later, not now.",
       "status": "APPROVED_BY_OWNER_DESIGN",
       "decision_utc": "2026-10-30T23:24:52Z"
+    },
+    {
+      "id": "V7-ALL-PAGE-COUNT-FLEXIBILITY-2026-10-30T2327",
+      "text": "Owner explicitly authorizes increasing or reducing page counts on R01–R06 freely. Previous page counts (including R05 two and R06 three and R03 chart pages) are preview targets only, never hard caps or mandated indices. Preserve every owner-approved section/figure/reference, >=12pt fonts, no truncation, data absence '-', blank charts, and automatic true n/N pagination.",
+      "status": "APPROVED_BY_OWNER_DESIGN_REQUIREMENT",
+      "decision_utc": "2026-10-30T23:36:27Z"
     }
   ],
   "checkpoints": [
@@ -305,7 +311,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Created and QA-checked six external Arabic RTL blank design preview PDFs totaling 20 A4 pages, min text size 12pt, no out-of-page text; R03 expanded to include 2 physical pages and a particle page plus candidate microchart spaces. Added unused Android V7ReportLayoutKit.java and CI path filter, with Android QA in progress run 41145229233. Preflight doc V7-SIX-REPORT-DESIGN-PREFLIGHT-2026-10-31_AR.md. Photos R05 pending; no changed scientific or production writers; APK not built.",
+  "latest_documented_change": "Owner on 2026-10-30T23:36:27Z delegated full freedom to increase or decrease all report page counts. Central policy amended; R05/R03/R04 and six-report preflight annotated. R06 prior three-page requirement is preserved as a three-section content baseline not mandatory sheet index. V7 Android shared layout kit fixture and CI QA updated. No engine or APK changes.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -421,8 +427,11 @@
       "no_fake_chart_values": true,
       "research_only": true,
       "no_food_safety_certification": true,
-      "future_source_correction": "Correct wrong study article DOI from 10.1016/j.dib.2018.11.075 to 10.1016/j.dib.2018.11.091 in dedicated later production metadata update"
-    }
+      "future_source_correction": "Correct wrong study article DOI from 10.1016/j.dib.2018.11.075 to 10.1016/j.dib.2018.11.091 in dedicated later production metadata update",
+      "page_count_soft_target": true,
+      "any_previous_fixed_pages": "SOFT_TARGET"
+    },
+    "page_count_dynamic": true
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -455,7 +464,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "SHARED_LAYOUT_KIT_ADDED_EXTERNAL_BLANK_PDF_PREFLIGHT_20_PAGES_ANDROID_CI_PENDING",
+    "current_phase": "DESIGN_AND_SHARED_LAYOUT_KIT_QA_WITH_OWNER_AUTHORIZED_DYNAMIC_PAGINATION",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -468,7 +477,8 @@
     ],
     "final_apk_authorized": false,
     "next_step": "Inspect Android-native CI run 41145229233 for layout kit compile; close exceptions; then integrate approved report templates without changing science engines, render actual Android source PDFs for QA and require owner visual acceptance.",
-    "layout_empty_data_policy": "docs/requirements/V7-REPORTS-DESIGN-FIRST-PLACEHOLDER-POLICY-2026-10-30_AR.md"
+    "layout_empty_data_policy": "docs/requirements/V7-REPORTS-DESIGN-FIRST-PLACEHOLDER-POLICY-2026-10-30_AR.md",
+    "page_count_limit": "NONE; respect completeness and 12pt, not arbitrary count"
   },
   "r01_prototype": {
     "id": "R01",
@@ -605,7 +615,8 @@
       "Android-native original writer rendering and source fidelity",
       "Detailed data contracts, all final visual signoffs",
       "All six writers production integration"
-    ]
+    ],
+    "page_counts_are_preliminary_not_hard_limits": true
   },
   "shared_layout_kit": {
     "source": "android/app/src/main/java/com/servoc/app/report/V7ReportLayoutKit.java",
@@ -631,5 +642,25 @@
         "state": "in_progress_as_of_check"
       }
     ]
+  },
+  "layout_pagination_owner_decision": {
+    "decision_utc": "2026-10-30T23:36:27Z",
+    "page_counts_are_soft_targets": true,
+    "applies_to": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06"
+    ],
+    "allow_more_or_fewer_pages": true,
+    "required_sections_never_omitted": true,
+    "body_min_pt": 12,
+    "never_truncate_rows": true,
+    "when_missing": "literal '-' and chart axes only",
+    "page_labels": "true page n of N",
+    "precedence": "supersedes earlier fixed-page owner signoffs",
+    "source": "docs/requirements/V7-REPORTS-DESIGN-FIRST-PLACEHOLDER-POLICY-2026-10-30_AR.md"
   }
 }
