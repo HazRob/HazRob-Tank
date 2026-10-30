@@ -52,6 +52,10 @@ public final class SettingsTab {
 
         LinearLayout cfg=UiKit.card(c);cfg.addView(UiKit.title(c,"الضبط"),UiKit.full(c));
         warm=field(c,cfg,"التسخين s",String.valueOf(host.preferences().getInt("warm",60)));measure=field(c,cfg,"القياس s",String.valueOf(host.preferences().getInt("measure",30)));
+        TextView timingHelp=UiKit.small(c,
+            "الأزمنة أعلاه تخص القياس التشغيلي فقط؛ معايرة R0 مستقلة وثابتة: 180s إحماء + 60s قياس.");
+        timingHelp.setTextColor(0xFF46515E);
+        cfg.addView(timingHelp,UiKit.full(c));
         cfg.addView(UiKit.small(c,"سرعة حركة المركبة تضبط من عمود السرعة في شاشة القيادة: 0–100%، والقيمة الافتراضية عند بدء التطبيق 100%."),UiKit.full(c));
         turnSpeed=field(c,cfg,"سرعة الالتفاف (%)",String.valueOf(host.preferences().getInt(DriveTuning.PREF_TURN_PERCENT,DriveTuning.DEFAULT_TURN_PERCENT)));
         pivotSpeed=field(c,cfg,"سرعة الدوران في المكان (%)",String.valueOf(host.preferences().getInt(DriveTuning.PREF_PIVOT_PERCENT,DriveTuning.DEFAULT_PIVOT_PERCENT)));
@@ -69,9 +73,9 @@ public final class SettingsTab {
         LinearLayout cleanAir=UiKit.card(c);
         cleanAir.addView(UiKit.title(c,"معايرة R0 — للمستخدم"),UiKit.full(c));
         cleanAir.addView(UiKit.small(c,
-            "معايرة الهواء النظيف على ESP32: 300 ثانية إحماء ثم 60 ثانية قياس. "+
-            "الحفظ الحالي في فيرموير V4 يتم تلقائيًا عند نجاح جميع قنوات MQ الثمانية؛ "+
-            "يجري تطوير اعتماد لاحق صريح في V5، ولا يعني إلغاء الشاشة التراجع عن NVS المحفوظة."),
+            "بروتوكول R0 المعتمد للإصدار السادس: 180 ثانية تسخين ثم 60 ثانية قراءة فعلية في نافذة واحدة (لا ثلاث دورات). "+
+            "يعتمد الحفظ على نجاح قنوات MQ الثماني وحالة القبول الموثقة في ESP32؛ "+
+            "التحديث اليدوي لا يستعير إثبات معايرة الفيرموير، ولا تُعامل قراءة غير متحققة كهواء نظيف."),
             UiKit.full(c));
         Button openCalibration=UiKit.button(c,"فتح معايرة R0");
         openCalibration.setOnClickListener(v->openUserCalibration());
@@ -197,7 +201,8 @@ public final class SettingsTab {
                 ChemCoreLibraryManager.CheckSummary c=libraryManager.check(ReleaseAudit.VERSION);
                 if(!c.updateAvailable){host.showToast("منظومة التحليل محدثة");return;}
                 if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())){host.showToast("أوقف القياس أو التحليل قبل التحديث");return;}
-                com.servoc.app.chemcore.library.ChemCoreLibraryStore.InstallResult r=libraryManager.install(c,ReleaseAudit.VERSION,false);
+                com.servoc.app.chemcore.library.ChemCoreLibraryStore.InstallResult r=libraryManager.install(c,ReleaseAudit.VERSION,
+                    ()->ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()));
                 if(r.installed){
                     ChemCoreMolecularSeedImporter.Result seed=ChemCoreMolecularSeedImporter.importBestAvailable(scroll.getContext().getApplicationContext(),host.database());
                     ChemCoreQsprRuntimeRegistry.Status qspr=ChemCoreQsprRuntimeRegistry.rebuild(host.database());
