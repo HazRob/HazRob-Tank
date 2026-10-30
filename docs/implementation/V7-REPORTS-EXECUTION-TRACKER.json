@@ -158,6 +158,26 @@
       "id": "D19",
       "text": "R02 design must include all 15 PhysicalCatalog indicators including ionizing radiation, UV, wind speed/direction, illuminance/flux, PM1/PM2.5/PM10, plus derived altitude and engine-delivered thermal analyses; no PDF-side gates.",
       "status": "APPROVED_BY_OWNER"
+    },
+    {
+      "id": "R03-A09",
+      "text": "Include full R02 physical report pages and dedicated particle analytics in same approved Field Session PDF for each actually selected G/F/P measurement family, preserving archived per-cycle provenance and optionally mixed A4 orientations.",
+      "status": "APPROVED_BY_OWNER_AS_DESIGN_REQUIREMENT"
+    },
+    {
+      "id": "R03-A10",
+      "text": "Display all engine-produced 3D/4D analyses, temperature/humidity compensation, fingerprint/curve comparisons, research versus reportable ppm and executed technique provenance without PDF-side analytic gates.",
+      "status": "APPROVED_BY_OWNER_AS_DESIGN_REQUIREMENT"
+    },
+    {
+      "id": "R03-A11",
+      "text": "Make ranked candidate results prominent with original candidate-specific GHS pictograms, SDS classification provenance, and exposure-limit references TWA/STEL/Ceiling etc, preserving each result's engine evidence status.",
+      "status": "APPROVED_BY_OWNER_AS_DESIGN_REQUIREMENT"
+    },
+    {
+      "id": "R03-A12",
+      "text": "No arbitrary top-N report caps, source truncation or source gate duplication; maintain verified approved-cycle SHA and evidence integrity as independent storage guarantees.",
+      "status": "APPROVED_BY_OWNER_AS_DESIGN_REQUIREMENT"
     }
   ],
   "checkpoints": [
@@ -259,7 +279,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R03 source and original six-page Android PDF audited, quantified fonts and empty panels, checked approved-cycle SHA and V6 read-only source replay, created owner discussion options D01–D08; no R03 code changed. R04 next after signoff.",
+  "latest_documented_change": "R03 owner added mandatory full G+F+P composite pages, exact R02 physical reuse, separate particle detailed pages, 3D/4D, T/RH compensation, all source curves/fingerprints/PPM, and prominent candidate-specific GHS/OEL. Verified runtime shows partial research 4D and adapter hard caps. Documented only; R03 Java untouched; final layout pending.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -312,7 +332,7 @@
   "active_report": {
     "id": "R03",
     "name": "Approved Field Session PDF",
-    "phase": "SOURCE_AND_SIX_PAGE_ORIGINAL_AUDITED_OWNER_DISCUSSION_PENDING",
+    "phase": "R03_COMPOSITE_SCOPE_AND_INTELLIGENCE_APPROVED_FINAL_LAYOUT_PENDING",
     "analysis_document": "docs/implementation/V7-R03-APPROVED-FIELD-SESSION-PDF-AUDIT-AND-REDESIGN-2026-10-30_AR.md",
     "issues": [
       "2 fully empty 6-panel analysis pages in synthetic QA due absent legacy ChemCore decision",
@@ -323,9 +343,22 @@
       "no fixed approved logo/bilingual header/footer",
       "need true engine execution decision and source explanation"
     ],
-    "proposal": "Six expandable report modules with executive and cycle timeline, MQ evidence heatmap, engine decision explanation and provenance, physical/PM integration, full audit and source hashes",
+    "proposal": "Dynamic composite G+F+P approved-cycle report; reuse exact R02 physical page renderer with original A4 portrait within single multi-orientation PDF, add particle report pages, 4D and T/RH correction and candidate GHS OEL highlight, all engine outputs unrestricted",
     "design_approved": false,
-    "production_changes": 0
+    "production_changes": 0,
+    "approved_scope": [
+      "R03-A09",
+      "R03-A10",
+      "R03-A11",
+      "R03-A12"
+    ],
+    "archive_contract": "telemetry_samples.env_payload and telemetry_samples.motion_payload.particles, per approved measurement session; never live latestDiag",
+    "engine_contract_note": "The current technique coverage document records partial implementations, e.g. 3D/4D. Do not claim they ran unless engine execution trace identifies actual outputs.",
+    "current_source_caps_to_address": [
+      "SmartFieldSessionPdfWriter: executive list only 7 sessions",
+      "TankExposureReferenceCatalog: MAX_CANDIDATES=8, MAX_LIMITS_PER_CANDIDATE=32",
+      "SmartReport charts fixed 6-panel pages"
+    ]
   },
   "logo_approval": {
     "source": "owner-uploaded 1000797098.png",
@@ -358,7 +391,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "DESIGN_DISCUSSIONS_R03",
+    "current_phase": "DESIGN_DISCUSSIONS_R03_PARTIALLY_APPROVED",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
