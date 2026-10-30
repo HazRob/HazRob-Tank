@@ -1,0 +1,62 @@
+{
+  "schema": "hazrob-tank-v6-n06c-improved-pdf-android-raster-layout/1",
+  "date": "2026-10-30",
+  "source_repo": "HazRob/HazRob-Tank",
+  "branch": "feature/tank-v6-implementation",
+  "workflow_run_id": 40981025159,
+  "workflow_result": "success",
+  "workflow_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/40981025159",
+  "artifact_id": 12944628278,
+  "artifact_zip_sha256": "572e77a948149cad74e09f63ef05c95cd804f6ed2af9f0360fd7cd7d13202d77",
+  "pdf_sha256": "bf0bf4900b7b9d5f2c15a7ae310b63ef34c7a20ebbd2b2272536df97068c3cbd",
+  "pdf_size_bytes": 514531,
+  "source": "actual SmartFieldSessionPdfWriter.v6ResearchAppendixPage rendered on Android PdfDocument and opened by Android PdfRenderer; test-only fixture activity",
+  "layout_fix": {
+    "cycle_pagination_before": 3,
+    "cycle_pagination_after": 2,
+    "source_cycle_count_fixture": 7,
+    "pdf_pages": 4,
+    "sensor_models_per_cycle": 8,
+    "observed_sensor_rows": 56,
+    "min_sensor_font_pt": 9,
+    "min_rs_r0_font_pt": 9,
+    "x_positions_pt": {
+      "MQ": 43,
+      "scan": 116,
+      "Rs": 222,
+      "R0": 347,
+      "state": 500
+    },
+    "all_text_within_page_bounds": true,
+    "all_7_fixture_cycles_present": true,
+    "source_only_and_insufficient_status_visible": true,
+    "original_V5_content_not_replaced": true,
+    "pdf_page_size_points": [
+      842,
+      595
+    ],
+    "png_pages": 4,
+    "validated_by": "fitz text-span geometry, real Android PdfRenderer PNG and actual PDF ZIP/CRC"
+  },
+  "scope_limits": {
+    "actual_approved_field_session_database_used": false,
+    "actual_hazrob_tank_device_sensor_hardware_used": false,
+    "user_phone_tested": false,
+    "production_apk_produced": false,
+    "temporary_ci_apk_signed_by_user": false,
+    "physical_tank_g3_validated": 0,
+    "ppm_reportable": false,
+    "food_engine_merged": false,
+    "new_field_session_primary_decision_persistence_tested": false
+  },
+  "library_zip": {
+    "path": "/HazRob/MQ_Reference_Measurements_2026/HazRob_Tank_V6_N06C_Android_PDF_Legible_4Pages_2026-10-30.zip",
+    "id": "libfile_9ba0b7472a1481918cce7cd728f2936a"
+  },
+  "related_source_migration": {
+    "ci_run_id": 40980388185,
+    "source_sql_results": "6 historical measurement sessions, 84 samples, 4 LEGACY_APPROVED, 2 LEGACY_IMPORTED, no fabricated SHA",
+    "physical_source_g3": 0
+  },
+  "next_gate": "Full FieldSessionReportExporter database-driven approved V10 source fixture on Android; test full PDF/XLSX outputs and preserved SHA digests"
+}
