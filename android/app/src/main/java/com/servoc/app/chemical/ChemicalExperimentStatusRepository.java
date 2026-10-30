@@ -27,23 +27,25 @@ public final class ChemicalExperimentStatusRepository {
         public final ChemicalRepository.Chemical chemical;
         public final Level fingerprint, ppm;
         public final boolean m4, tested, referenceCurve, referenceFingerprint,
-                referencePpm, referenceM4;
+                referencePpm, referenceM4, publishedM4Qualified;
         public final String evidenceRevision;
 
         Row(ChemicalRepository.Chemical chemical, Level fingerprint, Level ppm,
             boolean m4, boolean tested, String evidenceRevision,
-            boolean curveRef, boolean fingerprintRef, boolean ppmRef, boolean m4Ref) {
+            boolean curveRef, boolean fingerprintRef, boolean ppmRef, boolean m4Ref,
+            boolean m4Qualified) {
             this.chemical=chemical;this.fingerprint=fingerprint;this.ppm=ppm;
             this.m4=m4;this.tested=tested;
             this.referenceCurve=curveRef;this.referenceFingerprint=fingerprintRef;
-            this.referencePpm=ppmRef;this.referenceM4=m4Ref;
+            this.referencePpm=ppmRef;this.referenceM4=m4Ref;this.publishedM4Qualified=m4Qualified;
             this.evidenceRevision=evidenceRevision==null?"":evidenceRevision;
         }
 
         public String fingerprintMark(){return mark(fingerprint);}
         public String ppmMark(){return mark(ppm);}
-        public String m4Mark(){return m4?"✓":referenceM4?"◐ مرجع فقط":"—";}
-        public String curveMark(){return referenceCurve?"◐ مرجع منحنى":ppm==Level.READY?"✓ منحنى":"—";}
+        public String m4Mark(){return m4?"✓ جهاز":publishedM4Qualified?"✓ مكتبة":
+                referenceM4?"◐ مكتبة":"—";}
+        public String curveMark(){return referenceCurve?"◐ مكتبة":ppm==Level.READY?"✓ منحنى":"—";}
         public String capabilityLine(){
             return "بصمة "+fingerprintMark()+" • منحنى "+curveMark()+
                 " • PPM "+ppmMark()+" • M4 "+m4Mark();
@@ -89,16 +91,20 @@ public final class ChemicalExperimentStatusRepository {
         // These flags are never certified as active on-device MQ calibration.
         boolean referenceFp=exists("SELECT 1 FROM chemical_reference_updates_v6 "+
             "WHERE chemical_uid=? AND property_key='fingerprint_reference' AND "+
-            "evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED' LIMIT 1",c.uid);
+            "evidence_status LIKE 'PUBLISHED_LIBRARY_%' LIMIT 1",c.uid);
         boolean referenceCurve=exists("SELECT 1 FROM chemical_reference_updates_v6 "+
             "WHERE chemical_uid=? AND property_key='mq_curve_reference' AND "+
-            "evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED' LIMIT 1",c.uid);
+            "evidence_status LIKE 'PUBLISHED_LIBRARY_%' LIMIT 1",c.uid);
         boolean referencePpm=exists("SELECT 1 FROM chemical_reference_updates_v6 "+
             "WHERE chemical_uid=? AND property_key='ppm_reference' AND "+
-            "evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED' LIMIT 1",c.uid);
+            "evidence_status LIKE 'PUBLISHED_LIBRARY_%' LIMIT 1",c.uid);
         boolean referenceM4=exists("SELECT 1 FROM chemical_reference_updates_v6 "+
             "WHERE chemical_uid=? AND property_key='m4_reference' AND "+
-            "evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED' LIMIT 1",c.uid);
+            "evidence_status LIKE 'PUBLISHED_LIBRARY_%' LIMIT 1",c.uid);
+        boolean publishedM4Qualified=exists(
+            "SELECT 1 FROM chemical_reference_updates_v6 WHERE chemical_uid=? "+
+            "AND property_key='m4_reference' AND "+
+            "evidence_status='PUBLISHED_LIBRARY_QUALIFIED' LIMIT 1",c.uid);
         if(fingerprint==Level.NONE&&referenceFp)fingerprint=Level.PARTIAL;
 
         boolean anyActiveCurve=false,strictM4=false;
@@ -116,7 +122,8 @@ public final class ChemicalExperimentStatusRepository {
                 ||exists("SELECT 1 FROM reference_artifacts WHERE chemical_uid=? LIMIT 1",c.uid);
         return new Row(c,fingerprint,ppm,strictM4,
             tested||referenceFp||referenceCurve||referencePpm||referenceM4,
-            revision,referenceCurve,referenceFp,referencePpm,referenceM4);
+            revision,referenceCurve,referenceFp,referencePpm,referenceM4,
+            publishedM4Qualified);
     }
 
     /** Revision shown beside the matrix so the developer can verify which active central snapshot drives status. */
@@ -135,28 +142,28 @@ public final class ChemicalExperimentStatusRepository {
     }
 
     /** Any usable identity/fingerprint coverage from the active central snapshot or approved local artifact. */
-    public int countFingerprintMaterials(){return scalar("SELECT COUNT(DISTINCT uid) FROM chemicals WHERE uid IN (SELECT chemical_uid FROM reference_artifacts WHERE kind='fingerprint' AND active=1) OR uid IN (SELECT chemical_uid FROM sensor_evidence WHERE chemical_uid IS NOT NULL AND status NOT LIKE 'REJECT%' AND (lower(evidence_type) LIKE '%fingerprint%' OR lower(evidence_type) LIKE '%identity%')) OR uid IN (SELECT chemical_uid FROM chemical_reference_updates_v6 WHERE property_key='fingerprint_reference' AND evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED')");}
+    public int countFingerprintMaterials(){return scalar("SELECT COUNT(DISTINCT uid) FROM chemicals WHERE uid IN (SELECT chemical_uid FROM reference_artifacts WHERE kind='fingerprint' AND active=1) OR uid IN (SELECT chemical_uid FROM sensor_evidence WHERE chemical_uid IS NOT NULL AND status NOT LIKE 'REJECT%' AND (lower(evidence_type) LIKE '%fingerprint%' OR lower(evidence_type) LIKE '%identity%')) OR uid IN (SELECT chemical_uid FROM chemical_reference_updates_v6 WHERE property_key='fingerprint_reference' AND evidence_status LIKE 'PUBLISHED_LIBRARY_%')");}
     /** READY fingerprints only: approved local artifact or centrally accepted/verified identity fingerprint. */
     public int countReadyFingerprintMaterials(){return scalar("SELECT COUNT(DISTINCT uid) FROM chemicals WHERE uid IN (SELECT chemical_uid FROM reference_artifacts WHERE kind='fingerprint' AND active=1) OR uid IN (SELECT chemical_uid FROM sensor_evidence WHERE chemical_uid IS NOT NULL AND status NOT LIKE 'REJECT%' AND (lower(evidence_type) LIKE '%fingerprint%' OR lower(evidence_type) LIKE '%identity%') AND (upper(status) LIKE 'ACCEPTED_IDENTITY_FINGERPRINT%' OR upper(status) LIKE 'VERIFIED%FINGERPRINT%'))");}
     /** Any known concentration/curve evidence, including transfer evidence. */
-    public int countPpmMaterials(){return scalar("SELECT COUNT(DISTINCT uid) FROM chemicals WHERE legacy_id IN (SELECT chemical_id FROM calibration_curves WHERE active=1) OR uid IN (SELECT chemical_uid FROM sensor_evidence WHERE chemical_uid IS NOT NULL AND status NOT LIKE 'REJECT%' AND ((min_ppm IS NOT NULL AND min_ppm>=0) OR (max_ppm IS NOT NULL AND max_ppm>0))) OR uid IN (SELECT chemical_uid FROM chemical_reference_updates_v6 WHERE property_key IN ('ppm_reference','mq_curve_reference') AND evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED')");}
+    public int countPpmMaterials(){return scalar("SELECT COUNT(DISTINCT uid) FROM chemicals WHERE legacy_id IN (SELECT chemical_id FROM calibration_curves WHERE active=1) OR uid IN (SELECT chemical_uid FROM sensor_evidence WHERE chemical_uid IS NOT NULL AND status NOT LIKE 'REJECT%' AND ((min_ppm IS NOT NULL AND min_ppm>=0) OR (max_ppm IS NOT NULL AND max_ppm>0))) OR uid IN (SELECT chemical_uid FROM chemical_reference_updates_v6 WHERE property_key IN ('ppm_reference','mq_curve_reference') AND evidence_status LIKE 'PUBLISHED_LIBRARY_%')");}
     /** Remote reference claims are listed separately and cannot become approved M4. */
     public int countRemoteResearchM4Materials(){
         return scalar("SELECT COUNT(DISTINCT chemical_uid) FROM chemical_reference_updates_v6 "+
             "WHERE property_key='m4_reference' AND "+
-            "evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED'");
+            "evidence_status LIKE 'PUBLISHED_LIBRARY_%'");
     }
     public int countRemoteResearchCurveMaterials(){
         return scalar("SELECT COUNT(DISTINCT chemical_uid) FROM chemical_reference_updates_v6 "+
             "WHERE property_key='mq_curve_reference' AND "+
-            "evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED'");
+            "evidence_status LIKE 'PUBLISHED_LIBRARY_%'");
     }
     /** Strict reportable HR069 M4 material count. */
     public int countM4Materials(){return scalar("SELECT COUNT(DISTINCT chemical_id) FROM calibration_curves WHERE active=1 AND source_note LIKE '"+ReferenceArtifactBuilder.HR069_M4_SOURCE_PREFIX+"%'");}
     /** Union of local experiment activity and active central scientific evidence. */
-    public int countTestedMaterials(){return scalar("SELECT COUNT(DISTINCT uid) FROM chemicals WHERE uid IN (SELECT chemical_uid FROM experiments WHERE chemical_uid IS NOT NULL AND chemical_uid>0) OR uid IN (SELECT chemical_uid FROM sensor_evidence WHERE chemical_uid IS NOT NULL AND status NOT LIKE 'REJECT%') OR uid IN (SELECT chemical_uid FROM chemical_reference_updates_v6 WHERE evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED')");}
+    public int countTestedMaterials(){return scalar("SELECT COUNT(DISTINCT uid) FROM chemicals WHERE uid IN (SELECT chemical_uid FROM experiments WHERE chemical_uid IS NOT NULL AND chemical_uid>0) OR uid IN (SELECT chemical_uid FROM sensor_evidence WHERE chemical_uid IS NOT NULL AND status NOT LIKE 'REJECT%') OR uid IN (SELECT chemical_uid FROM chemical_reference_updates_v6 WHERE evidence_status LIKE 'PUBLISHED_LIBRARY_%')");}
     public int countLocalExperimentMaterials(){return scalar("SELECT COUNT(DISTINCT chemical_uid) FROM experiments WHERE chemical_uid IS NOT NULL AND chemical_uid>0");}
-    public int countCentralEvidenceMaterials(){return scalar("SELECT COUNT(DISTINCT uid) FROM chemicals WHERE uid IN (SELECT chemical_uid FROM sensor_evidence WHERE chemical_uid IS NOT NULL AND status NOT LIKE 'REJECT%') OR uid IN (SELECT chemical_uid FROM chemical_reference_updates_v6 WHERE evidence_status='REMOTE_RESEARCH_REFERENCE_NOT_G3_QUALIFIED')");}
+    public int countCentralEvidenceMaterials(){return scalar("SELECT COUNT(DISTINCT uid) FROM chemicals WHERE uid IN (SELECT chemical_uid FROM sensor_evidence WHERE chemical_uid IS NOT NULL AND status NOT LIKE 'REJECT%') OR uid IN (SELECT chemical_uid FROM chemical_reference_updates_v6 WHERE evidence_status LIKE 'PUBLISHED_LIBRARY_%')");}
     public int countExposureLimitMaterials(){return scalar("SELECT COUNT(DISTINCT chemical_uid) FROM exposure_limits WHERE chemical_uid IS NOT NULL");}
     public int countUntestedNoEvidenceMaterials(){int total=chemicals.count();return Math.max(0,total-countTestedMaterials());}
 
