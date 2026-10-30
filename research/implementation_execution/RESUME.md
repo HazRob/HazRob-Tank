@@ -1,3 +1,13 @@
+## 2026-10-31 — G2 MQ4 pinned cross-report reconciliation (596/596 G2 CI verified)
+
+- Reviewed research HEAD and prior G2 checkpoint: 583/583 G2 CI, 80 catalog techniques, 14 source slots, independent evidence `records=[]`. Verified latest pre-change research workflows on SHA `5ec1b81d26e2c1dd853cb4054a847c3f04c56b15` successful.
+- Added `g2_mq4_cross_report_reconciliation.py` to fail closed on source-hash or schema mismatch, per-lag cross-day arithmetic, LODO holdout/train purge accounting, inconsistent fold totals, duplicate JSON keys, nonfinite JSON and unsupported scientific qualification. Added 13 tests in `test_g2_mq4_cross_report_reconciliation.py` (12 synthetic + one pinned repository-report test), Arabic methods `G2_MQ4_CROSS_REPORT_RECONCILIATION_2026-10-31_AR.md`, and pinned summary result `G2_MQ4_CROSS_REPORT_RECONCILIATION_2026-10-31.json`.
+- **Verified implementation/test CI** on commit `da2e127032da4523d512ac58c94a765f2275f36d`: [G2 run 41130888748](https://github.com/HazRob/HazRob-Tank/actions/runs/41130888748), job `124321186798`: **596/596 tests PASS**, including pinned MQ4 cross-report test; Python compilation PASS; full 80-technique fail-closed audit PASS; deterministic audit/triage replay PASS; publication guard PASS (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). Recheck documentation and output-only commit workflows independently; do not claim latest-commit CI success before completed.
+- Report arithmetic reconciles 14,186 source rows, 11 calendar days, 11 contiguous minute segments, 12,981 max-lag timestamp-eligible rows and 1,200 two-way LODO exclusions/purges each. This is **cross-checking two existing reports**, not a fresh original-raw replay; shared upstream errors remain possible. Physical independence, Tank MQ8 hardware, reference calibration, model performance, G2/G3 approval remain unverified.
+- Changes limited to research branch `research/chemcore80-central-evidence-gap-analysis-20261021`, `research/implementation_execution/` only; no Stable, Android, firmware or main changes. No G2/G3 scientific promotion.
+
+---
+
 ## 2026-10-30 — G2 pinned MQ4 external benchmark claim reconciliation (583/583 G2 CI verified)
 
 - Resumed from the latest 570-test research checkpoint and verified **11/11 GitHub Actions successes** on implementation SHA 070a119ad97e079ab78d7b47fbb8c869d0328772, including G2 source/R0 run 41115493429. Central scope remains 80 techniques, 14 external source slots, 0/14 review-ready; G2_INDEPENDENT_EVIDENCE.json still records=[].
