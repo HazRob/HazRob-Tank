@@ -15,12 +15,10 @@ class StableV6UpdateContract(unittest.TestCase):
     def test_01_embedded_unchanged_hr069_stable_and_v6_compatibility(self):
         self.assertIn('public static final String VERSION="6.0"',RELEASE)
         self.assertIn('1.0.0-hr069r1',STABLE)
-        self.assertIn('52'+'',STABLE) if False else None
         self.assertIn('652 identities',STABLE)
         self.assertIn('49 research priors',STABLE)
         self.assertIn('"calibration_count":0',STABLE)
         self.assertIn('hashlib.sha256(raw).hexdigest()',STABLE)
-        self.assertIn('appVersion',CLIENT) if False else None
         self.assertIn('prepare_v6_stable_source.py',WORKFLOW)
         self.assertNotIn("sed -i 's/5\\.0/6.0/g'",WORKFLOW)
 
@@ -47,6 +45,6 @@ class StableV6UpdateContract(unittest.TestCase):
         self.assertIn("doc.get('owner_approved_apk_build') is True",WORKFLOW)
         self.assertIn('apk_produced',CI)
         self.assertIn("'apk_produced':False",CI)
-        self.assertIn('manifest[\'calibration_count\']==0',CI)
+        self.assertIn("manifest['model_count']==manifest['calibration_count']==0",CI)
 
 if __name__=="__main__":unittest.main()
