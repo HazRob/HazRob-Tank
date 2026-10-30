@@ -49,6 +49,7 @@ jobs:
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceCatalog.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/AlternativeCurveCatalog.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/Engine.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/CleanAirResponseGateV6.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/GasFingerprintCatalogV6.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/FingerprintEngineV6.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/EvidenceConflictV6.java \
