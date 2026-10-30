@@ -5,6 +5,12 @@
 **Repo/branch:** `HazRob/HazRob-Tank @ feature/tank-v7-reports`.  
 **Governance:** `HZT-V7-RPT-STD-001 rev1.2 / G01–G18`; `HZT-V7-RPT-LAYOUT-001` (DESIGN-FIRST, `-`, empty plots). **No production changes to Android/Meat Engine; do not imply APK release.**
 
+## قرار المالك اللاحق الملزم — 3 صفحات (2026-10-30T23:24:52Z)
+
+**APPROVED THREE-PAGE DESIGN REQUIREMENTS.** يعتمد المالك تصميم R06، ويختار **ثلاث صفحات A4 رأسية**، لا صفحتين؛ وبذلك تصبح صفحة **التحقق البحثي ومصفوفة الالتباس 4×4 ومخطط فترة الدراسة المصدرية 36h** الصفحة الثالثة الأساسية **الإلزامية** بدل ملحق اختياري. تظل الصفحة الأولى بطاقة العينة و7MQ والفئات الأربع، والثانية مخططات البصمة و180s وترتيب الفئات. **الرسومات عند غياب قراءات فارغة، والقيم `-`**. لا تعديل وظيفي حتى تنفيذ التقارير الستة في دفعة واحدة.
+
+**المواصفة المصادق عليها:** [`V7-R06-DESIGN-OWNER-001`](V7-R06-OWNER-APPROVED-THREE-PAGE-MEAT-REPORT-DESIGN-2026-10-30_AR.md). يتقدم هذا القرار على كل موضع أدناه يوصي **بصفحتين أو يجعل صفحة الدراسة اختيارية**. الاعتماد للتصميم فقط؛ معاينة PDF Android والإخراج النهائي لم يختبرا بعد.
+
 ## 1. Evidence and boundaries
 - Actual original Android V6 sample file: `06_V6_Meat_Freshness_Original.pdf`.
 - `SHA256 = 053d78db6133e2b519146ddd7ad85335d39c74a202fccbc47494d246319d2366`; `size=213267 bytes`; PDF v1.4 Skia, `1` page, A4 Portrait `595×842pt`, no embedded raster images, vector shapes.
