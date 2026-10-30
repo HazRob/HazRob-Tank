@@ -1,6 +1,9 @@
 """Synthetic numeric-integrity regressions; NOT physical gas validation."""
 import copy
+import hashlib
+import json
 import unittest
+from pathlib import Path
 from g2_mq4_numeric_integrity_audit import REQUIRED, audit_rows
 
 
@@ -84,6 +87,19 @@ class MQ4NumericIntegrityTests(unittest.TestCase):
         rows[0]['datetime'] = '2021-7-21 23:59:00'
         with self.assertRaisesRegex(ValueError, 'TIMESTAMP_NONCANONICAL'):
             self.run_rows(rows)
+
+    def test_pinned_replay_bytes_and_nonpromotion(self):
+        p = Path(__file__).with_name('G2_MQ4_PINNED_NUMERIC_INTEGRITY_2026-10-30.json')
+        raw = p.read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '42dc075efcd420b45faf3754189880da5536386087cfa1995c830cde921975d0')
+        record = json.loads(raw)
+        self.assertEqual(record['row_count'], 14186)
+        self.assertEqual(record['numeric_fields']['MQ4_3']['distinct_values'], 119)
+        self.assertEqual(record['numeric_fields']['MQ4_3']['consecutive_equal_pairs'], 5906)
+        self.assertTrue(record['source_numeric_integrity_verified'])
+        self.assertFalse(record['source_calibration_traceability_verified'])
+        self.assertFalse(record['g2_qualified'])
 
 
 if __name__ == '__main__':

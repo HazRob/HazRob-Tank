@@ -29,7 +29,7 @@
       "invalid_values": 0,
       "longest_identical_run": 15,
       "max": 111951.21951219512,
-      "min": 40000
+      "min": 40000.0
     },
     "licor_ch4": {
       "consecutive_equal_pairs": 0,
