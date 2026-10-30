@@ -1,4 +1,4 @@
-name: ChemCore V6 N06-F full approved SQLite session PDF XLSX on Android emulator
+name: ChemCore V6 N06-F negative SHA/tamper and PDF/XLSX Android integrity
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
     paths:
       - 'research/chemcore_v6/tests/android/V6NegativeFieldIntegrityFixtureActivity.java'
       - 'android/app/src/main/java/com/servoc/app/report/SmartFieldSessionPdfWriter.java'
-      - 'research/chemcore_v6/tests/android/run_n06f_full_approved_field_export.sh'
-      - '.github/workflows/chemcore-v6-n06f-approved-field-e2e-ci.yml'
+      - 'research/chemcore_v6/tests/android/run_n06f_negative_field_integrity.sh'
+      - '.github/workflows/chemcore-v6-n06f-negative-integrity-ci.yml'
   workflow_dispatch:
 
 permissions:
@@ -83,7 +83,7 @@ jobs:
           profile: pixel_2
           disable-animations: false
           emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
-          script: bash tank/research/chemcore_v6/tests/android/run_n06f_full_approved_field_export.sh
+          script: bash tank/research/chemcore_v6/tests/android/run_n06f_negative_field_integrity.sh
       - name: Verify real PDF and XLSX output bytes, XML and immutable source SHA
         shell: bash
         run: |
