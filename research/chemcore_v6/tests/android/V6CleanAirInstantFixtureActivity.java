@@ -135,6 +135,25 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
       require("NO_ACCEPTED_DEVICE_CLEAN_AIR_R0".equals(
               unqualifiedResult.getJSONObject("baseline_response_gate").optString("state")),
           "unqualified source never interpreted as deviation from clean Tank air");
+      JSONObject manual=new JSONObject(unqualified.toString());
+      for(String k:keys){
+          JSONObject v=manual.getJSONObject("mq").getJSONObject(k);
+          v.put("r0_source","manual_device_r0");
+          v.put("r0_provenance_complete",true);
+      }
+      JSONObject manualOut=TankInstantAnalyzer.analyze(db,manual,now+1200).analysis;
+      require(manualOut.getJSONArray("source_curve_hypotheses").length()==0,
+          "manual number alone does not prove clean-air calibration");
+      JSONObject firmwareMissing=new JSONObject(unqualified.toString());
+      for(String k:keys){
+          JSONObject v=firmwareMissing.getJSONObject("mq").getJSONObject(k);
+          v.put("r0_source","firmware_clean_air_r0");
+          v.put("r0_provenance_complete",true);
+          v.put("r0_samples",0);
+      }
+      JSONObject firmwareOut=TankInstantAnalyzer.analyze(db,firmwareMissing,now+1500).analysis;
+      require(firmwareOut.getJSONArray("candidates").length()==0,
+          "unproven firmware R0 with zero NVS samples cannot detect gas");
       JSONObject approvedChange=new JSONObject(original.toString());
       for(int i=0;i<keys.length;i++){
           JSONObject q=approvedChange.getJSONObject("mq").getJSONObject(keys[i]);
@@ -179,6 +198,8 @@ public final class V6CleanAirInstantFixtureActivity extends Activity {
             changedResult.getJSONArray("candidates").length())
         .put("opposite_direction_candidates",
             driftResult.getJSONArray("candidates").length())
+        .put("manual_unverified_candidates",manualOut.getJSONArray("candidates").length())
+        .put("firmware_without_samples_candidates",firmwareOut.getJSONArray("candidates").length())
         .put("research_ppm_example_mq2_lpg_not_operator_visible",
           diagnostic.getJSONObject(0).optDouble("source_estimate_ppm_research"));
       write("v6_clean_air_instant_status.json",
