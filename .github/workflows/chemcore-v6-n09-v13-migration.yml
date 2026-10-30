@@ -1,4 +1,4 @@
-name: ChemCore V6 V13 exact source schema migration regression
+name: ChemCore V6 V13 and V14 exact source schema migration regression
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
     paths:
       - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
       - 'research/chemcore_v6/tests/test_v13_unified_hazard_migration.py'
+      - 'research/chemcore_v6/tests/test_v14_unified_mq_clean_air_migration.py'
       - '.github/workflows/chemcore-v6-n09-v13-migration.yml'
   workflow_dispatch:
 
@@ -23,4 +24,4 @@ jobs:
           python-version: '3.11'
       - name: Execute exact Java V13 SQLite SQL on preserved V12 field and experiment fixture
         run: |
-          python3 -m unittest -v research/chemcore_v6/tests/test_v13_unified_hazard_migration.py
+          python3 -m unittest -v research/chemcore_v6/tests/test_v13_unified_hazard_migration.py research/chemcore_v6/tests/test_v14_unified_mq_clean_air_migration.py
