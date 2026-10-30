@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 mkdir -p /tmp/v6-n16
+# CI-only CONNECT bridge: the GitHub Actions host resolves GitHub DNS, while
+# Android retains its own verified end-to-end HTTPS TLS session. No data is
+# fetched from an untrusted source or mirrored into the app.
+python3 tank/research/chemcore_v6/tests/android/qa_restricted_tls_connect_proxy.py \
+  --port 18888 > /tmp/v6-n16/tls_connect_proxy.log 2>&1 &
+qa_proxy_pid=$!
+trap 'kill "$qa_proxy_pid" 2>/dev/null || true' EXIT
+python3 - <<'PY'
+import socket,time
+for i in range(40):
+    try:
+        with socket.create_connection(('127.0.0.1',18888),timeout=1):break
+    except OSError:
+        if i==39:raise
+        time.sleep(.25)
+print('N16 restricted GitHub-only CONNECT TLS proxy listening on host')
+PY
+adb shell settings put global http_proxy 10.0.2.2:18888
+echo "Android QA-only proxy: $(adb shell settings get global http_proxy)"
 adb install -r source/app/build/outputs/apk/debug/app-debug.apk
 adb shell am start -W -n com.hazrob.tank/com.servoc.app.chemcore.library.V6StableOnlineGithubActivity
 present=0
