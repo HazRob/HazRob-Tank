@@ -495,7 +495,7 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check("CAS مرجعي NIOSH: 64-17-5".equals(
                     unifiedRepo.catalogCasLabel(unifiedRepo.byUid(104))),
                 "historical ethanol displays qualified NIOSH CAS without modifying its master row");
-            check(unifiedRepo.sourceLinkedCas(104).equals("64-17-5"),
+            check("64-17-5".equals(unifiedRepo.sourceLinkedCas(104)),
                 "ethanol CAS sourced from verified NIOSH identity crosswalk");
             check(unifiedRepo.search("64-17-5",100).stream().anyMatch(q->q.uid==104),
                 "search by authority CAS also finds the historical ethanol alias");
