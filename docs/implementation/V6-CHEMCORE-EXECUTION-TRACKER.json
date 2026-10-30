@@ -876,5 +876,51 @@
     "g3_validated_techniques": 0,
     "gate": "DEFER_HARDWARE_G3_NOT_THE_V6_SOFTWARE_BUILD",
     "completed": false
+  },
+  "v6_joint_android_firmware_release": {
+    "decision": "ANDROID_V6_AND_ESP32_TANK_V6_AND_ESP32_CAM_BUNDLE_ARE_PRE_RELEASE_DELIVERABLES",
+    "prepared_at": "2026-10-30",
+    "android": {
+      "workflow": ".github/workflows/build-tank-android-v6.yml",
+      "build_run": 41004240322,
+      "product": "HazRob-Tank-V6-debug-UNRELEASED",
+      "status": "RUNNING_UNTIL_GITHUB_CI_CONFIRMS",
+      "app_version": "6.0",
+      "sqlite_version": 14,
+      "independent_application_id": "com.hazrob.tank",
+      "offline_stable": true
+    },
+    "firmware": {
+      "workflow": ".github/workflows/build-tank-v6-firmware.yml",
+      "build_run": 41004119052,
+      "subsystems": [
+        "ESP32-Tank",
+        "Cam-tank"
+      ],
+      "deliverables": [
+        "ESP32-Tank Arduino ZIP",
+        "ESP32-Tank compiled BIN",
+        "Cam-tank Arduino ZIP",
+        "Cam-tank compiled BIN",
+        "SHA256SUMS.txt",
+        "BUILD-MANIFEST.json"
+      ],
+      "r0_procedure_seconds": {
+        "warmup": 180,
+        "measurement": 60,
+        "cycles": 1,
+        "rest": 0
+      },
+      "previous_r0_nvs_not_overwritten": true,
+      "stop_watchdog_ms": 500,
+      "status": "RUNNING_UNTIL_GITHUB_CI_CONFIRMS"
+    },
+    "release_handover": [
+      "download and preserve exact GitHub Actions successful build artifacts",
+      "verify SHA256 manifest and version identity",
+      "run Android-to-ESP32 /r0 and offline/Direct functional smoke on actual unit when available",
+      "do not reinterpret missing physical G3 as a software packaging blocker"
+    ],
+    "physical_r0_comparison_deferred_until_after_v6_release": true
   }
 }
