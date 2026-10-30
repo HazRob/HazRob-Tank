@@ -110,7 +110,7 @@ public final class MeasurementsTab {
         root.setPadding(UiKit.dp(c,5),UiKit.dp(c,5),UiKit.dp(c,5),UiKit.dp(c,5));
         LinearLayout bar=UiKit.hbox(c);
         String[] names={"🔎 البحث والتتبع","📊 التحليل","🌡 الفيزيائية","◌ الجزيئات","🍎 نضارة الأغذية"};
-        for(int i=0;i<4;i++){
+        for(int i=0;i<names.length;i++){
             final int index=i;tabs[i]=UiKit.button(c,names[i]);
             tabs[i].setTextSize(11);
             tabs[i].setOnClickListener(v->show(index));
