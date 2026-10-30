@@ -55,6 +55,28 @@ class V14MqCleanAirMigration(unittest.TestCase):
         self.assertEqual(row[2:6],(None,None,None,None))
         self.assertEqual(row[6],"NO_QUALIFIED_NATURAL_RANGE")
         self.assertEqual(row[7],"NO_QUALIFIED_DANGER_LIMIT")
+        # A NOAA-style *descriptive* atmospheric span is not, by itself,
+        # a source-qualified normal/safe range suitable for an operator gate.
+        db.execute("INSERT INTO scientific_sources(source_id,title) "+
+            "VALUES('DESCRIPTIVE_AIR','atmospheric composition, context only')")
+        db.execute("INSERT INTO chemical_background_ranges "+
+            "(chemical_uid,environment_type,range_min,range_max,unit,"+
+            "source_id,qualification_status) "+
+            "VALUES(930,'TROPOSPHERE_TEST',20.11,20.947,'vol%',"+
+            "'DESCRIPTIVE_AIR','CONTEXT_SPECIFIC_DESCRIPTIVE_NOT_SAFETY')")
+        self.assertEqual(db.execute("SELECT natural_concentration_coverage_status "+
+            "FROM v14_unified_chemical_catalog WHERE uid=930").fetchone()[0],
+            "NO_QUALIFIED_NATURAL_RANGE")
+        db.execute("INSERT INTO scientific_sources(source_id,title) "+
+            "VALUES('QUALIFIED_REFERENCE','source reviewed for same context')")
+        db.execute("INSERT INTO chemical_background_ranges "+
+            "(chemical_uid,environment_type,range_min,range_max,unit,"+
+            "source_id,qualification_status) "+
+            "VALUES(930,'PROTOCOL_QUALIFIED',1,2,'ppm',"+
+            "'QUALIFIED_REFERENCE','SOURCE_QUALIFIED')")
+        self.assertEqual(db.execute("SELECT natural_concentration_coverage_status "+
+            "FROM v14_unified_chemical_catalog WHERE uid=930").fetchone()[0],
+            "SOURCE_QUALIFIED_ENVIRONMENTAL_RANGE")
         db.execute("INSERT INTO scientific_sources(source_id,title) VALUES('RESEARCH','research curves')")
         db.execute("INSERT INTO mq_chemical_reference_curves"+
             "(curve_id,chemical_uid,sensor_model,ratio_a,ratio_b,output_scale,"+
