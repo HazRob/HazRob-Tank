@@ -1,3 +1,15 @@
+## 2026-10-30 — G2 MQ4 strict-minute plateau/reference-span audit
+
+- Resumed from `670a79adbac63bd6b8242387c169f48531b3bb8d`; previous 20/20 workflows SUCCESS, 432/432 tests, independent evidence `records=[]`, 0/14 source-qualified, 0/80 G2 candidates.
+- Independently verified original Library ZIP SHA256 `7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9` and raw CSV SHA256 `3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d`.
+- New `g2_mq4_plateau_continuity_audit.py` uses existing numeric-integrity gate, splits constant-value runs on any non-60-second gap, assigns midnight-crossing equal pairs to the later day, and computes reference methane span within each constant channel run. Six new synthetic regressions and byte-pinned raw replay.
+- Actual 14,186 rows / 10 gaps / 14,175 strict one-minute adjacent pairs. MQ4_1 / MQ4_2 / MQ4_3 strict equal pairs: 7 / 13 / 5,906; constant runs >=2: 7 / 13 / 3,430. MQ4_3: 25 constant runs with reference span >=100 ppb; max span 1201.7229 ppb; longest run 15. No previously counted equal pair crosses a non-minute gap in this source. These are descriptive channel/representation findings, NOT hardware fault, source calibration or independent exposure evidence.
+- Pinned JSON `G2_MQ4_GAP_AWARE_PLATEAU_RAW_REPLAY_2026-10-30.json`, SHA256 `563c308f898cea911d8165de7b8fe96060902df88e76ac7fb2dbcb1021789f82`; Arabic methods `G2_MQ4_STRICT_MINUTE_PLATEAU_REFERENCE_SPAN_2026-10-30_AR.md`.
+- Local six synthetic tests passed. Verify CI full discovery, deterministic replay, publication guard and workflow status on this checkpoint. Research-only changes; no ChemCore Stable, Android, firmware or main modifications. No G2/G3 promotion.
+- Next independent evidence requirements: source calibration certificates, authenticated exposure/sample/device/session IDs, preregistered blinded physically grouped holdouts.
+
+---
+
 ## 2026-10-30 — G2 pinned MQ4 numeric integrity and plateau audit
 
 - Resumed from `531eb31897852f636f6aa0ff8528490c2bbff770`; previous G2 CI 20/20 successful. Research scope remains pinned 80 techniques/14 external source slots, 0/80 candidates, 0/14 source-qualified, independent evidence records=[].
