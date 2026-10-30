@@ -1,0 +1,135 @@
+name: HazRob Tank V6 owner-requested diagnostic APK from latest source
+
+# Diagnostic build explicitly requested by owner 2026-10-30.
+# Produces a separately installable debug-key APK only; NOT a verified upgrade
+# to installed V5. Never changes the gated production release workflow.
+on:
+  push:
+    branches: [feature/tank-v6-implementation]
+    paths:
+      - '.github/workflows/tank-v6-owner-requested-diagnostic-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-v6-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - name: Checkout HazRob Tank V6 branch
+        uses: actions/checkout@v4
+        with:
+          path: tank
+      - name: Checkout pinned Android base read only
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay current V6, assets, and offline Stable
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          if test -d tank/android/app/src/main/assets; then mkdir -p source/app/src/main/assets; cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/; fi
+          mkdir -p source/tools
+          cp tank/tools/prepare_v6_stable_source.py source/tools/prepare_v6_stable_source.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          gradle=Path('source/app/build.gradle')
+          text=gradle.read_text()
+          for old,new in (
+              ("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'"),
+              ("versionName '0.10.2'","versionName '6.0'"),
+              ("versionCode 30","versionCode 6"),
+              ("debug { signingConfig signingConfigs.prototype }","debug { }")):
+              assert old in text,'Pinned Android source changed: '+old
+              text=text.replace(old,new,1)
+          stable='https://raw.githubusercontent.com/HazRob/HazRob-Tank/main/updates/chemcore-stable/manifest.json'
+          key="buildConfigField 'String', 'CHEMCORE_LIBRARY_MANIFEST_URL', "
+          old=key+"'"+chr(34)*2+"'"
+          assert old in text,'missing stable manifest BuildConfig'
+          text=text.replace(old,key+"'"+chr(34)+stable+chr(34)+"'",1)
+          gradle.write_text(text)
+          manifest=Path('source/app/src/main/AndroidManifest.xml')
+          manifest.write_text(re.sub(r'android:label="[^"]*"','android:label="HazRob Tank"',manifest.read_text(),count=1))
+          release=Path('source/app/src/main/java/com/servoc/app/ReleaseAudit.java').read_text()
+          assert 'VERSION="6.0"' in release and 'DATABASE_SCHEMA=14' in release
+          PY
+          python3 source/tools/prepare_v6_stable_source.py source
+      - name: Build verified offline ChemCore Stable payload
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 tools/build_hr069_embedded_stable.py --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          directory=Path('app/build/generated/hazrobAssets/generated/chemcore/embedded_stable')
+          manifest=json.loads((directory/'manifest.json').read_text())
+          payload=(directory/manifest['payload_file']).read_bytes()
+          assert manifest['min_app_version']==manifest['max_app_version']=='6.0'
+          assert manifest['chemical_count']==652 and manifest['calibration_count']==0
+          assert manifest['payload_sha256']==hashlib.sha256(payload).hexdigest()
+          assert manifest['payload_size_bytes']==len(payload)
+          print('Stable in V6 APK: verified scientific snapshot and SHA256')
+          PY
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK 36
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - name: Set up Gradle 9.5
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Build owner-requested diagnostic Android V6 APK
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Verify APK, signer and embedded Stable payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile,hashlib,json
+          apk=Path('source/app/build/outputs/apk/debug/app-debug.apk')
+          assert apk.exists() and apk.stat().st_size>1000000
+          with zipfile.ZipFile(apk) as z:
+              base='assets/generated/chemcore/embedded_stable/'
+              manifest=json.loads(z.read(base+'manifest.json'))
+              payload=z.read(base+manifest['payload_file'])
+              assert manifest['chemical_count']==652
+              assert manifest['calibration_count']==0
+              assert manifest['min_app_version']==manifest['max_app_version']=='6.0'
+              assert hashlib.sha256(payload).hexdigest()==manifest['payload_sha256']
+          dest=Path('v6-diagnostic')
+          dest.mkdir(exist_ok=True)
+          outfile=dest/'HazRob-Tank-V6-Diagnostic.apk'
+          outfile.write_bytes(apk.read_bytes())
+          (dest/'SHA256SUMS.txt').write_text(hashlib.sha256(outfile.read_bytes()).hexdigest()+'  '+outfile.name+'\n')
+          (dest/'README.txt').write_text(
+              'HazRob Tank V6 diagnostic APK, owner requested, source '+__import__('os').environ['GITHUB_SHA']+'\n'
+              'NOT a production release or scientifically certified gas alarm.\n'
+              'This debug APK is not proven upgrade-compatible with installed V5.\n'
+              'DO NOT uninstall an existing HazRob Tank app without preserving its sessions and data.\n')
+          print('Built APK',outfile.stat().st_size, 'SHA256',hashlib.sha256(outfile.read_bytes()).hexdigest())
+          PY
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs v6-diagnostic/HazRob-Tank-V6-Diagnostic.apk
+      - name: Upload tested diagnostic APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V6-Diagnostic-APK-Owner-Requested
+          path: v6-diagnostic/
+          if-no-files-found: error
+          retention-days: 30
