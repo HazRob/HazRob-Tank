@@ -340,6 +340,28 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
             check(benzeneStudyProfile.optBoolean(
                 "external_r0_rs_not_material_constants",false),
                 "external sensor R0 never becomes a benzene R0 property");
+
+            check(benzeneStudyProfile.getJSONArray("mq_reference_curve_evidence")
+                .length()>0,"same master UID exposes each linked MQ source equation");
+            check(benzeneStudyProfile.getJSONArray("occupational_exposure_source_limits")
+                .length()>0,"source-qualified occupational limits share material UID");
+            check(benzeneStudyProfile.getJSONArray("source_qualified_hazard_classifications")
+                .length()>0,"GHS/IARC source classification shares material UID");
+            check(benzeneStudyProfile.optBoolean("qualified_tank_g3",true)==false &&
+                !benzeneStudyProfile.optBoolean("derived_hazard_notifications",true),
+                "a catalog evidence record cannot claim current Tank gas detection");
+            JSONObject benzeneCurve=benzeneStudyProfile.getJSONArray(
+                "mq_reference_curve_evidence").getJSONObject(0);
+            check(!benzeneCurve.getBoolean("can_calibrate_tank_r0") &&
+                !benzeneCurve.getBoolean("can_certify_gas_ppm"),
+                "research curve with unverified source R0 cannot certify Tank readings");
+            check(benzeneCurve.isNull("source_r0_kohm") &&
+                benzeneCurve.isNull("source_rs_kohm"),
+                "unknown source R0/Rs are null, never manufactured numeric zero");
+            check("hazrob-tank-unified-chemical-v14-plus-evidence/1".equals(
+                benzeneStudyProfile.optString("source_profile_schema","")),
+                "one UID-based material profile carries original source evidence");
+
                         JSONObject oxygenProfile=unifiedRepo.scientificProfile(oxygenUid);
             JSONObject benzeneProfile=unifiedRepo.scientificProfile(benzeneUid);
             check(oxygenProfile.length()>=75 && oxygenProfile.optInt("is_oxidizer",0)==1,
