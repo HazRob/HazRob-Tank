@@ -1,3 +1,14 @@
+## 2026-10-30 — G2 calibration-partition and declared test-group support diagnostic (517/517 CI)
+
+- Resumed from research HEAD `0adae7082e0d092737d9c601aded0bc8d98a0bfb`; prior 20/20 associated workflows successful. Reviewed central source-readiness matrix: 14 external source slots, 0 review-ready; `G2_INDEPENDENT_EVIDENCE.json` still `records=[]`. The Library raw-intake candidate is not independently qualified.
+- Corrected a research holdout audit omission: explicit `calibration` partition is now accepted separately from `train`, `validation`, and `test`. Added deterministic declared row/group counts per partition, missing-calibration protocol-review flag, and a descriptive two-declared-test-group check for cluster-uncertainty feasibility. These are metadata diagnostics, **not** authenticated independent physical groups, and cannot grant G2/G3.
+- Nine synthetic regression tests in `test_g2_declared_calibration_partition.py` cover separate calibration, session/sample cross-split overlap, absent calibration, one test group, missing train, row permutation and distinct validation/calibration.
+- On implementation/test commit `5b3f6080d164477d9c67b1e9898f9d7280385573`, [G2 Actions run 41070601752](https://github.com/HazRob/HazRob-Tank/actions/runs/41070601752), job `124113346350`: **517/517 tests PASS**, full 80-technique fail-closed audit PASS, deterministic triage/evidence replay PASS, publication guard PASS. `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Check final documentation commit CI separately; do not infer from earlier runs.
+- Arabic method note: `G2_DECLARED_CALIBRATION_PARTITION_COVERAGE_2026-10-30_AR.md`. Compare baseline to documentation commit `93a1ee4f7ab2341b60ae62f15baef0eabbe43c8b`: only three files changed, all within `research/implementation_execution/`. No ChemCore Stable, Android, firmware or main changes.
+- **Next:** authenticated physical exposure/sample/session/device IDs, traceable reference-gas concentration calibration, preregistered train/calibration/test holdouts by independent physical group, blinded predictions, and independent scientific review. Software tests and manufacturer curves do not qualify any of 80 techniques. Continue research-only.
+
+---
+
 ## 2026-10-30 — G2 declared train/test partition CI verification addendum
 
 - Final method/test files on `5bdac3c6299c01c8f05b735d9397d1708060fff0`: [G2 run 41062584033](https://github.com/HazRob/HazRob-Tank/actions/runs/41062584033) **508/508 offline tests PASS**, deterministic evidence audit/replay and publication guard PASS, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
