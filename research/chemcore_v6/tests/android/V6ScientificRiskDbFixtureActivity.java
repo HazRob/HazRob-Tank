@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import com.servoc.app.chemical.ChemicalSeedBootstrap;
+import com.servoc.app.chemical.ChemicalReferenceSyncV6;
+import com.servoc.app.chemical.ChemicalExperimentStatusRepository;
 import com.servoc.app.chemical.ChemicalIdentityEquivalenceV6;
 import com.servoc.app.chemical.ChemicalIdentityCategoryV6;
 import com.servoc.app.chemical.ChemicalMolecularProjectionV6;
@@ -748,6 +750,86 @@ public final class V6ScientificRiskDbFixtureActivity extends Activity {
                 V6ScientificThresholdPolicy.compare(5000,co2Pel,"TWA",0.90);
             check(reached.sitePotentialHazard&&!reached.regulatoryTwaExceeded,
                 "instant concentration reaching PEL is site warning not TWA proof");
+            // N17: The central scientific library publishes capability
+            // availability BEFORE download. Android mirrors availability,
+            // not a second qualification of fingerprints, PPM or M4.
+            // This is a disposable emulator fixture, never production data.
+            ChemicalReferenceSyncV6.ensure(sql);
+            ChemicalExperimentStatusRepository readiness=
+                new ChemicalExperimentStatusRepository(db);
+            JSONObject ref1=new JSONObject();
+            ref1.put("uid",77).put("cas","74-82-8");
+            JSONArray capabilities=new JSONArray();
+            String[] kinds={"fingerprint_reference","mq_curve_reference",
+                "ppm_reference","m4_reference"};
+            for(String capability:kinds){
+                capabilities.put(new JSONObject()
+                    .put("key",capability)
+                    .put("text","N17 test-only central published source")
+                    .put("library_status","m4_reference".equals(capability)?
+                        "QUALIFIED":"AVAILABLE")
+                    .put("source_id","HAZROB_RESEARCH")
+                    .put("source_url","https://github.com/HazRob/HazRob-Tank"));
+            }
+            ref1.put("facts",capabilities);
+            byte[] before=ref1.toString().getBytes(
+                java.nio.charset.StandardCharsets.UTF_8);
+            byte[] h=java.security.MessageDigest.getInstance("SHA-256").digest(before);
+            StringBuilder hex=new StringBuilder();
+            for(byte b:h)hex.append(String.format(java.util.Locale.US,"%02x",b&0xff));
+            ChemicalReferenceSyncV6.applyVerifiedRecord(
+                db,before,hex.toString(),"N17-REFERENCE-ONE");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_reference_updates_v6 "+
+                "WHERE chemical_uid=77")==4,
+                "all four published capability flags stored as one record transaction");
+            ChemicalExperimentStatusRepository.Row updated=
+                readiness.status(unifiedRepo.byUid(77));
+            check(updated.referenceFingerprint&&updated.referenceCurve&&
+                updated.referencePpm&&updated.referenceM4&&
+                updated.publishedM4Qualified,
+                "fingerprint/curve/PPM/M4 refresh immediately without scientific reapproval");
+            check(updated.m4Mark().contains("مكتبة")&&!updated.m4,
+                "library M4 qualification not conflated with device M4 calibration");
+            check(unifiedRepo.scientificProfile(77)
+                .getJSONArray("queried_reference_updates").length()==4,
+                "all four source capabilities appear in material details immediately");
+            check(!unifiedRepo.scientificProfile(77)
+                .optBoolean("queried_reference_updates_safety_qualified",true),
+                "central published reference cannot secretly qualify on-device gas alarms");
+            boolean tamperedRejected=false;
+            try{
+                ChemicalReferenceSyncV6.applyVerifiedRecord(
+                    db,(" "+ref1).getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                    hex.toString(),"N17-BAD");
+            }catch(IllegalArgumentException expected){tamperedRejected=true;}
+            check(tamperedRejected&&num(sql,
+                "SELECT COUNT(*) FROM chemical_reference_updates_v6 "+
+                "WHERE chemical_uid=77")==4,
+                "damaged transport is rejected before changing material statuses");
+            JSONObject ref2=new JSONObject().put("uid",77).put("cas","74-82-8")
+                .put("facts",new JSONArray().put(capabilities.getJSONObject(0)));
+            byte[] after=ref2.toString().getBytes(
+                java.nio.charset.StandardCharsets.UTF_8);
+            h=java.security.MessageDigest.getInstance("SHA-256").digest(after);
+            hex=new StringBuilder();
+            for(byte b:h)hex.append(String.format(java.util.Locale.US,"%02x",b&0xff));
+            ChemicalReferenceSyncV6.applyVerifiedRecord(
+                db,after,hex.toString(),"N17-REFERENCE-TWO");
+            ChemicalExperimentStatusRepository.Row withdrawn=
+                readiness.status(unifiedRepo.byUid(77));
+            check(withdrawn.referenceFingerprint&&!withdrawn.referenceCurve&&
+                !withdrawn.referencePpm&&!withdrawn.referenceM4&&
+                !withdrawn.publishedM4Qualified,
+                "withdrawn M4, PPM and curve availability disappear in next query");
+            check(num(sql,"SELECT COUNT(*) FROM chemical_reference_updates_v6 "+
+                "WHERE chemical_uid=77")==1,
+                "per-UID replacement removes withdrawn capabilities, never stale flags");
+            check(num(sql,"SELECT COUNT(*) FROM chemicals")==734 &&
+                num(sql,"SELECT COUNT(*) FROM chemical_risk_profiles "+
+                "WHERE occupational_alarm_authorized!=0")==0,
+                "reference sync never changes central identities or gas alarm approval");
+            out.put("central_published_capability_sync_e2e",
+                "PASS_STAGED_FOUR_CAPABILITIES_WITHDRAW_THREE_NO_REQUALIFICATION");
             out.put("material_field_coverage_audit",coverage);
             out.put("status","PASS");
             out.put("sqlite_version",14).put("legacy_rows",original)
