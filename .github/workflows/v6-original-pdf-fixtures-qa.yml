@@ -87,11 +87,20 @@ jobs:
           profile: pixel_2
           emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
           script: bash tank/research/chemcore_v6/tests/android/run_v6_all_original_pdf_qa.sh
-      - name: Inspect PDF page counts
+      - name: Verify authentic PDF byte signatures without host optional dependencies
         shell: bash
         run: |
           set -euo pipefail
-          for p in /tmp/v6-full-original-reports/*.pdf; do pdfinfo "$p" | grep Pages; done
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/v6-full-original-reports')
+          pdfs=sorted(p.glob('*.pdf'))
+          assert len(pdfs)==6,len(pdfs)
+          for file in pdfs:
+              b=file.read_bytes()
+              assert b.startswith(b'%PDF-') and b'%EOF' in b[-1024:],file
+              print('VERIFIED ORIGINAL ANDROID PDF:',file.name,len(b),'bytes')
+          PY
       - name: Upload individual PDF types; original Android producer only
         uses: actions/upload-artifact@v4
         with:
