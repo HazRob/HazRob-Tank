@@ -93,12 +93,13 @@ jobs:
       - name: Run unified Stable updater and 734-material catalog source contracts
         working-directory: tank
         run: python3 -m unittest research/chemcore_v6/tests/test_v6_stable_update_contract.py -v
-      - name: Preserve audit proof only, not an APK or unapproved Stable publication
+      - name: Stage fully SHA-verified Stable source publication candidate as private CI artifact only
         uses: actions/upload-artifact@v4
         with:
           name: HazRob-Tank-V6-Embedded-Stable-Source-Audit
           path: |
             source/app/build/generated/hazrobAssets/generated/chemcore/embedded_stable/manifest.json
+            source/app/build/generated/hazrobAssets/generated/chemcore/embedded_stable/chemcore-stable-snapshot.json
             source/app/build/generated/hazrobAssets/generated/chemcore/embedded_stable/V6-SCIENTIFIC-AUDIT.json
           retention-days: 30
           if-no-files-found: error
