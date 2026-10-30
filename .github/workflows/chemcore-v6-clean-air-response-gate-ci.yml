@@ -4,6 +4,8 @@ on:
     branches: [feature/tank-v6-implementation]
     paths:
       - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/CleanAirResponseGateV6.java'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/CleanAirReferenceStatisticsV14.java'
+      - 'research/chemcore_v6/tests/java/CleanAirReferenceStatisticsV14Test.java'
       - 'research/chemcore_v6/tests/java/CleanAirResponseGateV6Test.java'
       - '.github/workflows/chemcore-v6-clean-air-response-gate-ci.yml'
   workflow_dispatch:
@@ -28,5 +30,8 @@ jobs:
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/AlternativeCurveCatalog.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/Engine.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/CleanAirResponseGateV6.java \
-            research/chemcore_v6/tests/java/CleanAirResponseGateV6Test.java
+            research/chemcore_v6/tests/java/CleanAirResponseGateV6Test.java \\
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/CleanAirReferenceStatisticsV14.java \\
+            research/chemcore_v6/tests/java/CleanAirReferenceStatisticsV14Test.java
           java -cp /tmp/v6-response-gate com.hazrob.tank.chemcore.v6.CleanAirResponseGateV6Test
+          java -cp /tmp/v6-response-gate com.hazrob.tank.chemcore.v6.CleanAirReferenceStatisticsV14Test
