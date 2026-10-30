@@ -78,10 +78,35 @@ def lodo_context(timestamps, *, lags=LAGS, predictors=PREDICTORS):
         if crossing_fold_sum != 2 * len(cross_pairs):
             raise AssertionError('MQ4_LODO_PAIR_RECONCILIATION_FAILED')
         global_by_lag[str(lag)]['sum_cross_fold_context_rows_over_lodo_folds'] = crossing_fold_sum
+    # A row can use the complete lag manifest only when the entire longest
+    # lookback remains within one strict-minute segment. This is a timestamp-
+    # only eligibility check, NOT proof of complete sensor data or independence.
+    max_lag = max(lags)
+    eligible = {i for i in range(max_lag, len(timestamps))
+                if segment[i] == segment[i - max_lag]}
     result_folds = {}
     for d in days:
         f = folds[d]
+        holdout = {i for i, day in enumerate(dates) if day == d}
+        train = set(range(len(timestamps))) - holdout
+        valid_holdout = eligible & holdout
+        valid_train = eligible & train
+        # Two distinct embargo directions: remove holdout predictions that
+        # depend on training context; purge training features that use holdout.
+        exclude_holdout = valid_holdout & f['train_to_holdout_context_rows']
+        purge_train = valid_train & f['holdout_to_train_context_rows']
+        if (exclude_holdout & purge_train or
+                len(valid_holdout) + len(valid_train) != len(eligible)):
+            raise AssertionError('MQ4_LODO_PURGE_RECONCILIATION_FAILED')
         result_folds[d] = {
+            'timestamp_eligible_holdout_rows_all_lags': len(valid_holdout),
+            'timestamp_eligible_training_rows_all_lags': len(valid_train),
+            'holdout_rows_with_training_context_excluded': len(exclude_holdout),
+            'training_rows_with_holdout_context_purged': len(purge_train),
+            'holdout_rows_remaining_after_context_exclusion': len(valid_holdout - exclude_holdout),
+            'training_rows_remaining_after_context_purge': len(valid_train - purge_train),
+            'holdout_rows_missing_full_lag_history': len(holdout - valid_holdout),
+            'training_rows_missing_full_lag_history': len(train - valid_train),
             'holdout_row_count': dates.count(d),
             'unique_train_to_holdout_context_rows_any_lag': len(f['train_to_holdout_context_rows']),
             'unique_holdout_to_train_context_rows_any_lag': len(f['holdout_to_train_context_rows']),
@@ -92,6 +117,10 @@ def lodo_context(timestamps, *, lags=LAGS, predictors=PREDICTORS):
         'schema': 'hazrob.g2.mq4-lodo-calendar-fold-context.v1',
         'row_count': len(timestamps), 'calendar_date_count': len(days),
         'strict_minute_segment_count': segment[-1] + 1,
+        'max_lag_minutes': max_lag,
+        'timestamp_eligible_rows_all_lags': len(eligible),
+        'hypothetical_two_way_purge_plan': True,
+        'actual_purged_split_verified': False,
         'predictor_manifest': predictors, 'reference_target': TARGET,
         'reference_target_used_as_predictor': False,
         'lag_results': global_by_lag, 'lodo_folds': result_folds,
@@ -134,7 +163,7 @@ def audit_pinned_archive(path):
         'source_hashes_verified': True,
         **result,
         'units': {'reference_target': 'ppb', 'MQ4_channels': 'ohm'},
-        'method': 'For each leave-one-calendar-day-out fold, count strictly contiguous lag-feature contexts that cross the hypothetical train/holdout boundary. Report union of affected later rows over all lags, without double counting.',
+        'method': 'For each hypothetical calendar-date holdout, audit strict-minute lag contexts; require complete max-lag timestamp history, exclude holdout rows with training context, and purge training rows with holdout context. Counts are row-level, not independent exposures.',
         'limitations': 'Hypothetical LODO only. A calendar day is not an independent exposure. No actual training, feature manifest, split, device calibration, source exposure identity or G2/G3 scientific approval established.',
     }
 
