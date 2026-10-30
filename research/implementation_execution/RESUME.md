@@ -1,3 +1,11 @@
+## 2026-10-30 — G2 declared train/test partition CI verification addendum
+
+- Final method/test files on `5bdac3c6299c01c8f05b735d9397d1708060fff0`: [G2 run 41062584033](https://github.com/HazRob/HazRob-Tank/actions/runs/41062584033) **508/508 offline tests PASS**, deterministic evidence audit/replay and publication guard PASS, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Documentation checkpoint `1043ebc46aa3310f1b28533d480025f4bcddc165`: **20/20 associated Actions workflows SUCCESS**, including [G2 run 41062687307](https://github.com/HazRob/HazRob-Tank/actions/runs/41062687307). Earlier failed synthetic assertions on intermediate commits remain in history; final tests repaired.
+- Four changed files relative to `05a5aee1da249c790f59b2e8963f52f4ff2d0df4`, all under `research/implementation_execution/`: diagnostic, 21 synthetic tests, Arabic method note, RESUME. No Stable/Android/firmware/main edits; no scientific promotion or independent source data added. Verify CI again if this documentation-only commit triggers new workflows.
+
+---
+
 ## 2026-10-30 — G2 declared train/test holdout partition diagnostic (CI verification pending)
 
 - Resumed from research commit `05a5aee1da249c790f59b2e8963f52f4ff2d0df4`, whose previous G2 and associated workflows succeeded. Pinned central catalog: 80 technique entries, 14 external dataset slots, 0/14 source-review-ready; `G2_INDEPENDENT_EVIDENCE.json` still `records=[]`. No physical G2/G3 qualification.
