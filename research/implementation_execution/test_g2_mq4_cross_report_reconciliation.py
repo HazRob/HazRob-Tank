@@ -153,5 +153,15 @@ class MQ4CrossReportTests(unittest.TestCase):
         self.assertEqual(result['training_context_purges_across_folds'], 1200)
 
 
+    def test_committed_result_is_byte_identical_replay(self):
+        root = Path(__file__).resolve().parent
+        a = root / 'G2_MQ4_LODO_TWO_WAY_PURGE_RAW_REPLAY_2026-10-30.json'
+        b = root / 'G2_MQ4_MULTISCALE_DAY_CONTEXT_EMBARGO_2026-10-30.json'
+        saved = root / 'G2_MQ4_CROSS_REPORT_RECONCILIATION_2026-10-31.json'
+        result = reconcile(load_report(a), load_report(b))
+        self.assertEqual(saved.read_text(encoding='utf-8'),
+                         json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2) + '\n')
+
+
 if __name__ == '__main__':
     unittest.main()
