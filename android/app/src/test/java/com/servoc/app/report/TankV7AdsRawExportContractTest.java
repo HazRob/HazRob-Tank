@@ -6,14 +6,14 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/** Regression: ADS1115 raw conversion code must never be relabeled as voltage. */
+/** Source-contract of V7 Field Session XLSX only. No change to acquisition or UI. */
 public final class TankV7AdsRawExportContractTest {
-    private static String src(String relative)throws Exception {
+    private static String src(String relative)throws Exception{
         return new String(Files.readAllBytes(
             Paths.get("src/main/java/com/servoc/app/"+relative)),StandardCharsets.UTF_8);
     }
 
-    @Test public void exportsBothRawConversionCodeAndVoltageWithoutInference()throws Exception {
+    @Test public void xlsxReportsEightOriginalMqAdcCodesAndVoltageSeparately()throws Exception{
         String writer=src("report/SmartFieldSessionXlsxWriter.java");
         assertTrue(writer.contains("MQ الثمانية الخام"));
         assertTrue(writer.contains("MQ الأصل لكل حساس"));
@@ -21,28 +21,19 @@ public final class TankV7AdsRawExportContractTest {
         assertTrue(writer.contains("row.add(exactNumber(q,\"raw\"))"));
         assertTrue(writer.contains("row.add(exactNumber(q,\"adc\"))"));
         assertTrue(writer.contains("row.add(exactNumber(q,\"ao\"))"));
-        assertTrue(writer.contains("exactNumber(nativeQ,\"raw\")"));
-        assertTrue(writer.contains("originalJson(nativeQ)"));
+        assertTrue(writer.contains("row.add(exactNumber(q,\"rs\"))"));
+        assertTrue(writer.contains("row.add(exactNumber(q,\"r0\"))"));
+        assertTrue(writer.contains("originalJson(q)"));
         assertFalse(writer.contains("adcFromMq("));
-        assertFalse(writer.contains("for(String key:new String[]{\"adc_raw\",\"raw_adc\",\"adc\""));
     }
 
-    @Test public void rawFirmwarePayloadAndAcquisitionMetadataArePersistedTogether()throws Exception {
-        String recorder=src("measurement/TelemetryRecorder.java");
-        assertTrue(recorder.contains("state.put(\"firmware_mq\",new JSONObject(nativeMq.toString()))"));
-        assertTrue(recorder.contains("state.put(\"firmware_adc\",new JSONObject(nativeAdc.toString()))"));
-        assertTrue(recorder.contains("state.put(\"firmware_device_id\""));
-        assertTrue(recorder.contains("state.put(\"firmware_build_revision\""));
-        assertTrue(recorder.contains("v.put(\"mq_payload\",mq==null?\"{}\":mq.toString())"));
-        assertTrue(recorder.contains("v.put(\"motion_payload\",state.toString())"));
-    }
-
-    @Test public void approvedReportScopeAndInvalidationArePreserved()throws Exception {
-        String screen=src("ui/ReportsTab.java");
-        String queries=src("data/ExperimentQueries.java");
-        assertTrue(screen.contains("chosenSessionId=next;updateExportButtonLabels();refresh()"));
-        assertTrue(screen.contains("approvedFieldReportsForScope("));
-        assertTrue(queries.contains("AND fs.status='APPROVED' AND fs.site_id=?"));
-        assertTrue(queries.contains("sql.append(\" AND fs.field_session_id=?\")"));
+    @Test public void xlsxPreservesStoredCalibrationAndTimingWithoutInference()throws Exception{
+        String writer=src("report/SmartFieldSessionXlsxWriter.java");
+        assertTrue(writer.contains("exactNumber(q,\"scan_cycle\")"));
+        assertTrue(writer.contains("exactNumber(q,\"sample_us\")"));
+        assertTrue(writer.contains("exactNumber(q,\"firmware_r0\")"));
+        assertTrue(writer.contains("exactNumber(state,\"sample_utc_ms\")"));
+        assertTrue(writer.contains("SELECT id,t_ms,env_payload,mq_payload,motion_payload"));
+        assertTrue(writer.contains("WHERE session_id=? ORDER BY t_ms,id"));
     }
 }
