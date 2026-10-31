@@ -18,25 +18,25 @@
       "0": {
         "minimum_independent_locked_holdout_groups_per_claim": 71,
         "maximum_predeclared_misses": 0,
-        "rejection_tail_at_minimum": 0.0005639208733960184,
+        "rejection_tail_at_minimum": 0.0005639208733960174,
         "scientifically_qualified": false
       },
       "1": {
         "minimum_independent_locked_holdout_groups_per_claim": 94,
         "maximum_predeclared_misses": 1,
-        "rejection_tail_at_minimum": 0.0005719928532719981,
+        "rejection_tail_at_minimum": 0.000571992853271997,
         "scientifically_qualified": false
       },
       "2": {
         "minimum_independent_locked_holdout_groups_per_claim": 113,
         "maximum_predeclared_misses": 2,
-        "rejection_tail_at_minimum": 0.0006189755475131134,
+        "rejection_tail_at_minimum": 0.0006189755475131121,
         "scientifically_qualified": false
       },
       "5": {
         "minimum_independent_locked_holdout_groups_per_claim": 165,
         "maximum_predeclared_misses": 5,
-        "rejection_tail_at_minimum": 0.0006191624034135235,
+        "rejection_tail_at_minimum": 0.0006191624034135218,
         "scientifically_qualified": false
       }
     },
@@ -44,25 +44,25 @@
       "0": {
         "minimum_independent_locked_holdout_groups_per_claim": 144,
         "maximum_predeclared_misses": 0,
-        "rejection_tail_at_minimum": 0.0006197252075469491,
+        "rejection_tail_at_minimum": 0.0006197252075469534,
         "scientifically_qualified": false
       },
       "1": {
         "minimum_independent_locked_holdout_groups_per_claim": 191,
         "maximum_predeclared_misses": 1,
-        "rejection_tail_at_minimum": 0.0006147156981509814,
+        "rejection_tail_at_minimum": 0.0006147156981509863,
         "scientifically_qualified": false
       },
       "2": {
         "minimum_independent_locked_holdout_groups_per_claim": 231,
         "maximum_predeclared_misses": 2,
-        "rejection_tail_at_minimum": 0.0006200090601433019,
+        "rejection_tail_at_minimum": 0.0006200090601433074,
         "scientifically_qualified": false
       },
       "5": {
         "minimum_independent_locked_holdout_groups_per_claim": 336,
         "maximum_predeclared_misses": 5,
-        "rejection_tail_at_minimum": 0.0006247231475308888,
+        "rejection_tail_at_minimum": 0.0006247231475308954,
         "scientifically_qualified": false
       }
     }
