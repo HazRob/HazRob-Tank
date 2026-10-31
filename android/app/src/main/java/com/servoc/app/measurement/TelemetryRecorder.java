@@ -99,6 +99,24 @@ public final class TelemetryRecorder {
             JSONObject ir=snapshot.optJSONObject("ir");if(ir!=null)state.put("ir",ir);
             JSONObject ldr=snapshot.optJSONObject("ldr");if(ldr!=null&&ldr.optBoolean("installed",false))state.put("ldr",ldr);
             JSONObject adc=snapshot.optJSONObject("adc");if(adc!=null)state.put("adc",adc);
+            // Preserve the ESP32 /data MQ payload separately from the Android
+            // normalized MQ values (which may replace active R0 and ratio).
+            // This is an additive audit copy, not a second sensor sampling.
+            // MQTT can lack _data_api: do not manufacture device provenance.
+            JSONObject deviceData=snapshot.optJSONObject("_data_api");
+            if(deviceData!=null){
+                JSONObject nativeMq=deviceData.optJSONObject("mq");
+                if(nativeMq!=null)state.put("firmware_mq",new JSONObject(nativeMq.toString()));
+                JSONObject nativeAdc=deviceData.optJSONObject("adc");
+                if(nativeAdc!=null)state.put("firmware_adc",new JSONObject(nativeAdc.toString()));
+                state.put("firmware_source_endpoint","/data");
+            }
+            JSONObject deviceDiag=snapshot.optJSONObject("_diag_api");
+            if(deviceDiag!=null){
+                if(deviceDiag.has("device_id"))state.put("firmware_device_id",deviceDiag.optString("device_id",""));
+                if(deviceDiag.has("fw"))state.put("firmware_version",deviceDiag.optString("fw",""));
+                if(deviceDiag.has("build_revision"))state.put("firmware_build_revision",deviceDiag.optString("build_revision",""));
+            }
             JSONObject relay=snapshot.optJSONObject("relay");if(relay!=null)state.put("relay",relay);
             JSONObject sensorPower=snapshot.optJSONObject("sensor_power");if(sensorPower!=null)state.put("sensor_power",sensorPower);
             JSONObject measurement=snapshot.optJSONObject("measurement");if(measurement!=null){
