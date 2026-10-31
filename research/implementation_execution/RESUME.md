@@ -1,3 +1,14 @@
+## 2026-10-31 — G2 MQ4 three-channel forward benchmark and negative control (705/705 CI; research only)
+
+- Resumed from verified research HEAD a50fe128a4be4f4b6d2fd89c1e3473aff37ffbe5; all 20 visible workflows on that checkpoint completed successfully. Reopened original 2,040,810-byte central Library ZIP and checked SHA256 archive 7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9 and member 3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d.
+- Added g2_mq4_multichannel_forward_control.py, 11 deterministic synthetic/fail-closed tests, pinned source-derived JSON, Arabic methods document. Compared training-standardized three-channel Ridge alpha=0.1 (fixed, not tuned on holdout) with each univariate OLS, training-only mean and a within-day half-rotation label placebo on identical 6 chronological held-out days / 7,889 rows and gaps 0/1/2. Original archive remains outside Git.
+- Pooled Ridge RMSE gap 0/1/2: 1114.98/1158.16/1158.54 source ppb; MQ4_1 OLS 1123.90/1150.12/1150.24; training-mean 1319.04/1334.19/1351.99; label-rotation placebo Ridge 1328.08/1337.42/1437.16. Three-channel model improves slightly over MQ4_1 at gap 0 but worsens at gaps 1 and 2. Mean per-day Ridge skill is negative for all gaps; two of six days worse than training mean. Negative control is descriptive, not causal proof.
+- Local 11/11 tests PASS. Code/test/results commit 974d0abfaf331b58441aa3177b40723f2d93febe; G2 Actions run 41209948423 on that commit PASS **705/705** offline tests, 80-technique fail-closed audit, byte-identical replay and publication guard. Other workflows may remain queued; check final documentation HEAD separately. All new files restricted to research/implementation_execution/ and research branch only.
+- Scientific status unchanged: g2_pass_candidates=0, g2_blocked=80, source_blocked=14, independent evidence records=[]. No independent exposures, certified calibration, blinded grouped holdouts or Tank transfer; no G2/G3 promotion. No ChemCore Stable, Android, firmware or main changes.
+- Next: check all final-HEAD CI; continue source-qualified validation, not additional claims from observational rows.
+
+---
+
 ## 2026-10-31 — G2 MQ4 day-level sensitivity: negative macro-day skill (694/694 CI verified; no promotion)
 
 - Resumed from research HEAD `e5a77097c5f761949f28539e500d00a09270a3f0`. All 11 visible PR workflows on that SHA completed success, including G2 run 41201348039 (684 tests).
