@@ -173,7 +173,8 @@ final class SmartFieldSessionXlsxWriter {
     private static String rawMqLong(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
         SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(
             36,18,14,20,16,15,19,18,19,18,18,18,18,25,25,18,
-            18,20,18,18,18,18,18,18,18,18,20,22,45,55);
+            18,20,18,18,18,18,18,18,18,18,20,22,45,55,
+            18,20,25,18,75);
         identity(g,b,"MQ V7 — original per-channel archive and provenance");
         g.blank();
         g.rowStyled(SmartXlsxPackage.WARN,"Source",
@@ -186,7 +187,9 @@ final class SmartFieldSessionXlsxWriter {
             "R0 definition","R0 samples","scan cycle","sample_us",
             "channel offset us","age_us","MQ power","ADS1 ready",
             "ADS2 ready","T °C","RH %","Pressure hPa",
-            "ADC acquisition JSON","Original stored MQ channel JSON");
+            "ADC acquisition JSON","Android stored MQ JSON",
+            "Native ADS raw code","Native ADC voltage V","Firmware device ID",
+            "Firmware revision","Native /data MQ JSON");
         for(String sid:b.measurementSessionIds){
             try(Cursor c=db.getReadableDatabase().rawQuery(
                 "SELECT id,t_ms,env_payload,mq_payload,motion_payload "+
@@ -197,8 +200,10 @@ final class SmartFieldSessionXlsxWriter {
                     JSONObject mq=parseRecordedJson(c.getString(3));
                     JSONObject state=parseRecordedJson(c.getString(4));
                     JSONObject adc=state.optJSONObject("adc");
+                    JSONObject nativeMq=state.optJSONObject("firmware_mq");
                     for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){
                         JSONObject q=mq.optJSONObject(hw.key);
+                        JSONObject nativeQ=nativeMq==null?null:nativeMq.optJSONObject(hw.key);
                         g.row(sid,c.getLong(0),c.getLong(1),
                             exactNumber(state,"sample_utc_ms"),hw.key,
                             exactBoolean(q,"ok"),exactNumber(q,"ads"),
@@ -218,7 +223,11 @@ final class SmartFieldSessionXlsxWriter {
                             environmentalNumber(env,"humidity","h"),
                             environmentalNumber(env,"pressure","p"),
                             adc==null?null:originalJson(adc.optJSONObject("acquisition")),
-                            originalJson(q));
+                            originalJson(q),
+                            exactNumber(nativeQ,"raw"),exactNumber(nativeQ,"adc"),
+                            exactString(state,"firmware_device_id"),
+                            exactString(state,"firmware_build_revision"),
+                            originalJson(nativeQ));
                     }
                 }
             }
