@@ -1,3 +1,13 @@
+## 2026-10-31 — G2 MQ4 six-day exact sign diagnostic (research-only; CI verification pending)
+
+- Resumed from `2852d6782c900789c716932e424db509456d31e6`; checked all 20 latest visible Actions runs on that SHA: **20 success**. Independent physical evidence `G2_INDEPENDENT_EVIDENCE.json` still contains `records=[]`.
+- Added `g2_mq4_day_sign_sensitivity.py`, 12 fail-closed deterministic tests, pinned nine-case JSON and Arabic methodology. Uses the pinned source-derived six-day MQ4 robustness summary, not the original ZIP in this iteration.
+- For all three channels and gaps 0/1/2, conditional one-sided exact sign tails: **4/6 positive days -> 11/32 (0.34375)**; **5/6 -> 7/64 (0.109375)**. None of nine cases passes nominal 5% or 80-claim Bonferroni 0.000625. All nine day-mean skill values are negative. The days are not verified independent exposures; the p-values are conditional sensitivity calculations, **not validated inferential p-values**.
+- CI on intermediate SHA `3f3d94f2` failed because the pinned JSON was not yet committed. Pinned JSON was committed at `278a3b5f` and Arabic methods at `ed7456c5`; verify **final HEAD** CI separately and correct any remaining failure without weakening gates.
+- Research-only files under `research/implementation_execution/`; no ChemCore Stable, Android, firmware or main changes. `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14` as last verified. No G2/G3 qualification. Independent reference-calibrated exposures, prespecified claims and physically grouped blinded holdouts remain required.
+
+---
+
 ## 2026-10-31 — G2 family-wise nonzero-miss exact binomial budget (research only; CI verified)
 
 - Resumed from `b36e7010aff862fbdb1b1bffa5dd045cc43ee2b8`. Previous 745/745 tests and all 21 previous visible workflows were successful. Independent evidence `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
