@@ -1,0 +1,78 @@
+name: HazRob Tank V8 R0 Settings rebuild — source and timing QA
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/ui/OperatorR0CalibrationScreen.java'
+      - 'android/app/src/main/java/com/servoc/app/ui/DeveloperR0Tab.java'
+      - 'android/app/src/main/java/com/servoc/app/ui/SettingsTab.java'
+      - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
+      - 'android/app/src/main/java/com/servoc/app/calibration/FirmwareR0Contract.java'
+      - 'android/app/src/test/java/com/servoc/app/ui/TankV5OperatorR0ContractTest.java'
+      - 'android/app/src/test/java/com/servoc/app/calibration/TankR0LifecycleContractTest.java'
+      - 'android/app/src/test/java/com/servoc/app/calibration/TankAutoR0SampleProvenanceTest.java'
+      - 'android/app/src/test/java/com/servoc/app/calibration/TankV8R0TimeContractTest.java'
+      - 'android/app/src/test/java/com/servoc/app/HR069R1DeveloperWorkflowSmokeContractTest.java'
+      - '.github/workflows/v8-r0-rebuild-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v8-r0-android-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay Tank V8 Android; remove migrated DeveloperR0Tab
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          if test -d tank/android/app/src/main/assets; then mkdir -p source/app/src/main/assets; cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/; fi
+          if test -d tank/android/app/src/test/java; then mkdir -p source/app/src/test/java; cp -a tank/android/app/src/test/java/. source/app/src/test/java/; fi
+          rm -f source/app/src/main/java/com/servoc/app/ui/DeveloperR0Tab.java
+          test ! -f source/app/src/main/java/com/servoc/app/ui/DeveloperR0Tab.java
+          test -f source/app/src/main/java/com/servoc/app/ui/OperatorR0CalibrationScreen.java
+          ! grep -q 'new DeveloperR0Tab' source/app/src/main/java/com/servoc/app/ui/SettingsTab.java
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Compile full Android app and run V8 R0 lifecycle / time-contract unit tests
+        working-directory: source
+        run: |
+          set -euo pipefail
+          gradle --no-daemon :app:compileDebugJavaWithJavac
+          gradle --no-daemon :app:testDebugUnitTest \
+            --tests com.servoc.app.calibration.TankV8R0TimeContractTest \
+            --tests com.servoc.app.ui.TankV5OperatorR0ContractTest \
+            --tests com.servoc.app.calibration.TankR0LifecycleContractTest \
+            --tests com.servoc.app.calibration.TankAutoR0SampleProvenanceTest \
+            --tests com.servoc.app.calibration.FirmwareR0ContractTest \
+            --tests com.servoc.app.HR069R1DeveloperWorkflowSmokeContractTest
+      - name: Confirm exact branch revision
+        run: |
+          printf 'QA tested Tank branch commit: '
+          git -C tank rev-parse HEAD
+          echo 'Software-only QA; live ESP32 /r0 JSON still required before device acceptance.'
