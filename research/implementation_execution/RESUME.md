@@ -1,3 +1,13 @@
+## 2026-10-31 — G2 MQ4 midnight lag Lipschitz gate verified: 620/620
+
+- Rechecked the previous checkpoint `e36e9932eeb8068a1b14bef079cd84d606e88403`: G2 Actions [41159859977](https://github.com/HazRob/HazRob-Tank/actions/runs/41159859977), job `124414801435`, **616/616 PASS**, full 80-technique audit, deterministic replay and publication guard; all 20/20 workflows on that SHA completed successfully.
+- Added the necessary **per-midnight 1-Lipschitz bound** on cross-day lag-pair counts, derived from `C(k)=max(0,min(b,k)-max(0,k-a))` for the single strict-minute segment that can span a given midnight. The bound allows decreasing tails and rejects impossible jumps between sparse lag knots. This checks reported arithmetic, not source timestamps or exposure independence.
+- Code `054223c2cc4a4daf7ac8e3ca12a1ba8f70e5d8c4`; four new synthetic/pinned/integration tests in `ec1e2b5307a087da9e83faa927f6bc78d4a33bb0`; Arabic methodology `G2_MQ4_CROSS_MIDNIGHT_LAG_LIPSCHITZ_2026-10-31_AR.md` committed as `71fd9266d18ceab1b295b3e9c58f0af221dc4d96`.
+- **620/620 offline tests PASS** on code/test commit in [G2 Actions 41164080898](https://github.com/HazRob/HazRob-Tank/actions/runs/41164080898), job `124427740859`; compile, 80-technique fail-closed audit, deterministic replay and publication guard all PASS. Pinned MQ4 reconciliation output remains byte-identical and scientific qualification false. The later documentation-only commits may have separate Actions still pending; verify by SHA rather than assuming their status.
+- Independent evidence remains `G2_INDEPENDENT_EVIDENCE.json: records=[]`, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. G2 not complete; missing independently measured and traceably calibrated physical exposures, locked blinded group holdouts and independent scientific review. Changes restricted to `research/implementation_execution/` on research branch; ChemCore Stable, Android, firmware and main untouched.
+
+---
+
 ## 2026-10-31 — G2 MQ4 sparse-lag convexity research gate (CI verification pending)
 
 - Resumed from the latest research checkpoint: repaired code commit `ae10f849f1cc4b7b0ae639cffc402121078334a0` passed G2 Actions [41155009989](https://github.com/HazRob/HazRob-Tank/actions/runs/41155009989), **613/613 tests**, full 80-technique fail-closed audit, deterministic replay and publication guard. Older repaired [41149752531](https://github.com/HazRob/HazRob-Tank/actions/runs/41149752531) also succeeded.
