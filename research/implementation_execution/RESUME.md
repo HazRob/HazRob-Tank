@@ -1,3 +1,12 @@
+## 2026-10-31 — G2 MQ4 sparse-lag convexity research gate (CI verification pending)
+
+- Resumed from the latest research checkpoint: repaired code commit `ae10f849f1cc4b7b0ae639cffc402121078334a0` passed G2 Actions [41155009989](https://github.com/HazRob/HazRob-Tank/actions/runs/41155009989), **613/613 tests**, full 80-technique fail-closed audit, deterministic replay and publication guard. Older repaired [41149752531](https://github.com/HazRob/HazRob-Tank/actions/runs/41149752531) also succeeded.
+- Added a **necessary convexity inequality for sparse lag-pair counts** in `g2_mq4_cross_report_reconciliation.py`: for ordered lag knots, the average number of surviving strict-minute segments cannot increase at longer lags. Integer cross multiplication avoids floating-point tolerance. Integrated into `reconcile()` after existing per-lag diagnostics, without changing the pinned output schema or saved result.
+- Added **three regressions** (valid two-segment construction, impossible nonconvex counts despite monotonicity and independent bounds, pinned MQ4 summary), and Arabic methodology `G2_MQ4_SPARSE_LAG_SEGMENT_CONVEXITY_2026-10-31_AR.md`. Code commit `85e3331049f6470ee434d5606d69e2c0d50af02f`, tests commit `7c833001b2e21cfdb34ad877539ce93eb035c275`. **616 offline tests expected, NOT yet CI verified**. Check latest Actions and repair any failures before declaring success.
+- This is report-level mathematical consistency, not original raw ZIP replay, independent physical exposures, traceable calibration, blinded holdout, model performance or scientific G2/G3 approval. Evidence still `records=[]`; G2 0/80 candidates, 80 blocked, 14 source slots blocked. Changes confined to `research/implementation_execution/` on the research branch; no ChemCore Stable, Android, firmware or main changes.
+
+---
+
 ## 2026-10-31 — G2 MQ4 necessary-bound research gate verified: 613/613
 
 - Repaired implementation `ae10f849f1cc4b7b0ae639cffc402121078334a0` passed [GitHub Actions G2 run 41155009989](https://github.com/HazRob/HazRob-Tank/actions/runs/41155009989), job `124399757672`: **613/613 offline tests PASS**, compile PASS, full 80-technique fail-closed audit PASS, deterministic replay PASS, publication guard PASS. Research artifact `13024852649` saved. G2 `0/80` candidates, `80/80` blocked, source slots `14/14` blocked; independent evidence `records=[]`.
