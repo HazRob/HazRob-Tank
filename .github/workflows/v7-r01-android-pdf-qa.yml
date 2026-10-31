@@ -14,6 +14,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalIcons.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7FieldChartLayout.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7FieldReportSourceSnapshot.java'
+      - 'android/app/src/main/java/com/servoc/app/report/V7FieldSessionPdfWriter.java'
       - 'android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java'
       - 'android/app/src/main/res/drawable/hazrob_official_report_mark.xml'
       - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
@@ -258,6 +259,35 @@ jobs:
               'forms':'four equal 2x2 chart slots, dedicated 3D/4D/compensation, PPM blank micro slot',
               'data':'none',
               'scientific_claim':'no chemical identity, ppm, or sensor measurement'
+          },indent=2))
+          # R03 full-design Android renderer: no simulated chemical values or
+          # candidate/molecular evidence allowed in the blank fixture.
+          r03full=p.parent/'V7_R03_Full_Blank_Android_Report.pdf'
+          assert r03full.is_file() and r03full.stat().st_size>7000
+          field=fitz.open(r03full)
+          assert len(field)>=10,('R03 sections missing',len(field))
+          alltext=' '.join(page.get_text() for page in field)
+          for label in ('Session','R0/Rs','3D/4D','Source Curves',
+                        'PM1','PM2.5','PM10','PPM','Cycle'):
+              assert label in alltext,('R03 missing required section',label)
+          pageQ=[]
+          for index,page in enumerate(field):
+              assert abs(page.rect.width-842)<1 and abs(page.rect.height-595)<1
+              spans=[a for b in page.get_text('dict')['blocks'] if 'lines' in b
+                     for line in b['lines'] for a in line['spans']
+                     if a.get('text','').strip()]
+              assert spans,('empty R03 page',index+1)
+              font_min=min(a['size'] for a in spans)
+              assert font_min>=11.5,('R03 font below 12',index+1,font_min)
+              page.get_pixmap(matrix=fitz.Matrix(1.3,1.3),alpha=False).save(
+                  p.parent/f'V7_R03_Full_Page_{index+1:02d}.png')
+              pageQ.append({'page':index+1,'font_min_pt':font_min})
+          (p.parent/'r03_full_design_qa.json').write_text(json.dumps({
+              'page_count':len(field),'pages':pageQ,
+              'sha256':hashlib.sha256(r03full.read_bytes()).hexdigest(),
+              'source':'V7FieldSessionPdfWriter WRITE-BLANK-DESIGN fixture',
+              'status':'layout only, NOT APPROVED FIELD RESULT',
+              'no_source_data':'-'
           },indent=2))
           status=json.loads((p.parent/'status.json').read_text())
           assert status['scientific_status']=='UNKNOWN_G3_ZERO_NO_CERTIFIED_PPM'
