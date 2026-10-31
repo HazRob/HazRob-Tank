@@ -311,7 +311,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R02 native Android PDF automated QA passed on GitHub Actions 41146719225 (commit 811abddf): real Android PDF, all 15 physical/PM indicator labels, A4 dimensions, 12pt extraction, missing '-' and uploaded artifact ID 13021781146. App context binding for official logo was then added (latest commit 75202941) with fresh CI running. Manual per-page visual inspection and owner signoff are pending. No scientific engine changed. Production R02 PDF in successful run had 4 A4 portrait pages, 311561 bytes (synthetic QA input), not fixed-page design cap.",
+  "latest_documented_change": "Validated native R01/R02 CI run 41146906853 success and artifact. Integrated R06 beef research-only native Android three-section PDF writer and fixture, with true external TS5 4x4 confusion and source metadata; no direct Tank TVC claim. R03 four-panel/advanced-page/micro PPM geometry helper added and fixture. R06/R03 CI initially failed only due missing Canvas import in fixture; repair commit 308730b4 and new workflow 41147792261 in progress. Other production writers R03/R04/R05 not fully integrated; app release not complete.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -464,7 +464,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "R02_NATIVE_PDF_AUTOMATED_CI_PASS_MANUAL_VISUAL_AND_LATEST_BINDER_CI_PENDING_R03_NEXT",
+    "current_phase": "R01_R02_ANDROID_CI_PASSED_R03_GEOMETRY_TEST_RUNNING_R06_BEEF_NATIVE_WRITER_QA_RUNNING",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -734,5 +734,34 @@
       "R03–R06 production integration",
       "full visual owner acceptance"
     ]
+  },
+  "r06_native_implementation_checkpoint": {
+    "stage": "ANDROID_BEEF_PDF_WRITER_INTEGRATED_QA_PENDING",
+    "production_writer": "android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/V7BeefResearchPdfWriter.java",
+    "entrypoint": "android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchPdf.java",
+    "doc": "docs/implementation/V7-R06-NATIVE-BEEF-PDF-IMPLEMENTATION-AND-QA-GATE-2026-10-31_AR.md",
+    "outputs": [
+      "Beef test data, 7 MQ and four reference-class matches",
+      "Observed-v-source + 180s plot placeholders when timeseries missing",
+      "Research class similarity chart populated only from engine output",
+      "Actual source TS5 4x4 confusion, held-out accuracy, reference metadata, blank 36h historical plot"
+    ],
+    "science_boundary": "Beef only research; no physical Tank TVC / food safety validity, no chemCore gas ppm",
+    "qa": {
+      "state": "ANDROID_FIXTURE_COMPILE_REPAIR_AND_RUNNING",
+      "latest_run_id": 41147792261,
+      "observed_earlier_compile_error": "V7R01PdfFixtureActivity.java line 163 missing import android.graphics.Canvas",
+      "repair_commit": "308730b4b823b17aaa0303c92fddf6f3c957a0bb",
+      "result": "PENDING",
+      "strict_acceptance": "No automatic success from source commit"
+    },
+    "original_measurement_data": "Single 180s source scan; no invented time history"
+  },
+  "r03_layout_geometry_checkpoint": {
+    "source": "android/app/src/main/java/com/servoc/app/report/V7FieldChartLayout.java",
+    "status": "ANDROID_BLANK_CHART_GEOMETRY_TEST_ADDED_NOT_COMPLETE_PRODUCTION_FIELD_WRITER",
+    "owner_spec": "4 equal + separate 3D/4D and T/RH compensation + empty PPM mini",
+    "full_source_integration": false,
+    "qa_run": 41147792261
   }
 }
