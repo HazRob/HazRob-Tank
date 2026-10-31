@@ -1,3 +1,12 @@
+## 2026-10-31 — G2 joint adjacent-midnight capacity gate (CI pending)
+
+- Resumed from research checkpoint `65d200b897995a776c3526f58baa9f31726d9505`; its documented G2 implementation gate passed 624/624 in [Actions 41168123457](https://github.com/HazRob/HazRob-Tank/actions/runs/41168123457). GitHub connector returned 11 completed-success PR workflow runs for that documentation SHA; other workflows may exist outside the first page.
+- Found a gap in independent per-midnight feasibility: individually possible crossing profiles can jointly demand more distinct head/tail rows than a shared calendar day contains. Added deterministic adjacent-boundary capacity DP to `g2_mq4_cross_report_reconciliation.py`; code commit `661e2c7778eb875d32c69f4722ef1a1ec8b17eb9`. New error `MQ4_CROSS_REPORT_CROSS_DAY_ADJACENT_CAPACITY` distinguishes this failure from per-boundary infeasibility.
+- Added three regressions (six-row feasible shared day, five-row infeasible shared day, pinned MQ4 source summaries) in test commit `a5a27bf9885432ef10f63ee107fe592210965f3d`; Arabic methodology `G2_MQ4_JOINT_ADJACENT_MIDNIGHT_CAPACITY_2026-10-31_AR.md`. **627 tests expected, CI verification pending**; inspect Actions for the implementation/test commit and repair any failures. No original raw ZIP replay was performed.
+- Changes confined to `research/implementation_execution/` on the research branch. ChemCore Stable, Android, firmware, main, and existing scientific qualification flags unchanged. Independent evidence `records=[]`, 0/80 G2 candidates, 80 blocked, 14 source slots blocked at the last verified audit. Physical independent exposures, traceable calibration, blinded holdouts, and external review still required.
+
+---
+
 ## 2026-10-31 — G2 exact midnight profile feasibility gate (624/624 CI verified)
 
 - Reviewed prior research HEAD `dd5e74af94ba66a9d45553c4171cb7903e9ec8dc`: 20/20 associated Actions succeeded; the prior code/test commit `ec1e2b5307a087da9e83faa927f6bc78d4a33bb0` passed **620/620** tests in [G2 Actions 41164080898](https://github.com/HazRob/HazRob-Tank/actions/runs/41164080898). No CI failures on the prior documentation HEAD.
