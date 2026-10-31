@@ -1,3 +1,13 @@
+## 2026-10-31 — G2 MQ4 adjacent-calendar-day embargo stress probe (research-only)
+
+- Verified previous branch HEAD `4037770d76abc7cca35ce82ccb651a7ed213a87a` and previous G2 [Actions 41192600268](https://github.com/HazRob/HazRob-Tank/actions/runs/41192600268) success (667 tests). All 20 latest listed Actions on the checkpoint completed success.
+- Re-read original 2,040,810-byte central Library ZIP and verified archive/member SHA256. Ran univariate OLS LODO with **0, ±1 and ±2 calendar-day embargo**, training-only mean baseline, per-day and pooled errors, on 14,186 source observations / 11 days / three MQ4 channels.
+- Pooled RMSE (ppb of source methane reference), embargo 0 → ±1 → ±2: MQ4_1 **1248.26 → 1271.31 → 1282.18**; MQ4_2 **1287.28 → 1293.85 → 1315.16**; MQ4_3 **1266.99 → 1281.64 → 1294.19**. With ±2 days, 5/11, 4/11, 4/11 held-out days respectively are worse than each fold's training-mean baseline. Changing training composition changes baseline too; this is a sensitivity probe, not proof of temporal leakage.
+- Added research-only `g2_mq4_neighbor_day_embargo_probe.py`, eight synthetic/fail-closed tests, pinned source-derived JSON and Arabic methodology. Original archive not committed; CI synthetic tests cannot replay source bytes. Local tests **8/8 PASS**. Check GitHub Actions for the new commit before asserting CI pass.
+- No independent physically traceable exposure reference or blinded holdout. `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`; no G2/G3 promotion. No Stable, Android, firmware or main modifications.
+
+---
+
 ## 2026-10-31 — G2 original MQ4 raw numeric LODO probe (667/667 CI verified; no promotion)
 
 - Resumed from research checkpoint `ca8461f7e45d68d4663a3a7437da40957bd1ea04`. All 11 visible PR workflows on that SHA completed success; previous G2 implementation 661/661.
