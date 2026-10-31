@@ -264,7 +264,15 @@ public final class FieldCycleController {
             lastSnapshot=current;lastFreshMs=now;
         }
         if(lastFreshMs==0||now-lastFreshMs>STALE_MS){
-            stopWithFailure("توقفت بيانات الروبوت أو فقد الاتصال");return;
+            stopWithFailure("توقفت بيانات الروبوت أو فقد الاتصال لمدة تتجاوز 6 ثوان");return;
+        }
+        // A single failed /diag or /data poll sets latestDiagnostics=null.
+        // Null is UNKNOWN relay state, not evidence that the physical relay
+        // switched off. Preserve the 6-second freshness gate above; never
+        // mistake one transient HTTP miss for an acknowledged power-off.
+        if(current==null){
+            main.postDelayed(tick,500);
+            return;
         }
         if(gas&&!relayOn(current)){
             // The first UI telemetry object can precede the verified ON response
