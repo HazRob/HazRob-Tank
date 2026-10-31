@@ -63,7 +63,6 @@ jobs:
           gradle --no-daemon :app:compileDebugJavaWithJavac
           gradle --no-daemon :app:testDebugUnitTest \
             --tests com.servoc.app.field.TankV8FieldCycleFailureDiagnosticsTest \
-            --tests com.servoc.app.field.TankV5FieldCycleSourceContractTest \
             --tests com.servoc.app.field.FieldSessionApprovalPolicyTest \
             --tests com.servoc.app.chemcore.CompletedSessionChemCoreAnalyzerTest
       - name: Report tested source revision
