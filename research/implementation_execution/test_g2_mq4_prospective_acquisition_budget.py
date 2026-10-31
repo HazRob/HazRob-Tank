@@ -66,6 +66,10 @@ class MQ4ProspectiveAcquisitionBudgetTests(unittest.TestCase):
                             for g in a['gap_results'].values()
                             for v in g['nominal_rank_budgets'].values()))
 
+    def test_pinned_reproducible_summary(self):
+        pinned = Path(__file__).with_name('G2_MQ4_PROSPECTIVE_ACQUISITION_BUDGET_2026-10-31.json')
+        self.assertEqual(json.loads(pinned.read_text(encoding='utf-8')), plan())
+
 
 if __name__ == '__main__':
     unittest.main()
