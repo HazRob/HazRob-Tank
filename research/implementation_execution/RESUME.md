@@ -1,3 +1,13 @@
+## 2026-10-31 — G2 per-day strict-minute lag capacity (631-test CI requeued)
+
+- Resumed from `1ffe2a92b75d1c606c95a77080aed19ff003b489`. All 11 PR-associated workflows returned completed-success; the prior G2 implementation passed **627/627** in [Actions 41172130460](https://github.com/HazRob/HazRob-Tank/actions/runs/41172130460).
+- Added the necessary per-day bound `same_day_context_rows(k) <= sum_d max(0, holdout_total(d)-k)` for strictly contiguous one-minute lag pairs, in `g2_mq4_cross_report_reconciliation.py` (code commit `40c40d10a124daecfcd068235dac784f693f7ebb`). This rejects arithmetic summaries that demand more within-day pairs than daily row counts can supply; no raw ZIP replay or physical calibration is claimed.
+- Added four regressions and pinned-source check in test commit `e12132c983b68a8b3df4cda4b40b78dc986014a1`; Arabic methodology `G2_MQ4_SAME_DAY_STRICT_MINUTE_CAPACITY_2026-10-31_AR.md` (commit `935b438efeff4ddf27a1e73f0fda7e0d755b9bae`).
+- Initial [G2 Actions 41176405189](https://github.com/HazRob/HazRob-Tank/actions/runs/41176405189) ran **631 tests, one failed**: a pre-existing midnight-profile regression was intercepted by the new stronger day-capacity check. Repaired the *fixture* to preserve the new day-capacity bound while still testing the original profile contradiction, without weakening either validator; repair commit `b971b180ef3118a31c1ca0a5f87a5be2f7c810d2`. New [G2 Actions 41176466982](https://github.com/HazRob/HazRob-Tank/actions/runs/41176466982) **queued at last check; 631/631 NOT YET VERIFIED**. Check this run, its job logs, all workflow failures and repair if necessary.
+- Verified compare `1ffe2a92...b971b180`: only three files under `research/implementation_execution/` changed. No ChemCore Stable, Android, firmware or main changes. Independent evidence remains `records=[]`; G2 candidates 0/80, blocked 80/80, source slots blocked 14/14 at last verified audit. No scientific promotion; independent reference exposures, traceable calibration, blinded group holdouts and external review remain missing.
+
+---
+
 ## 2026-10-31 — G2 joint adjacent-midnight capacity gate (627/627 CI verified)
 
 - Resumed from research checkpoint `65d200b897995a776c3526f58baa9f31726d9505`; its documented G2 implementation gate passed 624/624 in [Actions 41168123457](https://github.com/HazRob/HazRob-Tank/actions/runs/41168123457). GitHub connector returned 11 completed-success PR workflow runs for that documentation SHA; other workflows may exist outside the first page.
