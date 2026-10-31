@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from g2_mq4_cross_report_reconciliation import ARCHIVE, RAW, LAGS, load_report, reconcile
+from g2_mq4_cross_report_reconciliation import ARCHIVE, RAW, LAGS, load_report, reconcile, check_lag_pair_convexity
 
 
 def synthetic():
@@ -328,6 +328,30 @@ class MQ4CrossReportTests(unittest.TestCase):
         # the impossible previous-day capacity in the summary metadata.
         with self.assertRaisesRegex(ValueError, 'CROSS_DAY_EXCEEDS_PRIOR_DAY_ROWS'):
             reconcile(l, m)
+
+
+
+    def test_accept_convex_sparse_lag_pairs(self):
+        # Segment lengths 10 and 171: P(k) = sum(max(0, length-k)).
+        knots = [(k, max(0, 10-k) + max(0, 171-k)) for k in LAGS]
+        self.assertIsNone(check_lag_pair_convexity(knots))
+
+    def test_reject_nonconvex_sparse_lag_pairs(self):
+        # Every P(k) is monotone and inside its independent segment bounds.
+        # Yet P(5)=174, P(15)=156 requires the average surviving-segment
+        # count to increase from 1.25 to 1.8, which is impossible.
+        knots = [(1, 179), (5, 174), (15, 156), (30, 141),
+                 (60, 111), (120, 51)]
+        with self.assertRaisesRegex(ValueError, 'LAG_SEGMENT_CONVEXITY'):
+            check_lag_pair_convexity(knots)
+
+    def test_pinned_mq4_lag_pairs_satisfy_convexity(self):
+        root = Path(__file__).resolve().parent
+        p = root / 'G2_MQ4_MULTISCALE_DAY_CONTEXT_EMBARGO_2026-10-30.json'
+        report = load_report(p)
+        knots = [(k, report['lag_results'][str(k)]['contiguous_lag_pairs'])
+                 for k in LAGS]
+        self.assertIsNone(check_lag_pair_convexity(knots))
 
 
 if __name__ == '__main__':
