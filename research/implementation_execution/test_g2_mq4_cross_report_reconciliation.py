@@ -267,12 +267,25 @@ class MQ4CrossReportTests(unittest.TestCase):
     def test_reject_cross_day_pairs_exceeding_later_day_rows(self):
         l, m = synthetic()
         first, second = l['folds']['2021-07-21'], l['folds']['2021-07-22']
-        first['holdout_total'] = 81
-        first['holdout_history_ineligible'] = 81
-        second['holdout_total'] = 100
-        second['holdout_history_ineligible'] = 39
-        # All fold arithmetic and raw totals still reconcile, but 120
-        # later-day cross-context rows cannot fit into 100 later-day rows.
+        # At the maximum lag only one row crosses the boundary, whereas
+        # the shorter 60-minute lag declares 60 cross-boundary rows.
+        # The latter cannot fit in the later day's 50 actual rows.
+        max_item = m['lag_results']['120']
+        max_item['cross_day_context_rows_requiring_embargo_if_day_holdout'] = 1
+        max_item['cross_day_context_rows_by_later_date']['2021-07-22'] = 1
+        max_item['same_day_context_rows'] = max_item['contiguous_lag_pairs'] - 1
+        max_item['cross_day_fraction_of_available_pairs'] = 1 / max_item['contiguous_lag_pairs']
+        l['sum_holdout_excluded_across_folds'] = 1
+        l['sum_train_purged_across_folds'] = 1
+        first.update(holdout_total=131, holdout_timestamp_eligible=60,
+                     holdout_history_ineligible=71, holdout_remaining=60,
+                     train_timestamp_eligible=1, train_purged_holdout_context=1,
+                     train_remaining=0)
+        second.update(holdout_total=50, holdout_timestamp_eligible=1,
+                      holdout_history_ineligible=49,
+                      holdout_excluded_training_context=1, holdout_remaining=0,
+                      train_timestamp_eligible=60, train_remaining=60)
+        # The 60-minute lag still declares 60 later-day cross-context rows.
         with self.assertRaisesRegex(ValueError, 'CROSS_DAY_EXCEEDS_DAY_ROWS'):
             reconcile(l, m)
 
