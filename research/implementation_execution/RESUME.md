@@ -1,3 +1,13 @@
+## 2026-10-31 — G2 MQ4 original ZIP raw-byte replay (652/652 CI verified; no promotion)
+
+- Resumed from research checkpoint `30d04442eb846e7507e3e108759b6c732bdc9150`. The previous implementation CI [41180696031](https://github.com/HazRob/HazRob-Tank/actions/runs/41180696031) passed 641/641 tests; all 11 visible PR workflows on that checkpoint completed successfully.
+- Located the original 2,040,810-byte source ZIP in the user's central Library `/HazRob/MQ_Reference_Measurements_2026/`; directly read the ZIP and original 4,787,918-byte CSV, verified archive SHA256 `7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9` and member SHA256 `3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d`. Recomputed timestamps, 14,186 rows, 11 daily folds, 11 strict-minute segments, 6 lag-pair profiles and midnight crossings directly from original CSV bytes; all matched pinned summaries.
+- Added research-only reproducible script `g2_mq4_original_zip_replay.py`, 11 synthetic/fail-closed regressions, pinned raw-derived JSON `G2_MQ4_ORIGINAL_ZIP_RAW_REPLAY_2026-10-31.json`, and Arabic methodology `G2_MQ4_ORIGINAL_ZIP_RAW_REPLAY_2026-10-31_AR.md`. The original ZIP remains in the central Library, not in the repository: CI validates synthetic regressions and pinned evidence boundaries, not the original ZIP replay.
+- A transient [G2 CI failure 41184578679](https://github.com/HazRob/HazRob-Tank/actions/runs/41184578679) on the intermediate test commit occurred because the pinned result file had not yet been committed. After the result commit, [G2 CI 41184614587](https://github.com/HazRob/HazRob-Tank/actions/runs/41184614587) **652/652 PASS**, all 80-technique fail-closed audit, deterministic replay and publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Preserve failed intermediate run in audit history.
+- This is raw-byte/timestamp reconciliation, NOT independent physical exposures, certified reference calibration, locked blinded group holdouts, gas identity performance or G2/G3 scientific approval. Independent evidence remains `records=[]`. No ChemCore Stable, Android, firmware or main changes. All new files under `research/implementation_execution/` on research branch only.
+
+---
+
 ## 2026-10-31 — G2 MQ4 reported calendar-minute capacity cross-source audit (641/641 CI verified)
 
 - Verified previous repaired implementation [G2 Actions 41176594975](https://github.com/HazRob/HazRob-Tank/actions/runs/41176594975): **631/631 tests PASS**, 80-technique fail-closed audit, deterministic replay and publication guard; all 20 workflows on previous documentation HEAD `456cc6af0c982b25ef17a99a69402f6784860184` completed successfully.
