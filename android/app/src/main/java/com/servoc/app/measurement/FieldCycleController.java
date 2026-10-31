@@ -33,6 +33,7 @@ public final class FieldCycleController {
     private boolean gas=false,busy=false;private volatile boolean stopping=false;
     private long finalizeRequestedMs=0;
     private long lastFreshMs=0;
+    private long relayVerifiedAtMs=0;
     private JSONObject lastSnapshot;
     private final Runnable tick=new Runnable(){public void run(){onTick();}};
 
@@ -111,6 +112,7 @@ public final class FieldCycleController {
                     }
                     cycleId=cid;deviceId=id;gas=modes.gas;busy=true;
                     lastSnapshot=verified;lastFreshMs=SystemClock.elapsedRealtime();
+                    relayVerifiedAtMs=lastFreshMs;
                     message("WARMUP","إحماء الحساسات/استقرار التشغيل • 60 ثانية",cid);
                     main.removeCallbacks(tick);main.post(tick);
                     observer.refreshed();
@@ -211,6 +213,7 @@ public final class FieldCycleController {
                     }
                     cycleId=cid;deviceId=id;lastSnapshot=verified;
                     lastFreshMs=SystemClock.elapsedRealtime();
+                    relayVerifiedAtMs=lastFreshMs;
                     message("WARMUP","المحاولة التالية • الإحماء 60 ثانية",cid);
                     main.post(tick);observer.refreshed();
                 });
@@ -264,7 +267,11 @@ public final class FieldCycleController {
             stopWithFailure("توقفت بيانات الروبوت أو فقد الاتصال");return;
         }
         if(gas&&!relayOn(current)){
-            stopWithFailure("انقطع ريلاي MQ أثناء الدورة");return;
+            // The first UI telemetry object can precede the verified ON response
+            // used to arm the cycle. Allow a short time for a NEW poll, but
+            // never count old snapshots as evidence or extend the 6s stale gate.
+            if(now-relayVerifiedAtMs<2500L){main.postDelayed(tick,500);return;}
+            stopWithFailure("انقطع ريلاي MQ أثناء الدورة (أو ظلت لقطة قديمة بعد التشغيل)");return;
         }
         JSONObject m=current==null?null:current.optJSONObject("measurement");
         if(m!=null&&("error".equals(m.optString("state",""))||
@@ -323,7 +330,8 @@ public final class FieldCycleController {
                                     "اكتملت الدورة؛ اختر اعتماد القياس أو إعادته",cycleId));
                                 return;
                             }
-                            throw new IllegalStateException("البيانات الفعلية لا تحقق شروط الاعتماد");
+                            throw new IllegalStateException(
+                                repo.completionFailureReason(cycleId,deviceId));
                         }
                         if(at-finalizeRequestedMs>12000L)
                             throw new IllegalStateException("تعذر إنهاء حفظ العينات خلال 12 ثانية");
@@ -362,6 +370,7 @@ public final class FieldCycleController {
     private void end(String state,String text,String id){
         if(disposed)return;
         busy=false;stopping=false;cycleId="";lastSnapshot=null;lastFreshMs=0;
+        relayVerifiedAtMs=0;
         MeasurementSessionRegistry.endFieldOperation();
         main.removeCallbacks(tick);
         message(state,text,id);observer.refreshed();
