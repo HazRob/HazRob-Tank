@@ -39,7 +39,7 @@ jobs:
           # Field-cycle-only QA: isolate the separate, unfinished MQSpaceData
           # research compilation blocker in this throwaway checkout. No V8
           # source file is altered and no distributable APK is produced.
-          rm -f source/app/src/main/java/com/hazrob/tank/chemcore/v7/MQSpaceDataSurfaceV7.java
+          rm -rf source/app/src/main/java/com/hazrob/tank/chemcore/v7
           if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
           if test -d tank/android/app/src/main/assets; then mkdir -p source/app/src/main/assets; cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/; fi
           if test -d tank/android/app/src/test/java; then mkdir -p source/app/src/test/java; cp -a tank/android/app/src/test/java/. source/app/src/test/java/; fi
