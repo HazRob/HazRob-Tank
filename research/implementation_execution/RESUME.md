@@ -1,3 +1,14 @@
+## 2026-10-31 — G2 family-wise nonzero-miss exact binomial budget (research only; CI verified)
+
+- Resumed from `b36e7010aff862fbdb1b1bffa5dd045cc43ee2b8`. Previous 745/745 tests and all 21 previous visible workflows were successful. Independent evidence `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
+- Added `g2_mq4_familywise_nonzero_miss_budget.py`, 12 deterministic/fail-closed tests, pinned JSON and Arabic methods. This generalizes the previous zero-miss Bonferroni bound to a predeclared maximum of 0, 1, 2 or 5 misses using exact rational binomial tails and 80 prespecified one-sided coverage claims.
+- At family confidence 95%, coverage target 90%, holdout groups per claim for k=0/1/2/5: **71/94/113/165**. At target 95%: **144/191/231/336**. These are conditional mathematical design thresholds, not physical data, observed coverage, or sufficient G2 qualification.
+- CI initially failed because an internally passed `Fraction` was rejected by the older numeric validator; corrected the exact-tail function to validate `Fraction` without weakening external invalid-input checks. Also pinned exact `Fraction`-derived JSON floats rather than binary-floating JS approximations.
+- [G2 Actions 41233562339](https://github.com/HazRob/HazRob-Tank/actions/runs/41233562339) on corrected implementation `927c084e54c3185cbbb495cd0255f6efdfb5117c`: **757/757 offline tests PASS**; 80-technique evidence audit, byte-identical replay and publication guard PASS (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). Other workflows on this SHA may still be pending; inspect documentation HEAD CI independently.
+- No original source ZIP replay in this iteration. Only four new research files plus this checkpoint under `research/implementation_execution/`; no Stable, Android, firmware, or main changes. No G2/G3 promotion. Independent traceably calibrated physical exposures and locked blinded grouped holdouts remain required.
+
+---
+
 ## 2026-10-31 — G2 family-wise 80-claim zero-miss planning (research-only; verify new CI)
 
 - Resumed from research HEAD 48c9f2ec1cdeebf8379f55f99d70b55240a7dfa6. Verified 20 latest visible Actions runs on this SHA completed success, including G2 run 41224129739 with 734/734 tests.
