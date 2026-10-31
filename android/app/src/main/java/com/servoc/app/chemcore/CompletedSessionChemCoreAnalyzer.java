@@ -69,6 +69,9 @@ public final class CompletedSessionChemCoreAnalyzer {
         // explicit non-identifying, non-quantitative analysis result; the separate
         // FieldCycleRepository gas/physical sample gates remain mandatory.
         if(ratios.isEmpty()){
+            // V8 only changes documented FIELD capture semantics; preserve
+            // existing Instant behavior until its own regression review.
+            if(!fieldCapture)return new Outcome(-1,0,0,null);
             ChemCoreResultEnvelope unavailable=new ChemCoreResultEnvelope(
                 id,ChemCoreDecision.Outcome.INSUFFICIENT_EVIDENCE,
                 ChemCoreDecision.EvidenceTier.M0_CATALOG_ONLY,
