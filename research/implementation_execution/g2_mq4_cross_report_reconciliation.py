@@ -78,37 +78,44 @@ def check_cross_day_lag_lipschitz(distributions):
 
 
 def check_cross_day_profile_feasibility(distributions, folds):
-    """Exact necessary feasibility of each midnight's sparse lag-pair profile.
+    """Necessary joint feasibility of adjacent midnight profiles.
 
-    For a single strict-minute run spanning midnight, let a and b be
-    consecutive rows immediately before/after midnight. At lag k the
-    number of crossing pairs is max(0, min(b,k)-max(0,k-a)).
-    For k <= max_lag, lengths beyond max_lag are indistinguishable
-    from max_lag; enumerate bounded candidates using declared day rows.
-    This does NOT recover raw timestamps or verify physical independence.
+    Each midnight has a single strict-minute crossing with preceding
+    tail a and later head b. A day's head from its preceding boundary
+    and tail from its following boundary occupy disjoint clock windows
+    (max_lag=120 < 720 minutes), so their lengths cannot sum to more
+    than the day's declared rows. Keep only the smallest feasible head
+    at each step: it dominates larger heads for every future boundary.
+    This is a summary-level check, NOT raw timestamp verification.
     """
     lags = tuple(k for k, _ in distributions)
     if not lags:
         return
     max_lag = max(lags)
     days = sorted(folds)
+    previous_head_min = 0
     for i in range(1, len(days)):
-        day = days[i]
+        day, previous_day = days[i], days[i - 1]
         observed = tuple(dist.get(day, 0) for _, dist in distributions)
         if not any(observed):
-            continue  # No declared continuous midnight crossing.
-        a_cap = min(max_lag, folds[days[i - 1]]['holdout_total'])
+            # No lag-one crossing means no continuous midnight segment.
+            previous_head_min = 0
+            continue
+        a_cap = min(max_lag, folds[previous_day]['holdout_total'])
         b_cap = min(max_lag, folds[day]['holdout_total'])
-        feasible = False
+        individual_feasible = False
+        next_head_min = None
         for a in range(1, a_cap + 1):
             for b in range(1, b_cap + 1):
                 if all(max(0, min(b, k) - max(0, k - a)) == count
                        for k, count in zip(lags, observed)):
-                    feasible = True
-                    break
-            if feasible:
-                break
-        check(feasible, 'CROSS_DAY_PROFILE_INFEASIBLE')
+                    individual_feasible = True
+                    if previous_head_min + a <= folds[previous_day]['holdout_total']:
+                        if next_head_min is None or b < next_head_min:
+                            next_head_min = b
+        check(individual_feasible, 'CROSS_DAY_PROFILE_INFEASIBLE')
+        check(next_head_min is not None, 'CROSS_DAY_ADJACENT_CAPACITY')
+        previous_head_min = next_head_min
 
 
 def reconcile(lodo, multi):
