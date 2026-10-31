@@ -125,7 +125,7 @@ public final class V7FruitReportPdfWriter {
             boolean eligible=selected.isEmpty()||family.equals(selected);
             if(!eligible)m=null;
             RectF imageCell=new RectF(pos[0],top,pos[1],bottom);
-            V7ReportLayoutKit.tableValue(c,imageCell,"",false);
+            frame(c,imageCell,V7ReportLayoutKit.BLACK,.7f);
             RectF photo=new RectF(pos[0]+1.5f*MM,top+2*MM,pos[1]-1.5f*MM,bottom-2*MM);
             if(!image(ctx,c,family,photo))
                 text(c,"-",photo,false,false);
