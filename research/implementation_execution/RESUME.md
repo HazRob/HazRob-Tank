@@ -1,3 +1,15 @@
+## 2026-10-31 — G2 MQ4 locked-day conformal finite-rank feasibility (714/714 CI, research only)
+
+- Resumed from research HEAD `6a49bad08d054f8614e6e672d3db6e78a2f664cd`. All 20 visible preceding CI workflows completed success; G2 run `41210051442` passed 705 tests.
+- Reopened original central Library ZIP `HazRob_MQ_Reference_Real_Measurements_2026-10-30.zip`; SHA256 archive `7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9` and internal CSV `3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d` verified. Direct original CSV read: 14,186 rows over 11 calendar days (2021-07-21 to 2021-07-31).
+- Added `g2_mq4_day_conformal_feasibility.py`, 9 synthetic/fail-closed tests, source-derived `G2_MQ4_DAY_CONFORMAL_FEASIBILITY_2026-10-31.json`, and Arabic methods `G2_MQ4_DAY_CONFORMAL_FEASIBILITY_2026-10-31_AR.md`. Research code/data commit `326b7839a63a13c11b584f3966f7b0e4e55dc6fc`.
+- New mathematical blocker: a finite standard split-conformal rank at nominal 90% requires >=9 exchangeable calibration groups, at 95% >=19. The **locked** six-day forward test block, minimum 3 training days and 0/1/2-day embargo, leaves at most **2/1/0** prior calendar calibration days. Even optimistic rolling folds that reuse previous test days yield at most 7/6/5 by last test day; still insufficient for a finite 90% bound. Calendar days are not verified independent exposures/exchangeable groups; this is feasibility, not observed coverage or a certified interval.
+- Local 9/9 tests passed. [G2 GitHub Actions 41214770224](https://github.com/HazRob/HazRob-Tank/actions/runs/41214770224) on research code commit passed **714/714** offline tests, 80-technique fail-closed audit, deterministic replay and publication guard (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). Other workflows on code commit may still be queued; check final documentation HEAD CI independently.
+- No independent exposure or traceably calibrated reference and no blinded group holdout: `G2_INDEPENDENT_EVIDENCE.json` still `records=[]`. No G2/G3 scientific promotion. No ChemCore Stable, Android, firmware or main changes. Original source ZIP remains in central Library, outside Git.
+- Next: verify documentation HEAD CI and continue acquiring source-qualified physically independent exposure groups; more within-day minute rows cannot repair missing calibration groups.
+
+---
+
 ## 2026-10-31 — G2 MQ4 three-channel forward benchmark and negative control (705/705 CI; research only)
 
 - Resumed from verified research HEAD a50fe128a4be4f4b6d2fd89c1e3473aff37ffbe5; all 20 visible workflows on that checkpoint completed successfully. Reopened original 2,040,810-byte central Library ZIP and checked SHA256 archive 7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9 and member 3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d.
