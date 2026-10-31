@@ -197,7 +197,16 @@ public final class V7ReportLayoutKit {
         c.drawLine(area.left,area.bottom,area.right,area.bottom,axis);
         text(c,missing(xAxis),new RectF(area.left+mm(6),area.bottom+mm(1),
             area.right,area.bottom+mm(12)),false,false,12,INK);
-        text(c,missing(yAxis),new RectF(r.left+mm(1),area.top,
-            area.left-mm(1),area.bottom),false,false,12,INK);
+        // Rotate the axis label instead of wrapping each English word into
+        // several 13-mm-wide lines, while preserving genuine 12pt text.
+        // Translation at bottom-left and -90 degree rotation use the
+        // chart's full vertical dimension as the text width.
+        c.save();
+        c.translate(r.left+mm(2),area.bottom);
+        c.rotate(-90f);
+        text(c,missing(yAxis),new RectF(0,0,
+            Math.max(mm(20),area.height()),mm(9)),
+            false,false,12,INK);
+        c.restore();
     }
 }
