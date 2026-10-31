@@ -1,27 +1,7 @@
 name: HazRob Tank V7 R01+R02+R03 Geometry Android PDF QA (non-release)
+# QA explicitly paused by project owner during V7 visual-design phase.
+# Keep manually callable for a future, separately authorized QA phase.
 on:
-  push:
-    branches: [feature/tank-v7-reports]
-    paths:
-      - 'android/app/src/main/java/com/servoc/app/report/TankInstantReportPdf.java'
-      - 'android/app/src/main/java/com/servoc/app/report/TankInstantV7PdfWriter.java'
-      - 'android/app/src/main/java/com/servoc/app/report/V7ReportLayoutKit.java'
-      - 'android/app/src/main/java/com/servoc/app/report/V7ReportPagePlanner.java'
-      - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java'
-      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/V7BeefResearchPdfWriter.java'
-      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchPdf.java'
-      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/V7FruitReportPdfWriter.java'
-      - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalIcons.java'
-      - 'android/app/src/main/java/com/servoc/app/report/V7FieldChartLayout.java'
-      - 'android/app/src/main/java/com/servoc/app/report/V7FieldReportSourceSnapshot.java'
-      - 'android/app/src/main/java/com/servoc/app/report/V7FieldSessionPdfWriter.java'
-      - 'android/app/src/main/java/com/servoc/app/report/V7FieldSourceReferences.java'
-      - 'android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java'
-      - 'android/app/src/main/res/drawable/hazrob_official_report_mark.xml'
-      - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
-      - 'research/chemcore_v6/tests/android/V7R01PdfFixtureActivity.java'
-      - '.github/workflows/v7-r01-android-pdf-qa.yml'
-      - 'research/chemcore_v6/tests/android/run_v7_r01_pdf_qa.sh'
   workflow_dispatch:
 permissions:
   contents: read
