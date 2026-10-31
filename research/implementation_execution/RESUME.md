@@ -1,8 +1,8 @@
-## 2026-10-31 — G2 exact midnight profile feasibility gate (CI pending)
+## 2026-10-31 — G2 exact midnight profile feasibility gate (624/624 CI verified)
 
 - Reviewed prior research HEAD `dd5e74af94ba66a9d45553c4171cb7903e9ec8dc`: 20/20 associated Actions succeeded; the prior code/test commit `ec1e2b5307a087da9e83faa927f6bc78d4a33bb0` passed **620/620** tests in [G2 Actions 41164080898](https://github.com/HazRob/HazRob-Tank/actions/runs/41164080898). No CI failures on the prior documentation HEAD.
 - Added exact sparse-lag **single-midnight-profile feasibility** across all lag knots using bounded `(a,b)` witness search. Unlike the earlier 1-Lipschitz necessary condition, this rejects impossible profiles such as `[1,5,15,30,59,60]` that satisfy each lag's cap and adjacent difference bound. Source-pinned ten day boundaries have feasible `(120,120)` witnesses.
-- Added four regressions (valid falling tail, impossible Lipschitz-valid profile, integrated tamper, pinned report) and Arabic methodology `G2_MQ4_EXACT_MIDNIGHT_PROFILE_FEASIBILITY_2026-10-31_AR.md`. **624 tests expected, CI NOT YET VERIFIED** at this checkpoint. Inspect GitHub Actions for this commit and repair any failure; do not assume success.
+- Added four regressions (valid falling tail, impossible Lipschitz-valid profile, integrated tamper, pinned report) and Arabic methodology `G2_MQ4_EXACT_MIDNIGHT_PROFILE_FEASIBILITY_2026-10-31_AR.md`. **624/624 tests PASS** on implementation commit `f80b1a52300f58a0188ffc3eaddcb98d40ddf502` in [G2 Actions 41168123457](https://github.com/HazRob/HazRob-Tank/actions/runs/41168123457), job `124440011712`. Compile, 80-technique fail-closed audit, deterministic replay and publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Other workflow runs on the documentation checkpoint must be verified separately.
 - Research-only change under `research/implementation_execution/` on research branch; no ChemCore Stable, Android, firmware or main changes. Original raw ZIP not replayed by this gate; no scientific promotion. Independent evidence `records=[]`, G2 0/80 qualified, 80 blocked, 14 source slots blocked.
 
 ---
