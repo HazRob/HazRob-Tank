@@ -45,6 +45,21 @@ def valid_iso_day(value):
         return False
 
 
+
+def check_lag_pair_convexity(lag_counts):
+    """Necessary convexity of P(k)=sum(max(0, segment_length-k)).
+
+    Between increasing lag knots, the average number of surviving
+    segments cannot increase. Integer cross-products avoid rounding.
+    This checks summary feasibility only, not original raw timestamps.
+    """
+    for (k0, p0), (k1, p1), (k2, p2) in zip(
+            lag_counts, lag_counts[1:], lag_counts[2:]):
+        check(k0 < k1 < k2, 'LAG_KNOT_ORDER')
+        check((p0 - p1) * (k2 - k1) >=
+              (p1 - p2) * (k1 - k0), 'LAG_SEGMENT_CONVEXITY')
+
+
 def reconcile(lodo, multi):
     check(type(lodo) is dict and type(multi) is dict, 'NOT_OBJECT')
     check(lodo.get('schema') == 'hazrob.g2.mq4-lodo-two-way-purge-raw-summary.v1' and
@@ -77,6 +92,7 @@ def reconcile(lodo, multi):
     days = sorted(folds)
     check(all(valid_iso_day(d) for d in days), 'DATES')
     previous_available = None
+    lag_counts = []
     lag_one_cross_day = {}
     day_index = {day: i for i, day in enumerate(days)}
     for lag in LAGS:
@@ -103,6 +119,7 @@ def reconcile(lodo, multi):
         check(available >= max(0, n - segments * lag),
               'LAG_MIN_PAIRS_BY_SEGMENTS')
         previous_available = available
+        lag_counts.append((lag, available))
         distribution = item.get('cross_day_context_rows_by_later_date')
         check(type(distribution) is dict and set(distribution).issubset(set(days)) and
               all(integer(v) for v in distribution.values()) and
@@ -132,6 +149,7 @@ def reconcile(lodo, multi):
         check((fraction is None and expected is None) or
               (type(fraction) in (int, float) and expected is not None and
                abs(fraction - expected) < 1e-12), 'LAG_FRACTION')
+    check_lag_pair_convexity(lag_counts)
     check(lr[str(max(LAGS))]['contiguous_lag_pairs'] == eligible, 'ELIGIBILITY')
     max_cross = lr[str(max(LAGS))]['cross_day_context_rows_by_later_date']
     total_rows = total_eligible = total_train = total_excluded = total_purged = 0
