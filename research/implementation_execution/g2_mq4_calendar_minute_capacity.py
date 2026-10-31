@@ -73,11 +73,11 @@ def audit(intake, lodo, segments):
         require(type(f) is dict and type(f.get("holdout_total")) is int and
                 0 < f["holdout_total"] <= 1440, "DAY_MINUTE_CAPACITY")
         counts.append(f["holdout_total"])
-    require(sum(counts) == src["rows"], "DAY_SUM")
     first_cap = 1440 - (first.hour * 60 + first.minute)
     last_cap = last.hour * 60 + last.minute + 1
     require(counts[0] <= first_cap, "FIRST_DAY_CAPACITY")
     require(counts[-1] <= last_cap, "LAST_DAY_CAPACITY")
+    require(sum(counts) == src["rows"], "DAY_SUM")
     lengths = segments.get("contiguous_one_minute_segment_lengths")
     require(type(lengths) is list and lengths and
             all(type(x) is int and x > 0 for x in lengths) and
