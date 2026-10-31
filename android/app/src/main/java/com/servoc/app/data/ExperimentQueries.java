@@ -45,6 +45,39 @@ public final class ExperimentQueries {
         return out;
     }
 
+    /** Approved report-history records for ONE selected site and optionally ONE
+     * approved Field Session. Apply the scope before the SQL row limit so a
+     * busy unrelated site cannot evict this site's measurements from history.
+     * This is a display query; approved PDF/XLSX still enforce their immutable
+     * cycle/SHA contract separately.
+     */
+    public static List<Record> approvedFieldReportsForScope(
+            ExperimentsDb db,String siteId,String fieldSessionId,int limit){
+        List<Record> out=new ArrayList<>();
+        if(db==null||siteId==null||siteId.trim().isEmpty())return out;
+        int n=Math.max(1,Math.min(limit,1000));
+        String select="e."+COLS.replace(",",",e.");
+        StringBuilder sql=new StringBuilder("SELECT "+select+" FROM experiments e "+
+            "JOIN measurement_sessions m ON m.session_id=e.session_id "+
+            "JOIN field_session_measurements fsm ON fsm.measurement_session_id=m.session_id "+
+            "JOIN field_sessions fs ON fs.field_session_id=fsm.field_session_id "+
+            "WHERE m.operator_role='USER' AND m.kind LIKE 'field_%' "+
+            "AND fs.status='APPROVED' AND fs.site_id=?");
+        String chosen=fieldSessionId==null?"":fieldSessionId.trim();
+        String[] args;
+        if(chosen.isEmpty()){
+            args=new String[]{siteId.trim()};
+        }else{
+            sql.append(" AND fs.field_session_id=?");
+            args=new String[]{siteId.trim(),chosen};
+        }
+        sql.append(" ORDER BY e.id DESC LIMIT ").append(n);
+        try(Cursor c=db.getReadableDatabase().rawQuery(sql.toString(),args)){
+            while(c.moveToNext())out.add(read(c));
+        }
+        return out;
+    }
+
     /** Developer-only laboratory/reference records; never show USER field records as publishable. */
     public static List<Record> recentDeveloper(ExperimentsDb db,int limit){
         List<Record> out=new ArrayList<>();int n=Math.max(1,Math.min(limit,1000));
