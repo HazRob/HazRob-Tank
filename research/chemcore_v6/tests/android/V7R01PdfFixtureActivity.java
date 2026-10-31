@@ -2,6 +2,7 @@ package com.servoc.app.report;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.graphics.pdf.PdfDocument;
