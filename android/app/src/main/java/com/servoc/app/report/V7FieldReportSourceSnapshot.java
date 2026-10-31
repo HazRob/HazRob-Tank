@@ -39,9 +39,9 @@ public final class V7FieldReportSourceSnapshot {
             sourceIndex=index;
             measurementOrdinal=ordinal;
             measurementSessionId=blank(sessionId);
-            label=blank(entry.optString("label",entry.optString("name","")));
+            label=blank(entry.optString("label",entry.optString("name",entry.optString("chemical",""))));
             cas=blank(entry.optString("cas",""));
-            uid=blank(entry.optString("uid",entry.optString("id","")));
+            uid=blank(entry.optString("chemical_uid",entry.optString("uid",entry.optString("id",""))));
             evidenceTier=blank(entry.optString("evidence_tier",""));
             sourceJson=entry.toString();
         }
