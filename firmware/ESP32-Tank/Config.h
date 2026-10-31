@@ -2,13 +2,23 @@
 #include <Arduino.h>
 
 namespace Cfg{
-constexpr char FW[]="ESP32-Tank 0.1.6-v6-quickr0-dev";
-constexpr char ENGINEERING_REVISION[]="TANK-V6-RS-AIR-180WARM-60SAMPLE-EXPERIMENTAL";
+// V8 bench candidate: existing four DC motors through dual-channel L298N.
+ // Change ONLY at compile time after hardware rewiring to two continuous servos.
+constexpr char FW[]="ESP32-Tank 0.1.8-v8-4wd-restore-dev";
+constexpr char ENGINEERING_REVISION[]="TANK-V8-4WD-L298N-RESTORE-REQUIRES_BENCH";
 constexpr uint8_t API=4;
-constexpr char HW_PROFILE[]="tank-doit-v1-2servo-8mq-echo-bme";
+enum class DriveHardware : uint8_t { L298N_FOUR_DC=0, TWO_CONTINUOUS_SERVOS=1 };
+constexpr DriveHardware DRIVE_HARDWARE=DriveHardware::L298N_FOUR_DC;
+constexpr const char* HW_PROFILE=DRIVE_HARDWARE==DriveHardware::L298N_FOUR_DC?
+    "tank-doit-v1-4dc-l298n6-8mq-echo-bme":"tank-doit-v1-2servo-8mq-echo-bme";
+// Original physically verified HR069 4WD six-wire L298N mapping.
+// LEFT is L298N channel B; RIGHT is channel A. Two DC motors per physical side.
+constexpr uint8_t DRIVE_L_EN=17,DRIVE_L_IN1=19,DRIVE_L_IN2=32;
+constexpr uint8_t DRIVE_R_EN=16,DRIVE_R_IN1=18,DRIVE_R_IN2=27;
+constexpr bool DRIVE_L_INVERT=false,DRIVE_R_INVERT=false;
 constexpr char SSID[]="HazRob",NVS[]="servoc",CAM[]="192.168.4.2";
 
-// Rear-mounted continuous-rotation servos; polarity is calibrated per track.
+// Alternative two continuous servos, disabled while L298N mode is selected.
 constexpr uint8_t SERVO_L_PIN=16,SERVO_R_PIN=17; // V4 original; drive-mode redesign deferred
 constexpr bool SERVO_L_INVERT=false,SERVO_R_INVERT=true; // provisional; verify wheels raised
 constexpr uint16_t SERVO_L_NEUTRAL_US=1500,SERVO_R_NEUTRAL_US=1500;
