@@ -210,11 +210,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private void showTab(int index){
         if(!entered||index<0||index>=tabViews.length)return;
         if(selectedTab==0&&index!=0)controlTab.stopCamera();
-        // The R0 acquisition lives on ESP32. Switching Android tabs must
-        // suspend only the Settings observer, never cancel a firmware run.
-        if(selectedTab==5&&index!=5&&settingsTab!=null)settingsTab.onTabHidden();
         selectedTab=index;
-        if(index==5&&settingsTab!=null)settingsTab.onTabShown();
         // MainActivity owns the navigation strip; ControlTab must not traverse
         // parent views or accidentally hide E-STOP/measurement content.
         boolean fullscreenDrive=index==0&&
@@ -262,9 +258,8 @@ public final class MainActivity extends Activity implements HazRobHost {
     private void onTelemetryUpdated(){if(isOffline()){latestDiag=null;if(globalStatus!=null){globalStatus.setText("دون اتصال");globalStatus.setTextColor(0xFF955000);}refreshVisibleTab();return;}JSONObject d=latestDiag;if(globalStatus==null)return;if(d==null){globalStatus.setText("غير متصل");globalStatus.setTextColor(0xFFFFB74D);}else{JSONObject drv=d.optJSONObject("drive"),device=d.optJSONObject("device"),proximity=device==null?null:device.optJSONObject("proximity");boolean near=proximity!=null&&proximity.optBoolean("warning",false),stale=drv!=null&&drv.optBoolean("stale_stop",false),gas=lastGasAlertLevel>0;globalStatus.setText("متصل"+(stale?" • توقف لانقطاع أوامر القيادة":gas?" • ⚠ غازات":near?" • ⚠ جسم قريب":""));globalStatus.setTextColor(stale?0xFF985400:gas?0xFFD62828:near?0xFFD62828:0xFF167443);}refreshVisibleTab();}
     private void refreshVisibleTab(){if(!entered)return;if(selectedTab==0)controlTab.refresh();else if(selectedTab==1)measurementsTab.refresh();else if(selectedTab==4)statusTab.refresh();else if(selectedTab==5)settingsTab.refresh();else if(selectedTab==6)developerTab.refresh();}
 
-    @Override protected void onResume(){super.onResume();if(!isOffline()&&!"remote".equalsIgnoreCase(prefs.getString("connection_mode","direct")))WifiRoute.bindConnectedWifi(this);foreground=true;if(entered){if(!isOffline()){startLinkService();if(selectedTab==0)controlTab.startCamera();}if(selectedTab==5&&settingsTab!=null)settingsTab.onTabShown();refreshVisibleTab();}}
+    @Override protected void onResume(){super.onResume();if(!isOffline()&&!"remote".equalsIgnoreCase(prefs.getString("connection_mode","direct")))WifiRoute.bindConnectedWifi(this);foreground=true;if(entered){if(!isOffline()){startLinkService();if(selectedTab==0)controlTab.startCamera();}refreshVisibleTab();}}
     @Override protected void onPause(){
-        if(settingsTab!=null)settingsTab.onTabHidden();
         foreground=false;
         if(entered){
             // HR069-R1 drive dead-man: Android SAF pickers, incoming calls, app switching
