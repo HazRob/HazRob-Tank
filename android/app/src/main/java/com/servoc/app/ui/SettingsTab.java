@@ -149,6 +149,14 @@ public final class SettingsTab {
         scroll.setVisibility(View.VISIBLE);
     }
 
+    /** Main-tab navigation and Activity pause are distinct from leaving the subpage. */
+    public void onTabHidden(){
+        if(userCalibration!=null)userCalibration.onHidden();
+    }
+    public void onTabShown(){
+        if(userCalibration!=null&&calibrationScreen!=null&&
+            calibrationScreen.getVisibility()==View.VISIBLE)userCalibration.onShown();
+    }
     public void release(){if(userCalibration!=null)userCalibration.release();}
     public View view(){return workspace;}
 
