@@ -1,0 +1,286 @@
+{
+  "schema": "hazrob-v7-r05-photo-asset-plan/1",
+  "date": "2026-10-31",
+  "owner_requirement": "18 real attributable food family reference photographs, including mixture composites, not Tank-measured specimens",
+  "license_policy": "Each source photo requires a stable source URL, creator, exact license/version, attribution string and applicable derivative permissions; never assume search image result grants reuse.",
+  "image_presentation": {
+    "format": "webp",
+    "target_source_resolution": "at least 600x400 px before crop",
+    "cell_mm": [
+      25,
+      18
+    ],
+    "visible_photo_mm": [
+      22,
+      14
+    ],
+    "fit": "contain",
+    "no_misleading_age_spoilage_claim": true,
+    "mixture_disclosure": "reference composite photograph"
+  },
+  "asset_status": "NOT_PACKAGED; SOURCE_AND_LICENSE_REVIEW_PENDING",
+  "items": [
+    {
+      "family": "banana",
+      "arabic": "موز",
+      "subjects": [
+        "banana"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/banana.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "blueberry",
+      "arabic": "توت أزرق",
+      "subjects": [
+        "blueberry"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/blueberry.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "grape",
+      "arabic": "عنب",
+      "subjects": [
+        "grape"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/grape.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "green apple",
+      "arabic": "تفاح أخضر",
+      "subjects": [
+        "green apple"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/green_apple.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "kiwi",
+      "arabic": "كيوي",
+      "subjects": [
+        "kiwi"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/kiwi.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "mandarin",
+      "arabic": "يوسفي",
+      "subjects": [
+        "mandarin"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/mandarin.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "pear",
+      "arabic": "كمثرى",
+      "subjects": [
+        "pear"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/pear.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "red apple",
+      "arabic": "تفاح أحمر",
+      "subjects": [
+        "red apple"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/red_apple.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "strawberry",
+      "arabic": "فراولة",
+      "subjects": [
+        "strawberry"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/strawberry.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "tomato",
+      "arabic": "طماطم",
+      "subjects": [
+        "tomato"
+      ],
+      "kind": "single_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/tomato.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "applebanana",
+      "arabic": "تفاح وموز",
+      "subjects": [
+        "red apple",
+        "banana"
+      ],
+      "kind": "composite_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/applebanana.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "applebananamandarin",
+      "arabic": "تفاح وموز ويوسفي",
+      "subjects": [
+        "red apple",
+        "banana",
+        "mandarin"
+      ],
+      "kind": "composite_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/applebananamandarin.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "applebananatomato",
+      "arabic": "تفاح وموز وطماطم",
+      "subjects": [
+        "red apple",
+        "banana",
+        "tomato"
+      ],
+      "kind": "composite_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/applebananatomato.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "applemandarin",
+      "arabic": "تفاح ويوسفي",
+      "subjects": [
+        "red apple",
+        "mandarin"
+      ],
+      "kind": "composite_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/applemandarin.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "appletomato",
+      "arabic": "تفاح وطماطم",
+      "subjects": [
+        "red apple",
+        "tomato"
+      ],
+      "kind": "composite_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/appletomato.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "bananamandarin",
+      "arabic": "موز ويوسفي",
+      "subjects": [
+        "banana",
+        "mandarin"
+      ],
+      "kind": "composite_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/bananamandarin.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "tomatobanana",
+      "arabic": "طماطم وموز",
+      "subjects": [
+        "tomato",
+        "banana"
+      ],
+      "kind": "composite_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/tomatobanana.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    },
+    {
+      "family": "tomatomandarin",
+      "arabic": "طماطم ويوسفي",
+      "subjects": [
+        "tomato",
+        "mandarin"
+      ],
+      "kind": "composite_reference_photo",
+      "asset": "android/app/src/main/assets/fruit_photos/tomatomandarin.webp",
+      "status": "PENDING_LICENSED_PHOTO",
+      "source_urls": [],
+      "attribution": [],
+      "license": [],
+      "sha256": null
+    }
+  ]
+}
