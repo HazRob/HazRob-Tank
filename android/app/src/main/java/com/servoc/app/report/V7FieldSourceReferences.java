@@ -53,7 +53,7 @@ public final class V7FieldSourceReferences {
         Map<Long,List<String>> verifiedGhs=GhsPictograms.allQualified(db);
         ExposureRepository exposure=new ExposureRepository(db);
         for(V7FieldReportSourceSnapshot.Candidate c:s.rawCandidates){
-            long chemicalUid=uid(c.uid);
+            long chemicalUid=c.qualifiedChemicalUid;
             List<String> codes=verifiedGhs.get(chemicalUid);
             display.pictograms.put(c,codes==null?Collections.<String>emptyList():
                 Collections.unmodifiableList(new ArrayList<>(codes)));
