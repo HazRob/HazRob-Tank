@@ -1,10 +1,10 @@
-## 2026-10-31 — G2 MQ4 zero-miss independent holdout coverage budget (research only; CI pending)
+## 2026-10-31 — G2 MQ4 zero-miss independent holdout coverage budget (734/734 G2 CI verified; research only)
 
 - Resumed from `815a620fe1cc94df56b762594d9082ac9f72f527`; G2 Actions run `41219577849` passed 724/724 offline tests and fail-closed audit/publication guard. All visible workflow runs for that checkpoint completed success.
 - Added `g2_mq4_zero_miss_holdout_budget.py`, ten deterministic synthetic/fail-closed tests, pinned JSON and Arabic methodology. Local 10/10 tests passed against the same finite-rank function as the research baseline. No original source ZIP replay was performed this iteration.
 - **Distinct from the finite split-conformal rank condition:** exact one-sided 95%-confidence Clopper–Pearson lower bound with zero observed misses requires 29 independent locked holdout groups to reach 90% coverage, or 59 for 95%. Six all-covered groups yield lower bound only ~60.70%. This is an optimistic zero-miss, independent Bernoulli planning bound, not measured coverage or sufficient G2 sample size.
 - Illustrative combined rank+zero-miss design: 3 training + 9 calibration + 29 holdout = 41 physical groups (90%); 3 + 19 + 59 = 81 (95%). With one *verified* independent group per consecutive day and 0/1/2-day embargo, hypothetical durations 41/42/43 and 81/82/83 days. Calendar days from the observational source are not independently qualified groups.
-- Changes are confined to `research/implementation_execution/` on the research branch. Check G2 Actions on this new HEAD before asserting 734/734 CI; 724/724 is the last independently verified baseline.
+- Changes are confined to `research/implementation_execution/` on the research branch. G2 Actions `41224032274` on code/results commit `765d7b5542d6bd165962649476d9a0bd9b856e53` passed **734/734** offline tests, 80-technique fail-closed audit, deterministic replay and publication guard; check CI on this documentation-only follow-up SHA independently.
 - Scientific state remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent evidence `records=[]`. No G2/G3 promotion, no ChemCore Stable, Android, firmware, or main changes. Independent traceably calibrated physical exposures and pre-registered blinded grouped holdouts remain required.
 
 ---
