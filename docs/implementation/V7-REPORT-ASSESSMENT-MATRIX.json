@@ -6,7 +6,7 @@
   "scope": "Initial six discovered Android V6 PDF report generators; more may be discovered in V7-R01",
   "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
   "qa_source": "https://github.com/HazRob/HazRob-Tank/actions/runs/41124888027",
-  "assessment_phase": "R02_NATIVE_ANDROID_AUTOMATED_QA_PASS_R01_R03_R06_FINAL_VISUAL_OR_PRODUCTION_PENDING",
+  "assessment_phase": "R01_R02_NATIVE_QA_PASS_R03_GEOMETRY_AND_R06_NATIVE_QA_IN_PROGRESS_R04_R05_UNIMPLEMENTED",
   "supported_statuses": [
     "NOT_AUDITED",
     "PASS",
@@ -26,7 +26,8 @@
     "R05_OWNER_APPROVED_2_PAGE_18_FRUIT_PHOTO_MATRIX_DESIGN_PREVIEW_PENDING",
     "R06_ORIGINAL_BEEF_ONE_PAGE_AND_ENGINE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
     "R06_OWNER_APPROVED_THREE_PAGE_MEAT_REPORT_DESIGN_VISUAL_QA_PENDING",
-    "R02_V7_NATIVE_PDF_WRITER_SOURCE_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING"
+    "R02_V7_NATIVE_PDF_WRITER_SOURCE_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING",
+    "R06_NATIVE_ANDROID_BEEF_WRITER_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING"
   ],
   "note": "Existing original Android PDFs from V6 provide a baseline but this template must not claim V7 visual audit, correctness or implementation. Rule G04 is scientifically condition-dependent, not universally GHS-applicable.",
   "rules": [
@@ -1643,10 +1644,10 @@
         "feature response heatmap when available"
       ],
       "risk": "Language exclusion or food-safety overstatement",
-      "review_state": "R06_OWNER_APPROVED_THREE_PAGE_MEAT_REPORT_DESIGN_VISUAL_QA_PENDING",
+      "review_state": "R06_NATIVE_ANDROID_BEEF_WRITER_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING",
       "original_pdf_verified": true,
       "approved_design_mockup": false,
-      "android_production_layout_changed": false,
+      "android_production_layout_changed": true,
       "visual_qa_passed": false,
       "data_integrity_passed": false,
       "bilingual_qa_passed": false,
@@ -1924,7 +1925,16 @@
       },
       "page_count_is_target_only": true,
       "page_count_can_increase_or_decrease": true,
-      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section."
+      "owner_pagination_exception": "No mandatory sheet index; only sections and chart types owner-approved. Do not omit any source row/section.",
+      "new_v7_pdf_writer": "android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/V7BeefResearchPdfWriter.java",
+      "new_android_entrypoint": "android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchPdf.java",
+      "new_qa_document": "docs/implementation/V7-R06-NATIVE-BEEF-PDF-IMPLEMENTATION-AND-QA-GATE-2026-10-31_AR.md",
+      "qa_status": "CODE_COMPILE_FIXED_ANDROID_FIXTURE_PENDING_RUN_41147792261",
+      "production_implemented_sections": [
+        "page1 seven-MQ raw Rs and 4 source study classes",
+        "page2 blank overlay/time response and precomputed four-class descriptive similarity",
+        "page3 true study TS5 4x4 confusion and external 36h placeholder with DOI + caveats"
+      ]
     }
   ],
   "shared_acceptance_criteria": {
@@ -1935,7 +1945,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Review R02 per-page images artifact from run 41146719225; verify newest MainActivity/V7ReportLayoutKit binding CI, then continue native R03/R04/R05/R06 conversions. Do not claim final APK or source science qualification.",
+  "next_action": "Verify run 41147792261 after missing Canvas import fix. Confirm R06 actual Android 3-page PDF fonts, TS5 matrix, DOI. Then wire R03/R04 and fruit R05 with 18 image assets, validate expanded cases and owner print signoff.",
   "visual_contract": {
     "branding_palette": [
       "black",
