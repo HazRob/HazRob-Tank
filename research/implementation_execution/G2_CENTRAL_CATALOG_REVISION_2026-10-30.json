@@ -1,0 +1,31 @@
+{
+  "schema": "hazrob.g2.central-catalog-revision-review.v1",
+  "date": "2026-10-30",
+  "repository": "HazRob/build-harness",
+  "path": "library/reference-bank/external-research/master_catalog.json",
+  "g2_locked_blob": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+  "g2_locked_record_count": 80,
+  "observed_main_blob": "248e6006a3bac6f814a6e92d9d334c3d7fb4cf73",
+  "observed_main_record_count": 94,
+  "original_80_entries_unchanged": true,
+  "new_entries": [
+    "MQ-EXT-21",
+    "MQ-EXT-22",
+    "MQ-EXT-23",
+    "MQ-EXT-24",
+    "MQ-EXT-25",
+    "MQ-EXT-26",
+    "MQ-EXT-27",
+    "MQ-EXT-28",
+    "MQ-EXT-29",
+    "MQ-EXT-30",
+    "MQ-EXT-31",
+    "MQ-FOOD-21",
+    "MQ-FOOD-22",
+    "MQ-FOOD-23"
+  ],
+  "new_entries_measurement_qualified": 0,
+  "food_only_new_entries": 3,
+  "policy": "DO_NOT_SILENTLY_REBASE_LOCKED_G2_CATALOG_OR_MERGE_FOOD_INTO_GAS_CHEMCORE",
+  "scientific_promotion": false
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "hazrob.g2.source-signal-lineage.v1",
+  "as_of": "2026-10-26",
+  "technique_id": "06.5",
+  "source_dataset_id": "UCI1081",
+  "dataset_doi": "10.24432/C5CK6F",
+  "original_archive_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "workflow_run_id": 40247645187,
+  "artifact_id": 12619196567,
+  "artifact_zip_sha256": "9663f13673e635c0c0b0f49d4c87e0683dccfb74b338a858e04ee7c7a7461b04",
+  "artifact_result_file": "uci1081_mq135_open_set_v4_results.json",
+  "feature_source_file": "research/benchmarks/uci1081_actual_modules_v1.py",
+  "benchmark_source_file": "research/benchmarks/uci1081_batch05_mq135_open_set_v4.py",
+  "physical_exposures": 90,
+  "sensor_models": [
+    "MQ135"
+  ],
+  "signal_processing": {
+    "sensor_ids": [
+      "UCI1081_MQ135_CHANNEL"
+    ],
+    "source_signal_units": "SOURCE_UNIT_UNVERIFIED",
+    "derived_signal_units": "SOURCE_UNIT_UNVERIFIED",
+    "feature_formula": "MEDIAN_RESPONSE_MINUS_MEDIAN_BASELINE",
+    "baseline_window_s": [
+      180,
+      300
+    ],
+    "response_window_s": [
+      780,
+      900
+    ],
+    "sampling_frequency_hz": 1,
+    "r0_mode": "NOT_USED",
+    "r0_reference": null,
+    "r0_subtracted_from_reading": false,
+    "rs_from_adc_calculated": false,
+    "ppb_from_mq_curve_calculated": false
+  },
+  "source_row_grouping": {
+    "key": "replicate_ordinal",
+    "origin": "INFERRED_WITHIN_GAS_AND_PPB_CELL",
+    "verified_independent_session_ids": false,
+    "verified_independent_device_ids": false,
+    "suitable_for_g2_grouped_holdout": false
+  },
+  "measured_exploratory_metrics": {
+    "known_accept_rate": 0.9444444444444444,
+    "unknown_reject_rate": 0.044444444444444446,
+    "unknown_false_accepts": 86,
+    "unknown_total": 90,
+    "known_acceptance_and_unknown_rejection_separate": true
+  },
+  "gate": "G2_BLOCKED",
+  "reasons": [
+    "SOURCE_SIGNAL_UNITS_UNVERIFIED_FOR_G2",
+    "GROUPING_NOT_VERIFIED_PHYSICAL_UNIT",
+    "NO_INDEPENDENT_TANK_REFERENCE",
+    "OPEN_SET_UNKNOWN_REJECTION_TOO_LOW"
+  ],
+  "scope": "EXTERNAL_EXPLORATORY_MEASURED_ONLY_NOT_TANK_G2_OR_G3"
+}

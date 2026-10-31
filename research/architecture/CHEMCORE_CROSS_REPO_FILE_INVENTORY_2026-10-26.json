@@ -1,0 +1,4040 @@
+{
+  "schema": "chemcore-crossrepo-git-tree-inventory-v1",
+  "generated": "2026-10-26",
+  "method": "GitHub git/trees recursive=1 exact tree; filtered file paths; inventory is not code review",
+  "repos": [
+    {
+      "repo": "sohpany/SERVOC-Android",
+      "ref": "6281d3eb7c1c961ce63b0b5e4ae0792874626720",
+      "tree": "6281d3eb7c1c961ce63b0b5e4ae0792874626720",
+      "truncated": false,
+      "total": 776,
+      "matching": 338,
+      "top": {
+        ".github": 14,
+        ".gitignore": 1,
+        ".tooling": 2,
+        "ARCHITECTURE.md": 1,
+        "CHANGELOG.md": 1,
+        "README.md": 1,
+        "REFERENCES_APA.md": 1,
+        "RELEASE_NOTES_v0.3.0.md": 1,
+        "RELEASE_NOTES_v0.5.0.md": 1,
+        "app": 460,
+        "branding": 1,
+        "build.gradle": 1,
+        "chemcore": 2,
+        "docs": 172,
+        "firmware": 31,
+        "for deleting": 1,
+        "gradle.properties": 1,
+        "railway": 1,
+        "reference_bank": 2,
+        "remote": 6,
+        "research_data": 22,
+        "settings.gradle": 1,
+        "signing": 2,
+        "tools": 50
+      },
+      "entries": [
+        {
+          "path": ".github/workflows/chemcore-candidate-qc.yml",
+          "blob": "20d4d5393b44139ae0be6216e92b208815e7b3e2",
+          "bytes": 1118
+        },
+        {
+          "path": ".github/workflows/chemcore-hardening-pr.yml",
+          "blob": "272c486354059909911be01d4fcc67d9daa5d077",
+          "bytes": 1936
+        },
+        {
+          "path": ".github/workflows/chemcore-library-publish-0102.yml",
+          "blob": "551b7544dc2b5cf00b80341f84ec97c8d74216af",
+          "bytes": 814
+        },
+        {
+          "path": ".github/workflows/chemcore-library-publish.yml",
+          "blob": "92043097765bc69f8550a137488f4b97e10f5523",
+          "bytes": 735
+        },
+        {
+          "path": ".github/workflows/chemcore-molecular-seed.yml",
+          "blob": "be47a67746f40915fb1d8f639fb65a207080189d",
+          "bytes": 732
+        },
+        {
+          "path": ".github/workflows/chemcore-unresolved-curation.yml",
+          "blob": "a624d728662208a0bd8dfb279e5e202a8dd33d70",
+          "bytes": 742
+        },
+        {
+          "path": "REFERENCES_APA.md",
+          "blob": "bb45717b31c8193ee4949ab4ca4c8dd7f010dbc2",
+          "bytes": 17548
+        },
+        {
+          "path": "app/src/main/assets/generated/chemcore/manifest.json",
+          "blob": "5e814eeba975a9c66fc1f52e0d9e2705a646965c",
+          "bytes": 946
+        },
+        {
+          "path": "app/src/main/assets/generated/chemcore/molecular_descriptors.json",
+          "blob": "539a7855e2b036fb2e0ac16c9ec4d1ecf1d1f08a",
+          "bytes": 2642719
+        },
+        {
+          "path": "app/src/main/assets/generated/chemcore/unresolved_curation.json",
+          "blob": "523f1f0467abdbc9fea2fca73977624743c135ff",
+          "bytes": 17860
+        },
+        {
+          "path": "app/src/main/assets/generated/exposure/manifest.json",
+          "blob": "c6f006108df392a464f0823fb41057aab10c3c30",
+          "bytes": 360
+        },
+        {
+          "path": "app/src/main/assets/generated/exposure/niosh_idlh.json",
+          "blob": "af1b632725684a2ce4307756ef979839ed42ba9b",
+          "bytes": 142465
+        },
+        {
+          "path": "app/src/main/assets/generated/exposure/osha_z1/manifest.json",
+          "blob": "349d173949b9bd5fb1d21fa939542de58d7bcf0f",
+          "bytes": 440
+        },
+        {
+          "path": "app/src/main/assets/generated/exposure/osha_z1/osha_z1.json",
+          "blob": "e44ed147d63b8a7924674a7ff11f3f1f5470e859",
+          "bytes": 258758
+        },
+        {
+          "path": "app/src/main/assets/generated/niosh/manifest.json",
+          "blob": "e310c5b473eb8ae4eac44ca3bffff6e91b435bbc",
+          "bytes": 579
+        },
+        {
+          "path": "app/src/main/assets/generated/niosh/niosh_chemicals.json",
+          "blob": "1a768d52833e624218bc05ff48e9485a29065e4d",
+          "bytes": 153941
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/CurveResearchActivity.java",
+          "blob": "68115187e8ead5562138f2e30f87e7b0eb7ac22e",
+          "bytes": 10267
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/analytics/AnalysisDecision.java",
+          "blob": "08f932e30e2cb858505050f6114ef55ac5df1b8a",
+          "bytes": 3914
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/analytics/AnalyticsSnapshot.java",
+          "blob": "ccf5f6bb35053d27a792e99dad33c7b258378921",
+          "bytes": 7677
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/analytics/LibraryStatus.java",
+          "blob": "7300f10e53f9617ceb41deb9e223a1e075231ebc",
+          "bytes": 2893
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/analytics/RidgeConcentrationModel.java",
+          "blob": "70af591184d277a2c7a41838d0d75c43e683d384",
+          "bytes": 4372
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/analytics/TemporalFeatureExtractor.java",
+          "blob": "5c3b4ea0e2140d8f5efe05b49b1b1bb378b78351",
+          "bytes": 1670
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/AcceptedR0Normalizer.java",
+          "blob": "8d4789aa36410359ecda8146ce74fa621aa481b3",
+          "bytes": 8841
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/CalibrationCurveProvider.java",
+          "blob": "793a3f913e37cd6ea1294acd8d827b5a4ff0b474",
+          "bytes": 1197
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/CalibrationCurvePublisher.java",
+          "blob": "0f165cff0314ed6f1aac980a8892c74e0be89e8e",
+          "bytes": 3849
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/CalibrationProfile.java",
+          "blob": "99f3e502f658c7bb09fc4df890d06c97cd66f65a",
+          "bytes": 2183
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/CalibrationQualityPolicy.java",
+          "blob": "b4fb20129082751a70fa38ffaabee4dcf7956704",
+          "bytes": 3271
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/CalibrationQualityReport.java",
+          "blob": "bf74e233a6b147283e2568d77d1c05d1a0d4a5a7",
+          "bytes": 7514
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/CalibrationSession.java",
+          "blob": "a355919bb7b4aae7d6d711bdb4684bc9f91f538c",
+          "bytes": 5948
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/CalibrationValidationMarker.java",
+          "blob": "eca67230002d192a42aeda85a2ac3f5578d895a2",
+          "bytes": 2333
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/EmpiricalMqCurve.java",
+          "blob": "51be40ad4b239a844f465962e70af933389922c0",
+          "bytes": 5747
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/FieldR0Baseline.java",
+          "blob": "650d40b806e2f66ceac7273678f6cd2553ea66ed",
+          "bytes": 1980
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/ManualR0Calibration.java",
+          "blob": "d781478a826215a82c88edecac864bb44a1d0a88",
+          "bytes": 8459
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/MicrophoneDbCalibration.java",
+          "blob": "b60bcc71d1fc531b727a968916f63970e67b11c9",
+          "bytes": 2917
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/calibration/SqliteCalibrationProvider.java",
+          "blob": "301cae69f5dd16cad7e9b8a4307d01f732dc9d66",
+          "bytes": 3523
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/AcceptedFingerprintIdentityEngine.java",
+          "blob": "388809542f0af2987a9af1cafdbf8c4d5b326779",
+          "bytes": 11051
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/AcceptedReferenceResponseModel.java",
+          "blob": "7e7b113bd26d3e85ed57f374b92ab1cca5703f0b",
+          "bytes": 9230
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/AmciDecisionEngine.java",
+          "blob": "a87bf3ea92cc5fa68ff6ea81d92c5f0b95c1bb64",
+          "bytes": 6097
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCore144MolecularCoverageAudit.java",
+          "blob": "6889f643f56be6acfe63957f714d79aa713c6324",
+          "bytes": 6310
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCore144ScreeningEngine.java",
+          "blob": "f99a18ec29e86d135fd28d1bf12a7b7ad947016a",
+          "bytes": 9796
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreAnalysisPresenter.java",
+          "blob": "507f53b81c5d9a476216bc71a2c591626aaf3e01",
+          "bytes": 14263
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreAnalyticalObjectSemantics.java",
+          "blob": "10c890966a1d78ca2d13651aba2d0e2b137c3f9e",
+          "bytes": 1880
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreAnalyticalTrace.java",
+          "blob": "6fed921eb91394e16cc8be2f9ee7e8b2ebc9c812",
+          "bytes": 3034
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreAnchorDriftMonitor.java",
+          "blob": "9e405f3181ae7d174c0448230a278941fd3849c9",
+          "bytes": 7681
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreBreadthRankingPolicy.java",
+          "blob": "43ef71c0321255670ac2a0ed4c70ef58f8734a2d",
+          "bytes": 1937
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreConfidenceMatrix.java",
+          "blob": "6519b937cea194d5bfc4c0e76550cb837d84b905",
+          "bytes": 3737
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreDecision.java",
+          "blob": "ddaea830d960e3bec45a7beeb551b72bb324c248",
+          "bytes": 1010
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreDecisionRepository.java",
+          "blob": "1de5f80ccd3640de3fa5452b90079991aa661844",
+          "bytes": 11921
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreDeepSessionResult.java",
+          "blob": "4fe03e5b2f13034a162d7aca86a486b3709f19be",
+          "bytes": 1798
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreEarlyBuildQualityPolicy.java",
+          "blob": "5b39361c1f4330ce0f28130e23dbd536b849dfff",
+          "bytes": 2263
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreEnvironmentDomainPolicy.java",
+          "blob": "2601c5a24f433cf39810cade62976cf682f481b3",
+          "bytes": 2988
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreEvidenceFusion.java",
+          "blob": "8faea685d03e7133d41a11ca1aadbf82f1d0c865",
+          "bytes": 11885
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreEvidenceLineagePolicy.java",
+          "blob": "5f01c3eeccb7c71826f86105e7cf14310b301232",
+          "bytes": 9422
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreEvidenceObservation.java",
+          "blob": "002759dcf9512437ef2f1ae0a410b82cd58cb837",
+          "bytes": 9445
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreExperimentalCampaignMap.java",
+          "blob": "aa9ccf716149a6b93f2ebbd244b40d486afa204f",
+          "bytes": 2690
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreFeaturePipeline.java",
+          "blob": "33cf66ab653df490c281c8f9ea20641285961447",
+          "bytes": 9784
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreFeatureReferenceBuilder.java",
+          "blob": "74b3b8b5b4561178f9c63a5020162656a725805c",
+          "bytes": 8112
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreFingerprintEvidenceEngine.java",
+          "blob": "492bb7a88935cfba4f8bcb3d3b3e22c25ba4b021",
+          "bytes": 8084
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreIdentityCeilingMap.java",
+          "blob": "50e4a22e5417fd4e8f159c6d269788caad6285da",
+          "bytes": 2168
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreIdentityCurationRepository.java",
+          "blob": "49ac586253fd953b6aa3f3e5610f402db65a65f7",
+          "bytes": 7857
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreInferenceEngine.java",
+          "blob": "d0aba24dc4a1448981adaf80c0263d33bc0d1e7f",
+          "bytes": 15785
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreLabQuality.java",
+          "blob": "56dcf8a6bee170837279e8aba9ee6607398823d6",
+          "bytes": 14474
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreLegacyCandidateRegistry.java",
+          "blob": "e8b27800269ddc704c07c541c69913358e456ad6",
+          "bytes": 5379
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreLiveSensingEngine.java",
+          "blob": "54176021c8a71b401a0350c2acaec681c4388a70",
+          "bytes": 19651
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreLiveStabilityMonitor.java",
+          "blob": "cb7fc11ced1af82432320ecc76556802fe5d29b2",
+          "bytes": 4767
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreModelArtifactRepository.java",
+          "blob": "9463176bfc95aaca19d15d15987abcf38927a6f3",
+          "bytes": 3925
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreModelCard.java",
+          "blob": "5f47adef2271d373193ee17c5abddcacf913811e",
+          "bytes": 4276
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreMolecularSeedImporter.java",
+          "blob": "e4b64e86effb499d75b33141924b0c3844b12561",
+          "bytes": 12917
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreOpenSetGate.java",
+          "blob": "b44e1d4055739d22843bc8992199ef6c8775e8cc",
+          "bytes": 6514
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCorePhysics.java",
+          "blob": "81f0af71c28e63440124c1724aafe16fa39c07db",
+          "bytes": 2858
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreProgressiveResultState.java",
+          "blob": "005e77093d72254c377516f5be0616f80eb93f6c",
+          "bytes": 4104
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreQsprRuntimeRegistry.java",
+          "blob": "d9bead46c7b6eac8ec265f45552b3ac09e64a42d",
+          "bytes": 13841
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreRejectedEvidenceAuditTrail.java",
+          "blob": "823f2a8c1b147b8ade874dcd0352eeb5d5fc2ec3",
+          "bytes": 8712
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreReportContract.java",
+          "blob": "bfcef9a127115626f4c4cb051e9113858e40461a",
+          "bytes": 1441
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreResponseModel.java",
+          "blob": "fb713a532bf5ed4e3e90ed820734b6be3839adbc",
+          "bytes": 3031
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreResultEnvelope.java",
+          "blob": "dc4d7ce26db775f188fb04e93a0263711dfbd354",
+          "bytes": 18664
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreRuntimeCoordinator.java",
+          "blob": "2998b70ab19656f8cbb8dfda08f8e4a3fa629dd6",
+          "bytes": 11820
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreSchema.java",
+          "blob": "56d256883179b0423e3c672fd25ed9a0af15b132",
+          "bytes": 12630
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreSessionController.java",
+          "blob": "f505d7a187ba59312959f6fb48ca7c2bd4419c9f",
+          "bytes": 4531
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreSessionDynamics.java",
+          "blob": "81fa4ff237bd27a07b9c64b9b8ebac3a17e1a734",
+          "bytes": 13099
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreSessionFeatureAdapter.java",
+          "blob": "953d6df3dd2248eeec8b66b7af796a1bfb72b48b",
+          "bytes": 9410
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreSessionFeatures.java",
+          "blob": "8dad69e7ae75661c71d424aa8c759f3463348864",
+          "bytes": 2722
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreSessionRepository.java",
+          "blob": "dee8ef62dfebfb37d8c38035778d1769fb5f86d4",
+          "bytes": 3423
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreSpecialistConflictEngine.java",
+          "blob": "c4f70818bbc8f0a86ec5013a38331996258243cf",
+          "bytes": 7101
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreSpecialistRoleRegistry.java",
+          "blob": "8e1bda318f1c433612150d4aefa88b68114d07fe",
+          "bytes": 4002
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/ChemCoreUncertaintyPolicy.java",
+          "blob": "bd8b3cc70fd98e05facdaf0e8117ba43596c7b24",
+          "bytes": 2660
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/CompletedSessionChemCoreAnalyzer.java",
+          "blob": "68a02688504d0d72d31d00f8ac11dd95fb733332",
+          "bytes": 5483
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/HierarchicalCandidateReducer.java",
+          "blob": "8b178c7bb679a84adcaa467f741cdb22c6ca94af",
+          "bytes": 4636
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/InverseMolecularSolver.java",
+          "blob": "98f4f888ef0974b153f2ab64e81b255969f3638e",
+          "bytes": 15051
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/LegacyGasEngineResponseModel.java",
+          "blob": "43fa7fcf6c911913a4200166609fa01a07a1bda5",
+          "bytes": 3440
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MahalanobisModel.java",
+          "blob": "78384879ec1afbb8e902738e0f7bafe5daebb1bc",
+          "bytes": 9113
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MixtureResidualGuard.java",
+          "blob": "7f2f322b68e0c8bdae6710ccd8cbca10b59f1e99",
+          "bytes": 4507
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MolecularCoverageReport.java",
+          "blob": "282f1bcf9e9e49e4ec3d2fb88a939aef61cbed5a",
+          "bytes": 4476
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MolecularDescriptorApplicabilityDomain.java",
+          "blob": "f690177ec0688d5c0cea3f17ef2fb732cf012012",
+          "bytes": 5478
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MolecularDescriptorContract.java",
+          "blob": "714b2a05704b3c9d686f6a08a41a9e97383d2099",
+          "bytes": 3668
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MolecularDescriptorMatrixBuilder.java",
+          "blob": "65540a96f9bea1bd6e82da4e4ab812546c0eb145",
+          "bytes": 7856
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MolecularFeasibilityGate.java",
+          "blob": "5b2a01dd16265de488220e7582e81f4e867b0fe8",
+          "bytes": 2519
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MolecularIntelligenceRepository.java",
+          "blob": "58ece85195233e0f983818cb9906967f6506718e",
+          "bytes": 5116
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MolecularProperty.java",
+          "blob": "7b94ae63cac03b815430422889654fe48f7a1289",
+          "bytes": 1562
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/MqVirtualSensorSimulator.java",
+          "blob": "76edef816ab7df462af882f0e91325882d5a9dd7",
+          "bytes": 6418
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/OpenSetThresholdCalibrator.java",
+          "blob": "da68190b44a9e1370d0f3ceb92a8bc5ca5de72ef",
+          "bytes": 4780
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/PiecewiseLogResponseModel.java",
+          "blob": "1d535be7c6a6407c7343e90e8dc1dafe37a4094a",
+          "bytes": 3887
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/PowerLawResponseModel.java",
+          "blob": "40979462547a86355a53fcc53ea90132142908eb",
+          "bytes": 2896
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/QsprMoxModel.java",
+          "blob": "d9a161b50049a8fbfe762dc1596d5dccf4acde12",
+          "bytes": 8588
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/QsprResponseModelAdapter.java",
+          "blob": "2feac5884bad0a5f906f824feb1177447f2e6327",
+          "bytes": 2500
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/QsprValidationProtocol.java",
+          "blob": "963fa329f62cf7e1dc7eadbecd1a8e7b9dab4355",
+          "bytes": 4992
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/SamplingLayout.java",
+          "blob": "5f3a555f649d8d8f46e83202f05f2c64c2250630",
+          "bytes": 5793
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/SamplingProfile.java",
+          "blob": "3a6492f5e94b233f85efdef56d93000606822bca",
+          "bytes": 8182
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/SamplingProfileRepository.java",
+          "blob": "6920386fafc2180174dd35d39665e5947de771d9",
+          "bytes": 7655
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/library/ChemCoreEmbeddedFallback.java",
+          "blob": "a7d1f630d4d5c7f272460102fd8e475feeb01126",
+          "bytes": 2221
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/library/ChemCoreEmbeddedStableInstaller.java",
+          "blob": "0e0d956266ef6f6ef8138af28c4f6ce12bacf256",
+          "bytes": 4688
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/library/ChemCoreLibraryManager.java",
+          "blob": "5e40b23ab3802c900e6166f3229d9ab474f6ebd3",
+          "bytes": 9043
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/library/ChemCoreLibraryManifest.java",
+          "blob": "e59367143c9a6f60daf4ec29f352f16939258bad",
+          "bytes": 9056
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/library/ChemCoreLibraryStore.java",
+          "blob": "f10c1675065d25010c5b080ab73990451064237e",
+          "bytes": 12437
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/library/ChemCoreLibraryUpdateClient.java",
+          "blob": "5dd9a20efdbecf6b975d31c1498ea7e5bbb596c0",
+          "bytes": 6363
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/library/ChemCoreLibraryVerifier.java",
+          "blob": "86ceea6cc7b5c0b9a949814f4424d84cc80188f1",
+          "bytes": 7013
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/library/ChemCoreLibraryVersion.java",
+          "blob": "764854104efed5fdf0a57bfaaa4e20ca9b8627b9",
+          "bytes": 3311
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemcore/library/ChemCoreStableKnowledgeReader.java",
+          "blob": "2d7fc27ba77b9d6636170021a1a283e9003a2a3e",
+          "bytes": 14788
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemical/AnalyticalResearchBootstrap.java",
+          "blob": "82243039dc39840a24b465318a7b02fa905282dd",
+          "bytes": 14833
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemical/EnvironmentalCompensationModel.java",
+          "blob": "b44540b2ba508c1d09239bb03056d3ceee9c6bec",
+          "bytes": 2994
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemical/EnvironmentalResponseModel.java",
+          "blob": "290b11c248bbe4680818d817e6c42a5a763fdf8d",
+          "bytes": 3460
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemical/MqCalibrationSeriesBootstrap.java",
+          "blob": "9da3d06045563b0a144705d0d855d34897d069af",
+          "bytes": 9944
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemical/MqVocFingerprintEvidenceBootstrap.java",
+          "blob": "427a4fc5159513ac0277a0c186d1418128d46603",
+          "bytes": 5057
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemical/ResearchCurveRegistry.java",
+          "blob": "099467fe10e47e9d6a600e1f53c797daa0be53c6",
+          "bytes": 7154
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/chemical/ResearchEnvironmentalCorrection.java",
+          "blob": "116f046f6ff313cf989a088f63dc8a8e44486ac5",
+          "bytes": 4773
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/data/ReferenceLineageGuard.java",
+          "blob": "98eceefc73885c2f0c2e79eb7241dee74bfa7de2",
+          "bytes": 5384
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/exposure/ChemCoreP10SessionFinalizer.java",
+          "blob": "af26152ae6736a0e12969698103d724659f4743f",
+          "bytes": 3154
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/exposure/ChemCoreQuantitativeTimeSeries.java",
+          "blob": "c9f4cc27b1bd048b99029773885d2411b8451310",
+          "bytes": 11368
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/fingerprint/ChemicalFingerprint.java",
+          "blob": "c2b90ee6622f7cc3df014333d1100e25e061bdfc",
+          "bytes": 803
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/fingerprint/FingerprintClassifier.java",
+          "blob": "ce3e818d1567e4686438bbb4fbd1a67824094114",
+          "bytes": 3584
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/fingerprint/FingerprintTrainer.java",
+          "blob": "47786347c981a345e58a68c9c58c2c9ef70274b2",
+          "bytes": 1763
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/fingerprint/ResearchIdentificationFingerprintRegistry.java",
+          "blob": "bf34b28d5acfd172da6fa8c580ff28380471682b",
+          "bytes": 11704
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/github/GitHubReferencePublisher.java",
+          "blob": "0c9f0936f2abb8c0f2a2ec3a8b1231ac8ecfe7bc",
+          "bytes": 11681
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/github/ReferencePublishAudit.java",
+          "blob": "1defa7b69f0c031ee03805f28737ec6d7de80f59",
+          "bytes": 1597
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/models/CalibrationModelLab.java",
+          "blob": "2fc2d8734a63809ad61d3e0cc6f3e5fe43d2cf03",
+          "bytes": 2253
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/models/CalibrationRegressionModels.java",
+          "blob": "bda655affa53306ae811b048e86caeaffb939723",
+          "bytes": 20356
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/models/ModelRuntimeRegistry.java",
+          "blob": "008b2d4fa97b165d7b058e122ee1b6f60c9074ab",
+          "bytes": 4526
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/models/Mq76ModelRoleRegistry.java",
+          "blob": "96212067fb197e6c53bbbb6e5c4d03184876adf0",
+          "bytes": 5131
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/models/MqDataScience76Catalog.java",
+          "blob": "2169d072d33ba22cecd6f1e7b380a31430e6a249",
+          "bytes": 3999
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/models/MqDataScienceModelProfile.java",
+          "blob": "ad225e1195ab077112aaa55bf70b18d72303fcbb",
+          "bytes": 2481
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/reference/ReferenceArtifactBuilder.java",
+          "blob": "3e6a7fbc78c48329ccea498a5f1c0eccd4fcccb2",
+          "bytes": 16405
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/report/ReferenceBankExporter.java",
+          "blob": "637903f4ade47fae882b15c55bca378f93a7bfdf",
+          "bytes": 4054
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/ui/ChemCoreAnalysisTab.java",
+          "blob": "eb42a85bdd1cf7cec6a5aa44fa84db9eca378e07",
+          "bytes": 26258
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/ui/ChemCoreLibraryTab.java",
+          "blob": "089ee8c42cab117fabf6a20fd07b39f9201799dd",
+          "bytes": 12436
+        },
+        {
+          "path": "app/src/main/java/com/servoc/app/vision/FlameColorModel.java",
+          "blob": "376aeb0cc59040c5fa4abe495b523b006ead46c6",
+          "bytes": 3797
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/MicrophoneDbCalibrationTest.java",
+          "blob": "1caa5f716f603713836f2efb4b5ea1a7ee244e75",
+          "bytes": 1219
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/analytics/AnalyticsSnapshotHeaterValidityTest.java",
+          "blob": "25cc57e210ed9f4ac180adaf2b4c53530bbcca56",
+          "bytes": 500
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/analytics/HazRobScientificLibraryAuditTest.java",
+          "blob": "f5e51f5fe76a0a6f679073bbaeb70f1479710280",
+          "bytes": 4216
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/analytics/TemporalFeatureExtractorCanonicalAdapterTest.java",
+          "blob": "3958f298a5cf7bf05adc6100a3c13309606307fc",
+          "bytes": 1012
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/calibration/AcceptedR0NormalizerEvidenceTest.java",
+          "blob": "1ba0fad59631f242ab74db617956b331692d4664",
+          "bytes": 4384
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/calibration/AcceptedR0NormalizerTest.java",
+          "blob": "806d5321024fc1d48ae324d31607a18fcde0ca6d",
+          "bytes": 1581
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/calibration/CalibrationManufacturerDomainWarningTest.java",
+          "blob": "0fc4a110c9f267b70c64cadfbcb026f90c256637",
+          "bytes": 1129
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/calibration/CalibrationValidationMarkerTest.java",
+          "blob": "0317d006712c6d6d0966ddcc39ed1b4dfc8acea2",
+          "bytes": 2127
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/calibration/FieldR0BaselineTest.java",
+          "blob": "9d3d17008568ecf3b3aedcd997f77f1012071d06",
+          "bytes": 1432
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/calibration/HR069R1EditableR0PersistenceTest.java",
+          "blob": "8ea5538a99c2dea1379b3e93c2ce08062db34e56",
+          "bytes": 8972
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/calibration/HR069R1HistoricalR0LineageContractTest.java",
+          "blob": "913361f6a9a4786897114303647fa5c37c2b6686",
+          "bytes": 2781
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/calibration/HR069R1R0ElectricalUnitsContractTest.java",
+          "blob": "0076436f2760465b507869cbcdb45ed72a2dde26",
+          "bytes": 1749
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/calibration/ManualR0CalibrationTest.java",
+          "blob": "d19a6446efd6ec107ab6dec9e7fe866e4a8278b6",
+          "bytes": 1410
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/AcceptedFingerprintIdentityEngineTest.java",
+          "blob": "63e3a8f57e5b2e754252ff5248e45686de1aba9c",
+          "bytes": 8017
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/AcceptedReferenceResponseModelTest.java",
+          "blob": "9895a7de55817a40ed016c72ef91be6e921ed3ac",
+          "bytes": 2772
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/AmciDecisionEngineTest.java",
+          "blob": "1db9e1a29858fd6686c55ab06bcd0c35f6452a19",
+          "bytes": 1418
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCore144ScreeningEngineTest.java",
+          "blob": "b53e7dd69fff27f278e6bf87a349fb9489ffd975",
+          "bytes": 3962
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreAnalysisPresenterTest.java",
+          "blob": "c46da754ac1df2430edcb3305942f8ecd0a2cd31",
+          "bytes": 4005
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreAnalyticalObjectSemanticsTest.java",
+          "blob": "66c72e4ec26b0406f49de330e673272aa7268078",
+          "bytes": 1540
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreAnalyticalTraceTest.java",
+          "blob": "46457bfd5ee4fe5765c337d4ba03aa2321a93893",
+          "bytes": 3329
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreAnchorDriftMonitorTest.java",
+          "blob": "1deb2d8022e0b7239ad234568742bd16f99273e7",
+          "bytes": 2608
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreAuditJsonTest.java",
+          "blob": "b90bbf1e251db3a4b080045f4556bc17e4892412",
+          "bytes": 4010
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreConfidenceMatrixEvidenceTest.java",
+          "blob": "5078e3d656a8b07f379ec26957a50c00378638f4",
+          "bytes": 5407
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreDeepSessionResultTest.java",
+          "blob": "04c8051bb91c90c8ba36eaba961a188f2e477d6d",
+          "bytes": 1677
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreDomainGatingTest.java",
+          "blob": "a270b085f3dc0bc3f2f7332b26b66d72bb36be7b",
+          "bytes": 2378
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreEnvironmentDomainPolicyTest.java",
+          "blob": "8ba4154cd335bcecb921c139ca7b530dbc32b505",
+          "bytes": 2292
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreEvidenceFusionTest.java",
+          "blob": "a67bd28c88b53f6a851008e8e8695a2ef3e631b3",
+          "bytes": 11972
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreEvidenceLineagePolicyTest.java",
+          "blob": "855edb6a321ee536e0c0d0b9df2d2c0b83fea00f",
+          "bytes": 4109
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreEvidenceObservationTest.java",
+          "blob": "e9f4b79db556ab9aa384409e6a8fe057d4fc94e6",
+          "bytes": 5471
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreExperiment4ReplayTest.java",
+          "blob": "e99fb87615de7b27262dcdcc6da35de930a70e84",
+          "bytes": 6065
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreExperimentalCampaignMapTest.java",
+          "blob": "fff0efdda8a9c4adc208027abea33d6cf37f620b",
+          "bytes": 1756
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreFeaturePipelineTest.java",
+          "blob": "c3d8009ec02485431726f17f75ce01fef809fd34",
+          "bytes": 2213
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreFingerprintUidConsistencyTest.java",
+          "blob": "6347c57751ea83a5c7da61fe267b6ecced904a9e",
+          "bytes": 2572
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreIdentityCeilingMapTest.java",
+          "blob": "8c77a14a413ba1851f63a8bafb825586f0e6bc83",
+          "bytes": 1848
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreLabQualityTest.java",
+          "blob": "69191f08b04e715e59d10cacf7c3a470e4a5257e",
+          "bytes": 2730
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreLegacyCandidateRegistryTest.java",
+          "blob": "dce0917d7b137b0138fe4684dc50e0d3a745fd68",
+          "bytes": 1607
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreLiveSensingEngineTest.java",
+          "blob": "257951379a12f0678719931f4cf0eba6021ff2c2",
+          "bytes": 4916
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreLiveStabilityMonitorTest.java",
+          "blob": "4c42848bc189173f77f93012f9d4aa4dcd98da78",
+          "bytes": 1509
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreM4CompletenessGateTest.java",
+          "blob": "57a33daeac601bb5f302cd43b54dda0d0c8644de",
+          "bytes": 2563
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreModelArtifactRepositoryTest.java",
+          "blob": "3c7b58d0a9571cc45393a7c24501c4cc432f229d",
+          "bytes": 666
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreOpenSetGateTest.java",
+          "blob": "e57b0edeed3bb21ebd5136d68d30ed02d1dbf8ac",
+          "bytes": 2938
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCorePhysicsTest.java",
+          "blob": "8449ca69f8ecac2ab175906a9df2e39932e86ad7",
+          "bytes": 1256
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreProgressiveResultStateTest.java",
+          "blob": "23870569e9e36bcefd7861fd85df8401cc0da2ef",
+          "bytes": 4742
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreReferenceSimulationTest.java",
+          "blob": "27312bfb52625422128f194b9d7c5f32bd374074",
+          "bytes": 14171
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreRejectedEvidenceAuditTrailTest.java",
+          "blob": "d0333d8008403037348780393224b9b942cca997",
+          "bytes": 6811
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreResultEnvelopeV3Test.java",
+          "blob": "d2352bb3e85a841a179c52ad3c6779e66a63d74f",
+          "bytes": 4314
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreResultEnvelopeV4Test.java",
+          "blob": "8b4d57493da9f983c9582b08e9d6d24ebeb5d922",
+          "bytes": 8446
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreRuntimeCoordinatorTest.java",
+          "blob": "2945bb083fc3af812c12689579d592db6855a530",
+          "bytes": 4307
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreSessionControllerTest.java",
+          "blob": "9211270cab776772429566fa119e7d0a311de64b",
+          "bytes": 3677
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreSessionDynamicsTest.java",
+          "blob": "8ba701323950593a5d529c407f2c6aaed934e3dc",
+          "bytes": 3724
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreSpecialistConflictEngineTest.java",
+          "blob": "511fc158de04e3be5df4b2c326acc93b20cd1fdb",
+          "bytes": 5081
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/ChemCoreUncertaintyPolicyTest.java",
+          "blob": "0ca4e95e59e0cc44e72455e23ccc0c4009592dd5",
+          "bytes": 1583
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/CompletedSessionChemCoreAnalyzerTest.java",
+          "blob": "77392fb8f6b07e220e22ba95454d458b506077da",
+          "bytes": 3146
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/HierarchicalCandidateReducerTest.java",
+          "blob": "56409d89585ea78b1d67cd6e7d804c962029a1b7",
+          "bytes": 2402
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/InverseMolecularSolverTest.java",
+          "blob": "18a0f1a2bbcf812afdd57ec1da2330fe7626eeeb",
+          "bytes": 4402
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/MahalanobisMissingFeatureTest.java",
+          "blob": "06309fa668e898caee629b833997547765a10210",
+          "bytes": 1399
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/MixtureResidualGuardTest.java",
+          "blob": "2619dfab06fe331555c90d4b93ec4f8d47517512",
+          "bytes": 2460
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/MolecularDescriptorApplicabilityDomainTest.java",
+          "blob": "a235ce45a1e0abae9ef1fb0b93ab42fd6c2572ea",
+          "bytes": 1796
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/MolecularDescriptorContractTest.java",
+          "blob": "dc98c844342c100d3dd1515160e33432a1e094cd",
+          "bytes": 1238
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/MolecularDescriptorMatrixBuilderTest.java",
+          "blob": "381b2d691d408c98eee065b3eb9feff05a4c4240",
+          "bytes": 1393
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/MolecularFeasibilityGateTest.java",
+          "blob": "ceb7f4db9d2952adf8787a6df82c194db09296c5",
+          "bytes": 1112
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/Mq3QsprFingerprintPilotTest.java",
+          "blob": "763261aab9424f51d2fae9ddabb7ba2f371af2f5",
+          "bytes": 11229
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/Mq3VirtualSensorPilotTest.java",
+          "blob": "a80b0dd6820fb60bf473f41bc797ed096e223294",
+          "bytes": 8018
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/OpenSetThresholdCalibratorTest.java",
+          "blob": "95960056e5380b57943722d48f255e76139e645b",
+          "bytes": 978
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/QsprMoxModelTest.java",
+          "blob": "dd9db6b2dcdf6052bdf9d5813943817c6d4e10de",
+          "bytes": 1977
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/QsprValidationProtocolTest.java",
+          "blob": "4dd2d7ab4ced3cab67804fc6dab70880a08c511f",
+          "bytes": 1666
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/SamplingLayoutTest.java",
+          "blob": "efe89a29b6aa7e61c425a03ec595c57c8e085c32",
+          "bytes": 1503
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/SamplingProfileTest.java",
+          "blob": "f81002a6896fc4673ed5ec5cb7964d4149718921",
+          "bytes": 2664
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/library/ChemCoreLibraryContractTest.java",
+          "blob": "9ab1288b47c9861588f1480e5e4be31070bcccaf",
+          "bytes": 6494
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemcore/library/HR069EmbeddedStableContractTest.java",
+          "blob": "603f0d0cd7e3615645cc2eaef3fcef81abc4d35e",
+          "bytes": 4353
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/chemical/HazRobAnalyticsTest.java",
+          "blob": "bccadb8dc9a725d92182d835cea527a97a9d147b",
+          "bytes": 5490
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/data/ReferenceLineageDbContractTest.java",
+          "blob": "5fd4d760ca116f8b71ea8c5dc68c1112827be650",
+          "bytes": 2802
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/exposure/ChemCoreQuantitativeTimeSeriesTest.java",
+          "blob": "bd16f839093bbca9b5bead9abc401918743421e2",
+          "bytes": 5013
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/field/FieldArchiveReferenceIsolationContractTest.java",
+          "blob": "9a0146ac1a0bbc8083a63ebbc4a78023b0b43398",
+          "bytes": 1376
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/fingerprint/EthyleneTransferEvidenceContractTest.java",
+          "blob": "4a1aca292073f2889c52ddf77aca3032812c62b2",
+          "bytes": 1535
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/fingerprint/MethanolTransferEvidenceContractTest.java",
+          "blob": "4ef95d992c781276b180b77a50ead702b120fd1a",
+          "bytes": 1400
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/fingerprint/PropanolTransferEvidenceContractTest.java",
+          "blob": "00757571e823c0b40c433c3c6439a4d70e891b6d",
+          "bytes": 827
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/fingerprint/ResearchIdentificationFingerprintRegistryTest.java",
+          "blob": "7fe1b41ca3e4a06a44fcd93af435de84fc43e548",
+          "bytes": 6746
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/github/GitHubReferencePublisherTest.java",
+          "blob": "10adce32c931f1f459f05a26784ae5b47c87d8d5",
+          "bytes": 2193
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/measurement/ChemCoreEarlyBuildQualityPolicyTest.java",
+          "blob": "b3bb63c836ae0639143c760342bff6a7c58463a3",
+          "bytes": 1746
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/models/CalibrationRegressionModelsTest.java",
+          "blob": "9f2f9303a2e562509021f4b0b87cbdfdea20a2d6",
+          "bytes": 4910
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/models/ModelRuntimeRegistryTest.java",
+          "blob": "ce027473f5e5fda94717e2541f919a83108070d3",
+          "bytes": 2708
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/models/Mq76ModelRoleRegistryTest.java",
+          "blob": "3a4b6db5c00d7672424bcc2cfab4e428906c1628",
+          "bytes": 1531
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/models/MqDataScienceModelProfileTest.java",
+          "blob": "37c58e64a149169be71f46a29784127ead9478e9",
+          "bytes": 1628
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/report/ChemCoreSmartReportSynchronizationTest.java",
+          "blob": "71f120de9a45dc5a2a9313bd5244b9d091d2d827",
+          "bytes": 1356
+        },
+        {
+          "path": "app/src/test/java/com/servoc/app/vision/FlameColorModelTest.java",
+          "blob": "e6a62bc64806790cbb7d7d11a7381037251cf3a1",
+          "bytes": 1417
+        },
+        {
+          "path": "chemcore/research/README.md",
+          "blob": "090b1e06c9cf27468fca1e4bbc3fabf30fa4f61f",
+          "bytes": 1294
+        },
+        {
+          "path": "chemcore/stable/VERSION",
+          "blob": "3eefcb9dd5b38e2c1dc061052455dd97bcd51e6c",
+          "bytes": 6
+        },
+        {
+          "path": "docs/0.10.1/HR044_CALIBRATION_BUILD_MANIFEST.json",
+          "blob": "b137efb4be21b946a5fa120f702ea9a236a25bcd",
+          "bytes": 3528
+        },
+        {
+          "path": "docs/0.10.1/HR046_ANALYTICAL_UNIFICATION_BUILD_MANIFEST.json",
+          "blob": "4e4b4eaf63ce2f92fa80f4ac69111eb4817ca704",
+          "bytes": 2248
+        },
+        {
+          "path": "docs/0.10.2/CR-20261008-006_DEV_REFERENCE_CHEMCORE_SYNC_AUDIT.md",
+          "blob": "78d1063a7acc3fadbfd13e799abde6d663d3ce89",
+          "bytes": 9040
+        },
+        {
+          "path": "docs/0.10.2/CR-20261008-012_BME280_AND_FOUR_DIMENSIONAL_RESEARCH.md",
+          "blob": "7832d2f33e4398a24885f5dd8500a0ca9e160a8d",
+          "bytes": 3818
+        },
+        {
+          "path": "docs/0.10.2/HR069_ACCEPTED_IDENTIFICATION_FINGERPRINTS_CHECKPOINT.md",
+          "blob": "c30a7ce2574ae06da36115fe16f17dca89117c85",
+          "bytes": 5546
+        },
+        {
+          "path": "docs/0.10.2/HR069_ANALYTICAL_PIPELINE_MQ76_RESEARCH_AUDIT.md",
+          "blob": "f6686b8359ed9e3091fc23b0c631450260ae68fa",
+          "bytes": 17959
+        },
+        {
+          "path": "docs/0.10.2/HR069_ANALYTICAL_RESEARCH_HARDENING_2026-09-29.md",
+          "blob": "9eaace28f854053ea2dd1280fc39f2d778c39206",
+          "bytes": 9312
+        },
+        {
+          "path": "docs/0.10.2/HR069_BME280_USER_CONFIRMED_STATUS_AND_4D_RESEARCH_2026-10-08.md",
+          "blob": "e36aaeb97c7e521d606e6dcc949c3857a2998f2b",
+          "bytes": 9558
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_144_CATALOG_STAGE1_INVENTORY_2026-10-02.csv",
+          "blob": "9f9d823a4cbf1b658479626b5d88361e43745b72",
+          "bytes": 5669
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_144_STAGE_PROGRESS_LEDGER_2026-10-02.md",
+          "blob": "aa11d19ebc847777f3fda9311c1554b91af66d78",
+          "bytes": 10306
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_ANALYTICAL_REMEDIATION_PLAN_2026-10-01.md",
+          "blob": "dbdcd00c0af367aef2e2a91ad653242ef3a81544",
+          "bytes": 17566
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_CENTRAL_LIBRARY_ORG_SYNC_PLAN_2026-10-02.md",
+          "blob": "10916b4930cc096704172caaf268e41d764baa06",
+          "bytes": 3590
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_EARLY_BUILD_FLEXIBILITY_ADDENDUM_2026-10-02.md",
+          "blob": "c725f2a665ef090ea38d086135a062bff2efe2c7",
+          "bytes": 1789
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_EXPERIMENTAL_VALIDATION_REQUIREMENTS_2026-10-01.md",
+          "blob": "fb6149ede7201b6e93d28af061ced06e8ab8f715",
+          "bytes": 12884
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_KNOWLEDGE_BASE_GOVERNANCE_2026-10-02.md",
+          "blob": "f2e3469573984667cc709b5169ed6debd4fad8d4",
+          "bytes": 4963
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE10_HARDWARE_GAP_REGISTER_2026-10-02.md",
+          "blob": "805b55dfecacc9371775feca2ad58dc8d4a758e8",
+          "bytes": 3293
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE11_CURVE_INVENTORY_2026-10-02.md",
+          "blob": "be036cc72a9a8ea8c9a6854fa0962d42d54b093d",
+          "bytes": 3236
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE12_CURVE_PROVENANCE_PRECEDENCE_2026-10-02.md",
+          "blob": "bb17a91d34e736db72f74d4e8a62fbec464bc2bd",
+          "bytes": 4505
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE13_CURVE_DOMAIN_AUDIT_2026-10-02.md",
+          "blob": "614fb634b07c0b61da3b22d4d5e86b0ffa693a2c",
+          "bytes": 6190
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE14_R0_CONVENTION_AUDIT_2026-10-02.md",
+          "blob": "4f3533923e231036be6855c9686a86667a6524d7",
+          "bytes": 4162
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE15_HR069_TRANSFER_STATUS_2026-10-02.md",
+          "blob": "7cdb072c12b654faabfefcca5a0511c7addc5df2",
+          "bytes": 4289
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE16_BOUNDARY_OUT_OF_DOMAIN_POLICY_2026-10-02.md",
+          "blob": "861acc4a7f38d3db14763bc4ed75bf0533f81997",
+          "bytes": 3913
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE17_CROSS_CHANNEL_CONCENTRATION_CONSISTENCY_2026-10-02.md",
+          "blob": "4c198cb4eadd72de673aba51948ee85fe6e944f3",
+          "bytes": 5248
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE18_FINGERPRINT_INVENTORY_2026-10-02.md",
+          "blob": "5e3ce722152a8f3c6eab608b8ae4d67d9b66399d",
+          "bytes": 6953
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE19_FAMILY_FINGERPRINT_LAYER_2026-10-02.md",
+          "blob": "090457d0704c8c00a2056e9209a90f42cd27fc21",
+          "bytes": 5458
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE20_EXACT_COMPOUND_FINGERPRINT_REVIEW_2026-10-02.md",
+          "blob": "4496a239bea99ea41b6a69df111678d9ba6396a2",
+          "bytes": 4069
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE21_FINGERPRINT_COVARIANCE_READINESS_2026-10-02.md",
+          "blob": "3fad620ac509bd934fb29d291d321894175f1d0b",
+          "bytes": 3130
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE22_TEMPORAL_FEATURE_READINESS_2026-10-02.md",
+          "blob": "d93e9be26d9adca3196933719b6fdf8aa91fb62d",
+          "bytes": 4248
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE23_FAMILY_FIRST_HIERARCHICAL_CLASSIFIER_2026-10-02.md",
+          "blob": "cf1d75d77ebdab9c294ce8cc0171b663fe67f9bc",
+          "bytes": 8081
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE24_PUBCHEM_COVERAGE_CHECKPOINT_2026-10-02.md",
+          "blob": "4d5d9184fbb5ed13d4ba04207e1c1b1edebbb29d",
+          "bytes": 4049
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE25_QSPR_APPLICABILITY_DOMAIN_AUDIT_2026-10-02.md",
+          "blob": "a17dedc1b708468318284d43012bc8a446daee98",
+          "bytes": 3530
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE26_QSPR_LEAKAGE_LCO_AUDIT_2026-10-02.md",
+          "blob": "42581df66fd9d47a2f40bce8b19f5b440473cee0",
+          "bytes": 3776
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE27_EVIDENCE_LINEAGE_CORRELATION_MAP_2026-10-02.md",
+          "blob": "51fbd45a1eec129c08ef36977c46ead60292c3c0",
+          "bytes": 4050
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE28_UNIFIED_EVIDENCE_WEIGHTING_POLICY_2026-10-02.md",
+          "blob": "d60630775784c5fe8b9b4dbefd0438fd0f2f7bf1",
+          "bytes": 3982
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE29_SPECIALIST_CONFLICT_ENGINE_2026-10-02.md",
+          "blob": "05603e3197753c99a690a3afb1053311a73c1e79",
+          "bytes": 3674
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE2_STRUCTURAL_TAXONOMY_2026-10-02.csv",
+          "blob": "53c36d2e5f31f43fc02793d12c8143578a5fc57f",
+          "bytes": 24688
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE30_PROGRESSIVE_RESULT_STATE_ENGINE_2026-10-02.md",
+          "blob": "0f77f81690fd109226fde4d4b29a5c2448ff6aa5",
+          "bytes": 2689
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE31_REJECTED_EVIDENCE_AUDIT_TRAIL_2026-10-02.md",
+          "blob": "1f37c1bff98cbd17e1402dcff5675a83d005475b",
+          "bytes": 3845
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE32_EXPLORATORY_OPEN_SET_ROUTING_2026-10-02.md",
+          "blob": "4912cabf154a1855fcdd3c5ae223d5802e090067",
+          "bytes": 1561
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE33_MIXTURE_INTERFERENCE_POLICY_2026-10-02.md",
+          "blob": "138dc0e278929e36c4abf77ddeb52bd6c3f92b5f",
+          "bytes": 1476
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE34_SOURCE_MATERIAL_HEADSPACE_SEMANTICS_2026-10-02.md",
+          "blob": "31fc38274b79da1f9d04f46813628f6b0e9b5766",
+          "bytes": 1285
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE35_IDENTITY_CEILING_MAP_2026-10-02.md",
+          "blob": "2d004daed21c3b469a64eee81541f7efb4c44d75",
+          "bytes": 1600
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE36_EXPERIMENTAL_CAMPAIGN_MAP_2026-10-02.md",
+          "blob": "3599b7c6d20b3976e48b1bf99db70ce2fc5dff34",
+          "bytes": 2281
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE37_SENSOR_HEALTH_DRIFT_QUALITY_POLICY_2026-10-02.md",
+          "blob": "3e3ca78a448a461d7abda7ce40ca68fa771869e5",
+          "bytes": 1563
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE38_END_TO_END_REPORTING_REGRESSION_2026-10-02.md",
+          "blob": "87bbbf7ab7e638763a24474093a870c4fb5fcf02",
+          "bytes": 2573
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE3_SENSOR_RESPONSE_TAXONOMY_2026-10-02.csv",
+          "blob": "ece90b9849d7c863a5a0275f809b8f9837a95d7e",
+          "bytes": 30805
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE4_OBJECT_TYPE_TAXONOMY_2026-10-02.csv",
+          "blob": "9114cdd6550d7a5f16022beea91916344b921ab9",
+          "bytes": 18578
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE5_ANALYTICAL_ROUTE_ASSIGNMENT_2026-10-02.csv",
+          "blob": "388330d7b34f73ee948ddb4358cacd59dcfdaaa6",
+          "bytes": 30067
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE6_SENSOR_ANALYTE_ROLE_MATRIX_2026-10-02.csv",
+          "blob": "f54b7d9b773824fbe57763ce5f0a827c63345c10",
+          "bytes": 56149
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE7_ANCHOR_SPECIALIST_MAP_2026-10-02.csv",
+          "blob": "788ebccde3ec74ad1148e5920ffcae22fa5b3861",
+          "bytes": 24656
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE8_HEATER_PROTOCOL_DEPENDENCY_2026-10-02.csv",
+          "blob": "d7c77bc6da309edb2e8c904d36e095f7251fa567",
+          "bytes": 14526
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_STAGE9_HARDWARE_SUITABILITY_2026-10-02.csv",
+          "blob": "2b7e71b3235f60182e14b1d236d08f86ba98a6f6",
+          "bytes": 38057
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_UNIFIED_ANALYTICAL_FRAMEWORK_38_STAGE_PLAN_2026-10-02.md",
+          "blob": "b8102ba5cabac172fde1550f1fc667a52acdb922",
+          "bytes": 20075
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_UNIFIED_ANALYTICAL_METHODOLOGY_V1_2026-10-02.md",
+          "blob": "bc869d7b7e6d854bd69787e8e027593c6423504b",
+          "bytes": 17809
+        },
+        {
+          "path": "docs/0.10.2/HR069_CHEMCORE_UPDATE_READINESS.md",
+          "blob": "105236267e07c176df939035464e4f8bd27e21c8",
+          "bytes": 4327
+        },
+        {
+          "path": "docs/0.10.2/HR069_OPERATOR_UI_ANALYTICS_WORKPLAN.md",
+          "blob": "23d4960d7d40cc698c3681ee10327554f927b3ca",
+          "bytes": 10999
+        },
+        {
+          "path": "docs/0.10.2/HR069_TRANSFER_FINGERPRINTS_CHECKPOINT.md",
+          "blob": "5be7270585985e9df4dc5f42697e322e259447e3",
+          "bytes": 6114
+        },
+        {
+          "path": "docs/0.10.2/HR069_UI_ANALYTICS_WORKPLAN.md",
+          "blob": "fe9baf10513d93722b4c9cc4d5db63c09beda960",
+          "bytes": 5971
+        },
+        {
+          "path": "docs/CHEMCORE_AMCI_MASTER_PLAN.md",
+          "blob": "668203e6c1251a154e24e32a2881486a22bdafce",
+          "bytes": 21160
+        },
+        {
+          "path": "docs/CHEMCORE_ANALYTICAL_RESULT_CONTRACT_V4.md",
+          "blob": "cad6f16801e0d94f489136c86e1632bf40c88492",
+          "bytes": 7211
+        },
+        {
+          "path": "docs/CHEMCORE_CHAMBER_STANDARD_V2.md",
+          "blob": "b7ae2dd9c04ef644824bc4e770df06d9f4aaa08b",
+          "bytes": 5349
+        },
+        {
+          "path": "docs/CHEMCORE_CHECKPOINT_C3_RUNTIME_AND_LIBRARY.md",
+          "blob": "5b16cf6ec82e0d9a9ea405a430e46d973ff39364",
+          "bytes": 5744
+        },
+        {
+          "path": "docs/CHEMCORE_FEATURE_PIPELINE_MIGRATION.md",
+          "blob": "dfda091bb10192f63d3051b78739df27aa021cde",
+          "bytes": 1385
+        },
+        {
+          "path": "docs/CHEMCORE_LIBRARY_SYNC_ARCHITECTURE.md",
+          "blob": "1f7fa5ae5127c491d1fdddea7e5effa2b3a5c923",
+          "bytes": 10644
+        },
+        {
+          "path": "docs/CHEMCORE_RESEARCH_REFERENCES_2024_2026.md",
+          "blob": "2b822730f5ab8136da59cb2b0e134d8f1d634926",
+          "bytes": 7583
+        },
+        {
+          "path": "docs/EXTERNAL_MQ_FINGERPRINT_DATASETS_HR069.md",
+          "blob": "901de844ab849d79141a792fe93f865e636e49e4",
+          "bytes": 6671
+        },
+        {
+          "path": "docs/GAS_MODEL_RESEARCH.md",
+          "blob": "08c2dcd28b39803a041924b40a90f68d871428b2",
+          "bytes": 9176
+        },
+        {
+          "path": "docs/chemcore/CR-20261004-UID-M3-OOD-HARDENING-VALIDATION.md",
+          "blob": "39d7c4d04f38f1f1812af8bb26f6fd4cfda58aad",
+          "bytes": 4362
+        },
+        {
+          "path": "docs/chemcore/CR-20261004-UID-M3-OOD-HARDENING.md",
+          "blob": "14ed1bf0371e8985370f3506e24d0164785a0dfa",
+          "bytes": 9946
+        },
+        {
+          "path": "docs/chemcore/DEFERRED-OPENSET-OOD-VALIDATION.md",
+          "blob": "5216059b744c3e9ce87ecddaa62e0786548efb35",
+          "bytes": 1803
+        },
+        {
+          "path": "docs/releases/0.10.2/CHEMCORE_REPORT_CONTRACT.md",
+          "blob": "4ad710a78db729a36ff958294bb4a8cc74f9f245",
+          "bytes": 2109
+        },
+        {
+          "path": "docs/releases/0.10.2/CHEMCORE_SCIENTIFIC_CONTRACT.md",
+          "blob": "83912f6ee94c5c29cfb51d6cb81f9ef86924abb3",
+          "bytes": 2537
+        },
+        {
+          "path": "reference_bank/SCHEMA.md",
+          "blob": "3d0de917c3a883805bae2e3d124373b448199f14",
+          "bytes": 904
+        },
+        {
+          "path": "reference_bank/approved_experiments/README.md",
+          "blob": "22fb4f31d4d9879892619d0e9ecac436be51d34a",
+          "bytes": 710
+        },
+        {
+          "path": "remote/video-relay/package.json",
+          "blob": "1858c4c3cd182cc99eaf3c76428a3044a0a2bd72",
+          "bytes": 432
+        },
+        {
+          "path": "research_data/chemical_coverage_hr069/evidence_registry.json",
+          "blob": "9626e627e4e5c9224cf52e9728305d2388f30a58",
+          "bytes": 12445
+        },
+        {
+          "path": "research_data/external_mq_fingerprints/.gitignore",
+          "blob": "7d636e449c04d5ddc587b0481779e2dcda07d402",
+          "bytes": 20
+        },
+        {
+          "path": "research_data/external_mq_fingerprints/README.md",
+          "blob": "6875ee7ba78d5ef14c4adbbb20b80365cabaab7b",
+          "bytes": 3307
+        },
+        {
+          "path": "research_data/external_mq_fingerprints/access_requests/EMAIL_DRAFTS.md",
+          "blob": "9faf35e1aeaf17b41928a0fac37d0a8850e1c423",
+          "bytes": 5854
+        },
+        {
+          "path": "research_data/external_mq_fingerprints/access_requests/REQUEST_LEDGER.md",
+          "blob": "285d0d886951f955c36f23bc67e1619b056b5ece",
+          "bytes": 3738
+        },
+        {
+          "path": "research_data/external_mq_fingerprints/fetch_sources.py",
+          "blob": "40dcfc09410166e05866a9d9b201de09514d320a",
+          "bytes": 5247
+        },
+        {
+          "path": "research_data/external_mq_fingerprints/manifest.json",
+          "blob": "04233feecf8255f4944a6cd312c4efa271d8ee97",
+          "bytes": 12329
+        },
+        {
+          "path": "research_data/hr069_analytical_library/1_propanol_sjtu_mq_transfer_evidence_v1.json",
+          "blob": "6f5cbd9a62a7196a96ede056b776c23bf41fd584",
+          "bytes": 2741
+        },
+        {
+          "path": "research_data/hr069_analytical_library/ethylene_mq3_transfer_evidence_v1.json",
+          "blob": "78426227c4d66ea2f2154af5fac803cc4048756c",
+          "bytes": 3070
+        },
+        {
+          "path": "research_data/hr069_analytical_library/food_freshness_headspace_fingerprints_v1.json",
+          "blob": "959aae7574307a0030d218d4b86eb6618a6f72b0",
+          "bytes": 6003
+        },
+        {
+          "path": "research_data/hr069_analytical_library/identification_fingerprint_priors_v1.json",
+          "blob": "5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
+          "bytes": 9029
+        },
+        {
+          "path": "research_data/hr069_analytical_library/kononov_mox_numeric_transfer_batch_v1.json",
+          "blob": "3495571c72b46027e1e6099dd8be7b93f4a13c45",
+          "bytes": 3979
+        },
+        {
+          "path": "research_data/hr069_analytical_library/methanol_mq_transfer_evidence_v1.json",
+          "blob": "462b241bb026fe39dd07ed8501c57ef99f56ba47",
+          "bytes": 3424
+        },
+        {
+          "path": "research_data/hr069_analytical_library/mq_experiment_source_index_v1.json",
+          "blob": "0f1a5388d2d28071091df833855238ba8c00804a",
+          "bytes": 8686
+        },
+        {
+          "path": "research_data/hr069_analytical_library/mq_models_76.json",
+          "blob": "7607764415cb26fbba4e46da9219e7dc861e2c23",
+          "bytes": 12353
+        },
+        {
+          "path": "research_data/hr069_analytical_library/mq_research_curves_43.json",
+          "blob": "bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1",
+          "bytes": 7995
+        },
+        {
+          "path": "research_data/hr069_analytical_library/multimodal_mq_transfer_fingerprints_v1.json",
+          "blob": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+          "bytes": 5692
+        },
+        {
+          "path": "research_data/hr069_analytical_library/pubchem_resolution_delta_v1.json",
+          "blob": "1124cff3c22aecdab71448f96396992fbf4202a1",
+          "bytes": 4526
+        },
+        {
+          "path": "research_data/hr069_analytical_library/robofusion_hr069_gasleak_operational_transfer_v1.json",
+          "blob": "8484d576926ba8a97dd00d8b4feff6a3bce0f9a1",
+          "bytes": 4656
+        },
+        {
+          "path": "research_data/hr069_analytical_library/same_sensor_peer_reviewed_identity_evidence_v1.json",
+          "blob": "412a9d48eb17b39c88645adba70380ce7a752d17",
+          "bytes": 7913
+        },
+        {
+          "path": "research_data/hr069_analytical_library/uci_mq135_lowconcentration_transfer_fingerprints_v1.json",
+          "blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+          "bytes": 16187
+        },
+        {
+          "path": "research_data/hr069_developer_submissions/README.md",
+          "blob": "6d4461266356db6cf7fa539bc7e9e045bb0b2020",
+          "bytes": 3030
+        },
+        {
+          "path": "tools/audit_0104_chemcore_library.py",
+          "blob": "12551bd1db1352cf38eb9aa6aa1b5f0d0f6c1686",
+          "bytes": 6411
+        },
+        {
+          "path": "tools/build_chemcore_molecular_seed.py",
+          "blob": "7cbdb6de4f608bca49114d69137dca778825ffff",
+          "bytes": 14690
+        },
+        {
+          "path": "tools/build_chemcore_stable_snapshot.py",
+          "blob": "1172ed3598b84be64550994bffd2a0d61654c9a6",
+          "bytes": 7262
+        },
+        {
+          "path": "tools/build_chemcore_unresolved_curation.py",
+          "blob": "9a96f6ce2865470e829b45c6c56fa6abf254fa07",
+          "bytes": 9739
+        },
+        {
+          "path": "tools/build_hr069_research_priors.py",
+          "blob": "24e0b912e5b52721d47b08055dbd68205c086dbe",
+          "bytes": 4744
+        },
+        {
+          "path": "tools/extract_multimodal_mq_transfer_fingerprints.py",
+          "blob": "453b6869a5307594ef4439c405998702d3411499",
+          "bytes": 4278
+        },
+        {
+          "path": "tools/publish_chemcore_library.py",
+          "blob": "bff58f42ed7689351b9755941f573d9a755fb553",
+          "bytes": 3790
+        },
+        {
+          "path": "tools/validate_chemcore_candidate.py",
+          "blob": "5967e586f57680174794b67c9f47a19f1ea7545b",
+          "bytes": 5522
+        }
+      ]
+    },
+    {
+      "repo": "sohpany/HazRob",
+      "ref": "main",
+      "tree": "3fc6b976963e9e45fe6957b90c9c5fd1b6061897",
+      "truncated": false,
+      "total": 2,
+      "matching": 0,
+      "top": {
+        ".gitignore": 1,
+        "README.md": 1
+      },
+      "entries": []
+    },
+    {
+      "repo": "sohpany/HazRob-Lab",
+      "ref": "main",
+      "tree": "36cb82139e43722b5f9341586481f2de0e527e15",
+      "truncated": false,
+      "total": 19,
+      "matching": 15,
+      "top": {
+        "FROZEN_2026-10-01.md": 1,
+        "README.md": 1,
+        "calibration": 2,
+        "datasets": 4,
+        "docs": 3,
+        "models": 1,
+        "references": 7
+      },
+      "entries": [
+        {
+          "path": "calibration/priors/identification_fingerprint_priors_v1.json",
+          "blob": "5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
+          "bytes": 9029
+        },
+        {
+          "path": "calibration/priors/mq_research_curves_43.json",
+          "blob": "32eb40fed332c65734bd8c372833e7f770bd4b72",
+          "bytes": 6287
+        },
+        {
+          "path": "datasets/external/derived/food_freshness_headspace_fingerprints_v1.json",
+          "blob": "959aae7574307a0030d218d4b86eb6618a6f72b0",
+          "bytes": 6003
+        },
+        {
+          "path": "datasets/external/derived/multimodal_mq_transfer_fingerprints_v1.json",
+          "blob": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+          "bytes": 5692
+        },
+        {
+          "path": "datasets/external/derived/uci_mq135_lowconcentration_transfer_fingerprints_v1.json",
+          "blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+          "bytes": 16187
+        },
+        {
+          "path": "datasets/external/registry.json",
+          "blob": "ad71203cbd9aff9764ca6214f545274abbd69701",
+          "bytes": 3314
+        },
+        {
+          "path": "docs/MIGRATION_LEDGER.csv",
+          "blob": "4dc68940e5a7e1d8be51c789d824865a301a2691",
+          "bytes": 380
+        },
+        {
+          "path": "models/mq76/catalog.json",
+          "blob": "171cb0a2be198a25d35e6129e9216351f0155bf0",
+          "bytes": 6854
+        },
+        {
+          "path": "references/extracted_analytical_equations_batch01_2026-10-18.md",
+          "blob": "de0ff0dbf7fb7f75f64cf60da4a637fe1211b9fa",
+          "bytes": 2597
+        },
+        {
+          "path": "references/fuels_formalin_single_sensor_external_2026-10-18.md",
+          "blob": "a4885d96a5de32c45d9692b07bfe05121c123598",
+          "bytes": 4565
+        },
+        {
+          "path": "references/sensor_specific_small_subset_research_2026-10-18.md",
+          "blob": "86eb9b81c27b30f083d96492a8904bbc1cbf452b",
+          "bytes": 5127
+        },
+        {
+          "path": "references/small_sensor_subsets_external_expansion_2026-10-18.md",
+          "blob": "8c80d6b53eb89f598ebbc44469c088f373c6d1f7",
+          "bytes": 3987
+        },
+        {
+          "path": "references/tech12_nested_subset_validation_2026-10-18.md",
+          "blob": "2335dc2a40114b0a90ee61cd237ed56eab0cf4a7",
+          "bytes": 1613
+        },
+        {
+          "path": "references/tech13_evidence_fusion_prototype_2026-10-18.md",
+          "blob": "dd771429a0cd04357ce2ef7f4d5ab8e9430e0327",
+          "bytes": 1093
+        },
+        {
+          "path": "references/tech14_real_data_generalization_audit_2026-10-18.md",
+          "blob": "83abbd6da1d7e35736bb58f53d3999f2bbd46cd1",
+          "bytes": 1825
+        }
+      ]
+    },
+    {
+      "repo": "HazRob/HazRob-Tank",
+      "ref": "main",
+      "tree": "53cb821b0eaaa1bf22ffc59be4e36cceec7592b5",
+      "truncated": false,
+      "total": 372,
+      "matching": 346,
+      "top": {
+        ".github": 27,
+        "README.md": 1,
+        "android": 1,
+        "chemcore": 1,
+        "docs": 3,
+        "firmware": 1,
+        "hardware": 1,
+        "references": 2,
+        "research": 334,
+        "tests": 1
+      },
+      "entries": [
+        {
+          "path": ".github/workflows/research-batch-01-ten.yml",
+          "blob": "b297352be8ad397bf65ecd7eed8d7cff8b1928d2",
+          "bytes": 1987
+        },
+        {
+          "path": ".github/workflows/research-batch-01-tests.yml",
+          "blob": "5e035078bc06fa77a7a15755da0b55fb625e5a4b",
+          "bytes": 940
+        },
+        {
+          "path": ".github/workflows/research-batch-02-ten.yml",
+          "blob": "757b34ed0f12fdb1295f5a94eec03976e1a7cdf8",
+          "bytes": 1892
+        },
+        {
+          "path": ".github/workflows/research-batch-03-ten.yml",
+          "blob": "30a12a276c3366d58263984791d4b331b61c2f5f",
+          "bytes": 1986
+        },
+        {
+          "path": ".github/workflows/research-batch-04-ten.yml",
+          "blob": "1df3dae2df92c7637c413d652a7b69208a7400c5",
+          "bytes": 1984
+        },
+        {
+          "path": ".github/workflows/research-batch-05-ten.yml",
+          "blob": "63dc31c2fd2cd7112d6d41afa5c59519dcd368f0",
+          "bytes": 1982
+        },
+        {
+          "path": ".github/workflows/research-batch-06-ten.yml",
+          "blob": "696cc9463cb0f59ca229f8489ee083be42ce3966",
+          "bytes": 2110
+        },
+        {
+          "path": ".github/workflows/research-batch-07-ten.yml",
+          "blob": "1075d25c16623efaf8c22fc003c70d00b181f1d5",
+          "bytes": 2127
+        },
+        {
+          "path": ".github/workflows/research-batch-08-ten.yml",
+          "blob": "f597079dcc40a081c624f1334e4db26b87509e15",
+          "bytes": 2099
+        },
+        {
+          "path": "chemcore/README.md",
+          "blob": "592487c6e88bb6bbda9fe1355f1f386052693398",
+          "bytes": 130
+        },
+        {
+          "path": "references/extracted_analytical_equations_batch01_2026-10-18.md",
+          "blob": "174d84eebb8a374909d79453eed0459a7dddccc9",
+          "bytes": 2863
+        },
+        {
+          "path": "references/tech13_evidence_fusion_prototype_2026-10-18.md",
+          "blob": "6053e69bb7fcae49462b87aacdeb0ad6f72d993d",
+          "bytes": 1353
+        },
+        {
+          "path": "research/BATCH_RESULTS_80.md",
+          "blob": "67aea2475bd816f81bb5b330ccc23a039b2ca478",
+          "bytes": 40109
+        },
+        {
+          "path": "research/EXECUTION_PLAN_80_AR.md",
+          "blob": "16b8643758e8078ac9ea7b90081cec787ab7bc97",
+          "bytes": 10024
+        },
+        {
+          "path": "research/G2_REAL_DATA_BATCH01_AR.md",
+          "blob": "f8cc34c5a0e047e5ab6dd07a328395dce7cfc6ba",
+          "bytes": 10912
+        },
+        {
+          "path": "research/G2_REAL_DATA_BATCH02_AR.md",
+          "blob": "99a8dbd4c7c284464000467b89e5aa32e8979f29",
+          "bytes": 11580
+        },
+        {
+          "path": "research/G2_REAL_DATA_BATCH03_AR.md",
+          "blob": "4ca4dc3e8fea94a649504f8ebe52f42167cb29ee",
+          "bytes": 8516
+        },
+        {
+          "path": "research/G2_REAL_DATA_BATCH04_AR.md",
+          "blob": "20705e706096fdc6deb1facfbd3d1da9ad4d4b94",
+          "bytes": 12805
+        },
+        {
+          "path": "research/G2_REAL_DATA_BATCH05_AR.md",
+          "blob": "4530af82b1c5cf47f2c45d422146f360b8342edd",
+          "bytes": 10222
+        },
+        {
+          "path": "research/G2_REAL_DATA_BATCH06_AR.md",
+          "blob": "7a19abf339b4e45e74506afcfa1a7beb5b963c58",
+          "bytes": 11435
+        },
+        {
+          "path": "research/G2_REAL_DATA_BATCH07_AR.md",
+          "blob": "58ee1457e672dae9d3cc5f49f67fb6585de593dc",
+          "bytes": 3699
+        },
+        {
+          "path": "research/G2_REAL_DATA_BATCH08_AR.md",
+          "blob": "ddc166b23647d1a658a6f919986b4dbff1dc9bc8",
+          "bytes": 6881
+        },
+        {
+          "path": "research/G2_UCI309_EXTENSION_AR.md",
+          "blob": "aee518a3fe3e343cf1982577028849435df3162a",
+          "bytes": 9698
+        },
+        {
+          "path": "research/G2_UCI_TRAINED_MODELS_AR.md",
+          "blob": "9650bd12366ff127a397aaae97096b6c44f23f98",
+          "bytes": 7985
+        },
+        {
+          "path": "research/G3_TANK_MEASUREMENT_PROTOCOL_AR.md",
+          "blob": "47cb4d205ca2837feb0eecddf2c9ca7f742fc39c",
+          "bytes": 7964
+        },
+        {
+          "path": "research/MASTER_PLAN.md",
+          "blob": "128830333f91e820f273549f67f47f66c1e28193",
+          "bytes": 6048
+        },
+        {
+          "path": "research/NEGATIVE_EVIDENCE_PROPOSAL.md",
+          "blob": "9cd173c38d37ffd3db97ae65cf0a0922d356f105",
+          "bytes": 2598
+        },
+        {
+          "path": "research/PROGRESS_80.json",
+          "blob": "0919307d46b352a887f2fdbc5e94c752a74b16d0",
+          "bytes": 115441
+        },
+        {
+          "path": "research/REFERENCE_BENCHMARK_INVENTORY.md",
+          "blob": "b9aa3640d56d3d269af6f75a4c9d40b54de94f61",
+          "bytes": 17914
+        },
+        {
+          "path": "research/REFERENCE_BENCHMARK_SCOPE.md",
+          "blob": "5e603d8ab4aae54ec24524fefe73adf2f8b6d139",
+          "bytes": 3003
+        },
+        {
+          "path": "research/RESUME.md",
+          "blob": "75cb5ec0ba4dbdf78a0028933a3a040fcbc945a8",
+          "bytes": 62441
+        },
+        {
+          "path": "research/STATUS_LEDGER.md",
+          "blob": "a1152582db712a6ce1ac2419e958af7e4e119c48",
+          "bytes": 29254
+        },
+        {
+          "path": "research/benchmarks/g2_batch08_eligibility_v1.py",
+          "blob": "89bc1edaa7b957d29bc6269041ead6581ab7cbad",
+          "bytes": 4567
+        },
+        {
+          "path": "research/benchmarks/results/uci1081_actual_modules_2026-10-19.json",
+          "blob": "c0b2c9963e33269e9922a92e964571fc4cdcfc96",
+          "bytes": 5820
+        },
+        {
+          "path": "research/benchmarks/results/uci1081_diagnostics_2026-10-19.json",
+          "blob": "c56bee901c609ea59c49c157eaba3165dfad30ca",
+          "bytes": 2342
+        },
+        {
+          "path": "research/benchmarks/results/uci1081_g2_batch02_2026-10-19.json",
+          "blob": "a4c4ff1cf4b207b3fa0a7fa815987b087fa75355",
+          "bytes": 3112
+        },
+        {
+          "path": "research/benchmarks/results/uci1081_g2_batch03_2026-10-19.json",
+          "blob": "c27497d9c27ed8f90ff3fd73a7e0ba999d521adf",
+          "bytes": 2473
+        },
+        {
+          "path": "research/benchmarks/results/uci1081_g2_batch07_2026-10-20.json",
+          "blob": "5b827f41869166ce405b60c23b6d2f008fc46d8c",
+          "bytes": 6942
+        },
+        {
+          "path": "research/benchmarks/results/uci1081_g2_batch08_2026-10-20.json",
+          "blob": "121bf20524652c659d405a662830125d8c8e79e7",
+          "bytes": 13763
+        },
+        {
+          "path": "research/benchmarks/results/uci270_g2_batch04_2026-10-19.json",
+          "blob": "88d13ae28468472631085f1136147cdbae0f3d8a",
+          "bytes": 7998
+        },
+        {
+          "path": "research/benchmarks/results/uci308_g2_batch05_2026-10-20.json",
+          "blob": "f3b8e9baa3b098c0eb969d52c5e9e95a06ccaf49",
+          "bytes": 4943
+        },
+        {
+          "path": "research/benchmarks/results/uci308_g2_batch06_2026-10-20.json",
+          "blob": "ce1a5eb4a05e03355c0dc8b572f0205ae789d871",
+          "bytes": 3660
+        },
+        {
+          "path": "research/benchmarks/results/uci309_g2_batch06_2026-10-20.json",
+          "blob": "94ac012cfdbc149077472819d1cb25ca4df31134",
+          "bytes": 4688
+        },
+        {
+          "path": "research/benchmarks/results/uci_trained_models_main_2026-10-21.json",
+          "blob": "94aa5749add50884bd9658f2274377d1f8d46514",
+          "bytes": 10079
+        },
+        {
+          "path": "research/benchmarks/tank_measurement_adapter_v1.py",
+          "blob": "75a54c9ea2db18427c558fbb5bf164a28143b874",
+          "bytes": 8243
+        },
+        {
+          "path": "research/benchmarks/test_g2_batch08_eligibility_v1.py",
+          "blob": "63e5b69e52697a69850c499637f8a957abdcd059",
+          "bytes": 1664
+        },
+        {
+          "path": "research/benchmarks/test_tank_measurement_adapter_v1.py",
+          "blob": "ecc77cd762272e1ef42a0363dae62f98a8fbedbb",
+          "bytes": 6912
+        },
+        {
+          "path": "research/benchmarks/test_uci1081_actual_modules_v1.py",
+          "blob": "c259b74e387cc4859bd35d10afdaf5c21490c63d",
+          "bytes": 2775
+        },
+        {
+          "path": "research/benchmarks/test_uci1081_completed_classical_v1.py",
+          "blob": "b2d45dbdfb782712174fa73d44aceeb786d090b6",
+          "bytes": 2345
+        },
+        {
+          "path": "research/benchmarks/test_uci1081_g2_batch02_v1.py",
+          "blob": "3e02f45b99b9bc9528bac9d242ed051a1d7988ad",
+          "bytes": 3176
+        },
+        {
+          "path": "research/benchmarks/test_uci1081_g2_batch03_v1.py",
+          "blob": "201487c5bd54648b0375859414d64b57188a9f2a",
+          "bytes": 2350
+        },
+        {
+          "path": "research/benchmarks/test_uci1081_g2_batch07_v1.py",
+          "blob": "d855624452131cff90b7a35bbc928bbe266d1fea",
+          "bytes": 2507
+        },
+        {
+          "path": "research/benchmarks/test_uci1081_trainable_neural_v1.py",
+          "blob": "a7c2ad1a0736d84d234c846f8de34b1190b87864",
+          "bytes": 4315
+        },
+        {
+          "path": "research/benchmarks/test_uci270_completed_classical_v1.py",
+          "blob": "4f09539921f83777681ff7f46c4c1976b2e3e17e",
+          "bytes": 1801
+        },
+        {
+          "path": "research/benchmarks/test_uci270_g2_batch04_v1.py",
+          "blob": "1c5708e36330ec3d06638df87c7817712fd37e5b",
+          "bytes": 2359
+        },
+        {
+          "path": "research/benchmarks/test_uci308_g2_batch05_v1.py",
+          "blob": "791b2dd8488c8855259ece9ffc6fed1c4fbcfd2a",
+          "bytes": 3548
+        },
+        {
+          "path": "research/benchmarks/test_uci308_g2_batch06_v1.py",
+          "blob": "bff7a76d4877d662f5a49de9d692cb307d0a76e5",
+          "bytes": 4293
+        },
+        {
+          "path": "research/benchmarks/test_uci309_g2_batch06_v1.py",
+          "blob": "77fbaa57bde2c0539c15cd5ccc61c44dee33c516",
+          "bytes": 4727
+        },
+        {
+          "path": "research/benchmarks/uci1081_actual_modules_v1.py",
+          "blob": "9dade93b9ff93d2cb7d96a5ef41174f9be6700ec",
+          "bytes": 11463
+        },
+        {
+          "path": "research/benchmarks/uci1081_completed_classical_v1.py",
+          "blob": "79f969dfc09fc698a9d12e5e3b6beccd60eb1379",
+          "bytes": 6362
+        },
+        {
+          "path": "research/benchmarks/uci1081_diagnostics_v1.py",
+          "blob": "e18172392c82c9868754625915163ba0a6626117",
+          "bytes": 6282
+        },
+        {
+          "path": "research/benchmarks/uci1081_g2_batch02_v1.py",
+          "blob": "57e2d10f1e1f91d42484970ac69ff9919a379a50",
+          "bytes": 17615
+        },
+        {
+          "path": "research/benchmarks/uci1081_g2_batch03_v1.py",
+          "blob": "3f6017addbf48643686a0fa9ce9249dd0a84304a",
+          "bytes": 10428
+        },
+        {
+          "path": "research/benchmarks/uci1081_g2_batch07_v1.py",
+          "blob": "c622e0202e2954288f507c50cbc62f43090ed240",
+          "bytes": 7305
+        },
+        {
+          "path": "research/benchmarks/uci1081_source_qc_v1.py",
+          "blob": "9e57a191eec28474c13f51f134e482bb5899b145",
+          "bytes": 2337
+        },
+        {
+          "path": "research/benchmarks/uci1081_trainable_neural_v1.py",
+          "blob": "360f733bf88bf9ce84146b9f08945ab5176a1c00",
+          "bytes": 10764
+        },
+        {
+          "path": "research/benchmarks/uci270_completed_classical_v1.py",
+          "blob": "edbd1fa83d8e4f7691d42a2b2f6293c97c34efdd",
+          "bytes": 4846
+        },
+        {
+          "path": "research/benchmarks/uci270_g2_batch04_v1.py",
+          "blob": "e64a9c2afc9d315e00b1a01f6abc7cd67bc552e6",
+          "bytes": 18572
+        },
+        {
+          "path": "research/benchmarks/uci270_inspect_v1.py",
+          "blob": "379e4e2546d0fc42407c24d0a7b016e78b4a9238",
+          "bytes": 756
+        },
+        {
+          "path": "research/benchmarks/uci270_source_adapter_v1.py",
+          "blob": "b37e76176e8380bdbede3c5e1ce577c80f0f5b98",
+          "bytes": 4137
+        },
+        {
+          "path": "research/benchmarks/uci308_g2_batch05_v1.py",
+          "blob": "4e6f41c8e1a2cc989d541ef559c1ffc488679a0a",
+          "bytes": 15321
+        },
+        {
+          "path": "research/benchmarks/uci308_g2_batch06_v1.py",
+          "blob": "ad241d5c01e91a39a96371011c3a24772b92c90d",
+          "bytes": 13660
+        },
+        {
+          "path": "research/benchmarks/uci308_inspect_v1.py",
+          "blob": "ac019a68bbbba631aef0e9df4c1f30e00cb7e12c",
+          "bytes": 2233
+        },
+        {
+          "path": "research/benchmarks/uci309_g2_batch06_v1.py",
+          "blob": "c7bccc186cff1d850676998aa2a86b0f610af933",
+          "bytes": 19333
+        },
+        {
+          "path": "research/benchmarks/uci309_inspect_v1.py",
+          "blob": "3762a2d713db2309b0159918e32bdc150fef41e2",
+          "bytes": 1405
+        },
+        {
+          "path": "research/legacy/README.md",
+          "blob": "dbb51795b320f0be3117a9dde4f0fdef322ab340",
+          "bytes": 1311
+        },
+        {
+          "path": "research/techniques/01.1/README.md",
+          "blob": "f8f62c371bb6ee41a93715ba330e13e72da5480e",
+          "bytes": 737
+        },
+        {
+          "path": "research/techniques/01.1/adc_rs_v1.py",
+          "blob": "9104a5c848735127ef11b7721e2db47677e5ac89",
+          "bytes": 1284
+        },
+        {
+          "path": "research/techniques/01.1/test_adc_rs_v1.py",
+          "blob": "0c6f921dee8ae5c47508bda8a8e057151bae4344",
+          "bytes": 1423
+        },
+        {
+          "path": "research/techniques/01.2/README.md",
+          "blob": "7c38f588bf3b11fdd983fd134f37a782a74bdc39",
+          "bytes": 1772
+        },
+        {
+          "path": "research/techniques/01.2/r0_calibration_v1.py",
+          "blob": "da97b873e8bdc89881f7f82999289fea03157619",
+          "bytes": 1463
+        },
+        {
+          "path": "research/techniques/01.2/test_r0_calibration_v1.py",
+          "blob": "a3dcea02577906de09bacde66abfff12a670081d",
+          "bytes": 1245
+        },
+        {
+          "path": "research/techniques/01.3/README.md",
+          "blob": "2b019f08c0b738378e781e5dc3af838198781fee",
+          "bytes": 1538
+        },
+        {
+          "path": "research/techniques/01.3/sensitivity_curves_v1.py",
+          "blob": "e3eb62aaebe2b1974c569173ae4df488b92a094b",
+          "bytes": 2450
+        },
+        {
+          "path": "research/techniques/01.3/test_sensitivity_curves_v1.py",
+          "blob": "7de93834c63ab0e2ac3254360353360559b126cc",
+          "bytes": 2405
+        },
+        {
+          "path": "research/techniques/01.4/README.md",
+          "blob": "7057337560459d4f11a36f85c10883064d898678",
+          "bytes": 1398
+        },
+        {
+          "path": "research/techniques/01.4/heater_cycles_v1.py",
+          "blob": "ac9f96f561bb0c425891bc2ecf9d126798e5be58",
+          "bytes": 1394
+        },
+        {
+          "path": "research/techniques/01.4/test_heater_cycles_v1.py",
+          "blob": "8dd3ad97a0a697e1637e91561ac118cf21bc786d",
+          "bytes": 1414
+        },
+        {
+          "path": "research/techniques/01.5/README.md",
+          "blob": "14bc66b883d3913ec6425cc6d582219ee5021271",
+          "bytes": 1610
+        },
+        {
+          "path": "research/techniques/01.5/environment_correction_v1.py",
+          "blob": "6f2f19b5223873ca7461931d8a358bd3ad4fcc28",
+          "bytes": 2168
+        },
+        {
+          "path": "research/techniques/01.5/test_environment_correction_v1.py",
+          "blob": "20b36c57d79846e53287d265b4027778be74655d",
+          "bytes": 1850
+        },
+        {
+          "path": "research/techniques/01.6/README.md",
+          "blob": "fa605b68cd52f5b441e96ed653772bfe84aa64d2",
+          "bytes": 1029
+        },
+        {
+          "path": "research/techniques/01.6/signal_quality_v1.py",
+          "blob": "14760359bd95d93716cd6ef2c75558ef5f38939e",
+          "bytes": 1955
+        },
+        {
+          "path": "research/techniques/01.6/test_signal_quality_v1.py",
+          "blob": "7b50c12db1fff5ff9317f7e9f35247a06d8e393b",
+          "bytes": 1402
+        },
+        {
+          "path": "research/techniques/01.7/README.md",
+          "blob": "3e6840342eb299ec60fb047eb3e6585b00492912",
+          "bytes": 1279
+        },
+        {
+          "path": "research/techniques/01.7/drift_monitor_v1.py",
+          "blob": "93320b600abe80ef764b4d42937c350f5465a902",
+          "bytes": 1782
+        },
+        {
+          "path": "research/techniques/01.7/test_drift_monitor_v1.py",
+          "blob": "164e6f60c6d98b598e5db1969497127f8bcc5851",
+          "bytes": 1589
+        },
+        {
+          "path": "research/techniques/02.1/README.md",
+          "blob": "2f8c54f123b1b64a48d0912d6939cc3fb4961e77",
+          "bytes": 1076
+        },
+        {
+          "path": "research/techniques/02.1/filtering_v1.py",
+          "blob": "c899761e9317ff039ba2d6cc2babad5a91f9cb72",
+          "bytes": 1275
+        },
+        {
+          "path": "research/techniques/02.1/test_filtering_v1.py",
+          "blob": "33710c54b8887d6d838be61bb9127d5ee4b60f36",
+          "bytes": 1652
+        },
+        {
+          "path": "research/techniques/02.2/README.md",
+          "blob": "bc89a09430d6dcb7f39eae0af3e99c0f681257ee",
+          "bytes": 1058
+        },
+        {
+          "path": "research/techniques/02.2/scaling_v1.py",
+          "blob": "23c1efa64035ded83a40980f835ade14107bfd31",
+          "bytes": 1908
+        },
+        {
+          "path": "research/techniques/02.2/test_scaling_v1.py",
+          "blob": "79cc93acc231eb23434d3610f5f7f94ad2f474b7",
+          "bytes": 1639
+        },
+        {
+          "path": "research/techniques/02.3/README.md",
+          "blob": "be4766ede8055749b8cbeb387efd056fd48ee15b",
+          "bytes": 984
+        },
+        {
+          "path": "research/techniques/02.3/static_features_v1.py",
+          "blob": "ca0dba94029a04061a1c5e223e0a7aed4934c06e",
+          "bytes": 1056
+        },
+        {
+          "path": "research/techniques/02.3/test_static_features_v1.py",
+          "blob": "e52dfb01f746a227401604864c5020ac05ad04ec",
+          "bytes": 1791
+        },
+        {
+          "path": "research/techniques/02.4/README.md",
+          "blob": "8d1dd2c38c1ea5f116358d492c7d13bb615295e3",
+          "bytes": 983
+        },
+        {
+          "path": "research/techniques/02.4/temporal_features_v1.py",
+          "blob": "6062cecc98c97379c6633b055eb484376c1f1847",
+          "bytes": 1935
+        },
+        {
+          "path": "research/techniques/02.4/test_temporal_features_v1.py",
+          "blob": "71a8e0d54d8b1bf18bad8d59ee004b3bba0edc56",
+          "bytes": 1979
+        },
+        {
+          "path": "research/techniques/02.5/README.md",
+          "blob": "1fb25456024ea7c71b49a49af94398038167a377",
+          "bytes": 1379
+        },
+        {
+          "path": "research/techniques/02.5/fingerprints_v1.py",
+          "blob": "e6861d16fe6cca5a5ec3d62a0f086a15ea26b12a",
+          "bytes": 1205
+        },
+        {
+          "path": "research/techniques/02.5/test_fingerprints_v1.py",
+          "blob": "2894be24f535934b92c7d02a02e4cc55ba1bee0c",
+          "bytes": 1614
+        },
+        {
+          "path": "research/techniques/02.6/README.md",
+          "blob": "96b6ac26939d7046f328ab4c13add01454613713",
+          "bytes": 1158
+        },
+        {
+          "path": "research/techniques/02.6/multidimensional_features_v1.py",
+          "blob": "a8d8ff9127fc94802727e941e5bf6e269e49dd5d",
+          "bytes": 2064
+        },
+        {
+          "path": "research/techniques/02.6/test_multidimensional_features_v1.py",
+          "blob": "4071cc61f279e7effff882a574089c62d6a8abc8",
+          "bytes": 2181
+        },
+        {
+          "path": "research/techniques/02.7/README.md",
+          "blob": "bff8996db7727b2d22d3bcab3a9caa0b0f8119a2",
+          "bytes": 1162
+        },
+        {
+          "path": "research/techniques/02.7/feature_selection_v1.py",
+          "blob": "8d6dee68d207e0350f874db8826ad1a0f064c9d1",
+          "bytes": 2402
+        },
+        {
+          "path": "research/techniques/02.7/test_feature_selection_v1.py",
+          "blob": "202b99f7135dc0e8f0b4264366d1ff6c3ca1e34a",
+          "bytes": 2059
+        },
+        {
+          "path": "research/techniques/02.8/README.md",
+          "blob": "c0bc8b5a8cec5dbf13467ab023eb7aa535ce5ecc",
+          "bytes": 1219
+        },
+        {
+          "path": "research/techniques/02.8/provenance_v1.py",
+          "blob": "066288f60200e0e5f64917c4dfac233ebb3f4777",
+          "bytes": 2457
+        },
+        {
+          "path": "research/techniques/02.8/test_provenance_v1.py",
+          "blob": "58667abafb8149bd927d76775c44a3285e17c792",
+          "bytes": 2422
+        },
+        {
+          "path": "research/techniques/03.1/README.md",
+          "blob": "c39f3ebebc184d4981977b861231028f60b5001c",
+          "bytes": 1157
+        },
+        {
+          "path": "research/techniques/03.1/pca_v1.py",
+          "blob": "f25d5c8456a8c96a7e4b160c1e589208bea827e9",
+          "bytes": 2650
+        },
+        {
+          "path": "research/techniques/03.1/test_pca_v1.py",
+          "blob": "290c70f94e1158b993e8e0c155d5da4960a5885b",
+          "bytes": 1662
+        },
+        {
+          "path": "research/techniques/03.2/README.md",
+          "blob": "4473c54b77c84365adcabf2729d3becc26ac34b2",
+          "bytes": 1102
+        },
+        {
+          "path": "research/techniques/03.2/similarity_v1.py",
+          "blob": "73cf6e2a9293085dd9d0c9a38fc650546be20669",
+          "bytes": 1813
+        },
+        {
+          "path": "research/techniques/03.2/test_similarity_v1.py",
+          "blob": "3aa2f4db16526b44c98cb2699104311b373fcc97",
+          "bytes": 1878
+        },
+        {
+          "path": "research/techniques/03.3/README.md",
+          "blob": "1fd82d4afccbb7057f9fd7e15d5f348be5c4043b",
+          "bytes": 1153
+        },
+        {
+          "path": "research/techniques/03.3/class_overlap_v1.py",
+          "blob": "46dcc23edf33d14d934634b26c7034a7b037c350",
+          "bytes": 2229
+        },
+        {
+          "path": "research/techniques/03.3/test_class_overlap_v1.py",
+          "blob": "c6791b4d185443e96bdd94909f535333142f21b9",
+          "bytes": 2362
+        },
+        {
+          "path": "research/techniques/03.4/README.md",
+          "blob": "0f195b43b19e1e080cc9aa9f85b675910b5ef59a",
+          "bytes": 1230
+        },
+        {
+          "path": "research/techniques/03.4/discriminant_v1.py",
+          "blob": "bf81513948e8c6afbef7089721c6bfecc48527a1",
+          "bytes": 3306
+        },
+        {
+          "path": "research/techniques/03.4/test_discriminant_v1.py",
+          "blob": "6d79a163b44774e6a4aa3a946b270e9b7a84ab59",
+          "bytes": 1888
+        },
+        {
+          "path": "research/techniques/03.5/README.md",
+          "blob": "2232272b4b0558bea6ebddb07ca2e66eee066ecc",
+          "bytes": 1231
+        },
+        {
+          "path": "research/techniques/03.5/sensor_importance_v1.py",
+          "blob": "7da23de183b21e0569b59761a7b397b63a8fcd28",
+          "bytes": 2214
+        },
+        {
+          "path": "research/techniques/03.5/test_sensor_importance_v1.py",
+          "blob": "e2a582e2ac8658a228193b023f80d941e84452f1",
+          "bytes": 2208
+        },
+        {
+          "path": "research/techniques/03.6/README.md",
+          "blob": "683bf48c11545ea313cc42283b15cd807ed7335d",
+          "bytes": 1215
+        },
+        {
+          "path": "research/techniques/03.6/sensor_subsets_v1.py",
+          "blob": "f526d3d354e448d658d43fda563a65849cef02f8",
+          "bytes": 2374
+        },
+        {
+          "path": "research/techniques/03.6/test_sensor_subsets_v1.py",
+          "blob": "f701b02704ad61252958677e27d28d0b740cf127",
+          "bytes": 2234
+        },
+        {
+          "path": "research/techniques/03.7/README.md",
+          "blob": "c811fc88f4a47b3be2b12a62e8b69a48930680d2",
+          "bytes": 1354
+        },
+        {
+          "path": "research/techniques/03.7/concentration_confounding_v1.py",
+          "blob": "64c8a5a387f13fe54a09957caa8e07ffc34159dc",
+          "bytes": 2306
+        },
+        {
+          "path": "research/techniques/03.7/test_concentration_confounding_v1.py",
+          "blob": "2cc9cc1b32b7f83f30a1704b80d12feae9cf3178",
+          "bytes": 2445
+        },
+        {
+          "path": "research/techniques/03.8/README.md",
+          "blob": "e01f1cb46424424922abcba95d1e3faa7d6e51b1",
+          "bytes": 1199
+        },
+        {
+          "path": "research/techniques/03.8/identifiability_v1.py",
+          "blob": "7e0152fffbcecd07e9f6cc85400551d08579198b",
+          "bytes": 3538
+        },
+        {
+          "path": "research/techniques/03.8/test_identifiability_v1.py",
+          "blob": "99eab42806c93014ceebf2b8c4402633967a2be1",
+          "bytes": 2301
+        },
+        {
+          "path": "research/techniques/04.1/README.md",
+          "blob": "e5d4a27c8054a2ff84f89f81bf706981abad3a49",
+          "bytes": 1330
+        },
+        {
+          "path": "research/techniques/04.1/curve_matching_v1.py",
+          "blob": "496b02e22474000fb4bcc76cfe1088f4fa74b59b",
+          "bytes": 2735
+        },
+        {
+          "path": "research/techniques/04.1/test_curve_matching_v1.py",
+          "blob": "91da85ce568090b0a4f647e5d26ecf6e7843a448",
+          "bytes": 2125
+        },
+        {
+          "path": "research/techniques/04.10/README.md",
+          "blob": "8f3fe6705fdff594ae1eb2ee082cbe2e356eff17",
+          "bytes": 1521
+        },
+        {
+          "path": "research/techniques/04.10/benchmarking_v1.py",
+          "blob": "cf2c6b8942082061db0a97372498e45c0f15de01",
+          "bytes": 3429
+        },
+        {
+          "path": "research/techniques/04.10/test_benchmarking_v1.py",
+          "blob": "492e97dd37cdf28065e304ad79f4cc7cca245e5f",
+          "bytes": 2224
+        },
+        {
+          "path": "research/techniques/04.2/README.md",
+          "blob": "9c81221ee6a4d5b388e4e0a3e11a36a17d49db1e",
+          "bytes": 1286
+        },
+        {
+          "path": "research/techniques/04.2/fingerprint_matching_v1.py",
+          "blob": "84e56b2bb205195baffd1c880c05e5fc4b0c1f6f",
+          "bytes": 2617
+        },
+        {
+          "path": "research/techniques/04.2/test_fingerprint_matching_v1.py",
+          "blob": "4679793b19bead0feb78a8971feca932c2838557",
+          "bytes": 2177
+        },
+        {
+          "path": "research/techniques/04.3/README.md",
+          "blob": "2a7af39c6e36b40c62923a864329817e25fc14b5",
+          "bytes": 1124
+        },
+        {
+          "path": "research/techniques/04.3/knn_v1.py",
+          "blob": "50c1a2c5f3f6361e2cc333ba88fef5f2cfafb427",
+          "bytes": 2567
+        },
+        {
+          "path": "research/techniques/04.3/test_knn_v1.py",
+          "blob": "5d80cd1b1a910b4b3563315339aa5d4eb9e54163",
+          "bytes": 2015
+        },
+        {
+          "path": "research/techniques/04.4/README.md",
+          "blob": "84cf11220a93ffb9e294a33e60f0ffd4e65d92db",
+          "bytes": 1262
+        },
+        {
+          "path": "research/techniques/04.4/logistic_regression_v1.py",
+          "blob": "45326fdb814f0aa6c90b0cbccf2cadb305812d8f",
+          "bytes": 3156
+        },
+        {
+          "path": "research/techniques/04.4/test_logistic_regression_v1.py",
+          "blob": "5d3760608b194b97636605b9129085409e737aeb",
+          "bytes": 2193
+        },
+        {
+          "path": "research/techniques/04.5/README.md",
+          "blob": "0c92ebd80fd10220ffa7126fb0a7a656211a2b9c",
+          "bytes": 1115
+        },
+        {
+          "path": "research/techniques/04.5/svm_v1.py",
+          "blob": "544ccd57546c763e7bdb679317db130619d114eb",
+          "bytes": 2868
+        },
+        {
+          "path": "research/techniques/04.5/test_svm_v1.py",
+          "blob": "48c090991b60c9b563e7fc45fb9e45c414cd27b0",
+          "bytes": 2087
+        },
+        {
+          "path": "research/techniques/04.6/README.md",
+          "blob": "99845dc593218ceaa230234d7ecc561cdb3ba5d6",
+          "bytes": 1228
+        },
+        {
+          "path": "research/techniques/04.6/random_forest_v1.py",
+          "blob": "fe1c647992fb4c24bc53bd6d05c831c84658b4e2",
+          "bytes": 3457
+        },
+        {
+          "path": "research/techniques/04.6/test_random_forest_v1.py",
+          "blob": "ebd8c24a279595311726c5634d37be895b2f8a87",
+          "bytes": 2179
+        },
+        {
+          "path": "research/techniques/04.7/README.md",
+          "blob": "3ab7a068aaad912f9d458a5c1ea935bd67b00d97",
+          "bytes": 1199
+        },
+        {
+          "path": "research/techniques/04.7/gradient_boosting_v1.py",
+          "blob": "23d204c03f836ec0fcb61af3a3d1917f774bfdbc",
+          "bytes": 3870
+        },
+        {
+          "path": "research/techniques/04.7/test_gradient_boosting_v1.py",
+          "blob": "9345399c3634517a5ac48c8f9ec5943661b10585",
+          "bytes": 2220
+        },
+        {
+          "path": "research/techniques/04.8/README.md",
+          "blob": "dacb5adece528548690d6f02b2e65067e87d3396",
+          "bytes": 1189
+        },
+        {
+          "path": "research/techniques/04.8/mlp_v1.py",
+          "blob": "86867dcb6b28a253d5a64581c185d686f99f9e59",
+          "bytes": 3881
+        },
+        {
+          "path": "research/techniques/04.8/test_mlp_v1.py",
+          "blob": "de5b1357977815fea75c3b4b200e897f2919781b",
+          "bytes": 1998
+        },
+        {
+          "path": "research/techniques/04.9/README.md",
+          "blob": "6207b39c7ebe74053b5b9d19c9cbca611915153d",
+          "bytes": 1627
+        },
+        {
+          "path": "research/techniques/04.9/physics_ml_v1.py",
+          "blob": "10a135ff921d26896ba35712e2da7bbc800fcf47",
+          "bytes": 3854
+        },
+        {
+          "path": "research/techniques/04.9/test_physics_ml_v1.py",
+          "blob": "ad4e62c91cc2cc62165100d742ce99c861254280",
+          "bytes": 2673
+        },
+        {
+          "path": "research/techniques/05.1/README.md",
+          "blob": "d9e83f6ccad2b6f4cd62bceebe4a27e97fa259d0",
+          "bytes": 1497
+        },
+        {
+          "path": "research/techniques/05.1/single_sensor_calibration_v1.py",
+          "blob": "8aa9263cd2a51ac8aac9b450463eb1769cb85715",
+          "bytes": 2608
+        },
+        {
+          "path": "research/techniques/05.1/test_single_sensor_calibration_v1.py",
+          "blob": "ab76b82c3f3a3ef4e20f1306f37178525e5309f0",
+          "bytes": 2056
+        },
+        {
+          "path": "research/techniques/05.2/README.md",
+          "blob": "b13c78be8edbc99107fc42f9238f1201d1a75053",
+          "bytes": 1441
+        },
+        {
+          "path": "research/techniques/05.2/multipoint_calibration_v1.py",
+          "blob": "efe1a0b152c51f7d95dd47b8d47d6ab450cffd9a",
+          "bytes": 2377
+        },
+        {
+          "path": "research/techniques/05.2/test_multipoint_calibration_v1.py",
+          "blob": "6c58ff4199aa3438bd6ef04dc0603ed0ce1837d6",
+          "bytes": 2070
+        },
+        {
+          "path": "research/techniques/05.3/README.md",
+          "blob": "f8d5dd7ba65dcd0d14cb2f187c7bfb706e83e169",
+          "bytes": 1389
+        },
+        {
+          "path": "research/techniques/05.3/nonlinear_regression_v1.py",
+          "blob": "33fa8c052fb2ddec99c3f53e9a2634a010330131",
+          "bytes": 3640
+        },
+        {
+          "path": "research/techniques/05.3/test_nonlinear_regression_v1.py",
+          "blob": "c5d6ba23bb65f0d1e491402cc451b7713dd8ff5a",
+          "bytes": 2292
+        },
+        {
+          "path": "research/techniques/05.4/README.md",
+          "blob": "41ac42697e30c702bbac209222e58d5cc9a3f369",
+          "bytes": 1392
+        },
+        {
+          "path": "research/techniques/05.4/multisensor_regression_v1.py",
+          "blob": "b9df937adedd1205f004df86dd5aad1fc492b274",
+          "bytes": 3591
+        },
+        {
+          "path": "research/techniques/05.4/test_multisensor_regression_v1.py",
+          "blob": "858cf60fa7941f8dd0ee8ce8f71239432c79e58d",
+          "bytes": 2291
+        },
+        {
+          "path": "research/techniques/05.5/README.md",
+          "blob": "787540bf3ebf447c93357520b8a2fef606093a98",
+          "bytes": 1214
+        },
+        {
+          "path": "research/techniques/05.5/pls_regression_v1.py",
+          "blob": "c7b209965f1b0eed02f059fd37a7953fe7c74c4d",
+          "bytes": 3565
+        },
+        {
+          "path": "research/techniques/05.5/test_pls_regression_v1.py",
+          "blob": "79965826d044650e97596eb259f84a5e55622112",
+          "bytes": 2145
+        },
+        {
+          "path": "research/techniques/05.6/README.md",
+          "blob": "d793b1c5b9abe930943ce5a72b4f37553883116b",
+          "bytes": 1406
+        },
+        {
+          "path": "research/techniques/05.6/test_tree_regression_v1.py",
+          "blob": "e99c3fa2e8508dc11b7ec9272b851a38789b32bd",
+          "bytes": 2416
+        },
+        {
+          "path": "research/techniques/05.6/tree_regression_v1.py",
+          "blob": "316ae63fb909d7ad36fe728a3fc9d56035300fa3",
+          "bytes": 4283
+        },
+        {
+          "path": "research/techniques/05.7/README.md",
+          "blob": "bb07b852f21d4e76f5e4e7df061741bb5b3f9643",
+          "bytes": 1423
+        },
+        {
+          "path": "research/techniques/05.7/identity_conditional_v1.py",
+          "blob": "1663c91f1d566c3b2a8d9fc648d438d890a0224a",
+          "bytes": 2884
+        },
+        {
+          "path": "research/techniques/05.7/test_identity_conditional_v1.py",
+          "blob": "96cf774a1998277a2354aa13ce2cfd372fa450d1",
+          "bytes": 2435
+        },
+        {
+          "path": "research/techniques/05.8/README.md",
+          "blob": "42fc44df3685171a23f7e09233e8ffba6a9a9751",
+          "bytes": 1684
+        },
+        {
+          "path": "research/techniques/05.8/lod_loq_v1.py",
+          "blob": "67bdb960527980bb4114c59c6eed65cc0d0e4cf1",
+          "bytes": 2466
+        },
+        {
+          "path": "research/techniques/05.8/test_lod_loq_v1.py",
+          "blob": "790f23242e325081360c0d374b26291c3ccbe181",
+          "bytes": 2134
+        },
+        {
+          "path": "research/techniques/05.9/README.md",
+          "blob": "742eae995d017ee08f0f0f67cca5ad6c51dbb70c",
+          "bytes": 1505
+        },
+        {
+          "path": "research/techniques/05.9/test_unseen_concentrations_v1.py",
+          "blob": "a45ce63b6d9f70c76e83d5f4cd216d24c30967b9",
+          "bytes": 2311
+        },
+        {
+          "path": "research/techniques/05.9/unseen_concentrations_v1.py",
+          "blob": "c4cd91d67d21f6b75eb99f572b22b69dc2c8338a",
+          "bytes": 3284
+        },
+        {
+          "path": "research/techniques/06.1/README.md",
+          "blob": "aff2239aa46709c63c98f9a51d51cd1c4486bfd1",
+          "bytes": 1537
+        },
+        {
+          "path": "research/techniques/06.1/evidence_fusion_v1.py",
+          "blob": "93b8e69076d326ab1390993322f5d2e6885b5de3",
+          "bytes": 3058
+        },
+        {
+          "path": "research/techniques/06.1/test_evidence_fusion_v1.py",
+          "blob": "e1a32794118272b363d04a5916905ef4a0f4f859",
+          "bytes": 2254
+        },
+        {
+          "path": "research/techniques/06.2/README.md",
+          "blob": "c70bc20f784731b7e40856e0b2318c004d54abec",
+          "bytes": 1557
+        },
+        {
+          "path": "research/techniques/06.2/bayesian_inference_v1.py",
+          "blob": "68f2b987b5f81cbf7ae4a022ce6dc4d8a41e81e1",
+          "bytes": 2582
+        },
+        {
+          "path": "research/techniques/06.2/test_bayesian_inference_v1.py",
+          "blob": "6175589ac3b97cf39da2de944fc9dd939bb14799",
+          "bytes": 2108
+        },
+        {
+          "path": "research/techniques/06.3/README.md",
+          "blob": "a4c9d32cd655b14a328439c396d813082d714c39",
+          "bytes": 1342
+        },
+        {
+          "path": "research/techniques/06.3/probability_calibration_v1.py",
+          "blob": "14b61f8dbf3cfbed176903f9d20990c97f2dfa42",
+          "bytes": 3550
+        },
+        {
+          "path": "research/techniques/06.3/test_probability_calibration_v1.py",
+          "blob": "e4dd4b858946e1d229ecfeb5417f4d5b2c227f40",
+          "bytes": 1828
+        },
+        {
+          "path": "research/techniques/06.4/README.md",
+          "blob": "c18b18a2916755636de83bf56eb83e945120d5b8",
+          "bytes": 1454
+        },
+        {
+          "path": "research/techniques/06.4/conformal_prediction_v1.py",
+          "blob": "cdc17966ed70c0449ba60dca374e4eda25708180",
+          "bytes": 2813
+        },
+        {
+          "path": "research/techniques/06.4/test_conformal_prediction_v1.py",
+          "blob": "6bc480fb6bd8b2f3b4b4c6e7a932f0d366976bee",
+          "bytes": 1959
+        },
+        {
+          "path": "research/techniques/06.5/README.md",
+          "blob": "897dec962a79dc5d34260033ae8f9fae43be8d0e",
+          "bytes": 1371
+        },
+        {
+          "path": "research/techniques/06.5/open_set_recognition_v1.py",
+          "blob": "8e8a0c0c2698d239ade005c7c215be910f4b16ff",
+          "bytes": 3279
+        },
+        {
+          "path": "research/techniques/06.5/test_open_set_recognition_v1.py",
+          "blob": "c32cb214c565f71858b9eb8bbf0133ca77b10394",
+          "bytes": 1889
+        },
+        {
+          "path": "research/techniques/06.6/README.md",
+          "blob": "eefd2fa97d66a53ecd1e533226acc0be999946fc",
+          "bytes": 493
+        },
+        {
+          "path": "research/techniques/06.6/ood_detection_v1.py",
+          "blob": "6b8022dc02c02d4108ce95722b713f9b9428528e",
+          "bytes": 1094
+        },
+        {
+          "path": "research/techniques/06.6/test_ood_detection_v1.py",
+          "blob": "5339c02cf681f4f9159c9f1d4674b8737fb6a1c7",
+          "bytes": 1935
+        },
+        {
+          "path": "research/techniques/06.7/README.md",
+          "blob": "b153db6512eafb05318786630eaf61f3c17ca322",
+          "bytes": 564
+        },
+        {
+          "path": "research/techniques/06.7/evidence_conflicts_v1.py",
+          "blob": "f5b90d02be06ee2e3a6e4a757c419161dd0f3444",
+          "bytes": 1641
+        },
+        {
+          "path": "research/techniques/06.7/test_evidence_conflicts_v1.py",
+          "blob": "0b9c440d8211769697ea152fac6ca7ea9aa7d7b5",
+          "bytes": 2662
+        },
+        {
+          "path": "research/techniques/06.8/README.md",
+          "blob": "3d91c1f36d7f5363d8f7a34f97ca178658e4eb46",
+          "bytes": 531
+        },
+        {
+          "path": "research/techniques/06.8/shap_v1.py",
+          "blob": "edc64a7f8e3e7d3ef55a67444bd40b0e84cedd64",
+          "bytes": 1483
+        },
+        {
+          "path": "research/techniques/06.8/test_shap_v1.py",
+          "blob": "81a30f64d1a0febe2f6086a2d668d112e597f91d",
+          "bytes": 2215
+        },
+        {
+          "path": "research/techniques/06.9/README.md",
+          "blob": "fa50c5764d4675b7ba5bafd19ed26daeca6bed2c",
+          "bytes": 486
+        },
+        {
+          "path": "research/techniques/06.9/abstention_v1.py",
+          "blob": "80d27117e60ddebd71df15a40660822a488f8f57",
+          "bytes": 1168
+        },
+        {
+          "path": "research/techniques/06.9/test_abstention_v1.py",
+          "blob": "e664ddcfa11b6c9fc2f621b66507b5968d343d5e",
+          "bytes": 273
+        },
+        {
+          "path": "research/techniques/06.9/test_behavioral_gate_v1.py",
+          "blob": "eb77c6ea3f0d7ed7416a050c61368068377da961",
+          "bytes": 1780
+        },
+        {
+          "path": "research/techniques/07.1/README.md",
+          "blob": "b08f6aeaec6af4b6eba28e5507235430184285e6",
+          "bytes": 489
+        },
+        {
+          "path": "research/techniques/07.1/cross_session_tests_v1.py",
+          "blob": "942246cdc97b94ab72dffa2c934e9940dd28ff7e",
+          "bytes": 1246
+        },
+        {
+          "path": "research/techniques/07.1/test_behavioral_gate_v1.py",
+          "blob": "f2ce12749036fe122eb9ca99291d44665b3f35e7",
+          "bytes": 1982
+        },
+        {
+          "path": "research/techniques/07.1/test_cross_session_tests_v1.py",
+          "blob": "7a9a6c3d1c24362ec27afffb4d4e4ecbac6f71b2",
+          "bytes": 362
+        },
+        {
+          "path": "research/techniques/07.10/README.md",
+          "blob": "1d91088213fc43dbc1a1d1b0b00bfa65cdc2ed5c",
+          "bytes": 568
+        },
+        {
+          "path": "research/techniques/07.10/resource_profiling_v1.py",
+          "blob": "84c71fe86c78a12f327dff5e5eb796f1f4b4bf23",
+          "bytes": 921
+        },
+        {
+          "path": "research/techniques/07.10/test_behavioral_gate_v1.py",
+          "blob": "499137ec9a52042b4e9ad17bac472af7d507adae",
+          "bytes": 1697
+        },
+        {
+          "path": "research/techniques/07.10/test_resource_profiling_v1.py",
+          "blob": "0ee46af3a0d5bb63f4cc7be11c783d52f08b2575",
+          "bytes": 274
+        },
+        {
+          "path": "research/techniques/07.2/README.md",
+          "blob": "e8d6af150a8481430000dc413adaedc6127aff01",
+          "bytes": 549
+        },
+        {
+          "path": "research/techniques/07.2/cross_device_tests_v1.py",
+          "blob": "90af0a806ee6a76dbe69f21f41fe1be8e3d6d0d2",
+          "bytes": 1143
+        },
+        {
+          "path": "research/techniques/07.2/test_behavioral_gate_v1.py",
+          "blob": "de6d480eb1b5a246fb62c0f1477150df33bde3b5",
+          "bytes": 1931
+        },
+        {
+          "path": "research/techniques/07.2/test_cross_device_tests_v1.py",
+          "blob": "4a0cc70e13394c797d5bfc1b33adf340ab29c0cb",
+          "bytes": 361
+        },
+        {
+          "path": "research/techniques/07.3/README.md",
+          "blob": "6affc32a52bf53adb80e4add91a53d94b5f7aa5f",
+          "bytes": 542
+        },
+        {
+          "path": "research/techniques/07.3/cross_concentration_tests_v1.py",
+          "blob": "517f3d722e92402ffe3078fd5d532c1bd97970e5",
+          "bytes": 860
+        },
+        {
+          "path": "research/techniques/07.3/test_behavioral_gate_v1.py",
+          "blob": "fca68f39c9a1bb14e47749d4b6e99e407cfc0545",
+          "bytes": 2203
+        },
+        {
+          "path": "research/techniques/07.3/test_cross_concentration_tests_v1.py",
+          "blob": "83dbb4fa8c9b94e49b141adf67a6bdbece28ad42",
+          "bytes": 291
+        },
+        {
+          "path": "research/techniques/07.4/README.md",
+          "blob": "591f130dc14cea709928e569de352494f5f7ed43",
+          "bytes": 537
+        },
+        {
+          "path": "research/techniques/07.4/drift_detection_v1.py",
+          "blob": "fd8667ea5506c8e069c3c96450cb64a9a856545d",
+          "bytes": 1897
+        },
+        {
+          "path": "research/techniques/07.4/test_behavioral_gate_v1.py",
+          "blob": "794831c5b402e36ef65922ea578ba6bd671da328",
+          "bytes": 1853
+        },
+        {
+          "path": "research/techniques/07.4/test_drift_detection_v1.py",
+          "blob": "44a1e3307aa51d3e431eab3480fbf1e638c8f868",
+          "bytes": 347
+        },
+        {
+          "path": "research/techniques/07.5/README.md",
+          "blob": "5f2fb371ced10b18ff2550b85e5671243f247d4e",
+          "bytes": 554
+        },
+        {
+          "path": "research/techniques/07.5/drift_compensation_v1.py",
+          "blob": "1a4556241140e4c6a5d97cbb1b0bef1a913e65c3",
+          "bytes": 1198
+        },
+        {
+          "path": "research/techniques/07.5/test_behavioral_gate_v1.py",
+          "blob": "576c595e3c3ec38b7f636b37f37c5bfb1abd87a5",
+          "bytes": 1743
+        },
+        {
+          "path": "research/techniques/07.5/test_drift_compensation_v1.py",
+          "blob": "a52e7a0ff08c288e23f271afd47af2ce16c91777",
+          "bytes": 358
+        },
+        {
+          "path": "research/techniques/07.6/README.md",
+          "blob": "db09d3b7f79579684551f080e36f2ff60df5105e",
+          "bytes": 531
+        },
+        {
+          "path": "research/techniques/07.6/domain_adaptation_v1.py",
+          "blob": "81e55c3491f91ca2a71de66c47a93881ae324b2f",
+          "bytes": 1964
+        },
+        {
+          "path": "research/techniques/07.6/test_behavioral_gate_v1.py",
+          "blob": "7b55e911ff9571b08436fffbb96e425f98b844ec",
+          "bytes": 2065
+        },
+        {
+          "path": "research/techniques/07.6/test_domain_adaptation_v1.py",
+          "blob": "38dd510b779d9b3998284648d1c49afa6645e722",
+          "bytes": 360
+        },
+        {
+          "path": "research/techniques/07.7/README.md",
+          "blob": "8a947957ad396cd7c3a50a7a5e531d11c0774343",
+          "bytes": 573
+        },
+        {
+          "path": "research/techniques/07.7/test_behavioral_gate_v1.py",
+          "blob": "3bad9e7653483b3059172c39c88e406396c9493b",
+          "bytes": 1644
+        },
+        {
+          "path": "research/techniques/07.7/test_transfer_learning_v1.py",
+          "blob": "e3f9d7e8857e1976eba2745b6f19a24460f22a56",
+          "bytes": 349
+        },
+        {
+          "path": "research/techniques/07.7/transfer_learning_v1.py",
+          "blob": "4aa4946a8b7b203c6f1664deb8d36ff24df897a9",
+          "bytes": 1206
+        },
+        {
+          "path": "research/techniques/07.8/README.md",
+          "blob": "1f2b812a836744868ec053df024e84be9b25dc7c",
+          "bytes": 601
+        },
+        {
+          "path": "research/techniques/07.8/active_learning_doe_v1.py",
+          "blob": "dda3093c58748741545fd0158797e25501b3b0f1",
+          "bytes": 1146
+        },
+        {
+          "path": "research/techniques/07.8/test_active_learning_doe_v1.py",
+          "blob": "1857d52a4a0f643f6029e3f83e495634c450b27d",
+          "bytes": 282
+        },
+        {
+          "path": "research/techniques/07.8/test_behavioral_gate_v1.py",
+          "blob": "e7938f89a1fd7b80f840ed988428ff7e784142e4",
+          "bytes": 1941
+        },
+        {
+          "path": "research/techniques/07.9/README.md",
+          "blob": "3fbb45de01e72df4762662c0635c831000e5bf3c",
+          "bytes": 564
+        },
+        {
+          "path": "research/techniques/07.9/continual_learning_v1.py",
+          "blob": "936f495e5ca5e66fa8dc9b26fe8672b94dfbe1ae",
+          "bytes": 1228
+        },
+        {
+          "path": "research/techniques/07.9/test_behavioral_gate_v1.py",
+          "blob": "2f101791d187c8d2f897f88f2011d55e7470e4b2",
+          "bytes": 1950
+        },
+        {
+          "path": "research/techniques/07.9/test_continual_learning_v1.py",
+          "blob": "ddc04c23c9a0954bf37611220c4eda0c650bd502",
+          "bytes": 350
+        },
+        {
+          "path": "research/techniques/08.1/README.md",
+          "blob": "782e1d4962841080dc2cec93ad6db9632262b789",
+          "bytes": 535
+        },
+        {
+          "path": "research/techniques/08.1/cnn_1d_v1.py",
+          "blob": "55bb334a12688b9acbe49fa0f65559dd8f2dd7a5",
+          "bytes": 786
+        },
+        {
+          "path": "research/techniques/08.1/test_behavioral_gate_v1.py",
+          "blob": "ec49bef425f2fd9b8105ac2d4904dac39c93869a",
+          "bytes": 1452
+        },
+        {
+          "path": "research/techniques/08.1/test_cnn_1d_v1.py",
+          "blob": "9f35b30c30adc75211c5c69c15b1f3b0955defe0",
+          "bytes": 356
+        },
+        {
+          "path": "research/techniques/08.10/README.md",
+          "blob": "3c8d8f2a1184df50beca7f57f0cb28b5dbb565df",
+          "bytes": 538
+        },
+        {
+          "path": "research/techniques/08.10/multi_analyte_regression_v1.py",
+          "blob": "4645154224118fbfcdc41e3e766782bc99463618",
+          "bytes": 1230
+        },
+        {
+          "path": "research/techniques/08.10/test_behavioral_gate_v1.py",
+          "blob": "d15848e10882cc273aeb8233e512b059140222a5",
+          "bytes": 1970
+        },
+        {
+          "path": "research/techniques/08.10/test_multi_analyte_regression_v1.py",
+          "blob": "62b7452e98e897425fcccb5468dd35cf049d3301",
+          "bytes": 259
+        },
+        {
+          "path": "research/techniques/08.11/README.md",
+          "blob": "90ce4f5a9cdce585d937d7598984ba2e67dd3c39",
+          "bytes": 568
+        },
+        {
+          "path": "research/techniques/08.11/interference_v1.py",
+          "blob": "a5b00cca98aa84502ae2fb5360a4eb6d9e1ef5d6",
+          "bytes": 680
+        },
+        {
+          "path": "research/techniques/08.11/test_behavioral_gate_v1.py",
+          "blob": "bffe7697512e8e833a48531db14f04bb5196f595",
+          "bytes": 1404
+        },
+        {
+          "path": "research/techniques/08.11/test_interference_v1.py",
+          "blob": "2ad7bc4fe87852362e6d186221a63b4457d9755b",
+          "bytes": 252
+        },
+        {
+          "path": "research/techniques/08.12/README.md",
+          "blob": "375e903199bbb0c4acb3a787243483f19f3e0091",
+          "bytes": 581
+        },
+        {
+          "path": "research/techniques/08.12/complex_products_v1.py",
+          "blob": "677502957f09af42cb3a779a5956a135cb3e6e1f",
+          "bytes": 949
+        },
+        {
+          "path": "research/techniques/08.12/test_behavioral_gate_v1.py",
+          "blob": "5a388b1c3b1bd2a26de8e3c3117e5f590f756133",
+          "bytes": 1623
+        },
+        {
+          "path": "research/techniques/08.12/test_complex_products_v1.py",
+          "blob": "cf7dedf2c9ee332bfd64bac4e432bc96fe742b89",
+          "bytes": 250
+        },
+        {
+          "path": "research/techniques/08.2/README.md",
+          "blob": "50a29616602bd8ff9a55d724eafce12a7e9af698",
+          "bytes": 469
+        },
+        {
+          "path": "research/techniques/08.2/tcn_v1.py",
+          "blob": "e88cdd2f1ca940d569d98a3af4482476471df509",
+          "bytes": 679
+        },
+        {
+          "path": "research/techniques/08.2/test_behavioral_gate_v1.py",
+          "blob": "8fe116247f55b535ee6fd6a3e41a187789df9801",
+          "bytes": 1352
+        },
+        {
+          "path": "research/techniques/08.2/test_tcn_v1.py",
+          "blob": "1b1bdb4b8554258310c668a457813e9c687e4d92",
+          "bytes": 334
+        },
+        {
+          "path": "research/techniques/08.3/README.md",
+          "blob": "432dffeacdc367161d9bbb5a5e19ce701ab0f364",
+          "bytes": 464
+        },
+        {
+          "path": "research/techniques/08.3/lstm_gru_v1.py",
+          "blob": "b37569104f85f8899ca81449ef15b2df7e68c6d9",
+          "bytes": 797
+        },
+        {
+          "path": "research/techniques/08.3/test_behavioral_gate_v1.py",
+          "blob": "f90e30ee888e8d59e8140d5713db51b1c3295ea6",
+          "bytes": 1644
+        },
+        {
+          "path": "research/techniques/08.3/test_lstm_gru_v1.py",
+          "blob": "2f084807d5ad5a2d0db9eef21a9af47d5317e81e",
+          "bytes": 336
+        },
+        {
+          "path": "research/techniques/08.4/README.md",
+          "blob": "608f8bfc7bf72ae0418754a4fee6aede4df4dc73",
+          "bytes": 475
+        },
+        {
+          "path": "research/techniques/08.4/gnn_v1.py",
+          "blob": "fa940d146e32dd4f745e9f27b46f196ab48c62e9",
+          "bytes": 896
+        },
+        {
+          "path": "research/techniques/08.4/test_behavioral_gate_v1.py",
+          "blob": "f39a7e1d51b25093242b58295e201cf8e1446ce4",
+          "bytes": 1491
+        },
+        {
+          "path": "research/techniques/08.4/test_gnn_v1.py",
+          "blob": "ae2081f7e58def10e4750366399386a22240976b",
+          "bytes": 251
+        },
+        {
+          "path": "research/techniques/08.5/README.md",
+          "blob": "c5ac70651762ca31f4fc5320a3b8203544009335",
+          "bytes": 492
+        },
+        {
+          "path": "research/techniques/08.5/temporal_ensemble_v1.py",
+          "blob": "154aa184e78cb607b407bc6a5b63365ca5568d53",
+          "bytes": 996
+        },
+        {
+          "path": "research/techniques/08.5/test_behavioral_gate_v1.py",
+          "blob": "ba55f51fcf539461e6bbd80272f71cf7256e8317",
+          "bytes": 1602
+        },
+        {
+          "path": "research/techniques/08.5/test_temporal_ensemble_v1.py",
+          "blob": "4103cec508405f9fa339b05f90ffe1c911d292e6",
+          "bytes": 264
+        },
+        {
+          "path": "research/techniques/08.6/README.md",
+          "blob": "efd9bd6c2ee6db491ca7afca45967b54cf1db984",
+          "bytes": 488
+        },
+        {
+          "path": "research/techniques/08.6/simulation_v1.py",
+          "blob": "0cf85bd6f30fc4fc89ddc533a58cbd1924171695",
+          "bytes": 870
+        },
+        {
+          "path": "research/techniques/08.6/test_behavioral_gate_v1.py",
+          "blob": "f729b5dbc28dbe700d130d68f8c7100982b0c028",
+          "bytes": 1644
+        },
+        {
+          "path": "research/techniques/08.6/test_simulation_v1.py",
+          "blob": "5889ac6575f1e92b35549c143e3080f6311cc882",
+          "bytes": 257
+        },
+        {
+          "path": "research/techniques/08.7/README.md",
+          "blob": "9aa2881b769672c49106b3e0eb897c0dc21a52a1",
+          "bytes": 572
+        },
+        {
+          "path": "research/techniques/08.7/sim_to_real_v1.py",
+          "blob": "23f5306b116ce35b6e567eda58d4a85175fc1ac8",
+          "bytes": 825
+        },
+        {
+          "path": "research/techniques/08.7/test_behavioral_gate_v1.py",
+          "blob": "97d84110538b0c693cc972614bbb8bf959181c54",
+          "bytes": 1445
+        },
+        {
+          "path": "research/techniques/08.7/test_sim_to_real_v1.py",
+          "blob": "5b3298a73b2eae77d8eb56942e3d6685939e5856",
+          "bytes": 245
+        },
+        {
+          "path": "research/techniques/08.8/README.md",
+          "blob": "25b3b179951c1d79f6a808481a8b956ec00a6b75",
+          "bytes": 570
+        },
+        {
+          "path": "research/techniques/08.8/mixture_detection_v1.py",
+          "blob": "27c4bddd3797d8d9173963183fc9b7076a86d52b",
+          "bytes": 1366
+        },
+        {
+          "path": "research/techniques/08.8/test_behavioral_gate_v1.py",
+          "blob": "fb39579072e1a8acae7f90ec12a4eb6ab3279eb7",
+          "bytes": 1745
+        },
+        {
+          "path": "research/techniques/08.8/test_mixture_detection_v1.py",
+          "blob": "322c1e0a21368229423ed2367c2e48761fd0b0dd",
+          "bytes": 250
+        },
+        {
+          "path": "research/techniques/08.9/README.md",
+          "blob": "f19ac1646495a8c1aed3a700a13bbe2880c1aa3d",
+          "bytes": 557
+        },
+        {
+          "path": "research/techniques/08.9/test_behavioral_gate_v1.py",
+          "blob": "b8f838cafb8693cf56d940cd430c0bfe553d6349",
+          "bytes": 1834
+        },
+        {
+          "path": "research/techniques/08.9/test_unmixing_v1.py",
+          "blob": "6d9df63b402ee62f0be60e8be1965346a166ab2d",
+          "bytes": 244
+        },
+        {
+          "path": "research/techniques/08.9/unmixing_v1.py",
+          "blob": "4b912fc1435a5ac464cb0532566d20fcb3a7a4d0",
+          "bytes": 1157
+        },
+        {
+          "path": "research/techniques/09.1/README.md",
+          "blob": "9663f3c98cdbf7438d8c51c8bd3b475068e5f801",
+          "bytes": 560
+        },
+        {
+          "path": "research/techniques/09.1/robotic_olfaction_v1.py",
+          "blob": "6e352748e0b191e9676105a6648b79a2763f6376",
+          "bytes": 797
+        },
+        {
+          "path": "research/techniques/09.1/test_behavioral_gate_v1.py",
+          "blob": "c6703fa82ba9b0da56f170e0f78403efffdc03b7",
+          "bytes": 1633
+        },
+        {
+          "path": "research/techniques/09.1/test_robotic_olfaction_v1.py",
+          "blob": "a0e5b8e7745a63011c066af3f2948712b52d522b",
+          "bytes": 254
+        },
+        {
+          "path": "research/techniques/09.2/README.md",
+          "blob": "03a13948c566176c8f7cc43fc393577404fa84d2",
+          "bytes": 578
+        },
+        {
+          "path": "research/techniques/09.2/gas_mapping_v1.py",
+          "blob": "27ec4e74e64a4a01fe90fffb3c3a2984ca44f6bc",
+          "bytes": 736
+        },
+        {
+          "path": "research/techniques/09.2/test_behavioral_gate_v1.py",
+          "blob": "1debd69638308e29178dcd12f0337f6e7a8a7822",
+          "bytes": 1464
+        },
+        {
+          "path": "research/techniques/09.2/test_gas_mapping_v1.py",
+          "blob": "34431f3858642f0d4171b4c8b158dc79626db289",
+          "bytes": 246
+        },
+        {
+          "path": "research/techniques/09.3/README.md",
+          "blob": "8bc708919ce0fb601238607713d29b48452792bd",
+          "bytes": 561
+        },
+        {
+          "path": "research/techniques/09.3/source_localization_v1.py",
+          "blob": "d40aec921028ea055135a85c7dc1667c0b375c03",
+          "bytes": 798
+        },
+        {
+          "path": "research/techniques/09.3/test_behavioral_gate_v1.py",
+          "blob": "0ad90ba438f178c1fb63c6f4cdf4d54f1e0924d3",
+          "bytes": 1623
+        },
+        {
+          "path": "research/techniques/09.3/test_source_localization_v1.py",
+          "blob": "46603625146b78f60d6b43b604c6526740a74105",
+          "bytes": 263
+        },
+        {
+          "path": "research/techniques/09.4/README.md",
+          "blob": "39603bfc658a21b3fdad4ad864a56c6307ac8eba",
+          "bytes": 617
+        },
+        {
+          "path": "research/techniques/09.4/active_sampling_v1.py",
+          "blob": "6ffd6efcec17d164176fd447e1002d68a51773dc",
+          "bytes": 727
+        },
+        {
+          "path": "research/techniques/09.4/test_active_sampling_v1.py",
+          "blob": "8a7a3c2a50cd4ebdce96bb335aaa8edad8fb02f5",
+          "bytes": 256
+        },
+        {
+          "path": "research/techniques/09.4/test_behavioral_gate_v1.py",
+          "blob": "c271dfe3ffa2663d6f59aefec49cf26cfabbffc3",
+          "bytes": 1571
+        },
+        {
+          "path": "research/techniques/09.5/README.md",
+          "blob": "ed4c0525c1222d98ae4b6ab898cb229decf448d8",
+          "bytes": 623
+        },
+        {
+          "path": "research/techniques/09.5/spatiotemporal_fusion_v1.py",
+          "blob": "ab050db3d0bf7b385b8e97e22551adb6411cbda9",
+          "bytes": 1674
+        },
+        {
+          "path": "research/techniques/09.5/test_behavioral_gate_v1.py",
+          "blob": "5deeb0f81f64291b4f8fd20faa030de87c6dc5b1",
+          "bytes": 1917
+        },
+        {
+          "path": "research/techniques/09.5/test_spatiotemporal_fusion_v1.py",
+          "blob": "e9d154a3cadd6c66f9c617c1c83f3ccf0a4d37bf",
+          "bytes": 249
+        },
+        {
+          "path": "research/techniques/09.6/README.md",
+          "blob": "32cb93e6cfb20edfa3a28ec2a70fde3dbb37899e",
+          "bytes": 640
+        },
+        {
+          "path": "research/techniques/09.6/motion_decisions_v1.py",
+          "blob": "aa226c78d1e4fa1b34439c49f6e99a55f90d0bdf",
+          "bytes": 1417
+        },
+        {
+          "path": "research/techniques/09.6/test_behavioral_gate_v1.py",
+          "blob": "2ac70db0166b7faf0250a3c232aec2b14286f16e",
+          "bytes": 1978
+        },
+        {
+          "path": "research/techniques/09.6/test_motion_decisions_v1.py",
+          "blob": "d2c8a3b0a92b2a270b3711f8f134e67c2c3cca46",
+          "bytes": 249
+        },
+        {
+          "path": "research/techniques/10.1/README.md",
+          "blob": "b80b0d418759501c775db176cc2d882b2c7b4c60",
+          "bytes": 1097
+        },
+        {
+          "path": "research/techniques/10.1/negative_evidence.py",
+          "blob": "eb2257a1d2c4fb0106cf5846142a3f1e126b6c14",
+          "bytes": 2307
+        },
+        {
+          "path": "research/techniques/10.1/test_behavioral_gate_v1.py",
+          "blob": "156ffd2a6dbc834ca5d056d19a34e717910fa235",
+          "bytes": 2159
+        },
+        {
+          "path": "research/techniques/10.1/test_negative_evidence.py",
+          "blob": "e7e76ac9f1db10ce8ec673f5cb1f21971fc256fe",
+          "bytes": 1305
+        }
+      ]
+    },
+    {
+      "repo": "HazRob/build-harness",
+      "ref": "main",
+      "tree": "b58823bebcfd42f573668730395a474fc5f0ae19",
+      "truncated": false,
+      "total": 150,
+      "matching": 83,
+      "top": {
+        ".github": 15,
+        "ANALYTICAL_INTEGRATION_TRIGGER": 1,
+        "APK_TRIGGER": 1,
+        "CURRENT_EXECUTION_STATUS_0.10.2_HR069.md": 1,
+        "CURRENT_RELEASE_AUTHORITY.md": 1,
+        "CURRENT_UI_QUALIFICATION_TRIGGER": 1,
+        "EXECUTION_RULES_HR069.md": 1,
+        "EXTERNAL_DATA_TRIGGER": 1,
+        "PRIORITY_EVIDENCE_TRIGGER": 1,
+        "RC1_TRIGGER": 1,
+        "README.md": 1,
+        "ROBOFUSION_DERIVATION_TRIGGER": 1,
+        "ROBOFUSION_INTEGRATION_TRIGGER": 1,
+        "ROBOFUSION_MANIFEST_TRIGGER": 1,
+        "SOURCE_PACKAGE_TRIGGER": 1,
+        "TRANSFER_QUALIFICATION_TRIGGER": 1,
+        "controlled-assets": 1,
+        "docs": 28,
+        "library": 81,
+        "source-overlay": 7,
+        "tools": 3
+      },
+      "entries": [
+        {
+          "path": ".github/workflows/reference-bank-catalog-validation.yml",
+          "blob": "8d4643791a6c7a4d0d33373e6cf0695c8fdcc137",
+          "bytes": 1237
+        },
+        {
+          "path": ".github/workflows/stable-reference-snapshot-integrity.yml",
+          "blob": "f51dafd71548ef706e35b163e232ba256b486e3f",
+          "bytes": 1492
+        },
+        {
+          "path": "docs/CR-20261004-010_SMARTREPORT_ANALYTICAL_EXPANSION_AND_CHEMCORE_SYNC.md",
+          "blob": "57dc6216b29105f232f2776bf6faa7079ca864a5",
+          "bytes": 20198
+        },
+        {
+          "path": "docs/CR-20261008-001_GAS_ANALYSIS_REFERENCES.md",
+          "blob": "d2dd202d86ee0439efd80445698edd02d219b577",
+          "bytes": 4921
+        },
+        {
+          "path": "docs/CR-20261008-003_CHEMCORE_UNUSED_ANALYTICS_DISCUSSION_ARCHIVE.md",
+          "blob": "62c4a33559fe23adda0024db4bbc4e42c7dedadd",
+          "bytes": 5899
+        },
+        {
+          "path": "library/chemcore/stable/README.md",
+          "blob": "9debffde7019347fa1dbea5c00b6931063d52055",
+          "bytes": 574
+        },
+        {
+          "path": "library/chemcore/stable/material-status-index.json",
+          "blob": "93d181d2def056ae7482fd987acb2a22927c42a9",
+          "bytes": 9420
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/README.md",
+          "blob": "cd11cbb8ed5a39164965ec9a8d4bfd010b237903",
+          "bytes": 1023
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/RESUME.md",
+          "blob": "77d89aa4bf346a6b249ecec3c368684eb85a8ec6",
+          "bytes": 839
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/citations/AUDIT_CONVERSATION_COMPLETENESS_2026-10-21_AR.md",
+          "blob": "e9343690f7dc50f98758b8974ca96b31216453e2",
+          "bytes": 4269
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/citations/INDEX.md",
+          "blob": "09c847ce5d64eb1a211f654f3b37f8a0f8560076",
+          "bytes": 20724
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/citations/RESUME.md",
+          "blob": "aa82f37fe4365e85f8cad3e6170e28055233e485",
+          "bytes": 4845
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/citations/master_catalog.json",
+          "blob": "e0a8191f95516cac6ee77103d99f54e70f6f1528",
+          "bytes": 140379
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/curated/mq135_alternative_log_curves_6.json",
+          "blob": "393f304c54027bb6f19e7bcd47309c4506f7f2b7",
+          "bytes": 5235
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/1_propanol_sjtu_mq_transfer_evidence_v1.json",
+          "blob": "6f5cbd9a62a7196a96ede056b776c23bf41fd584",
+          "bytes": 2741
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/current-manifest.json",
+          "blob": "40513a5781466b99d8c3394e672b8cc71999a024",
+          "bytes": 3259
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/electronic_nose_robotic_olfaction_reference_index_v1.json",
+          "blob": "825acc50de730004a1f272be53c741b7f00eff9b",
+          "bytes": 13633
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/ethylene_mq3_transfer_evidence_v1.json",
+          "blob": "78426227c4d66ea2f2154af5fac803cc4048756c",
+          "bytes": 3070
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/food_freshness_headspace_fingerprints_v1.json",
+          "blob": "959aae7574307a0030d218d4b86eb6618a6f72b0",
+          "bytes": 6003
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/gas_analysis_methodology_landscape_2026-10-08.md",
+          "blob": "d67c7e27fdb5236034226d60dda24166b512fe16",
+          "bytes": 7747
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/gas_analysis_technology_reference_index_v1.json",
+          "blob": "c2f0a0ac1a3bf8635f27d600076212aad8b9b263",
+          "bytes": 20650
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/identification_fingerprint_priors_v1.json",
+          "blob": "5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
+          "bytes": 9029
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/kononov_mox_numeric_transfer_batch_v1.json",
+          "blob": "3495571c72b46027e1e6099dd8be7b93f4a13c45",
+          "bytes": 3979
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/methanol_mq_transfer_evidence_v1.json",
+          "blob": "462b241bb026fe39dd07ed8501c57ef99f56ba47",
+          "bytes": 3424
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/mq_experiment_source_index_v1.json",
+          "blob": "0f1a5388d2d28071091df833855238ba8c00804a",
+          "bytes": 8686
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/mq_models_76.json",
+          "blob": "7607764415cb26fbba4e46da9219e7dc861e2c23",
+          "bytes": 12353
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/mq_research_curves_43.json",
+          "blob": "bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1",
+          "bytes": 7995
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/multimodal_mq_transfer_fingerprints_v1.json",
+          "blob": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+          "bytes": 5692
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/pubchem_resolution_delta_v1.json",
+          "blob": "1124cff3c22aecdab71448f96396992fbf4202a1",
+          "bytes": 4526
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/robofusion_hr069_gasleak_operational_transfer_v1.json",
+          "blob": "8484d576926ba8a97dd00d8b4feff6a3bce0f9a1",
+          "bytes": 4656
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/same_sensor_peer_reviewed_identity_evidence_v1.json",
+          "blob": "412a9d48eb17b39c88645adba70380ce7a752d17",
+          "bytes": 7913
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/uci_mq135_lowconcentration_transfer_fingerprints_v1.json",
+          "blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+          "bytes": 16187
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/ANALYTICAL_SYSTEMS_MIXTURE_UNMIXING_QUANT_FILTERS_2026-10-21_AR.md",
+          "blob": "e0ddc34501f2d4d5ddc24131f104dd599c1cc017",
+          "bytes": 14340
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/CHINESE_JAPANESE_MQ_MOS_RESEARCH_2026-10-21_AR.md",
+          "blob": "1095ae60a0d899e6703fbada993d64c708b1e712",
+          "bytes": 9882
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/MQDATASCIENCE_AND_EXPANDED_DATA_2026-10-21_AR.md",
+          "blob": "664111f17b31e5068c373d24076188c205207faa",
+          "bytes": 16801
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/MQ_DATASETS_INITIAL_AUDIT_2026-10-21_AR.md",
+          "blob": "af3048b43f43a1d491e0816b9dacee402be65bfc",
+          "bytes": 13015
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/PUBCHEM_QSPR_INVERSE_MOLECULAR_2026-10-21_AR.md",
+          "blob": "96967709439a9c6c47eaab6c604c0c6d768fb1d9",
+          "bytes": 15327
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/manifest.json",
+          "blob": "ea4ddf660724f0030d2aa3695c12fe85065fccb0",
+          "bytes": 13595
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/raw/mq_ext_03_multimodal_github_mirror_6400.csv",
+          "blob": "451fdd05a18db8531abc219089de071ccc0dd461",
+          "bytes": 258009
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/screening/STABLE_FINGERPRINT_CURVE_LOG_AUDIT_2026-10-21_AR.md",
+          "blob": "0e64c6e5a1e8be8016de36f11f3d0adf420a29b3",
+          "bytes": 15028
+        },
+        {
+          "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/screening/candidate_register_2026-10-21.json",
+          "blob": "8fe0fc1b78d19feac15ca4cedbd8c6a5cf5b60c5",
+          "bytes": 15384
+        },
+        {
+          "path": "library/reference-bank/INDEX.md",
+          "blob": "1e05fdd9aa4a4ccb01f18a1ddf046c12a15da9e4",
+          "bytes": 23172
+        },
+        {
+          "path": "library/reference-bank/LEGACY_COLLECTIONS.md",
+          "blob": "c082825878d6e9982ed701a88ce068dc51ac15f7",
+          "bytes": 3635
+        },
+        {
+          "path": "library/reference-bank/README.md",
+          "blob": "57962a961ed8d053abbe73317cf238eb6b38355a",
+          "bytes": 7519
+        },
+        {
+          "path": "library/reference-bank/approved-experiments/README.md",
+          "blob": "70196d8683adc2ca79e9ec073650572a44be115f",
+          "bytes": 392
+        },
+        {
+          "path": "library/reference-bank/derived-references/README.md",
+          "blob": "b21fcd2c6ec93a4c5869ef61bdaa98bba3f31da1",
+          "bytes": 361
+        },
+        {
+          "path": "library/reference-bank/external-research/AUDIT_CONVERSATION_COMPLETENESS_2026-10-21_AR.md",
+          "blob": "e9343690f7dc50f98758b8974ca96b31216453e2",
+          "bytes": 4269
+        },
+        {
+          "path": "library/reference-bank/external-research/RESUME.md",
+          "blob": "804497662172d500eec7716e09aa734e44e851e2",
+          "bytes": 6313
+        },
+        {
+          "path": "library/reference-bank/external-research/calibration/MQ_R0_ADDITIONAL_5_SOURCES_2026-10-21.json",
+          "blob": "34b3cbc64cbc881444fbeefa54fda92448cbedfb",
+          "bytes": 12863
+        },
+        {
+          "path": "library/reference-bank/external-research/calibration/MQ_R0_ADDITIONAL_5_SOURCES_COMPARISON_2026-10-21_AR.md",
+          "blob": "415556013e67209dbe6b75e49ddbaecc405a50a7",
+          "bytes": 8157
+        },
+        {
+          "path": "library/reference-bank/external-research/calibration/MQ_R0_RS_CROSS_STUDY_2026-10-21.json",
+          "blob": "03198302d478c9f54cf84a79b5bdec1b600612ca",
+          "bytes": 14582
+        },
+        {
+          "path": "library/reference-bank/external-research/calibration/MQ_R0_RS_CROSS_STUDY_AUDIT_2026-10-21_AR.md",
+          "blob": "710c85920ce95b57f13e1985ec232d75df725c29",
+          "bytes": 14017
+        },
+        {
+          "path": "library/reference-bank/external-research/calibration_audits/MQ_R0_RS_PEER_COMPARISON_2026-10-21_AR.md",
+          "blob": "1c80e7249581d680418ea6fac3529a6bfe909bf6",
+          "bytes": 10665
+        },
+        {
+          "path": "library/reference-bank/external-research/calibration_audits/mq_r0_rs_peer_sources_2026-10-21.json",
+          "blob": "8565d6f2d9c27bf459d3f63f4350b4b19d9ecf3b",
+          "bytes": 17512
+        },
+        {
+          "path": "library/reference-bank/external-research/master_catalog.json",
+          "blob": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+          "bytes": 156060
+        },
+        {
+          "path": "library/reference-bank/external-research/reviews/ANALYTICAL_SYSTEMS_MIXTURE_UNMIXING_QUANT_FILTERS_2026-10-21_AR.md",
+          "blob": "e0ddc34501f2d4d5ddc24131f104dd599c1cc017",
+          "bytes": 14340
+        },
+        {
+          "path": "library/reference-bank/external-research/reviews/CHINESE_JAPANESE_MQ_MOS_RESEARCH_2026-10-21_AR.md",
+          "blob": "1095ae60a0d899e6703fbada993d64c708b1e712",
+          "bytes": 9882
+        },
+        {
+          "path": "library/reference-bank/external-research/reviews/MQDATASCIENCE_AND_EXPANDED_DATA_2026-10-21_AR.md",
+          "blob": "664111f17b31e5068c373d24076188c205207faa",
+          "bytes": 16801
+        },
+        {
+          "path": "library/reference-bank/external-research/reviews/MQ_DATASETS_INITIAL_AUDIT_2026-10-21_AR.md",
+          "blob": "af3048b43f43a1d491e0816b9dacee402be65bfc",
+          "bytes": 13015
+        },
+        {
+          "path": "library/reference-bank/external-research/reviews/PUBCHEM_QSPR_INVERSE_MOLECULAR_2026-10-21_AR.md",
+          "blob": "96967709439a9c6c47eaab6c604c0c6d768fb1d9",
+          "bytes": 15327
+        },
+        {
+          "path": "library/reference-bank/mechanical-design/open_printable_tracked_robots_2026-10-11.md",
+          "blob": "f9cf5fe0bc25658e4037ac7628ff4fa473653d6e",
+          "bytes": 7383
+        },
+        {
+          "path": "library/research/hr069/1_propanol_sjtu_mq_transfer_evidence_v1.json",
+          "blob": "6f5cbd9a62a7196a96ede056b776c23bf41fd584",
+          "bytes": 2741
+        },
+        {
+          "path": "library/research/hr069/README.md",
+          "blob": "aa41f601bf9795b0e697823a5e05c2672fe109d7",
+          "bytes": 647
+        },
+        {
+          "path": "library/research/hr069/current-manifest.json",
+          "blob": "40513a5781466b99d8c3394e672b8cc71999a024",
+          "bytes": 3259
+        },
+        {
+          "path": "library/research/hr069/electronic_nose_robotic_olfaction_reference_index_v1.json",
+          "blob": "825acc50de730004a1f272be53c741b7f00eff9b",
+          "bytes": 13633
+        },
+        {
+          "path": "library/research/hr069/ethylene_mq3_transfer_evidence_v1.json",
+          "blob": "78426227c4d66ea2f2154af5fac803cc4048756c",
+          "bytes": 3070
+        },
+        {
+          "path": "library/research/hr069/food_freshness_headspace_fingerprints_v1.json",
+          "blob": "959aae7574307a0030d218d4b86eb6618a6f72b0",
+          "bytes": 6003
+        },
+        {
+          "path": "library/research/hr069/gas_analysis_methodology_landscape_2026-10-08.md",
+          "blob": "d67c7e27fdb5236034226d60dda24166b512fe16",
+          "bytes": 7747
+        },
+        {
+          "path": "library/research/hr069/gas_analysis_technology_reference_index_v1.json",
+          "blob": "c2f0a0ac1a3bf8635f27d600076212aad8b9b263",
+          "bytes": 20650
+        },
+        {
+          "path": "library/research/hr069/identification_fingerprint_priors_v1.json",
+          "blob": "5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
+          "bytes": 9029
+        },
+        {
+          "path": "library/research/hr069/kononov_mox_numeric_transfer_batch_v1.json",
+          "blob": "3495571c72b46027e1e6099dd8be7b93f4a13c45",
+          "bytes": 3979
+        },
+        {
+          "path": "library/research/hr069/methanol_mq_transfer_evidence_v1.json",
+          "blob": "462b241bb026fe39dd07ed8501c57ef99f56ba47",
+          "bytes": 3424
+        },
+        {
+          "path": "library/research/hr069/mq_experiment_source_index_v1.json",
+          "blob": "0f1a5388d2d28071091df833855238ba8c00804a",
+          "bytes": 8686
+        },
+        {
+          "path": "library/research/hr069/mq_models_76.json",
+          "blob": "7607764415cb26fbba4e46da9219e7dc861e2c23",
+          "bytes": 12353
+        },
+        {
+          "path": "library/research/hr069/mq_research_curves_43.json",
+          "blob": "bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1",
+          "bytes": 7995
+        },
+        {
+          "path": "library/research/hr069/multimodal_mq_transfer_fingerprints_v1.json",
+          "blob": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+          "bytes": 5692
+        },
+        {
+          "path": "library/research/hr069/pubchem_resolution_delta_v1.json",
+          "blob": "1124cff3c22aecdab71448f96396992fbf4202a1",
+          "bytes": 4526
+        },
+        {
+          "path": "library/research/hr069/robofusion_hr069_gasleak_operational_transfer_v1.json",
+          "blob": "8484d576926ba8a97dd00d8b4feff6a3bce0f9a1",
+          "bytes": 4656
+        },
+        {
+          "path": "library/research/hr069/same_sensor_peer_reviewed_identity_evidence_v1.json",
+          "blob": "412a9d48eb17b39c88645adba70380ce7a752d17",
+          "bytes": 7913
+        },
+        {
+          "path": "library/research/hr069/uci_mq135_lowconcentration_transfer_fingerprints_v1.json",
+          "blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+          "bytes": 16187
+        },
+        {
+          "path": "tools/reference_bank/validate_catalog.py",
+          "blob": "d292d0eea86e8b0177e949c7a0ebc63347794ef7",
+          "bytes": 3310
+        },
+        {
+          "path": "tools/reference_bank/validate_stable_reference_snapshot.py",
+          "blob": "ddfc82241a69b19a742748327d276eeae190a305",
+          "bytes": 5291
+        },
+        {
+          "path": "tools/reference_bank/verify_mq_r0_rs_evidence.py",
+          "blob": "d393313d6d019cf0c46ee596a89dc7dd00a8a610",
+          "bytes": 5089
+        }
+      ]
+    }
+  ]
+}

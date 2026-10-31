@@ -1,0 +1,96 @@
+{
+  "schema": "hazrob.g2.mq4-grouped-numeric-probe-summary.v1",
+  "date": "2026-10-31",
+  "source": "MQ-ACQ-2026-06",
+  "archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "raw_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "raw_rows": 14186,
+  "calendar_day_groups": 11,
+  "method": "leave-one-calendar-day-out univariate OLS; no preprocessing fitted on holdout; comparator is training-day methane mean; pooled error is row-weighted",
+  "channels": {
+    "MQ4_1": {
+      "pooled_pearson": -0.45902107222286104,
+      "positive_day_correlations": 2,
+      "negative_day_correlations": 9,
+      "lodo_rmse_ppb": 1248.259767028264,
+      "train_mean_baseline_rmse_ppb": 1376.3403609493594,
+      "skill_vs_train_mean": 0.1774576749506026,
+      "within_day_pearson_rounded_6": [
+        -0.479591,
+        0.371841,
+        -0.911428,
+        0.17148,
+        -0.882141,
+        -0.651602,
+        -0.865827,
+        -0.850202,
+        -0.842815,
+        -0.702621,
+        -0.440458
+      ]
+    },
+    "MQ4_2": {
+      "pooled_pearson": -0.38694432082830954,
+      "positive_day_correlations": 2,
+      "negative_day_correlations": 9,
+      "lodo_rmse_ppb": 1287.2843804796614,
+      "train_mean_baseline_rmse_ppb": 1376.3403609493594,
+      "skill_vs_train_mean": 0.12522309636847995,
+      "within_day_pearson_rounded_6": [
+        -0.405248,
+        0.456904,
+        -0.867011,
+        0.301564,
+        -0.863868,
+        -0.556268,
+        -0.830704,
+        -0.828665,
+        -0.799836,
+        -0.538148,
+        -0.200134
+      ]
+    },
+    "MQ4_3": {
+      "pooled_pearson": -0.42572084256782233,
+      "positive_day_correlations": 2,
+      "negative_day_correlations": 9,
+      "lodo_rmse_ppb": 1266.9874005688544,
+      "train_mean_baseline_rmse_ppb": 1376.3403609493594,
+      "skill_vs_train_mean": 0.1525913342449574,
+      "within_day_pearson_rounded_6": [
+        -0.441825,
+        0.408482,
+        -0.89318,
+        0.227192,
+        -0.87427,
+        -0.605721,
+        -0.847255,
+        -0.845483,
+        -0.809167,
+        -0.658892,
+        -0.315569
+      ]
+    }
+  },
+  "calendar_days": [
+    "2021-07-21",
+    "2021-07-22",
+    "2021-07-23",
+    "2021-07-24",
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "scientific_state": {
+    "g2_qualified": false,
+    "g3_tank_qualified": false,
+    "physical_independence_verified": false,
+    "reference_calibration_verified": false,
+    "blinded_holdout_verified": false
+  },
+  "limitations": "Observational original source CSV. Calendar-day groups are not independent physical exposures, calibration and instrument traceability not externally verified, single gas reference channel only, no Tank transfer claim. Metrics are exploratory, not ppm certification."
+}

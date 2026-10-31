@@ -1,0 +1,82 @@
+{
+  "g2_qualified": false,
+  "g3_tank_qualified": false,
+  "independent_exposure_groups_verified": false,
+  "limitations": "Not evidence of calibration certificate, physically independent exposures, gas identification, training/holdout independence, or Tank G2/G3 qualification.",
+  "numeric_fields": {
+    "MQ4_1": {
+      "consecutive_equal_pairs": 7,
+      "distinct_values": 10716,
+      "finite_values": 14186,
+      "invalid_values": 0,
+      "longest_identical_run": 2,
+      "max": 88013.52919272592,
+      "min": 33481.2976307067
+    },
+    "MQ4_2": {
+      "consecutive_equal_pairs": 13,
+      "distinct_values": 10691,
+      "finite_values": 14186,
+      "invalid_values": 0,
+      "longest_identical_run": 2,
+      "max": 128762.60381075836,
+      "min": 43355.04694973789
+    },
+    "MQ4_3": {
+      "consecutive_equal_pairs": 5906,
+      "distinct_values": 119,
+      "finite_values": 14186,
+      "invalid_values": 0,
+      "longest_identical_run": 15,
+      "max": 111951.21951219512,
+      "min": 40000.0
+    },
+    "licor_ch4": {
+      "consecutive_equal_pairs": 0,
+      "distinct_values": 14181,
+      "finite_values": 14186,
+      "invalid_values": 0,
+      "longest_identical_run": 1,
+      "max": 9997.930649999998,
+      "min": 1945.53885
+    },
+    "rh": {
+      "consecutive_equal_pairs": 354,
+      "distinct_values": 762,
+      "finite_values": 14186,
+      "invalid_values": 0,
+      "longest_identical_run": 7,
+      "max": 73.5,
+      "min": 31.35
+    },
+    "t": {
+      "consecutive_equal_pairs": 273,
+      "distinct_values": 1722,
+      "finite_values": 14186,
+      "invalid_values": 0,
+      "longest_identical_run": 3,
+      "max": 30.165,
+      "min": 9.015
+    }
+  },
+  "reference_methane_ppm_max": 9.997930649999999,
+  "reference_methane_ppm_min": 1.94553885,
+  "row_count": 14186,
+  "schema": "hazrob.g2.mq4-raw-numeric-integrity.v1",
+  "scope": "Raw numeric syntax, finiteness, positivity, timestamp monotonicity and simple RH bounds only.",
+  "source_archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_calibration_traceability_verified": false,
+  "source_hashes_verified": true,
+  "source_id": "MQ-ACQ-2026-06",
+  "source_member": "raw/MQ-ACQ-2026-06_umn_10ppm_data_csv.csv",
+  "source_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "source_numeric_integrity_verified": true,
+  "units": {
+    "MQ4_1": "ohm",
+    "MQ4_2": "ohm",
+    "MQ4_3": "ohm",
+    "licor_ch4": "ppb",
+    "rh": "percent",
+    "t": "degC"
+  }
+}

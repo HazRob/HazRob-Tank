@@ -1,0 +1,55 @@
+name: Tank ChemCore V4 batch04 ML/QSPR/grouped conditional ppm research (G1 only)
+on:
+  push:
+    paths:
+      - 'research/techniques/04.8/**'
+      - 'research/techniques/04.9/**'
+      - 'research/techniques/04.10/**'
+      - 'research/techniques/05.1/**'
+      - 'research/techniques/05.2/**'
+      - 'research/techniques/05.3/**'
+      - 'research/techniques/05.4/**'
+      - 'research/techniques/05.5/**'
+      - 'research/techniques/05.6/**'
+      - 'research/techniques/05.7/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch04.yml'
+  pull_request:
+    paths:
+      - 'research/techniques/04.8/**'
+      - 'research/techniques/04.9/**'
+      - 'research/techniques/04.10/**'
+      - 'research/techniques/05.1/**'
+      - 'research/techniques/05.2/**'
+      - 'research/techniques/05.3/**'
+      - 'research/techniques/05.4/**'
+      - 'research/techniques/05.5/**'
+      - 'research/techniques/05.6/**'
+      - 'research/techniques/05.7/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch04.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  partial-source-model-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: V4 source-linked plan unchanged, G3 zero
+        run: python research/implementation_execution/validate_plan_v4.py
+      - name: Historical software regressions for first three batch04 IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          for id in 04.8 04.9 04.10 05.1 05.2 05.3 05.4 05.5 05.6 05.7; do
+            (cd "research/techniques/$id" && python -m unittest discover -p 'test_*.py' -v)
+          done
+      - name: Actual grouped train, blinded candidate QSPR and source hash tests
+        run: python -m unittest -v research/implementation_execution/test_batch04_v2.py
+      - name: No source data qualification implied
+        run: echo 'PASS G1 ONLY — physical Tank G3 remains 0/80'

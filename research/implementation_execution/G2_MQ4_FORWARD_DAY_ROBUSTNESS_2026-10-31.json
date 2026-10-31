@@ -1,0 +1,170 @@
+{
+  "artifact_kind": "source-derived day-level sensitivity summary; full exclusions reproducible from original ZIP",
+  "calendar_day_count": 6,
+  "channels": {
+    "MQ4_1": {
+      "0": {
+        "calendar_test_days": 6,
+        "equal_day_weighted_rmse_model_ppb": 1182.0552797269231,
+        "equal_day_weighted_rmse_baseline_ppb": 1287.6279565047007,
+        "leave_one_test_day_out_skill_min": 0.1670818696168419,
+        "leave_one_test_day_out_skill_max": 0.40208500894563337,
+        "max_day_share_model_sse": 0.40876097743491974,
+        "max_day_share_baseline_sse": 0.4846540491493339,
+        "mean_defined_day_skill": -0.1454601143819683,
+        "negative_skill_days": 2,
+        "pooled_skill": 0.2739975382192923,
+        "positive_skill_days": 4,
+        "test_rows": 7889,
+        "zero_baseline_days": 0
+      },
+      "1": {
+        "calendar_test_days": 6,
+        "equal_day_weighted_rmse_model_ppb": 1228.666064602511,
+        "equal_day_weighted_rmse_baseline_ppb": 1300.7502559780398,
+        "leave_one_test_day_out_skill_min": 0.1526048348472686,
+        "leave_one_test_day_out_skill_max": 0.41957259245678125,
+        "max_day_share_model_sse": 0.3939884102327029,
+        "max_day_share_baseline_sse": 0.4685693100108173,
+        "mean_defined_day_skill": -0.34902450858539064,
+        "negative_skill_days": 2,
+        "pooled_skill": 0.2568924342131199,
+        "positive_skill_days": 4,
+        "test_rows": 7889,
+        "zero_baseline_days": 0
+      },
+      "2": {
+        "calendar_test_days": 6,
+        "equal_day_weighted_rmse_model_ppb": 1220.9437385839879,
+        "equal_day_weighted_rmse_baseline_ppb": 1311.913228868464,
+        "leave_one_test_day_out_skill_min": 0.16549688416485986,
+        "leave_one_test_day_out_skill_max": 0.42822972597377373,
+        "max_day_share_model_sse": 0.4006667371561226,
+        "max_day_share_baseline_sse": 0.45532397186584794,
+        "mean_defined_day_skill": -0.6173384449923222,
+        "negative_skill_days": 2,
+        "pooled_skill": 0.27618366991256826,
+        "positive_skill_days": 4,
+        "test_rows": 7889,
+        "zero_baseline_days": 0
+      }
+    },
+    "MQ4_2": {
+      "0": {
+        "calendar_test_days": 6,
+        "equal_day_weighted_rmse_model_ppb": 1192.2290562926428,
+        "equal_day_weighted_rmse_baseline_ppb": 1287.6279565047007,
+        "leave_one_test_day_out_skill_min": 0.16474507256900295,
+        "leave_one_test_day_out_skill_max": 0.3244672541484287,
+        "max_day_share_model_sse": 0.44433049401790226,
+        "max_day_share_baseline_sse": 0.4846540491493339,
+        "mean_defined_day_skill": -0.08029152838759555,
+        "negative_skill_days": 1,
+        "pooled_skill": 0.22941718759489516,
+        "positive_skill_days": 5,
+        "test_rows": 7889,
+        "zero_baseline_days": 0
+      },
+      "1": {
+        "calendar_test_days": 6,
+        "equal_day_weighted_rmse_model_ppb": 1237.2997740271435,
+        "equal_day_weighted_rmse_baseline_ppb": 1300.7502559780398,
+        "leave_one_test_day_out_skill_min": 0.1227088690189082,
+        "leave_one_test_day_out_skill_max": 0.3024282429642978,
+        "max_day_share_model_sse": 0.42138119907058685,
+        "max_day_share_baseline_sse": 0.4685693100108173,
+        "mean_defined_day_skill": -0.21920538516882535,
+        "negative_skill_days": 1,
+        "pooled_skill": 0.19425461061790295,
+        "positive_skill_days": 5,
+        "test_rows": 7889,
+        "zero_baseline_days": 0
+      },
+      "2": {
+        "calendar_test_days": 6,
+        "equal_day_weighted_rmse_model_ppb": 1201.0983175626293,
+        "equal_day_weighted_rmse_baseline_ppb": 1311.913228868464,
+        "leave_one_test_day_out_skill_min": 0.1329000417561378,
+        "leave_one_test_day_out_skill_max": 0.3370332565915667,
+        "max_day_share_model_sse": 0.4532007121437746,
+        "max_day_share_baseline_sse": 0.45532397186584794,
+        "mean_defined_day_skill": -0.2766255399997248,
+        "negative_skill_days": 1,
+        "pooled_skill": 0.24669891276582967,
+        "positive_skill_days": 5,
+        "test_rows": 7889,
+        "zero_baseline_days": 0
+      }
+    },
+    "MQ4_3": {
+      "0": {
+        "calendar_test_days": 6,
+        "equal_day_weighted_rmse_model_ppb": 1189.6082495049327,
+        "equal_day_weighted_rmse_baseline_ppb": 1287.6279565047007,
+        "leave_one_test_day_out_skill_min": 0.1733359701754702,
+        "leave_one_test_day_out_skill_max": 0.3754026461682334,
+        "max_day_share_model_sse": 0.4276507312720771,
+        "max_day_share_baseline_sse": 0.4846540491493339,
+        "mean_defined_day_skill": -0.13377107941401134,
+        "negative_skill_days": 2,
+        "pooled_skill": 0.2556678522000848,
+        "positive_skill_days": 4,
+        "test_rows": 7889,
+        "zero_baseline_days": 0
+      },
+      "1": {
+        "calendar_test_days": 6,
+        "equal_day_weighted_rmse_model_ppb": 1229.9800232653397,
+        "equal_day_weighted_rmse_baseline_ppb": 1300.7502559780398,
+        "leave_one_test_day_out_skill_min": 0.15606447403999257,
+        "leave_one_test_day_out_skill_max": 0.38293500360671506,
+        "max_day_share_model_sse": 0.4140532421971653,
+        "max_day_share_baseline_sse": 0.4685693100108173,
+        "mean_defined_day_skill": -0.2988955961151604,
+        "negative_skill_days": 1,
+        "pooled_skill": 0.23840691673547454,
+        "positive_skill_days": 5,
+        "test_rows": 7889,
+        "zero_baseline_days": 0
+      },
+      "2": {
+        "calendar_test_days": 6,
+        "equal_day_weighted_rmse_model_ppb": 1208.1814402851628,
+        "equal_day_weighted_rmse_baseline_ppb": 1311.913228868464,
+        "leave_one_test_day_out_skill_min": 0.1570789303210255,
+        "leave_one_test_day_out_skill_max": 0.4007236340391951,
+        "max_day_share_model_sse": 0.43284657716354097,
+        "max_day_share_baseline_sse": 0.45532397186584794,
+        "mean_defined_day_skill": -0.4737783528116792,
+        "negative_skill_days": 1,
+        "pooled_skill": 0.27231185005804814,
+        "positive_skill_days": 5,
+        "test_rows": 7889,
+        "zero_baseline_days": 0
+      }
+    }
+  },
+  "common_test_days": [
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "gaps": [
+    0,
+    1,
+    2
+  ],
+  "limitations": "Day-level descriptive sensitivity of observational source data. Calendar days may be dependent; neither row counts nor jackknife resampling establish independent exposures, calibrated ppm, blind holdout or Tank validity.",
+  "raw_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "schema": "hazrob.g2.mq4-forward-day-robustness.v1",
+  "scientific_state": {
+    "blinded_holdout_verified": false,
+    "g2_qualified": false,
+    "g3_tank_qualified": false,
+    "physical_independence_verified": false,
+    "reference_calibration_verified": false
+  }
+}

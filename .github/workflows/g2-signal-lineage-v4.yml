@@ -1,0 +1,101 @@
+name: "Tank V4 G2 — source signal and R0 evidence gate"
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - 'research/implementation_execution/g2_*.py'
+      - 'research/implementation_execution/test_g2_*.py'
+      - 'research/implementation_execution/G2_UCI1081_SIGNAL_R0_PROVENANCE_2026-10-26.json'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
+      - 'research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json'
+      - 'research/g2/evidence/**'
+      - 'research/g2/raw/**'
+      - 'research/PROGRESS_80.json'
+      - 'research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json'
+      - '.github/workflows/g2-signal-lineage-v4.yml'
+  pull_request:
+    paths:
+      - 'research/implementation_execution/g2_*.py'
+      - 'research/implementation_execution/test_g2_*.py'
+      - 'research/implementation_execution/G2_UCI1081_SIGNAL_R0_PROVENANCE_2026-10-26.json'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
+      - 'research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json'
+      - 'research/g2/evidence/**'
+      - 'research/g2/raw/**'
+      - 'research/PROGRESS_80.json'
+      - 'research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json'
+      - '.github/workflows/g2-signal-lineage-v4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g2-signal-lineage-fail-closed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: "Compile all research G2 Python modules"
+        run: python -m compileall -q research/implementation_execution
+      - name: "Run every offline G2 regression test (including new test files)"
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_*.py' -v
+      - name: "Run full 80-technique G2 fail-closed evidence audit"
+        run: |
+          python research/implementation_execution/g2_evidence_audit.py --output "$RUNNER_TEMP/g2_audit_results.json"
+          python - "$RUNNER_TEMP/g2_audit_results.json" <<'PY'
+          import json, sys
+          x = json.load(open(sys.argv[1]))
+          records = x["records"]
+          assert len(records) == 80
+          assert len({r["id"] for r in records}) == 80
+          assert x["g2_pass_candidates"] + x["g2_blocked"] == 80
+          assert all(r["status"] in {"G2_BLOCKED", "G2_PASS_CANDIDATE_REQUIRES_REVIEW"} for r in records)
+          assert not any(r["status"] == "G2_PASS" for r in records)
+          print("G2 review-only candidates:", x["g2_pass_candidates"],
+                "blocked:", x["g2_blocked"])
+          PY
+      - name: "Generate deterministic G2 acquisition triage (not qualification)"
+        run: |
+          python research/implementation_execution/g2_acquisition_triage.py \
+            --audit "$RUNNER_TEMP/g2_audit_results.json" \
+            --source-matrix research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json \
+            --output "$RUNNER_TEMP/g2_acquisition_triage.json"
+      - name: "Replay G2 audit and acquisition triage from the same pinned inputs"
+        run: |
+          python research/implementation_execution/g2_evidence_audit.py --output "$RUNNER_TEMP/g2_audit_results_replay.json"
+          python research/implementation_execution/g2_acquisition_triage.py \
+            --audit "$RUNNER_TEMP/g2_audit_results_replay.json" \
+            --source-matrix research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json \
+            --output "$RUNNER_TEMP/g2_acquisition_triage_replay.json"
+      - name: "Verify byte-identical G2 replay and write integrity manifest"
+        run: |
+          python research/implementation_execution/g2_replay_consistency.py \
+            --audit-first "$RUNNER_TEMP/g2_audit_results.json" \
+            --audit-second "$RUNNER_TEMP/g2_audit_results_replay.json" \
+            --triage-first "$RUNNER_TEMP/g2_acquisition_triage.json" \
+            --triage-second "$RUNNER_TEMP/g2_acquisition_triage_replay.json" \
+            --output "$RUNNER_TEMP/g2_replay_integrity.json"
+      - name: "Validate final G2 publication bytes and cross-report lineage"
+        run: |
+          python research/implementation_execution/g2_artifact_publish_gate.py \
+            --audit "$RUNNER_TEMP/g2_audit_results.json" \
+            --triage "$RUNNER_TEMP/g2_acquisition_triage.json" \
+            --manifest "$RUNNER_TEMP/g2_replay_integrity.json" \
+            --source-matrix research/implementation_execution/G2_CENTRAL_CATALOG_SOURCE_READINESS_2026-10-28.json \
+            --ledger research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json \
+            --evidence research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json
+      - name: "Upload reproducible G2 gate output"
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tank-v4-g2-signal-r0-gate
+          path: |
+            ${{ runner.temp }}/g2_audit_results.json
+            ${{ runner.temp }}/g2_acquisition_triage.json
+            ${{ runner.temp }}/g2_replay_integrity.json
+          if-no-files-found: error

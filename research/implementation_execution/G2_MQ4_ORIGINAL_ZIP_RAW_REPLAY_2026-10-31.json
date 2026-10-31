@@ -1,0 +1,173 @@
+{
+  "archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "blinded_holdout_verified": false,
+  "derived": {
+    "columns": 20,
+    "daily_rows": {
+      "2021-07-21": 774,
+      "2021-07-22": 1435,
+      "2021-07-23": 1231,
+      "2021-07-24": 1421,
+      "2021-07-25": 1436,
+      "2021-07-26": 1440,
+      "2021-07-27": 1437,
+      "2021-07-28": 1437,
+      "2021-07-29": 1418,
+      "2021-07-30": 1434,
+      "2021-07-31": 723
+    },
+    "first_timestamp": "2021-07-21 11:06:00",
+    "lags": {
+      "1": {
+        "contiguous_lag_pairs": 14175,
+        "cross_day_by_later_date": {
+          "2021-07-22": 1,
+          "2021-07-23": 1,
+          "2021-07-24": 1,
+          "2021-07-25": 1,
+          "2021-07-26": 1,
+          "2021-07-27": 1,
+          "2021-07-28": 1,
+          "2021-07-29": 1,
+          "2021-07-30": 1,
+          "2021-07-31": 1
+        },
+        "cross_day_context_rows": 10,
+        "same_day_context_rows": 14165,
+        "unavailable_rows": 11
+      },
+      "5": {
+        "contiguous_lag_pairs": 14131,
+        "cross_day_by_later_date": {
+          "2021-07-22": 5,
+          "2021-07-23": 5,
+          "2021-07-24": 5,
+          "2021-07-25": 5,
+          "2021-07-26": 5,
+          "2021-07-27": 5,
+          "2021-07-28": 5,
+          "2021-07-29": 5,
+          "2021-07-30": 5,
+          "2021-07-31": 5
+        },
+        "cross_day_context_rows": 50,
+        "same_day_context_rows": 14081,
+        "unavailable_rows": 55
+      },
+      "15": {
+        "contiguous_lag_pairs": 14031,
+        "cross_day_by_later_date": {
+          "2021-07-22": 15,
+          "2021-07-23": 15,
+          "2021-07-24": 15,
+          "2021-07-25": 15,
+          "2021-07-26": 15,
+          "2021-07-27": 15,
+          "2021-07-28": 15,
+          "2021-07-29": 15,
+          "2021-07-30": 15,
+          "2021-07-31": 15
+        },
+        "cross_day_context_rows": 150,
+        "same_day_context_rows": 13881,
+        "unavailable_rows": 155
+      },
+      "30": {
+        "contiguous_lag_pairs": 13881,
+        "cross_day_by_later_date": {
+          "2021-07-22": 30,
+          "2021-07-23": 30,
+          "2021-07-24": 30,
+          "2021-07-25": 30,
+          "2021-07-26": 30,
+          "2021-07-27": 30,
+          "2021-07-28": 30,
+          "2021-07-29": 30,
+          "2021-07-30": 30,
+          "2021-07-31": 30
+        },
+        "cross_day_context_rows": 300,
+        "same_day_context_rows": 13581,
+        "unavailable_rows": 305
+      },
+      "60": {
+        "contiguous_lag_pairs": 13581,
+        "cross_day_by_later_date": {
+          "2021-07-22": 60,
+          "2021-07-23": 60,
+          "2021-07-24": 60,
+          "2021-07-25": 60,
+          "2021-07-26": 60,
+          "2021-07-27": 60,
+          "2021-07-28": 60,
+          "2021-07-29": 60,
+          "2021-07-30": 60,
+          "2021-07-31": 60
+        },
+        "cross_day_context_rows": 600,
+        "same_day_context_rows": 12981,
+        "unavailable_rows": 605
+      },
+      "120": {
+        "contiguous_lag_pairs": 12981,
+        "cross_day_by_later_date": {
+          "2021-07-22": 120,
+          "2021-07-23": 120,
+          "2021-07-24": 120,
+          "2021-07-25": 120,
+          "2021-07-26": 120,
+          "2021-07-27": 120,
+          "2021-07-28": 120,
+          "2021-07-29": 120,
+          "2021-07-30": 120,
+          "2021-07-31": 120
+        },
+        "cross_day_context_rows": 1200,
+        "same_day_context_rows": 11781,
+        "unavailable_rows": 1205
+      }
+    },
+    "last_timestamp": "2021-07-31 12:02:00",
+    "max_lag_eligible_by_day": {
+      "2021-07-21": 654,
+      "2021-07-22": 1315,
+      "2021-07-23": 1111,
+      "2021-07-24": 1296,
+      "2021-07-25": 1316,
+      "2021-07-26": 1440,
+      "2021-07-27": 1197,
+      "2021-07-28": 1317,
+      "2021-07-29": 1298,
+      "2021-07-30": 1314,
+      "2021-07-31": 723
+    },
+    "reference_methane_max_ppb": 9997.930649999998,
+    "reference_methane_min_ppb": 1945.53885,
+    "rows": 14186,
+    "segment_lengths": [
+      1406,
+      1565,
+      1388,
+      5,
+      1454,
+      2495,
+      675,
+      1367,
+      995,
+      1417,
+      1419
+    ],
+    "segments_spanning_calendar_days": 9
+  },
+  "g2_qualified": false,
+  "g3_tank_qualified": false,
+  "limitations": "Raw CSV time/values and published summaries reconciled. The original authors' measurements and instrument calibration were not independently replicated; timestamps do not establish physically independent exposures or qualified gas identification.",
+  "physical_exposure_independence_verified": false,
+  "raw_member_bytes": 4787918,
+  "raw_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "raw_replayed_in_this_execution": true,
+  "reference_calibration_certificate_verified": false,
+  "schema": "hazrob.g2.mq4-original-zip-raw-replay.v1",
+  "source_id": "MQ-ACQ-2026-06",
+  "summary_fields_verified": true
+}

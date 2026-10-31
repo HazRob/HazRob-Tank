@@ -1,0 +1,110 @@
+{
+  "artifact_kind": "source-derived observational benchmark summary; full folds reproducible from SHA256-pinned ZIP",
+  "common_test_days": [
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "days": [
+    "2021-07-21",
+    "2021-07-22",
+    "2021-07-23",
+    "2021-07-24",
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "gaps": [
+    0,
+    1,
+    2
+  ],
+  "gaps_results": {
+    "0": {
+      "calendar_test_days": 6,
+      "days_ridge_beats_placebo": 4,
+      "days_ridge_worse_than_MQ4_1": 2,
+      "days_ridge_worse_than_training_mean": 2,
+      "mean_defined_day_ridge_skill": -0.09755740655963184,
+      "placebo_skill_vs_training_mean": -0.013745381503782461,
+      "pooled_rmse_ppb": {
+        "MQ4_1": 1123.8993687497407,
+        "MQ4_2": 1157.8919633684588,
+        "MQ4_3": 1137.99870784637,
+        "day_rotation_placebo_ridge3": 1328.0756832289906,
+        "ridge3": 1114.980462729188,
+        "training_mean": 1319.0412600027319
+      },
+      "ridge_skill_vs_MQ4_1": 0.0158083854736345,
+      "ridge_skill_vs_training_mean": 0.28547446498992923,
+      "total_test_rows": 7889
+    },
+    "1": {
+      "calendar_test_days": 6,
+      "days_ridge_beats_placebo": 4,
+      "days_ridge_worse_than_MQ4_1": 2,
+      "days_ridge_worse_than_training_mean": 2,
+      "mean_defined_day_ridge_skill": -0.31444497380133224,
+      "placebo_skill_vs_training_mean": -0.004849103249705333,
+      "pooled_rmse_ppb": {
+        "MQ4_1": 1150.1204018631495,
+        "MQ4_2": 1197.6126659601148,
+        "MQ4_3": 1164.3377048966472,
+        "day_rotation_placebo_ridge3": 1337.4202375310713,
+        "ridge3": 1158.1646681129414,
+        "training_mean": 1334.189338606219
+      },
+      "ridge_skill_vs_MQ4_1": -0.014037483674614881,
+      "ridge_skill_vs_training_mean": 0.24646107388990413,
+      "total_test_rows": 7889
+    },
+    "2": {
+      "calendar_test_days": 6,
+      "days_ridge_beats_placebo": 4,
+      "days_ridge_worse_than_MQ4_1": 1,
+      "days_ridge_worse_than_training_mean": 2,
+      "mean_defined_day_ridge_skill": -0.561735518598439,
+      "placebo_skill_vs_training_mean": -0.12995101191930414,
+      "pooled_rmse_ppb": {
+        "MQ4_1": 1150.2416643759823,
+        "MQ4_2": 1173.4354472462987,
+        "MQ4_3": 1153.3139829527956,
+        "day_rotation_placebo_ridge3": 1437.158652321411,
+        "ridge3": 1158.5416999036786,
+        "training_mean": 1351.9944417577942
+      },
+      "ridge_skill_vs_MQ4_1": -0.014483880949621275,
+      "ridge_skill_vs_training_mean": 0.2657000003581901,
+      "total_test_rows": 7889
+    }
+  },
+  "limitations": "Observational source MQ4 data, not independent gas exposures. Placebo preserves day-level labels and may preserve confounding; no blind group holdout, physical reference calibration, Tank transfer or certified ppm.",
+  "method": "past-only day folds; fixed training-standardized ridge; 3 univariate OLS; training mean; half-day label-rotation placebo",
+  "min_train_days": 3,
+  "models": [
+    "ridge3",
+    "MQ4_1",
+    "MQ4_2",
+    "MQ4_3",
+    "training_mean",
+    "day_rotation_placebo_ridge3"
+  ],
+  "raw_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "ridge_alpha": 0.1,
+  "rows": 14186,
+  "schema": "hazrob.g2.mq4-multichannel-forward-control.v1",
+  "scientific_state": {
+    "blinded_holdout_verified": false,
+    "g2_qualified": false,
+    "g3_tank_qualified": false,
+    "physical_independence_verified": false,
+    "reference_calibration_verified": false
+  }
+}
