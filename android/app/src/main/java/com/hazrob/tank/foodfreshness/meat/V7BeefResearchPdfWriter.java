@@ -57,16 +57,18 @@ public final class V7BeefResearchPdfWriter {
     private static void cell(Canvas c,String content,RectF r,boolean rtl){
         V7ReportLayoutKit.tableValue(c,r,content,rtl);
     }
-    private static void pageChrome(Canvas c,Context ctx,int number){
+    private static void pageChrome(Canvas c,Context ctx,int number,
+                                   String captureTimestampUtc){
         V7ReportLayoutKit.drawHeader(c,ctx,false,
-            "تقرير فحص بصمة اللحوم البقرية","Beef Research Headspace","-");
+            "تقرير فحص بصمة اللحوم البقرية","Beef Research Headspace",
+            V7ReportLayoutKit.missing(captureTimestampUtc));
         V7ReportLayoutKit.drawFooter(c,false,number,3);
     }
     private static void pageOne(Canvas c,Context ctx,
                                 BeefResearchEngine.Result result,
                                 Map<String,Double> channels,int samples,
-                                long ms,String id,double t,double rh){
-        pageChrome(c,ctx,1);
+                                long ms,String id,double t,double rh,String captureTimestampUtc){
+        pageChrome(c,ctx,1,captureTimestampUtc);
         section(c,"بيانات العينة والفحص","Sample & Acquisition",80);
         text(c,"لحم بقري — دراسة بصمات بحثية",L+8,128,W-16,24,true,true);
         String scan=(ms>=0?value(ms/1000.0,1)+" s":"-");
@@ -101,8 +103,9 @@ public final class V7BeefResearchPdfWriter {
         text(c,"Research similarity is NOT a microbial TVC result or food-safety verdict.",
             L+8,764,W-16,21,false,true);
     }
-    private static void pageTwo(Canvas c,Context ctx,BeefResearchEngine.Result result){
-        pageChrome(c,ctx,2);
+    private static void pageTwo(Canvas c,Context ctx,BeefResearchEngine.Result result,
+                                String captureTimestampUtc){
+        pageChrome(c,ctx,2,captureTimestampUtc);
         V7ReportLayoutKit.blankChart(c,rect(L,82,W,211),
             "البصمة المقاسة مقابل المرجع / Seven-MQ source comparison",
             "MQ2–MQ135", "Shape");
@@ -135,8 +138,8 @@ public final class V7BeefResearchPdfWriter {
             text(c,value(match.descriptiveSimilarity,1),L+460,y,65,26,false,true);
         }
     }
-    private static void pageThree(Canvas c,Context ctx){
-        pageChrome(c,ctx,3);
+    private static void pageThree(Canvas c,Context ctx,String captureTimestampUtc){
+        pageChrome(c,ctx,3,captureTimestampUtc);
         section(c,"التحقق البحثي المستقل","Source-study TS5 validation",82);
         text(c,"SOURCE STUDY ONLY — five beef cuts, TS1–TS4 train / TS5 holdout",
             L+6,132,W-12,50,false,true);
@@ -174,6 +177,13 @@ public final class V7BeefResearchPdfWriter {
     public static void write(Context ctx,OutputStream out,BeefResearchEngine.Result result,
                              Map<String,Double> readings,int sampleCount,long ms,
                              String id,double temperatureC,double humidityPct)throws Exception{
+        write(ctx,out,result,readings,sampleCount,ms,id,temperatureC,humidityPct,"-");
+    }
+    /** Timestamp is the archived specimen acquisition time, not export time. */
+    public static void write(Context ctx,OutputStream out,BeefResearchEngine.Result result,
+                             Map<String,Double> readings,int sampleCount,long ms,
+                             String id,double temperatureC,double humidityPct,
+                             String captureTimestampUtc)throws Exception{
         if(ctx==null||out==null||result==null)
             throw new IllegalArgumentException("Frozen beef study result required");
         PdfDocument pdf=new PdfDocument();
@@ -182,9 +192,9 @@ public final class V7BeefResearchPdfWriter {
                 PdfDocument.Page p=V7ReportLayoutKit.open(pdf,i,false);
                 Canvas c=p.getCanvas();c.drawColor(Color.WHITE);
                 if(i==1)pageOne(c,ctx,result,readings,sampleCount,ms,id,
-                    temperatureC,humidityPct);
-                else if(i==2)pageTwo(c,ctx,result);
-                else pageThree(c,ctx);
+                    temperatureC,humidityPct,captureTimestampUtc);
+                else if(i==2)pageTwo(c,ctx,result,captureTimestampUtc);
+                else pageThree(c,ctx,captureTimestampUtc);
                 pdf.finishPage(p);
             }
             pdf.writeTo(out);
