@@ -22,7 +22,12 @@ def binomial_upper_tail_for_at_most_misses(n, misses, coverage):
     misses = _integer(misses, 'MISSES', 0, MAX_MISSES)
     if misses >= n:
         raise ValueError('G2_FAMILYWISE_MISSES_NOT_LESS_THAN_N')
-    p = _probability(coverage, 'TARGET')
+    if type(coverage) is Fraction:
+        if not 0 < coverage < 1:
+            raise ValueError('G2_FAMILYWISE_TARGET')
+        p = coverage
+    else:
+        p = _probability(coverage, 'TARGET')
     term = p ** n
     total = term
     for j in range(1, misses + 1):
