@@ -60,6 +60,23 @@ def check_lag_pair_convexity(lag_counts):
               (p1 - p2) * (k1 - k0), 'LAG_SEGMENT_CONVEXITY')
 
 
+
+def check_cross_day_lag_lipschitz(distributions):
+    """Necessary 1-Lipschitz bound for pairs crossing each calendar midnight.
+
+    A strict one-minute timeline has at most one uninterrupted segment
+    spanning a given midnight. If it has a preceding-day rows and
+    later-day rows, cross-day pairs at lag k equal
+    max(0, min(b, k) - max(0, k-a)). Changing k by one can change
+    this count by at most one. This is not a raw timestamp replay.
+    """
+    for (k0, d0), (k1, d1) in zip(distributions, distributions[1:]):
+        check(k0 < k1, 'LAG_KNOT_ORDER')
+        for day in set(d0) | set(d1):
+            check(abs(d1.get(day, 0) - d0.get(day, 0)) <= k1 - k0,
+                  'CROSS_DAY_LAG_LIPSCHITZ')
+
+
 def reconcile(lodo, multi):
     check(type(lodo) is dict and type(multi) is dict, 'NOT_OBJECT')
     check(lodo.get('schema') == 'hazrob.g2.mq4-lodo-two-way-purge-raw-summary.v1' and
@@ -93,6 +110,7 @@ def reconcile(lodo, multi):
     check(all(valid_iso_day(d) for d in days), 'DATES')
     previous_available = None
     lag_counts = []
+    lag_distributions = []
     lag_one_cross_day = {}
     day_index = {day: i for i, day in enumerate(days)}
     for lag in LAGS:
@@ -138,6 +156,7 @@ def reconcile(lodo, multi):
                       (date.fromisoformat(later_day) -
                        date.fromisoformat(days[prior_index])).days == 1,
                       'CROSS_DAY_NONADJACENT')
+        lag_distributions.append((lag, dict(distribution)))
         if lag == 1:
             lag_one_cross_day = dict(distribution)
         else:
@@ -150,6 +169,7 @@ def reconcile(lodo, multi):
               (type(fraction) in (int, float) and expected is not None and
                abs(fraction - expected) < 1e-12), 'LAG_FRACTION')
     check_lag_pair_convexity(lag_counts)
+    check_cross_day_lag_lipschitz(lag_distributions)
     check(lr[str(max(LAGS))]['contiguous_lag_pairs'] == eligible, 'ELIGIBILITY')
     max_cross = lr[str(max(LAGS))]['cross_day_context_rows_by_later_date']
     total_rows = total_eligible = total_train = total_excluded = total_purged = 0
