@@ -6,9 +6,13 @@ import com.servoc.app.chemical.GasEngine;
 public final class HazRobHardwareProfile {
     private HazRobHardwareProfile(){}
 
-    public static final String ID="tank-doit-v1-2servo-8mq-echo-bme";
-    public static final String DRIVE_DRIVER="dual_continuous_servo";
+    // V8 assembled hardware default. Firmware /diag is authoritative when connected.
+    public static final String ID="tank-doit-v1-4dc-l298n6-8mq-echo-bme";
+    public static final String DRIVE_DRIVER="l298n_four_dc";
 
+    public static final int DC_L_EN_GPIO=17,DC_L_IN1_GPIO=19,DC_L_IN2_GPIO=32;
+    public static final int DC_R_EN_GPIO=16,DC_R_IN1_GPIO=18,DC_R_IN2_GPIO=27;
+    // Future compile-time alternative: two continuous rotation servos.
     public static final int SERVO_L_GPIO=16;
     public static final int SERVO_R_GPIO=17;
 
