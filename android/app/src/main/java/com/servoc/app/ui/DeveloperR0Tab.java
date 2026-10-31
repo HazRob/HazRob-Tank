@@ -41,15 +41,30 @@ public final class DeveloperR0Tab {
         @Override public void run(){
             if(!automaticActive||disposed)return;
             host.io().execute(()->{
+                JSONObject response=null;
                 try{
-                    JSONObject response=host.robotApi().calibrationStatus();
+                    response=host.robotApi().calibrationStatus();
                     FirmwareR0Contract.Progress progress=FirmwareR0Contract.progress(response);
                     scroll.post(()->displayCalibration(progress,response));
                 }catch(Exception ex){
+                    // Surface the actual contract error, not just the exception class.
+                    // Reading a staging R0 response is NOT permission to overwrite
+                    // phone or firmware R0. Keep controls locked and allow cancel.
+                    android.util.Log.e("TankR0V8","ESP32 R0 status/contract rejected",ex);
+                    final JSONObject observed=response;
+                    final String error=ex.getClass().getSimpleName()+": "+
+                        (ex.getMessage()==null?"no_detail":ex.getMessage());
+                    final String origin=observed==null?"no_reply":
+                        "schema="+observed.optString("schema","missing")+
+                        ", state="+observed.optString("state","missing")+
+                        ", windows="+observed.optInt("window_count",-1)+
+                        ", warmup_ms="+observed.optInt("warmup_ms",-1)+
+                        ", duration_ms="+observed.optInt("duration_ms",-1);
                     scroll.post(()->{
                         if(disposed||!automaticActive)return;
                         autoProgress.setText("تعذر تحديث معايرة الروبوت؛ إعادة المحاولة بعد ثانيتين. "+
-                            ex.getClass().getSimpleName());
+                            error+"\nESP32 R0: "+origin+
+                            "\nاحتفظ بقيم R0 الحالية؛ استخدم إلغاء إذا استمر الرفض.");
                         clock.postDelayed(autoTick,2000);
                     });
                 }
