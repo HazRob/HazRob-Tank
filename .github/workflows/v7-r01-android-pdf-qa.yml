@@ -10,6 +10,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java'
       - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/V7BeefResearchPdfWriter.java'
       - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchPdf.java'
+      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/V7FruitReportPdfWriter.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7PhysicalIcons.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7FieldChartLayout.java'
       - 'android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java'
@@ -163,6 +164,43 @@ jobs:
                        'data':'Synthetic test fixture; not a Tank exposure assessment',
                        'scientific_claim':'No recalculated altitude, heat, PM or exposure limits'}
           (p.parent/'r02_manifest.json').write_text(json.dumps(r02manifest,indent=2))
+          # R05 candidate is NOT production-wired until 18 licensed reference
+          # photographs are bundled. Validate layout and source integrity only.
+          fruit_path=p.parent/'V7_R05_Fruit_18_Families_No_Photos_Yet.pdf'
+          fruit_blank_path=p.parent/'V7_R05_Fruit_No_Data_18_Families.pdf'
+          assert fruit_path.is_file() and fruit_blank_path.is_file()
+          selected_pdf=fitz.open(fruit_path)
+          absent_pdf=fitz.open(fruit_blank_path)
+          assert len(selected_pdf)>=3,('R05 18-item matrix + source details',len(selected_pdf))
+          assert len(absent_pdf)==2,('R05 no-sample two-page matrix',len(absent_pdf))
+          ftext=' '.join(' '.join(pg.get_text().split()) for pg in selected_pdf)
+          blank_text=' '.join(' '.join(pg.get_text().split()) for pg in absent_pdf)
+          for family in ['banana','blueberry','grape','green apple','kiwi',
+                         'mandarin','pear','red apple','strawberry','tomato',
+                         'applebanana','applebananamandarin','applebananatomato',
+                         'applemandarin','appletomato','bananamandarin',
+                         'tomatobanana','tomatomandarin']:
+              assert family in ftext,('Missing selectable R05 food family',family)
+              assert family in blank_text,('Missing blank-mode R05 family',family)
+          for report in [selected_pdf,absent_pdf]:
+              for i,pg in enumerate(report):
+                  assert abs(pg.rect.width-595)<1 and abs(pg.rect.height-842)<1
+                  spans=[sp for b in pg.get_text('dict')['blocks'] if 'lines' in b
+                         for ln in b['lines'] for sp in ln['spans']
+                         if sp.get('text','').strip()]
+                  assert spans,(i,'empty R05 page')
+                  assert min(sp['size'] for sp in spans)>=11.5,(i,'font under 12pt')
+                  pg.get_pixmap(matrix=fitz.Matrix(1.5,1.5),alpha=False).save(
+                      p.parent/f'V7_R05_{len(report)}pages_Page_{i+1:02d}.png')
+          fruit_manifest={'format':'hazrob-v7-r05-layout-qa/1',
+                          'selected_pages':len(selected_pdf),
+                          'no_data_pages':len(absent_pdf),
+                          'families_present':18,
+                          'photo_assets_bundled':False,
+                          'production_entrypoint_integrated':False,
+                          'source':'Android V7FruitReportPdfWriter, not final fruit facade',
+                          'input':'Synthetic source fixture / empty readings'}
+          (p.parent/'r05_layout_manifest.json').write_text(json.dumps(fruit_manifest,indent=2))
           r06path=p.parent/'V7_R06_Actual_Android_Report.pdf'
           assert r06path.is_file() and r06path.stat().st_size>5000
           beef_pdf=fitz.open(r06path)
