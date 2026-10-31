@@ -311,7 +311,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Validated native R01/R02 CI run 41146906853 success and artifact. Integrated R06 beef research-only native Android three-section PDF writer and fixture, with true external TS5 4x4 confusion and source metadata; no direct Tank TVC claim. R03 four-panel/advanced-page/micro PPM geometry helper added and fixture. R06/R03 CI initially failed only due missing Canvas import in fixture; repair commit 308730b4 and new workflow 41147792261 in progress. Other production writers R03/R04/R05 not fully integrated; app release not complete.",
+  "latest_documented_change": "Verified real R06 Android export in run 41147792261: 3 pages, 383172 bytes, 7 MQ and TS5 confusion source, fonts>=12, 2018 article DOI, synthetic CI test only. R03 four-chart geometry Android fixture also included in same successful run, production R03 writer not replaced. Added R05 V7FruitReportPdfWriter as nonproduction candidate: 18 visible photo slots, selected only, all matching source references annex; photos not packaged and old R05 facade unchanged. No release APK.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -464,7 +464,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "R01_R02_ANDROID_CI_PASSED_R03_GEOMETRY_TEST_RUNNING_R06_BEEF_NATIVE_WRITER_QA_RUNNING",
+    "current_phase": "R01_R02_R06_REAL_ANDROID_PDF_QA_PASS_R03_GEOMETRY_QA_PASS_R05_UNWIRED_LAYOUT_CANDIDATE_R04_NOT_INTEGRATED",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -748,12 +748,24 @@
     ],
     "science_boundary": "Beef only research; no physical Tank TVC / food safety validity, no chemCore gas ppm",
     "qa": {
-      "state": "ANDROID_FIXTURE_COMPILE_REPAIR_AND_RUNNING",
-      "latest_run_id": 41147792261,
-      "observed_earlier_compile_error": "V7R01PdfFixtureActivity.java line 163 missing import android.graphics.Canvas",
-      "repair_commit": "308730b4b823b17aaa0303c92fddf6f3c957a0bb",
-      "result": "PENDING",
-      "strict_acceptance": "No automatic success from source commit"
+      "state": "ANDROID_NATIVE_PDF_AND_SCHEMA_QA_PASS",
+      "run_id": 41147792261,
+      "commit": "308730b4b823b17aaa0303c92fddf6f3c957a0bb",
+      "artifact_name": "HazRob-Tank-V7-R01-R02-R03-Geometry-Android-PDF-QA",
+      "artifact_id": 13022040717,
+      "original_android_pages": 3,
+      "original_android_pdf_bytes": 383172,
+      "test_fixture": "EXPLICIT_SYNTHETIC_TEST_FIXTURE_NOT_TANK_MEAT_VALIDATION",
+      "validations": [
+        "Gradle assembleDebug PASS",
+        "Android emulator real PdfDocument/PdfRenderer PASS",
+        "All 7 MQ labels and 4 class labels PASS",
+        "External TS5 source 4x4 cells and 2018 DOI PASS",
+        "A4 portrait, text >=12pt PASS",
+        "Per-page PNG QA artifact exported"
+      ],
+      "owner_visual_acceptance": false,
+      "production_apk_released": false
     },
     "original_measurement_data": "Single 180s source scan; no invented time history"
   },
@@ -763,5 +775,17 @@
     "owner_spec": "4 equal + separate 3D/4D and T/RH compensation + empty PPM mini",
     "full_source_integration": false,
     "qa_run": 41147792261
+  },
+  "r05_native_candidate_checkpoint": {
+    "state": "SOURCE_LAYOUT_CANDIDATE_ADDED_NOT_WIRED_TO_PRODUCTION_EXPORT",
+    "source": "android/app/src/main/java/com/hazrob/tank/foodfreshness/V7FruitReportPdfWriter.java",
+    "image_contract": "Android assets/fruit_photos/<source_family>.webp, includes composite photos of mixtures",
+    "photo_assets_packaged": false,
+    "all_categories": 18,
+    "nonselected_result": "-",
+    "complete_source_match_annex": true,
+    "fixture": "research/chemcore_v6/tests/android/V7R01PdfFixtureActivity.java",
+    "qa": "PENDING",
+    "production_route_changed": false
   }
 }
