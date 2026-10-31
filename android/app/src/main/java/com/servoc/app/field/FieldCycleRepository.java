@@ -214,6 +214,96 @@ public final class FieldCycleRepository {
         }finally{w.endTransaction();}
     }
     /**
+     * Explains which immutable acceptance gate blocked a completed field cycle.
+     * Read-only; it cannot promote a FAILED operation or create evidence.
+     */
+    public String completionFailureReason(String cycleId,String expectedDeviceId){
+        String cid=required(cycleId);
+        SQLiteDatabase w=db.getReadableDatabase();
+        try(Cursor c=w.rawQuery(
+            "SELECT c.state,c.measurement_session_id,c.device_id,"+
+            "m.ended_ts,m.operator_role,m.kind,m.analytics,m.payload,"+
+            "(SELECT COUNT(*) FROM telemetry_samples t WHERE t.session_id=c.measurement_session_id),"+
+            "c.sampling_started_ms,c.include_gas,c.include_physical,c.include_particles "+
+            "FROM field_measurement_cycles c LEFT JOIN measurement_sessions m "+
+            "ON m.session_id=c.measurement_session_id WHERE c.cycle_id=?",
+            new String[]{cid})){
+            if(!c.moveToFirst())return "FIELD_CYCLE_NOT_FOUND";
+            if(!SAMPLING.equals(c.getString(0)))return "INVALID_CYCLE_STATE:"+nz(c.getString(0));
+            String measurement=nz(c.getString(1)),device=nz(c.getString(2));
+            if(measurement.isEmpty())return "MISSING_MEASUREMENT_LINK";
+            if(device.isEmpty()||!device.equals(expectedDeviceId))
+                return "DEVICE_ID_MISMATCH";
+            if(nz(c.getString(3)).isEmpty())return "TELEMETRY_TERMINAL_NOT_SAVED";
+            if(!"USER".equals(nz(c.getString(4)))||
+               !nz(c.getString(5)).startsWith("field_"))
+                return "FIELD_MEASUREMENT_ROLE_OR_KIND_INVALID";
+            int rows=c.getInt(8);
+            if(rows<1)return "NO_RECORDED_TELEMETRY_SAMPLES";
+            if(!FieldSessionApprovalPolicy.completedSuccessfully(
+                    nz(c.getString(6)),nz(c.getString(7))))
+                return "FIELD_CAPTURE_DURATION_SAMPLES_OR_TERMINAL_STATE_INVALID";
+            if(c.isNull(9)||c.getLong(9)<=0)return "MISSING_SAMPLING_START";
+            long elapsed=android.os.SystemClock.elapsedRealtime()-c.getLong(9);
+            if(elapsed<60000L)return "SAMPLING_UNDER_60_SECONDS:"+elapsed+"ms";
+            boolean gas=c.getInt(10)!=0,physical=c.getInt(11)!=0,particles=c.getInt(12)!=0;
+            // Report individual validity counts without changing the >=10
+            // independent hardware-cycles and physical evidence criteria.
+            if(!hasMeasuredEvidence(w,measurement,gas,physical,particles))
+                return sourceEvidenceSummary(w,measurement,gas,physical,particles);
+            if(!hasRequiredChemCoreDecision(measurement,gas))
+                return "CHEMCORE_DECISION_NOT_PERSISTED_FOR_CAPTURE";
+            return "EVIDENCE_COMMIT_FAILED_OR_CONCURRENT_CHANGE";
+        }catch(Exception ex){
+            return "FIELD_COMPLETION_DIAGNOSTIC_ERROR:"+
+                ex.getClass().getSimpleName()+":"+
+                (ex.getMessage()==null?"":ex.getMessage());
+        }
+    }
+
+    private static String sourceEvidenceSummary(SQLiteDatabase db,String id,
+                                                  boolean gas,boolean physical,boolean particles){
+        java.util.Set<Long> distinctGasCycles=new java.util.HashSet<>();
+        int validPhysical=0,validParticles=0,rawRows=0;
+        try(Cursor c=db.rawQuery(
+            "SELECT mq_payload,env_payload,motion_payload FROM telemetry_samples "+
+            "WHERE session_id=? ORDER BY t_ms,id",new String[]{id})){
+            while(c.moveToNext()){
+                rawRows++;
+                try{
+                    JSONObject mq=new JSONObject(nz(c.getString(0)));
+                    java.util.Iterator<String> keys=mq.keys();
+                    while(keys.hasNext()){
+                        JSONObject q=mq.optJSONObject(keys.next());
+                        if(q!=null&&q.optBoolean("ok",false)&&
+                           q.optBoolean("powered",false)&&
+                           q.has("scan_cycle")&&q.optLong("scan_cycle",-1)>=0&&
+                           Double.isFinite(q.optDouble("rs",Double.NaN))&&
+                           q.optDouble("rs",0)>0){
+                            distinctGasCycles.add(q.optLong("scan_cycle",-1));break;
+                        }
+                    }
+                }catch(Exception ignored){}
+                try{
+                    JSONObject env=new JSONObject(nz(c.getString(1)));
+                    if(env.optBoolean("ok",false)&&
+                       Double.isFinite(env.optDouble("temperature",Double.NaN))&&
+                       env.optLong("last_ok_age_ms",Long.MAX_VALUE)<=5000L)validPhysical++;
+                }catch(Exception ignored){}
+                try{
+                    JSONObject payload=new JSONObject(nz(c.getString(2)));
+                    JSONObject pm=payload.optJSONObject("particles");
+                    if(pm!=null&&pm.optBoolean("ok",false))validParticles++;
+                }catch(Exception ignored){}
+            }
+        }
+        return "INSUFFICIENT_MEASURED_EVIDENCE:rows="+rawRows+
+            (gas?",distinct_mq_scan_cycles="+distinctGasCycles.size()+"/10":"")+
+            (physical?",valid_environment_samples="+validPhysical+"/10":"")+
+            (particles?",valid_particle_samples="+validParticles+"/10":"");
+    }
+
+    /**
      * Reverify the persisted source and the ChemCore decision immediately
      * before a PDF/XLSX reads any approved V5 measurement. Legacy V9 imported
      * rows have no historical SHA, so remain governed by their original
