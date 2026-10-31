@@ -50,7 +50,7 @@
       "title": "لا يمكن إكمال معايرة R0 التلقائية من الإعدادات",
       "module": "DeveloperR0Tab / FirmwareR0Contract / ESP32 /r0",
       "severity": "BLOCKER",
-      "status": "REPORTED",
+      "status": "CI_VERIFIED",
       "reported_by": "owner",
       "evidence": "Screenshot 1 (2026-10-31): repeating IllegalArgumentException on R0 polling, and MQ2 source=unavailable / recorded R0 samples=0",
       "actual": "Auto R0 fails to progress/commit; user sees IllegalArgumentException class only",
@@ -58,8 +58,21 @@
       "root_cause": null,
       "diagnostic_hypothesis": "FirmwareR0Contract.progress() rejects ESP32 /r0 payload; exact reason cannot be determined from screenshot because V7 hides exception message",
       "source_change": "2678773e724faefb18338aa6d54a225eb80610eb exposes exception message and /r0 schema/timing in UI; diagnostic only; not yet tested",
-      "next_evidence": "Capture actual /r0 JSON schema/state/window_count/warmup_ms/duration_ms/channels plus ESP32 firmware version, without modifying R0",
-      "validation": "Require actual V6-device R0 8-channel committed readback and phone persistence without losing existing stored R0"
+      "next_evidence": "Capture /diag fw/build_revision and raw /r0 responses at pre-start and during actual calibration; verify 180s+60s, 8 MQ counts >=10, acceptance, NVS readback and phone R0. No prior-version revert.",
+      "validation": "Require actual V6-device R0 8-channel committed readback and phone persistence without losing existing stored R0",
+      "resolution_scope": "V8 operator R0 UI and protocol compatibility diagnostics rebuilt; actual V7 IllegalArgumentException source still not reproducible without device /r0 response",
+      "source_changes": [
+        "c08b825034caa6df514b13ad88f2ff3111ff91b4 independent OperatorR0CalibrationScreen",
+        "dd777f7cda2092d130cbce96deca6fed4bf2c157 Settings integration",
+        "e6d160e207f42d888c1a88c4930eebb41a573bb5 detailed firmware schema/timing error",
+        "390d7363a7559f01b14955cf877f0435e450777b MainActivity tab/activity observer suspension",
+        "82441723d542d0946edb3762983b964467cb8b6b delete old DeveloperR0Tab overlay",
+        "2f67cdce79f0a33ec4588b99660e226a6753ca72 V6 quick 180+60 state-aware JUnit"
+      ],
+      "ci_run": 41158316938,
+      "ci_conclusion": "SUCCESS: Android full javac and targeted R0 unit tests",
+      "actual_device_status": "NOT_TESTED",
+      "confirmed_firmware_source_finding": "V6 /r0 can report tank-r0-fw-v5/2 while idle without stored quick calibration, then v6/2 for warmup/sampling/pending/ready; this version transition is valid and requires state-aware validation."
     },
     {
       "id": "V8-002",
