@@ -15,6 +15,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/report/V7FieldChartLayout.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7FieldReportSourceSnapshot.java'
       - 'android/app/src/main/java/com/servoc/app/report/V7FieldSessionPdfWriter.java'
+      - 'android/app/src/main/java/com/servoc/app/report/V7FieldSourceReferences.java'
       - 'android/app/src/main/java/com/servoc/app/report/TankPhysicalSnapshotPdf.java'
       - 'android/app/src/main/res/drawable/hazrob_official_report_mark.xml'
       - 'android/app/src/main/java/com/servoc/app/MainActivity.java'
