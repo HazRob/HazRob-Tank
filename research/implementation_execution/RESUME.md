@@ -1,3 +1,12 @@
+## 2026-10-31 — G2 MQ4 necessary lag-pair and later-day row bounds (611 expected; CI verification pending)
+
+- Reviewed the previous checkpoint `1a825ce8da3e7fe3b577e5089ba49d7ce0d08497`. Its G2 workflow [41144282084](https://github.com/HazRob/HazRob-Tank/actions/runs/41144282084), job `124365584523`, **completed successfully with 608/608 tests**, 80-technique fail-closed gate, deterministic replay and publication guard (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). This confirms the *previous* checkpoint only.
+- Identified a necessary combinatorial invariant absent from the MQ4 cross-report checker: with `n` rows, `s` nonempty strict-minute segments and lag `k`, contiguous pairs cannot exceed `max(0,n-s+1-k)`; mere monotonicity is insufficient. Also added later-day cross-context count <= later-day raw fold rows and a positive row count per declared calendar day.
+- Research-only code commit `b9d765bcec8772ca8a63baa17b2cd4a2f94f5fa7`; tests `299a3f913ec815c34763d4adce203a8ccd0a82b6` corrected with internally consistent cross-day fixture in `d3b0c1b7fac2cc6de97746b173ad2ee5239281af`. Three new synthetic regressions; **611 tests expected, not yet verified**. Methodology: `G2_MQ4_LAG_COMBINATORIAL_DAY_ROW_BOUNDS_2026-10-31_AR.md` (commit `134df376eca8c9ac56456039e78b9b485ceba077`). Verify new G2 Actions and repair any failure; do not infer success from previous CI.
+- Existing pinned reconciliation result schema/bytes unchanged; no new original raw ZIP replay, independently calibrated reference, physical exposure grouping or scientific qualification. `G2_INDEPENDENT_EVIDENCE.json` still `records=[]`; no G2/G3 promotions. All modifications restricted to `research/implementation_execution/` on the research branch; Stable, Android, firmware and main unchanged.
+
+---
+
 ## 2026-10-31 — G2 MQ4 cross-midnight day adjacency and lag-one continuity (CI pending)
 
 - Resumed from `6857c83a9330885ff5cd629ed277a16fcf7b3844`; verified **20/20 prior HEAD Actions successes** and preserved 605-test baseline. Research-only updates to `g2_mq4_cross_report_reconciliation.py` and `test_g2_mq4_cross_report_reconciliation.py` add fail-closed checks for **nonadjacent calendar-day crossings** and **positive longer-lag midnight crossing without a lag-one contiguous crossing**. Added **three synthetic regression cases** and Arabic methodology `G2_MQ4_CROSS_DAY_CONTIGUITY_2026-10-31_AR.md`. Expected test count is **608**, but **do not claim 608/608 PASS before G2 CI finishes**.
