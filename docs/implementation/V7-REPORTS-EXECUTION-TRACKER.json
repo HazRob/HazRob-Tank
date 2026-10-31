@@ -6,7 +6,7 @@
   "baseline_branch": "feature/tank-v6-implementation",
   "baseline_commit": "cf818a9e2ea1064da37f0d9fdf6beb0de4847250",
   "focus": "Android PDF report design, authentic chart/analysis presentation and evidence integrity",
-  "state": "V7_DISCUSS_ALL_REPORTS_BEFORE_UNIFIED_IMPLEMENTATION",
+  "state": "V7_REPORT_VISUAL_DESIGN_ONLY_QA_PAUSED_BY_OWNER",
   "app_version_target": "7.0-dev (planned, not changed in source)",
   "last_packaged_app_version": "6.0 diagnostic",
   "firmware_change_scope": "NONE",
@@ -15,7 +15,7 @@
     "production_release_authorized": false,
     "hardware_g3_techniques_validated": 0,
     "approval_required": true,
-    "ci_quality_gate": "pending",
+    "ci_quality_gate": "PAUSED_BY_OWNER_FOR_CURRENT_DESIGN_PHASE",
     "note": "V6 has not completed production acceptance; V7 branch is report-design work only."
   },
   "initial_inventory": [
@@ -310,8 +310,8 @@
       "state": "NO_RELEASE"
     }
   ],
-  "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "R03 native full blank layout passed CI 41148763993 (11 A4 landscape pages, min 12pt), earlier 2x2 geometry passed 41147792261; fixed y-axis word-breaking via vertical orientation, CI 41148972994 PASS. New V7FieldSessionPdfWriter source contract preserves all approved session candidate rows and full audit hashes; new qualified material GHS and all-source OEL appendix without calculating exposure. Latest native regression runs 41149351009/41149366653 still in progress. Production SmartFieldSessionPdfWriter unchanged until source graphics and G/F/P are preserved.",
+  "resume_rule": "At owner-directed QA pause: do DESIGN ONLY. Read detailed R04 spec and unified R01-R06 visual map, continue layouts/figures and record owner approvals. Do not run Android QA/tests/builds or switch production entrypoints until owner explicitly reauthorizes testing; never claim blank external previews are app-produced PDFs.",
+  "latest_documented_change": "2026-10-31: Owner paused tests/QA and requested focus on report design. R04 complete detailed proposed site visual spec committed 192778f5; unified R01-R06 design-components/figures/page mapping committed b54fd47f. No new CI requested in design-only phase; final acceptance and production APK remain blocked. Earlier R03 source-provenance/header changes are source edits, not new accepted R03 production integration.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -837,5 +837,20 @@
     "production_r03_replaced": false,
     "reason_not_replaced": "Actual MQ/chemcore time series, compensation/3D4D and archived physical/PM chart inputs are not yet bound; current production R03 still contains original source-plotted charts.",
     "owner_visual_signoff": false
+  },
+  "design_only_checkpoint": {
+    "date": "2026-10-31",
+    "state": "OWNER_PAUSED_QA_DESIGN_ONLY",
+    "new_docs": [
+      "docs/implementation/V7-R04-SITE-DESIGN-DETAIL-2026-10-31_AR.md",
+      "docs/implementation/V7-R01-R06-UNIFIED-REPORT-VISUAL-DESIGN-MAP-2026-10-31_AR.md"
+    ],
+    "changes": [
+      "R04 detailed A4 geometry and 12-section site design including 144, G/F/P, all candidates and SHA audit",
+      "R01-R06 shared component map and nonduplicate chart purposes",
+      "No tests, APK, field-validation assertions"
+    ],
+    "r04_owner_signoff": "ONLY previously approved components; new R04 page ordering is proposal",
+    "next": "Continue visual composition; capture owner visual design approvals; keep QA paused"
   }
 }
