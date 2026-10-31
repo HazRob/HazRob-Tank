@@ -73,9 +73,9 @@ public final class V7ExtremeInstantReplay {
             3.5,2.6,4.5,2.0,0.006,3.0,0.012,2.9));
         tests.add(new Profile("ALTERNATING_LOWS_HIGHS",13,
             0.008,6.0,0.020,5.0,0.005,4.0,0.040,3.0));
-        tests.add(new Profile("FOUR_PRESENT_TWO_RESPOND",0,
-            Double.NaN,0.01,Double.NaN,0.02,Double.NaN,1.0,Double.NaN,1.0));
-        tests.add(new Profile("FOUR_PRESENT_TWO_RESPOND_VALID",13,
+        tests.add(new Profile("FOUR_PRESENT_ONE_RESPOND",0,
+            Double.NaN,0.01,Double.NaN,1.0,Double.NaN,1.0,Double.NaN,1.0));
+        tests.add(new Profile("FOUR_PRESENT_TWO_RESPOND_VALID",7,
             Double.NaN,0.01,Double.NaN,0.02,1,1,Double.NaN,Double.NaN));
         List<Long> constantOrder=null;
         Set<String> engineRankings=new LinkedHashSet<>();
@@ -92,11 +92,9 @@ public final class V7ExtremeInstantReplay {
                 if(constantOrder==null)constantOrder=ranked;
                 expect(constantOrder.equals(ranked),test.id+": V7 source-first projection changed");
             }
-            if(test.expectedOperator==13)
-                expect(ui.size()==13,test.id+": expected 13 operator candidates");
-            else if(test.expectedOperator==0)
-                expect(ui.size()==0,test.id+": expected gate to suppress operator list");
-            else throw new AssertionError("fixture unsupported");
+            expect(ui.size()==test.expectedOperator,
+                test.id+": expected "+test.expectedOperator+
+                " hypotheses but saw "+ui.size());
             if(!engine.rankedCandidates.isEmpty()){
                 engineRankings.add(engine.rankedCandidates.toString());
                 scoreSequences.add(summary(engine,3));
