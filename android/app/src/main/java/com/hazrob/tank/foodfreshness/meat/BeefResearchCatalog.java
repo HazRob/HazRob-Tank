@@ -14,7 +14,7 @@ import java.util.List;
  */
 public final class BeefResearchCatalog {
     public static final String STUDY_DOI="10.17632/mwmhh766fc.3";
-    public static final String STUDY_PAPER="10.1016/j.dib.2018.11.075";
+    public static final String STUDY_PAPER="10.1016/j.dib.2018.11.091";
     public static final String MODEL="wijaya2018-5series-seven-overlap-median-centered-log-shape/1";
     public static final double HELDOUT_ACCURACY=0.4393518518518518;
     public static final double HELDOUT_BALANCED_ACCURACY=0.38878968253968255;
