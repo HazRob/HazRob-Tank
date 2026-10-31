@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from g2_mq4_cross_report_reconciliation import ARCHIVE, RAW, LAGS, load_report, reconcile, check_lag_pair_convexity, check_cross_day_lag_lipschitz, check_cross_day_profile_feasibility
+from g2_mq4_cross_report_reconciliation import ARCHIVE, RAW, LAGS, load_report, reconcile, check_lag_pair_convexity, check_cross_day_lag_lipschitz, check_cross_day_profile_feasibility, check_same_day_lag_capacity
 
 
 def synthetic():
@@ -464,6 +464,39 @@ class MQ4CrossReportTests(unittest.TestCase):
         knots = [(k, m['lag_results'][str(k)]
                   ['cross_day_context_rows_by_later_date']) for k in LAGS]
         self.assertIsNone(check_cross_day_profile_feasibility(knots, l['folds']))
+
+
+    def test_same_day_lag_capacity_accepts_contiguous_synthetic(self):
+        l, m = synthetic()
+        self.assertIsNone(check_same_day_lag_capacity(m['lag_results'], l['folds']))
+
+    def test_same_day_lag_capacity_rejects_excess_reported_pairs(self):
+        l, m = synthetic()
+        # At k=120, 60+121 rows across two days permit at most one
+        # same-day strict-minute pair. A reported second pair is impossible.
+        m['lag_results']['120']['same_day_context_rows'] = 2
+        with self.assertRaisesRegex(ValueError, 'SAME_DAY_LAG_CAPACITY'):
+            check_same_day_lag_capacity(m['lag_results'], l['folds'])
+
+    def test_reconcile_rejects_calendar_day_capacity_tamper(self):
+        l, m = synthetic()
+        # Preserve all global row totals and fold arithmetic, but move
+        # one row across midnight. The single reported same-day lag-120
+        # pair is now impossible even though aggregate lag totals match.
+        first = l['folds']['2021-07-21']
+        second = l['folds']['2021-07-22']
+        first['holdout_total'] = 61
+        first['holdout_history_ineligible'] = 61
+        second['holdout_total'] = 120
+        second['holdout_history_ineligible'] = 59
+        with self.assertRaisesRegex(ValueError, 'SAME_DAY_LAG_CAPACITY'):
+            reconcile(l, m)
+
+    def test_pinned_mq4_same_day_lag_capacity(self):
+        root = Path(__file__).resolve().parent
+        l = load_report(root / 'G2_MQ4_LODO_TWO_WAY_PURGE_RAW_REPLAY_2026-10-30.json')
+        m = load_report(root / 'G2_MQ4_MULTISCALE_DAY_CONTEXT_EMBARGO_2026-10-30.json')
+        self.assertIsNone(check_same_day_lag_capacity(m['lag_results'], l['folds']))
 
 
 if __name__ == '__main__':
