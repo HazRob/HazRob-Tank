@@ -1,0 +1,95 @@
+name: Tank V8 four-DC L298N firmware compile and six-pin regression (bench candidate)
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'firmware/ESP32-Tank/**'
+      - '.github/workflows/v8-4wd-l298n-firmware-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-esp32-tank-v8-4wd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the assembled four-DC drive mapping and R0 continuity
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          c=Path('firmware/ESP32-Tank/Config.h').read_text()
+          hw=Path('firmware/ESP32-Tank/Hardware.cpp').read_text()
+          ino=Path('firmware/ESP32-Tank/ESP32-Tank.ino').read_text()
+          expected={
+            'DRIVE_L_EN':17,'DRIVE_L_IN1':19,'DRIVE_L_IN2':32,
+            'DRIVE_R_EN':16,'DRIVE_R_IN1':18,'DRIVE_R_IN2':27}
+          for pin,n in expected.items():
+            assert re.search(r'\b'+pin+r'\s*=\s*'+str(n)+r'\b',c), (pin,n)
+          assert 'DRIVE_HARDWARE=DriveHardware::L298N_FOUR_DC' in c
+          assert 'dcMotorWrite(Cfg::DRIVE_L_EN,Cfg::DRIVE_L_IN1,Cfg::DRIVE_L_IN2' in hw
+          assert 'dcMotorWrite(Cfg::DRIVE_R_EN,Cfg::DRIVE_R_IN1,Cfg::DRIVE_R_IN2' in hw
+          assert 'driveOutputsBegin();' in hw
+          assert 'void motionStopImmediate()' in hw and 'driveWrite();' in hw
+          assert 'CONTROL_COMMAND_TIMEOUT_MS=500' in c
+          assert 'if(transportLost||now-cmdAt>Cfg::CONTROL_COMMAND_TIMEOUT_MS)' in hw
+          assert 'l298n_four_dc' in hw and 'dual_continuous_servo' in hw
+          assert 'warmSeconds==180&&sampleSeconds==60' in hw
+          assert 'DEVICE_CLEAN_AIR_RS_MEAN' in hw
+          assert 'web.on("/drive"' in ino and 'web.on("/r0"' in ino
+          assert 'ultraWarning=' in hw and 'no_falling_edge' in hw
+          assert 'ultraWarning' not in hw[hw.index('void driveUpdate()'):hw.index('/* energy basis')]
+          print("SOURCE-LEVEL PASSED; bench and installed device not tested")
+          PY
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install pinned Arduino-ESP32 3.3.11
+        shell: bash
+        run: |
+          set -euo pipefail
+          INDEX=https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index --additional-urls "$INDEX"
+          arduino-cli core install esp32:esp32@3.3.11 --additional-urls "$INDEX"
+      - name: Compile ESP32-Tank sketch for DOIT DevKit V1
+        run: |
+          set -euo pipefail
+          arduino-cli compile --fqbn esp32:esp32:esp32 --warnings all \
+            --output-dir built-esp32-tank firmware/ESP32-Tank
+          test -n "$(find built-esp32-tank -name '*.bin' -print -quit)"
+      - name: Package Arduino source and bench-only BIN
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,zipfile,json
+          root=Path('firmware/ESP32-Tank');out=Path('v8-4wd-bench');out.mkdir(exist_ok=True)
+          source=out/'HazRob-Tank-V8-4DC-L298N-Arduino-UNVERIFIED-HARDWARE.zip'
+          with zipfile.ZipFile(source,'w',zipfile.ZIP_DEFLATED) as z:
+            for p in sorted(root.iterdir()):
+              if p.is_file() and p.suffix in {'.ino','.cpp','.h','.md'} and not p.name.endswith('Secrets.h'):
+                z.write(p,arcname='ESP32-Tank/'+p.name)
+          binaries=sorted(Path('built-esp32-tank').glob('*.bin'))
+          assert binaries
+          for binary in binaries: (out/binary.name).write_bytes(binary.read_bytes())
+          manifest={
+            'source_commit':'${{ github.sha }}','sketch':'ESP32-Tank',
+            'drive_backend':'L298N_FOUR_DC',
+            'wiring':{'L_EN':17,'L_IN1':19,'L_IN2':32,'R_EN':16,'R_IN1':18,'R_IN2':27},
+            'physical_flash_test':False,'physical_motion_test':False,
+            'r0_device_validation':False,'echo_device_validation':False,
+            'arduino_esp32_core':'3.3.11'
+          }
+          (out/'BUILD-MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          (out/'SHA256SUMS.txt').write_text(''.join(
+            hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n'
+            for p in sorted(out.iterdir()) if p.name!='SHA256SUMS.txt'))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tank-V8-4DC-L298N-Arduino-BIN-BENCH-NOT-FLASHED
+          path: v8-4wd-bench/
+          if-no-files-found: error
+          retention-days: 30
