@@ -1,3 +1,11 @@
+## 2026-10-31 — G2 MQ4 CI regression repair (611-test gate requeued)
+
+- Initial new-code G2 workflow [41149599386](https://github.com/HazRob/HazRob-Tank/actions/runs/41149599386), job `124382691584`, executed **611 tests and failed 1**: legacy `test_reject_lag_pair_count_increasing_with_lag` expected `LAG_AVAILABLE_MONOTONIC`, but the newly inserted stronger `LAG_MAX_PAIRS_BY_SEGMENTS` check raised first. No underlying pinned-source discrepancy was identified; the test failed because of diagnostic precedence.
+- Fixed by checking monotonicity first, then the stricter combinatorial bound, preserving both checks and the legacy diagnostic contract. Repair commit `d481dfa0c4afdf917937c7ec0e7a01f637ad847e`. The 611-test G2 workflow [41149752531](https://github.com/HazRob/HazRob-Tank/actions/runs/41149752531) was queued at the last inspection. **Do not claim a pass until the repair CI finishes**; inspect logs and repair further failures if any.
+- Scientific state remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent evidence `records=[]`. No Stable, Android, firmware, main or G2/G3 qualification changes.
+
+---
+
 ## 2026-10-31 — G2 MQ4 necessary lag-pair and later-day row bounds (611 expected; CI verification pending)
 
 - Reviewed the previous checkpoint `1a825ce8da3e7fe3b577e5089ba49d7ce0d08497`. Its G2 workflow [41144282084](https://github.com/HazRob/HazRob-Tank/actions/runs/41144282084), job `124365584523`, **completed successfully with 608/608 tests**, 80-technique fail-closed gate, deterministic replay and publication guard (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). This confirms the *previous* checkpoint only.
