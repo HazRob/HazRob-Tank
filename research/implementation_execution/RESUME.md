@@ -1,3 +1,15 @@
+## 2026-10-31 — G2 MQ4 prospective conformal acquisition rank budget (research only; CI pending)
+
+- Resumed from research HEAD `604cd0191d2e5b3dd7daf42c172b82f79f7a64f9`; all 11 PR-associated workflows on that SHA completed success, including G2 `41214843068` (714 tests). Independent evidence `G2_INDEPENDENT_EVIDENCE.json` still has `records=[]`.
+- Added `g2_mq4_prospective_acquisition_budget.py`, 10 deterministic synthetic/fail-closed tests, pinned `G2_MQ4_PROSPECTIVE_ACQUISITION_BUDGET_2026-10-31.json` and Arabic design document. Exact rational finite-rank bound avoids a near-unity confidence-level performance/precision issue. Local 10/10 tests PASS.
+- This is a **necessary rank-only planning budget**, not physical exposure data or sufficient scientific sample size. At 90%/95% nominal levels, calibration rank needs 9/19 candidate exchangeable groups. With 3 training groups, 6 illustrative locked test groups, and calendar embargo 0/1/2 days, a **fresh** hypothetical one-independent-exposure-group-per-day sequence needs 18/19/20 or 28/29/30 consecutive calendar days respectively. Six holdout groups are not a validated coverage test size.
+- Existing 11 source calendar days yield at most 2/1/0 candidate calibration days before the locked block; these days are **not** verified independent physical exposures. No source ZIP reanalysis was performed in this iteration: the planning inputs are taken from the previous pinned, SHA-verified source summary. The original ZIP remains outside Git.
+- Research-only commits: implementation `e88ebe38`, tests `36f674b1`, pinned result `7c0294be`, Arabic documentation `0644cf50`, pinned-result regression `7d8afff6`, exact-rank fix `3282279e`, extreme-nominal test `80b20805`. All paths under `research/implementation_execution/`, research branch only.
+- GitHub Actions on final code/test commit `80b208054d007a681c71ccf6a268c6096e38ca63` were queued at last check. Inspect its G2 run, fix failures if any, and update this checkpoint with verified CI before asserting 724 tests PASS. Previous 714/714 is verified, not a claim for this commit.
+- Scientific state unchanged: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; no G2/G3 promotion. No ChemCore Stable, Android, firmware or main modifications. Independent traceably calibrated exposures and blinded grouped holdouts remain the fundamental blocker.
+
+---
+
 ## 2026-10-31 — G2 MQ4 locked-day conformal finite-rank feasibility (714/714 CI, research only)
 
 - Resumed from research HEAD `6a49bad08d054f8614e6e672d3db6e78a2f664cd`. All 20 visible preceding CI workflows completed success; G2 run `41210051442` passed 705 tests.
