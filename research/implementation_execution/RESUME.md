@@ -1,3 +1,13 @@
+## 2026-10-31 — G2 family-wise 80-claim zero-miss planning (research-only; verify new CI)
+
+- Resumed from research HEAD 48c9f2ec1cdeebf8379f55f99d70b55240a7dfa6. Verified 20 latest visible Actions runs on this SHA completed success, including G2 run 41224129739 with 734/734 tests.
+- Added exact-rational Bonferroni family-wise zero-miss planning for **80 predeclared coverage claims**, 11 synthetic/fail-closed tests, pinned JSON and Arabic methods. Locally tested 11/11 PASS using the same finite-rank function as the research source.
+- For simultaneous one-sided 95% family confidence, target coverage 90%/95%, zero misses per claim, minimum **71/144** independent physical holdout groups per claim; distinct from single-claim 29/59. Illustrative 3 training + 9/19 conformal rank calibration + 71/144 holdout = **83/166** groups; 0/1/2-day hypothetical embargo yields 83/84/85 and 166/167/168 days only if one verified independent exposure group per day. Groups may be reused across techniques only when each claim's physical validity is established; no 80-fold multiplication is assumed.
+- **Conditional planning, not observed coverage or qualification.** No original ZIP replay this iteration; previous SHA-verified 14,186-row/11-day MQ4 source summary remains the reference. G2_INDEPENDENT_EVIDENCE.json still records=[], g2_pass_candidates=0, g2_blocked=80, source_blocked=14.
+- Research-only changes in research/implementation_execution/ on the research branch. No Stable, Android, firmware or main changes. Verify Actions on this new SHA before claiming 745/745. Independent traceably calibrated exposures, frozen blinded grouped holdouts and source-qualified provenance are still required.
+
+---
+
 ## 2026-10-31 — G2 MQ4 zero-miss independent holdout coverage budget (734/734 G2 CI verified; research only)
 
 - Resumed from `815a620fe1cc94df56b762594d9082ac9f72f527`; G2 Actions run `41219577849` passed 724/724 offline tests and fail-closed audit/publication guard. All visible workflow runs for that checkpoint completed success.

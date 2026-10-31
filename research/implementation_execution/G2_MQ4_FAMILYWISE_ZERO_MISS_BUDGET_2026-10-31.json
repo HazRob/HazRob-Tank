@@ -1,0 +1,47 @@
+{
+  "calendar_embargo_days": [
+    0,
+    1,
+    2
+  ],
+  "family_confidence": 0.95,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "illustrative_existing_holdout_groups": 6,
+  "illustrative_training_groups": 3,
+  "independent_physical_holdout_records_available": 0,
+  "levels": {
+    "0.9": {
+      "all_claims_scientifically_qualified": false,
+      "finite_split_conformal_calibration_rank_groups_only": 9,
+      "illustrative_days_one_verified_independent_group_per_day": {
+        "0": 83,
+        "1": 84,
+        "2": 85
+      },
+      "illustrative_train_calibration_holdout_groups": 83,
+      "independent_zero_miss_holdout_groups_per_claim": 71,
+      "previous_six_group_simultaneous_lower_bound_if_all_covered": 0.2924017738212866
+    },
+    "0.95": {
+      "all_claims_scientifically_qualified": false,
+      "finite_split_conformal_calibration_rank_groups_only": 19,
+      "illustrative_days_one_verified_independent_group_per_day": {
+        "0": 166,
+        "1": 167,
+        "2": 168
+      },
+      "illustrative_train_calibration_holdout_groups": 166,
+      "independent_zero_miss_holdout_groups_per_claim": 144,
+      "previous_six_group_simultaneous_lower_bound_if_all_covered": 0.2924017738212866
+    }
+  },
+  "limitations": "Conditional design only: 80 separately predeclared coverage claims, Bonferroni family-wise one-sided confidence, zero misses per claim, independent representative Bernoulli physical holdout groups within each claim, fixed protocol and genuine blinded evaluation. Bonferroni does not require independence across techniques; the same verified physical groups may be reused across techniques when every claim is valid on them. These are necessary numerical zero-miss bounds for the stated protocol, not observed performance, a sufficient G2 sample size, power analysis, or evidence of independent exposures. Calendar days are not inherently independent groups. No multiple-claim correction is necessary when only one claim is prespecified; do not assert 80 simultaneous claims unless all are preregistered and scientifically meaningful.",
+  "nominal_coverage_levels": [
+    0.9,
+    0.95
+  ],
+  "number_of_predeclared_coverage_claims": 80,
+  "per_claim_alpha_bonferroni": 0.000625,
+  "schema": "hazrob.g2.mq4-familywise-zero-miss-budget.v1"
+}
