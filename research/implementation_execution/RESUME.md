@@ -1,9 +1,9 @@
-## 2026-11-01 — G2 MQ4 hypothetical prevalence-transport sensitivity (research-only; CI pending)
+## 2026-11-01 — G2 MQ4 hypothetical prevalence-transport sensitivity (810/810 G2 CI verified)
 
 - Resumed from `78ba63fb54d9f550217755ab2e4d26d7d551dcfd`; verified 11/11 PR-associated Actions on that commit completed success, including G2 run 41248361462. Independent physical evidence `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
 - Added exact-Fraction reproducible source-only diagnostic prevalence stress test across all five pinned MQ4 4-ppm confusion matrices, hypothetical prevalence 1%, 5%, 10%, 50%; 16 deterministic fail-closed tests, pinned JSON and Arabic methodology. Source SHA256 `0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea`.
 - For RIDGE_MQ4_3_T_RH (Se=1302/2346, FPR=787/11840), conditional projected PPV at 1% prevalence is 7.78%; **not observed field PPV**, not safety performance. Fixed sensitivity/specificity under prevalence shift is a strong, unverified assumption. Original retrospective folds train on future days; serial rows are not independent exposures.
-- No raw source ZIP replay or independent Tank measurements in this iteration. Check CI for new atomic research-only commit before claiming suite success. G2/G3 blocked; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No Stable, Android, firmware or main modifications.
+- No raw source ZIP replay or independent Tank measurements in this iteration. [G2 Actions 41252610715](https://github.com/HazRob/HazRob-Tank/actions/runs/41252610715) on research implementation SHA `dd9f5b31a5bad931883a0dbc353267ee985becd2` passed **810/810** offline tests, including all 16 new fail-closed tests, evidence audit, byte-identical replay and publication guard. Verify documentation-only follow-up CI separately. G2/G3 blocked; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No Stable, Android, firmware or main modifications.
 
 ---
 
