@@ -91,13 +91,13 @@ def reconcile(lodo, multi):
               a + b == available and available + c == n, 'LAG_ARITHMETIC')
         if lag == 1:
             check(available == n - segments, 'SEGMENT_LAG_ONE')
+        if previous_available is not None:
+            check(available <= previous_available, 'LAG_AVAILABLE_MONOTONIC')
         # With `segments` nonempty contiguous runs and n total rows, the
         # maximum lag-k pairs occur when all but one run contain one row.
         # This is a necessary combinatorial bound, not raw-signal validation.
         check(available <= max(0, n - segments + 1 - lag),
               'LAG_MAX_PAIRS_BY_SEGMENTS')
-        if previous_available is not None:
-            check(available <= previous_available, 'LAG_AVAILABLE_MONOTONIC')
         previous_available = available
         distribution = item.get('cross_day_context_rows_by_later_date')
         check(type(distribution) is dict and set(distribution).issubset(set(days)) and
