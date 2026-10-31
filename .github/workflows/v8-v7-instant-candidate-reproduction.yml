@@ -1,0 +1,82 @@
+name: Reproduce V7 instant candidate source-first ranking (frozen V7 source)
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'research/chemcore_v7_regression/V7CandidateRankingRepro.java'
+      - '.github/workflows/v8-v7-instant-candidate-reproduction.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v7-candidate-reproduction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact V7 immutable source (not V8)
+        uses: actions/checkout@v4
+        with:
+          ref: b344b8ac1c651794fb600baae029efd0f2522ce8
+          path: v7
+          persist-credentials: false
+      - name: Checkout independent V8 diagnostic harness only
+        uses: actions/checkout@v4
+        with:
+          path: diagnostics
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify exact V7 candidate projection/gate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C v7 rev-parse HEAD)" = b344b8ac1c651794fb600baae029efd0f2522ce8
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('v7/android/app/src/main/java')
+          instant=(root/'com/servoc/app/chemcore/TankInstantAnalyzer.java').read_text()
+          bridge=(root/'com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java').read_text()
+          engine=(root/'com/hazrob/tank/chemcore/v6/Engine.java').read_text()
+          assert 'JSONArray source=out.optJSONArray("source_curve_hypotheses")' in instant
+          assert 'Map<Long,JSONObject> distinct=new LinkedHashMap<>()' in instant
+          assert 'for(int i=0;i<source.length();i++)' in instant
+          assert 'item.put("rank",distinct.size()+1)' in instant
+          assert 'for(JSONObject candidate:distinct.values())candidates.put(candidate)' in instant
+          assert 'rankedCandidates' not in instant
+          assert 'root.put("source_curve_hypotheses",baseline.showGasHypotheses?' in bridge
+          assert 'for(Engine.SourceFit fit:data.responseCurves.allSourceFits)' in bridge
+          assert 'sourceFits.add(new SourceFit(ch,source,concentration))' in engine
+          assert 'rank.sort(Comparator' in engine
+          print("PASS exact V7 source: app projects first-source-seen IDs, NOT numerical engine rank")
+          PY
+      - name: Run original V7 Engine and clean-air gate on 5 independent synthetic inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v7-instant-test diagnostic-results
+          src=v7/android/app/src/main/java/com/hazrob/tank/chemcore/v6
+          javac -d /tmp/v7-instant-test \
+            "$src/SourceCatalog.java" \
+            "$src/AlternativeCurveCatalog.java" \
+            "$src/Engine.java" \
+            "$src/CleanAirResponseGateV6.java" \
+            diagnostics/research/chemcore_v7_regression/V7CandidateRankingRepro.java
+          java -cp /tmp/v7-instant-test \
+            com.hazrob.tank.chemcore.v6.V7CandidateRankingRepro |
+            tee diagnostic-results/V7-INSTANT-CANDIDATE-RANKING-REPRO.txt
+          printf '%s\n' 'Baseline: b344b8ac1c651794fb600baae029efd0f2522ce8' \
+            'Inputs: synthetic engineering stress cases, not known-gas lab observations' \
+            'Scope: V7 JDK inference and source-first UI projection, not SQLite Android end-to-end' \
+            'Physical gas identity/ppm validation: NOT performed' \
+            > diagnostic-results/PROVENANCE.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: V7-Instant-Candidates-Synthetic-Regression-Evidence
+          path: diagnostic-results
+          if-no-files-found: error
+          retention-days: 30
