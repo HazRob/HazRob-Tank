@@ -34,6 +34,7 @@ public final class V7FieldReportSourceSnapshot {
     }
     public static final class Candidate {
         public final int sourceIndex, measurementOrdinal;
+        public final long qualifiedChemicalUid;
         public final String measurementSessionId,label,cas,uid,evidenceTier,sourceJson;
         private Candidate(int index,int ordinal,String sessionId,JSONObject entry){
             sourceIndex=index;
@@ -42,6 +43,8 @@ public final class V7FieldReportSourceSnapshot {
             label=blank(entry.optString("label",entry.optString("name",entry.optString("chemical",""))));
             cas=blank(entry.optString("cas",""));
             uid=blank(entry.optString("chemical_uid",entry.optString("uid",entry.optString("id",""))));
+            long sourceUid=entry.optLong("chemical_uid",-1);
+            qualifiedChemicalUid=sourceUid>0?sourceUid:-1;
             evidenceTier=blank(entry.optString("evidence_tier",""));
             sourceJson=entry.toString();
         }
