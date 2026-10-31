@@ -1,3 +1,11 @@
+## 2026-10-31 — G2 MQ4 CI diagnostic-precedence repair (613-test gate requeued)
+
+- Initial [G2 CI 41154893354](https://github.com/HazRob/HazRob-Tank/actions/runs/41154893354) on `f58aa703d17cabe77289d90f1b06596ae67a9094` executed 613 tests with **one failure**: `test_reject_declared_calendar_day_with_zero_source_rows` expected `FOLD_EMPTY_CALENDAR_DAY`, but the newly inserted previous-day capacity check raised earlier. No pinned-source discrepancy was shown; test failure was diagnostic precedence.
+- Repaired by deferring the previous-day capacity invariant until after existing fold validations. Updated the new previous-day capacity negative fixture to preserve fold and global row accounting; both invariants remain active. **613 tests expected; recheck CI before declaring success.**
+- Research-only code/tests/methodology/RESUME, no Stable/Android/firmware/main changes or scientific promotion; G2 remains blocked without independent measured references and blinded physical holdouts.
+
+---
+
 ## 2026-10-31 — G2 MQ4 necessary lower lag bound and preceding-day crossing capacity (613 tests expected; CI pending)
 
 - Rechecked prior repaired G2 CI: run [41149778083](https://github.com/HazRob/HazRob-Tank/actions/runs/41149778083), job `124383281484`, **611/611 PASS**; all 20/20 workflow runs on research HEAD `059164fe7f579c083a9b33a09bd9e491ab44e8eb` completed successfully. G2 remained 0 candidates / 80 blocked / 14 source slots blocked; independent evidence `records=[]`.

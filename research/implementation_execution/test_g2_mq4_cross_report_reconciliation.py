@@ -318,7 +318,14 @@ class MQ4CrossReportTests(unittest.TestCase):
         # A lag-5 crossing declares five distinct preceding-day rows,
         # but only four source rows are now declared for that day.
         # Later-day bounds alone cannot detect this contradiction.
-        l['folds']['2021-07-21']['holdout_total'] = 4
+        first = l['folds']['2021-07-21']
+        second = l['folds']['2021-07-22']
+        first['holdout_total'] = 4
+        first['holdout_history_ineligible'] = 4
+        second['holdout_total'] = 177
+        second['holdout_history_ineligible'] = 116
+        # Preserve fold arithmetic and global row totals, exposing only
+        # the impossible previous-day capacity in the summary metadata.
         with self.assertRaisesRegex(ValueError, 'CROSS_DAY_EXCEEDS_PRIOR_DAY_ROWS'):
             reconcile(l, m)
 

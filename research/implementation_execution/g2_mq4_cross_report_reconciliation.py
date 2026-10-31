@@ -121,13 +121,6 @@ def reconcile(lodo, multi):
                       (date.fromisoformat(later_day) -
                        date.fromisoformat(days[prior_index])).days == 1,
                       'CROSS_DAY_NONADJACENT')
-                # A distinct cross-midnight pair consumes one distinct
-                # source row on the preceding calendar day.
-                prior_fold = folds[days[prior_index]]
-                check(type(prior_fold) is dict and
-                      integer(prior_fold.get('holdout_total')) and
-                      cross_rows <= prior_fold['holdout_total'],
-                      'CROSS_DAY_EXCEEDS_PRIOR_DAY_ROWS')
         if lag == 1:
             lag_one_cross_day = dict(distribution)
         else:
@@ -166,6 +159,14 @@ def reconcile(lodo, multi):
         total_train += f['train_timestamp_eligible']
         total_excluded += f['holdout_excluded_training_context']
         total_purged += f['train_purged_holdout_context']
+    # Apply the preceding-day capacity check after validating all fold
+    # counters so legacy malformed/empty-fold diagnostics take precedence.
+    for lag in LAGS:
+        for later_day, cross_rows in lr[str(lag)]['cross_day_context_rows_by_later_date'].items():
+            if cross_rows:
+                previous_day = days[day_index[later_day] - 1]
+                check(cross_rows <= folds[previous_day]['holdout_total'],
+                      'CROSS_DAY_EXCEEDS_PRIOR_DAY_ROWS')
     check(total_rows == n and total_eligible == eligible and
           total_train == eligible * (len(days) - 1), 'FOLD_TOTALS')
     check(total_excluded == total_purged ==

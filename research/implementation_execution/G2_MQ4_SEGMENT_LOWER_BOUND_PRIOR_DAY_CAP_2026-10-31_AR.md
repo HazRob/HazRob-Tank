@@ -18,3 +18,7 @@ The committed pinned-summary test and deterministic committed-result byte replay
 ## Scientific boundary
 
 No independent calibrated reference-gas exposures, authenticated physical sample groups, preregistered blind holdouts or external scientific review have been supplied. `G2_INDEPENDENT_EVIDENCE.json` remains the authority for actual submitted independent evidence. Neither these inequalities nor passing synthetic tests promote any of the 80 techniques. Stable ChemCore, Android, ESP32 firmware and `main` are out of scope.
+
+## CI regression and correction
+
+Initial commit `f58aa703d17cabe77289d90f1b06596ae67a9094` triggered [G2 CI 41154893354](https://github.com/HazRob/HazRob-Tank/actions/runs/41154893354): **613 tests, one failure**. The earlier empty-calendar-day negative fixture expected `FOLD_EMPTY_CALENDAR_DAY` but the new preceding-day capacity check raised first. This was diagnostic precedence, not a disagreement in pinned MQ4 data. The capacity check was moved after complete per-fold validation, preserving the original error classification. The preceding-day capacity fixture now keeps fold arithmetic and global row totals internally consistent while still violating the physical-day capacity constraint. Re-run CI; no pass is asserted until verified.
