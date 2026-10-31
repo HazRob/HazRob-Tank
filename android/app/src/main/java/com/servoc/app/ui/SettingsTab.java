@@ -63,7 +63,7 @@ public final class SettingsTab {
         turnSpeed.setInputType(InputType.TYPE_CLASS_NUMBER);pivotSpeed.setInputType(InputType.TYPE_CLASS_NUMBER);
         TextView tuningHelp=UiKit.small(c,"الالتفاف = سرعة الجهة الداخلية عند أقصى انحراف أثناء الحركة. الدوران = سرعة Pivot في المكان. النطاق 0–100%. الافتراضي 40% / 60%. تطبق القيم على العجلة وJoystick والأزرار فقط.");tuningHelp.setTextColor(0xFF13539C);cfg.addView(tuningHelp,UiKit.full(c));
         Button saveDriveTuning=UiKit.button(c,"حفظ سرعات القيادة");saveDriveTuning.setOnClickListener(v->saveDriveTuning());cfg.addView(saveDriveTuning,UiKit.full(c));
-        cfg.addView(UiKit.small(c,"منظومة الحركة: سيرفوان مستمرا الدوران • LEFT GPIO16 • RIGHT GPIO17 • PWM 50Hz"),UiKit.full(c));
+        cfg.addView(UiKit.small(c,"منظومة الحركة: V8 تدعم درايفر L298N لأربعة محركات DC عبر 6 منافذ، أو سيرفوَين مستمري الدوران عند اختيار وضعهما في فريموير مستقل. تحقّق من نوع الدرايفر الفعلي في بيانات الاتصال أدناه."),UiKit.full(c));
         TextView reverseHelp=UiKit.small(c,"عكس التوجيه مستقل لكل طريقة: يبدل يمين/يسار فقط ولا يغيّر الأمام/الخلف. المساطر المزدوجة مستثناة وتبقى كل مسطرة مرتبطة بجهتها مباشرة.");reverseHelp.setTextColor(0xFF13539C);cfg.addView(reverseHelp,UiKit.full(c));
         cfg.addView(directionReverseCheck(c,"العجلة: عكس التوجيه يمين/يسار",DriveDirectionOption.PREF_REVERSE_WHEEL),UiKit.full(c));
         cfg.addView(directionReverseCheck(c,"Joystick: عكس التوجيه يمين/يسار",DriveDirectionOption.PREF_REVERSE_JOYSTICK),UiKit.full(c));
@@ -166,7 +166,10 @@ public final class SettingsTab {
         String envAddr=env==null?"—":env.optString("address","—");
         String envChip=env==null?"—":env.optString("chip_id","—");
         String envAck=env==null?"76:— 77:—":"76:"+(env.optBoolean("ack_0x76",false)?"ACK":"—")+" 77:"+(env.optBoolean("ack_0x77",false)?"ACK":"—");
-        compatibility.setText("وحدة التحكم • متصلة\nDrive "+driver+" • L "+HazRobHardwareProfile.SERVO_L_GPIO+" • R "+HazRobHardwareProfile.SERVO_R_GPIO+"\nADS bus SDA21/SCL22 • ADS1 "+(adc!=null&&adc.optBoolean("ads1",false)?"OK":"—")+" • ADS2 "+(adc!=null&&adc.optBoolean("ads2",false)?"OK":"—")+"\nENV bus SDA13/SCL14 • "+(envOk?"OK":envStatus)+" • "+envType+" "+envAddr+" chip "+envChip+" • "+envAck+"\nLDR GPIO34 "+(ldr!=null&&ldr.optBoolean("installed",false)?"OK":"—")+"   •   ALERT GPIO"+(alert==null?26:alert.optInt("gpio",26))+" "+(alert!=null?"OK":"—"));compatibility.setTextColor(envOk?0xFF167443:0xFF995500);
+        String physicalPins=drive==null?"غير معروف":drive.optString("driver","").equals("l298n_four_dc")?
+            "L(EN17,IN1=19,IN2=32) • R(EN16,IN1=18,IN2=27)":
+            "L servo GPIO16 • R servo GPIO17";
+        compatibility.setText("وحدة التحكم • متصلة\nDrive "+driver+" • "+physicalPins+"\nADS bus SDA21/SCL22 • ADS1 "+(adc!=null&&adc.optBoolean("ads1",false)?"OK":"—")+" • ADS2 "+(adc!=null&&adc.optBoolean("ads2",false)?"OK":"—")+"\nENV bus SDA13/SCL14 • "+(envOk?"OK":envStatus)+" • "+envType+" "+envAddr+" chip "+envChip+" • "+envAck+"\nLDR GPIO34 "+(ldr!=null&&ldr.optBoolean("installed",false)?"OK":"—")+"   •   ALERT GPIO"+(alert==null?26:alert.optInt("gpio",26))+" "+(alert!=null?"OK":"—"));compatibility.setTextColor(envOk?0xFF167443:0xFF995500);
     }
 
     private void saveDriveTuning(){
