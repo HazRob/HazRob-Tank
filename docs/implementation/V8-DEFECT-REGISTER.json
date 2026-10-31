@@ -1,0 +1,89 @@
+{
+  "schema": "hazrob-tank-v8-defects/1",
+  "opened_date": "2026-10-31",
+  "repository": "HazRob/HazRob-Tank",
+  "branch": "feature/tank-v8-implementation",
+  "parent_branch": "feature/tank-v7-reports",
+  "parent_sha": "b344b8ac1c651794fb600baae029efd0f2522ce8",
+  "user_feedback": "V7 test APK has many problems; individual symptoms are not yet specified",
+  "artifact_under_review": {
+    "name": "HazRob-Tank-V7-Excel-TEST.apk",
+    "workflow_run": 41154308473,
+    "workflow_conclusion": "success",
+    "device_validation": "NOT_VERIFIED",
+    "signature_compatibility": "NOT_VERIFIED"
+  },
+  "severity_scale": {
+    "BLOCKER": "Cannot use app / data loss / unsafe control",
+    "HIGH": "Main workflow broken (sessions, core export, connection)",
+    "MEDIUM": "Partial function or wrong values/presentation with workaround",
+    "LOW": "Minor visual or wording issue"
+  },
+  "status_scale": [
+    "REPORTED",
+    "REPRODUCED",
+    "ROOT_CAUSE_IDENTIFIED",
+    "FIXED_SOURCE",
+    "CI_VERIFIED",
+    "DEVICE_VERIFIED",
+    "CLOSED_OWNER_ACCEPTED"
+  ],
+  "issues": [
+    {
+      "id": "V8-000",
+      "title": "بلاغ إجمالي: توجد مشكلات كثيرة في APK V7 الاختباري",
+      "module": "UNSPECIFIED",
+      "type": "OWNER_REPORT_PLACEHOLDER",
+      "severity": "UNASSESSED",
+      "status": "REPORTED",
+      "evidence": "User message 2026-10-31: توجد مشاكل كثيرة، لذا افتح مسار تعديلات v8",
+      "reproduction_steps": [],
+      "expected": null,
+      "actual": null,
+      "root_cause": null,
+      "fix_commit": null,
+      "ci_run": null,
+      "note": "Not a reproducible defect; split into numbered V8-001+ issues when user identifies them."
+    }
+  ],
+  "engineering_verification_backlog": [
+    {
+      "id": "V8-RISK-01",
+      "title": "Signed APK update compatibility and user data continuity",
+      "status": "UNVERIFIED",
+      "not_a_confirmed_bug": true
+    },
+    {
+      "id": "V8-RISK-02",
+      "title": "Full PDF R01–R06 Android generation/production UI routing",
+      "status": "UNVERIFIED",
+      "not_a_confirmed_bug": true
+    },
+    {
+      "id": "V8-RISK-03",
+      "title": "XLSX eight-MQ ADS raw vs volts and T/RH/pressure with approved field SQLite",
+      "status": "PREVIOUS_TEST_NOT_FINAL_DEVICE_TEST",
+      "not_a_confirmed_bug": true
+    },
+    {
+      "id": "V8-RISK-04",
+      "title": "Direct and Remote source provenance, R0 calibration, timing and clean-air alerts",
+      "status": "UNVERIFIED_ON_DEVICE",
+      "not_a_confirmed_bug": true
+    },
+    {
+      "id": "V8-RISK-05",
+      "title": "Android 12 sessions/navigation stability and offline/connection behavior",
+      "status": "UNVERIFIED_ON_DEVICE",
+      "not_a_confirmed_bug": true
+    }
+  ],
+  "release": {
+    "v8_apk_built": false,
+    "firmware_v8_modified": false,
+    "g3_hardware_techniques_validated": 0,
+    "defects_reproduced": 0,
+    "defects_fixed": 0,
+    "device_accepted": false
+  }
+}
