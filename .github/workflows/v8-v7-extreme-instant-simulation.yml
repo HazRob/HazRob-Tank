@@ -1,0 +1,82 @@
+name: Frozen V7 Extreme Instant MQ Simulation (ten distinct synthetic profiles)
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'research/chemcore_v7_regression/V7ExtremeInstantReplay.java'
+      - '.github/workflows/v8-v7-extreme-instant-simulation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v7-extreme-instant-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable V7 app sources
+        uses: actions/checkout@v4
+        with:
+          ref: b344b8ac1c651794fb600baae029efd0f2522ce8
+          path: frozen-v7
+          persist-credentials: false
+      - name: Checkout V8 test harness
+        uses: actions/checkout@v4
+        with:
+          path: simulations
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify exact V7 snapshot ranking and gate integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C frozen-v7 rev-parse HEAD)" = b344b8ac1c651794fb600baae029efd0f2522ce8
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('frozen-v7/android/app/src/main/java')
+          adapter=(p/'com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java').read_text()
+          instant=(p/'com/servoc/app/chemcore/TankInstantAnalyzer.java').read_text()
+          ui=(p/'com/servoc/app/ui/MeasurementsTab.java').read_text()
+          assert 'CleanAirResponseGateV6.assess(cleanAirReferences)' in adapter
+          assert 'if(!show)' in adapter
+          assert 'root.put("source_curve_hypotheses",new JSONArray())' in adapter
+          assert 'item.put("rank",distinct.size()+1)' in instant
+          assert 'Map<Long,JSONObject> distinct=new LinkedHashMap<>()' in instant
+          assert 'for(JSONObject candidate:distinct.values())candidates.put(candidate)' in instant
+          assert 'row.setBackground(UiKit.outline(c,CARD,0xFF8994A3))' in ui
+          assert 'JSONArray masterCandidates=p.optJSONArray("candidates")' in ui
+          print('Verified frozen V7 source-first operator UI projection and fixed white V6 card styling')
+          PY
+      - name: Run 10 synthetic far-apart MQ measurement vectors on original V7 Engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v7-chemcore-extreme simulation-results
+          src=frozen-v7/android/app/src/main/java/com/hazrob/tank/chemcore/v6
+          javac -d /tmp/v7-chemcore-extreme \
+            "$src/SourceCatalog.java" \
+            "$src/AlternativeCurveCatalog.java" \
+            "$src/Engine.java" \
+            "$src/CleanAirResponseGateV6.java" \
+            simulations/research/chemcore_v7_regression/V7ExtremeInstantReplay.java
+          java -cp /tmp/v7-chemcore-extreme \
+            com.hazrob.tank.chemcore.v6.V7ExtremeInstantReplay \
+            | tee simulation-results/V7-EXTREME-INSTANT-RESULTS.txt
+          printf '%s\n' \
+            'Exact V7 commit: b344b8ac1c651794fb600baae029efd0f2522ce8' \
+            'Synthetic Rs/R0 = input ratio; fixed illustrative R0=100 kOhm each sensor.' \
+            'Gate calculation assumes R0 has accepted on-device evidence for each present channel.' \
+            'Operator source-first projection mirrors TankInstantAnalyzer; actual Android SQLite master UID mapping and rendering not executed.' \
+            'No actual gas identities, concentrations or G3 qualification are established.' \
+            > simulation-results/PROVENANCE-AND-LIMITATIONS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Frozen-V7-Extreme-Instant-Simulation-Research-Only
+          path: simulation-results/
+          if-no-files-found: error
+          retention-days: 30
