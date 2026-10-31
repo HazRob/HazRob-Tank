@@ -401,7 +401,10 @@ public final class FieldSessionsTab {
             else cycleStatus.setText("الدورة #"+mostRecent.sequence+
                 " • المحاولة #"+mostRecent.attempt+" • الحالة "+mostRecent.state+
                 " • "+(mostRecent.measurementId.isEmpty()?"لم تُربط عينات بعد":
-                "قياس مرتبط "+mostRecent.measurementId));
+                "قياس مرتبط "+mostRecent.measurementId)+
+                (FieldCycleRepository.FAILED.equals(mostRecent.state)&&
+                 !mostRecent.failReason.isEmpty()?
+                    "\nسبب الفشل المحفوظ: "+mostRecent.failReason:""));
         }
         beginMeasurement.setEnabled(active&&!cycleDriver.busy());
         boolean review=mostRecent!=null&&mostRecent.reviewReady()&&!cycleDriver.busy();
