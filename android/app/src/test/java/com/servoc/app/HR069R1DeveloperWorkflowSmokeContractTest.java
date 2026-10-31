@@ -29,8 +29,8 @@ public final class HR069R1DeveloperWorkflowSmokeContractTest {
         assertTrue(s.contains("if(!unlocked||views==null)return"));
         assertTrue(lab.contains("new DeveloperExperimentsTab(context,host)"));
         assertTrue(lab.contains("experimentsButton=UiKit.button(c,\"التجارب المرجعية\")"));
-        assertTrue(settings.contains("new OperatorR0CalibrationScreen(scroll.getContext(),host)"));
-        assertFalse(s.contains("r0=new OperatorR0CalibrationScreen("));
+        assertTrue(settings.contains("new DeveloperR0Tab(scroll.getContext(),host)"));
+        assertFalse(s.contains("r0=new DeveloperR0Tab("));
     }
 
     @Test public void experimentsCannotPromoteUnreviewedOrUserLocalData()throws Exception{
@@ -49,14 +49,14 @@ public final class HR069R1DeveloperWorkflowSmokeContractTest {
     }
 
     @Test public void localR0SaveAndResetInterlockedDuringActiveCapture()throws Exception{
-        String r0=source("ui/OperatorR0CalibrationScreen.java");
-        assertTrue(r0.contains("mutationBlocked()"));
+        String r0=source("ui/DeveloperR0Tab.java");
+        assertTrue(r0.contains("calibrationChangeBlocked()"));
         assertTrue(r0.contains("ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics())"));
         assertTrue(r0.contains("ManualR0Calibration.saveForDevice("));
         assertTrue(r0.contains("ManualR0Calibration.reset("));
         assertTrue(r0.contains("ManualR0Calibration.saveAllForDevice("));
         assertTrue(r0.contains("kΩ"));
-        assertTrue(r0.contains("kΩ"));
+        assertTrue(r0.contains("1000 Ω = 1 kΩ"));
     }
 
     @Test public void labReportsCannotCallResearchScreeningQuantifiedPpmWithoutM4()throws Exception{
