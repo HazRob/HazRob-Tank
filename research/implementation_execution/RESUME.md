@@ -1,3 +1,15 @@
+## 2026-10-31 — G2 MQ4 chronological forward-only holdout (684/684 CI verified; no promotion)
+
+- Resumed from verified research HEAD `03aa288bcdb0a39445c335e6426b18c3eca4b614`; its 11 PR-associated workflows completed success. Reopened central Library original ZIP, SHA256 `7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9`, and internal CSV SHA256 `3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d`; 14,186 readings, 11 days, three MQ4 channels.
+- Added `g2_mq4_forward_chaining_probe.py`: expanding **past-only** training days, 0/1/2 prior-calendar-day embargo, at least three training days, **identical six held-out days (26–31 July) across all gaps**, training-only mean baseline, per-fold coefficients and errors. This is a distinct observational forward-prediction stress test, not independent exposure evidence.
+- Full source ZIP replay locally: 7,889 test rows across six days. Pooled RMSE ppb at gaps 0/1/2: MQ4_1 **1123.90 / 1150.12 / 1150.24**; MQ4_2 **1157.89 / 1197.61 / 1173.44**; MQ4_3 **1138.00 / 1164.34 / 1153.31**; training-mean baseline **1319.04 / 1334.19 / 1351.99**. Compare only across these same six test days; older LODO 11-day RMSE uses different test population.
+- Nine new synthetic tests (including future-label non-leakage, gap boundaries, zero-variance and tampered archive hashes) + pinned compact source-derived metrics JSON + Arabic methodology. Local 9/9 PASS. The original ZIP is not in Git; CI uses synthetic tests, not the physical original source replay.
+- Intermediate [G2 Actions 41201168815](https://github.com/HazRob/HazRob-Tank/actions/runs/41201168815) failed one of 684 tests because the test commit preceded the pinned JSON commit; **no validator weakened**. After the JSON commit, [G2 Actions 41201196210](https://github.com/HazRob/HazRob-Tank/actions/runs/41201196210) on `ffc54b8bf34b31ddbd3e48f5a3edf5d8e26840ea` **684/684 PASS**, 80-technique fail-closed audit, byte-identical replay and publication guard PASS. Documentation commit `945a5e5627abe410a7290ceecb6a0c9debc334d0` may have separate pending workflows; check by SHA.
+- Scientific status remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent evidence `records=[]`. No G2/G3 promotion, no ChemCore Stable, Android, firmware or main changes. All changes confined to `research/implementation_execution/` on research branch.
+- Next: inspect CI on documentation checkpoint, then source-qualified new independent physical exposure evidence with traceable calibration and genuinely blinded grouped holdouts; until then preserve blocked scientific state.
+
+---
+
 ## 2026-10-31 — G2 MQ4 adjacent-calendar-day embargo stress probe (research-only)
 
 - Verified previous branch HEAD `4037770d76abc7cca35ce82ccb651a7ed213a87a` and previous G2 [Actions 41192600268](https://github.com/HazRob/HazRob-Tank/actions/runs/41192600268) success (667 tests). All 20 latest listed Actions on the checkpoint completed success.
