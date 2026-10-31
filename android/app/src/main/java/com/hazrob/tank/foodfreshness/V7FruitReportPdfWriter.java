@@ -111,11 +111,13 @@ public final class V7FruitReportPdfWriter {
             "  |  MQ: "+result.usableSensorCount+"/8",
             new RectF(L+4*MM,y+10*MM,L+W-4*MM,y+21*MM),false,false);
         float headerTop=52*MM;
-        float[] pos=new float[COL.length+1];pos[0]=L;
-        for(int i=0;i<COL.length;i++)pos[i+1]=pos[i]+COL[i]*MM;
+        // Source-family photo is the FIRST column on the RIGHT in RTL.
+        // Column geometry descends from the page's right printable boundary.
+        float[] pos=new float[COL.length+1];pos[0]=L+W;
+        for(int i=0;i<COL.length;i++)pos[i+1]=pos[i]-COL[i]*MM;
         for(int col=0;col<COL.length;col++)
             V7ReportLayoutKit.tableHeader(c,
-                new RectF(pos[col],headerTop,pos[col+1],headerTop+16*MM),
+                new RectF(pos[col+1],headerTop,pos[col],headerTop+16*MM),
                 HEAD[col],col==0||col==1);
         for(int idx=0;idx<9;idx++){
             int current=(page-1)*9+idx;
@@ -125,20 +127,20 @@ public final class V7FruitReportPdfWriter {
             FoodFreshnessEngine.Match m=best.get(family);
             boolean eligible=selected.isEmpty()||family.equals(selected);
             if(!eligible)m=null;
-            RectF imageCell=new RectF(pos[0],top,pos[1],bottom);
+            RectF imageCell=new RectF(pos[1],top,pos[0],bottom);
             frame(c,imageCell,V7ReportLayoutKit.BLACK,.7f);
-            RectF photo=new RectF(pos[0]+1.5f*MM,top+2*MM,pos[1]-1.5f*MM,bottom-2*MM);
+            RectF photo=new RectF(pos[1]+1.5f*MM,top+2*MM,pos[0]-1.5f*MM,bottom-2*MM);
             if(!image(ctx,c,family,photo))
                 text(c,"-",photo,false,false);
-            V7ReportLayoutKit.tableValue(c,new RectF(pos[1],top,pos[2],bottom),
+            V7ReportLayoutKit.tableValue(c,new RectF(pos[2],top,pos[1],bottom),
                 AR[current]+"\n"+family,true);
-            V7ReportLayoutKit.tableValue(c,new RectF(pos[2],top,pos[3],bottom),
+            V7ReportLayoutKit.tableValue(c,new RectF(pos[3],top,pos[2],bottom),
                 m==null?"-":m.referenceLabel,false);
-            V7ReportLayoutKit.tableValue(c,new RectF(pos[3],top,pos[4],bottom),
+            V7ReportLayoutKit.tableValue(c,new RectF(pos[4],top,pos[3],bottom),
                 m==null?"-":fmt(m.similarityIndex,1),false);
-            V7ReportLayoutKit.tableValue(c,new RectF(pos[4],top,pos[5],bottom),
+            V7ReportLayoutKit.tableValue(c,new RectF(pos[5],top,pos[4],bottom),
                 m==null?"-":Integer.toString(m.overlappingSensors),false);
-            V7ReportLayoutKit.tableValue(c,new RectF(pos[5],top,pos[6],bottom),
+            V7ReportLayoutKit.tableValue(c,new RectF(pos[6],top,pos[5],bottom),
                 m==null?"-":"Research only",false);
             if(!selected.isEmpty()&&selected.equals(family))
                 frame(c,new RectF(L,top,L+W,bottom),V7ReportLayoutKit.AMBER,2f);
