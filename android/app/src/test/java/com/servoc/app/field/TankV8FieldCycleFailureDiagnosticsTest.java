@@ -42,6 +42,9 @@ public final class TankV8FieldCycleFailureDiagnosticsTest {
         assertTrue(controller.contains("repo.completionFailureReason(cycleId,deviceId)"));
         assertTrue(controller.contains("now-relayVerifiedAtMs<2500L"));
         assertTrue(controller.contains("STALE_MS=6000L"));
+        assertTrue(controller.contains("if(current==null){"));
+        assertTrue(controller.contains("main.postDelayed(tick,500)"));
+        assertTrue(controller.contains("UNKNOWN relay state"));
     }
 
     @Test public void missingChemCoreRatiosBecomeExplicitNonQuantitativeDecision()throws Exception{
