@@ -16,6 +16,7 @@ adb exec-out run-as com.servoc.app cat files/V7_R01_Instant_ChemCore_Approved_La
 adb exec-out run-as com.servoc.app cat files/V7_Blank_Layout_Kit_Actual_Android.pdf > /tmp/v7-r01-pdf/V7_Blank_Layout_Kit_Actual_Android.pdf
 adb exec-out run-as com.servoc.app cat files/V7_R02_Actual_Android_Report.pdf > /tmp/v7-r01-pdf/V7_R02_Actual_Android_Report.pdf
 adb exec-out run-as com.servoc.app cat files/V7_R03_Blank_Layout_Actual_Android.pdf > /tmp/v7-r01-pdf/V7_R03_Blank_Layout_Actual_Android.pdf
+adb exec-out run-as com.servoc.app cat files/V7_R03_Full_Blank_Android_Report.pdf > /tmp/v7-r01-pdf/V7_R03_Full_Blank_Android_Report.pdf
 
 adb exec-out run-as com.servoc.app cat files/V7_R06_Actual_Android_Report.pdf > /tmp/v7-r01-pdf/V7_R06_Actual_Android_Report.pdf
 adb exec-out run-as com.servoc.app cat files/V7_R05_Fruit_18_Families_No_Photos_Yet.pdf > /tmp/v7-r01-pdf/V7_R05_Fruit_18_Families_No_Photos_Yet.pdf
