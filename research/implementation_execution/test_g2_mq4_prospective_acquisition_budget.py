@@ -13,6 +13,10 @@ class MQ4ProspectiveAcquisitionBudgetTests(unittest.TestCase):
         self.assertEqual([finite_rank_minimum(p) for p in (0.5, 0.8, 0.9, 0.95)],
                          [1, 4, 9, 19])
 
+    def test_near_unity_nominal_does_not_loop_or_round_down(self):
+        self.assertEqual(finite_rank_minimum(0.999999), 999999)
+        self.assertEqual(finite_rank_minimum(0.9999999), 9999999)
+
     def test_historical_calendar_shortfalls_are_not_independent_evidence(self):
         r = plan()
         self.assertEqual([r['gap_results'][str(g)]
