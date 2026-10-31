@@ -6,28 +6,26 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import static org.junit.Assert.*;
 
-/** R0 screen navigation must never leave duplicate polling or auto-commit NVS. */
+/** No 20-minute R0 acquisition or save dialog may outlive its Android Activity. */
 public final class TankR0LifecycleContractTest {
     private static String src(String path)throws Exception{
-        return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/"+path)),
-            StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/"+path)),StandardCharsets.UTF_8);
     }
-    @Test public void onlySettingsOwnsR0AndHostDestroysController()throws Exception{
-        String settings=src("ui/SettingsTab.java");
-        assertTrue(src("MainActivity.java").contains("if(settingsTab!=null)settingsTab.release()"));
-        assertTrue(settings.contains("if(userCalibration!=null)userCalibration.release()"));
-        assertTrue(settings.contains("if(userCalibration!=null)userCalibration.onHidden()"));
-        assertTrue(settings.contains("userCalibration.onShown()"));
+    @Test public void hostDestroyDisposesDeveloperAutomaticR0()throws Exception{
+        assertTrue(src("MainActivity.java").contains("if(developerTab!=null)developerTab.release()"));
+        assertTrue(src("ui/SettingsTab.java").contains("if(userCalibration!=null)userCalibration.release()"));
     }
-    @Test public void uiPollLifecycleAndExplicitNvApproval()throws Exception{
-        String s=src("ui/OperatorR0CalibrationScreen.java");
-        assertTrue(s.contains("private boolean disposed=false,visible=false"));
-        assertTrue(s.contains("main.removeCallbacksAndMessages(null)"));
-        assertTrue(s.contains("main.removeCallbacks(poll)"));
-        assertTrue(s.contains("generation!=token"));
+    @Test public void cancellationAndActivityDestroyCannotAccidentallyApplyLateR0()throws Exception{
+        String s=src("ui/DeveloperR0Tab.java");
+        assertTrue(s.contains("private volatile boolean disposed=false"));
+        assertTrue(s.contains("if(disposed||!automaticActive)return"));
+        assertTrue(s.contains("clock.removeCallbacks(autoTick)"));
+        assertTrue(s.contains("scroll.setKeepScreenOn(false)"));
         assertTrue(s.contains("host.robotApi().calibrationCancel()"));
-        assertTrue(s.contains("FirmwareR0Contract.committedValues(verified)"));
+        assertTrue(s.contains("FirmwareR0Contract.committedValues(response)"));
         assertTrue(s.contains("ManualR0Calibration.saveFirmware("));
         assertFalse(s.contains("automaticSaveDialog"));
+        assertFalse(s.contains("awaitingSave"));
     }
+
 }
