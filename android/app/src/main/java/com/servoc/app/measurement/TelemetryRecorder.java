@@ -143,7 +143,16 @@ public final class TelemetryRecorder {
                 db.putMeta("last_chemcore_screening_session_id",completed);
                 db.putMeta("last_chemcore_screening_candidate_count",Integer.toString(analysis.candidateCount));
                 db.putMeta("last_chemcore_screening_observed_channels",Integer.toString(analysis.observedChannels));
-            }catch(Exception ignored){}
+            }catch(Exception failure){
+                android.util.Log.e("TankFieldCycle",
+                    "ChemCore decision persistence failed for documented measurement "+completed,
+                    failure);
+                if(fieldCaptureSession){
+                    db.putMeta("field_chemcore_error_"+completed,
+                        failure.getClass().getSimpleName()+":"+
+                        (failure.getMessage()==null?"":failure.getMessage()));
+                }
+            }
         }
 
         lastCompletedSessionId=completed;db.putMeta("last_measurement_session_id",completed);db.putMeta("last_measurement_session_terminal_state",state);
