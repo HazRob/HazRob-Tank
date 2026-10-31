@@ -194,6 +194,21 @@ public final class V7R01PdfFixtureActivity extends Activity {
             "3 PAGE ANDROID BLANK DESIGN ONLY; NO REPORT OR MEASUREMENT");
     }
 
+    /** Actual V7 R03 layout-only report, no chemical or field measurements. */
+    private void exerciseR03FullBlankDesign()throws Exception {
+        ByteArrayOutputStream out=new ByteArrayOutputStream();
+        V7FieldSessionPdfWriter.writeBlankDesignFixture(this,out);
+        store("V7_R03_Full_Blank_Android_Report.pdf",out);
+        int count=verify("V7_R03_Full_Blank_Android_Report.pdf");
+        if(count<10)
+            throw new IllegalStateException("R03 owner sections omitted: "+count);
+        status.put("v7_r03_full_blank",new JSONObject()
+            .put("pages",count).put("candidates","NONE - DESIGN ONLY")
+            .put("cycle_sources","NONE - DESIGN ONLY")
+            .put("render_provenance","ANDROID V7FieldSessionPdfWriter")
+            .put("engine_status","NOT CONNECTED BY DESIGN"));
+    }
+
     private void execute()throws Exception {
         com.servoc.app.chemical.GhsPictograms.bindContext(this);
         TankInstantV7PdfWriter.bindContext(this);
@@ -218,6 +233,7 @@ public final class V7R01PdfFixtureActivity extends Activity {
         exerciseV7FlexiblePagination();
         exerciseV7BlankLayoutKit();
         exerciseR03ChartGeometry();
+        exerciseR03FullBlankDesign();
         store("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf",bytes);
         verify("V7_R01_Instant_ChemCore_Approved_Layout_Test.pdf");
         bytes=new ByteArrayOutputStream();
