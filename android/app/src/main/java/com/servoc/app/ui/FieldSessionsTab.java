@@ -401,12 +401,7 @@ public final class FieldSessionsTab {
             else cycleStatus.setText("الدورة #"+mostRecent.sequence+
                 " • المحاولة #"+mostRecent.attempt+" • الحالة "+mostRecent.state+
                 " • "+(mostRecent.measurementId.isEmpty()?"لم تُربط عينات بعد":
-                "قياس مرتبط "+mostRecent.measurementId)+
-                // The FAILED reason is persisted in the ledger. Never erase it
-                // from the operator screen during refresh or navigation.
-                (FieldCycleRepository.FAILED.equals(mostRecent.state)?
-                    "\nسبب رفض الدورة: "+(mostRecent.failReason.isEmpty()?
-                        "غير موثق؛ راجع حالة الحساس والاتصال وسجل التطبيق":mostRecent.failReason):""));
+                "قياس مرتبط "+mostRecent.measurementId));
         }
         beginMeasurement.setEnabled(active&&!cycleDriver.busy());
         boolean review=mostRecent!=null&&mostRecent.reviewReady()&&!cycleDriver.busy();
