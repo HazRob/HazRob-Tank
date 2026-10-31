@@ -114,7 +114,7 @@ final class SmartFieldSessionXlsxWriter {
      * "ADC" is blank if the ESP32 did not record per-channel ADC in mq_payload.
      */
     private static String rawMqWide(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
-        int[] widths=new int[5+HazRobHardwareProfile.MQ.length*4];
+        double[] widths=new double[5+HazRobHardwareProfile.MQ.length*4];
         for(int i=0;i<widths.length;i++)widths[i]=i==0?33:i==1?16:20;
         SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(widths);
         identity(g,b,"MQ — source-exact 8-channel timestamped capture");
