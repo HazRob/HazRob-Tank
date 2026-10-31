@@ -1,3 +1,12 @@
+## 2026-11-01 — G2 MQ4 hypothetical prevalence-transport sensitivity (research-only; CI pending)
+
+- Resumed from `78ba63fb54d9f550217755ab2e4d26d7d551dcfd`; verified 11/11 PR-associated Actions on that commit completed success, including G2 run 41248361462. Independent physical evidence `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
+- Added exact-Fraction reproducible source-only diagnostic prevalence stress test across all five pinned MQ4 4-ppm confusion matrices, hypothetical prevalence 1%, 5%, 10%, 50%; 16 deterministic fail-closed tests, pinned JSON and Arabic methodology. Source SHA256 `0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea`.
+- For RIDGE_MQ4_3_T_RH (Se=1302/2346, FPR=787/11840), conditional projected PPV at 1% prevalence is 7.78%; **not observed field PPV**, not safety performance. Fixed sensitivity/specificity under prevalence shift is a strong, unverified assumption. Original retrospective folds train on future days; serial rows are not independent exposures.
+- No raw source ZIP replay or independent Tank measurements in this iteration. Check CI for new atomic research-only commit before claiming suite success. G2/G3 blocked; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No Stable, Android, firmware or main modifications.
+
+---
+
 ## 2026-11-01 — G2 MQ4 retrospective 4-ppm threshold risk audit (794/794 CI verified)
 
 - Resumed from `7f037e908ab82f1a9da9b0168458adcae3e2b7df`; G2 CI `41243618986` on that SHA completed success (781 offline tests). Verified independent evidence `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
