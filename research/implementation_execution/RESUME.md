@@ -1,9 +1,9 @@
-## 2026-11-01 — G2 MQ4 retrospective-vs-prospective protocol audit (research-only; verify CI)
+## 2026-11-01 — G2 MQ4 retrospective-vs-prospective protocol audit (781/781 CI verified)
 
 - Resumed from `1917fc605e7a67d723af678857be80deebf81c53`; all 20 latest visible Actions runs on that SHA were successful, including G2 run 41238834837 (769/769 offline tests). `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
 - Independently inspected central Library `mq4_system_benchmark_2026-10-30.py` SHA256 `367658f9884ff8355c89d803f67eb7ced78ec7299759d58ddd1742ba9a1b368b` and `mq4_full_system_research_summary_2026-10-30.json` SHA256 `0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea`. Pinned the latter as research-only snapshot.
 - **New protocol finding:** original 11-fold day holdout is retrospective, not prospective: **10/11 folds train on later days**, first fold calibrates on later day (July 31 for July 21 test), only last fold uses exclusively prior days. No within-fold same-day train/test leakage, but metrics must NOT be compared directly to six-day forward-chaining results or described as future-prediction validation.
-- Added reproducible audit script, 12 deterministic fail-closed tests, pinned JSON and Arabic report. No original ZIP replay; CI can verify pinned Library summary, not the external Library script bytes or raw archive. Check final research HEAD CI before asserting full pass.
+- Added reproducible audit script, 12 deterministic fail-closed tests, pinned JSON and Arabic report. [GitHub Actions G2 run 41243557624](https://github.com/HazRob/HazRob-Tank/actions/runs/41243557624) on implementation SHA `2fd349266ea2a77e9c8cb3eff1e928a66fb78ffb` passed **781/781** offline tests, 80-technique fail-closed evidence audit, byte-identical replay and publication guard (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). No original ZIP replay; CI verifies pinned Library summary, not the external Library script bytes or raw archive. Check CI on this documentation-only follow-up SHA independently.
 - G2 remains blocked 80/80; no G2/G3 scientific promotion, no ChemCore Stable, Android, firmware or main modifications. Continue only with source-qualified physical independent references and blinded group holdouts.
 
 ---
