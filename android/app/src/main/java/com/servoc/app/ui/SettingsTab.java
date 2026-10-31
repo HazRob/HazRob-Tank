@@ -32,7 +32,7 @@ public final class SettingsTab {
     private static final int DRIVE_FIRMWARE_LIMIT=100;
     private final HazRobHost host;private final ScrollView scroll;
     private final FrameLayout workspace;
-    private DeveloperR0Tab userCalibration;
+    private OperatorR0CalibrationScreen userCalibration;
     private LinearLayout calibrationScreen;
     private final EditText robot,camera,warm,measure,micOffset,turnSpeed,pivotSpeed;
 
@@ -118,15 +118,11 @@ public final class SettingsTab {
         return b;
     }
     private EditText field(Context c,LinearLayout p,String label,String value){TextView l=UiKit.small(c,label);l.setTextColor(0xFF46515E);p.addView(l,UiKit.full(c));EditText e=UiKit.input(c,value);p.addView(e,UiKit.full(c));return e;}
-    /**
-     * Reuses the same R0 calibration controller from V4 without requiring
-     * developer PIN. Create it lazily so settings load cannot fail on a
-     * calibration-side constructor error, and give it a full-height page.
-     */
+    /** Independent operator-only R0 controller; no developer PIN or legacy view lifecycle. */
     private void openUserCalibration(){
         if(userCalibration==null){
             try{
-                userCalibration=new DeveloperR0Tab(scroll.getContext(),host);
+                userCalibration=new OperatorR0CalibrationScreen(scroll.getContext(),host);
                 calibrationScreen=UiKit.vbox(scroll.getContext());
                 calibrationScreen.setBackgroundColor(0xFFF7F8FA);
                 Button back=UiKit.button(scroll.getContext(),"← العودة إلى الإعدادات");
@@ -144,10 +140,11 @@ public final class SettingsTab {
         }
         scroll.setVisibility(View.GONE);
         calibrationScreen.setVisibility(View.VISIBLE);
-        userCalibration.refresh();
+        userCalibration.onShown();
     }
 
     private void closeUserCalibration(){
+        if(userCalibration!=null)userCalibration.onHidden();
         if(calibrationScreen!=null)calibrationScreen.setVisibility(View.GONE);
         scroll.setVisibility(View.VISIBLE);
     }
