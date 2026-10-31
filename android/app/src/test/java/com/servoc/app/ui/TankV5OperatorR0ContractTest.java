@@ -6,34 +6,36 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import static org.junit.Assert.*;
 
-/** Source contract only. ESP32 NVS acceptance and device UI require bench tests. */
+/** V8 source contracts supersede the V5 migrated DeveloperR0Tab screen. */
 public final class TankV5OperatorR0ContractTest {
-    private static String src(String f)throws Exception{
-        return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/"+f)),
-                StandardCharsets.UTF_8);
+    private static String src(String p)throws Exception{
+        return new String(Files.readAllBytes(Paths.get("src/main/java/com/servoc/app/"+p)),
+            StandardCharsets.UTF_8);
     }
-    @Test public void r0IsOperatorSettingsPageAndNotDeveloperNavigation()throws Exception{
-        String s=src("ui/SettingsTab.java"),d=src("ui/DeveloperTab.java"),host=src("MainActivity.java");
-        assertTrue(s.contains("openUserCalibration()"));
-        assertTrue(s.contains("new DeveloperR0Tab(scroll.getContext(),host)"));
-        assertTrue(s.contains("calibrationScreen.addView(userCalibration.view()"));
-        assertFalse(d.contains("new DeveloperR0Tab(context,host)"));
-        assertTrue(d.contains("views=new View[3]"));
-        assertTrue(host.contains("if(settingsTab!=null)settingsTab.release()"));
+    @Test public void operatorR0IsRebuiltInSettingsAndNotDeveloper()throws Exception{
+        String settings=src("ui/SettingsTab.java"),dev=src("ui/DeveloperTab.java");
+        String screen=src("ui/OperatorR0CalibrationScreen.java");
+        assertTrue(settings.contains("new OperatorR0CalibrationScreen(scroll.getContext(),host)"));
+        assertTrue(settings.contains("userCalibration.onShown()"));
+        assertTrue(settings.contains("userCalibration.onHidden()"));
+        assertTrue(settings.contains("userCalibration.release()"));
+        assertFalse(dev.contains("new OperatorR0CalibrationScreen("));
+        assertFalse(settings.contains("new DeveloperR0Tab("));
+        assertFalse(Files.exists(Paths.get("src/main/java/com/servoc/app/ui/DeveloperR0Tab.java")));
+        assertTrue(screen.contains("main.removeCallbacks(poll)"));
+        assertTrue(screen.contains("generation++"));
+        assertTrue(screen.contains("onHidden()"));
     }
-    @Test public void explicitApprovalDoesNotClaimToRollbackFirmwareNvs()throws Exception{
-        String s=src("ui/DeveloperR0Tab.java");
-        assertTrue(s.contains("calibrationStart(300,60)"));
-        assertTrue(s.contains("autoApprove=UiKit.button(c,\"اعتماد R0 في التطبيق\")"));
-        assertTrue(s.contains("autoRetry=UiKit.button(c,\"إعادة المعايرة\")"));
-        assertTrue(s.contains("pendingFirmwareResult=new JSONObject(response.toString())"));
-        assertTrue(s.contains("private void acceptFirmwareResult()"));
-        assertTrue(s.contains("if(ChemCoreLibraryManager.measurementOrAnalysisActive(host.latestDiagnostics()))"));
-        assertTrue(s.contains("host.robotApi().calibrationAccept()"));
-        assertTrue(s.contains("FirmwareR0Contract.pendingValues(response)"));
-        assertTrue(s.contains("ManualR0Calibration.saveFirmware(host.preferences(),actual,deviceId,actualProgress.counts)"));
-        assertTrue(s.contains("المتبقي"));
-        assertTrue(s.contains("إلغاء R0"));
-        assertFalse(s.contains("ManualR0Calibration.saveFirmware(host.preferences(),values,deviceId,p.counts)"));
+    @Test public void approvalVerifiesFirmwareAndSavedPhoneWithoutFabrication()throws Exception{
+        String screen=src("ui/OperatorR0CalibrationScreen.java");
+        assertTrue(screen.contains("calibrationStart(180,60)"));
+        assertTrue(screen.contains("FirmwareR0Contract.pendingValues("));
+        assertTrue(screen.contains("FirmwareR0Contract.committedValues(verified)"));
+        assertTrue(screen.contains("host.robotApi().calibrationAccept()"));
+        assertTrue(screen.contains("host.robotApi().calibrationStatus()"));
+        assertTrue(screen.contains("ManualR0Calibration.saveFirmware("));
+        assertTrue(screen.contains("requestCancel()"));
+        assertTrue(screen.contains("هوية ESP32"));
+        assertFalse(screen.contains("host.robotApi().mqPower(false)"));
     }
 }
