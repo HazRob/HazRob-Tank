@@ -118,6 +118,22 @@ def check_cross_day_profile_feasibility(distributions, folds):
         previous_head_min = next_head_min
 
 
+
+def check_same_day_lag_capacity(lag_results, folds):
+    """Necessary per-calendar-day upper bound for strict-minute lag pairs.
+
+    For N distinct rows in one calendar day, even a single uninterrupted
+    one-minute run can contribute at most max(0, N-k) lag-k pairs whose
+    endpoints remain in that day. Splitting into shorter runs cannot
+    increase the number. This is a summary bound, not raw-data replay.
+    """
+    for lag in LAGS:
+        capacity = sum(max(0, f['holdout_total'] - lag)
+                       for f in folds.values())
+        check(lag_results[str(lag)]['same_day_context_rows'] <= capacity,
+              'SAME_DAY_LAG_CAPACITY')
+
+
 def reconcile(lodo, multi):
     check(type(lodo) is dict and type(multi) is dict, 'NOT_OBJECT')
     check(lodo.get('schema') == 'hazrob.g2.mq4-lodo-two-way-purge-raw-summary.v1' and
@@ -246,6 +262,7 @@ def reconcile(lodo, multi):
                 previous_day = days[day_index[later_day] - 1]
                 check(cross_rows <= folds[previous_day]['holdout_total'],
                       'CROSS_DAY_EXCEEDS_PRIOR_DAY_ROWS')
+    check_same_day_lag_capacity(lr, folds)
     check_cross_day_profile_feasibility(lag_distributions, folds)
     check(total_rows == n and total_eligible == eligible and
           total_train == eligible * (len(days) - 1), 'FOLD_TOTALS')
