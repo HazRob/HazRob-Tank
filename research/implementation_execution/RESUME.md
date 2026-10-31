@@ -1,3 +1,11 @@
+## 2026-10-31 — G2 MQ4 necessary-bound research gate verified: 613/613
+
+- Repaired implementation `ae10f849f1cc4b7b0ae639cffc402121078334a0` passed [GitHub Actions G2 run 41155009989](https://github.com/HazRob/HazRob-Tank/actions/runs/41155009989), job `124399757672`: **613/613 offline tests PASS**, compile PASS, full 80-technique fail-closed audit PASS, deterministic replay PASS, publication guard PASS. Research artifact `13024852649` saved. G2 `0/80` candidates, `80/80` blocked, source slots `14/14` blocked; independent evidence `records=[]`.
+- New necessary lag-pair lower bound and prior-day cross-midnight capacity both tested. Initial failed run [41154893354](https://github.com/HazRob/HazRob-Tank/actions/runs/41154893354) remains visible; root cause was diagnostic precedence and was corrected, not suppressed. The committed pinned MQ4 reconciliation result remains unchanged.
+- CI confirmation applies to the code/test commit above. The later documentation-only checkpoint may trigger additional Actions; verify their status separately. No physical independent exposures, traceable calibration, blinded holdout or scientific G2/G3 promotion. Only research files on the research branch changed; Stable/Android/firmware/main untouched.
+
+---
+
 ## 2026-10-31 — G2 MQ4 CI diagnostic-precedence repair (613-test gate requeued)
 
 - Initial [G2 CI 41154893354](https://github.com/HazRob/HazRob-Tank/actions/runs/41154893354) on `f58aa703d17cabe77289d90f1b06596ae67a9094` executed 613 tests with **one failure**: `test_reject_declared_calendar_day_with_zero_source_rows` expected `FOLD_EMPTY_CALENDAR_DAY`, but the newly inserted previous-day capacity check raised earlier. No pinned-source discrepancy was shown; test failure was diagnostic precedence.

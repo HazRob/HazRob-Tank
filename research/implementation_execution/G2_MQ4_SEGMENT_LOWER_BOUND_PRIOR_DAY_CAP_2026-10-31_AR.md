@@ -22,3 +22,7 @@ No independent calibrated reference-gas exposures, authenticated physical sample
 ## CI regression and correction
 
 Initial commit `f58aa703d17cabe77289d90f1b06596ae67a9094` triggered [G2 CI 41154893354](https://github.com/HazRob/HazRob-Tank/actions/runs/41154893354): **613 tests, one failure**. The earlier empty-calendar-day negative fixture expected `FOLD_EMPTY_CALENDAR_DAY` but the new preceding-day capacity check raised first. This was diagnostic precedence, not a disagreement in pinned MQ4 data. The capacity check was moved after complete per-fold validation, preserving the original error classification. The preceding-day capacity fixture now keeps fold arithmetic and global row totals internally consistent while still violating the physical-day capacity constraint. Re-run CI; no pass is asserted until verified.
+
+## Verified CI evidence
+
+After repairing diagnostic precedence, [GitHub Actions run 41155009989](https://github.com/HazRob/HazRob-Tank/actions/runs/41155009989) on commit `ae10f849f1cc4b7b0ae639cffc402121078334a0`, job `124399757672`, passed **613/613** offline tests, compilation, 80-technique fail-closed audit, deterministic replay, and publication integrity gate. Research artifact ID: `13024852649`. The previously failed run `41154893354` is preserved for audit. This verification does not imply scientific G2 or G3 approval.
