@@ -311,7 +311,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Added V7FieldReportSourceSnapshot immutable source-only R03 input from approved archive, preserving all unshortened candidate/cycle IDs+SHA and G/F/P flags, triggered Android compile run 41148370108. Added R05 18-family candidate PDF writer with image-asset slots and complete source annex, CI run 41148231563 pending. R06 true Android 3-page PDF passed 41147792261; no release APK.",
+  "latest_documented_change": "R03 native full blank layout passed CI 41148763993 (11 A4 landscape pages, min 12pt), earlier 2x2 geometry passed 41147792261; fixed y-axis word-breaking via vertical orientation, CI 41148972994 PASS. New V7FieldSessionPdfWriter source contract preserves all approved session candidate rows and full audit hashes; new qualified material GHS and all-source OEL appendix without calculating exposure. Latest native regression runs 41149351009/41149366653 still in progress. Production SmartFieldSessionPdfWriter unchanged until source graphics and G/F/P are preserved.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -464,7 +464,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "R01_R02_R06_NATIVE_QA_PASS_R03_SOURCE_SNAPSHOT_AND_LAYOUT_KIT_ADDED_R05_NATIVE_LAYOUT_QA_PENDING_R04_NOT_YET_INTEGRATED",
+    "current_phase": "R03_NATIVE_11_PAGE_LAYOUT_QA_PASS_SOURCE_QUALIFIED_GHS_OEL_RETEST_PENDING_PRODUCTION_NOT_SWITCHED",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -813,5 +813,29 @@
     "safety": "Approved cycle only may contribute to analysis; entire cycle audit ledger retained. No PDF-side classification or ppm.",
     "test": "Android compile workflow 41148370108 pending",
     "report_pdf_status": "Current SmartFieldSessionPdfWriter remains old until full R03 source->chart mapping and visual QA pass."
+  },
+  "r03_native_pdf_layout_checkpoint": {
+    "state": "NEW_NATIVE_R03_SOURCE_ONLY_LAYOUT_QA_PASS_GHS_OEL_EXTENSION_RETEST_PENDING",
+    "document": "docs/implementation/V7-R03-APPROVED-SOURCE-BINDING-AND-GHS-OEL-PRINT-GATE-2026-10-31_AR.md",
+    "native_pdf_writer": "android/app/src/main/java/com/servoc/app/report/V7FieldSessionPdfWriter.java",
+    "verified_source_contract": "android/app/src/main/java/com/servoc/app/report/V7FieldReportSourceSnapshot.java",
+    "source_reference_bridge": "android/app/src/main/java/com/servoc/app/report/V7FieldSourceReferences.java",
+    "baseline_qa_run": 41148763993,
+    "baseline_qa_result": "success",
+    "baseline_native_pdf_pages": 11,
+    "baseline_min_font_pt": 12,
+    "baseline_pdf_artifact_id": 13021339689,
+    "source_update": "all candidates per every independently approved measurement session; full ids and SHA; no cross-session rank fusion",
+    "ghssource": "qualified chemical_uid joins verified GHS catalog; only material hazard classification, not gas detection",
+    "exposure_reference_source": "all independent OEL/REL/TLV source rows with authority type unit duration source ID revision; no ppm threshold computation",
+    "dynamic_report_pages": true,
+    "new_gsh_oel_ci_runs": [
+      41149351009,
+      41149366653
+    ],
+    "new_ghs_oel_ci_state": "in_progress_at_last_check",
+    "production_r03_replaced": false,
+    "reason_not_replaced": "Actual MQ/chemcore time series, compensation/3D4D and archived physical/PM chart inputs are not yet bound; current production R03 still contains original source-plotted charts.",
+    "owner_visual_signoff": false
   }
 }
