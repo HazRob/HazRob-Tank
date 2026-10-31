@@ -3,7 +3,7 @@
   "method": "per_row_centered_log10_Rs_across_7_matching_MQ_sensor_models; median_class_profile; nearest_euclidean_log_shape",
   "provenance": {
     "original_source_doi": "10.17632/mwmhh766fc.3",
-    "original_paper_doi": "10.1016/j.dib.2018.11.075",
+    "original_paper_doi": "10.1016/j.dib.2018.11.091",
     "open_mirror": "MomThu/Beef-Quality-Analysis",
     "mirror_files": [
       {
