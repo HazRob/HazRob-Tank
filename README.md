@@ -1,3 +1,9 @@
+> **القرار الحالي لمسار HazRob Tank V7 — 31 أكتوبر 2026**  
+> **(1)** تقارير PDF R01–R06: **منجز تصميميًا بقرار المالك**، مع بقاء الربط/التحقق الإصدارِي عند إغلاق التطبيق. **(2)** تجهيز الجلسات الميدانية وتصدير Excel/البيانات الأصلية لكل حساسات MQ الثمانية، بما في ذلك **`raw` الخاص بـ ADS1115** والجهود وRs/R0 والتوقيت والمعايرة. **(3)** إنهاء Android V7 ثم إخراج APK بعد التنفيذ والاختبار والتوقيع وفق التوجيه.  
+> **فريموير V6 يوفر بالفعل 2×ADS1115 مع متوسط raw لأربع تحويلات لكل قناة عبر `/data`، ولا توجد ضرورة مبدئية لتطوير فريموير V7 لمجرد ADS.** فريموير V7 مشروط بالحاجة التقنية بعد فحص عقد البيانات. **تجارب R0 والغازات ومحاكاة ChemCore وتطوير 3D/4D مؤجلة إلى V8**، ولا تسوّغ أرقام كشف/ppm معتمدة الآن.  
+> **حظر التنفيذ الحالي:** لا إصلاحات مصدرية أخرى، لا QA جديد، لا GitHub Actions build، ولا APK حتى يوجّه المالك بالاستئناف. تعديلات التصدير والنطاق المصدرية التي سبقت هذا القرار **غير مختبرة وغير متاحة تلقائيًا في APK V6**.  
+> **المستند المرجعي الجديد:** [خطة V7 المنقحة ونتيجة تدقيق ADS](docs/implementation/V7-REVISED-ROADMAP-ADS-CAPTURE-2026-10-31_AR.md). [فهرس المحاور](docs/implementation/V7-MULTI-AXIS-MASTER-PLAN-2026-10-31_AR.md). [سجل تقارير PDF التاريخي](docs/implementation/V7-REPORTS-EXECUTION-TRACKER.json).  
+
 > **V7 visual-design checkpoint — 31 October 2026 (branch `feature/tank-v7-reports`)**  
 > The current requested work is **design-only for six Android PDF reports R01–R06**. Project owner directed **stop tests/QA** and **do not produce an APK until explicitly instructed**. This is NOT a V7 release. Existing V6/Firmware release claims are unchanged.  
 > **Resume here:** [V7 six-report visual art direction](docs/implementation/V7-R01-R06-VISUAL-ART-DIRECTION-2026-10-31_AR.md), [current tracker](docs/implementation/V7-REPORTS-EXECUTION-TRACKER.json), [18 fruit photo asset slots](docs/implementation/V7-R05-PHOTO-ASSET-CATALOG-2026-10-31.json).  
