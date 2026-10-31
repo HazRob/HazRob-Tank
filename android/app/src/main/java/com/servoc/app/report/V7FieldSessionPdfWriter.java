@@ -70,10 +70,10 @@ public final class V7FieldSessionPdfWriter {
     private static PdfDocument.Page open(PdfDocument pdf,int page){
         return V7ReportLayoutKit.open(pdf,page,true);
     }
-    private static void chrome(Canvas c,Context ctx,int no,int total){
+    private static void chrome(Canvas c,Context ctx,int no,int total,String captureTimestamp){
         V7ReportLayoutKit.drawHeader(c,ctx,true,
             "تقرير الجلسة الميدانية المعتمدة",
-            "Approved Field Session | Research Evidence",DASH);
+            "Approved Field Session | Research Evidence",captureTimestamp);
         V7ReportLayoutKit.drawFooter(c,true,no,total);
     }
     private static int candidatePages(V7FieldReportSourceSnapshot s){
@@ -111,9 +111,12 @@ public final class V7FieldSessionPdfWriter {
         };
         float yy=45;
         for(String[] line:lines){labelValue(c,yy,line[0],line[1]);yy+=14;}
-        title(c,"تفسير نتائج المصدر / Source Status",174);
+        String capture=s==null?DASH:
+            clean(s.sourceCaptureStartedUtc)+"  /  "+clean(s.sourceCaptureEndedUtc);
+        text(c,"Original capture UTC: "+capture,
+            rect(7,173,280,8),false,true);
         text(c,"تعود المقارنات إلى دورات مؤرشفة ومعتمدة. الترشيح البحثي ليس إثبات هوية غاز أو قياس PPM معتمد.",
-            rect(7,184,280,6),true,false);
+            rect(7,183,280,8),true,false);
     }
     private static void candidateTable(Canvas c,V7FieldReportSourceSnapshot s,int page,
             V7FieldSourceReferences refs,Context ctx){
@@ -322,7 +325,7 @@ public final class V7FieldSessionPdfWriter {
             for(int p=1;p<=total;p++){
                 PdfDocument.Page page=open(pdf,p);
                 Canvas canvas=page.getCanvas();canvas.drawColor(Color.WHITE);
-                chrome(canvas,ctx,p,total);
+                chrome(canvas,ctx,p,total,source==null?DASH:source.sourceCaptureStartedUtc);
                 int slot=p-1;
                 if(slot==0)summary(canvas,source);
                 else {
