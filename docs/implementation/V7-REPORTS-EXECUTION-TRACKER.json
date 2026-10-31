@@ -311,7 +311,7 @@
     }
   ],
   "resume_rule": "Read markdown and tracker, fetch latest branch head, start at first TODO, commit source+tests+evidence, update tracker; never claim a PDF emitted by the Android app if it is a separately drawn lookalike.",
-  "latest_documented_change": "Verified real R06 Android export in run 41147792261: 3 pages, 383172 bytes, 7 MQ and TS5 confusion source, fonts>=12, 2018 article DOI, synthetic CI test only. R03 four-chart geometry Android fixture also included in same successful run, production R03 writer not replaced. Added R05 V7FruitReportPdfWriter as nonproduction candidate: 18 visible photo slots, selected only, all matching source references annex; photos not packaged and old R05 facade unchanged. No release APK.",
+  "latest_documented_change": "Added V7FieldReportSourceSnapshot immutable source-only R03 input from approved archive, preserving all unshortened candidate/cycle IDs+SHA and G/F/P flags, triggered Android compile run 41148370108. Added R05 18-family candidate PDF writer with image-asset slots and complete source annex, CI run 41148231563 pending. R06 true Android 3-page PDF passed 41147792261; no release APK.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -464,7 +464,7 @@
     "approach": "DISCUSS_ALL_SIX_ONE_BY_ONE_FREEZE_DESIGN_THEN_BUILD_SHARED_ONCE_IMPLEMENT_SIX_WITH_PER_REPORT_QA",
     "user_proposed_on": "2026-10-30",
     "state": "ADOPTED_FOR_NEXT_V7_WORK",
-    "current_phase": "R01_R02_R06_REAL_ANDROID_PDF_QA_PASS_R03_GEOMETRY_QA_PASS_R05_UNWIRED_LAYOUT_CANDIDATE_R04_NOT_INTEGRATED",
+    "current_phase": "R01_R02_R06_NATIVE_QA_PASS_R03_SOURCE_SNAPSHOT_AND_LAYOUT_KIT_ADDED_R05_NATIVE_LAYOUT_QA_PENDING_R04_NOT_YET_INTEGRATED",
     "code_freeze": "PAUSE_NEW_PRODUCTION_PDF_EDITS_UNTIL_SIX_DESIGNS_APPROVED",
     "exception": "Already implemented R01 prototype is retained unchanged; its preliminary PDF CI success predates later layout refinements.",
     "independent_owner_approvals_required": [
@@ -785,7 +785,33 @@
     "nonselected_result": "-",
     "complete_source_match_annex": true,
     "fixture": "research/chemcore_v6/tests/android/V7R01PdfFixtureActivity.java",
-    "qa": "PENDING",
+    "qa": {
+      "latest_run_id": 41148231563,
+      "state": "IN_PROGRESS_AT_LAST_CHECK",
+      "tests": [
+        "18 families selectable rows",
+        "selected-only results",
+        "complete source research matching annex",
+        "blank no-data 18 families preserved",
+        "A4 12pt on Android"
+      ],
+      "release_blocker": "18 real fruit or mixture photo assets not packaged"
+    },
     "production_route_changed": false
+  },
+  "r03_source_contract_checkpoint": {
+    "state": "IMMUTABLE_SOURCE_ONLY_REPORT_INPUT_ADDED_NO_PRODUCTION_WRITER_ROUTING",
+    "source": "android/app/src/main/java/com/servoc/app/report/V7FieldReportSourceSnapshot.java",
+    "fields": [
+      "field session/site original IDs names status",
+      "full original measurement IDs",
+      "all source candidate records not top N",
+      "full cycle ledger including rejected attempts",
+      "full SHA-256 strings and timestamps",
+      "separate approved G/F/P mode flags"
+    ],
+    "safety": "Approved cycle only may contribute to analysis; entire cycle audit ledger retained. No PDF-side classification or ppm.",
+    "test": "Android compile workflow 41148370108 pending",
+    "report_pdf_status": "Current SmartFieldSessionPdfWriter remains old until full R03 source->chart mapping and visual QA pass."
   }
 }
