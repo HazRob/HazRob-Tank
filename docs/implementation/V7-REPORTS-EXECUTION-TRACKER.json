@@ -6,7 +6,7 @@
   "baseline_branch": "feature/tank-v6-implementation",
   "baseline_commit": "cf818a9e2ea1064da37f0d9fdf6beb0de4847250",
   "focus": "Android PDF report design, authentic chart/analysis presentation and evidence integrity",
-  "state": "V7_REPORT_VISUAL_DESIGN_ONLY_QA_PAUSED_BY_OWNER",
+  "state": "V7_ALL_SIX_REPORTS_NATIVE_VISUAL_DESIGN_SOURCES_UPDATED_QA_PAUSED_NO_APK",
   "app_version_target": "7.0-dev (planned, not changed in source)",
   "last_packaged_app_version": "6.0 diagnostic",
   "firmware_change_scope": "NONE",
@@ -15,7 +15,7 @@
     "production_release_authorized": false,
     "hardware_g3_techniques_validated": 0,
     "approval_required": true,
-    "ci_quality_gate": "PAUSED_BY_OWNER_FOR_CURRENT_DESIGN_PHASE",
+    "ci_quality_gate": "OWNER_PAUSED_AUTOMATIC_V7_PDF_QA_MANUAL_ONLY",
     "note": "V6 has not completed production acceptance; V7 branch is report-design work only."
   },
   "initial_inventory": [
@@ -310,8 +310,8 @@
       "state": "NO_RELEASE"
     }
   ],
-  "resume_rule": "At owner-directed QA pause: do DESIGN ONLY. Read detailed R04 spec and unified R01-R06 visual map, continue layouts/figures and record owner approvals. Do not run Android QA/tests/builds or switch production entrypoints until owner explicitly reauthorizes testing; never claim blank external previews are app-produced PDFs.",
-  "latest_documented_change": "2026-10-31: Owner paused tests/QA and requested focus on report design. R04 complete detailed proposed site visual spec committed 192778f5; unified R01-R06 design-components/figures/page mapping committed b54fd47f. No new CI requested in design-only phase; final acceptance and production APK remain blocked. Earlier R03 source-provenance/header changes are source edits, not new accepted R03 production integration.",
+  "resume_rule": "OWNER ORDER 2026-10-31: Continue DESIGN ONLY across all 6 reports; NEVER build APK until explicit direction, and DO NOT initiate tests/CI until owner lifts QA pause. First read latest visual art direction and fruit photo manifest. Continue faithful visual source design, then licensed R05 imagery and report owner visual review. Preserve source/engine evidence fidelity; do not integrate production entrypoints during design-only stage.",
+  "latest_documented_change": "2026-10-31: visual design source advanced for R01-R06. New non-production native R01 candidate/GHS/OEL two-page design (7338102), R02 neutral 15-gauge design (53588e7), R04 12-section site layout (4b19937); R05 original source family photograph moved to first right-hand RTL column (c29a8df), fruit timestamp overload (92e3990); R06 source capture timestamp overload (2162bab). R03 preserved existing native 11-page layout/source references and historical capture timestamp. 18 licensed fruit photos still missing. QA manually paused: workflow now dispatch-only (88a791f). No APK and no new test claims. Six-report art direction document commit 20a57dbc.",
   "requirements_baseline": {
     "document": "docs/requirements/V7-REPORT-DESIGN-CHARTER-2026-10-30_AR.md",
     "document_id": "HZT-V7-RPT-STD-001",
@@ -840,7 +840,7 @@
   },
   "design_only_checkpoint": {
     "date": "2026-10-31",
-    "state": "OWNER_PAUSED_QA_DESIGN_ONLY",
+    "state": "SIX_REPORT_VISUAL_DESIGN_SOURCES_ADVANCED_QA_PAUSED",
     "new_docs": [
       "docs/implementation/V7-R04-SITE-DESIGN-DETAIL-2026-10-31_AR.md",
       "docs/implementation/V7-R01-R06-UNIFIED-REPORT-VISUAL-DESIGN-MAP-2026-10-31_AR.md"
@@ -851,6 +851,42 @@
       "No tests, APK, field-validation assertions"
     ],
     "r04_owner_signoff": "ONLY previously approved components; new R04 page ordering is proposal",
-    "next": "Continue visual composition; capture owner visual design approvals; keep QA paused"
+    "next": "Continue visual composition; capture owner visual design approvals; keep QA paused",
+    "files": [
+      "android/app/src/main/java/com/servoc/app/report/V7InstantVisualAnnexWriter.java",
+      "android/app/src/main/java/com/servoc/app/report/V7PhysicalGaugeVisualWriter.java",
+      "android/app/src/main/java/com/servoc/app/report/V7FieldSessionPdfWriter.java",
+      "android/app/src/main/java/com/servoc/app/report/V7SiteVisualPdfWriter.java",
+      "android/app/src/main/java/com/hazrob/tank/foodfreshness/V7FruitReportPdfWriter.java",
+      "android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/V7BeefResearchPdfWriter.java",
+      "docs/implementation/V7-R01-R06-VISUAL-ART-DIRECTION-2026-10-31_AR.md",
+      "docs/implementation/V7-R05-PHOTO-ASSET-CATALOG-2026-10-31.json"
+    ],
+    "commits": {
+      "R01_appendix": "7338102ba3405eb8e868b740bacc6e71a735d40e",
+      "R02_gauges": "53588e7bdb22837098706d8158f1ba6732b78e07",
+      "R03_capture_time": "b902b6a42ac7ea49b2cfd68d267e3eff0dd00d30",
+      "R04_native_visual": "4b19937f28508fa24b310fbbc549fd491da23bc9",
+      "R05_rtl_photo": "c29a8df760ea3000c77450c8bc8b82947f5d4b4d",
+      "R05_capture_time": "92e399097c2b86906012baba654c57202e3e0f00",
+      "R06_capture_time": "2162bab7a1f5caca71ec7297cd11b6fb1e91ed96",
+      "pause_auto_ci": "88a791fff4c6a3b1a6fc401dc82095da9c30abd9",
+      "art_direction": "20a57dbc04fc7f37d66484985ff4f4c4d634b9fd"
+    },
+    "report_status": {
+      "R01": "NATIVE_SOURCE_BASELINE_PLUS_ADDENDUM_DESIGN_NOT_CONNECTED",
+      "R02": "15_PHYSICAL_NATIVE_SOURCE_PLUS_NEUTRAL_GAUGE_DESIGN_NOT_CONNECTED",
+      "R03": "NATIVE_LAYOUT_AND_ARCHIVED_SOURCE_CONTRACT_EXISTS_NO_NEW_QA",
+      "R04": "12_SECTION_ANDROID_VISUAL_WRITER_ADDITIVE_NOT_PRODUCTION_WIRED",
+      "R05": "18_FAMILY_RTL_CORRECTED_LAYOUT_PHOTOS_PENDING_PRODUCTION_UNWIRED",
+      "R06": "NATIVE_STUDY_PAGES_TIMESTAMP_OVERLOAD_UNTESTED"
+    },
+    "pending_visual": [
+      "R05 package 18 authentic licensed reference photos with subject/licensing attribution/asset SHA; mixture composite provenance",
+      "Review all R01-R06 layouts visually from original Android PdfDocument after explicit permission to resume rendering/QA",
+      "Owner final visual signoff on new R04 ordering, R01/R02 supplements and actual R05 reference pictures"
+    ],
+    "tests": "PAUSED_BY_OWNER_NO_MANUAL_QA_OR_GRADLE_RUN",
+    "apk": "NOT_BUILT_AND_NOT_AUTHORIZED"
   }
 }
