@@ -262,8 +262,8 @@ def reconcile(lodo, multi):
                 previous_day = days[day_index[later_day] - 1]
                 check(cross_rows <= folds[previous_day]['holdout_total'],
                       'CROSS_DAY_EXCEEDS_PRIOR_DAY_ROWS')
-    check_same_day_lag_capacity(lr, folds)
     check_cross_day_profile_feasibility(lag_distributions, folds)
+    check_same_day_lag_capacity(lr, folds)
     check(total_rows == n and total_eligible == eligible and
           total_train == eligible * (len(days) - 1), 'FOLD_TOTALS')
     check(total_excluded == total_purged ==
