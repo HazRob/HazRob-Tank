@@ -431,5 +431,40 @@ class MQ4CrossReportTests(unittest.TestCase):
 
 
 
+    def test_joint_midnight_capacity_accepts_disjoint_day_windows(self):
+        # Two individually feasible midnight profiles need 3 head and
+        # 3 tail rows in the shared middle day. Six rows are sufficient.
+        days = ('2021-07-21', '2021-07-22', '2021-07-23')
+        folds = {days[0]: {'holdout_total': 5},
+                 days[1]: {'holdout_total': 6},
+                 days[2]: {'holdout_total': 5}}
+        values = (1, 3, 0, 0, 0, 0)
+        knots = [(k, {days[1]: v, days[2]: v})
+                 for k, v in zip(LAGS, values)]
+        self.assertIsNone(check_cross_day_profile_feasibility(knots, folds))
+
+    def test_joint_midnight_capacity_rejects_individually_feasible_profiles(self):
+        # Every boundary separately has witnesses (3,5),(4,4),(5,3).
+        # But the shared day has only five rows, and any combination
+        # needs at least 3 after the first midnight plus 3 before the next.
+        days = ('2021-07-21', '2021-07-22', '2021-07-23')
+        folds = {days[0]: {'holdout_total': 5},
+                 days[1]: {'holdout_total': 5},
+                 days[2]: {'holdout_total': 5}}
+        values = (1, 3, 0, 0, 0, 0)
+        knots = [(k, {days[1]: v, days[2]: v})
+                 for k, v in zip(LAGS, values)]
+        with self.assertRaisesRegex(ValueError, 'CROSS_DAY_ADJACENT_CAPACITY'):
+            check_cross_day_profile_feasibility(knots, folds)
+
+    def test_pinned_mq4_joint_midnight_day_capacity(self):
+        root = Path(__file__).resolve().parent
+        l = load_report(root / 'G2_MQ4_LODO_TWO_WAY_PURGE_RAW_REPLAY_2026-10-30.json')
+        m = load_report(root / 'G2_MQ4_MULTISCALE_DAY_CONTEXT_EMBARGO_2026-10-30.json')
+        knots = [(k, m['lag_results'][str(k)]
+                  ['cross_day_context_rows_by_later_date']) for k in LAGS]
+        self.assertIsNone(check_cross_day_profile_feasibility(knots, l['folds']))
+
+
 if __name__ == '__main__':
     unittest.main()
