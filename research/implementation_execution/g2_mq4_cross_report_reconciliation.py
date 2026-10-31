@@ -91,6 +91,11 @@ def reconcile(lodo, multi):
               a + b == available and available + c == n, 'LAG_ARITHMETIC')
         if lag == 1:
             check(available == n - segments, 'SEGMENT_LAG_ONE')
+        # With `segments` nonempty contiguous runs and n total rows, the
+        # maximum lag-k pairs occur when all but one run contain one row.
+        # This is a necessary combinatorial bound, not raw-signal validation.
+        check(available <= max(0, n - segments + 1 - lag),
+              'LAG_MAX_PAIRS_BY_SEGMENTS')
         if previous_available is not None:
             check(available <= previous_available, 'LAG_AVAILABLE_MONOTONIC')
         previous_available = available
@@ -99,6 +104,12 @@ def reconcile(lodo, multi):
               all(integer(v) for v in distribution.values()) and
               sum(distribution.values()) == b, 'LAG_DISTRIBUTION')
         check(all(v <= lag for v in distribution.values()), 'CROSS_DAY_LAG_CAP')
+        # A cross-midnight context pair is anchored to a later-day row;
+        # its count cannot exceed that day's actual holdout-row count.
+        check(all(v <= folds[day].get('holdout_total', -1)
+                  for day, v in distribution.items()
+                  if type(folds.get(day)) is dict),
+              'CROSS_DAY_EXCEEDS_DAY_ROWS')
         for later_day, cross_rows in distribution.items():
             if cross_rows:
                 prior_index = day_index[later_day] - 1
@@ -127,6 +138,7 @@ def reconcile(lodo, multi):
                 'train_timestamp_eligible', 'train_purged_holdout_context',
                 'train_remaining', 'holdout_history_ineligible')
         check(type(f) is dict and all(integer(f.get(k)) for k in keys), 'FOLD_COUNTS')
+        check(f['holdout_total'] > 0, 'FOLD_EMPTY_CALENDAR_DAY')
         check(f['holdout_timestamp_eligible'] + f['holdout_history_ineligible'] == f['holdout_total'] and
               f['holdout_remaining'] + f['holdout_excluded_training_context'] == f['holdout_timestamp_eligible'] and
               f['train_remaining'] + f['train_purged_holdout_context'] == f['train_timestamp_eligible'],
