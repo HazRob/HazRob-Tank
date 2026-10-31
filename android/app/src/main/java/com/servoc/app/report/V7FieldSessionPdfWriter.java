@@ -111,7 +111,7 @@ public final class V7FieldSessionPdfWriter {
         for(String[] line:lines){labelValue(c,yy,line[0],line[1]);yy+=14;}
         title(c,"تفسير نتائج المصدر / Source Status",174);
         text(c,"تعود المقارنات إلى دورات مؤرشفة ومعتمدة. الترشيح البحثي ليس إثبات هوية غاز أو قياس PPM معتمد.",
-            rect(7,185,280,6),true,false);
+            rect(7,184,280,6),true,false);
     }
     private static void candidateTable(Canvas c,V7FieldReportSourceSnapshot s,int page){
         title(c,"جدول جميع المرشحين / Complete Source Candidates",27);
@@ -131,8 +131,6 @@ public final class V7FieldSessionPdfWriter {
             for(int i=begin;i<end;i++)
                 candidateRow(c,60+(i-begin)*32,s.rawCandidates.get(i));
         }
-        text(c,"SDS/GHS هو تصنيف المادة المرجعية، وليس تأكيدًا للتعرف على الغاز. لا تجوز مقارنة TWA/STEL بقراءة غير مكافئة.",
-            rect(7,188,282,5),true,false);
     }
     private static void candidateRow(Canvas c,float y,
              V7FieldReportSourceSnapshot.Candidate candidate){
@@ -272,10 +270,15 @@ public final class V7FieldSessionPdfWriter {
                     else if(slot==4)sourceGallery(canvas);
                     else {
                         slot-=5;
-                        if(physical){if(slot==0)physicalMatrix(canvas);slot--;}
-                        if(pm){if(slot==0)particleCharts(canvas);slot--;}
-                        if(slot>=0&&slot<cy)cycles(canvas,source,slot);
-                        else sourceAnnex(canvas,source,slot-cy);
+                        int physicalPages=physical?1:0, particlePages=pm?1:0;
+                        if(physical&&slot==0)physicalMatrix(canvas);
+                        else if(pm&&slot==physicalPages)particleCharts(canvas);
+                        else {
+                            int continuation=slot-physicalPages-particlePages;
+                            if(continuation>=0&&continuation<cy)
+                                cycles(canvas,source,continuation);
+                            else sourceAnnex(canvas,source,continuation-cy);
+                        }
                     }
                 }
                 pdf.finishPage(page);
