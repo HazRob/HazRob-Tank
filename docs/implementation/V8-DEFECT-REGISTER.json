@@ -5,7 +5,7 @@
   "branch": "feature/tank-v8-implementation",
   "parent_branch": "feature/tank-v7-reports",
   "parent_sha": "b344b8ac1c651794fb600baae029efd0f2522ce8",
-  "user_feedback": "V7 test APK has many problems; individual symptoms are not yet specified",
+  "user_feedback": "Three specific issues documented from owner screenshots and actual V7 instant PDF: R0 auto calibration rejected; field cycles FAILED; instant gas result correctly gated without R0 (also no G3).",
   "artifact_under_review": {
     "name": "HazRob-Tank-V7-Excel-TEST.apk",
     "workflow_run": 41154308473,
@@ -44,6 +44,57 @@
       "fix_commit": null,
       "ci_run": null,
       "note": "Not a reproducible defect; split into numbered V8-001+ issues when user identifies them."
+    },
+    {
+      "id": "V8-001",
+      "title": "لا يمكن إكمال معايرة R0 التلقائية من الإعدادات",
+      "module": "DeveloperR0Tab / FirmwareR0Contract / ESP32 /r0",
+      "severity": "BLOCKER",
+      "status": "REPORTED",
+      "reported_by": "owner",
+      "evidence": "Screenshot 1 (2026-10-31): repeating IllegalArgumentException on R0 polling, and MQ2 source=unavailable / recorded R0 samples=0",
+      "actual": "Auto R0 fails to progress/commit; user sees IllegalArgumentException class only",
+      "expected": "Calibrate 180 s warmup + 60 s acquisition, inspect 8 channels, explicit accept/save NVS and Android R0",
+      "root_cause": null,
+      "diagnostic_hypothesis": "FirmwareR0Contract.progress() rejects ESP32 /r0 payload; exact reason cannot be determined from screenshot because V7 hides exception message",
+      "source_change": "2678773e724faefb18338aa6d54a225eb80610eb exposes exception message and /r0 schema/timing in UI; diagnostic only; not yet tested",
+      "next_evidence": "Capture actual /r0 JSON schema/state/window_count/warmup_ms/duration_ms/channels plus ESP32 firmware version, without modifying R0",
+      "validation": "Require actual V6-device R0 8-channel committed readback and phone persistence without losing existing stored R0"
+    },
+    {
+      "id": "V8-002",
+      "title": "كل دورات القياس الميداني تنتهي FAILED",
+      "module": "FieldCycleController / FieldCycleRepository / CompletedSessionChemCoreAnalyzer",
+      "severity": "BLOCKER",
+      "status": "REPORTED",
+      "reported_by": "owner",
+      "evidence": "Screenshot 2 (2026-10-31): session attempt 1 state FAILED with linked measurement session ID; no fail_reason visible",
+      "actual": "No approved measurement usable for field reports",
+      "expected": "Valid recorded, timed, fresh raw field observations can complete review with explicit insufficient-analysis status when R0 is absent; no fabricated gas ppm or identity",
+      "root_cause": null,
+      "diagnostic_hypothesis": "A field capture with absent R0 lacks normalized ratios and may not persist ChemCore decision; repository completion requires persisted decision. Other independent failure paths remain possible. Must inspect saved fail_reason.",
+      "source_changes": [
+        "5d3179b3fa85009c7691a17489ca813990a23d25 preserves explicit INSUFFICIENT_EVIDENCE result for missing R0 without claiming identity",
+        "c7dce8c43961c1d2e9fc872f0b15791fae4724f7 shows persisted fail_reason in session UI"
+      ],
+      "next_evidence": "Read field_measurement_cycles.fail_reason plus sample counts/scan_cycle and Env freshness. Device reproduction needed.",
+      "validation": "Successful physical-data session must obey 60-second duration, min valid samples, device ownership and SHA approvals; no false positive"
+    },
+    {
+      "id": "V8-003",
+      "title": "تقرير الغاز الآني يسجل 8 Rs لكنه بلا R0 أو ratios أو PPM",
+      "module": "TankInstantV7PdfWriter / ChemCore instant gate",
+      "severity": "HIGH",
+      "status": "REPORTED",
+      "reported_by": "owner",
+      "evidence": "User-supplied 2026-10-31 one-page PDF HazRob_Tank_Instant_20261031_043030.pdf; Operation INSTANT-1793410214754; 8 Rs rows; R0 blank; Rs/R0 blank; Gate NO_ACCEPTED_DEVICE_CLEAN_AIR_R0; PPM Not reportable; Engine NO; N05H_SOURCE_UNKNOWN_GATE_FAILED_NO_TANK_G3.",
+      "actual": "Eight Rs values appear but no normalized chemical fingerprint or analytical candidates; PDF itself did generate as requested.",
+      "expected": "After valid R0 calibration show normalized ratios and scientifically qualified screening where available; report unsupported identity/ppm explicitly rather than inventing them.",
+      "root_cause": "The missing accepted device clean-air R0 is confirmed as the immediate gating reason for zero Rs/R0 in this PDF. It does not prove the source of calibration's IllegalArgumentException nor the field-cycle FAILED reason.",
+      "scientific_separation": "NO_TANK_G3 remains independent of R0; calibration alone cannot establish validated gas identification or ppm certification.",
+      "source_change": null,
+      "next_evidence": "After verified R0 acceptance, generate a new instant PDF with R0/ratio counts and compare; do not compare readings from different moments as identical",
+      "validation": "R0 > 0 only where device-approved; 8-channel per-sensor ratios if source data valid; no ppm without G3/M4"
     }
   ],
   "engineering_verification_backlog": [
@@ -85,5 +136,6 @@
     "defects_reproduced": 0,
     "defects_fixed": 0,
     "device_accepted": false
-  }
+  },
+  "last_review": "2026-10-31"
 }
