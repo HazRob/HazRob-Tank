@@ -1,3 +1,13 @@
+## 2026-10-31 — G2 original MQ4 raw numeric LODO probe (667/667 CI verified; no promotion)
+
+- Resumed from research checkpoint `ca8461f7e45d68d4663a3a7437da40957bd1ea04`. All 11 visible PR workflows on that SHA completed success; previous G2 implementation 661/661.
+- Reopened original central Library ZIP `/HazRob/MQ_Reference_Measurements_2026/HazRob_MQ_Reference_Real_Measurements_2026-10-30.zip`; original archive and CSV SHA256 matched existing pinned raw replay. Directly analyzed **14,186 raw observations over 11 calendar days**, source methane `licor_ch4` (reported ppb) and three raw MQ4 channels. No original ZIP committed.
+- Added `g2_mq4_grouped_numeric_probe.py` and six deterministic synthetic regressions. Calendar-day leave-one-day-out OLS is trained only on other days, compared to each fold's training-mean methane baseline; full raw results are reproducible with the documented CLI. Research-only summary JSON and Arabic methodology document pinned. Correlation sign is **positive on 2/11 days and negative on 9/11 days for each of the three MQ4 channels**. Pooled held-out RMSEs: MQ4_1 1248.26 ppb; MQ4_2 1287.28 ppb; MQ4_3 1266.99 ppb, versus training-mean baseline 1376.34 ppb. This is an observational source-data stress probe, **not** physically independent or blinded exposure validation, certified methane ppm, or Tank transfer evidence.
+- [G2 Actions 41192600268](https://github.com/HazRob/HazRob-Tank/actions/runs/41192600268), job `124512246670`, on code/test commit `0f713d18ed19ddc7bcc55896e5e7ed68707e1486`: **667/667 tests PASS**, 80-technique fail-closed audit, deterministic replay and publication guard PASS; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Synthetic tests in CI do not replay the external original ZIP.
+- Changes restricted to research files under `research/implementation_execution/` on the research branch. No ChemCore Stable, Android, firmware or main modifications. Independent evidence `G2_INDEPENDENT_EVIDENCE.json` still `records=[]`; G2 remains incomplete. Future work requires independent traceably calibrated physical exposures and genuinely blinded grouped holdouts; do not promote techniques.
+
+---
+
 ## 2026-10-31 — G2 MQ4 original ZIP raw-byte replay (652/652 CI verified; no promotion)
 
 - Resumed from research checkpoint `30d04442eb846e7507e3e108759b6c732bdc9150`. The previous implementation CI [41180696031](https://github.com/HazRob/HazRob-Tank/actions/runs/41180696031) passed 641/641 tests; all 11 visible PR workflows on that checkpoint completed successfully.
