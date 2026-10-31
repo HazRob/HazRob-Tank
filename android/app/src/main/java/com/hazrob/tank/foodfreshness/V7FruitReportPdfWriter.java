@@ -98,8 +98,9 @@ public final class V7FruitReportPdfWriter {
     private static void mainPage(Canvas c,Context ctx,int page,int pages,
                                  FoodFreshnessEngine.Result result,
                                  Map<String,Double> readings,int frames,long duration,
-                                 String id,Map<String,FoodFreshnessEngine.Match> best){
-        header(c,ctx,page,pages,"-");
+                                 String id,Map<String,FoodFreshnessEngine.Match> best,
+                                 String captureTimestampUtc){
+        header(c,ctx,page,pages,captureTimestampUtc);
         float y=27*MM;
         String selected=result.foodSelection==null?"":result.foodSelection;
         text(c,"عملية الفحص / Scan: "+V7ReportLayoutKit.missing(id),
@@ -150,8 +151,9 @@ public final class V7FruitReportPdfWriter {
             page==1?"Observed resistance":"Similarity index");
     }
     private static void appendixPage(Canvas c,Context ctx,int page,int count,
-                                     FoodFreshnessEngine.Result result,int start){
-        header(c,ctx,page,count,"-");
+                                     FoodFreshnessEngine.Result result,int start,
+                                     String captureTimestampUtc){
+        header(c,ctx,page,count,captureTimestampUtc);
         V7ReportLayoutKit.tableHeader(c,
             new RectF(L,27*MM,L+W,45*MM),
             "تفاصيل المراجع البحثية / Complete source reference matches",true);
@@ -174,6 +176,13 @@ public final class V7FruitReportPdfWriter {
                              FoodFreshnessEngine.Result result,
                              Map<String,Double> readings,int samples,long durationMs,
                              String reportId)throws Exception{
+        write(ctx,out,result,readings,samples,durationMs,reportId,"-");
+    }
+    /** Optional original capture UTC; never replace with PDF export time. */
+    public static void write(Context ctx,OutputStream out,
+                             FoodFreshnessEngine.Result result,
+                             Map<String,Double> readings,int samples,long durationMs,
+                             String reportId,String captureTimestampUtc)throws Exception{
         if(ctx==null||out==null||result==null)
             throw new IllegalArgumentException("Frozen fruit result required");
         // Main matrix contains all eighteen source-selectable fruit/mix families.
@@ -186,8 +195,8 @@ public final class V7FruitReportPdfWriter {
                 PdfDocument.Page p=V7ReportLayoutKit.open(pdf,i,false);
                 Canvas c=p.getCanvas();c.drawColor(Color.WHITE);
                 if(i<=2)mainPage(c,ctx,i,pages,result,readings,samples,
-                    durationMs,reportId,matches);
-                else appendixPage(c,ctx,i,pages,result,(i-3)*8);
+                    durationMs,reportId,matches,captureTimestampUtc);
+                else appendixPage(c,ctx,i,pages,result,(i-3)*8,captureTimestampUtc);
                 pdf.finishPage(p);
             }
             pdf.writeTo(out);
