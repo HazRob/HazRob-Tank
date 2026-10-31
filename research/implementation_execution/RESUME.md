@@ -1,3 +1,12 @@
+## 2026-10-31 — G2 exact midnight profile feasibility gate (CI pending)
+
+- Reviewed prior research HEAD `dd5e74af94ba66a9d45553c4171cb7903e9ec8dc`: 20/20 associated Actions succeeded; the prior code/test commit `ec1e2b5307a087da9e83faa927f6bc78d4a33bb0` passed **620/620** tests in [G2 Actions 41164080898](https://github.com/HazRob/HazRob-Tank/actions/runs/41164080898). No CI failures on the prior documentation HEAD.
+- Added exact sparse-lag **single-midnight-profile feasibility** across all lag knots using bounded `(a,b)` witness search. Unlike the earlier 1-Lipschitz necessary condition, this rejects impossible profiles such as `[1,5,15,30,59,60]` that satisfy each lag's cap and adjacent difference bound. Source-pinned ten day boundaries have feasible `(120,120)` witnesses.
+- Added four regressions (valid falling tail, impossible Lipschitz-valid profile, integrated tamper, pinned report) and Arabic methodology `G2_MQ4_EXACT_MIDNIGHT_PROFILE_FEASIBILITY_2026-10-31_AR.md`. **624 tests expected, CI NOT YET VERIFIED** at this checkpoint. Inspect GitHub Actions for this commit and repair any failure; do not assume success.
+- Research-only change under `research/implementation_execution/` on research branch; no ChemCore Stable, Android, firmware or main changes. Original raw ZIP not replayed by this gate; no scientific promotion. Independent evidence `records=[]`, G2 0/80 qualified, 80 blocked, 14 source slots blocked.
+
+---
+
 ## 2026-10-31 — G2 MQ4 midnight lag Lipschitz gate verified: 620/620
 
 - Rechecked the previous checkpoint `e36e9932eeb8068a1b14bef079cd84d606e88403`: G2 Actions [41159859977](https://github.com/HazRob/HazRob-Tank/actions/runs/41159859977), job `124414801435`, **616/616 PASS**, full 80-technique audit, deterministic replay and publication guard; all 20/20 workflows on that SHA completed successfully.

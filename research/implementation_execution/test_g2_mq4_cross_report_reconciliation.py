@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from g2_mq4_cross_report_reconciliation import ARCHIVE, RAW, LAGS, load_report, reconcile, check_lag_pair_convexity, check_cross_day_lag_lipschitz
+from g2_mq4_cross_report_reconciliation import ARCHIVE, RAW, LAGS, load_report, reconcile, check_lag_pair_convexity, check_cross_day_lag_lipschitz, check_cross_day_profile_feasibility
 
 
 def synthetic():
@@ -388,6 +388,46 @@ class MQ4CrossReportTests(unittest.TestCase):
         knots = [(k, report['lag_results'][str(k)]
                   ['cross_day_context_rows_by_later_date']) for k in LAGS]
         self.assertIsNone(check_cross_day_lag_lipschitz(knots))
+
+
+
+    def test_accept_exact_midnight_profile_with_falling_tail(self):
+        folds = {'2021-07-21': {'holdout_total': 2},
+                 '2021-07-22': {'holdout_total': 10}}
+        knots = [(k, {'2021-07-22':
+                       max(0, min(10, k) - max(0, k - 2))}) for k in LAGS]
+        self.assertIsNone(check_cross_day_profile_feasibility(knots, folds))
+
+    def test_reject_lipschitz_valid_but_infeasible_midnight_profile(self):
+        # All individual caps and sparse 1-Lipschitz differences pass.
+        # No single contiguous (a,b) crossing can yield this profile.
+        values = (1, 5, 15, 30, 59, 60)
+        knots = [(k, {'2021-07-22': v})
+                 for k, v in zip(LAGS, values)]
+        self.assertIsNone(check_cross_day_lag_lipschitz(knots))
+        folds = {'2021-07-21': {'holdout_total': 60},
+                 '2021-07-22': {'holdout_total': 121}}
+        with self.assertRaisesRegex(ValueError, 'CROSS_DAY_PROFILE_INFEASIBLE'):
+            check_cross_day_profile_feasibility(knots, folds)
+
+    def test_reconcile_rejects_exact_midnight_profile_contradiction(self):
+        l, m = synthetic()
+        item = m['lag_results']['60']
+        item['cross_day_context_rows_requiring_embargo_if_day_holdout'] = 59
+        item['cross_day_context_rows_by_later_date']['2021-07-22'] = 59
+        item['same_day_context_rows'] += 1
+        item['cross_day_fraction_of_available_pairs'] = (
+            59 / item['contiguous_lag_pairs'])
+        with self.assertRaisesRegex(ValueError, 'CROSS_DAY_PROFILE_INFEASIBLE'):
+            reconcile(l, m)
+
+    def test_pinned_mq4_midnight_profiles_have_feasible_witnesses(self):
+        root = Path(__file__).resolve().parent
+        l = load_report(root / 'G2_MQ4_LODO_TWO_WAY_PURGE_RAW_REPLAY_2026-10-30.json')
+        m = load_report(root / 'G2_MQ4_MULTISCALE_DAY_CONTEXT_EMBARGO_2026-10-30.json')
+        knots = [(k, m['lag_results'][str(k)]
+                  ['cross_day_context_rows_by_later_date']) for k in LAGS]
+        self.assertIsNone(check_cross_day_profile_feasibility(knots, l['folds']))
 
 
 

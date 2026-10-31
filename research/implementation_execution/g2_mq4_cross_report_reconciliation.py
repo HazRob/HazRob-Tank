@@ -77,6 +77,40 @@ def check_cross_day_lag_lipschitz(distributions):
                   'CROSS_DAY_LAG_LIPSCHITZ')
 
 
+def check_cross_day_profile_feasibility(distributions, folds):
+    """Exact necessary feasibility of each midnight's sparse lag-pair profile.
+
+    For a single strict-minute run spanning midnight, let a and b be
+    consecutive rows immediately before/after midnight. At lag k the
+    number of crossing pairs is max(0, min(b,k)-max(0,k-a)).
+    For k <= max_lag, lengths beyond max_lag are indistinguishable
+    from max_lag; enumerate bounded candidates using declared day rows.
+    This does NOT recover raw timestamps or verify physical independence.
+    """
+    lags = tuple(k for k, _ in distributions)
+    if not lags:
+        return
+    max_lag = max(lags)
+    days = sorted(folds)
+    for i in range(1, len(days)):
+        day = days[i]
+        observed = tuple(dist.get(day, 0) for _, dist in distributions)
+        if not any(observed):
+            continue  # No declared continuous midnight crossing.
+        a_cap = min(max_lag, folds[days[i - 1]]['holdout_total'])
+        b_cap = min(max_lag, folds[day]['holdout_total'])
+        feasible = False
+        for a in range(1, a_cap + 1):
+            for b in range(1, b_cap + 1):
+                if all(max(0, min(b, k) - max(0, k - a)) == count
+                       for k, count in zip(lags, observed)):
+                    feasible = True
+                    break
+            if feasible:
+                break
+        check(feasible, 'CROSS_DAY_PROFILE_INFEASIBLE')
+
+
 def reconcile(lodo, multi):
     check(type(lodo) is dict and type(multi) is dict, 'NOT_OBJECT')
     check(lodo.get('schema') == 'hazrob.g2.mq4-lodo-two-way-purge-raw-summary.v1' and
@@ -205,6 +239,7 @@ def reconcile(lodo, multi):
                 previous_day = days[day_index[later_day] - 1]
                 check(cross_rows <= folds[previous_day]['holdout_total'],
                       'CROSS_DAY_EXCEEDS_PRIOR_DAY_ROWS')
+    check_cross_day_profile_feasibility(lag_distributions, folds)
     check(total_rows == n and total_eligible == eligible and
           total_train == eligible * (len(days) - 1), 'FOLD_TOTALS')
     check(total_excluded == total_purged ==
