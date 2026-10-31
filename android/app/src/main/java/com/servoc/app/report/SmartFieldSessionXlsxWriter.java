@@ -107,26 +107,33 @@ final class SmartFieldSessionXlsxWriter {
     private static String timeSeries(ExperimentsDb db,FieldSessionReportExporter.Bundle b){SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(28,12,15,15,15,14,14,14,14,14,14,14,14,14,14,14,14,14,14);identity(g,b,"السلاسل الزمنية — لا يتم دمج الجلسات الفنية في منحنى مصطنع");g.blank();List<String> h=new ArrayList<>();h.add("Measurement Session");h.add("t_ms");h.add("Temperature °C");h.add("Humidity %RH");h.add("Pressure hPa");for(HazRobHardwareProfile.Channel q:HazRobHardwareProfile.MQ){h.add(q.key+" Rs/R0");h.add(q.key+" Rs");}g.header(h.toArray(new String[0]));for(String sid:b.measurementSessionIds){SessionSeries.Series s=SessionSeries.byId(db,sid);if(s==null)continue;for(SessionSeries.Sample sample:s.samples){List<Object> r=new ArrayList<>();r.add(sid);r.add(sample.tMs);r.add(finiteObj(sample.env,"temperature"));r.add(finiteObj(sample.env,"humidity"));r.add(finiteObj(sample.env,"pressure"));for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){JSONObject q=SessionSeries.sensor(sample,hw.key);r.add(finiteObj(q,"ratio"));r.add(finiteObj(q,"rs"));}g.row(r.toArray(new Object[0]));}}return g.finish();}
 
     /**
-     * SOURCE-EXACT V7 simulation handoff.
-     * One source database row per captured Android telemetry sample, displaying
-     * all eight MQ channels together. Values originate from the saved mq_payload,
-     * without the historical-ratio recalculation used by analytical charts.
-     * "ADC" is blank if the ESP32 did not record per-channel ADC in mq_payload.
+     * V7 audit workbook: one SQLite telemetry row per timestamp and all eight
+     * MQ channels. Names distinguish the ADS1115 conversion code ("raw") from
+     * the ADC voltage ("adc"/"ao"). Values are exactly those archived in the
+     * normalized Android snapshot; firmware and phone R0 are separated.
+     * Missing fields remain empty and do not create fabricated measurements.
      */
     private static String rawMqWide(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
-        double[] widths=new double[5+HazRobHardwareProfile.MQ.length*4];
+        double[] widths=new double[5+HazRobHardwareProfile.MQ.length*7];
         for(int i=0;i<widths.length;i++)widths[i]=i==0?33:i==1?16:20;
         SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(widths);
-        identity(g,b,"MQ — source-exact 8-channel timestamped capture");
-        g.blank();g.rowStyled(SmartXlsxPackage.WARN,"SOURCE CONTRACT",
-            "Rs/R0/ADC here are only the original archived mq_payload fields. "+
-            "Blank means absent. No current R0 or calculated ratios are substituted.");
+        identity(g,b,"MQ V7 — eight-channel recorded values");
+        g.blank();
+        g.rowStyled(SmartXlsxPackage.WARN,"Source",
+            "raw = ADS1115 averaged conversion code; adc/ao = voltage in V; "+
+            "rs/r0 = stored resistance values. Blank means not recorded. "+
+            "Archived Android normalized snapshots may have phone R0 overrides.");
         List<String> headings=new ArrayList<>();
         headings.add("Measurement Session ID");headings.add("Telemetry row ID");
-        headings.add("t_ms");headings.add("sample UTC ms");headings.add("Scan record / state");
+        headings.add("t_ms");headings.add("sample UTC ms");headings.add("State");
         for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){
-            headings.add(hw.key+" Rs as stored");headings.add(hw.key+" R0 as stored");
-            headings.add(hw.key+" ratio as stored");headings.add(hw.key+" ADC if recorded");
+            headings.add(hw.key+" ADS raw code (4-conv mean)");
+            headings.add(hw.key+" adc voltage V");
+            headings.add(hw.key+" ao voltage V");
+            headings.add(hw.key+" Rs stored");
+            headings.add(hw.key+" R0 active stored");
+            headings.add(hw.key+" firmware R0 if copied");
+            headings.add(hw.key+" ratio stored");
         }
         g.header(headings.toArray(new String[0]));
         for(String sid:b.measurementSessionIds){
@@ -134,17 +141,21 @@ final class SmartFieldSessionXlsxWriter {
                 "SELECT id,t_ms,mq_payload,motion_payload FROM telemetry_samples "+
                 "WHERE session_id=? ORDER BY t_ms,id",new String[]{sid})){
                 while(c.moveToNext()){
-                    JSONObject mq=parseRaw(c.getString(2)),state=parseRaw(c.getString(3));
+                    JSONObject mq=parseRecordedJson(c.getString(2));
+                    JSONObject state=parseRecordedJson(c.getString(3));
                     List<Object> row=new ArrayList<>();
                     row.add(sid);row.add(c.getLong(0));row.add(c.getLong(1));
                     row.add(exactNumber(state,"sample_utc_ms"));
                     row.add(exactString(state,"measurement_state"));
                     for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){
                         JSONObject q=mq.optJSONObject(hw.key);
+                        row.add(exactNumber(q,"raw"));
+                        row.add(exactNumber(q,"adc"));
+                        row.add(exactNumber(q,"ao"));
                         row.add(exactNumber(q,"rs"));
                         row.add(exactNumber(q,"r0"));
+                        row.add(exactNumber(q,"firmware_r0"));
                         row.add(exactNumber(q,"ratio"));
-                        row.add(adcFromMq(q));
                     }
                     g.row(row.toArray(new Object[0]));
                 }
@@ -154,44 +165,60 @@ final class SmartFieldSessionXlsxWriter {
     }
 
     /**
-     * One row per actual sensor/scan sample: complete per-sensor MQ JSON is
-     * retained verbatim as an independent cell, covering device-specific
-     * timing, ADC, heater, R0 provenance and quality fields when present.
-     * This does NOT certify that absent hardware fields were measured.
+     * Long form suitable for importing measurements for V8 offline simulation.
+     * Each row maps to one real SQLite telemetry row and one installed MQ channel.
+     * Exporting unchanged archived channel JSON retains any additional device
+     * timing/calibration attributes even when a printed column is absent.
      */
     private static String rawMqLong(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
         SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(
-            36,18,16,20,18,16,22,20,20,20,22,20,20,18,18,26,20,90);
-        identity(g,b,"MQ — original stored per-sensor source payload");
-        g.blank();g.rowStyled(SmartXlsxPackage.WARN,"PROVENANCE",
-            "Every row corresponds to an actually stored source sample and MQ channel. "+
-            "Original JSON is not normalized; do not infer missing ADC, heater, ppm or R0.");
+            36,18,14,20,16,15,19,18,19,18,18,18,18,25,25,18,
+            18,20,18,18,18,18,18,18,18,18,20,22,45,55);
+        identity(g,b,"MQ V7 — original per-channel archive and provenance");
+        g.blank();
+        g.rowStyled(SmartXlsxPackage.WARN,"Source",
+            "Raw ADC is the field raw. adc and ao are voltage in V. "+
+            "No samples, R0, concentration, calibration or physical synchronization are inferred.");
         g.header("Measurement Session ID","Telemetry ID","t_ms",
-            "Sample UTC ms","MQ model","State","Rs original","R0 original",
-            "Ratio original","ADC when present","R0 source","R0 UTC",
-            "R0 session","MQ scan cycle","Channel offset us",
-            "T °C","RH %","Original MQ channel JSON");
+            "Sample UTC ms","MQ sensor","ok","ADS index","ADS channel",
+            "ADS raw code","adc voltage V","ao voltage V","Rs stored",
+            "R0 active stored","R0 firmware stored","R0 source","ratio",
+            "R0 definition","R0 samples","scan cycle","sample_us",
+            "channel offset us","age_us","MQ power","ADS1 ready",
+            "ADS2 ready","T °C","RH %","Pressure hPa",
+            "ADC acquisition JSON","Original stored MQ channel JSON");
         for(String sid:b.measurementSessionIds){
             try(Cursor c=db.getReadableDatabase().rawQuery(
                 "SELECT id,t_ms,env_payload,mq_payload,motion_payload "+
                 "FROM telemetry_samples WHERE session_id=? ORDER BY t_ms,id",
                 new String[]{sid})){
                 while(c.moveToNext()){
-                    JSONObject env=parseRaw(c.getString(2));
-                    JSONObject mq=parseRaw(c.getString(3));
-                    JSONObject state=parseRaw(c.getString(4));
+                    JSONObject env=parseRecordedJson(c.getString(2));
+                    JSONObject mq=parseRecordedJson(c.getString(3));
+                    JSONObject state=parseRecordedJson(c.getString(4));
+                    JSONObject adc=state.optJSONObject("adc");
                     for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){
                         JSONObject q=mq.optJSONObject(hw.key);
                         g.row(sid,c.getLong(0),c.getLong(1),
                             exactNumber(state,"sample_utc_ms"),hw.key,
-                            exactString(q,"state"),
+                            exactBoolean(q,"ok"),exactNumber(q,"ads"),
+                            exactNumber(q,"ch"),exactNumber(q,"raw"),
+                            exactNumber(q,"adc"),exactNumber(q,"ao"),
                             exactNumber(q,"rs"),exactNumber(q,"r0"),
-                            exactNumber(q,"ratio"),adcFromMq(q),
-                            exactString(q,"r0_source"),exactString(q,"r0_utc"),
-                            exactString(q,"r0_session"),exactNumber(q,"scan_cycle"),
+                            exactNumber(q,"firmware_r0"),
+                            exactString(q,"r0_source"),exactNumber(q,"ratio"),
+                            exactString(q,"r0_definition"),
+                            exactNumber(q,"r0_samples"),
+                            exactNumber(q,"scan_cycle"),exactNumber(q,"sample_us"),
                             exactNumber(q,"channel_offset_us"),
-                            exactNumber(env,"temperature"),exactNumber(env,"humidity"),
-                            q==null?null:q.toString());
+                            exactNumber(q,"age_us"),
+                            exactBoolean(q,"powered"),
+                            exactBoolean(adc,"ads1"),exactBoolean(adc,"ads2"),
+                            environmentalNumber(env,"temperature","t"),
+                            environmentalNumber(env,"humidity","h"),
+                            environmentalNumber(env,"pressure","p"),
+                            adc==null?null:originalJson(adc.optJSONObject("acquisition")),
+                            originalJson(q));
                     }
                 }
             }
@@ -199,37 +226,35 @@ final class SmartFieldSessionXlsxWriter {
         return g.finish();
     }
 
-    private static JSONObject parseRaw(String value){
+    /** Exact payload comes from immutable telemetry_samples; no reconstructed
+     * readings or current calibration values are inserted during export. */
+    private static JSONObject parseRecordedJson(String value){
         try{return value==null?new JSONObject():new JSONObject(value);}
         catch(org.json.JSONException invalid){
-            // Never silently synthesize a scientific reading when source JSON
-            // cannot be parsed. The immutable database source is untouched.
-            throw new IllegalStateException("Corrupt archived MQ telemetry JSON",invalid);
+            throw new IllegalStateException("Corrupt archived telemetry JSON",invalid);
         }
     }
-    private static Object exactNumber(JSONObject o,String key){
-        if(o==null||!o.has(key)||o.isNull(key))return null;
-        Object raw=o.opt(key);
-        if(raw instanceof Number){
-            double n=((Number)raw).doubleValue();
-            return Double.isFinite(n)?raw:null;
+    private static Object exactNumber(JSONObject obj,String key){
+        if(obj==null||!obj.has(key)||obj.isNull(key))return null;
+        Object value=obj.opt(key);
+        if(value instanceof Number){
+            double n=((Number)value).doubleValue();
+            return Double.isFinite(n)?value:null;
         }
-        return raw instanceof String?raw:null; // preserve raw string; no forced conversion
+        return value instanceof String?value:null;
     }
-    private static String exactString(JSONObject o,String key){
-        if(o==null||!o.has(key)||o.isNull(key))return "";
-        return String.valueOf(o.opt(key));
+    private static Object exactBoolean(JSONObject obj,String key){
+        return obj==null||!obj.has(key)||obj.isNull(key)?null:obj.opt(key);
     }
-    private static Object adcFromMq(JSONObject sensor){
-        if(sensor==null)return null;
-        // Some ESP32 firmware revisions publish adc_raw, others adc.
-        // These are per-channel ONLY, never the aggregate snapshot adc block.
-        for(String key:new String[]{"adc_raw","raw_adc","adc","adc_code"}){
-            Object v=exactNumber(sensor,key);
-            if(v!=null)return v;
-        }
-        return null;
+    private static String exactString(JSONObject obj,String key){
+        if(obj==null||!obj.has(key)||obj.isNull(key))return "";
+        return String.valueOf(obj.opt(key));
     }
+    private static Object environmentalNumber(JSONObject env,String canonical,String firmware){
+        Object value=exactNumber(env,canonical);
+        return value==null?exactNumber(env,firmware):value;
+    }
+    private static String originalJson(JSONObject o){return o==null?"":o.toString();}
 
     private static String measurementRecords(FieldSessionReportExporter.Bundle b){SmartXlsxPackage.Grid g=wide();identity(g,b,"سجل القياسات الفنية والاشتقاقات");g.blank();g.header("Experiment ID","Measurement Session ID","UTC","Protocol","Capture ID","Chemical UID","Reference kind","Known ppm","Approved","Reference name");for(ExperimentQueries.Record r:b.records)g.row(r.id,nz(r.sessionId),nz(r.ts),nz(r.protocol),r.captureId,r.chemicalUid,nz(r.referenceKind),r.knownPpm,r.approved,nz(r.referenceName));return g.finish();}
 
