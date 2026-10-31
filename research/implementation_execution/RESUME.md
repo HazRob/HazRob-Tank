@@ -1,9 +1,9 @@
-## 2026-11-01 — G2 MQ4 retrospective 4-ppm threshold risk audit (research-only; verify CI)
+## 2026-11-01 — G2 MQ4 retrospective 4-ppm threshold risk audit (794/794 CI verified)
 
 - Resumed from `7f037e908ab82f1a9da9b0168458adcae3e2b7df`; G2 CI `41243618986` on that SHA completed success (781 offline tests). Verified independent evidence `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
 - Audited pinned central-Library MQ4 external system summary (SHA256 `0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea`) for 5-model 4 ppm pooled confusion matrices, consistent denominators 2,346 positive / 11,840 negative of 14,186 rows. No raw ZIP rerun in this iteration.
 - Highest pooled sensitivity `RIDGE_MQ4_3_T_RH` = 1,302/2,346 (~55.50%), missing 1,044 positives (~44.50%); 787/11,840 (~6.65%) false positives among negatives. `HGB_MQ4_3_T_RH` sensitivity 533/2,346 (~22.72%), missing 1,813 positives. All 5 models below nominal 90% pooled interval coverage. 4 ppm is source diagnostic only, NOT a safety threshold.
-- Added reproducible research-only audit script, 13 deterministic/fail-closed tests, pinned JSON and Arabic method note. CI on this commit must be verified before claiming full suite success.
+- Added reproducible research-only audit script, 13 deterministic/fail-closed tests, pinned JSON and Arabic method note. [G2 Actions 41248248568](https://github.com/HazRob/HazRob-Tank/actions/runs/41248248568) on research implementation SHA `ed0ba26cb7223d702106ee9e023b7986047ef0e1` passed **794/794** offline tests, 80-technique fail-closed audit, byte-identical replay and publication guard (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). Documentation-only follow-up CI should be checked separately.
 - Caveats: source benchmark retrospective (10/11 folds train on future dates); serial rows are not independent physical exposures. These are descriptive source-derived pooled metrics, not confidence bounds, prospective safety performance, multi-gas identity, Tank ppm calibration, or G2/G3 qualification.
 - No change to Stable, Android, firmware, main. Scientific status remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent evidence `records=[]`. Next: verify CI and obtain traceable independent blinded physical exposures.
 
