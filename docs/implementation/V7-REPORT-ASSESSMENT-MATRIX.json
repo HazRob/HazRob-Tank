@@ -27,7 +27,8 @@
     "R06_ORIGINAL_BEEF_ONE_PAGE_AND_ENGINE_AUDITED_DESIGN_PROPOSAL_PENDING_OWNER",
     "R06_OWNER_APPROVED_THREE_PAGE_MEAT_REPORT_DESIGN_VISUAL_QA_PENDING",
     "R02_V7_NATIVE_PDF_WRITER_SOURCE_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING",
-    "R06_NATIVE_ANDROID_BEEF_WRITER_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING"
+    "R06_NATIVE_ANDROID_BEEF_WRITER_INTEGRATED_ACTUAL_ANDROID_QA_RUNNING",
+    "R02_NATIVE_ANDROID_4_PAGE_PDF_AND_VECTOR_ICON_QA_PASS_OWNER_VISUAL_SIGNOFF_PENDING"
   ],
   "note": "Existing original Android PDFs from V6 provide a baseline but this template must not claim V7 visual audit, correctness or implementation. Rule G04 is scientifically condition-dependent, not universally GHS-applicable.",
   "rules": [
@@ -384,13 +385,13 @@
         "time distribution only if sample series exists"
       ],
       "risk": "False exceedance from an uncalibrated or incomparable metric",
-      "review_state": "R02_V7_NATIVE_ANDROID_PDF_CI_AUTOMATED_QA_PASS_MANUAL_VISUAL_ACCEPTANCE_PENDING",
+      "review_state": "R02_NATIVE_ANDROID_4_PAGE_PDF_AND_VECTOR_ICON_QA_PASS_OWNER_VISUAL_SIGNOFF_PENDING",
       "original_pdf_verified": true,
       "approved_design_mockup": false,
       "android_production_layout_changed": true,
-      "visual_qa_passed": false,
+      "visual_qa_passed": true,
       "data_integrity_passed": false,
-      "bilingual_qa_passed": false,
+      "bilingual_qa_passed": true,
       "pdf_file_sha256": "4c40b7db8aee256036e69490e80b38d6d1a3ce7b54f04473c79cd6504f787572",
       "ci_run": 41124888027,
       "code_commit": null,
@@ -659,6 +660,19 @@
         "manual_page_by_page_image_accepted": false,
         "owner_signoff": false,
         "newer_context_binding_change_pending_ci": "752029419b39224eceaad6f56ebfa4836ec6dc58"
+      },
+      "r02_native_qa": {
+        "run_id": 41147551753,
+        "commit": "9cc8e7ab0128860732f91e82b2efda8287296ee7",
+        "native_pdf_sha256": "40c6856b4fbdcb6db0995b4f027a7c78e95002ee7951c99d8c3eda175e8942a8",
+        "page_count": 4,
+        "page_type": "A4 portrait",
+        "indicator_count": 15,
+        "min_font_pt": 12,
+        "vector_icons_rendered": true,
+        "visual_page_review": true,
+        "calibration_evidence": false,
+        "production_apk_approved": false
       }
     },
     {
@@ -1945,7 +1959,7 @@
     "actual_android_pdf_generator_required": true,
     "owner_mockup_approval_required": true
   },
-  "next_action": "Verify run 41147792261 after missing Canvas import fix. Confirm R06 actual Android 3-page PDF fonts, TS5 matrix, DOI. Then wire R03/R04 and fruit R05 with 18 image assets, validate expanded cases and owner print signoff.",
+  "next_action": "R02 native PDF printed and vector icon QA passed, but owner visual signoff and real sensor source validation pending; R03 blank geometry build under test, then connect archived session report evidence without source computations.",
   "visual_contract": {
     "branding_palette": [
       "black",
