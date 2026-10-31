@@ -138,7 +138,8 @@ public final class V7FieldSessionPdfWriter {
         String identity=candidate==null?DASH:
             "CAS: "+clean(candidate.cas)+"\nUID: "+clean(candidate.uid);
         String evidence=candidate==null?DASH:
-            "#"+(candidate.sourceIndex+1)+"\n"+clean(candidate.evidenceTier);
+            "S"+candidate.measurementOrdinal+" #"+(candidate.sourceIndex+1)+
+                "\n"+clean(candidate.evidenceTier);
         String[] vals={DASH,name+"\n"+identity,evidence,DASH,DASH,""};
         float cursor=5;
         for(int i=0;i<COLUMNS_MM.length;i++){
