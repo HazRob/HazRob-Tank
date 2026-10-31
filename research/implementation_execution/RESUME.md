@@ -1,8 +1,8 @@
-## 2026-10-31 — G2 MQ4 reported calendar-minute capacity cross-source audit (CI pending)
+## 2026-10-31 — G2 MQ4 reported calendar-minute capacity cross-source audit (641/641 CI verified)
 
 - Verified previous repaired implementation [G2 Actions 41176594975](https://github.com/HazRob/HazRob-Tank/actions/runs/41176594975): **631/631 tests PASS**, 80-technique fail-closed audit, deterministic replay and publication guard; all 20 workflows on previous documentation HEAD `456cc6af0c982b25ef17a99a69402f6784860184` completed successfully.
 - Added `g2_mq4_calendar_minute_capacity.py`, ten regression tests, pinned result JSON and Arabic methodology. Cross-reconciles source-intake assertions, LODO daily fold counts and strict-minute segment totals; checks 1440 minute bins/day and the first/last partial-day caps (774/723) **conditional on reported unique minute timestamps**. Does NOT replay raw ZIP bytes or independently verify the asserted time granularity.
-- Expected offline test count: **641**; CI must confirm before any pass claim. Existing pinned summary and Stable unchanged. Independent evidence remains empty; 0/80 G2 candidates, 80 blocked, 14 catalog sources blocked. Continue with original raw-byte verification and independently calibrated physical exposure evidence.
+- **641/641 offline tests PASS** on repaired implementation commit `87ee4796c5b8936ebed29c4f4bd6f34c7ea6f892` in [G2 Actions 41180696031](https://github.com/HazRob/HazRob-Tank/actions/runs/41180696031), job `124477332383`. Full 80-technique fail-closed audit, deterministic replay and publication guard PASS. The initial test+documentation commit `6166ece797cd1e320cf0f1f997ec3819951c24b2` was followed by a diagnostic-precedence correction before verification. Existing pinned summary and Stable unchanged. Independent evidence remains empty; 0/80 G2 candidates, 80 blocked, 14 catalog sources blocked. Continue with original raw-byte verification and independently calibrated physical exposure evidence.
 
 ---
 
