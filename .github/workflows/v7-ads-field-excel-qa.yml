@@ -1,0 +1,145 @@
+name: HazRob Tank V7 ADS1115 eight-channel Excel and reports QA (non-release)
+
+on:
+  push:
+    branches: [feature/tank-v7-reports]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/report/SmartFieldSessionXlsxWriter.java'
+      - 'android/app/src/main/java/com/servoc/app/measurement/TelemetryRecorder.java'
+      - 'android/app/src/main/java/com/servoc/app/ui/ReportsTab.java'
+      - 'android/app/src/main/java/com/servoc/app/data/ExperimentQueries.java'
+      - 'android/app/src/test/java/com/servoc/app/report/TankV7AdsRawExportContractTest.java'
+      - 'research/chemcore_v6/tests/android/V7AdsFieldExportFixtureActivity.java'
+      - 'research/chemcore_v6/tests/android/run_v7_ads_field_export.sh'
+      - '.github/workflows/v7-ads-field-excel-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  field-ads-excel-source-and-emulator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay actual Tank V7 sources and isolated Android fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          if test -d tank/android/app/src/main/assets; then mkdir -p source/app/src/main/assets; cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/; fi
+          if test -d tank/android/app/src/test/java; then mkdir -p source/app/src/test/java; cp -a tank/android/app/src/test/java/. source/app/src/test/java/; fi
+          cp tank/research/chemcore_v6/tests/android/V7AdsFieldExportFixtureActivity.java source/app/src/main/java/com/servoc/app/report/
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('source/app/src/main/AndroidManifest.xml')
+          s=p.read_text()
+          needle='<activity android:name=".MainActivity" android:exported="false"/>'
+          assert needle in s
+          s=s.replace(needle,'<activity android:name=".report.V7AdsFieldExportFixtureActivity" android:exported="true"/>\n        '+needle)
+          p.write_text(s)
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Ensure Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Unit source contracts and complete Java compilation
+        working-directory: source
+        run: |
+          gradle --no-daemon :app:compileDebugJavaWithJavac
+          gradle --no-daemon :app:testDebugUnitTest --tests com.servoc.app.report.TankV7AdsRawExportContractTest
+      - name: Disposable test-only signing certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source/signing
+          keytool -genkeypair -alias hazrob-prototype -keystore source/signing/hazrob-prototype.jks \
+            -storepass hazrob-prototype -keypass hazrob-prototype -keyalg RSA -keysize 2048 \
+            -validity 1 -dname "CN=V7 ADS TEMP QA ONLY,OU=NOT FOR RELEASE,O=HazRob" -noprompt
+      - name: Assemble isolated Android emulator TEST package (not distributable APK)
+        working-directory: source
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Enable emulator acceleration
+        run: if test -c /dev/kvm; then sudo chmod a+rw /dev/kvm; fi
+      - name: Exercise native FieldSessionReportExporter with approved SQLite data
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none
+          script: bash tank/research/chemcore_v6/tests/android/run_v7_ads_field_export.sh
+      - name: Inspect XLSX 16 sheets and prove ADS code-versus-voltage separation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile,xml.etree.ElementTree as ET,json,hashlib
+          base=Path('/tmp/v6-n06e-approved')
+          status=json.loads((base/'n06e_status.json').read_text())
+          p=base/'n06e_full_approved_field.xlsx'
+          assert status['status']=='PASS',status
+          assert status['xlsx_sheet_count']==16,status
+          assert status['archive_digest_before']==status['archive_digest_after']
+          assert zipfile.is_zipfile(p)
+          ns='{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              root=ET.fromstring(z.read('xl/workbook.xml'))
+              names=[e.attrib['name'] for e in root.findall('.//'+ns+'sheet')]
+              assert len(names)==16,names
+              wide=names.index('MQ الثمانية الخام')+1
+              long=names.index('MQ الأصل لكل حساس')+1
+              w=ET.fromstring(z.read(f'xl/worksheets/sheet{wide}.xml'))
+              l=ET.fromstring(z.read(f'xl/worksheets/sheet{long}.xml'))
+              def vals(root):
+                  return [e.text for e in root.findall('.//'+ns+'v') if e.text]
+              wn=vals(w);ln=vals(l)
+              assert '1800.0' in wn, ('missing original ADS code',wn[:70])
+              assert any(abs(float(x)-0.3375)<0.00001 for x in wn),('missing voltage',wn[:70])
+              assert '2800.0' in ln,('missing native firmware ADS code',ln[:70])
+              assert '1800.0' in ln,('missing normalized Android ADS code',ln[:70])
+              assert len(l.findall('.//'+ns+'row'))>=16*8
+              for name in z.namelist():
+                  if name.endswith(('.xml','.rels')): ET.fromstring(z.read(name))
+          report={
+              'status':'PASS','source':'Android emulator native exporter; synthetic fixture only',
+              'worksheet_count':len(names),'sheet_names':names,
+              'ads_firmware_code_sample':2800,'ads_android_code_sample':1800,
+              'adc_voltage_sample_v':0.3375,
+              'snapshot_immutable':True,
+              'not_device_validated':True,'not_released':True,
+              'xlsx_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+              'pdf_sha256':hashlib.sha256((base/'n06e_full_approved_field.pdf').read_bytes()).hexdigest(),
+          }
+          (base/'v7_ads_export_qa.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          print('V7_ADS_XLSX_E2E_PASS',report)
+          PY
+      - name: Upload V7 research export proof only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-V7-ADS-Field-Excel-Research-QA-NON-RELEASE
+          path: /tmp/v6-n06e-approved/
+          if-no-files-found: warn
