@@ -93,7 +93,9 @@ public final class ReportsTab {
                 if(rebindingScope||position!=fieldSelector.getSelectedItemPosition())return;
                 String next=position>0&&position<=scopeSessions.size()?scopeSessions.get(position-1).id:"";
                 if(next.equals(chosenSessionId))return;
-                chosenSessionId=next;updateExportButtonLabels();
+                // A selected Field Session also scopes the history cards and
+                // charts, not just the PDF/XLSX export labels.
+                chosenSessionId=next;updateExportButtonLabels();refresh();
             }
             public void onNothingSelected(AdapterView<?> parent){}
         });
@@ -230,7 +232,16 @@ public final class ReportsTab {
                     if(!found)effectiveSite=sites.isEmpty()?"":sites.get(0).id;
                     List<FieldSessionRepository.FieldSession> sessions=effectiveSite.isEmpty()
                             ?new ArrayList<>():fieldSessions.approvedSessionsForSite(effectiveSite);
-                    List<ExperimentQueries.Record> records=ExperimentQueries.approvedFieldReports(host.database(),100);
+                    // Scope the query BEFORE the 100-row limit. A missing or
+                    // stale selected Field Session means "all approved sessions
+                    // for this site" after the spinner is re-bound.
+                    String effectiveSession="";
+                    for(FieldSessionRepository.FieldSession item:sessions)
+                        if(item.id.equals(sessionId)){effectiveSession=sessionId;break;}
+                    List<ExperimentQueries.Record> records=effectiveSite.isEmpty()
+                        ?new ArrayList<>()
+                        :ExperimentQueries.approvedFieldReportsForScope(
+                            host.database(),effectiveSite,effectiveSession,100);
                     ScopeData data=new ScopeData(siteId,sessionId,sites,sessions,records);
                     scroll.post(()->{
                         if(released||reportGeneration!=request)return;
