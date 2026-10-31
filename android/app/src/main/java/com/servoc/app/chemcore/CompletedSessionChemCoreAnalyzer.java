@@ -64,6 +64,35 @@ public final class CompletedSessionChemCoreAnalyzer {
         Map<String,Double> ratios=fieldCapture?
             observedRatiosAcrossFieldSamples(db,id):observedRatios(terminalSnapshot);
         // Field sessions must never silently fall back to a single terminal snapshot.
+        // A REAL raw-MQ field capture remains a valid documented observation even
+        // when clean-air R0 has not yet been calibrated. Persist an honest M0
+        // INSUFFICIENT_EVIDENCE decision: no identity, candidates, or ppm. The
+        // independent FieldCycleRepository still validates real sensor samples,
+        // duration, freshness and approval before accepting the measurement.
+        if(ratios.isEmpty()&&fieldCapture){
+            ChemCoreResultEnvelope insufficient=new ChemCoreResultEnvelope(
+                id,ChemCoreDecision.Outcome.INSUFFICIENT_EVIDENCE,
+                ChemCoreDecision.EvidenceTier.M0_CATALOG_ONLY,
+                null,"",Double.NaN,Double.NaN,Double.NaN,Double.NaN,
+                Double.NaN,Double.NaN,
+                SamplingProfile.hazRobStandardChamberV2().profileId,
+                ChemCoreFeaturePipeline.SCHEMA_VERSION,MODEL_VERSION,
+                "NO_VALID_RECORDED_R0_RATIOS; preserved raw MQ source only; no gas identity or ppm",
+                Collections.emptyList());
+            try{
+                JSONObject quality=new JSONObject();
+                quality.put("state","RAW_MQ_CAPTURE_NO_VALID_R0");
+                quality.put("valid_r0_normalized_channels",0);
+                quality.put("field_60s_capture",true);
+                quality.put("candidate_ranking_permitted",false);
+                quality.put("named_identity_permitted",false);
+                quality.put("ppm_reportable",false);
+                quality.put("requires_r0_before_gas_analysis",true);
+                insufficient=insufficient.withLabQuality(quality);
+            }catch(Exception ignored){}
+            long row=decisions.save(Math.max(0,tMs),insufficient);
+            return new Outcome(row,0,0,insufficient);
+        }
         if(ratios.isEmpty())return new Outcome(-1,0,0,null);
 
         ChemCoreSessionFeatureAdapter.Extraction extraction=null;
