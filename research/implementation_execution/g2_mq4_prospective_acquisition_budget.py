@@ -7,6 +7,7 @@ import argparse
 import json
 import math
 from pathlib import Path
+from fractions import Fraction
 
 
 def _positive_integer(value, label, minimum=0):
@@ -18,10 +19,9 @@ def _positive_integer(value, label, minimum=0):
 def finite_rank_minimum(nominal):
     if type(nominal) not in (int, float) or not math.isfinite(nominal) or not 0 < nominal < 1:
         raise ValueError('G2_ACQUISITION_NOMINAL')
-    n = 1
-    while math.ceil((n + 1) * nominal - 1e-12) > n:
-        n += 1
-    return n
+    # Exact rational rank bound avoids floating-point edge cases and O(n) loops.
+    p = Fraction(str(nominal))
+    return (p.numerator + (p.denominator - p.numerator) - 1) // (p.denominator - p.numerator)
 
 
 def plan(min_training_groups=3, locked_test_groups=6, gaps=(0, 1, 2),
