@@ -300,5 +300,28 @@ class MQ4CrossReportTests(unittest.TestCase):
             reconcile(l, m)
 
 
+    def test_reject_lag_pair_count_below_segment_combinatorial_minimum(self):
+        l, m = synthetic()
+        item = m['lag_results']['5']
+        item['contiguous_lag_pairs'] -= 1
+        item['same_day_context_rows'] -= 1
+        item['lag_context_unavailable_rows'] += 1
+        item['cross_day_fraction_of_available_pairs'] = (
+            5 / item['contiguous_lag_pairs'])
+        # One uninterrupted 181-row segment has exactly 176 lag-5 pairs.
+        # The old upper bound and monotonicity checks both accepted 175.
+        with self.assertRaisesRegex(ValueError, 'LAG_MIN_PAIRS_BY_SEGMENTS'):
+            reconcile(l, m)
+
+    def test_reject_cross_day_pairs_exceeding_previous_day_rows(self):
+        l, m = synthetic()
+        # A lag-5 crossing declares five distinct preceding-day rows,
+        # but only four source rows are now declared for that day.
+        # Later-day bounds alone cannot detect this contradiction.
+        l['folds']['2021-07-21']['holdout_total'] = 4
+        with self.assertRaisesRegex(ValueError, 'CROSS_DAY_EXCEEDS_PRIOR_DAY_ROWS'):
+            reconcile(l, m)
+
+
 if __name__ == '__main__':
     unittest.main()

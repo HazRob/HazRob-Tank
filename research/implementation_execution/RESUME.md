@@ -1,3 +1,12 @@
+## 2026-10-31 — G2 MQ4 necessary lower lag bound and preceding-day crossing capacity (613 tests expected; CI pending)
+
+- Rechecked prior repaired G2 CI: run [41149778083](https://github.com/HazRob/HazRob-Tank/actions/runs/41149778083), job `124383281484`, **611/611 PASS**; all 20/20 workflow runs on research HEAD `059164fe7f579c083a9b33a09bd9e491ab44e8eb` completed successfully. G2 remained 0 candidates / 80 blocked / 14 source slots blocked; independent evidence `records=[]`.
+- Added two **necessary** report-consistency checks in `g2_mq4_cross_report_reconciliation.py`: `P_k >= max(0,n-s*k)` for nonempty contiguous segments and cross-midnight pair count <= the preceding calendar day's declared raw rows. Existing upper bound, date adjacency, later-day capacity, and fail-closed scientific boundaries remain unchanged.
+- Added two synthetic regressions to `test_g2_mq4_cross_report_reconciliation.py` and methodology `G2_MQ4_SEGMENT_LOWER_BOUND_PRIOR_DAY_CAP_2026-10-31_AR.md`. **613 offline tests expected, not verified until GitHub Actions completes.** The pinned reconciliation output is intentionally unchanged.
+- All changes restricted to `research/implementation_execution/` on the research branch; no ChemCore Stable, Android, firmware, main, G2/G3 qualification or scientific claims changed. Check G2 CI for this commit, repair failures if any, and preserve negative findings. Physical independent reference exposures, traceable calibrations, blinded holdouts and independent review remain missing.
+
+---
+
 ## 2026-10-31 — G2 MQ4 CI regression repair (611-test gate requeued)
 
 - Initial new-code G2 workflow [41149599386](https://github.com/HazRob/HazRob-Tank/actions/runs/41149599386), job `124382691584`, executed **611 tests and failed 1**: legacy `test_reject_lag_pair_count_increasing_with_lag` expected `LAG_AVAILABLE_MONOTONIC`, but the newly inserted stronger `LAG_MAX_PAIRS_BY_SEGMENTS` check raised first. No underlying pinned-source discrepancy was identified; the test failed because of diagnostic precedence.

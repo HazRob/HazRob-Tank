@@ -98,6 +98,10 @@ def reconcile(lodo, multi):
         # This is a necessary combinatorial bound, not raw-signal validation.
         check(available <= max(0, n - segments + 1 - lag),
               'LAG_MAX_PAIRS_BY_SEGMENTS')
+        # Each nonempty segment can lose at most k rows at lag k.
+        # A smaller count is impossible for the declared n and segments.
+        check(available >= max(0, n - segments * lag),
+              'LAG_MIN_PAIRS_BY_SEGMENTS')
         previous_available = available
         distribution = item.get('cross_day_context_rows_by_later_date')
         check(type(distribution) is dict and set(distribution).issubset(set(days)) and
@@ -117,6 +121,13 @@ def reconcile(lodo, multi):
                       (date.fromisoformat(later_day) -
                        date.fromisoformat(days[prior_index])).days == 1,
                       'CROSS_DAY_NONADJACENT')
+                # A distinct cross-midnight pair consumes one distinct
+                # source row on the preceding calendar day.
+                prior_fold = folds[days[prior_index]]
+                check(type(prior_fold) is dict and
+                      integer(prior_fold.get('holdout_total')) and
+                      cross_rows <= prior_fold['holdout_total'],
+                      'CROSS_DAY_EXCEEDS_PRIOR_DAY_ROWS')
         if lag == 1:
             lag_one_cross_day = dict(distribution)
         else:
