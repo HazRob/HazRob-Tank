@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from g2_mq4_cross_report_reconciliation import ARCHIVE, RAW, LAGS, load_report, reconcile, check_lag_pair_convexity
+from g2_mq4_cross_report_reconciliation import ARCHIVE, RAW, LAGS, load_report, reconcile, check_lag_pair_convexity, check_cross_day_lag_lipschitz
 
 
 def synthetic():
@@ -352,6 +352,43 @@ class MQ4CrossReportTests(unittest.TestCase):
         knots = [(k, report['lag_results'][str(k)]['contiguous_lag_pairs'])
                  for k in LAGS]
         self.assertIsNone(check_lag_pair_convexity(knots))
+
+
+    def test_accept_cross_day_lag_lipschitz_with_decreasing_tail(self):
+        # One contiguous midnight crossing: a=2 preceding and b=10 later.
+        # Counts need not be monotone in k, but must be 1-Lipschitz.
+        knots = [(k, {'2021-07-22': v}) for k, v in
+                 [(1, 1), (2, 2), (3, 2), (5, 2), (10, 2),
+                  (11, 1), (12, 0)]]
+        self.assertIsNone(check_cross_day_lag_lipschitz(knots))
+
+    def test_reject_cross_day_lag_jump_beyond_elapsed_minutes(self):
+        knots = [(5, {'2021-07-22': 1}),
+                 (15, {'2021-07-22': 15})]
+        with self.assertRaisesRegex(ValueError, 'CROSS_DAY_LAG_LIPSCHITZ'):
+            check_cross_day_lag_lipschitz(knots)
+
+    def test_reconcile_rejects_cross_day_profile_inconsistent_across_lags(self):
+        l, m = synthetic()
+        item = m['lag_results']['5']
+        # Each lag's distribution passes its individual capacity checks.
+        # Yet one cross-day pair at lag 5 cannot jump to 15 at lag 15.
+        item['cross_day_context_rows_requiring_embargo_if_day_holdout'] = 1
+        item['cross_day_context_rows_by_later_date']['2021-07-22'] = 1
+        item['same_day_context_rows'] += 4
+        item['cross_day_fraction_of_available_pairs'] = (
+            1 / item['contiguous_lag_pairs'])
+        with self.assertRaisesRegex(ValueError, 'CROSS_DAY_LAG_LIPSCHITZ'):
+            reconcile(l, m)
+
+    def test_pinned_mq4_cross_day_lag_lipschitz(self):
+        root = Path(__file__).resolve().parent
+        p = root / 'G2_MQ4_MULTISCALE_DAY_CONTEXT_EMBARGO_2026-10-30.json'
+        report = load_report(p)
+        knots = [(k, report['lag_results'][str(k)]
+                  ['cross_day_context_rows_by_later_date']) for k in LAGS]
+        self.assertIsNone(check_cross_day_lag_lipschitz(knots))
+
 
 
 if __name__ == '__main__':
