@@ -15,6 +15,7 @@ import com.hazrob.tank.v6integration.TankV6TelemetryAdapter;
 import com.hazrob.tank.foodfreshness.FoodFreshnessEngine;
 import com.hazrob.tank.foodfreshness.FoodFreshnessPdf;
 import com.hazrob.tank.foodfreshness.FoodReferenceCatalog;
+import com.hazrob.tank.foodfreshness.V7FruitReportPdfWriter;
 import com.hazrob.tank.foodfreshness.meat.BeefResearchCatalog;
 import com.hazrob.tank.foodfreshness.meat.BeefResearchEngine;
 import com.hazrob.tank.foodfreshness.meat.BeefResearchPdf;
@@ -250,6 +251,27 @@ public final class V7R01PdfFixtureActivity extends Activity {
         Uri fruitUri=FoodFreshnessPdf.save(this,fruitResult,fruitReadings,177,180000L,"CI-V6-FRUIT");
         copy("05_V6_Fruit_Freshness_Original.pdf",fruitUri);
         verify("05_V6_Fruit_Freshness_Original.pdf");
+        ByteArrayOutputStream fruitLayout=new ByteArrayOutputStream();
+        V7FruitReportPdfWriter.write(this,fruitLayout,fruitResult,fruitReadings,
+            177,180000L,"CI-V7-FRUIT-SELECTED");
+        store("V7_R05_Fruit_18_Families_No_Photos_Yet.pdf",fruitLayout);
+        int fruitLayoutPages=verify("V7_R05_Fruit_18_Families_No_Photos_Yet.pdf");
+        if(fruitLayoutPages<3)throw new IllegalStateException(
+            "R05 must show all 18 options plus complete source matches");
+        status.put("v7_r05_preview",new JSONObject()
+            .put("pages",fruitLayoutPages)
+            .put("source_families",18)
+            .put("photographs_packed",false)
+            .put("layout_only_not_production",true));
+        // Missing data must remain '-'; no fabricated matching index.
+        FoodFreshnessEngine.Result fruitBlank=FoodFreshnessEngine.analyzeFruit(
+            new ArrayList<FoodFreshnessEngine.Reading>(),"Banana");
+        fruitLayout.reset();
+        V7FruitReportPdfWriter.write(this,fruitLayout,fruitBlank,
+            Collections.<String,Double>emptyMap(),0,0L,"CI-V7-FRUIT-BLANK");
+        store("V7_R05_Fruit_No_Data_18_Families.pdf",fruitLayout);
+        if(verify("V7_R05_Fruit_No_Data_18_Families.pdf")!=2)
+            throw new IllegalStateException("R05 blank source must retain two matrix pages");
 
         Map<String,Double> beef=new LinkedHashMap<>();
         double[] profile=BeefResearchCatalog.classes().get(0).logShape();
