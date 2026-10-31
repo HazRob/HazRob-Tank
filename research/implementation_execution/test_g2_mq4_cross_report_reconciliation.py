@@ -253,5 +253,39 @@ class MQ4CrossReportTests(unittest.TestCase):
             reconcile(l, m)
 
 
+    def test_reject_lag_pair_count_above_segment_combinatorial_maximum(self):
+        l, m = synthetic()
+        item = m['lag_results']['5']
+        item['contiguous_lag_pairs'] += 1
+        item['same_day_context_rows'] += 1
+        item['lag_context_unavailable_rows'] -= 1
+        item['cross_day_fraction_of_available_pairs'] = 5 / item['contiguous_lag_pairs']
+        # Still below lag-one pairs: monotonicity alone would miss this.
+        with self.assertRaisesRegex(ValueError, 'LAG_MAX_PAIRS_BY_SEGMENTS'):
+            reconcile(l, m)
+
+    def test_reject_cross_day_pairs_exceeding_later_day_rows(self):
+        l, m = synthetic()
+        first, second = l['folds']['2021-07-21'], l['folds']['2021-07-22']
+        first['holdout_total'] = 81
+        first['holdout_history_ineligible'] = 81
+        second['holdout_total'] = 100
+        second['holdout_history_ineligible'] = 39
+        # All fold arithmetic and raw totals still reconcile, but 120
+        # later-day cross-context rows cannot fit into 100 later-day rows.
+        with self.assertRaisesRegex(ValueError, 'CROSS_DAY_EXCEEDS_DAY_ROWS'):
+            reconcile(l, m)
+
+    def test_reject_declared_calendar_day_with_zero_source_rows(self):
+        l, m = synthetic()
+        first, second = l['folds']['2021-07-21'], l['folds']['2021-07-22']
+        first['holdout_total'] = 0
+        first['holdout_history_ineligible'] = 0
+        second['holdout_total'] = 181
+        second['holdout_history_ineligible'] = 120
+        with self.assertRaisesRegex(ValueError, 'FOLD_EMPTY_CALENDAR_DAY'):
+            reconcile(l, m)
+
+
 if __name__ == '__main__':
     unittest.main()
