@@ -18,7 +18,10 @@ public final class TankV4ReportsAsyncContractTest {
         assertTrue(s.contains("host.io().execute(()->{"));
         assertTrue(s.contains("List<FieldSessionRepository.Site> sites=fieldSessions.sites()"));
         assertTrue(s.contains("fieldSessions.approvedSessionsForSite(effectiveSite)"));
-        assertTrue(s.contains("ExperimentQueries.approvedFieldReports(host.database(),100)"));
+        assertTrue(s.contains("ExperimentQueries.approvedFieldReportsForScope("));
+        assertTrue(s.contains("host.database(),effectiveSite,effectiveSession,100)"));
+        assertTrue(s.contains("chosenSessionId=next;updateExportButtonLabels();refresh()"));
+        assertTrue(s.contains("for(FieldSessionRepository.FieldSession item:sessions)"));
         assertTrue(s.contains("ScopeData data=new ScopeData(siteId,sessionId,sites,sessions,records)"));
         assertTrue(s.contains("if(released||reportGeneration!=request)return"));
         assertTrue(s.contains("if(!chosenSiteId.equals(siteId)||!chosenSessionId.equals(sessionId))"));
