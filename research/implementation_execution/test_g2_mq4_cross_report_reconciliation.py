@@ -418,6 +418,16 @@ class MQ4CrossReportTests(unittest.TestCase):
         item['same_day_context_rows'] += 1
         item['cross_day_fraction_of_available_pairs'] = (
             59 / item['contiguous_lag_pairs'])
+        # Keep the per-calendar-day same-day capacity feasible so this
+        # regression continues to isolate the exact-midnight profile gate.
+        # A 59/122 day split has lag-60 same-day capacity 62, but the
+        # declared lag-120 cross-midnight count remains inconsistent.
+        first = l['folds']['2021-07-21']
+        second = l['folds']['2021-07-22']
+        first['holdout_total'] = 59
+        first['holdout_history_ineligible'] = 59
+        second['holdout_total'] = 122
+        second['holdout_history_ineligible'] = 61
         with self.assertRaisesRegex(ValueError, 'CROSS_DAY_PROFILE_INFEASIBLE'):
             reconcile(l, m)
 
