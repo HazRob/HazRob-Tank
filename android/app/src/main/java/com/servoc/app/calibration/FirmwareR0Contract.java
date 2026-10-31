@@ -35,9 +35,7 @@ public final class FirmwareR0Contract {
         boolean v6Three=V6_SCHEMA.equals(schema);
         boolean v6Quick=V6_QUICK_SCHEMA.equals(schema);
         if(!v6Three&&!v6Quick&&!SCHEMA.equals(schema))
-            throw new IllegalArgumentException("Unsupported ESP32 R0 schema='"+schema+
-                "'; expected V6 quick='"+V6_QUICK_SCHEMA+"' (active), V6 three-window='"+
-                V6_SCHEMA+"' or V5 idle='"+SCHEMA+"'.");
+            throw new IllegalArgumentException("Unsupported firmware R0 API schema");
         int windows=response.optInt("window_count",(v6Three||v6Quick)?0:1);
         String definition=response.optString("r0_definition","");
         String state=response.optString("state","");
@@ -51,11 +49,7 @@ public final class FirmwareR0Contract {
         if((v6Three&&(windows!=3||!"DEVICE_CLEAN_AIR_RS_MEAN".equals(definition)))||
             (v6Quick&&(windows!=1||!"DEVICE_CLEAN_AIR_RS_MEAN".equals(definition)||
               response.optInt("warmup_ms",-1)!=180000||wrongQuickDuration)))
-            throw new IllegalArgumentException("ESP32 R0 timing/definition mismatch: schema="+schema+
-                ", state="+state+", warmup_ms="+response.optInt("warmup_ms",-1)+
-                " (V6 quick expects 180000), duration_ms="+stageDuration+
-                " (warmup expects 180000; sampling/pending/ready expects 60000),"+
-                " window_count="+windows+" (quick expects 1), definition="+definition);
+            throw new IllegalArgumentException("V6 R0 schema and physical timing disagree");
         if(!("idle".equals(state)||"warmup".equals(state)||"sampling".equals(state)
              ||"ready".equals(state)||"pending".equals(state)||"resting".equals(state)||"error".equals(state)||"cancelled".equals(state)))
             throw new IllegalArgumentException("Unknown R0 state");
