@@ -1,6 +1,7 @@
 package com.servoc.app.report;
 
 import com.servoc.app.data.ExperimentsDb;
+import com.servoc.app.chemcore.ChemCoreDecisionRepository;
 import com.servoc.app.field.FieldCycleRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,10 +33,12 @@ public final class V7FieldReportSourceSnapshot {
         }
     }
     public static final class Candidate {
-        public final int sourceIndex;
-        public final String label,cas,uid,evidenceTier,sourceJson;
-        private Candidate(int index,JSONObject entry){
+        public final int sourceIndex, measurementOrdinal;
+        public final String measurementSessionId,label,cas,uid,evidenceTier,sourceJson;
+        private Candidate(int index,int ordinal,String sessionId,JSONObject entry){
             sourceIndex=index;
+            measurementOrdinal=ordinal;
+            measurementSessionId=blank(sessionId);
             label=blank(entry.optString("label",entry.optString("name","")));
             cas=blank(entry.optString("cas",""));
             uid=blank(entry.optString("uid",entry.optString("id","")));
@@ -53,7 +56,7 @@ public final class V7FieldReportSourceSnapshot {
     public final int approvedCycles;
     public final String contractEvidence;
 
-    private V7FieldReportSourceSnapshot(FieldSessionReportExporter.Bundle b) {
+    private V7FieldReportSourceSnapshot(ExperimentsDb db,FieldSessionReportExporter.Bundle b) {
         if(b==null||b.analyticalContract==null)
             throw new IllegalArgumentException("Archived approved contract required");
         siteId=blank(b.site.id);siteName=blank(b.site.name);
@@ -78,11 +81,21 @@ public final class V7FieldReportSourceSnapshot {
         approvedCycles=app;approvedGas=g;approvedParticles=p;approvedPhysical=f;
         JSONObject decision=b.analyticalContract.decision();
         primarySourceDecisionJson=decision==null?"{}":decision.toString();
-        JSONArray candidates=decision==null?null:decision.optJSONArray("candidates");
         List<Candidate> all=new ArrayList<>();
-        if(candidates!=null)for(int i=0;i<candidates.length();i++){
-            JSONObject entry=candidates.optJSONObject(i);
-            if(entry!=null)all.add(new Candidate(i,entry));
+        // Preserve candidates from ALL approved archived measurement sessions,
+        // never just the single best-scoring primary session. Do not fuse
+        // their ranks or derive chemical identity in the PDF data contract.
+        ChemCoreDecisionRepository decisions=new ChemCoreDecisionRepository(db);
+        for(int ord=0;ord<measurementSessionIds.size();ord++){
+            String sid=measurementSessionIds.get(ord);
+            JSONObject payload=sid.equals(primaryMeasurementSessionId)?
+                decision:decisions.latestPayloadForSession(sid);
+            JSONArray candidates=payload==null?null:payload.optJSONArray("candidates");
+            if(candidates==null)continue;
+            for(int i=0;i<candidates.length();i++){
+                JSONObject entry=candidates.optJSONObject(i);
+                if(entry!=null)all.add(new Candidate(i,ord+1,sid,entry));
+            }
         }
         rawCandidates=Collections.unmodifiableList(all);
         contractEvidence="ARCHIVED_APPROVED_FIELD_SESSION_ONLY; RAW_SOURCE_UNCHANGED";
@@ -92,6 +105,6 @@ public final class V7FieldReportSourceSnapshot {
     }
     public static V7FieldReportSourceSnapshot resolve(ExperimentsDb db,String fieldId){
         FieldSessionReportExporter.Bundle b=FieldSessionReportExporter.resolve(db,fieldId);
-        return new V7FieldReportSourceSnapshot(b);
+        return new V7FieldReportSourceSnapshot(db,b);
     }
 }
