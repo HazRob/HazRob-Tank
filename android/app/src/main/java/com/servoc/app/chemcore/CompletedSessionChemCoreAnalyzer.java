@@ -64,36 +64,7 @@ public final class CompletedSessionChemCoreAnalyzer {
         Map<String,Double> ratios=fieldCapture?
             observedRatiosAcrossFieldSamples(db,id):observedRatios(terminalSnapshot);
         // Field sessions must never silently fall back to a single terminal snapshot.
-        // Real, independently scanned raw MQ evidence can still be a valid field
-        // measurement when every device-bound R0 ratio is unavailable. Persist an
-        // explicit non-identifying, non-quantitative analysis result; the separate
-        // FieldCycleRepository gas/physical sample gates remain mandatory.
-        if(ratios.isEmpty()){
-            // V8 only changes documented FIELD capture semantics; preserve
-            // existing Instant behavior until its own regression review.
-            if(!fieldCapture)return new Outcome(-1,0,0,null);
-            ChemCoreResultEnvelope unavailable=new ChemCoreResultEnvelope(
-                id,ChemCoreDecision.Outcome.INSUFFICIENT_EVIDENCE,
-                ChemCoreDecision.EvidenceTier.M0_CATALOG_ONLY,
-                null,"",Double.NaN,Double.NaN,Double.NaN,Double.NaN,
-                Double.NaN,Double.NaN,
-                SamplingProfile.hazRobStandardChamberV2().profileId,
-                ChemCoreFeaturePipeline.SCHEMA_VERSION,MODEL_VERSION,
-                "NO_ACCEPTED_DEVICE_R0_RATIO_FROM_DISTINCT_SCAN_CYCLES",
-                Collections.emptyList());
-            try{
-                JSONObject quality=new JSONObject();
-                quality.put("state","FIELD_SCREENING_INSUFFICIENT_EVIDENCE");
-                quality.put("field_60s_capture",fieldCapture);
-                quality.put("r0_normalized_channels",0);
-                quality.put("named_identity_permitted",false);
-                quality.put("ppm_reportable",false);
-                quality.put("no_single_terminal_snapshot_fallback",fieldCapture);
-                unavailable=unavailable.withLabQuality(quality);
-            }catch(Exception ignored){}
-            long decisionRow=decisions.save(Math.max(0,tMs),unavailable);
-            return new Outcome(decisionRow,0,0,unavailable);
-        }
+        if(ratios.isEmpty())return new Outcome(-1,0,0,null);
 
         ChemCoreSessionFeatureAdapter.Extraction extraction=null;
         try{extraction=ChemCoreSessionFeatureAdapter.extract(db,id);}catch(Exception ignored){}
