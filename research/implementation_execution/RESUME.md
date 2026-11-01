@@ -1,3 +1,11 @@
+## 2026-11-01 — Original MQ4 source paired-reproduction CI verified (955/955)
+
+- Research implementation SHA `519b5458175b212f8450b4b49ab12e7f953b134b`: all **21/21** associated GitHub Actions workflows completed **success**, including [G2 source/R0 evidence gate #41306362405](https://github.com/HazRob/HazRob-Tank/actions/runs/41306362405), whose log explicitly reports **955/955 tests OK** and seven new pinned-receipt synthetic regressions.
+- Full fail-closed 80-technique audit, deterministic replay and publication guard also passed: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No original archive replay occurred **inside CI**; two full original-source executions occurred locally using the user's SHA-pinned Library ZIP and benchmark script.
+- Evidence receipt and Arabic methods: `G2_MQ4_ORIGINAL_SOURCE_PAIRED_REPRODUCTION_2026-11-01.json` and `G2_MQ4_ORIGINAL_SOURCE_PAIRED_REPRODUCTION_2026-11-01_AR.md`. Independent Tank exposures, prospective holdouts and calibration certificates remain missing. No G2/G3 promotion, no Stable/Android/firmware/main changes.
+
+---
+
 ## 2026-11-01 — G2 original MQ4 ZIP and 70,930 paired predictions independently re-executed locally; CI pending
 
 - Resumed from `fb30369da5c0fcc128de00c860e8b098158a976d` and verified 20 visible final-head workflow runs succeeded. Located the previously missing original SHA-pinned source ZIP and benchmark Python script in the user's Library, materialized both, and verified archive/member/script SHA256.
