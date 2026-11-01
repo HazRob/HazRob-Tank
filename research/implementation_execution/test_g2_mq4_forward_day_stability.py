@@ -68,5 +68,26 @@ class Tests(unittest.TestCase):
         self.assertIsNone(rates({'n':3,'pos':0,'tp':0,'fn':0,'fp':1,'tn':2})['sensitivity'])
 
 
+    def test_pinned_day_stability_artifact_matches_recalculation(self):
+        pin = json.loads(Path(__file__).with_name(
+            'G2_MQ4_FORWARD_DAY_STABILITY_2026-11-01.json').read_text(encoding='utf-8'))
+        actual = analyze(self.source)
+        self.assertEqual(pin['schema'], actual['schema'])
+        self.assertEqual(pin['calendar_days'], actual['calendar_days'])
+        self.assertEqual(pin['days_without_positives'], actual['days_without_positives'])
+        self.assertFalse(pin['g2_qualified'])
+        self.assertEqual(set(pin['models']), set(actual['models']))
+        for name in actual['models']:
+            for key in ('min_day_sensitivity', 'max_day_false_positive_rate',
+                        'macro_sensitivity_defined_days',
+                        'macro_specificity_defined_days'):
+                self.assertAlmostEqual(pin['models'][name][key], actual['models'][name][key], places=12)
+            self.assertEqual(pin['models'][name]['days_sensitivity_undefined'],
+                             actual['models'][name]['days_sensitivity_undefined'])
+            for a, b in zip(pin['models'][name]['days'], actual['models'][name]['days']):
+                self.assertEqual((a['day'], a['pos'], a['fn'], a['fp']),
+                                 (b['day'], b['pos'], b['fn'], b['fp']))
+
+
 if __name__ == '__main__':
     unittest.main()
