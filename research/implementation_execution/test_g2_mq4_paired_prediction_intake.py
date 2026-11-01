@@ -8,7 +8,7 @@ import json
 import unittest
 
 from g2_mq4_pairwise_frechet_bounds import EVIDENCE, NAMES, SOURCE
-from g2_mq4_paired_prediction_intake import SCHEMA, audit
+from g2_mq4_paired_prediction_intake import SCHEMA, audit, validate_full_fold_partition
 
 SOURCE_RAW = SOURCE.read_bytes()
 EVIDENCE_RAW = EVIDENCE.read_bytes()
@@ -175,6 +175,64 @@ class PairedIntakeTests(unittest.TestCase):
         obj["origin"] = "TANK_G3_VERIFIED"
         with self.assertRaisesRegex(ValueError, "INVALID_ORIGIN"):
             check(obj)
+
+
+
+class FullFoldPartitionTests(unittest.TestCase):
+    """Only synthetic day metadata; no source rows or physical observations."""
+
+    @staticmethod
+    def folds():
+        days = [f"2021-07-{day:02d}" for day in range(21, 32)]
+        return {test: tuple(d for d in days if d not in (test, days[(i + 1) % 11]))
+                for i, test in enumerate(days)}
+
+    def test_valid_synthetic_partition_and_inferred_calibration(self):
+        result = validate_full_fold_partition(self.folds())
+        self.assertEqual(len(result), 11)
+        self.assertEqual(result["2021-07-21"], "2021-07-22")
+
+    def test_missing_day_rejected(self):
+        folds = self.folds()
+        del folds["2021-07-31"]
+        with self.assertRaisesRegex(ValueError, "INVALID_FOLD_DAY_COUNT"):
+            validate_full_fold_partition(folds)
+
+    def test_eight_training_days_rejected(self):
+        folds = self.folds()
+        day = next(iter(folds))
+        folds[day] = folds[day][:-1]
+        with self.assertRaisesRegex(ValueError, "INVALID_FOLD_TRAINING_PARTITION"):
+            validate_full_fold_partition(folds)
+
+    def test_unknown_training_day_rejected(self):
+        folds = self.folds()
+        day = next(iter(folds))
+        folds[day] = folds[day][:-1] + ("2021-08-01",)
+        with self.assertRaisesRegex(ValueError, "TRAIN_DAY_NOT_IN_SOURCE_DAYS"):
+            validate_full_fold_partition(folds)
+
+    def test_duplicate_training_day_rejected(self):
+        folds = self.folds()
+        day = next(iter(folds))
+        folds[day] = folds[day][:-1] + (folds[day][0],)
+        with self.assertRaisesRegex(ValueError, "INVALID_FOLD_TRAINING_PARTITION"):
+            validate_full_fold_partition(folds)
+
+    def test_test_day_in_training_rejected(self):
+        folds = self.folds()
+        day = next(iter(folds))
+        folds[day] = folds[day][:-1] + (day,)
+        with self.assertRaisesRegex(ValueError, "INVALID_FOLD_TRAINING_PARTITION"):
+            validate_full_fold_partition(folds)
+
+    def test_partial_audit_does_not_claim_partition_or_authentication(self):
+        result = check(sample())
+        self.assertEqual(result["declared_calibration_day_by_test_day"], {})
+        self.assertFalse(result["declared_fold_partition_structurally_checked"])
+        self.assertFalse(result["original_source_fold_partition_independently_verified"])
+
+
 
 
 if __name__ == "__main__":
