@@ -35,6 +35,31 @@ def _row_id(value):
     return value
 
 
+
+def validate_full_fold_partition(folds):
+    """Check a declared 11-day, 9-train/1-calibration/1-test partition.
+
+    This verifies internal arithmetic only, not the source's actual fold plan.
+    """
+    if not isinstance(folds, dict) or len(folds) != 11:
+        raise ValueError("INVALID_FOLD_DAY_COUNT")
+    days = set(folds)
+    calibration = {}
+    for test_day, train_days in folds.items():
+        _day(test_day)
+        if not isinstance(train_days, (tuple, list)) or len(train_days) != 9:
+            raise ValueError("INVALID_FOLD_TRAINING_PARTITION")
+        if any(not isinstance(d, str) or d not in days for d in train_days):
+            raise ValueError("TRAIN_DAY_NOT_IN_SOURCE_DAYS")
+        if len(set(train_days)) != 9 or test_day in train_days:
+            raise ValueError("INVALID_FOLD_TRAINING_PARTITION")
+        remaining = days - set(train_days) - {test_day}
+        if len(remaining) != 1:
+            raise ValueError("INVALID_FOLD_CALIBRATION_PARTITION")
+        calibration[test_day] = next(iter(remaining))
+    return dict(sorted(calibration.items()))
+
+
 def audit(raw, source_raw, evidence_raw, *, require_full=True):
     # project() checks the pinned source SHA, scope, five model identities and
     # strict independent-evidence records=[]. Do not bypass this check.
@@ -99,6 +124,7 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
             ea = predictions[a] != truth
             eb = predictions[b] != truth
             paired[a + "|" + b][(int(ea) << 1) | int(eb)] += 1
+    calibration_days = validate_full_fold_partition(folds) if require_full else {}
     if require_full:
         if len(rows) != source["source_rows"] or len(folds) != source["days"]:
             raise ValueError("INCOMPLETE_SOURCE_ROWS")
@@ -111,6 +137,9 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         "schema": "hazrob.g2.mq4-paired-intake-audit.v1",
         "submitted_rows": len(rows),
         "submitted_days": len(folds),
+        "declared_calibration_day_by_test_day": calibration_days,
+        "declared_fold_partition_structurally_checked": bool(require_full),
+        "original_source_fold_partition_independently_verified": False,
         "source_summary_sha256": hashlib.sha256(source_raw).hexdigest(),
         "submitted_positive_rows": positive,
         "model_confusion_counts_tp_fn_fp_tn": counts,
@@ -124,7 +153,7 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         "paired_inferential_test_authorized": False,
         "g2_qualified": False,
         "g3_qualified": False,
-        "limitations": "Submitted-row arithmetic only. Hash syntax is checked, not authenticated against the original ZIP. Source retrospective folds can train on future dates. No McNemar inference, Tank calibration, gas identity or safety claims."
+        "limitations": "Submitted-row arithmetic and declared 11-day fold partition only. Hash syntax and fold claims are not authenticated against the original ZIP. Source retrospective folds can train on future dates. No McNemar inference, Tank calibration, gas identity or safety claims."
     }
 
 
