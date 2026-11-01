@@ -1,3 +1,13 @@
+## 2026-11-02 — MQ4 nested scientific-claim guard and empty-path fail-closed handling (research only)
+
+- Resumed from `f0e93a8a0f1ea3c0755adb9a107470c3e1d4d802`. Verified all 11 associated GitHub Actions workflows completed **success**, including G2 source/R0 gate [#41346353637](https://github.com/HazRob/HazRob-Tank/actions/runs/41346353637). No evidence of scientific promotion; last documented state `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank exposure ledger `records=[]`.
+- Found that the four-receipt audit checked unsupported G2/G3/calibration/safety claims only at JSON top level; a nested object or array could contain an unsupported claim without triggering the guard. Also `audit({})` silently selected default paths, instead of rejecting an explicit incomplete file map.
+- Added recursive fail-closed inspection of all nested objects and arrays across all four JSON receipts; retained explicit top-level required false flags. Explicit empty file maps now fail. Added six deterministic regressions for nested promotion in source/derived/array, nested safety-limit claim, allowed explicit nested false, and empty paths. Code commit `84bac0a8b7e94c19ce55ceb440b9a7c79a3b4930`, test commit `a4ffe6992e0490bd8c0673f7ae60799dd4d5bbd1`, and Arabic methodology update.
+- G2 workflow for test commit [#41351959183](https://github.com/HazRob/HazRob-Tank/actions/runs/41351959183) was **queued** when first inspected; check completion and fix failures before claiming 1046/1046. Source ZIP was **not** replayed in this iteration; this is receipt metadata integrity testing, not new independent Tank data.
+- No changes to ChemCore Stable, Android, firmware or `main`. Scientific status is not promoted. Next: verify CI on final documentation HEAD and address failures, then prioritize traceably calibrated blinded independent Tank exposure groups for G2 evidence.
+
+---
+
 ## 2026-11-01 — MQ4 four-receipt strict JSON provenance gate (research only; final CI to verify)
 
 - Resumed from `a8ede04306e157b5217f84f8d69dee3501427555`; verified all 11 associated workflows completed successfully, including G2 #41341676342. Independent Tank evidence remains `records=[]`.
