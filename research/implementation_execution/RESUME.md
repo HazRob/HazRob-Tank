@@ -1,3 +1,12 @@
+## 2026-11-01 — G2 GitHub Actions artifact-trigger coverage repaired (research branch; final CI pending)
+
+- Resumed from \`924d96ee339786a077b0ae7fd2748d041d331d67\`; verified all 20/20 associated Actions runs completed success, including G2 source/R0 gate #41336338922 (prior 1023/1023 tests). The external MQ4 source receipts remain descriptive; independent Tank ledger \`records=[]\`.
+- Found a reproducibility gap: G2 workflow path filters did not cover source-receipt JSON or documentation-only changes (e.g., \`G2_MQ4_FORWARD_DAY_RANKING_2026-11-01.json\` or \`RESUME.md\`). Prior passing CI on a code commit could not establish that a later documentation/source receipt HEAD was checked.
+- Added \`research/implementation_execution/**\` to both push and pull_request G2 workflow path filters, preserving research-only push branch and raw/evidence/80-technique registry triggers. Added \`test_g2_workflow_trigger_coverage.py\` with 5 deterministic offline trigger-coverage tests and Arabic methods note \`G2_CI_TRIGGER_COVERAGE_2026-11-01_AR.md\`. This tests YAML intent; real GitHub Actions run must be inspected separately.
+- No source ZIP replay or new physically independent Tank measurements. Scientific status unchanged: \`g2_pass_candidates=0\`, \`g2_blocked=80\`, \`source_blocked=14\`; no G2/G3 promotion, no Stable/Android/firmware/main changes. Next: verify new HEAD CI and repair failures if any; then prioritize independent blinded calibrated Tank exposure groups.
+
+---
+
 ## 2026-11-01 — MQ4 forward-only support-stratified day-level MAE (research-only; 1023/1023 G2 CI verified)
 
 - Resumed from 5d0082a25b7080122e42ee76b2789e6f2abb238a; verified all 11 prior-head GitHub Actions workflows completed successfully, including G2 source/R0 gate #41331066208 (1011/1011 tests). Independent Tank evidence remains records=[].
