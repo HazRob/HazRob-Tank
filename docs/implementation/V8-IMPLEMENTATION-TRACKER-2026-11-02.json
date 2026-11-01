@@ -8,15 +8,15 @@
   "v5_reference_branch": "feature/tank-v5-implementation (read-only benchmark comparison only)",
   "v7_mutation_allowed": false,
   "old_v7_rehabilitation_branch": "ABANDONED_NOT_FOR_EXECUTION",
-  "scope": "V8-only improvements to independent ChemCore V6, scientific G1/G2/G3 assessment and MQ Data Science gap research; V7 immutable reference; V5 comparison only",
-  "status": "OWNER_APPROVED_CHEMCORE_V6_CONTINUATION_PLAN_RECORDED",
+  "scope": "V8: full MQDataScience v7 scientific inventory and gap evaluation first; extend independent ChemCore V6 into ChemCore Next, gated; V5/V6/V7 originals preserved",
+  "status": "OWNER_APPROVED_CHEMCORE_NEXT_SOURCE_AUDIT_IN_PROGRESS",
   "app_code_changed": false,
   "firmware_changed": false,
   "apk_built": false,
   "hardware_test_pass": false,
   "latest_approved_stable_confirmed": false,
   "last_verified_sha": "8f887a28e41a33f2878bbef68926e1de28e9a97c",
-  "next_action": "C6-00: audit ChemCore V6 module activation paths and 80-technique coverage; C6-01 MQ Data Science 3D/4D 76-model gap matrix; do not change app engine until scientific audit and tests",
+  "next_action": "NEXT-00: finish file-by-file MQDataScience 7.0.0 audit and v6 source delta; NEXT-01: reconcile 89 source-gas relations/76 model gaps with V6, then implement and test Next modules before V8 integration",
   "tasks": [
     {
       "id": "G00",
@@ -215,7 +215,7 @@
     "ChemCore V6 remains runtime candidate, not replaced by legacy ChemCore V5",
     "MQ Data Science 76 models and 3D/4D remain research-only until G1 and grouped G2 acceptance"
   ],
-  "approved_decision": "RETAIN_CHEMCORE_V6_EVALUATE_ENHANCE_NO_OLD_ENGINE_REPLACEMENT",
+  "approved_decision": "MQDATASCIENCE_COMPLETE_AUDIT_FIRST_THEN_CHEMCORE_NEXT_BASED_ON_INDEPENDENT_CHEMCORE_V6",
   "authoritative_plan": "docs/implementation/V8-CHEMCORE-V6-VALIDATION-MASTER-PLAN-2026-11-02_AR.md",
   "superseded_plan": "docs/implementation/V8-IMPLEMENTATION-MASTER-PLAN-2026-11-02_AR.md",
   "priority_order": [
@@ -240,5 +240,103 @@
     "G2": "grouped independent source validation",
     "G3": "physically referenced Tank validation",
     "current_g3_promoted_techniques": 0
+  },
+  "chemcore_next": {
+    "name": "ChemCore Next",
+    "revision": "next/0.1.0-research-design",
+    "runtime_activated": false,
+    "requested_order": [
+      "MQDataScience7_full_source_audit",
+      "v6_techniques_and_source_gap_inventory",
+      "build_next_modules",
+      "G1",
+      "grouped_G2",
+      "integrate_V8",
+      "G3"
+    ],
+    "source": {
+      "url": "https://github.com/abcdaaaaaaaaa/MQDataScience",
+      "version": "7.0.0",
+      "reference_tag": "v6.0.0",
+      "important_blobs": {
+        "PredictData": "bacf95948714dbe76f09c57e3db14cbc60616580",
+        "MQInfo": "c9519bcebd22c79fadeaa6b21d22d4fb821ba290",
+        "surface3d": "0f55b726e07730d2cfa4f33f72da46b65d0a31e6",
+        "curve4d": "cc620184f38461fa02ae1c8a52033d04e91c176d"
+      }
+    },
+    "verified_static_inventory": {
+      "supported_MQ_sensor_models": 21,
+      "source_gas_relation_rows": 89,
+      "actual_Tank_MQ_rows": 43,
+      "unmounted_sensor_relation_rows": 46,
+      "regression_models_total": 76,
+      "roles": {
+        "environmental_response": 11,
+        "curve_robust_regression": 38,
+        "temporal_dynamics": 14,
+        "ml_regression": 13
+      },
+      "legacy_android_recorded": 14,
+      "legacy_android_approximate": 2,
+      "unported_legacy_android": 62,
+      "next_V8_model_parity_tests_run": false,
+      "source_7_full_file_audit_complete": false,
+      "hardware_G3_qualified": 0
+    },
+    "files": {
+      "audit": "docs/research/CHEMCORE-NEXT-MQDATASCIENCE-SCIENTIFIC-AUDIT-2026-11-02_AR.md",
+      "matrix76": "docs/research/CHEMCORE-NEXT-MQDATA-76-MODEL-GAP-2026-11-02.csv",
+      "source89": "research/chemcore_next/mqdata_v7_source_gas_curve_register_89.csv",
+      "architecture": "docs/architecture/CHEMCORE-NEXT-ADR-2026-11-02_AR.md"
+    },
+    "tasks": [
+      {
+        "id": "NEXT-00",
+        "description": "MQDataScience 7 complete source+license+data audit",
+        "status": "IN_PROGRESS",
+        "next": "Review remaining Regression, DataScript, examples, source data and train/test leakage"
+      },
+      {
+        "id": "NEXT-01",
+        "description": "Reconcile all v7 curves and 76 methods to independent V6 runtime",
+        "status": "PARTIAL_SOURCE_MATRIX_WRITTEN",
+        "next": "Compare actual code activation and duplicate method/curve semantics"
+      },
+      {
+        "id": "NEXT-02",
+        "description": "3D environmental/source equation math G1",
+        "status": "NOT_STARTED"
+      },
+      {
+        "id": "NEXT-03",
+        "description": "4D causal validated model selection G2",
+        "status": "NOT_STARTED"
+      },
+      {
+        "id": "NEXT-04",
+        "description": "Next independent evidence and UNKNOWN/mixture",
+        "status": "NOT_STARTED"
+      },
+      {
+        "id": "NEXT-05",
+        "description": "V8 wiring and parity",
+        "status": "NOT_STARTED"
+      },
+      {
+        "id": "NEXT-06",
+        "description": "physical G3",
+        "status": "NOT_STARTED"
+      }
+    ],
+    "commits": [
+      "c0b90c2fd51a4b2d87ac3fdd5191b10ab2aee6e8",
+      "52150e99787db7751e80462050d0e66a5471e2dc",
+      "26bae3bf075aa553d46d79511b00f526b8dab857",
+      "dd5e63b96d8bc35feb5cb99d23254ae1293503e8"
+    ],
+    "tests_executed_in_this_new_track": "NONE",
+    "firmware_changed": false,
+    "apk_built": false
   }
 }
