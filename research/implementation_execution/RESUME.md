@@ -1,3 +1,13 @@
+## 2026-11-01 — MQ4 forward-only calendar-day stability, pinned source receipt (G2 still blocked)
+
+- Resumed from `2d2c7903642a00571e69bd6eff99e5ea44a1e466`; verified its 20 visible associated GitHub Actions workflows completed successfully, including G2 source/R0 gate #41317078264 (975/975). Independent Tank evidence still `records=[]`.
+- Added `g2_mq4_forward_day_stability.py`, pinned day-level JSON `G2_MQ4_FORWARD_DAY_STABILITY_2026-11-01.json`, 13 new deterministic fail-closed tests in `test_g2_mq4_forward_day_stability.py`, and Arabic methods `G2_MQ4_FORWARD_DAY_STABILITY_2026-11-01_AR.md`. Source is the prior original-archive forward-only receipt; **the original ZIP was not rerun this iteration**, and CI does not contain it.
+- Recomputed per-day confusion counts, macro rates, worst-day false-positive rates, and leave-one-calendar-day-out descriptive sensitivity. Across 7 days (9,325 rows; 1,425 >=4-ppm source positives), two days have no positives and sensitivity is **undefined**, not 100%. RIDGE_MQ4_3 pooled sensitivity 90.46% but minimum positive-day sensitivity 43.28% and maximum daily FPR 84.79%; HGB_MQ4_3_T_RH minimum sensitivity 4.88%, maximum FPR 79.52%; RIDGE_MQ4_3_T_RH maximum FPR 96.22%. This is not an independent exposure-group CI or safety claim.
+- Local synthetic/pinned-receipt suite: 12/12 initial regressions PASS; G2 Actions #41321036492 on test implementation SHA `2e6bfc64509507f33ff625a17147b3113bc9fd0b` PASS **987/987**, full 80-technique fail-closed audit and publication guard. A 13th test binds the committed day-stability JSON to recomputed values; check the newer test SHA `5122ae372ff1c5c9310b12df10e63c97b7e1ede8` CI before claiming 988/988 or final HEAD success.
+- No G2/G3 promotion: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank evidence `records=[]`. All writes in `research/implementation_execution/` on the research branch; no Stable, Android, firmware, or main changes. Next: verify newest CI and resolve failures, then obtain independent blinded physically calibrated Tank exposures and group-held-out tests.
+
+---
+
 ## 2026-11-01 — G2 MQ4 original-source expanding forward-only 4-ppm benchmark (975/975 G2 CI verified)
 
 - Resumed from `9d9ebf71a2ac26855bc9328ce98376d442e442cb`; its 20 visible GitHub Actions workflows completed successfully, including G2 source/R0 gate 41311181771. Confirmed independent Tank evidence remains `records=[]`.
