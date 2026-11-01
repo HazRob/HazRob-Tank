@@ -1,3 +1,13 @@
+## 2026-11-01 — G2 MQ4 historical replay metadata integrity gate (948/948 CI)
+
+- Resumed from `db9b4290da9a7725dd8b0fd2200956e7ba139570`. Confirmed its 11 visible CI workflows completed successfully and independent evidence remains `records=[]`.
+- Found a report-integrity gap: the production original-ZIP authentication checked source/member SHA and re-derived data but did not verify the historical replay report's schema, source ID, member byte length, replay/completeness flags or scientific qualification claims. It could accept a replay JSON with `g2_qualified=true` while preserving source SHA and `derived`.
+- Added `validate_replay_metadata` before source replay reconciliation. It fails closed on altered schema/source/byte size, missing or false replay-completeness flags, any claimed G2/G3/independence/calibration/blinded verification, missing derived payload, and still verifies derived content from the actual pinned archive. Added **12 synthetic ZIP/CSV regressions** and Arabic methods plus pinned machine-readable result manifest.
+- [G2 Actions #41301555969](https://github.com/HazRob/HazRob-Tank/actions/runs/41301555969) on test SHA `1b1c1f71e22de82d4b40d5f9b0d71ee7f7340bd3` **PASS: 948/948 tests**, full 80-technique fail-closed audit, deterministic replay and publication guard (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). The test suite uses synthetic ZIP bytes; **the original MQ4 ZIP was not replayed in this iteration**. Documentation-only follow-up HEAD CI should be checked separately.
+- All changes are in `research/implementation_execution/` on the research branch; no Stable, Android, firmware or main changes. No real same-row predictions or traceable independent physical exposures were supplied. No G2/G3 promotion. Next: verify final-head CI; pursue authenticated original predictions and independent blinded reference-calibrated exposure groups before qualification.
+
+---
+
 ## 2026-11-01 — G2 MQ4 row-level LiCor truth-label authentication (936/936 CI on implementation)
 
 - Resumed from `89a716e090932ec8b7356fb4f6126dc37dbbc0f5`; verified the preceding 927-test source-row authentication suite and the independent-evidence ledger `records=[]`.
