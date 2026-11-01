@@ -5,7 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from g2_mq4_receipt_lineage_ci import ROOT, FILENAMES, audit, strict_json
+from g2_mq4_receipt_lineage_ci import (ROOT, FILENAMES, SOURCE_RECEIPT_SHA256,
+                                      audit, strict_json, reject_nested_claims)
 
 
 class ReceiptLineageTests(unittest.TestCase):
@@ -118,10 +119,31 @@ class ReceiptLineageTests(unittest.TestCase):
                 {"metadata": {"threshold_4ppm_is_safety_limit": True}})))
 
     def test_nested_explicit_false_is_not_promotion(self):
-        result = self.check(self.changed("source", lambda x: x.update(
-            {"metadata": {"g2_qualified": False,
-                          "threshold_4ppm_is_safety_limit": False}})))
-        self.assertEqual(result["test_rows"], 9325)
+        # Claim guard accepts explicit false; source byte pin separately
+        # forbids modifying the committed research source receipt.
+        reject_nested_claims({"metadata": {"g2_qualified": False,
+                           "threshold_4ppm_is_safety_limit": False}})
+
+    def test_source_digest_matches_reproduced_archive_receipt(self):
+        import hashlib
+        self.assertEqual(hashlib.sha256(self.original["source"]).hexdigest(),
+                         SOURCE_RECEIPT_SHA256)
+
+    def test_source_benign_metadata_mutation_rejected(self):
+        # Previously this source-only addition passed every lineage check.
+        with self.assertRaisesRegex(ValueError, "SOURCE_SHA256_MISMATCH"):
+            self.check(self.changed("source", lambda x: x.update(
+                {"metadata": {"changed_without_raw_replay": True}})))
+
+    def test_source_whitespace_reencoding_rejected(self):
+        # Byte identity matters even when JSON semantics are unchanged.
+        with self.assertRaisesRegex(ValueError, "SOURCE_SHA256_MISMATCH"):
+            self.check({"source": self.original["source"] + b" "})
+
+    def test_source_protocol_relabel_rejected(self):
+        with self.assertRaisesRegex(ValueError, "SOURCE_SHA256_MISMATCH"):
+            self.check(self.changed("source", lambda x: x.update(
+                {"protocol": "retrospective future-data training"})))
 
     def test_explicit_empty_paths_rejected(self):
         with self.assertRaisesRegex(ValueError, "FILE_SET_MISMATCH"):
