@@ -1,3 +1,13 @@
+## 2026-11-01 — G2 original MQ4 ZIP and 70,930 paired predictions independently re-executed locally; CI pending
+
+- Resumed from `fb30369da5c0fcc128de00c860e8b098158a976d` and verified 20 visible final-head workflow runs succeeded. Located the previously missing original SHA-pinned source ZIP and benchmark Python script in the user's Library, materialized both, and verified archive/member/script SHA256.
+- Re-ran the original research benchmark **twice** on the genuine 14,186-row archive (five models × 11 day folds = 70,930 same-row predictions; 33 unseen-instance folds). Four output CSV files were byte-identical across both runs. Checked source-row index, day, LiCor ppb-to-ppm truth and 4-ppm labels, and reconciled all five model confusion marginals to the pinned Library summary.
+- Produced ten **observed** paired-error tables from real source rows (not hypothetical Fréchet bounds). Example RIDGE_MQ4_3_T_RH vs HGB_MQ4_3_T_RH: both correct 10,691; RIDGE correct only 1,664; HGB correct only 638; both wrong 1,193. This is descriptive retrospective research, not an independent Tank inference.
+- Added pinned JSON receipt, seven synthetic CI integrity tests and Arabic methods. Original ZIP and 70,930-row prediction CSV remain in Library/local working files and are **not** included in CI. New tests check receipt integrity only; verify new-head CI before claiming pass.
+- Scientific blockers persist: 10/11 folds use future training and 1/11 future calibration, independent exposure ledger `records=[]`, no traceable reference-calibrated blinded Tank exposures. `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No Stable, Android, firmware, main, G2 or G3 promotion.
+
+---
+
 ## 2026-11-01 — G2 MQ4 historical replay metadata integrity gate (948/948 CI)
 
 - Resumed from `db9b4290da9a7725dd8b0fd2200956e7ba139570`. Confirmed its 11 visible CI workflows completed successfully and independent evidence remains `records=[]`.
