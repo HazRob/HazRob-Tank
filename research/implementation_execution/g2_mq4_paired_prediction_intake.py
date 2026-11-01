@@ -60,6 +60,38 @@ def validate_full_fold_partition(folds):
     return dict(sorted(calibration.items()))
 
 
+# Historical source-day totals from G2_MQ4_ORIGINAL_ZIP_RAW_REPLAY_2026-10-31.json.
+# These are pinned cross-check targets, NOT independent row authentication.
+SOURCE_DAILY_ROWS = {
+    "2021-07-21": 774, "2021-07-22": 1435, "2021-07-23": 1231,
+    "2021-07-24": 1421, "2021-07-25": 1436, "2021-07-26": 1440,
+    "2021-07-27": 1437, "2021-07-28": 1437, "2021-07-29": 1418,
+    "2021-07-30": 1434, "2021-07-31": 723,
+}
+
+
+def validate_pinned_source_folds(folds, daily_rows):
+    """Reconcile submitted metadata with pinned raw replay and Library split.
+
+    The source Library script's retrospective protocol uses cyclic previous-
+    day calibration (first fold uses last day). This only validates declared
+    metadata against previously transcribed source facts, not original rows.
+    """
+    days = sorted(SOURCE_DAILY_ROWS)
+    if set(folds) != set(days):
+        raise ValueError("SOURCE_DAY_SCOPE_MISMATCH")
+    if not isinstance(daily_rows, dict) or daily_rows != SOURCE_DAILY_ROWS:
+        raise ValueError("SOURCE_DAY_COUNTS_MISMATCH")
+    calibration = {}
+    for i, test in enumerate(days):
+        cal = days[(i - 1) % len(days)]
+        expected_training = set(days) - {test, cal}
+        if set(folds[test]) != expected_training:
+            raise ValueError("SOURCE_FOLD_PROTOCOL_MISMATCH")
+        calibration[test] = cal
+    return calibration
+
+
 def classify_future_fit_days(folds, calibration_days):
     """Flag declared future information in both training and calibration.
 
@@ -90,6 +122,7 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         raise ValueError("MISSING_PAIRED_ROWS")
     seen = set()
     folds = {}
+    daily_rows = {}
     counts = {name: [0, 0, 0, 0] for name in NAMES}
     paired = {a + "|" + b: [0, 0, 0, 0]
               for a, b in itertools.combinations(NAMES, 2)}
@@ -102,6 +135,7 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
             raise ValueError("DUPLICATE_ROW_ID")
         seen.add(rid)
         day = _day(row.get("test_day"))
+        daily_rows[day] = daily_rows.get(day, 0) + 1
         if row.get("fold_test_day") != day:
             raise ValueError("TEST_FOLD_MISMATCH")
         sha = row.get("raw_row_sha256")
@@ -139,6 +173,9 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         if len(rows) != source["source_rows"] or len(folds) != source["days"]:
             raise ValueError("INCOMPLETE_SOURCE_ROWS")
         calibration_days = validate_full_fold_partition(folds)
+        pinned_calibration = validate_pinned_source_folds(folds, daily_rows)
+        if calibration_days != pinned_calibration:
+            raise ValueError("SOURCE_FOLD_PROTOCOL_MISMATCH")
         if positive != 2346 or len(rows) - positive != 11840:
             raise ValueError("REFERENCE_MARGINAL_MISMATCH")
         for model in source["models"]:
@@ -151,6 +188,8 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         "submitted_days": len(folds),
         "declared_calibration_day_by_test_day": calibration_days,
         "declared_fold_partition_structurally_checked": bool(require_full),
+        "declared_source_day_counts_match_pinned_raw_replay": bool(require_full),
+        "declared_source_fold_schedule_matches_pinned_library_protocol": bool(require_full),
         "original_source_fold_partition_independently_verified": False,
         "source_summary_sha256": hashlib.sha256(source_raw).hexdigest(),
         "submitted_positive_rows": positive,
@@ -168,7 +207,7 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         "paired_inferential_test_authorized": False,
         "g2_qualified": False,
         "g3_qualified": False,
-        "limitations": "Submitted-row arithmetic and declared 11-day fold partition only. Hash syntax and fold claims are not authenticated against the original ZIP. Source retrospective folds can train or calibrate on future dates. No McNemar inference, Tank calibration, gas identity or safety claims."
+        "limitations": "Submitted-row arithmetic, pinned historical day counts and declared retrospective fold schedule only. Hash syntax and fold claims are not authenticated against the original ZIP. Source retrospective folds can train or calibrate on future dates. No McNemar inference, Tank calibration, gas identity or safety claims."
     }
 
 

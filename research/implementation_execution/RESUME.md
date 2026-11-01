@@ -1,3 +1,13 @@
+## 2026-11-01 — G2 MQ4 pinned per-day/source-fold reconciliation (research-only; final CI pending)
+
+- Resumed from `36e31b1cddb7a32378c93c2f3a81b3d54013eaeb`; verified prior G2 Actions 41276560741 completed success (884/884), with independent physical evidence `records=[]`.
+- Hardened full MQ4 paired-row intake: the prior 11-day/9-train structural check accepted arbitrary days, shuffled per-day row counts, and arbitrary calibration schedules that preserved pooled source marginals. New gate pins all eleven 2021-07-21..31 day counts from prior original ZIP raw replay and cyclic previous-day calibration/9-train source protocol from the independently inspected Library script. Rejects fabricated day scope, day-count redistribution even at identical grand total, and structurally valid but incorrect fold plans.
+- Added seven synthetic-only regression tests and Arabic method note; expected full suite **891 tests**, pending new-head GitHub Actions verification. No real same-row source predictions or new raw ZIP replay in this change.
+- Source-day counts and split are historical pinned research observations; submitted row identities, hashes, original model predictions and independent physical exposures remain **unverified**. `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; no G2/G3 promotion.
+- Files changed only under `research/implementation_execution/` on research branch. No Stable, Android, firmware or main changes. Next: verify final-head CI, correct any failure; obtain verifiable source row predictions and blinded reference-calibrated Tank exposures.
+
+---
+
 ## 2026-11-01 — G2 MQ4 future-calibration CI verification (884/884)
 
 - Research implementation commit `9c5aa7a77d784f46cdc9f67d750e87c27d0bdec1`: [GitHub Actions G2 run 41276499088](https://github.com/HazRob/HazRob-Tank/actions/runs/41276499088) **PASS**, `Ran 884 tests`, `OK`. The full 80-technique fail-closed audit, deterministic replay and publication gate also passed: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.

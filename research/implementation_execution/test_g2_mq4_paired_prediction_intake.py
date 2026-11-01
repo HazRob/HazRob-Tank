@@ -8,7 +8,7 @@ import json
 import unittest
 
 from g2_mq4_pairwise_frechet_bounds import EVIDENCE, NAMES, SOURCE
-from g2_mq4_paired_prediction_intake import SCHEMA, audit, validate_full_fold_partition, classify_future_fit_days
+from g2_mq4_paired_prediction_intake import SCHEMA, SOURCE_DAILY_ROWS, audit, validate_full_fold_partition, validate_pinned_source_folds, classify_future_fit_days
 
 SOURCE_RAW = SOURCE.read_bytes()
 EVIDENCE_RAW = EVIDENCE.read_bytes()
@@ -269,6 +269,63 @@ class FullFoldPartitionTests(unittest.TestCase):
         self.assertFalse(result["original_source_fold_partition_independently_verified"])
 
 
+
+
+
+class PinnedSourceFoldReconciliationTests(unittest.TestCase):
+    """Synthetic metadata only; not authenticated original source rows."""
+
+    @staticmethod
+    def canonical():
+        days = sorted(SOURCE_DAILY_ROWS)
+        return {day: tuple(d for d in days if d not in (day, days[(i - 1) % len(days)]))
+                for i, day in enumerate(days)}
+
+    def test_original_cyclic_previous_day_protocol_and_counts(self):
+        folds = self.canonical()
+        self.assertEqual(validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS)),
+                         validate_full_fold_partition(folds))
+        self.assertEqual(validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS))["2021-07-21"],
+                         "2021-07-31")
+
+    def test_valid_structural_but_wrong_calibration_schedule_rejected(self):
+        folds = self.canonical()
+        days = sorted(SOURCE_DAILY_ROWS)
+        first = days[0]
+        folds[first] = tuple(d for d in days if d not in (first, days[1]))
+        self.assertEqual(validate_full_fold_partition(folds)[first], days[1])
+        with self.assertRaisesRegex(ValueError, "SOURCE_FOLD_PROTOCOL_MISMATCH"):
+            validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS))
+
+    def test_wrong_day_count_rejected(self):
+        counts = dict(SOURCE_DAILY_ROWS)
+        counts["2021-07-21"] += 1
+        with self.assertRaisesRegex(ValueError, "SOURCE_DAY_COUNTS_MISMATCH"):
+            validate_pinned_source_folds(self.canonical(), counts)
+
+    def test_same_total_with_swapped_day_counts_rejected(self):
+        counts = dict(SOURCE_DAILY_ROWS)
+        counts["2021-07-21"] += 1
+        counts["2021-07-22"] -= 1
+        self.assertEqual(sum(counts.values()), sum(SOURCE_DAILY_ROWS.values()))
+        with self.assertRaisesRegex(ValueError, "SOURCE_DAY_COUNTS_MISMATCH"):
+            validate_pinned_source_folds(self.canonical(), counts)
+
+    def test_unknown_source_day_rejected_even_with_eleven_days(self):
+        folds = self.canonical()
+        folds["2021-08-01"] = folds.pop("2021-07-31")
+        with self.assertRaisesRegex(ValueError, "SOURCE_DAY_SCOPE_MISMATCH"):
+            validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS))
+
+    def test_training_day_order_not_semantically_significant(self):
+        folds = {k: tuple(reversed(v)) for k, v in self.canonical().items()}
+        self.assertEqual(len(validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS))), 11)
+
+    def test_partial_intake_never_claims_pinned_reconciliation(self):
+        result = check(sample())
+        self.assertFalse(result["declared_source_day_counts_match_pinned_raw_replay"])
+        self.assertFalse(result["declared_source_fold_schedule_matches_pinned_library_protocol"])
+        self.assertFalse(result["original_raw_archive_row_hashes_independently_verified"])
 
 
 if __name__ == "__main__":
