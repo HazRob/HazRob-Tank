@@ -1,3 +1,14 @@
+## 2026-11-01 — MQ4 leave-two-day-out composition stress (research-only; CI pending)
+
+- Resumed from `6d5ebb3c89566eacb83a17ee877106de35ef7087`. Verified **11/11** associated final-head GitHub Actions runs completed successfully, including G2 source/R0 gate #41321176373. Independent Tank ledger remains `records=[]`.
+- Added `g2_mq4_forward_day_pair_stress.py`, `test_g2_mq4_forward_day_pair_stress.py` (12 fail-closed deterministic tests), `G2_MQ4_FORWARD_DAY_PAIR_STRESS_2026-11-01.json` (105 descriptive subset evaluations) and Arabic methods `G2_MQ4_FORWARD_DAY_PAIR_STRESS_2026-11-01_AR.md`.
+- Analysis enumerates 21 two-calendar-day omissions for each of five models using the existing genuine-source forward-only day receipt (9,325 rows; 1,425 reference positives). It first verifies **full JSON equality** between the pinned day-stability artifact and its recalculation from the source receipt. This catches alterations to any fields, not merely selected summary statistics. Original source ZIP was **not rerun** in this iteration.
+- Source-only sensitivity range when two days are omitted: RIDGE_MQ4_3 79.61%–100%, RIDGE_MQ4_1 18.74%–90.12%, HGB_MQ4_3_T_RH 35.60%–89.12%. These are overlapping descriptive subsets, **not** independent validation folds or confidence intervals.
+- New test implementation commit `e3aa918b9d975338b87e5a2cf85467d15fb1684f`; 11 associated CI runs initially queued, **not yet confirmed passed**. Verify test and documentation HEAD CI and fix any failure before claiming a test count. Only research-branch `research/implementation_execution/` files changed; no Stable, Android, firmware, main, or G2/G3 promotion.
+- Scientific status unchanged: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; independent exposures `records=[]`. Next: check CI, then pursue blinded, independently calibrated Tank exposure groups and prospective holdouts.
+
+---
+
 ## 2026-11-01 — MQ4 forward-only calendar-day stability, pinned source receipt (G2 still blocked)
 
 - Resumed from `2d2c7903642a00571e69bd6eff99e5ea44a1e466`; verified its 20 visible associated GitHub Actions workflows completed successfully, including G2 source/R0 gate #41317078264 (975/975). Independent Tank evidence still `records=[]`.
