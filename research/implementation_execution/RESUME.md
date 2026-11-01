@@ -1,3 +1,14 @@
+## 2026-11-02 — Original MQ4 raw day-level correlation and value-cardinality audit (research only)
+
+- Resumed from `b50e4d5f3ba385a465b1b868dc224b1c8a397d3b`. Independently verified **21/21** GitHub Actions runs for that exact commit completed **success**; no CI failure to repair. Source/R0 gate: [#41357145503](https://github.com/HazRob/HazRob-Tank/actions/runs/41357145503).
+- Materialized the **original** `HazRob_MQ_Reference_Real_Measurements_2026-10-30.zip` from the central user Library and verified ZIP SHA256 `7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9` and raw CSV SHA256 `3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d`.
+- Ran a **new raw-byte-derived descriptive diagnostic** on 14,186 rows, 11 calendar days, 3 physical MQ4 units: per-day Pearson correlation of raw MQ4 signal against LiCor methane reference (ppb/1000), distinct exact raw signal values and fractions, reference range. All three sensors' correlations changed sign: positive July 22 and July 24, negative on nine other days. MQ4_3 daily distinct fraction only 1.875%-6.848% vs MQ4_1 85.943%-98.884%. No inference of sensor ADC resolution, causal effect, identity, calibration or alarm performance.
+- Research files: `g2_mq4_raw_day_diagnostics.py`, `test_g2_mq4_raw_day_diagnostics.py` (11 deterministic synthetic/offline regressions), `G2_MQ4_RAW_DAY_DIAGNOSTICS_2026-11-02.json` (compact original-source-derived receipt), `G2_MQ4_RAW_DAY_DIAGNOSTICS_2026-11-02_AR.md` (method and limitations). The `--compact` option reproduces the committed JSON **semantically** from the original pinned archive; local verification passed. No original ZIP is committed to GitHub or replayed in CI.
+- Local 11/11 new tests passed. At the time of this entry, GitHub Actions for research implementation/documentation HEAD were **queued** (e.g. G2 source/R0 run [#41362293614](https://github.com/HazRob/HazRob-Tank/actions/runs/41362293614)); do not declare those runs successful before checking completion. Next: verify all final-HEAD CI, repair failures if any, then design grouped prospective Tank exposures with traceable reference calibration and blinded holdouts.
+- No changes to ChemCore Stable, Android, firmware, or `main`. Independent physical Tank evidence still `records=[]`; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No G2/G3 scientific promotion.
+
+---
+
 ## 2026-11-02 — MQ4 original forward receipt immutable SHA256 pin (research only)
 
 - Resumed from `016f7a6bc19f9b710715f1d7fde2509f90636e8a`; confirmed its 21/21 associated GitHub Actions runs completed **success**, including source/R0 gate #41352067164. Independent Tank exposures remain absent; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
