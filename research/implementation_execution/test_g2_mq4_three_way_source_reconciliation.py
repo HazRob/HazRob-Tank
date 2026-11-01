@@ -75,6 +75,62 @@ class SourceReconciliationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "LIBRARY_PROTOCOL_FOLD_MISMATCH"):
             check(protocol=obj)
 
+    def test_segment_reallocation_preserving_total_rejected(self):
+        obj = json.loads(REPLAY_RAW)
+        obj["derived"]["segment_lengths"][0] += 1
+        obj["derived"]["segment_lengths"][1] -= 1
+        with self.assertRaisesRegex(ValueError, "RAW_REPLAY_SEGMENT_MISMATCH"):
+            check(replay=obj)
+
+    def test_segment_reordering_rejected(self):
+        obj = json.loads(REPLAY_RAW)
+        segments = obj["derived"]["segment_lengths"]
+        segments[0], segments[1] = segments[1], segments[0]
+        with self.assertRaisesRegex(ValueError, "RAW_REPLAY_SEGMENT_MISMATCH"):
+            check(replay=obj)
+
+    def test_short_lag_mutation_rejected(self):
+        obj = json.loads(REPLAY_RAW)
+        obj["derived"]["lags"]["5"]["contiguous_lag_pairs"] += 1
+        with self.assertRaisesRegex(ValueError, "RAW_REPLAY_LAG_CONTEXT_MISMATCH"):
+            check(replay=obj)
+
+    def test_lag60_cross_day_distribution_rejected(self):
+        obj = json.loads(REPLAY_RAW)
+        obj["derived"]["lags"]["60"]["cross_day_by_later_date"]["2021-07-22"] -= 1
+        with self.assertRaisesRegex(ValueError, "RAW_REPLAY_LAG_CONTEXT_MISMATCH"):
+            check(replay=obj)
+
+    def test_missing_lag_scale_rejected(self):
+        obj = json.loads(REPLAY_RAW)
+        del obj["derived"]["lags"]["15"]
+        with self.assertRaisesRegex(ValueError, "RAW_REPLAY_LAG_CONTEXT_MISMATCH"):
+            check(replay=obj)
+
+    def test_boolean_lag_count_rejected(self):
+        obj = json.loads(REPLAY_RAW)
+        obj["derived"]["lags"]["1"]["unavailable_rows"] = True
+        with self.assertRaisesRegex(ValueError, "RAW_REPLAY_LAG_CONTEXT_MISMATCH"):
+            check(replay=obj)
+
+    def test_max_lag_day_eligibility_rejected(self):
+        obj = json.loads(REPLAY_RAW)
+        obj["derived"]["max_lag_eligible_by_day"]["2021-07-26"] -= 1
+        with self.assertRaisesRegex(ValueError, "RAW_REPLAY_MAX_LAG_ELIGIBILITY_MISMATCH"):
+            check(replay=obj)
+
+    def test_timestamp_mutation_rejected(self):
+        obj = json.loads(REPLAY_RAW)
+        obj["derived"]["first_timestamp"] = "2021-07-21 11:07:00"
+        with self.assertRaisesRegex(ValueError, "RAW_REPLAY_TIMELINE_MISMATCH"):
+            check(replay=obj)
+
+    def test_raw_member_size_mutation_rejected(self):
+        obj = json.loads(REPLAY_RAW)
+        obj["raw_member_bytes"] += 1
+        with self.assertRaisesRegex(ValueError, "RAW_REPLAY_BYTES_MISMATCH"):
+            check(replay=obj)
+
     def test_duplicate_json_keys_rejected(self):
         raw = REPLAY_RAW.replace(b'"source_id":', b'"source_id": "fake", "source_id":', 1)
         with self.assertRaisesRegex(ValueError, "DUPLICATE_JSON_KEY"):

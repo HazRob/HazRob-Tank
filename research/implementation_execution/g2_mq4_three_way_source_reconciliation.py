@@ -20,6 +20,17 @@ MEMBER_SHA = "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d"
 SCRIPT_SHA = "367658f9884ff8355c89d803f67eb7ced78ec7299759d58ddd1742ba9a1b368b"
 SOURCE_SHA = "0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea"
 
+# Historical replay observations pinned independently of this gate's arithmetic.
+# These are NOT independently authenticated raw-source row measurements.
+PINNED_SEGMENTS = (1406, 1565, 1388, 5, 1454, 2495, 675, 1367, 995, 1417, 1419)
+PINNED_MAX_LAG_ELIGIBLE_BY_DAY = {
+    "2021-07-21": 654, "2021-07-22": 1315, "2021-07-23": 1111,
+    "2021-07-24": 1296, "2021-07-25": 1316, "2021-07-26": 1440,
+    "2021-07-27": 1197, "2021-07-28": 1317, "2021-07-29": 1298,
+    "2021-07-30": 1314, "2021-07-31": 723,
+}
+REPORTED_LAGS = (1, 5, 15, 30, 60, 120)
+
 
 def _check(condition, code):
     if not condition:
@@ -54,21 +65,43 @@ def reconcile(replay_raw, protocol_raw, source_raw, evidence_raw):
     segments = derived.get("segment_lengths")
     _check(isinstance(segments, list)
            and all(type(v) is int and v > 0 for v in segments)
-           and len(segments) == 11 and sum(segments) == 14186
+           and segments == list(PINNED_SEGMENTS)
+           and sum(segments) == 14186
            and derived.get("segments_spanning_calendar_days") == 9,
            "RAW_REPLAY_SEGMENT_MISMATCH")
+    _check(derived.get("first_timestamp") == "2021-07-21 11:06:00"
+           and derived.get("last_timestamp") == "2021-07-31 12:02:00",
+           "RAW_REPLAY_TIMELINE_MISMATCH")
+    _check(type(replay.get("raw_member_bytes")) is int
+           and replay["raw_member_bytes"] == 4787918,
+           "RAW_REPLAY_BYTES_MISMATCH")
+    _check(derived.get("max_lag_eligible_by_day") ==
+           PINNED_MAX_LAG_ELIGIBLE_BY_DAY,
+           "RAW_REPLAY_MAX_LAG_ELIGIBILITY_MISMATCH")
+    # Recalculate all six reported lag scales from strict-minute segments,
+    # rather than trusting only the 120-minute summary. Cross-day context
+    # remains a historical report claim, not original-row authentication.
     lags = derived.get("lags")
-    lag120 = lags.get("120") if isinstance(lags, dict) else None
-    _check(isinstance(lag120, dict)
-           and lag120.get("contiguous_lag_pairs") == 12981
-           and lag120.get("same_day_context_rows") == 11781
-           and lag120.get("cross_day_context_rows") == 1200
-           and lag120.get("unavailable_rows") == 1205
-           and lag120.get("cross_day_by_later_date") ==
-               {day: 120 for day in sorted(SOURCE_DAILY_ROWS)[1:]}
-           and 12981 + 1205 == 14186
-           and 11781 + 1200 == 12981,
+    _check(isinstance(lags, dict)
+           and set(lags) == {str(lag) for lag in REPORTED_LAGS},
            "RAW_REPLAY_LAG_CONTEXT_MISMATCH")
+    for lag in REPORTED_LAGS:
+        actual = lags[str(lag)]
+        expected_pairs = sum(max(0, length - lag) for length in PINNED_SEGMENTS)
+        expected_unavailable = sum(min(length, lag) for length in PINNED_SEGMENTS)
+        expected_cross = lag * (len(SOURCE_DAILY_ROWS) - 1)
+        expected_by_day = {day: lag for day in sorted(SOURCE_DAILY_ROWS)[1:]}
+        _check(isinstance(actual, dict)
+               and all(type(actual.get(key)) is int for key in (
+                   "contiguous_lag_pairs", "same_day_context_rows",
+                   "cross_day_context_rows", "unavailable_rows"))
+               and actual["contiguous_lag_pairs"] == expected_pairs
+               and actual["unavailable_rows"] == expected_unavailable
+               and actual["cross_day_context_rows"] == expected_cross
+               and actual["same_day_context_rows"] == expected_pairs - expected_cross
+               and actual.get("cross_day_by_later_date") == expected_by_day
+               and expected_pairs + expected_unavailable == 14186,
+               "RAW_REPLAY_LAG_CONTEXT_MISMATCH")
     _check(protocol.get("schema") == "hazrob.g2.mq4-retrospective-protocol-audit.v1"
            and protocol.get("source_library_summary_sha256") == SOURCE_SHA
            and protocol.get("source_library_benchmark_script_sha256") == SCRIPT_SHA

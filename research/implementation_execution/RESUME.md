@@ -1,3 +1,11 @@
+## 2026-11-01 — G2 MQ4 six-lag segment consistency hardening (research only; CI pending)
+
+- Resumed from `d3c2b0236cd3e5039d5eccf02dee7ea3d93a6745`; verified latest 20 visible final-head CI runs all successful, including G2 Actions 41284690747 (903/903 tests). Independent physical evidence remains `records=[]`.
+- Fixed a source-report integrity blind spot: the prior three-way gate accepted reallocated segment lengths with unchanged total and ignored 1/5/15/30/60-minute lag drift. Now pins all 11 historical segment lengths, first/last timestamps, original member byte length, per-day max-lag eligibility and recomputes all six lag scales with exact integer arithmetic. Nine new synthetic tamper regressions; expected G2 suite 912 tests, **not CI-verified until new-head run completes**.
+- Historical raw ZIP is NOT replayed in this iteration. This checks consistency of a prior report, not original row authentication, prospective holdouts or physical Tank calibration. `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; no G2/G3 promotion. Research-only files; no Stable, Android, firmware or main changes. Next: inspect CI and repair failures, then pursue original row-level evidence and blinded reference-calibrated physical exposure groups.
+
+---
+
 ## 2026-11-01 — G2 MQ4 three-way historical source reconciliation (903/903 G2 CI verified)
 
 - Resumed from `d746771b4c24d8fcc04dc67ba1adf5fd83ebcfce`; verified final-head G2 Actions 41280851249 and other visible runs completed successfully (891/891 tests previously verified). Independent physical evidence remains `records=[]`.
