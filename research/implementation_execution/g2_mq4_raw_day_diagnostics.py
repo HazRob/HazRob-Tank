@@ -110,12 +110,38 @@ def analyze_archive(blob):
         return analyze_csv(z.read(MEMBER))
 
 
+
+def compact(report):
+    """Stable 5-decimal source receipt projection; never a scientific promotion."""
+    fields = ('schema', 'archive_sha256', 'member_sha256', 'source', 'rows',
+              'calendar_days', 'sensor_names')
+    out = {k: report[k] for k in fields}
+    out['daily_compact'] = {
+        day: {'n': item['rows'],
+              'ref_min_ppm': round(item['reference_min_ppm'], 4),
+              'ref_max_ppm': round(item['reference_max_ppm'], 4),
+              'mq4': {name: [sensor['distinct_raw_values'],
+                              round(sensor['pearson_raw_vs_licor_ppm'], 5)]
+                      for name, sensor in item['sensors'].items()}}
+        for day, item in report['days'].items()}
+    out['summary'] = {
+        name: {key: round(value, 5) if isinstance(value, float) else value
+               for key, value in entry.items()}
+        for name, entry in report['summary'].items()}
+    for k in ('g2_qualified', 'g3_qualified', 'independent_tank_exposures',
+              'traceable_calibration', 'blinded_prospective', 'limitations'):
+        out[k] = report[k]
+    return out
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--archive', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--compact', action='store_true', help='emit committed compact receipt')
     a = p.parse_args()
     report = analyze_archive(a.archive.read_bytes())
+    if a.compact:
+        report = compact(report)
     a.output.write_text(json.dumps(report, ensure_ascii=False, sort_keys=True,
                                    indent=2, allow_nan=False) + '\n', encoding='utf-8')
     print('Pinned raw MQ4 day diagnostics PASS; external source only; no G2/G3')
