@@ -1,0 +1,139 @@
+{
+  "schema": "hazrob.v8.implementation_tracker/1",
+  "date": "2026-11-02",
+  "repo": "HazRob/HazRob-Tank",
+  "branch": "feature/tank-v8-implementation",
+  "v8_reset_commit": "c0066929b7d1217f56551392bf4e0d1c9d89f2d5",
+  "v7_reference_sha": "b344b8ac1c651794fb600baae029efd0f2522ce8",
+  "v5_reference_branch": "feature/tank-v5-implementation",
+  "v7_mutation_allowed": false,
+  "old_v7_rehabilitation_branch": "ABANDONED_NOT_FOR_EXECUTION",
+  "scope": "V8-only modification track; V7 frozen baseline for read-only diagnosis",
+  "status": "PLAN_DOCUMENTED",
+  "app_code_changed": false,
+  "firmware_changed": false,
+  "apk_built": false,
+  "hardware_test_pass": false,
+  "latest_approved_stable_confirmed": false,
+  "last_verified_sha": "af3117ddf1af050c80ff86606a43794addf94a3e",
+  "next_action": "G00 record exact V5/V7 source inputs/outputs and create parity tests on V8 branch only",
+  "tasks": [
+    {
+      "id": "G00",
+      "title": "Baseline/reproducibility and source SHA manifest",
+      "status": "IN_PROGRESS",
+      "next_action": "Record V5/V7 source blob hashes, V8 reset root, no V7 writes",
+      "evidence_file": "docs/implementation/V8-IMPLEMENTATION-MASTER-PLAN-2026-11-02_AR.md",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "R01",
+      "title": "Restore prior ChemCore V5 inference for V8 instant/session/lab",
+      "status": "SOURCE_DIAGNOSED",
+      "next_action": "Build V5→V8 adapter and immutable engine evidence contract; compare full inputs",
+      "evidence_file": "research/v8_implementation/results/legacy_engine_parity.json",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "R02",
+      "title": "Field cycle relay power-off after capture/DB verification; failures explained",
+      "status": "SOURCE_DIAGNOSED",
+      "next_action": "Introduce capture→flush→readback→poweroff, persist failure codes, separate UNKNOWN from capture error",
+      "evidence_file": "research/v8_implementation/results/field_cycle_failure_matrix.json",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "R03",
+      "title": "Instant real warmup/record countdown and success stage",
+      "status": "SOURCE_DIAGNOSED",
+      "next_action": "Monotonic 60s warmup + 60s real sampling, no stale terminal snapshots",
+      "evidence_file": "research/v8_implementation/results/instant_60_60_timing.json",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "R04",
+      "title": "Candidate ranking and routing vs source ledger",
+      "status": "REPRODUCED_IN_FROZEN_V7",
+      "next_action": "Rewire operator list to restored V5 ranked result, enforce quality.valid and UNKNOWN; replay divergent data",
+      "evidence_file": "research/v8_implementation/results/candidate_replay_10case.json",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": "Historical frozen V7 software replays: Actions 41171598687 and 41173692574; do not claim V8 fix."
+    },
+    {
+      "id": "R05",
+      "title": "Full unified 734-material catalog and per-field evidence provenance",
+      "status": "SOURCE_DIAGNOSED",
+      "next_action": "Audit completeness all fields then source-qualified fill; unknown remains unknown, verify migrations",
+      "evidence_file": "research/v8_implementation/results/chemical_completeness_audit.csv",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "R06",
+      "title": "Instant/session/site/lab and other reports accurate from same immutable output",
+      "status": "SOURCE_DIAGNOSED",
+      "next_action": "Diff source JSON vs PDF/XLSX/preview, inspect real PDFs and XLSX records, verify hashes",
+      "evidence_file": "research/v8_implementation/results/report_parity_checks.json",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "R07",
+      "title": "HC-SR04 echo measurement diagnosis and repair",
+      "status": "SOURCE_DIAGNOSED_DEVICE_BENCH_REQUIRED",
+      "next_action": "Verify GPIO23/39, ISR edge/timing, voltage divider, diagnostic and 10/20/50/100 cm bench",
+      "evidence_file": "research/v8_implementation/results/echo_bench_matrix.csv",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "R08",
+      "title": "Embed latest APPROVED Stable compatible with V8",
+      "status": "LATEST_APPROVED_NOT_YET_ESTABLISHED",
+      "next_action": "Verify manifest, SHA, runtime_activation; preserve 1.0.0-hr069r1 if no newer qualified runtime",
+      "evidence_file": "research/v8_implementation/results/stable_payload_integrity.json",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": "Build-harness research snapshot is NOT runtime-active."
+    },
+    {
+      "id": "G09",
+      "title": "Integrated acceptance and release gate",
+      "status": "NOT_STARTED",
+      "next_action": "Android JUnit + SQLite migration + reports + UI + bench; APK after approvals",
+      "evidence_file": "docs/implementation/V8-IMPLEMENTATION-RELEASE-GATE.md",
+      "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    }
+  ],
+  "guardrails": [
+    "V7/V6/V5 original branches remain unchanged",
+    "No invented exposure values or synthetic chemical identity certifications",
+    "All source-based chemistry remains research only until grouped holdout and Tank G3",
+    "Field safety/relay outage fail-safe overrides waiting for capture persistence",
+    "No final APK release claim before tests and approval"
+  ]
+}
