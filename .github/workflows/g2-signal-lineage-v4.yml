@@ -44,6 +44,8 @@ jobs:
           python-version: '3.11'
       - name: "Compile all research G2 Python modules"
         run: python -m compileall -q research/implementation_execution
+      - name: "Authenticate pinned MQ4 forward-day receipt lineage (source only; not G2)"
+        run: python research/implementation_execution/g2_mq4_receipt_lineage_ci.py --output "$RUNNER_TEMP/g2_mq4_receipt_lineage.json"
       - name: "Run every offline G2 regression test (including new test files)"
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_*.py' -v
       - name: "Run full 80-technique G2 fail-closed evidence audit"
@@ -100,4 +102,5 @@ jobs:
             ${{ runner.temp }}/g2_audit_results.json
             ${{ runner.temp }}/g2_acquisition_triage.json
             ${{ runner.temp }}/g2_replay_integrity.json
+            ${{ runner.temp }}/g2_mq4_receipt_lineage.json
           if-no-files-found: error
