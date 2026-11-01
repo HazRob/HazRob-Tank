@@ -124,10 +124,11 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
             ea = predictions[a] != truth
             eb = predictions[b] != truth
             paired[a + "|" + b][(int(ea) << 1) | int(eb)] += 1
-    calibration_days = validate_full_fold_partition(folds) if require_full else {}
+    calibration_days = {}
     if require_full:
         if len(rows) != source["source_rows"] or len(folds) != source["days"]:
             raise ValueError("INCOMPLETE_SOURCE_ROWS")
+        calibration_days = validate_full_fold_partition(folds)
         if positive != 2346 or len(rows) - positive != 11840:
             raise ValueError("REFERENCE_MARGINAL_MISMATCH")
         for model in source["models"]:
