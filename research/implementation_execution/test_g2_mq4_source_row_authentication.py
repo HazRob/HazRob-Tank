@@ -1,7 +1,12 @@
 """Synthetic-only regression tests; no original archive or real predictions supplied."""
 import csv
 import io
+import json
 import unittest
+import zipfile
+from unittest.mock import patch
+
+import g2_mq4_source_row_authentication as auth
 
 from g2_mq4_source_row_authentication import (
     SOURCE_ID, authenticate_rows, authenticate_reference_labels, canonical_row_sha256,
@@ -199,6 +204,111 @@ class SyntheticRowAuthenticationTests(unittest.TestCase):
         report = authenticate_reference_labels(raw, rows[:1], require_full=False)
         self.assertFalse(report["complete_reference_label_coverage"])
         self.assertFalse(report["g2_qualified"])
+
+
+class SyntheticReplayMetadataTests(unittest.TestCase):
+    """Synthetic ZIP and replay; no original MQ4 archive is bundled."""
+
+    def setUp(self):
+        self.raw, _ = fixture()
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr(auth.MEMBER, self.raw)
+        self.archive = buffer.getvalue()
+        for key, value in (
+                ("ARCHIVE_SHA", auth.sha256(self.archive)),
+                ("MEMBER_SHA", auth.sha256(self.raw)),
+                ("PINNED_MEMBER_BYTES", len(self.raw))):
+            p = patch.object(auth, key, value)
+            p.start()
+            self.addCleanup(p.stop)
+        self.replay = {
+            "schema": "hazrob.g2.mq4-original-zip-raw-replay.v1",
+            "source_id": auth.SOURCE_ID,
+            "archive_sha256": auth.ARCHIVE_SHA,
+            "raw_member_sha256": auth.MEMBER_SHA,
+            "raw_member_bytes": len(self.raw),
+            "raw_replayed_in_this_execution": True,
+            "summary_fields_verified": True,
+            "g2_qualified": False,
+            "g3_tank_qualified": False,
+            "physical_exposure_independence_verified": False,
+            "reference_calibration_certificate_verified": False,
+            "blinded_holdout_verified": False,
+            "derived": auth.derive(self.raw),
+        }
+
+    def verify(self):
+        return auth.verify_original_archive(
+            self.archive, json.dumps(self.replay).encode("utf-8"))
+
+    def test_complete_synthetic_replay_accepted_without_g2(self):
+        self.assertEqual(self.verify(), self.raw)
+        self.assertFalse(self.replay["g2_qualified"])
+
+    def test_replay_schema_change_rejected(self):
+        self.replay["schema"] = "unversioned"
+        with self.assertRaisesRegex(ValueError, "REPLAY_SCHEMA_MISMATCH"):
+            self.verify()
+
+    def test_replay_source_id_change_rejected(self):
+        self.replay["source_id"] = "OTHER-SOURCE"
+        with self.assertRaisesRegex(ValueError, "REPLAY_LINEAGE_MISMATCH"):
+            self.verify()
+
+    def test_replay_member_length_change_rejected(self):
+        self.replay["raw_member_bytes"] += 1
+        with self.assertRaisesRegex(ValueError, "REPLAY_MEMBER_SIZE_MISMATCH"):
+            self.verify()
+
+    def test_boolean_member_length_rejected(self):
+        self.replay["raw_member_bytes"] = True
+        with self.assertRaisesRegex(ValueError, "REPLAY_MEMBER_SIZE_MISMATCH"):
+            self.verify()
+
+    def test_replay_not_replayed_rejected(self):
+        self.replay["raw_replayed_in_this_execution"] = False
+        with self.assertRaisesRegex(ValueError, "REPLAY_COMPLETENESS_MISMATCH"):
+            self.verify()
+
+    def test_replay_summary_not_verified_rejected(self):
+        self.replay["summary_fields_verified"] = False
+        with self.assertRaisesRegex(ValueError, "REPLAY_COMPLETENESS_MISMATCH"):
+            self.verify()
+
+    def test_all_unsupported_scientific_promotions_rejected(self):
+        for field in ("g2_qualified", "g3_tank_qualified",
+                      "physical_exposure_independence_verified",
+                      "reference_calibration_certificate_verified",
+                      "blinded_holdout_verified"):
+            with self.subTest(field=field):
+                self.replay[field] = True
+                with self.assertRaisesRegex(
+                        ValueError, "REPLAY_UNSUPPORTED_SCIENTIFIC_PROMOTION"):
+                    self.verify()
+                self.replay[field] = False
+
+    def test_missing_scientific_status_rejected(self):
+        del self.replay["blinded_holdout_verified"]
+        with self.assertRaisesRegex(
+                ValueError, "REPLAY_UNSUPPORTED_SCIENTIFIC_PROMOTION"):
+            self.verify()
+
+    def test_replay_missing_derived_rejected(self):
+        del self.replay["derived"]
+        with self.assertRaisesRegex(ValueError, "REPLAY_DERIVED_MISSING"):
+            self.verify()
+
+    def test_replay_derived_mutation_rejected(self):
+        self.replay["derived"]["rows"] += 1
+        with self.assertRaisesRegex(
+                ValueError, "SOURCE_REPLAY_DERIVATION_MISMATCH"):
+            self.verify()
+
+    def test_replay_member_sha_mutation_rejected(self):
+        self.replay["raw_member_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "REPLAY_LINEAGE_MISMATCH"):
+            self.verify()
 
 
 if __name__ == "__main__":
