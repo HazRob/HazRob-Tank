@@ -162,14 +162,41 @@ def authenticate_reference_labels(csv_bytes, submitted_rows, *, require_full=Tru
     }
 
 
+def validate_replay_metadata(replay):
+    """Fail closed on historical raw-replay provenance and scientific status.
+
+    Source bytes and derived statistics are checked separately by the caller.
+    A self-declared successful replay is NOT independent physical evidence.
+    """
+    if not isinstance(replay, dict) or replay.get("schema") != (
+            "hazrob.g2.mq4-original-zip-raw-replay.v1"):
+        raise ValueError("REPLAY_SCHEMA_MISMATCH")
+    if replay.get("source_id") != SOURCE_ID or (
+            replay.get("archive_sha256") != ARCHIVE_SHA or
+            replay.get("raw_member_sha256") != MEMBER_SHA):
+        raise ValueError("REPLAY_LINEAGE_MISMATCH")
+    if type(replay.get("raw_member_bytes")) is not int or (
+            replay["raw_member_bytes"] != PINNED_MEMBER_BYTES):
+        raise ValueError("REPLAY_MEMBER_SIZE_MISMATCH")
+    if replay.get("raw_replayed_in_this_execution") is not True or (
+            replay.get("summary_fields_verified") is not True):
+        raise ValueError("REPLAY_COMPLETENESS_MISMATCH")
+    for key in ("g2_qualified", "g3_tank_qualified",
+                "physical_exposure_independence_verified",
+                "reference_calibration_certificate_verified",
+                "blinded_holdout_verified"):
+        if replay.get(key) is not False:
+            raise ValueError("REPLAY_UNSUPPORTED_SCIENTIFIC_PROMOTION")
+    if not isinstance(replay.get("derived"), dict):
+        raise ValueError("REPLAY_DERIVED_MISSING")
+
+
 def verify_original_archive(archive_bytes, replay_raw):
     """Verify source archive/member bytes and independently re-derive report."""
     if sha256(archive_bytes) != ARCHIVE_SHA:
         raise ValueError("ARCHIVE_SHA_MISMATCH")
     replay = strict_json(replay_raw)
-    if not isinstance(replay, dict) or replay.get("archive_sha256") != ARCHIVE_SHA \
-            or replay.get("raw_member_sha256") != MEMBER_SHA:
-        raise ValueError("REPLAY_LINEAGE_MISMATCH")
+    validate_replay_metadata(replay)
     try:
         with zipfile.ZipFile(io.BytesIO(archive_bytes)) as z:
             names = z.namelist()
