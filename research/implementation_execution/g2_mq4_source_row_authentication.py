@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import io
+import math
 import json
 import zipfile
 from datetime import datetime
@@ -96,6 +97,71 @@ def authenticate_rows(csv_bytes, submitted_rows, *, require_full=True):
     }
 
 
+def authenticate_reference_labels(csv_bytes, submitted_rows, *, require_full=True):
+    """Recompute every submitted 4-ppm truth label from source LiCor ppb.
+
+    Mirrors the pinned Library benchmark: target = licor_ch4 / 1000.0,
+    known_high = target >= 4.0. This authenticates source labels only;
+    it does NOT reproduce any model predictions or qualify G2/G3.
+    """
+    if not isinstance(submitted_rows, list) or not submitted_rows:
+        raise ValueError("NO_SUBMITTED_ROWS")
+    try:
+        reader = csv.DictReader(
+            io.StringIO(csv_bytes.decode("utf-8-sig"), newline=""), strict=True)
+        columns = reader.fieldnames
+        if not columns or len(columns) != 20 or len(set(columns)) != 20 \
+                or columns[0] != "datetime" or "licor_ch4" not in columns:
+            raise ValueError("INVALID_SOURCE_HEADER")
+        expected = {}
+        for index, record in enumerate(reader, 1):
+            if None in record or any(v is None for v in record.values()):
+                raise ValueError("SOURCE_COLUMN_COUNT_MISMATCH")
+            ppb = float(record["licor_ch4"])
+            if not math.isfinite(ppb) or ppb <= 0:
+                raise ValueError("INVALID_SOURCE_REFERENCE_PPB")
+            expected[f"{SOURCE_ID}:{index:06d}"] = ppb / 1000.0 >= 4.0
+    except (UnicodeError, csv.Error, OverflowError) as exc:
+        raise ValueError("INVALID_SOURCE_CSV") from exc
+    except (TypeError, ValueError) as exc:
+        if isinstance(exc, ValueError) and str(exc) in (
+                "INVALID_SOURCE_HEADER", "SOURCE_COLUMN_COUNT_MISMATCH",
+                "INVALID_SOURCE_REFERENCE_PPB"):
+            raise
+        raise ValueError("INVALID_SOURCE_REFERENCE_PPB") from exc
+    if require_full and len(submitted_rows) != len(expected):
+        raise ValueError("SOURCE_ROW_COVERAGE_MISMATCH")
+    if len(expected) == 14186 and sum(expected.values()) != 2346:
+        raise ValueError("SOURCE_REFERENCE_MARGINAL_MISMATCH")
+    seen = set()
+    for row in submitted_rows:
+        if not isinstance(row, dict):
+            raise ValueError("INVALID_SUBMITTED_ROW")
+        rid = row.get("row_id")
+        if not isinstance(rid, str) or rid not in expected:
+            raise ValueError("SOURCE_ROW_ID_MISMATCH")
+        if rid in seen:
+            raise ValueError("DUPLICATE_SUBMITTED_SOURCE_ROW")
+        seen.add(rid)
+        if type(row.get("reference_positive_4ppm")) is not bool:
+            raise ValueError("INVALID_SUBMITTED_REFERENCE_LABEL")
+        if row["reference_positive_4ppm"] != expected[rid]:
+            raise ValueError("SOURCE_REFERENCE_LABEL_MISMATCH")
+    if require_full and len(seen) != len(expected):
+        raise ValueError("SOURCE_ROW_COVERAGE_MISMATCH")
+    return {
+        "source_rows": len(expected),
+        "reference_positive_rows": sum(expected.values()),
+        "authenticated_reference_labels": len(seen),
+        "complete_reference_label_coverage": require_full,
+        "reference_threshold_ppm": 4.0,
+        "reference_source_unit": "LiCor ppb",
+        "model_predictions_independently_reproduced": False,
+        "g2_qualified": False,
+        "g3_qualified": False,
+    }
+
+
 def verify_original_archive(archive_bytes, replay_raw):
     """Verify source archive/member bytes and independently re-derive report."""
     if sha256(archive_bytes) != ARCHIVE_SHA:
@@ -129,6 +195,7 @@ def authenticate_paired_submission(archive_bytes, submission_raw,
     raw = verify_original_archive(archive_bytes, replay_raw)
     submitted = strict_json(submission_raw)
     row_audit = authenticate_rows(raw, submitted["rows"], require_full=True)
+    label_audit = authenticate_reference_labels(raw, submitted["rows"], require_full=True)
     if row_audit["source_rows"] != 14186:
         raise ValueError("PINNED_SOURCE_ROW_COUNT_MISMATCH")
     return {
@@ -139,6 +206,9 @@ def authenticate_paired_submission(archive_bytes, submission_raw,
         "submitted_rows": row_audit["authenticated_submitted_rows"],
         "source_row_digest_method": row_audit["row_digest_method"],
         "submitted_rows_matched_to_sha_pinned_archive": True,
+        "reference_labels_matched_to_sha_pinned_archive": True,
+        "authenticated_reference_labels": label_audit["authenticated_reference_labels"],
+        "source_reference_positive_rows": label_audit["reference_positive_rows"],
         "source_benchmark_marginals_reconciled": submitted_audit["full_source_marginals_match"],
         "model_predictions_independently_reproduced": False,
         "blinded_independent_holdouts_verified": False,
