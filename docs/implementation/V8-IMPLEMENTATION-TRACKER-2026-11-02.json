@@ -5,18 +5,18 @@
   "branch": "feature/tank-v8-implementation",
   "v8_reset_commit": "c0066929b7d1217f56551392bf4e0d1c9d89f2d5",
   "v7_reference_sha": "b344b8ac1c651794fb600baae029efd0f2522ce8",
-  "v5_reference_branch": "feature/tank-v5-implementation",
+  "v5_reference_branch": "feature/tank-v5-implementation (read-only benchmark comparison only)",
   "v7_mutation_allowed": false,
   "old_v7_rehabilitation_branch": "ABANDONED_NOT_FOR_EXECUTION",
-  "scope": "V8-only modification track; V7 frozen baseline for read-only diagnosis",
-  "status": "PLAN_DOCUMENTED",
+  "scope": "V8-only improvements to independent ChemCore V6, scientific G1/G2/G3 assessment and MQ Data Science gap research; V7 immutable reference; V5 comparison only",
+  "status": "OWNER_APPROVED_CHEMCORE_V6_CONTINUATION_PLAN_RECORDED",
   "app_code_changed": false,
   "firmware_changed": false,
   "apk_built": false,
   "hardware_test_pass": false,
   "latest_approved_stable_confirmed": false,
   "last_verified_sha": "8f887a28e41a33f2878bbef68926e1de28e9a97c",
-  "next_action": "G00: inspect remaining V5↔V7 inference and report contracts; then R01 run old-engine parity tests on V8 only",
+  "next_action": "C6-00: audit ChemCore V6 module activation paths and 80-technique coverage; C6-01 MQ Data Science 3D/4D 76-model gap matrix; do not change app engine until scientific audit and tests",
   "tasks": [
     {
       "id": "G00",
@@ -31,14 +31,14 @@
     },
     {
       "id": "R01",
-      "title": "Restore prior ChemCore V5 inference for V8 instant/session/lab",
-      "status": "SOURCE_DIAGNOSED",
-      "next_action": "Build V5→V8 adapter and immutable engine evidence contract; compare full inputs",
-      "evidence_file": "research/v8_implementation/results/legacy_engine_parity.json",
+      "title": "RETAIN ChemCore V6; audit and improve core rather than restore V5",
+      "status": "REPLANNED_OWNER_APPROVED_NOT_IMPLEMENTED",
+      "next_action": "Run C6-00 / C6-01 / C6-02 scientific inventory, source comparisons and math regression before any Android rewire",
+      "evidence_file": "research/v8_implementation/results/chemcore_v6_technique_activation_inventory.csv",
       "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
       "verified_commit": null,
       "action_run": null,
-      "notes": null
+      "notes": "V5 remains comparison baseline only; prior restore-V5 proposal cancelled and superseded."
     },
     {
       "id": "R02",
@@ -66,7 +66,7 @@
       "id": "R04",
       "title": "Candidate ranking and routing vs source ledger",
       "status": "REPRODUCED_IN_FROZEN_V7",
-      "next_action": "Rewire operator list to restored V5 ranked result, enforce quality.valid and UNKNOWN; replay divergent data",
+      "next_action": "Repair V7 candidate list after independent ChemCore V6 mathematical and grouped-data validation; never route source_curve_hypotheses as ranked operator results",
       "evidence_file": "research/v8_implementation/results/candidate_replay_10case.json",
       "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
       "verified_commit": null,
@@ -88,7 +88,7 @@
       "id": "R06",
       "title": "Instant/session/site/lab and other reports accurate from same immutable output",
       "status": "SOURCE_DIAGNOSED",
-      "next_action": "Diff source JSON vs PDF/XLSX/preview, inspect real PDFs and XLSX records, verify hashes",
+      "next_action": "One immutable VERIFIED ChemCore V6 result shared by UI, reports and plots; no legacy V5 reranking",
       "evidence_file": "research/v8_implementation/results/report_parity_checks.json",
       "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
       "verified_commit": null,
@@ -127,13 +127,118 @@
       "verified_commit": null,
       "action_run": null,
       "notes": null
+    },
+    {
+      "id": "C6-00",
+      "title": "Inventory ChemCore V6 all 80 techniques and actual activation/wiring",
+      "status": "NOT_STARTED",
+      "next_action": "Audit V6 packages, techniques, consumed outputs and source hashes",
+      "evidence_file": "research/v8_implementation/results/chemcore_v6_technique_activation_inventory.csv",
+      "test_status": "NOT_RUN_IN_V8",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "C6-01",
+      "title": "MQ Data Science 3D/4D and 76-model methodology gap matrix",
+      "status": "SOURCE_IDENTIFIED_AUDIT_PENDING",
+      "next_action": "Audit original archived Python sources, correction equations, CV leakage, train/validation/test, provenance, Android feasibility",
+      "evidence_file": "research/v8_implementation/results/mq_data_science_gap_matrix.csv",
+      "test_status": "NOT_RUN_IN_V8",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": "Earlier archived V8 source at db0efc3e contains 3DSurface.py,4DCurve.py, MQInfo.py,PredictData.py, readppm.py; no runtime activation claim."
+    },
+    {
+      "id": "C6-02",
+      "title": "ChemCore V6 G1 numerical and scientific regression gate",
+      "status": "NOT_STARTED",
+      "next_action": "Run deterministic unit tests across MQ ratios/R0/temperature/humidity, sensor failures and open-set; record discrepancies",
+      "evidence_file": "research/v8_implementation/results/g1_numerical_accuracy.json",
+      "test_status": "NOT_RUN_IN_V8",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "C6-03",
+      "title": "ChemCore V6 G2 externally sourced grouped holdout evaluation",
+      "status": "NOT_STARTED",
+      "next_action": "Source-qualified dataset splits by exposure/day/device, top1/top3, false positives, UNKNOWN rates, uncertainty",
+      "evidence_file": "research/v8_implementation/results/g2_grouped_holdout_benchmark.json",
+      "test_status": "NOT_RUN_IN_V8",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "C6-04",
+      "title": "Evidence-based additions to ChemCore V6 from MQ Data Science",
+      "status": "NOT_STARTED",
+      "next_action": "Feature-gated improvements only after independent math validity and holdouts; no wholesale 76-model Android deployment",
+      "evidence_file": "research/v8_implementation/results/technique_change_ledger.json",
+      "test_status": "NOT_RUN_IN_V8",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "C6-05",
+      "title": "Actual ChemCore V6 ranked evidence connected to V8 instant candidates and reports",
+      "status": "NOT_STARTED",
+      "next_action": "Use validated ranked output with scores, source, provenance and UNKNOWN rather than catalog order",
+      "evidence_file": "research/v8_implementation/results/candidate_output_routing_parity.json",
+      "test_status": "NOT_RUN_IN_V8",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
+    },
+    {
+      "id": "C6-06",
+      "title": "Tank hardware G3 validation after controlled source/reference measurements",
+      "status": "BENCH_REQUIRED_NOT_STARTED",
+      "next_action": "Gas concentration qualified reference, independent exposure groups, device calibration, reliable data lineage",
+      "evidence_file": "research/v8_implementation/results/g3_tank_qualification_manifest.json",
+      "test_status": "NOT_RUN_IN_V8",
+      "verified_commit": null,
+      "action_run": null,
+      "notes": null
     }
   ],
   "guardrails": [
-    "V7/V6/V5 original branches remain unchanged",
     "No invented exposure values or synthetic chemical identity certifications",
     "All source-based chemistry remains research only until grouped holdout and Tank G3",
     "Field safety/relay outage fail-safe overrides waiting for capture persistence",
-    "No final APK release claim before tests and approval"
-  ]
+    "No final APK release claim before tests and approval",
+    "V5/V6/V7 original reference branches remain unchanged",
+    "ChemCore V6 remains runtime candidate, not replaced by legacy ChemCore V5",
+    "MQ Data Science 76 models and 3D/4D remain research-only until G1 and grouped G2 acceptance"
+  ],
+  "approved_decision": "RETAIN_CHEMCORE_V6_EVALUATE_ENHANCE_NO_OLD_ENGINE_REPLACEMENT",
+  "authoritative_plan": "docs/implementation/V8-CHEMCORE-V6-VALIDATION-MASTER-PLAN-2026-11-02_AR.md",
+  "superseded_plan": "docs/implementation/V8-IMPLEMENTATION-MASTER-PLAN-2026-11-02_AR.md",
+  "priority_order": [
+    "G00",
+    "C6-00",
+    "C6-01",
+    "C6-02",
+    "C6-03",
+    "C6-04",
+    "C6-05",
+    "R02",
+    "R03",
+    "R05",
+    "R07",
+    "R08",
+    "R06",
+    "C6-06",
+    "G09"
+  ],
+  "scientific_quality_gates": {
+    "G1": "numerical/source reproducibility",
+    "G2": "grouped independent source validation",
+    "G3": "physically referenced Tank validation",
+    "current_g3_promoted_techniques": 0
+  }
 }
