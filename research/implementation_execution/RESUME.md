@@ -1,3 +1,10 @@
+## 2026-11-01 — G2 MQ4 future-calibration CI verification (884/884)
+
+- Research implementation commit `9c5aa7a77d784f46cdc9f67d750e87c27d0bdec1`: [GitHub Actions G2 run 41276499088](https://github.com/HazRob/HazRob-Tank/actions/runs/41276499088) **PASS**, `Ran 884 tests`, `OK`. The full 80-technique fail-closed audit, deterministic replay and publication gate also passed: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Four new synthetic regression cases cover future calibration without future training, future training without future calibration, combined flags, and full-fold inferred calibration. No original raw ZIP replay or independent physical evidence; no G2/G3 promotion. This documentation-only follow-up commit needs its own CI verification.
+
+---
+
 ## 2026-11-01 — G2 MQ4 future-calibration leakage flag (research only; CI pending)
 
 - Checked research HEAD `940ecf5d332b9888baa2eac57fd2e55372da81e2` and latest Actions; all 21 visible runs on that head completed success. Earlier G2 suite was 880 expected tests; no physical independent evidence or scientific promotion.
