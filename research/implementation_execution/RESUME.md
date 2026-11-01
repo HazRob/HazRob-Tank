@@ -1,3 +1,14 @@
+## 2026-11-01 — G2 MQ4 row-level LiCor truth-label authentication (936/936 CI on implementation)
+
+- Resumed from `89a716e090932ec8b7356fb4f6126dc37dbbc0f5`; verified the preceding 927-test source-row authentication suite and the independent-evidence ledger `records=[]`.
+- Found a specific fail-open scientific integrity gap: source-row SHA matching plus pooled model confusion marginals did **not** independently bind `reference_positive_4ppm` to each raw LiCor methane measurement. A malicious or mistaken per-row label swap can preserve pooled positive/negative totals. Inspected the original central Library `mq4_system_benchmark_2026-10-30.py` source: `target = d.licor_ch4.to_numpy()/1000.0`; `known_high = truth>=4.0`.
+- Implemented `authenticate_reference_labels` and integrated it into production `authenticate_paired_submission`. Recomputes each row's source truth from SHA-pinned raw LiCor ppb, rejects non-boolean or mismatched submitted truth and non-finite/non-positive source reference, and checks the 2,346-positive historical marginal on full 14,186-row source. **9 new synthetic regressions** include a truth-label swap that preserves aggregate positives, exact 4-ppm boundary, partial coverage, and invalid source values. Updated Arabic methodology and pinned research result JSON.
+- [G2 CI 41297359471](https://github.com/HazRob/HazRob-Tank/actions/runs/41297359471) on implementation/test SHA `31db4264c98c4702dc1d70d6eb39b0341118c31e` **PASS: 936/936 tests**; full 80-technique fail-closed audit and publication guard remain intact (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). Documentation-only follow-up CI may still be queued; verify separately before claiming final HEAD success.
+- No original MQ4 ZIP or actual same-row model predictions were supplied to this execution. Only synthetic regression cases were run; no physical Tank exposures, reference-calibrated blinded holdouts, or model-training reproduction. No G2/G3 promotion. All changed files remain under `research/implementation_execution/` on research branch; no ChemCore Stable, Android, firmware or main changes.
+- Next: verify final-head CI and fix failures if any; acquire authentic full-source paired predictions and traceable blinded independent physical exposure groups before scientific qualification.
+
+---
+
 ## 2026-11-01 — G2 MQ4 source-row authentication intake (927/927 G2 CI verified)
 
 - Resumed from `591905c472eb86f5e8c15a7e5f83c36fc58abdd9` and verified previous G2 CI 41288858754 completed successfully (912/912 tests). No independent physical evidence (`G2_INDEPENDENT_EVIDENCE.json: records=[]`).
