@@ -8,7 +8,7 @@ import json
 import unittest
 
 from g2_mq4_pairwise_frechet_bounds import EVIDENCE, NAMES, SOURCE
-from g2_mq4_paired_prediction_intake import SCHEMA, audit, validate_full_fold_partition
+from g2_mq4_paired_prediction_intake import SCHEMA, audit, validate_full_fold_partition, classify_future_fit_days
 
 SOURCE_RAW = SOURCE.read_bytes()
 EVIDENCE_RAW = EVIDENCE.read_bytes()
@@ -226,10 +226,46 @@ class FullFoldPartitionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "INVALID_FOLD_TRAINING_PARTITION"):
             validate_full_fold_partition(folds)
 
+    def test_future_calibration_without_future_training_is_flagged(self):
+        test_day = "2021-07-30"
+        training = tuple(f"2021-07-{d:02d}" for d in range(21, 30))
+        train, cal, any_future = classify_future_fit_days(
+            {test_day: training}, {test_day: "2021-07-31"})
+        self.assertEqual(train, [])
+        self.assertEqual(cal, [test_day])
+        self.assertEqual(any_future, [test_day])
+
+    def test_future_training_without_future_calibration_is_flagged(self):
+        train, cal, any_future = classify_future_fit_days(
+            {"2021-07-22": ("2021-07-23",)}, {"2021-07-22": "2021-07-21"})
+        self.assertEqual(train, ["2021-07-22"])
+        self.assertEqual(cal, [])
+        self.assertEqual(any_future, ["2021-07-22"])
+
+    def test_future_training_and_calibration_union_is_unique_sorted(self):
+        train, cal, any_future = classify_future_fit_days(
+            {"2021-07-23": ("2021-07-24",), "2021-07-22": ("2021-07-21",)},
+            {"2021-07-23": "2021-07-25", "2021-07-22": "2021-07-25"})
+        self.assertEqual(train, ["2021-07-23"])
+        self.assertEqual(cal, ["2021-07-22", "2021-07-23"])
+        self.assertEqual(any_future, ["2021-07-22", "2021-07-23"])
+
+    def test_full_partition_infers_future_calibration_for_late_test_day(self):
+        folds = self.folds()
+        day = "2021-07-30"
+        folds[day] = tuple(f"2021-07-{d:02d}" for d in range(21, 30))
+        calibration = validate_full_fold_partition(folds)
+        train, cal, any_future = classify_future_fit_days({day: folds[day]}, {day: calibration[day]})
+        self.assertEqual(train, [])
+        self.assertEqual(cal, [day])
+        self.assertEqual(any_future, [day])
+
     def test_partial_audit_does_not_claim_partition_or_authentication(self):
         result = check(sample())
         self.assertEqual(result["declared_calibration_day_by_test_day"], {})
         self.assertFalse(result["declared_fold_partition_structurally_checked"])
+        self.assertFalse(result["future_calibration_assessed_from_full_declared_partition"])
+        self.assertEqual(result["test_days_with_future_calibration"], [])
         self.assertFalse(result["original_source_fold_partition_independently_verified"])
 
 

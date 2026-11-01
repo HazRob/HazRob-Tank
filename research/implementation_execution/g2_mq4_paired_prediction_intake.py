@@ -60,6 +60,19 @@ def validate_full_fold_partition(folds):
     return dict(sorted(calibration.items()))
 
 
+def classify_future_fit_days(folds, calibration_days):
+    """Flag declared future information in both training and calibration.
+
+    For partial synthetic intake, calibration_days is empty; no absence of
+    future calibration can be inferred from that missing declaration.
+    """
+    training = sorted(test for test, train in folds.items()
+                      if any(day > test for day in train))
+    calibration = sorted(test for test, day in calibration_days.items()
+                         if day > test)
+    return training, calibration, sorted(set(training) | set(calibration))
+
+
 def audit(raw, source_raw, evidence_raw, *, require_full=True):
     # project() checks the pinned source SHA, scope, five model identities and
     # strict independent-evidence records=[]. Do not bypass this check.
@@ -81,7 +94,6 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
     paired = {a + "|" + b: [0, 0, 0, 0]
               for a, b in itertools.combinations(NAMES, 2)}
     positive = 0
-    future_days = set()
     for row in rows:
         if not isinstance(row, dict):
             raise ValueError("INVALID_ROW")
@@ -104,8 +116,6 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         if day in folds and folds[day] != train:
             raise ValueError("INCONSISTENT_FOLD_PROVENANCE")
         folds[day] = train
-        if any(v > day for v in train):
-            future_days.add(day)
         truth = row.get("reference_positive_4ppm")
         if type(truth) is not bool:
             raise ValueError("INVALID_REFERENCE_LABEL")
@@ -134,6 +144,7 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         for model in source["models"]:
             if counts[model["model"]] != [model[k] for k in MODEL_FIELDS]:
                 raise ValueError("MODEL_MARGINAL_MISMATCH")
+    future_training, future_calibration, future_any = classify_future_fit_days(folds, calibration_days)
     return {
         "schema": "hazrob.g2.mq4-paired-intake-audit.v1",
         "submitted_rows": len(rows),
@@ -145,7 +156,10 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         "submitted_positive_rows": positive,
         "model_confusion_counts_tp_fn_fp_tn": counts,
         "pairwise_submitted_rows_both_correct_a_correct_b_wrong_a_wrong_b_correct_both_wrong": paired,
-        "test_days_with_future_training": sorted(future_days),
+        "test_days_with_future_training": future_training,
+        "test_days_with_future_calibration": future_calibration,
+        "test_days_with_any_future_fit_data": future_any,
+        "future_calibration_assessed_from_full_declared_partition": bool(require_full),
         "internal_submitted_row_ids_unique": True,
         "internal_submitted_fold_alignment": True,
         "full_source_marginals_match": bool(require_full),
@@ -154,7 +168,7 @@ def audit(raw, source_raw, evidence_raw, *, require_full=True):
         "paired_inferential_test_authorized": False,
         "g2_qualified": False,
         "g3_qualified": False,
-        "limitations": "Submitted-row arithmetic and declared 11-day fold partition only. Hash syntax and fold claims are not authenticated against the original ZIP. Source retrospective folds can train on future dates. No McNemar inference, Tank calibration, gas identity or safety claims."
+        "limitations": "Submitted-row arithmetic and declared 11-day fold partition only. Hash syntax and fold claims are not authenticated against the original ZIP. Source retrospective folds can train or calibrate on future dates. No McNemar inference, Tank calibration, gas identity or safety claims."
     }
 
 

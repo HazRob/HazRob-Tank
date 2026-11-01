@@ -1,3 +1,11 @@
+## 2026-11-01 — G2 MQ4 future-calibration leakage flag (research only; CI pending)
+
+- Checked research HEAD `940ecf5d332b9888baa2eac57fd2e55372da81e2` and latest Actions; all 21 visible runs on that head completed success. Earlier G2 suite was 880 expected tests; no physical independent evidence or scientific promotion.
+- Corrected an audit blind spot: future-date **calibration** can contaminate retrospective evaluation even when all declared training days precede the test. New deterministic fields flag future training, future calibration, and their union; partial submissions explicitly do not assert that future calibration has been assessed.
+- Added four synthetic-only tests and one partial-mode assertion; expected offline suite 884 tests, **CI not yet verified**. This does not authenticate raw rows, independently confirm declared fold dates, or establish prospective performance. G2 remains 0/80 qualified; no Stable, Android, firmware or main changes.
+
+---
+
 ## 2026-11-01 — G2 MQ4 declared fold-partition gate (research-only; final CI pending)
 
 - Resumed from the 873-test paired-prediction intake checkpoint; verified G2 Actions runs 41268903201 and 41268955618 completed successfully. Independent physical evidence remains `G2_INDEPENDENT_EVIDENCE.json: records=[]`.
