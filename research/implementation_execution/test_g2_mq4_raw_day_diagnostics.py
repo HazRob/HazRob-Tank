@@ -85,6 +85,16 @@ class RawDayDiagnosticTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'TIME_ORDER'):
                 mod.analyze_csv(raw)
 
+    def test_compact_projection_deterministic(self):
+        raw = self.synthetic()
+        with patch.object(mod, 'MEMBER_SHA256', hashlib.sha256(raw).hexdigest()):
+            full = mod.analyze_csv(raw)
+        a, b = mod.compact(full), mod.compact(full)
+        self.assertEqual(a, b)
+        self.assertEqual(a['daily_compact']['2021-07-21']['n'], 1289)
+        self.assertEqual(a['daily_compact']['2021-07-21']['mq4']['MQ4_3'][1], 1.0)
+        self.assertFalse(a['g2_qualified'])
+
     def test_committed_receipt_has_no_scientific_promotion(self):
         from pathlib import Path
         p = Path(__file__).with_name('G2_MQ4_RAW_DAY_DIAGNOSTICS_2026-11-02.json')
