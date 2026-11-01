@@ -54,13 +54,30 @@ def strict_json(raw):
     return obj
 
 
+def reject_nested_claims(value, location="$"):
+    """Fail closed on unsupported scientific/safety claims at any JSON depth."""
+    if isinstance(value, dict):
+        for key, child in value.items():
+            here = location + "." + key
+            if key in NO_APPROVAL and child is not False:
+                raise ValueError("MQ4_RECEIPT_UNSUPPORTED_PROMOTION:" + here)
+            if key == "threshold_4ppm_is_safety_limit" and child is not False:
+                raise ValueError("MQ4_RECEIPT_SAFETY_THRESHOLD_CLAIM:" + here)
+            reject_nested_claims(child, here)
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            reject_nested_claims(child, location + "[" + str(index) + "]")
+
+
 def audit(paths=None):
-    paths = paths or {name: ROOT / filename for name, filename in FILENAMES.items()}
+    if paths is None:
+        paths = {name: ROOT / filename for name, filename in FILENAMES.items()}
     if set(paths) != set(FILENAMES):
         raise ValueError("MQ4_RECEIPT_FILE_SET_MISMATCH")
     raw = {name: Path(paths[name]).read_bytes() for name in FILENAMES}
     obj = {name: strict_json(raw[name]) for name in FILENAMES}
     for name, item in obj.items():
+        reject_nested_claims(item, name)
         if any(item.get(flag) is not False for flag in NO_APPROVAL):
             raise ValueError("MQ4_RECEIPT_UNSUPPORTED_PROMOTION:" + name)
     if obj["source"].get("threshold_4ppm_is_safety_limit") is not False:
