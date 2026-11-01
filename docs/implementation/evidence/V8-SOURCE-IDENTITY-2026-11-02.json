@@ -1,0 +1,31 @@
+{
+  "schema": "hazrob.v8.source_identity/1",
+  "date": "2026-11-02",
+  "branch": "feature/tank-v8-implementation",
+  "reference_v7_commit": "b344b8ac1c651794fb600baae029efd0f2522ce8",
+  "reference_v7_tree": "a3bb5353eec46c7b0b32fbbb1624d3165e4d4cdc",
+  "v8_reset_commit": "c0066929b7d1217f56551392bf4e0d1c9d89f2d5",
+  "sources": [
+    {
+      "role": "V5 legacy runtime candidate",
+      "ref": "feature/tank-v5-implementation",
+      "path": "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java",
+      "blob_sha": "a24b8e7e433e24565adb400cc3f605cfd02ac3df",
+      "calls": "ChemCoreInferenceEngine.analyze",
+      "status": "SOURCE_VERIFIED_NOT_RESTORED"
+    },
+    {
+      "role": "V7 instant live runtime for contrast",
+      "ref": "b344b8ac1c651794fb600baae029efd0f2522ce8",
+      "path": "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java",
+      "blob_sha": "c3fb91f9c7a34645aaa034399e4befadcffbc169",
+      "calls": "TankV6TelemetryAdapter.analyzeSnapshot",
+      "status": "SOURCE_VERIFIED_REFERENCE_ONLY"
+    }
+  ],
+  "legacy_v7_branch": "feature/tank-v7-rehabilitation",
+  "legacy_v7_branch_note": "Cancelled; tree identical to frozen V7 and not authorized for development",
+  "tests": "NOT_RUN_IN_V8",
+  "apk": "NOT_BUILT",
+  "firmware": "NOT_FLASHED"
+}
