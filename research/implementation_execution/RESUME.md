@@ -1,3 +1,12 @@
+## 2026-11-01 — MQ4 four-receipt strict JSON provenance gate (research only; final CI to verify)
+
+- Resumed from `a8ede04306e157b5217f84f8d69dee3501427555`; verified all 11 associated workflows completed successfully, including G2 #41341676342. Independent Tank evidence remains `records=[]`.
+- Added `g2_mq4_receipt_lineage_ci.py` to strictly parse four committed forward-only MQ4 JSON receipts, reject duplicate JSON keys/nonfinite values/unsupported G2 or safety claims, recompute stability, ranking and support-strata receipts from the pinned source receipt, compare full objects, and emit SHA256 for all four files. Added 12 negative/deterministic regressions and Arabic methodology `G2_MQ4_RECEIPT_LINEAGE_CI_2026-11-01_AR.md`.
+- G2 workflow now executes this receipt-chain gate independently before the unit suite and uploads `g2_mq4_receipt_lineage.json`. On implementation SHA `97a4e6cc7b42120e2b0583a05d3185736cdbce87`, the MQ4 receipt gate, unit suite, full 80-technique audit, deterministic replay and publication guard all reported success at step level in G2 run #41346261599; confirm completed run conclusion and the new documentation HEAD separately.
+- No original MQ4 ZIP replay in CI, no new physically independent Tank exposures, no calibration certificate, and no G2/G3 promotion. Scientific state stays `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No ChemCore Stable, Android, firmware or main changes. Next: verify final HEAD CI, repair any failures, and obtain traceable blinded physical exposure groups before any scientific promotion.
+
+---
+
 ## 2026-11-01 — G2 GitHub Actions artifact-trigger coverage repaired (research branch; final CI pending)
 
 - Resumed from \`924d96ee339786a077b0ae7fd2748d041d331d67\`; verified all 20/20 associated Actions runs completed success, including G2 source/R0 gate #41336338922 (prior 1023/1023 tests). The external MQ4 source receipts remain descriptive; independent Tank ledger \`records=[]\`.
