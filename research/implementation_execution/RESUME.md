@@ -1,3 +1,13 @@
+## 2026-11-01 — G2 MQ4 source-row authentication intake (927/927 G2 CI verified)
+
+- Resumed from `591905c472eb86f5e8c15a7e5f83c36fc58abdd9` and verified previous G2 CI 41288858754 completed successfully (912/912 tests). No independent physical evidence (`G2_INDEPENDENT_EVIDENCE.json: records=[]`).
+- Closed an authentication gap left by syntactic SHA checks and aggregate confusion-matrix reconciliation: new `g2_mq4_source_row_authentication.py` requires original archive SHA256, original CSV member SHA256 and byte length, re-derived source replay, and complete 14,186-row pairing with canonical source row IDs, day and ordered-field digests. Submitted predictions still require the existing five-model, fold and marginal audit.
+- Added **15 synthetic-only regressions**, Arabic protocol and pinned CI result JSON. [G2 Actions 41292981387](https://github.com/HazRob/HazRob-Tank/actions/runs/41292981387) on implementation/test SHA `c7d266fe4ec2877ab796a033a4b3a602753d6f7b` **PASS: 927/927 tests**, full 80-technique fail-closed audit, deterministic replay and publication guard (`g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`). No G2/G3 promotion.
+- The actual original ZIP and genuine same-row model predictions were **not supplied to or replayed by CI**; new tests use synthetic rows. The archive bytes and model predictions must be obtained to run the production gate; model-training reproduction and blinded reference-calibrated independent physical exposures remain separately required. A matched source-row digest alone does not authorize McNemar inference or safety claims.
+- All writes restricted to `research/implementation_execution/` on research branch. No ChemCore Stable, Android, firmware or main changes. Next: verify all outstanding workflow conclusions, then obtain authenticated full-source paired predictions and independent blinded physical Tank exposure groups.
+
+---
+
 ## 2026-11-01 — G2 MQ4 six-lag segment consistency hardening (912/912 G2 CI verified)
 
 - Resumed from `d3c2b0236cd3e5039d5eccf02dee7ea3d93a6745`; verified latest 20 visible final-head CI runs all successful, including G2 Actions 41284690747 (903/903 tests). Independent physical evidence remains `records=[]`.
