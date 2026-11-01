@@ -97,5 +97,36 @@ class ReceiptLineageTests(unittest.TestCase):
                 audit(paths)
 
 
+    def test_nested_promotion_claim_in_source_rejected(self):
+        with self.assertRaisesRegex(ValueError, "UNSUPPORTED_PROMOTION"):
+            self.check(self.changed("source", lambda x: x.update(
+                {"metadata": {"g2_qualified": True}})))
+
+    def test_nested_promotion_claim_in_array_rejected(self):
+        with self.assertRaisesRegex(ValueError, "UNSUPPORTED_PROMOTION"):
+            self.check(self.changed("source", lambda x: x.update(
+                {"notes": [{"traceable_calibration": "yes"}]})))
+
+    def test_nested_promotion_claim_in_derived_receipt_rejected(self):
+        with self.assertRaisesRegex(ValueError, "UNSUPPORTED_PROMOTION"):
+            self.check(self.changed("support", lambda x: x.update(
+                {"research": [{"g3_qualified": 1}]})))
+
+    def test_nested_safety_threshold_claim_rejected(self):
+        with self.assertRaisesRegex(ValueError, "SAFETY_THRESHOLD_CLAIM"):
+            self.check(self.changed("source", lambda x: x.update(
+                {"metadata": {"threshold_4ppm_is_safety_limit": True}})))
+
+    def test_nested_explicit_false_is_not_promotion(self):
+        result = self.check(self.changed("source", lambda x: x.update(
+            {"metadata": {"g2_qualified": False,
+                          "threshold_4ppm_is_safety_limit": False}})))
+        self.assertEqual(result["test_rows"], 9325)
+
+    def test_explicit_empty_paths_rejected(self):
+        with self.assertRaisesRegex(ValueError, "FILE_SET_MISMATCH"):
+            audit({})
+
+
 if __name__ == "__main__":
     unittest.main()
