@@ -1,5 +1,5 @@
 """Research-only sharp marginal bounds for hypothetical MQ4 OR/AND ensembles."""
-import argparse, hashlib, itertools, json
+import argparse, hashlib, itertools, json, math
 from fractions import Fraction
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
@@ -8,6 +8,22 @@ EVIDENCE=ROOT/"G2_INDEPENDENT_EVIDENCE.json"
 SHA="0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea"
 NAMES=("TRAIN_MEDIAN_REFERENCE","RIDGE_MQ4_1","RIDGE_MQ4_3","RIDGE_MQ4_3_T_RH","HGB_MQ4_3_T_RH")
 P,N=2346,11840
+def _unique_object(pairs):
+    obj={}
+    for key,value in pairs:
+        if key in obj: raise ValueError("DUPLICATE_JSON_KEY")
+        obj[key]=value
+    return obj
+def _reject_constant(value):
+    raise ValueError("NONFINITE_JSON_NUMBER")
+def _finite_float(token):
+    value=float(token)
+    if not math.isfinite(value): raise ValueError("NONFINITE_JSON_NUMBER")
+    return value
+def strict_json(raw):
+    """Reject duplicate keys at every depth and non-finite JSON numbers."""
+    return json.loads(raw,object_pairs_hook=_unique_object,
+                      parse_constant=_reject_constant,parse_float=_finite_float)
 def rational(n,d):
     f=Fraction(n,d)
     return [f.numerator,f.denominator]
@@ -28,7 +44,8 @@ def bounds(a,b,p,n,mode):
                 false_positive_rate_range=[rational(fl,n),rational(fh,n)])
 def project(raw,evidence_raw):
     if hashlib.sha256(raw).hexdigest()!=SHA: raise ValueError("SOURCE_SHA_MISMATCH")
-    s=json.loads(raw); e=json.loads(evidence_raw)
+    s=strict_json(raw); e=strict_json(evidence_raw)
+    if not isinstance(s,dict) or not isinstance(e,dict): raise ValueError("INVALID_JSON_OBJECT")
     if (s.get("schema")!="hazrob-tank-v6-mq4-external-system-evaluation/1" or
         s.get("role")!="EXTERNAL_SOURCE_RESEARCH_PIPELINE_ONLY_NOT_JAVA_ANDROID_RUNTIME" or
         s.get("source_rows")!=14186 or s.get("days")!=11 or s.get("distinct_gases")!=1 or

@@ -73,6 +73,36 @@ class PairBoundsTests(unittest.TestCase):
     e=json.loads(self.ev);e["records"]=[{"unverified":True}]
     with self.assertRaisesRegex(ValueError,"UNVERIFIED_INDEPENDENT_EVIDENCE"):
      project(self.raw,json.dumps(e).encode())
+ def test_duplicate_evidence_records_fail_closed(self):
+    malicious=b'{"schema":"hazrob.g2.independent-evidence.v1","records":[{"unverified":true}],"records":[]}'
+    with self.assertRaisesRegex(ValueError,"DUPLICATE_JSON_KEY"):
+     project(self.raw,malicious)
+ def test_nested_duplicate_evidence_key_fail_closed(self):
+    malicious=b'{"schema":"hazrob.g2.independent-evidence.v1","records":[],"meta":{"source":"a","source":"b"}}'
+    with self.assertRaisesRegex(ValueError,"DUPLICATE_JSON_KEY"):
+     project(self.raw,malicious)
+ def test_nonfinite_nan_evidence_fail_closed(self):
+    malicious=b'{"schema":"hazrob.g2.independent-evidence.v1","records":[],"meta":NaN}'
+    with self.assertRaisesRegex(ValueError,"NONFINITE_JSON_NUMBER"):
+     project(self.raw,malicious)
+ def test_nonfinite_infinity_evidence_fail_closed(self):
+    malicious=b'{"schema":"hazrob.g2.independent-evidence.v1","records":[],"meta":Infinity}'
+    with self.assertRaisesRegex(ValueError,"NONFINITE_JSON_NUMBER"):
+     project(self.raw,malicious)
+ def test_nonfinite_exponent_evidence_fail_closed(self):
+    malicious=b'{"schema":"hazrob.g2.independent-evidence.v1","records":[],"meta":1e10000}'
+    with self.assertRaisesRegex(ValueError,"NONFINITE_JSON_NUMBER"):
+     project(self.raw,malicious)
+ def test_reordered_valid_evidence_same_result(self):
+    valid=b'{"records":[],"schema":"hazrob.g2.independent-evidence.v1"}'
+    self.assertEqual(project(self.raw,valid),self.out)
+ def test_nonobject_evidence_fail_closed(self):
+    with self.assertRaisesRegex(ValueError,"INVALID_JSON_OBJECT"):
+     project(self.raw,b'[]')
+ def test_nonempty_evidence_never_qualified(self):
+    valid=b'{"schema":"hazrob.g2.independent-evidence.v1","records":[{"source":"unverified"}]}'
+    with self.assertRaisesRegex(ValueError,"UNVERIFIED_INDEPENDENT_EVIDENCE"):
+     project(self.raw,valid)
  def test_no_promotion(self):
     self.assertFalse(self.out["g2_qualified"]);self.assertFalse(self.out["g3_qualified"])
     self.assertFalse(self.out["prospective_or_tank_validation"])

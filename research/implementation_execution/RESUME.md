@@ -1,3 +1,12 @@
+## 2026-11-01 — G2 MQ4 strict evidence JSON parser (research-only; verify new CI)
+
+- Resumed from research HEAD `a3cc1d1b9d82f2d0fb58facb0adfe73de1231d9a`. Inspected previous successful 828-test G2 run 41256350389 and current independent evidence `records=[]`; all latest visible workflows on HEAD were successful.
+- Closed a fail-open JSON parsing ambiguity in the research-only pairwise Fréchet audit: default `json.loads` silently accepted duplicate `records` keys, permitting a nonempty earlier value to be overwritten by `[]`. New strict parser rejects duplicate keys at every depth, NaN/Infinity, exponent overflow, and nonobject roots; retains valid reordered JSON.
+- Added 8 deterministic regression tests and Arabic method note `G2_MQ4_STRICT_EVIDENCE_JSON_2026-11-01_AR.md`. Pinned source JSON and pairwise result JSON are unchanged. CI on this new commit must be checked before asserting the new test count.
+- No original raw ZIP rerun or independent Tank physical exposures. Scientific status remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; G2/G3 not qualified. No Stable, Android, firmware or main edits.
+
+---
+
 ## 2026-11-01 — G2 MQ4 pairwise OR/AND sharp overlap bounds (research only; new CI pending)
 
 - Resumed from `e4b50e85dfe60164410332487ffb6189f913e2e1`; checked prior 810/810 G2 tests on run 41252610715 and the latest 11 research-head Actions jobs (all successful). Independent evidence remains `G2_INDEPENDENT_EVIDENCE.json: records=[]`.
