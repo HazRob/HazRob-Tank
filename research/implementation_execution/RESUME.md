@@ -1,3 +1,12 @@
+## 2026-11-01 — MQ4 forward-only support-stratified day-level MAE (research-only; CI pending)
+
+- Resumed from 5d0082a25b7080122e42ee76b2789e6f2abb238a; verified all 11 prior-head GitHub Actions workflows completed successfully, including G2 source/R0 gate #41331066208 (1011/1011 tests). Independent Tank evidence remains records=[].
+- Added source-day support-stratified audit, 12 fail-closed tests, pinned JSON and Arabic methods. It fully rechecks the pinned stability and ranking receipts before deriving new outputs. The original ZIP was NOT rerun.
+- Five external-source days contain >=4-ppm references (7,162 rows; 1,425 positives); two days do not (2,163 rows). Equal-day macro-MAE winner on positive-support days: RIDGE_MQ4_1 (0.808006794023 ppm); on zero-positive days: training-median baseline (0.367200495165 ppm vs RIDGE_MQ4_1 1.147242258513). RIDGE_MQ4_1 beats baseline on 5/7 days, but 1/2 zero-positive days. This is DAY-level, not row-class stratification.
+- No promotion: g2_pass_candidates=0, g2_blocked=80, source_blocked=14; no independent blinded traceably calibrated Tank exposure groups. All changes confined to research/implementation_execution/ on research branch; no Stable, Android, firmware or main modifications. Next: inspect new-head CI, repair failures, then pursue independent prospective Tank holdouts.
+
+---
+
 ## 2026-11-01 — MQ4 forward-only day-vs-pooled MAE ranking audit (CI pending; research-only)
 
 - Resumed from `4f67d02f961699ade5f87f7215b8dd83d2a16134`; verified **11/11** GitHub Actions runs on that prior commit completed successfully (including source/R0 gate #41326480733). The independent Tank evidence ledger remains `records=[]` per the latest reviewed G2 record.

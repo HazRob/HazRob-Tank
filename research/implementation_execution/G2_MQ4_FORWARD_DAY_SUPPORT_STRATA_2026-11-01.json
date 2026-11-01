@@ -1,0 +1,139 @@
+{
+  "schema": "hazrob.g2.mq4-forward-day-support-strata.v1",
+  "source_zip_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_csv_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "source_receipt_schema": "hazrob.g2.mq4-forward-4ppm-source.v1",
+  "baseline": "TRAIN_MEDIAN_REFERENCE",
+  "calendar_days": [
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "strata": {
+    "days_with_reference_positives": {
+      "calendar_days": [
+        "2021-07-25",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30"
+      ],
+      "days": 5,
+      "rows": 7162,
+      "reference_positives": 1425,
+      "equal_day_weight_macro_mae_ppm": {
+        "HGB_MQ4_3_T_RH": 0.981194892617,
+        "RIDGE_MQ4_1": 0.808006794023,
+        "RIDGE_MQ4_3": 0.98193094081,
+        "RIDGE_MQ4_3_T_RH": 1.3328538817,
+        "TRAIN_MEDIAN_REFERENCE": 0.972589270747
+      },
+      "equal_day_weight_mae_ascending": [
+        "RIDGE_MQ4_1",
+        "TRAIN_MEDIAN_REFERENCE",
+        "HGB_MQ4_3_T_RH",
+        "RIDGE_MQ4_3",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "day_rank_sum": {
+        "HGB_MQ4_3_T_RH": 15,
+        "RIDGE_MQ4_1": 11,
+        "RIDGE_MQ4_3": 16,
+        "RIDGE_MQ4_3_T_RH": 17,
+        "TRAIN_MEDIAN_REFERENCE": 16
+      },
+      "day_rank_sum_ascending": [
+        "RIDGE_MQ4_1",
+        "HGB_MQ4_3_T_RH",
+        "RIDGE_MQ4_3",
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_3_T_RH"
+      ]
+    },
+    "days_without_reference_positives": {
+      "calendar_days": [
+        "2021-07-26",
+        "2021-07-31"
+      ],
+      "days": 2,
+      "rows": 2163,
+      "reference_positives": 0,
+      "equal_day_weight_macro_mae_ppm": {
+        "HGB_MQ4_3_T_RH": 1.022489900225,
+        "RIDGE_MQ4_1": 1.147242258513,
+        "RIDGE_MQ4_3": 1.51894486315,
+        "RIDGE_MQ4_3_T_RH": 1.032480452256,
+        "TRAIN_MEDIAN_REFERENCE": 0.367200495165
+      },
+      "equal_day_weight_mae_ascending": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "HGB_MQ4_3_T_RH",
+        "RIDGE_MQ4_3_T_RH",
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3"
+      ],
+      "day_rank_sum": {
+        "HGB_MQ4_3_T_RH": 6,
+        "RIDGE_MQ4_1": 5,
+        "RIDGE_MQ4_3": 10,
+        "RIDGE_MQ4_3_T_RH": 5,
+        "TRAIN_MEDIAN_REFERENCE": 4
+      },
+      "day_rank_sum_ascending": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3_T_RH",
+        "HGB_MQ4_3_T_RH",
+        "RIDGE_MQ4_3"
+      ]
+    }
+  },
+  "paired_calendar_day_mae_vs_baseline": {
+    "HGB_MQ4_3_T_RH": {
+      "days_better_than_baseline": 2,
+      "days_worse_than_baseline": 5,
+      "days_tied_with_baseline": 0,
+      "positive_support_days_better": 2,
+      "zero_positive_support_days_better": 0,
+      "better_on_all_zero_positive_days": false,
+      "better_on_all_seven_days": false
+    },
+    "RIDGE_MQ4_1": {
+      "days_better_than_baseline": 5,
+      "days_worse_than_baseline": 2,
+      "days_tied_with_baseline": 0,
+      "positive_support_days_better": 4,
+      "zero_positive_support_days_better": 1,
+      "better_on_all_zero_positive_days": false,
+      "better_on_all_seven_days": false
+    },
+    "RIDGE_MQ4_3": {
+      "days_better_than_baseline": 3,
+      "days_worse_than_baseline": 4,
+      "days_tied_with_baseline": 0,
+      "positive_support_days_better": 3,
+      "zero_positive_support_days_better": 0,
+      "better_on_all_zero_positive_days": false,
+      "better_on_all_seven_days": false
+    },
+    "RIDGE_MQ4_3_T_RH": {
+      "days_better_than_baseline": 3,
+      "days_worse_than_baseline": 4,
+      "days_tied_with_baseline": 0,
+      "positive_support_days_better": 2,
+      "zero_positive_support_days_better": 1,
+      "better_on_all_zero_positive_days": false,
+      "better_on_all_seven_days": false
+    }
+  },
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "independent_tank_exposures": false,
+  "blinded_prospective": false,
+  "traceable_calibration": false,
+  "limitations": "External observational MQ4 days only; grouping is by whether a calendar day contains any >=4 ppm reference rows, NOT a row-level class-stratified MAE. The 4-ppm cut is a study classification threshold, not a safety limit. Days share training history and repeated measurements; no independence, significance tests, intervals, Tank performance, alarm fitness, or G2/G3 qualification is established."
+}
