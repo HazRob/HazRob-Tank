@@ -1,3 +1,13 @@
+## 2026-11-01 — G2 MQ4 paired-row prediction intake gate (research-only; 873 tests passed; final HEAD CI pending)
+
+- Resumed from `a282f12444f243fb90eae6650e89b9bcb86e2043`. Verified previously queued G2 runs `41264711875` and `41264767745` both completed success; the prior 852-test paired-discordance analysis remains **conditional on common row identity**. Independent physical evidence `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
+- Added research-only `g2_mq4_paired_prediction_intake.py`: fail-closed, SHA-pinned intake of **actual future submitted same-row predictions** for all five MQ4 models, with unique row IDs, source-row hash syntax, per-day fold provenance, exact bool predictions, confusion-matrix and day-count reconciliation for the full 14,186-row source, and explicit future-training flags. No real paired rows are currently bundled or claimed.
+- Added **21 synthetic-only regression tests** in `test_g2_mq4_paired_prediction_intake.py` and Arabic protocol `G2_MQ4_PAIRED_PREDICTION_INTAKE_2026-11-01_AR.md`. The implementation+test CI run [41268903201](https://github.com/HazRob/HazRob-Tank/actions/runs/41268903201) passed **873/873** tests, the 80-technique fail-closed audit, byte-identical replay and publication guard. Follow-up documentation/expectation-fix HEAD run `41268955618` was queued at last check; verify final HEAD CI separately.
+- Critically, even matching all source marginals and syntactically valid hashes does **not** authenticate original raw row bytes, prove source-row identity, establish independent physical exposures, or authorize paired inferential p-values. The intake always marks `original_raw_archive_row_hashes_independently_verified=false`, `paired_inferential_test_authorized=false`, `g2_qualified=false`, `g3_qualified=false`. The 4-ppm threshold is diagnostic only.
+- Scientific state unchanged: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; no Tank reference-calibrated physical holdouts, no G2/G3 promotion. Next empirical work: obtain original row-level source predictions with verifiable archive IDs/hashes and independent blinded physical exposures; do not edit ChemCore Stable, Android, firmware or main.
+
+---
+
 ## 2026-11-01 — G2 MQ4 paired-error non-identifiability bounds (research-only; CI pending)
 
 - Resumed from branch HEAD `ae6633d9e0fec539dd84378de4c34f881ca6a646`. Confirmed the prior 836-test G2 run `41260813661` and 20 visible latest CI runs on that head were successful; independent evidence remains `G2_INDEPENDENT_EVIDENCE.json: records=[]`.
