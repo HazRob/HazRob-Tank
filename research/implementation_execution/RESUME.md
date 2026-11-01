@@ -1,3 +1,13 @@
+## 2026-11-01 — G2 MQ4 original-source expanding forward-only 4-ppm benchmark (final CI pending)
+
+- Resumed from `9d9ebf71a2ac26855bc9328ce98376d442e442cb`; its 20 visible GitHub Actions workflows completed successfully, including G2 source/R0 gate 41311181771. Confirmed independent Tank evidence remains `records=[]`.
+- Re-materialized the original central Library MQ4 ZIP and source benchmark script, verified both SHA256 pins, and performed a new fixed-hyperparameter **expanding forward-only train/calibration/test** experiment on genuine source measurements (not a synthetic simulation). Each fold uses only earlier training days, immediately previous calibration day and next test day, with no future fit data. Seven test days (2021-07-25..31), 9,325 source rows, 1,425 >=4-ppm reference positives across five days; two days have zero positives.
+- Source-only descriptive sensitivity/specificity: RIDGE_MQ4_1 59.51%/81.27% (MAE 0.8221 ppm); RIDGE_MQ4_3 90.46%/70.04% (MAE 1.0555 ppm); RIDGE_MQ4_3_T_RH 67.86%/75.25% (MAE 1.2103 ppm); HGB_MQ4_3_T_RH 64.63%/82.38% (MAE 0.9557 ppm). Training-median baseline MAE 0.8413 ppm, zero sensitivity. Day-level false positives vary sharply; this does not authorize safety alarm performance or Tank ppm certification.
+- Added `g2_mq4_forward_4ppm.py`, six deterministic synthetic/pinned-receipt regression tests, compact SHA-pinned original-source JSON receipt (`5c4ad11c228208522cabe3c83a3b51b541598463ab75d6662a3e6fd1c5fb210a`), and Arabic methods note. Original ZIP was run locally twice with byte-identical compact results; CI does not include/replay the original ZIP. Verify final-head CI and fix failures if any.
+- **No G2/G3 promotion:** `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent evidence `records=[]`. External observational CH4 source is not a traceable independent blinded Tank exposure. All writes confined to `research/implementation_execution/` on research branch; no ChemCore Stable, Android, firmware or main changes. Next: CI verification, day-group robustness and new physically referenced blinded holdouts.
+
+---
+
 ## 2026-11-01 — G2 MQ4 strict chronological original-source holdout (critical zero-positive support; CI pending)
 
 - Resumed from `eb8572d863cc28839fe84989dc9e17e811442eb3`; verified its 11 visible associated CI workflows all completed success, including G2 run 41306481978 (955 tests). Original external-source ZIP and benchmark script retrieved from the user's Library and verified SHA256; benchmark rerun on the real original archive, with prediction/fold output SHA256 matching the earlier pinned reproduction receipt.
