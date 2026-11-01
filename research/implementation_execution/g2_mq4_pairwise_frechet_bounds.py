@@ -66,5 +66,5 @@ if __name__=="__main__":
     parser.add_argument("--evidence",type=Path,default=EVIDENCE)
     parser.add_argument("--output",type=Path,required=True)
     args=parser.parse_args()
-    args.output.write_text(json.dumps(project(args.source.read_bytes(),args.evidence.read_bytes()),sort_keys=True,indent=2)+"\\n",encoding="utf-8")
+    args.output.write_text(json.dumps(project(args.source.read_bytes(),args.evidence.read_bytes()),sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print("Source-only sharp bounds; G2/G3 blocked")
