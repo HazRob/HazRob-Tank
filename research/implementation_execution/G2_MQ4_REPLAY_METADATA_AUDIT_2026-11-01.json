@@ -14,5 +14,9 @@
     "g2_qualified": false,
     "g3_qualified": false
   },
-  "ci_verification": "pending"
+  "ci_verification": "passed_on_implementation_commit",
+  "ci_test_count": 948,
+  "ci_run_id": 41301555969,
+  "ci_run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41301555969",
+  "ci_commit": "1b1c1f71e22de82d4b40d5f9b0d71ee7f7340bd3"
 }
