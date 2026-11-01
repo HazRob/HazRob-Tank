@@ -1,3 +1,13 @@
+## 2026-11-02 — MQ4 original forward receipt immutable SHA256 pin (research only)
+
+- Resumed from `016f7a6bc19f9b710715f1d7fde2509f90636e8a`; confirmed its 21/21 associated GitHub Actions runs completed **success**, including source/R0 gate #41352067164. Independent Tank exposures remain absent; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Identified that receipt-lineage validation recomputed derived reports from the *current* source JSON but did not compare the source bytes against the originally reproduced external MQ4 source receipt. A source-only metadata change could pass all derived-lineage checks, while a coordinated rewrite could move the evidence baseline. Independently recomputed SHA256 of the committed 4,352-byte source JSON and matched the previously documented source-reproduction digest `5c4ad11c228208522cabe3c83a3b51b541598463ab75d6662a3e6fd1c5fb210a`.
+- Pinned this exact source-receipt SHA256 in `g2_mq4_receipt_lineage_ci.py`, after unsupported-claim validation and before derived recomputation. Added four deterministic regressions (source digest, metadata rewrite, byte re-encoding, protocol relabel), and adjusted the explicit-false claim test to check the claim guard directly without permitting source receipt mutation. Arabic method: `G2_MQ4_SOURCE_RECEIPT_BYTE_PIN_2026-11-02_AR.md`.
+- On implementation SHA `de1c479d03f90e74adfa4c313f0992e4bb8c9c5a`, G2 Actions [#41357065720](https://github.com/HazRob/HazRob-Tank/actions/runs/41357065720) completed **success: 1050/1050 offline tests**, full 80-technique fail-closed audit, deterministic triage replay and publication guard. Final documentation HEAD must be verified separately; do not infer all workflow conclusions from this one run.
+- No original MQ4 ZIP replay this iteration and no independent, traceably calibrated, blinded Tank exposure data. No scientific promotion, no Stable/Android/firmware/main changes. Next: verify all final-head CI and fix any failures, then obtain independent physical Tank exposure groups with documented reference calibration and grouped holdouts.
+
+---
+
 ## 2026-11-02 — MQ4 nested scientific-claim guard and empty-path fail-closed handling (research only)
 
 - Resumed from `f0e93a8a0f1ea3c0755adb9a107470c3e1d4d802`. Verified all 11 associated GitHub Actions workflows completed **success**, including G2 source/R0 gate [#41346353637](https://github.com/HazRob/HazRob-Tank/actions/runs/41346353637). No evidence of scientific promotion; last documented state `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank exposure ledger `records=[]`.
