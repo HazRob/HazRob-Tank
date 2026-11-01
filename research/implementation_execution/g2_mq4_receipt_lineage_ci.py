@@ -20,6 +20,9 @@ FILENAMES = {
     "ranking": "G2_MQ4_FORWARD_DAY_RANKING_2026-11-01.json",
     "support": "G2_MQ4_FORWARD_DAY_SUPPORT_STRATA_2026-11-01.json",
 }
+SOURCE_RECEIPT_SHA256 = "5c4ad11c228208522cabe3c83a3b51b541598463ab75d6662a3e6fd1c5fb210a"
+# Original externally sourced forward-only compact receipt, reproduced twice
+# from the central source archive. Pin its exact bytes, not merely its schema.
 NO_APPROVAL = ("g2_qualified", "g3_qualified",
                "independent_tank_exposures", "blinded_prospective",
                "traceable_calibration")
@@ -82,6 +85,8 @@ def audit(paths=None):
             raise ValueError("MQ4_RECEIPT_UNSUPPORTED_PROMOTION:" + name)
     if obj["source"].get("threshold_4ppm_is_safety_limit") is not False:
         raise ValueError("MQ4_RECEIPT_SAFETY_THRESHOLD_CLAIM")
+    if hashlib.sha256(raw["source"]).hexdigest() != SOURCE_RECEIPT_SHA256:
+        raise ValueError("MQ4_RECEIPT_SOURCE_SHA256_MISMATCH")
     if analyze(obj["source"]) != obj["stability"]:
         raise ValueError("MQ4_RECEIPT_STABILITY_LINEAGE_MISMATCH")
     if rank_days(obj["source"], obj["stability"]) != obj["ranking"]:
