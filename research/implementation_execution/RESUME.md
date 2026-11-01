@@ -1,3 +1,12 @@
+## 2026-11-01 — G2 MQ4 three-way historical source reconciliation (research-only; new CI pending)
+
+- Resumed from `d746771b4c24d8fcc04dc67ba1adf5fd83ebcfce`; verified final-head G2 Actions 41280851249 and other visible runs completed successfully (891/891 tests previously verified). Independent physical evidence remains `records=[]`.
+- Added `g2_mq4_three_way_source_reconciliation.py`, 12 deterministic synthetic-mutation regressions, pinned JSON result and Arabic methods note. The fail-closed gate cross-reconciles the historical original ZIP raw-replay report, SHA-pinned central Library benchmark-script protocol, pinned source summary and empty independent-evidence record. It checks 14,186 source rows, 11 calendar days, strict-minute segments, 120-minute cross-midnight lag context and the 11 declared calibration/training folds; rejects silent report/protocol drift or unsupported qualification claims.
+- Source protocol still has 10/11 folds with future training, 1/11 with future calibration; only 2021-07-31 has no future fit data in the *declared* protocol. This does not establish prospective validity, paired row identity or Tank exposure independence. Original ZIP was **not** replayed in this iteration. All G2/G3 flags remain false, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Research-only implementation and documentation commit `063b6d6e4cf07af55e2ff6101674ddb26384415a`; new-head GitHub Actions G2 run `41284487743` was queued at initial check. Verify CI and repair failures before asserting the expected 903-test suite passed. No ChemCore Stable, Android, firmware or main changes.
+
+---
+
 ## 2026-11-01 — G2 MQ4 pinned per-day/source-fold reconciliation (891/891 G2 CI verified)
 
 - Resumed from `36e31b1cddb7a32378c93c2f3a81b3d54013eaeb`; verified prior G2 Actions 41276560741 completed success (884/884), with independent physical evidence `records=[]`.
