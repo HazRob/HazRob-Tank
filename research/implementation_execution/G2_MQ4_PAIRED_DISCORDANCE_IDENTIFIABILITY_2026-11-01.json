@@ -1,0 +1,308 @@
+{
+  "schema": "hazrob.g2.mq4-paired-discordance-identifiability.v1",
+  "source_library_summary_sha256": "0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea",
+  "positive_rows": 2346,
+  "negative_rows": 11840,
+  "threshold_ppm": 4,
+  "threshold_is_safety_limit": false,
+  "common_row_identity_verified": false,
+  "conditional_same_row_universe": true,
+  "pairwise_prediction_rows_available": false,
+  "mcnemar_test_performed": false,
+  "independent_physical_evidence_records": 0,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "pairs": [
+    {
+      "models": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_1"
+      ],
+      "positive_row_disagreement_range": [
+        237,
+        237
+      ],
+      "negative_row_disagreement_range": [
+        799,
+        799
+      ],
+      "total_disagreement_range": [
+        1036,
+        1036
+      ],
+      "a_wrong_b_correct_range": [
+        237,
+        237
+      ],
+      "a_correct_b_wrong_range": [
+        799,
+        799
+      ],
+      "b_minus_a_total_errors": 562,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    },
+    {
+      "models": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_3"
+      ],
+      "positive_row_disagreement_range": [
+        644,
+        644
+      ],
+      "negative_row_disagreement_range": [
+        1174,
+        1174
+      ],
+      "total_disagreement_range": [
+        1818,
+        1818
+      ],
+      "a_wrong_b_correct_range": [
+        644,
+        644
+      ],
+      "a_correct_b_wrong_range": [
+        1174,
+        1174
+      ],
+      "b_minus_a_total_errors": 530,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    },
+    {
+      "models": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "positive_row_disagreement_range": [
+        1302,
+        1302
+      ],
+      "negative_row_disagreement_range": [
+        787,
+        787
+      ],
+      "total_disagreement_range": [
+        2089,
+        2089
+      ],
+      "a_wrong_b_correct_range": [
+        1302,
+        1302
+      ],
+      "a_correct_b_wrong_range": [
+        787,
+        787
+      ],
+      "b_minus_a_total_errors": -515,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    },
+    {
+      "models": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "HGB_MQ4_3_T_RH"
+      ],
+      "positive_row_disagreement_range": [
+        533,
+        533
+      ],
+      "negative_row_disagreement_range": [
+        1044,
+        1044
+      ],
+      "total_disagreement_range": [
+        1577,
+        1577
+      ],
+      "a_wrong_b_correct_range": [
+        533,
+        533
+      ],
+      "a_correct_b_wrong_range": [
+        1044,
+        1044
+      ],
+      "b_minus_a_total_errors": 511,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3"
+      ],
+      "positive_row_disagreement_range": [
+        407,
+        881
+      ],
+      "negative_row_disagreement_range": [
+        375,
+        1973
+      ],
+      "total_disagreement_range": [
+        782,
+        2854
+      ],
+      "a_wrong_b_correct_range": [
+        407,
+        1443
+      ],
+      "a_correct_b_wrong_range": [
+        375,
+        1411
+      ],
+      "b_minus_a_total_errors": -32,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "positive_row_disagreement_range": [
+        1065,
+        1539
+      ],
+      "negative_row_disagreement_range": [
+        12,
+        1586
+      ],
+      "total_disagreement_range": [
+        1077,
+        3125
+      ],
+      "a_wrong_b_correct_range": [
+        1077,
+        2101
+      ],
+      "a_correct_b_wrong_range": [
+        0,
+        1024
+      ],
+      "b_minus_a_total_errors": -1077,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_1",
+        "HGB_MQ4_3_T_RH"
+      ],
+      "positive_row_disagreement_range": [
+        296,
+        770
+      ],
+      "negative_row_disagreement_range": [
+        245,
+        1843
+      ],
+      "total_disagreement_range": [
+        541,
+        2613
+      ],
+      "a_wrong_b_correct_range": [
+        296,
+        1332
+      ],
+      "a_correct_b_wrong_range": [
+        245,
+        1281
+      ],
+      "b_minus_a_total_errors": -51,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_3",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "positive_row_disagreement_range": [
+        658,
+        1946
+      ],
+      "negative_row_disagreement_range": [
+        387,
+        1961
+      ],
+      "total_disagreement_range": [
+        1045,
+        3907
+      ],
+      "a_wrong_b_correct_range": [
+        1045,
+        2476
+      ],
+      "a_correct_b_wrong_range": [
+        0,
+        1431
+      ],
+      "b_minus_a_total_errors": -1045,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_3",
+        "HGB_MQ4_3_T_RH"
+      ],
+      "positive_row_disagreement_range": [
+        111,
+        1177
+      ],
+      "negative_row_disagreement_range": [
+        130,
+        2218
+      ],
+      "total_disagreement_range": [
+        241,
+        3395
+      ],
+      "a_wrong_b_correct_range": [
+        130,
+        1707
+      ],
+      "a_correct_b_wrong_range": [
+        111,
+        1688
+      ],
+      "b_minus_a_total_errors": -19,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_3_T_RH",
+        "HGB_MQ4_3_T_RH"
+      ],
+      "positive_row_disagreement_range": [
+        769,
+        1835
+      ],
+      "negative_row_disagreement_range": [
+        257,
+        1831
+      ],
+      "total_disagreement_range": [
+        1026,
+        3666
+      ],
+      "a_wrong_b_correct_range": [
+        0,
+        1320
+      ],
+      "a_correct_b_wrong_range": [
+        1026,
+        2346
+      ],
+      "b_minus_a_total_errors": 1026,
+      "paired_predictions_available": false,
+      "paired_statistical_test_permitted": false
+    }
+  ],
+  "limitations": "Sharp hypothetical binary-error disagreement bounds from pinned pooled marginals only. Equal counts and 11 reported days do not prove paired row identities; bounds require a common labelled row universe. No observed discordances, no McNemar p-values, no independent exposures. Retrospective 10/11 folds train on future dates; 4 ppm is not an occupational safety limit."
+}
