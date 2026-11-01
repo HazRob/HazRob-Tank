@@ -15,8 +15,8 @@
   "apk_built": false,
   "hardware_test_pass": false,
   "latest_approved_stable_confirmed": false,
-  "last_verified_sha": "af3117ddf1af050c80ff86606a43794addf94a3e",
-  "next_action": "G00 record exact V5/V7 source inputs/outputs and create parity tests on V8 branch only",
+  "last_verified_sha": "8f887a28e41a33f2878bbef68926e1de28e9a97c",
+  "next_action": "G00: inspect remaining V5↔V7 inference and report contracts; then R01 run old-engine parity tests on V8 only",
   "tasks": [
     {
       "id": "G00",
@@ -27,7 +27,7 @@
       "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
       "verified_commit": null,
       "action_run": null,
-      "notes": null
+      "notes": "Pinned V5/V7 instant-analyzer Git blob SHAs in docs/implementation/evidence/V8-SOURCE-IDENTITY-2026-11-02.json; full reference manifest and parity tests pending"
     },
     {
       "id": "R01",
