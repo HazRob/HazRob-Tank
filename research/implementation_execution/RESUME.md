@@ -1,3 +1,12 @@
+## 2026-11-01 — G2 MQ4 paired-error non-identifiability bounds (research-only; CI pending)
+
+- Resumed from branch HEAD `ae6633d9e0fec539dd84378de4c34f881ca6a646`. Confirmed the prior 836-test G2 run `41260813661` and 20 visible latest CI runs on that head were successful; independent evidence remains `G2_INDEPENDENT_EVIDENCE.json: records=[]`.
+- Added source-SHA-verified exact integer sharp disagreement bounds for **all 10 pairs** of the five retrospective MQ4 4-ppm models. Equal denominators do not prove row identity: no paired predictions, no McNemar p-value or observed paired advantage is claimed. For RIDGE_MQ4_3_T_RH vs HGB_MQ4_3_T_RH, conditional total disagreement range is **1026–3666 rows**; error discordance direction remains unobserved.
+- Added research-only `g2_mq4_paired_discordance_identifiability.py`, 16 deterministic/fail-closed tests (including exhaustive three-row sharpness), pinned JSON `G2_MQ4_PAIRED_DISCORDANCE_IDENTIFIABILITY_2026-11-01.json`, Arabic methods `G2_MQ4_PAIRED_DISCORDANCE_IDENTIFIABILITY_2026-11-01_AR.md`. CI run `41264711875` was queued at the last check; verify completion and fix any failures before calling the 852-test suite passed.
+- Scientific status unchanged: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`; physical independent records `[]`. Original source raw ZIP was not replayed in this iteration; pinned source summary is retrospective (10/11 folds train on later dates). Next empirical step requires same-row predictions with verified IDs and independent blinded physical group holdouts. No Stable, Android, firmware or main changes.
+
+---
+
 ## 2026-11-01 — G2 MQ4 strict evidence JSON parser (research-only; verify new CI)
 
 - Resumed from research HEAD `a3cc1d1b9d82f2d0fb58facb0adfe73de1231d9a`. Inspected previous successful 828-test G2 run 41256350389 and current independent evidence `records=[]`; all latest visible workflows on HEAD were successful.
