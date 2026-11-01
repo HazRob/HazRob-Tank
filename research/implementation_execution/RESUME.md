@@ -1,3 +1,13 @@
+## 2026-11-01 — G2 MQ4 declared fold-partition gate (research-only; final CI pending)
+
+- Resumed from the 873-test paired-prediction intake checkpoint; verified G2 Actions runs 41268903201 and 41268955618 completed successfully. Independent physical evidence remains `G2_INDEPENDENT_EVIDENCE.json: records=[]`.
+- Tightened full-source MQ4 intake with `validate_full_fold_partition`: 11 distinct test days; nine distinct training days from that same universe per fold; test day excluded; exactly one residual declared calibration day. Rejects unknown days, duplicates, missing folds and invalid train partitions. Preserved prior `INCOMPLETE_SOURCE_ROWS` rejection ordering.
+- Added **7 synthetic-only tests** to `test_g2_mq4_paired_prediction_intake.py` and documented limitations in `G2_MQ4_PAIRED_PREDICTION_INTAKE_2026-11-01_AR.md`. Expected full suite: 880 tests, **not yet asserted passed until final-head CI confirms**.
+- The inferred calibration day and all row hashes remain unverified declarations. No original raw ZIP replay, actual paired rows, independent reference-calibrated physical holdouts, or G2/G3 promotion. Scientific status remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Changes restricted to `research/implementation_execution/` on research branch. No ChemCore Stable, Android, firmware or main edits. Next: inspect final HEAD Actions, fix failures, then pursue source-authenticated per-row predictions and independent blinded physical exposure evidence.
+
+---
+
 ## 2026-11-01 — G2 MQ4 paired-row prediction intake gate (research-only; 873 tests passed; final HEAD CI pending)
 
 - Resumed from `a282f12444f243fb90eae6650e89b9bcb86e2043`. Verified previously queued G2 runs `41264711875` and `41264767745` both completed success; the prior 852-test paired-discordance analysis remains **conditional on common row identity**. Independent physical evidence `G2_INDEPENDENT_EVIDENCE.json` remains `records=[]`.
