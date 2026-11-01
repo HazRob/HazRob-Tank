@@ -1,3 +1,13 @@
+## 2026-11-01 — G2 MQ4 strict chronological original-source holdout (critical zero-positive support; CI pending)
+
+- Resumed from `eb8572d863cc28839fe84989dc9e17e811442eb3`; verified its 11 visible associated CI workflows all completed success, including G2 run 41306481978 (955 tests). Original external-source ZIP and benchmark script retrieved from the user's Library and verified SHA256; benchmark rerun on the real original archive, with prediction/fold output SHA256 matching the earlier pinned reproduction receipt.
+- NEW scientific finding: only the 2021-07-31 source fold satisfies training **and** calibration preceding test (9 training days 2021-07-21..29, calibration 2021-07-30). Ten other folds have future training and one has future calibration. The eligible day has **723/723 negative reference rows at the diagnostic 4-ppm threshold, zero positives**; sensitivity is undefined, not 100%. All four learned models had worse day-only MAE than the training-median baseline; Ridge/HGB models had 337–613/723 or 234/723 false positives depending on model. This is an external source-only temporal stress test, not Tank G2 validation.
+- Added `g2_mq4_chronological_holdout_audit.py`, 14 synthetic deterministic tests, SHA-pinned JSON receipt, and Arabic methods note. The original-source audit was run twice with byte-identical output. CI only runs synthetic and pinned-receipt checks; original ZIP is **not** in CI. Verify final-head CI before claiming 969/969 tests passed; fix failures if any.
+- G2 blockers: no multi-day temporally valid ≥4-ppm positive holdouts, no independent blinded Tank exposures, no traceable instrument calibration, no Tank runtime model evidence. `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent evidence `records=[]`. No G2/G3 promotion; research branch only, no Stable/Android/firmware/main changes.
+- Reproduce with original Library ZIP/script and the new chronological audit script; full details in `G2_MQ4_CHRONOLOGICAL_HOLDOUT_2026-11-01_AR.md`.
+
+---
+
 ## 2026-11-01 — Original MQ4 source paired-reproduction CI verified (955/955)
 
 - Research implementation SHA `519b5458175b212f8450b4b49ab12e7f953b134b`: all **21/21** associated GitHub Actions workflows completed **success**, including [G2 source/R0 evidence gate #41306362405](https://github.com/HazRob/HazRob-Tank/actions/runs/41306362405), whose log explicitly reports **955/955 tests OK** and seven new pinned-receipt synthetic regressions.
