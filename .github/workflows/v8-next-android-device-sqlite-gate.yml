@@ -1,0 +1,88 @@
+name: HazRob Tank V8 Next SQLite on Android 12 emulator
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'android/app/src/androidTest/java/com/servoc/app/chemcore/nextintegration/**'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/nextintegration/**'
+      - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
+      - '.github/workflows/v8-next-android-device-sqlite-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sqlite-v14-to-v15-android12:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay audited V8 code and device test in ephemeral workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          mkdir -p source/app/src/androidTest/java
+          cp -a tank/android/app/src/androidTest/java/. source/app/src/androidTest/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          if test -d tank/android/app/src/main/assets; then mkdir -p source/app/src/main/assets; cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/; fi
+          cat >> source/app/build.gradle <<'EOF'
+
+          android {
+              defaultConfig {
+                  testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+              }
+          }
+          dependencies {
+              androidTestImplementation 'androidx.test:runner:1.6.2'
+              androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+          }
+          EOF
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android API 31 and build tools
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-31" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Run real Android SQLite migration and immutable decision replay, never robot G3
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          disable-animations: true
+          working-directory: source
+          script: gradle --no-daemon :app:connectedDebugAndroidTest --stacktrace
+      - name: Document Android scope
+        if: always()
+        run: |
+          mkdir -p v8-android-test-scope
+          echo "runner=${{ github.run_id }}" > v8-android-test-scope/scope.txt
+          echo "Android API=31; ephemeral emulator; tests V14->V15 and stored UNKNOWN replay" >> v8-android-test-scope/scope.txt
+          echo "No physical Tank data, UI coverage or gas G3 test performed" >> v8-android-test-scope/scope.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HazRob-Tank-V8-Next-Android12-DB-Tests
+          path: |
+            v8-android-test-scope/
+            source/app/build/outputs/androidTest-results/
+            source/app/build/reports/androidTests/
+          retention-days: 45
+          if-no-files-found: warn
