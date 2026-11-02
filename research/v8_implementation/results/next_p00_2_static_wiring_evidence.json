@@ -1,0 +1,134 @@
+{
+  "schema": "hazrob.v8.next.p00_2.static_wiring/1",
+  "date": "2026-11-02",
+  "task_id": "P00.2",
+  "audit_type": "STATIC_CLASS_CALLSITE_SCAN_WITH_EXISTING_80_LEDGER",
+  "techniques_total": 80,
+  "counts": {
+    "SOURCE_CLASS_PRESENT_RUNTIME_NOT_PROVEN": 67,
+    "CLASS_CALLSITE_PRESENT_METHOD_UNVERIFIED": 11,
+    "NOT_PORTED": 2
+  },
+  "source_ledger_blob": "e11e8df02fc4529635d05251cffcd568b700b748",
+  "source_files_listing": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/AdaptationEvidenceResearchV6.java",
+      "sha": "651108ef9d3fe5760b1d24f36e85beb9177cdf79"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/AlternativeCurveCatalog.java",
+      "sha": "8cf9b3b28f5424522e1cfb501f3828cc999abd99"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/CalibrationResearchV6.java",
+      "sha": "e2049c561df277eeb939fc26c8e511c378a7d160"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/ChemCoreTankV6.java",
+      "sha": "41bf19235fc2d50298f7112cbbdd08898b900a4e"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/ClassicalLearningV6.java",
+      "sha": "54a7a0490a9713c910fcd3f4b851114a89881ae9"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/CleanAirReferenceStatisticsV14.java",
+      "sha": "1674bbe1ff85efe4d201e292778363909d9c61c5"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/CleanAirResponseGateV6.java",
+      "sha": "2e2ad9fadf3d757ec288830335610cd3d6fc281d"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/Engine.java",
+      "sha": "4c63995cbdd8c214e922bed91496740f053742c9"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/EvidenceConflictV6.java",
+      "sha": "3a7e07cbc2e60501a88b8e6688d7b6c6de43c3e6"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/FingerprintEngineV6.java",
+      "sha": "00f8993158446fd29af10058d614866912b02934"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/GasFingerprintCatalogV6.java",
+      "sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/MeasurementDiagnosticsV6.java",
+      "sha": "e2e4c77a7e3e9af065a8c48289d4d5d8a3424989"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/OpenSetResearchV6.java",
+      "sha": "0fd0db8d2e00e6f732edc04a9a435c0dbf8e56a0"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/ResearchDiagnosticsV6.java",
+      "sha": "8d4caea4f095f1b913dec8f361b6d472e5844eb5"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/SignalFeaturesV6.java",
+      "sha": "5d13bdd3d0f1ab91d926c1561e29596826c0cb3c"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceCatalog.java",
+      "sha": "207088bd46ef14ccce6b5fb81f6d9f6933802663"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceNumericsV6.java",
+      "sha": "0481d58389f4c953589bbf3eeec35032b1b9e959"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceValidationV6.java",
+      "sha": "ba5bc86b37b542743a331bad5a41cbc12a983e80"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/SupervisedLearningResearchV6.java",
+      "sha": "eba278eef1908a51fe15fcffa0025a908e1fc0bc"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/TemporalNeuralResearchV6.java",
+      "sha": "3b9c2cd21c56a32a854c584dc0e5f33e67266566"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/TemporalSpatialResearchV6.java",
+      "sha": "a13a3ed0704f8c5d5079ce8c5f47c1a7ec60a18b"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/V6ScientificThresholdPolicy.java",
+      "sha": "9aeca48d31d3294fe94fa3d5d4c02fe349199d5b"
+    }
+  ],
+  "traced_entrypoints": [
+    "ChemCoreTankV6",
+    "Engine",
+    "FingerprintEngineV6",
+    "EvidenceConflictV6",
+    "SourceCatalog",
+    "GasFingerprintCatalogV6",
+    "CleanAirResponseGateV6",
+    "TankV6TelemetryAdapter",
+    "TankInstantAnalyzer",
+    "CompletedSessionChemCoreAnalyzer"
+  ],
+  "path_observations": [
+    "ChemCoreTankV6.analyze invokes Engine.analyze and FingerprintEngineV6.match, plus EvidenceConflictV6.compare",
+    "Engine uses SourceCatalog; FingerprintEngineV6 uses GasFingerprintCatalogV6",
+    "TankV6TelemetryAdapter invokes ChemCoreTankV6.analyze and CleanAirResponseGateV6.assess",
+    "TankInstantAnalyzer maps source_curve_hypotheses to legacyId<144 rather than core rank",
+    "CompletedSessionChemCoreAnalyzer contains call to ChemCoreInferenceEngine.analyze on a historical path"
+  ],
+  "limitations": [
+    "A class callsite proves a class is referenced in sampled source, NOT that every technique ID mapped to that class was executed",
+    "No JVM or Android runtime execution happened in this audit",
+    "Not all Android callsites were traversed; true activation state of individual methods remains UNKNOWN",
+    "The 80-row matrix preserves the original claims as historic and does not promote to G1/G2/G3"
+  ],
+  "all_source_modules_missing": [],
+  "unported_ids": [
+    "01.4",
+    "09.6"
+  ],
+  "next_action": "P00.2 remaining: method-level reachability and real invocation tests for all technique IDs; then P00.3 full V8 runtime data flow"
+}
