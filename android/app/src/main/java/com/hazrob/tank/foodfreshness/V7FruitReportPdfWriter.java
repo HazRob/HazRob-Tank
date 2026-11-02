@@ -83,7 +83,7 @@ public final class V7FruitReportPdfWriter {
     }
     private static void header(Canvas c,Context ctx,int n,int total,String timestamp){
         V7ReportLayoutKit.drawHeader(c,ctx,false,
-            "تقرير بصمة الفواكه","Fruit Research Fingerprint",
+            "تقرير القياس البحثي للفواكه","Fruit Direct Measurement Research",
             V7ReportLayoutKit.missing(timestamp));
         V7ReportLayoutKit.drawFooter(c,false,n,total);
     }
