@@ -97,6 +97,50 @@ class AuditTests(unittest.TestCase):
         issues = audit_record(x)["issues"]
         self.assertFalse(any(i.startswith("CLASSIFICATION_") for i in issues))
 
+    def test_bounded_classification_families_reject_invalid_scores(self):
+        names = ("balanced_accuracy", "precision", "recall", "specificity",
+                 "sensitivity", "f1_score", "roc_auc",
+                 "positive_predictive_value", "negative_predictive_value",
+                 "false_positive_rate", "false_negative_rate")
+        for name in names:
+            with self.subTest(name=name):
+                x = eligible_fixture()
+                x.update(metric_name=name, metric_value=1.0001,
+                         baseline_metric_value=-0.0001)
+                issues = audit_record(x)["issues"]
+                self.assertIn("BOUNDED_CLASSIFICATION_METRIC_OUT_OF_RANGE:metric_value", issues)
+                self.assertIn("BOUNDED_CLASSIFICATION_METRIC_OUT_OF_RANGE:baseline_metric_value", issues)
+
+    def test_bounded_classification_families_reject_invalid_intervals(self):
+        for name in ("precision", "recall", "f1_score", "roc_auc", "balanced_accuracy"):
+            with self.subTest(name=name):
+                x = eligible_fixture()
+                x["metric_name"] = name
+                x["confidence_interval"].update(low=-0.01, high=1.01)
+                issues = audit_record(x)["issues"]
+                self.assertIn("BOUNDED_CLASSIFICATION_INTERVAL_OUT_OF_RANGE:low", issues)
+                self.assertIn("BOUNDED_CLASSIFICATION_INTERVAL_OUT_OF_RANGE:high", issues)
+
+    def test_bounded_classification_endpoints_are_permitted(self):
+        for name in ("precision", "recall", "f1_score", "roc_auc"):
+            with self.subTest(name=name):
+                x = eligible_fixture()
+                x.update(metric_name=name, metric_value=0.0, baseline_metric_value=1.0)
+                x["confidence_interval"].update(low=0.0, high=1.0)
+                issues = audit_record(x)["issues"]
+                self.assertFalse(any(s.startswith("BOUNDED_CLASSIFICATION_") for s in issues))
+                self.assertEqual(audit_record(x)["status"], "G2_BLOCKED")
+
+    def test_unbounded_metrics_keep_their_own_domains(self):
+        for name, value in (("rmse", 2.5), ("mae", 3.5),
+                            ("matthews_corrcoef", -0.5)):
+            with self.subTest(name=name):
+                x = eligible_fixture()
+                x.update(metric_name=name, metric_value=value, baseline_metric_value=value)
+                x["confidence_interval"].update(low=value-0.1, high=value+0.1)
+                issues = audit_record(x)["issues"]
+                self.assertFalse(any(s.startswith("BOUNDED_CLASSIFICATION_") for s in issues))
+
     def test_raw_hash_must_be_verified(self):
         x=eligible_fixture();x["raw_sha256_verified_from_bytes"]=False
         self.assertIn("RAW_SOURCE_BYTES_NOT_SHA_VERIFIED",audit_record(x)["issues"])
