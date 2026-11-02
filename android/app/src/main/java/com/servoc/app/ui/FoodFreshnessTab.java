@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.hazrob.tank.foodfreshness.FoodFreshnessEngine;
 import com.hazrob.tank.foodfreshness.FoodFreshnessPdf;
 import com.hazrob.tank.foodfreshness.FoodReferenceCatalog;
+import com.hazrob.tank.foodfreshness.FoodMeasurementDecision;
 import com.hazrob.tank.foodfreshness.meat.BeefResearchEngine;
 import com.hazrob.tank.foodfreshness.meat.BeefResearchPdf;
 import com.hazrob.tank.foodfreshness.meat.BeefResearchCatalog;
@@ -66,6 +67,7 @@ public final class FoodFreshnessTab {
     private String reportId="";
     private FoodFreshnessEngine.Result completed;
     private BeefResearchEngine.Result meatCompleted;
+    private FoodMeasurementDecision.Decision interpreted;
     private Map<String,Double> frozenReadings;
 
     public FoodFreshnessTab(Context c,HazRobHost h){
@@ -75,13 +77,13 @@ public final class FoodFreshnessTab {
         root.setPadding(UiKit.dp(c,10),UiKit.dp(c,10),UiKit.dp(c,10),UiKit.dp(c,22));
         root.setBackgroundColor(0xFFF7F8FA);
         view.addView(root);
-        root.addView(UiKit.title(c,"🍎 فحص نضارة الأغذية"),UiKit.full(c));
-        root.addView(UiKit.title(c,"طريقة القياس"),UiKit.full(c));
+        root.addView(UiKit.title(c,"🥩🍎 القياس المباشر لجودة الأغذية"),UiKit.full(c));
+        root.addView(UiKit.title(c,"اختر مسار الفحص المستقل"),UiKit.full(c));
         modeChoice=new Spinner(c);
         modeChoice.setAdapter(UiKit.lightOptions(c,new String[]{"🥩 اللحوم","🍎 الفواكه"}));
         UiKit.outlinedSpinner(modeChoice);
         root.addView(modeChoice,UiKit.full(c));
-        TextView note=UiKit.small(c,"قياس آني فردي مستقل عن ChemCore للغازات. نقارن بصمة 8 حساسات MQ مع 59 عينة بحثية. التشابه ليس اختبارًا ميكروبيًا أو شهادة لصلاحية الغذاء.");
+        TextView note=UiKit.small(c,"فحص مباشر لا يتطلب إنشاء بصمة أو تدريبًا من المستخدم. يحلل 180 ثانية من قراءات MQ ويقارنها بنتائج الدراسات الأصلية؛ محرك اللحوم مستقل عن محرك الفواكه، وكلاهما منفصل تمامًا عن ChemCore Next للغازات. هذه نتائج بحثية ولا تثبت صلاحية الأكل.");
         note.setTextColor(0xFF243247);root.addView(note,UiKit.full(c));
         protocolHint=UiKit.small(c,"");
         protocolHint.setTextColor(0xFF172F4A);
@@ -95,9 +97,9 @@ public final class FoodFreshnessTab {
         UiKit.outlinedSpinner(foodChoice);
         root.addView(foodChoice,UiKit.full(c));
         LinearLayout row=UiKit.hbox(c);
-        start=UiKit.button(c,"▶ بدء الفحص");
-        finish=UiKit.button(c,"■ إلغاء الفحص قبل الاكتمال");
-        export=UiKit.button(c,"PDF التقرير");
+        start=UiKit.button(c,"▶ ابدأ قياس العينة");
+        finish=UiKit.button(c,"■ إلغاء");
+        export=UiKit.button(c,"تقرير PDF");
         finish.setEnabled(false);export.setEnabled(false);
         row.addView(start,UiKit.weight(1));
         row.addView(finish,UiKit.weight(1));
@@ -118,10 +120,10 @@ public final class FoodFreshnessTab {
         results.setTextIsSelectable(true);
         results.setBackground(UiKit.outline(c,Color.WHITE,0xFFA3ABB7));
         root.addView(results,UiKit.full(c));
-        root.addView(UiKit.title(c,"مخطط استجابة الحساسات أثناء الفحص"),UiKit.full(c));
+        root.addView(UiKit.title(c,"منحنيات استجابة الحساسات المقاسة خلال 180 ثانية"),UiKit.full(c));
         signalGraph=new PatternGraph(c,false);
         root.addView(signalGraph,new LinearLayout.LayoutParams(-1,UiKit.dp(c,208)));
-        comparisonTitle=UiKit.title(c,"مخطط مقارنة الدراسة");
+        comparisonTitle=UiKit.title(c,"منحنيات الدراسة المرجعية وتفسير القياس");
         root.addView(comparisonTitle,UiKit.full(c));
         dayGraph=new PatternGraph(c,true);
         root.addView(dayGraph,new LinearLayout.LayoutParams(-1,UiKit.dp(c,208)));
@@ -129,7 +131,7 @@ public final class FoodFreshnessTab {
             public void onItemSelected(android.widget.AdapterView<?> parent,View option,int index,long id){
                 if(capturing)return;
                 operationMode=index==0?"MEAT":"FRUIT";
-                completed=null;meatCompleted=null;frozenReadings=null;reportId="";
+                completed=null;meatCompleted=null;interpreted=null;frozenReadings=null;reportId="";
                 export.setEnabled(false);
                 results.setText("ابدأ فحصًا جديدًا بعد اختيار نوع العينة.");
                 boolean meat="MEAT".equals(operationMode);
@@ -137,8 +139,8 @@ public final class FoodFreshnessTab {
                 comparisonTitle.setText(meat?
                     "مقارنة الفئات البحثية الأربع للحوم":"التشابه مع أيام دراسة الفواكه");
                 protocolHint.setText(meat?
-                    "اللحوم: نموذج مستقل للحوم البقرية، مبني على 10,800 قراءة في دراسة Wijaya 2018، بسبعة حساسات متطابقة الطراز. قياس 3 دقائق استكشافي وليس دورة الدراسة الأصلية البالغة 36 ساعة أو فحصًا ميكروبيًا.":
-                    "الفواكه: مقارنة بصمة ثمانية حساسات مع 59 مرجعًا؛ زمن اللقطة 180 ثانية وعينات الدراسة متباعدة 24 ساعة. درجة التشابه ليست حكمًا بصلاحية الغذاء.");
+                    "اللحوم: قياس مباشر لعينات لحم البقر وفق المرجع Wijaya 2018 (10,800 سجل، 7 MQ). تعرض أقرب فئة مرجعية ومؤشر الفصل عن الفئة الثانية؛ اختبار TS5 المتوازن 38.88% فقط، فلا يصدر حكم صلاحية.":
+                    "الفواكه: قياس مباشر ومطابقة 54 نمطًا غذائيًا من أصل 59، وحساب الموضع على منحنى أيام الدراسة D1–D5 حيث تتوفر 5 نقاط. الموضع مرجعي وليس عمرًا أو درجة نضج أو سلامة ميكروبية.");
                 dayGraph.invalidate();
             }
             public void onNothingSelected(android.widget.AdapterView<?> parent){}
@@ -156,7 +158,7 @@ public final class FoodFreshnessTab {
             host.showToast("يلزم اتصال حي بحساسات MQ لبدء فحص الغذاء");return;
         }
         operationMode=modeChoice.getSelectedItemPosition()==0?"MEAT":"FRUIT";
-        capturing=true;completed=null;meatCompleted=null;frozenReadings=null;reportId="";
+        capturing=true;completed=null;meatCompleted=null;interpreted=null;frozenReadings=null;reportId="";
         sum.clear();counts.clear();lastCycle.clear();signalHistory.clear();
         snapshots=0;started=SystemClock.elapsedRealtime();lastAccept=0;frozenElapsed=0;
         tempSum=humiditySum=0;tempCount=humidityCount=0;
@@ -234,7 +236,7 @@ public final class FoodFreshnessTab {
             complete();
             return;
         }
-        capturing=false;completed=null;meatCompleted=null;
+        capturing=false;completed=null;meatCompleted=null;interpreted=null;
         frozenReadings=null;reportId="";frozenElapsed=0;
         finish.setEnabled(false);start.setEnabled(true);
         export.setEnabled(false);foodChoice.setEnabled(true);
@@ -260,13 +262,16 @@ public final class FoodFreshnessTab {
         int supportedSensors=0;
         for(java.util.Map.Entry<String,Integer> count:counts.entrySet())
             if(count.getValue()!=null&&count.getValue()>=10)supportedSensors++;
-        if(snapshots<30||supportedSensors<5){
+        int modelChannels=0;
+        for(String sensor:("MEAT".equals(operationMode)?BeefResearchCatalog.SENSOR_ORDER:FoodReferenceCatalog.SENSOR_ORDER))
+            if(counts.getOrDefault(sensor,0)>=10)modelChannels++;
+        if(snapshots<30||modelChannels<6){
             completed=null;meatCompleted=null;frozenReadings=null;reportId="";
             export.setEnabled(false);
             status.setText("اكتملت المدة لكن جودة الأدلة غير كافية: "+
-                snapshots+" لقطات، "+supportedSensors+" حساسات مؤهلة.");
-            results.setText("لا يوجد تصنيف بحثي ولا تقرير. يلزم >=30 لقطة مستقلة "+
-                "و>=5 حساسات، لكل منها >=10 قراءات صحيحة في مدة 180 ثانية. "+
+                snapshots+" لقطات، "+modelChannels+" حساسات متوافقة مؤهلة.");
+            results.setText("لا نتيجة ولا تقرير لفحص غير كافٍ. يلزم 30 لقطة حديثة على الأقل "+
+                "و6 حساسات مطابقة للدراسة على الأقل، لكل منها 10 قراءات في مدة 180 ثانية. "+
                 "تحقق من اتصال الحساسات واستقرار التغذية ثم أعد القياس.");
             dayGraph.clear();
             return;
@@ -282,10 +287,16 @@ public final class FoodFreshnessTab {
             // Meat source uses seven common MQ models and a four-class beef corpus.
             // It is not a repeat of the fruit headspace protocol/algorithm.
             meatCompleted=BeefResearchEngine.analyze(frozenReadings);
+            interpreted=FoodMeasurementDecision.meat(frozenReadings);
             completed=null;
-            export.setEnabled(!meatCompleted.rankedClasses.isEmpty());
+            export.setEnabled(!meatCompleted.rankedClasses.isEmpty()&&!"INSUFFICIENT_EVIDENCE".equals(interpreted.status));
             StringBuilder out=new StringBuilder();
-            out.append("نتيجة بحثية للحوم البقرية (لا تثبت الصلاحية للاستهلاك)\n")
+            out.append("تفسير القياس: ").append(interpreted.statement).append("\n")
+               .append("الحالة: ").append(interpreted.status)
+               .append(" | الفصل النسبي عن البديل: ")
+               .append(Double.isFinite(interpreted.relativeSeparation)?String.format(Locale.US,"%.1f%%",100*interpreted.relativeSeparation):"غير محدد")
+               .append(" (ليس احتمالًا)\n")
+               .append("نتائج فئات المرجع الأصلية:\n")
                .append("المرجع: Wijaya 2018؛ خمس عينات، 10,800 قراءة، حساسات MQ مشتركة: 7.\n")
                .append("الفترة الأصلية: 36 ساعة/عينة؛ عملية الروبوت: ")
                .append(String.format(Locale.US,"%.1f",frozenElapsed/1000.0))
@@ -322,10 +333,18 @@ public final class FoodFreshnessTab {
             for(Map.Entry<String,Double> e:frozenReadings.entrySet())
                 inputs.add(new FoodFreshnessEngine.Reading(e.getKey(),e.getValue()));
             completed=FoodFreshnessEngine.analyzeFruit(inputs,selectedFamily());
+            interpreted=FoodMeasurementDecision.fruit(frozenReadings,selectedFamily());
             meatCompleted=null;
-            export.setEnabled(!completed.rankedTemplates.isEmpty());
+            export.setEnabled(!completed.rankedTemplates.isEmpty()&&!"INSUFFICIENT_EVIDENCE".equals(interpreted.status));
             StringBuilder out=new StringBuilder();
-            out.append("مطابقة الفواكه بالمرجع البحثي — ليست حكمًا بصلاحية الغذاء\n")
+            out.append("نتيجة قياس الفاكهة: ").append(interpreted.statement).append("\n")
+               .append("الحالة: ").append(interpreted.status)
+               .append(" | مسافة النمط: ")
+               .append(String.format(Locale.US,"%.5f",interpreted.referenceDistance))
+               .append(" | الفصل عن البديل: ")
+               .append(Double.isFinite(interpreted.relativeSeparation)?String.format(Locale.US,"%.1f%%",100*interpreted.relativeSeparation):"غير محدد")
+               .append(" (تشخيص رياضي لا احتمال)\n")
+               .append("مطابقات المرجع:\n")
                .append("العينة: ").append(selectedFamily().isEmpty()?"جميع الأصناف":selectedFamily())
                .append("\nمدة التسجيل: ")
                .append(String.format(Locale.US,"%.1f",frozenElapsed/1000.0))
@@ -341,6 +360,7 @@ public final class FoodFreshnessTab {
             if(limit==0)out.append("لا توجد بيانات صالحة للمقارنة الحسابية.");
             out.append("\nمرجع الفواكه: Zenodo 10.5281/zenodo.17285312\n")
                .append("لا تثبت النتائج النشاط الميكروبي أو الصلاحية للاستهلاك.");
+            out.append("\nلا يوجد إثبات ميكروبي ولا استنتاج آلي بأن الغذاء صالح للاستهلاك.");
             results.setText(out.toString());
         }
         dayGraph.invalidate();
@@ -423,6 +443,13 @@ public final class FoodFreshnessTab {
                     paint.setColor(0xFF263445);paint.setTextSize(11);
                     canvas.drawText("D"+m.studyDay,x-9,bottom+16,paint);
                     prevX=x;prevY=y;
+                }
+                if(interpreted!=null&&Double.isFinite(interpreted.fittedStudyPosition)){
+                    float mx=left+(right-left)*(float)Math.max(0,Math.min(1,(interpreted.fittedStudyPosition-1)/Math.max(1,maxDay-1)));
+                    paint.setColor(0xFFD55A21);paint.setStrokeWidth(2f);
+                    canvas.drawLine(mx,top,mx,bottom,paint);
+                    paint.setTextSize(10);
+                    canvas.drawText(String.format(Locale.US,"D%.2f reference",interpreted.fittedStudyPosition),Math.min(mx,right-96),top+12,paint);
                 }
             }else{
                 int index=0;
