@@ -1,0 +1,54 @@
+{
+  "schema": "hazrob.tank.next.p02_1.signalphysics/1",
+  "date": "2026-11-02",
+  "task_id": "P02.1",
+  "github_run": 41374005807,
+  "run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41374005807",
+  "run_commit": "96489fba7c90b5219c1563eff03984d8ff926453",
+  "job_id": 125050244707,
+  "run_result": "PASS",
+  "test_assertions": {
+    "p01_immutable": 28,
+    "p01_replay": 36,
+    "p02_signal_physics": 69,
+    "combined": 133
+  },
+  "software_features": [
+    "ADS1115 raw positive code conversion uses 6.144V/32768 from pinned Tank firmware",
+    "Vout voltage and actual ADC VDD restricted independently",
+    "MQ resistance Rs=RL*(Vcc/Vout-1), numerical unit kOhm",
+    "invalid/missing/saturated ADC never generates valid Rs",
+    "nominal board declared constants do NOT claim hardware-verified configuration",
+    "raw ADC validity also checked when an external voltage accompanies it",
+    "status carries explicit reason and source sensor UID"
+  ],
+  "code_and_sources": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SignalPhysics.java",
+      "sha": "1d4bdb86c274e12a29d592189af767f6c85b4901"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/SignalPhysicsSmoke.java",
+      "sha": "d84c5b29b378b160914d413554c47b15865b3da4"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "sha": "1249e15f42fe4eb75c64b962c206a7642a5a335f"
+    },
+    {
+      "path": "firmware/ESP32-Tank/Hardware.cpp",
+      "sha": "d28f529089d1546d641e1cc0eade9874defb5ffe"
+    },
+    {
+      "path": "firmware/ESP32-Tank/Config.h",
+      "sha": "e4746fbd3049e5ae82b3f3ba976e75a2c749a5ac"
+    }
+  ],
+  "human_hardware_tests_done": false,
+  "physical_ads_vdd_measured": false,
+  "independent_vout_resistance_verified": false,
+  "gas_identity_g3": false,
+  "ppm_calibration": false,
+  "qualifier": "G1_RESEARCH_MATH_AND_SOURCE_CONTRACT_ONLY",
+  "next": "P02.2 handle R_air vs R0_source K on per-sensor basis; ensure firmware heater profiles and reference provenance respected."
+}
