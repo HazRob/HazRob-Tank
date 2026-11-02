@@ -408,6 +408,22 @@ public final class MeasurementsTab {
     }
 
     public View view(){return root;}
+    /** Only a completed V8 Next decision is eligible for operator feedback. */
+    public String currentFeedbackDecisionUid(){
+        TankInstantAnalyzer.Result result=currentOperation;
+        if(result==null||result.analysis==null)return "";
+        if(!"hazrob.tank.v8.next.decision.presentation/1".equals(
+            result.analysis.optString("schema","")))return "";
+        return result.analysis.optString("decision_uid","");
+    }
+    public JSONObject currentFeedbackAnalysis(){
+        TankInstantAnalyzer.Result result=currentOperation;
+        if(result==null||result.analysis==null||
+           currentFeedbackDecisionUid().isEmpty())return null;
+        try{return new JSONObject(result.analysis.toString());}
+        catch(Exception invalid){return null;}
+    }
+
     public void refresh(){
         switch(selected){
             case 1:
