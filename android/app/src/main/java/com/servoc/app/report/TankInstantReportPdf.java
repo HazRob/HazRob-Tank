@@ -127,90 +127,6 @@ public final class TankInstantReportPdf {
         }
     }
 
-    /**
-     * V8 Next uses a dedicated rendering path for the persisted decision.
-     * All N candidate UIDs/ranks are rendered without deriving posterior, ppm,
-     * exposure exceedances or GHS detection evidence from UI/display code.
-     */
-    private static void writeNext(OutputStream out,JSONObject telemetry,JSONObject next,
-                                  String operation,long timestamp)throws Exception{
-        JSONArray candidates=next.optJSONArray("candidates");
-        int count=candidates==null?0:candidates.length();
-        if(count!=next.optInt("candidate_count",count))
-            throw new IllegalArgumentException("Next candidate count/receipt mismatch");
-        if(next.optString("decision_uid","").isEmpty()||
-           next.optString("snapshot_sha256","").isEmpty())
-            throw new IllegalArgumentException("Persisted Next decision identity missing");
-        int perPage=14;
-        PdfDocument doc=new PdfDocument();
-        try{
-            PdfDocument.Page page=doc.startPage(new PdfDocument.PageInfo.Builder(595,842,1).create());
-            Canvas c=page.getCanvas();c.drawColor(Color.WHITE);int y=46;
-            rtl(c,"HazRob Tank V8 — ChemCore Next • تقرير القياس الآني",y,16,true);y+=29;
-            rtl(c,"بحثي فقط • غير مؤهل لكشف غاز أو تقييم التعرض (G3=0/80)",y,11,false);y+=27;
-            rtl(c,"العملية: "+operation+" • "+utc(timestamp),y,10,false);y+=19;
-            rtl(c,"قرار محفوظ: "+next.optString("decision_uid"),y,10,true);y+=18;
-            rtl(c,"الحالة: "+next.optString("decision_status","UNKNOWN")+
-                " • الهوية المسجلة: UNKNOWN",y,11,true);y+=22;
-            rtl(c,"المحرك: "+next.optString("model_version","—"),y,10,false);y+=19;
-            String digest=next.optString("snapshot_sha256");
-            rtl(c,"Snapshot SHA-256 (1): "+digest.substring(0,Math.min(32,digest.length())),y,9,false);y+=17;
-            if(digest.length()>32){rtl(c,"Snapshot SHA-256 (2): "+digest.substring(32),y,9,false);y+=17;}
-            rtl(c,"Stable manifest: "+next.optString("stable_manifest_sha256","—"),y,9,false);y+=22;
-            JSONObject capture=telemetry.optJSONObject("v8_instant_source_capture");
-            if(capture!=null){
-                rtl(c,"المصدر: إحماء "+capture.optLong("warmup_monotonic_ms",0)/1000+
-                    "ث • تسجيل "+
-                    capture.optLong("capture_elapsed_monotonic_ms",0)/1000+
-                    "ث • دورات MQ "+capture.optInt("distinct_scan_cycles",0),y,10,true);y+=19;
-                rtl(c,"امتداد عينات المصدر: "+
-                    capture.optLong("source_observed_span_ms",0)/1000+
-                    "ث • المصدر الأصلي محفوظ ببيانات العملية",y,10,false);y+=20;
-            }else{
-                rtl(c,"لا يوجد سجل تسلسل مصادر موثق لهذه اللقطة",y,10,false);y+=20;
-            }
-            c.drawLine(35,y,560,y,paint(1,false,0xFFD1D7DE));y+=21;
-            rtl(c,"القراءات النهائية لقنوات MQ — دليل المصدر لا هوية المادة",y,12,true);y+=23;
-            JSONObject mq=telemetry.optJSONObject("mq");
-            for(HazRobHardwareProfile.Channel ch:HazRobHardwareProfile.MQ){
-                JSONObject q=mq==null?null:mq.optJSONObject(ch.key);
-                boolean valid=q!=null&&q.optBoolean("ok",q.optBoolean("valid",false));
-                rtl(c,ch.key.toUpperCase(Locale.US)+" • "+
-                    (valid?"Rs "+data(q,"rs",3)+" kΩ • R0 "+data(q,"r0",3)+
-                        " kΩ • Rs/R0 "+data(q,"ratio",3):"قراءة غير متاحة/غير صالحة"),y,10,false);
-                y+=22;
-            }
-            y+=7;
-            rtl(c,"عدد مرشحي Next الأصليين: "+count,y,11,true);y+=21;
-            if(count==0){rtl(c,"UNKNOWN — لا توجد هوية مرشحة بدليل مقبول",y,10,false);y+=19;}
-            rtl(c,"لا تعرض قيم ppm أو إنذارات حدود التعرض دون تأهيل فيزيائي.",y+16,10,false);
-            doc.finishPage(page);
-            for(int offset=0;offset<count;offset+=perPage){
-                PdfDocument.Page cp=doc.startPage(new PdfDocument.PageInfo.Builder(
-                    595,842,2+offset/perPage).create());
-                Canvas canvas=cp.getCanvas();canvas.drawColor(Color.WHITE);
-                int cy=48;
-                rtl(canvas,"ChemCore Next — ترتيب المرشحين من القرار المحفوظ",cy,14,true);cy+=30;
-                rtl(canvas,"قرار: "+next.optString("decision_uid"),cy,10,false);cy+=22;
-                rtl(canvas,"لا أسماء أو تركيزات أو نسب ثقة مُشتقة داخل التقرير",cy,10,false);cy+=28;
-                for(int i=offset;i<Math.min(count,offset+perPage);i++){
-                    JSONObject row=candidates.optJSONObject(i);
-                    if(row==null)throw new IllegalArgumentException("Next candidate row missing");
-                    int rank=row.optInt("rank",-1);
-                    if(rank!=i+1)throw new IllegalArgumentException("Next ranked order mismatch");
-                    long uid=row.optLong("chemical_uid",-1L);
-                    if(uid<0)throw new IllegalArgumentException("Next canonical UID missing");
-                    rtl(canvas,"#"+rank+" • Canonical UID "+uid+
-                        " • RESEARCH_ONLY",cy,11,true);cy+=21;
-                    rtl(canvas,"الأدلة: "+row.optString("evidence_summary","—"),cy,9,false);cy+=27;
-                }
-                rtl(canvas,"لا يمثل ترتيب المرشحين إثباتًا لوجود الغاز.",773,11,false);
-                doc.finishPage(cp);
-            }
-            doc.writeTo(out);
-        }finally{doc.close();}
-    }
-
     public static void write(OutputStream out,JSONObject telemetry,JSONObject chemcore,String id,long timestamp)throws Exception{
         if(out==null||telemetry==null||chemcore==null||id==null||id.isEmpty())
             throw new IllegalArgumentException("Completed immutable measurement required");
@@ -222,7 +138,7 @@ public final class TankInstantReportPdf {
             return;
         }
         if("hazrob.tank.v8.next.decision.presentation/1".equals(chemcore.optString("schema",""))){
-            writeNext(out,telemetry,chemcore,id,timestamp);
+            TankInstantV7PdfWriter.writeNext(out,telemetry,chemcore,id,timestamp);
             return;
         }
         PdfDocument doc=new PdfDocument();
