@@ -392,13 +392,23 @@ public final class FoodFreshnessTab {
         final BeefResearchEngine.Result meat=meatCompleted;
         if((beef&&meat==null)||(!beef&&fruit==null))return;
         final Map<String,Double> observations=new LinkedHashMap<>(frozenReadings);
+        // Freeze captured timestamped Rs samples on UI thread before background export.
+        // Never draw a synthetic trace from averages or from source-study rows.
+        final Map<String,List<double[]>> realTrace=new LinkedHashMap<>();
+        for(Map.Entry<String,List<PlotPoint>> row:signalHistory.entrySet()){
+            List<double[]> measured=new ArrayList<>();
+            for(PlotPoint point:row.getValue())
+                if(Double.isFinite(point.seconds)&&Double.isFinite(point.value)&&point.value>0)
+                    measured.add(new double[]{point.seconds,point.value});
+            if(!measured.isEmpty())realTrace.put(row.getKey(),measured);
+        }
         final String id=reportId;final long duration=frozenElapsed;final int count=snapshots;
         final double temp=finalTemperature,rh=finalHumidity;
         export.setEnabled(false);
         host.io().execute(()->{
             try{
-                if(beef)BeefResearchPdf.save(context,meat,observations,count,duration,id,temp,rh);
-                else FoodFreshnessPdf.save(context,fruit,observations,count,duration,id);
+                if(beef)BeefResearchPdf.save(context,meat,observations,count,duration,id,temp,rh,realTrace);
+                else FoodFreshnessPdf.save(context,fruit,observations,count,duration,id,realTrace);
                 view.post(()->{
                     export.setEnabled(true);
                     host.showToast("حُفظ تقرير "+(beef?"اللحوم":"الفواكه")+" في Downloads/HazRobTank");
