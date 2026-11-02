@@ -1,0 +1,28 @@
+{
+  "schema": "chemcore.next.P04.4.environment.expert.g1/1",
+  "date": "2026-11-02",
+  "task": "P04.4",
+  "qualification": "G1_SOFTWARE_ONLY",
+  "ci_run_id": 41391032078,
+  "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41391032078",
+  "commit": "4987adcac8c999e9064b6ef1fe8562eace182169",
+  "assertions_passed": 26,
+  "code": "android/app/src/main/java/com/hazrob/tank/chemcore/next/EnvironmentEvidenceExpert.java",
+  "test": "research/chemcore_next/tests/java/EnvironmentEvidenceExpertSmoke.java",
+  "source_equation": "signal_ref = measured_Rs_over_R_air * exp(-betaT*(T-Tref)-betaRH*(RH-RHref))",
+  "source_constraints": [
+    "no default manufacturer coefficients",
+    "sourceRoot, heater phase and sensor model mandatory",
+    "measured T and RH required",
+    "source domain and reference point verified",
+    "stale/invalid sensor or missing relay always abstain",
+    "one physical source 3D feature not three independent votes"
+  ],
+  "output_policy": {
+    "research_only": true,
+    "ppm_authorized": false,
+    "chemical_identification": false,
+    "tank_g3": false
+  },
+  "next": "P04.5 grouped external source ML research"
+}

@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
-  "status": "CHEMCORE_NEXT_P03_COMPLETE_P04_CURVEEXPERT_READY",
-  "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
+  "status": "CHEMCORE_NEXT_P04_1_TO_4_G1_PASSED_P04_5_READY",
+  "last_verified_head_sha": "4987adcac8c999e9064b6ef1fe8562eace182169",
   "active_phase": "P04",
-  "active_task": "P04.1",
-  "last_checkpoint": "Independent ChemCore Next 19/37 core tasks passed. P03 source modeling and catalog audit complete. P03.6 actual 21 risk rows: 13 with exposure, 10 with LFL/UFL, 2 source GHS +4 provisional, zero LOD/background/G3; P04.1 CurveExpert next.",
-  "next_action": "P04.1 implement a source-locked CurveExpert for direct/inverse equation parity with source-defined R0/heater/range abstention, without deploying estimates.",
+  "active_task": "P04.5",
+  "last_checkpoint": "23/37 ChemCore Next core tasks done; P04.1 to P04.4 G1 software CI passed; source-only qualification and Tank G3=0.",
+  "next_action": "P04.5: audit and execute source-group-safe ML experiments; never label time-blocks as independent physical exposures; no Android deployment.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 19,
-    "passed_tests": 18,
+    "done_tasks": 23,
+    "passed_tests": 22,
     "failed_tests": 0,
-    "percent_complete": 26.76
+    "percent_complete": 32.39
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -105,7 +105,7 @@
         "P03.5",
         "P03.6"
       ],
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "depends_on": [
         "P02"
       ],
@@ -125,7 +125,7 @@
         "P04.5",
         "P04.6"
       ],
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "depends_on": [
         "P03"
       ],
@@ -886,8 +886,8 @@
       "id": "P04.1",
       "phase": "P04",
       "description": "CurveExpert الصيغ المباشرة والعكسية",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_SOFTWARE_SOURCE_GUARDS_ONLY_NO_SOURCE_TRANSFERENCE_G2_OR_TANK_G3",
       "depends_on": [
         "P03.6"
       ],
@@ -898,23 +898,25 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "GitHub Actions chemcore-next-p01-jvm-ci.yml Java17 SourceCurveExpertSmoke",
+      "test_result": "44 dual source equation, R0/heater/range abstentions; no field gas identity, ppm or safety alarm",
+      "action_run_id": 41389758695,
+      "commit_sha": "d839f2dd256b1b6c9584ee992b848d0343c9f625",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p04_1_curve_expert_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "P04.1 G1 passed; original source/device validation remains out of scope",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P04.2",
       "phase": "P04",
       "description": "FingerprintExpert البصمات والمجموعات الفردية والزوجية",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_SOFTWARE_SOURCE_GUARDS_ONLY_NO_SOURCE_TRANSFERENCE_G2_OR_TANK_G3",
       "depends_on": [
         "P04.1"
       ],
@@ -925,23 +927,25 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "GitHub Actions chemcore-next-p01-jvm-ci.yml Java17 FingerprintExpertSmoke",
+      "test_result": "34 source-space 1/2/8 sensor conditional subset checks; no field gas identity, ppm or safety alarm",
+      "action_run_id": 41390127310,
+      "commit_sha": "46b924284c33d53ecb7651a0c9e0cca27b1d8dff",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p04_2_fingerprint_expert_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "P04.2 G1 passed; original source/device validation remains out of scope",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P04.3",
       "phase": "P04",
       "description": "TemporalExpert زمن التغير والاستعادة و4D",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_SOFTWARE_SOURCE_GUARDS_ONLY_NO_SOURCE_TRANSFERENCE_G2_OR_TANK_G3",
       "depends_on": [
         "P04.2"
       ],
@@ -952,23 +956,25 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "GitHub Actions chemcore-next-p01-jvm-ci.yml Java17 TemporalEvidenceExpertSmoke",
+      "test_result": "35 time-ordered single-exposure 4D features, failure injection, one source root; no field gas identity, ppm or safety alarm",
+      "action_run_id": 41390828989,
+      "commit_sha": "3d9d1410be48188243595b3bab900cfa54c737aa",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p04_3_temporal_expert_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "P04.3 G1 passed; original source/device validation remains out of scope",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P04.4",
       "phase": "P04",
       "description": "EnvironmentExpert استجابات الحرارة والرطوبة و3D",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_SOFTWARE_SOURCE_GUARDS_ONLY_NO_SOURCE_TRANSFERENCE_G2_OR_TANK_G3",
       "depends_on": [
         "P04.3"
       ],
@@ -979,22 +985,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "GitHub Actions chemcore-next-p01-jvm-ci.yml Java17 EnvironmentEvidenceExpertSmoke",
+      "test_result": "26 source-locked 3D environmental corrections and conservative abstentions; no field gas identity, ppm or safety alarm",
+      "action_run_id": 41391032078,
+      "commit_sha": "4987adcac8c999e9064b6ef1fe8562eace182169",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p04_4_environment_expert_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "P04.4 G1 passed; original source/device validation remains out of scope",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P04.5",
       "phase": "P04",
       "description": "MLResearchExpert تجارب مقارنة مجموعة من 76 نموذجًا",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P04.4"
@@ -2512,6 +2520,24 @@
       "commit_sha": "b743a024676962e879d33e814976c8d9b1c6a1d3",
       "ci_run": 41388369661,
       "evidence": "research/v8_implementation/results/next_p03_6_risk_coverage_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P04.3",
+      "description": "35 time-ordered single-exposure 4D features, failure injection, one source root",
+      "commit_sha": "3d9d1410be48188243595b3bab900cfa54c737aa",
+      "ci_run": 41390828989,
+      "evidence": "research/v8_implementation/results/next_p04_3_temporal_expert_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P04.4",
+      "description": "26 source-locked 3D environmental corrections and conservative abstentions",
+      "commit_sha": "4987adcac8c999e9064b6ef1fe8562eace182169",
+      "ci_run": 41391032078,
+      "evidence": "research/v8_implementation/results/next_p04_4_environment_expert_evidence.json"
     }
   ],
   "notes": [
@@ -2545,9 +2571,9 @@
   "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
   "core_program_progress": {
     "total_tasks": 37,
-    "done_tasks": 19,
-    "percent_complete": 51.35,
-    "active_task": "P04.1",
+    "done_tasks": 23,
+    "percent_complete": 62.16,
+    "active_task": "P04.5",
     "qualified_g3_techniques": 0
   },
   "separate_android_integration_scope": {

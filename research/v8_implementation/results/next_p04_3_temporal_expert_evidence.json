@@ -1,0 +1,29 @@
+{
+  "schema": "chemcore.next.P04.3.temporal.expert.g1/1",
+  "date": "2026-11-02",
+  "task": "P04.3",
+  "qualification": "G1_SOFTWARE_ONLY",
+  "ci_run_id": 41390828989,
+  "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41390828989",
+  "commit": "3d9d1410be48188243595b3bab900cfa54c737aa",
+  "assertions_passed": 35,
+  "code": "android/app/src/main/java/com/hazrob/tank/chemcore/next/TemporalEvidenceExpert.java",
+  "test": "research/chemcore_next/tests/java/TemporalEvidenceExpertSmoke.java",
+  "source_constraints": [
+    "sourceRoot/featureSpace/sensorModel/heaterPhase verified",
+    "monotonic time/unique snapshot IDs",
+    "single physical exposure",
+    "four non-overlapping time windows with at least two physical samples each",
+    "same Stable manifest and device identity",
+    "all samples real valid warm heater and relay on",
+    "per-window maximum gap; no extrapolation/interpolation",
+    "4 derived descriptors count as one independent evidence root"
+  ],
+  "output_policy": {
+    "research_only": true,
+    "ppm_authorized": false,
+    "chemical_identification": false,
+    "tank_g3": false
+  },
+  "next": "P04.4 source domain environmental expert"
+}
