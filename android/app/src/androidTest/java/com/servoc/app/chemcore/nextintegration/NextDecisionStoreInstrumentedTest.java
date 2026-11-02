@@ -92,6 +92,40 @@ public final class NextDecisionStoreInstrumentedTest {
       assertTrue(c.moveToFirst());assertEquals(1,c.getInt(0));
     }
   }
+  @Test public void originalDecisionUidAndDynamicOrderMatchScreenAndExporter() throws Exception{
+    seedV14(ctx);
+    helper=new ExperimentsDb(ctx);
+    var frozen=capture();
+    var ordered=new java.util.ArrayList<CoreContracts.Candidate>();
+    for(int n=0;n<12;n++)ordered.add(
+      new CoreContracts.Candidate(900L+n,"source-root-research-"+n,
+         java.util.List.of("physical-source-"+n)));
+    var decision=new CoreContracts.Result(ChemCoreNext.VERSION,frozen,
+      ChemCoreNext.snapshotHash(frozen),
+      CoreContracts.DecisionStatus.MIXTURE_UNRESOLVED,
+      java.util.List.of(),ordered,java.util.List.of("SOURCE_ONLY_NOT_G3"));
+    var persisted=new NextDecisionStore(helper).append("FIELD-EVIDENCE-12",42L,
+      frozen,decision);
+    org.json.JSONObject screen=NextDecisionEnvelope.fromReceipt(persisted);
+    org.json.JSONObject pdf=NextDecisionEnvelope.fromReceipt(
+       new NextDecisionStore(helper).byId(persisted.decisionUid));
+    NextDecisionEnvelope.assertParity(screen,pdf);
+    assertEquals("MIXTURE_UNRESOLVED",screen.getString("decision_status"));
+    assertEquals(12,screen.getInt("candidate_count"));
+    assertEquals(900L,screen.getJSONArray("candidates").getJSONObject(0).getLong("chemical_uid"));
+    assertEquals(911L,screen.getJSONArray("candidates").getJSONObject(11).getLong("chemical_uid"));
+    assertEquals(12,screen.getJSONArray("candidates").getJSONObject(11).getInt("rank"));
+    assertFalse(screen.getBoolean("ppm_reportable"));
+    assertFalse(screen.getBoolean("physical_g3_validated"));
+    assertFalse(screen.getBoolean("legacy_v6_fallback_used"));
+    org.json.JSONObject altered=new org.json.JSONObject(screen.toString());
+    altered.getJSONArray("candidates").getJSONObject(1).put("chemical_uid",1234L);
+    boolean detected=false;
+    try{NextDecisionEnvelope.assertParity(screen,altered);}
+    catch(IllegalStateException expected){detected=true;}
+    assertTrue("report parity must reject silent UID/rank modifications",detected);
+  }
+
   @Test public void oldDecisionsCannotBeOverwrittenOrDeleted(){
     seedV14(ctx);
     helper=new ExperimentsDb(ctx);
