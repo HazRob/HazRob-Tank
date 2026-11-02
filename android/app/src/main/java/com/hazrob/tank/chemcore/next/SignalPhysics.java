@@ -85,7 +85,7 @@ public final class SignalPhysics {
         if(raw==null)return invalid(c,Status.NO_SAMPLE,"missing ADS sample",null,null,null);
         if(raw<0||raw>c.adcCountsForFullScale)
             return invalid(c,Status.ADC_INVALID,"ADS code outside unsigned positive range",raw,null,null);
-        if(raw==c.adcCountsForFullScale)
+        if(raw>=c.adcCountsForFullScale-1)
             return invalid(c,Status.ADC_SATURATED,"ADC positive full-scale code saturated",raw,null,null);
         double adcV=raw*(c.adcFullScaleV/c.adcCountsForFullScale);
         if(!c.adcVoltageVerified)
@@ -104,6 +104,10 @@ public final class SignalPhysics {
      */
     public static Observation fromKnownAdcVoltage(Circuit c,Integer raw,Double observedAdcV) {
         if(c==null)throw new IllegalArgumentException("circuit required");
+        if(raw!=null && (raw<0 || raw>c.adcCountsForFullScale))
+            return invalid(c,Status.ADC_INVALID,"invalid raw ADC code paired with voltage",raw,observedAdcV,null);
+        if(raw!=null && raw>=c.adcCountsForFullScale-1)
+            return invalid(c,Status.ADC_SATURATED,"saturated raw ADC code paired with voltage",raw,observedAdcV,null);
         if(observedAdcV==null)return invalid(c,Status.NO_SAMPLE,"no measured Vout",raw,null,null);
         if(!Double.isFinite(observedAdcV))
             return invalid(c,Status.VOLTAGE_NOT_FINITE,"Vout is NaN/infinite",raw,null,null);
