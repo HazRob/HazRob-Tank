@@ -1,0 +1,66 @@
+{
+  "schema": "chemcore.next.p03.4.shared-source-chemical-hypotheses/1",
+  "date": "2026-11-02",
+  "decision_origin": "Project owner: retain upstream MQ135 NH4 and V6 NH3 interpretations provisionally until laboratory comparison",
+  "source_curve_uid": "MQDS-SRC-053",
+  "source_v6_curve_id": "MQDATA43-042",
+  "sensor_model": "MQ135",
+  "upstream_label": "NH4",
+  "v6_label": "NH4/NH3",
+  "source_file": "DataScience/Requirements/MQInfo.py",
+  "source_blob_sha": "c9519bcebd22c79fadeaa6b21d22d4fb821ba290",
+  "source_root_id": "MQDATASCIENCE_ORIGINAL_GAS_SENSOR_CURVE_FAMILY",
+  "unique_evidence_group": "MQDS-SRC-053",
+  "source_a": 6.2968,
+  "source_b": -0.3892,
+  "source_equation": "response_ratio = 6.2968 * (ppm/source_scale)^(-0.3892)",
+  "source_scale_ppm": "UNKNOWN_NOT_QUALIFIED",
+  "source_r0_definition": "UNKNOWN_NOT_QUALIFIED",
+  "hypotheses": [
+    {
+      "id": "MQ135-SRC053-NH3",
+      "formula": "NH3",
+      "species": "neutral ammonia molecule",
+      "phase": "gas",
+      "provisional_master_uid": 22,
+      "master_cas": "7664-41-7",
+      "status": "TENTATIVE_LABEL_INTERPRETATION_NOT_DETECTED",
+      "may_appear_as_research_hypothesis": true,
+      "may_appear_as_confirmed_gas": false,
+      "quantitative_ppm_qualified": false
+    },
+    {
+      "id": "MQ135-SRC053-NH4",
+      "formula": "NH4+",
+      "species": "ammonium cation",
+      "phase": "aqueous_ionic_not_free_atmospheric_gas",
+      "provisional_master_uid": null,
+      "master_cas": null,
+      "status": "UPSTREAM_NH4_LABEL_CHEMICAL_FORM_UNVERIFIED",
+      "may_appear_as_research_hypothesis": true,
+      "may_appear_as_confirmed_gas": false,
+      "quantitative_ppm_qualified": false
+    }
+  ],
+  "independent_experimental_evidence_count": 1,
+  "duplicate_numerical_models_counted_for_votes": 1,
+  "proven_independent_gas_identifications": 0,
+  "interpretation": "Two separate labeled research hypotheses sharing one numeric relationship, not two independent sensors or exposures. NH4+ is not an independent atmospheric gas measurable as NH4+ ppm by MQ135. If real-world ammonium material volatilizes, emitted NH3 can be assessed only with independent reference gas validation.",
+  "requires_lab": [
+    "verify original meaning and provenance of MQInfo.py NH4 label (possibly notation mistake)",
+    "challenge MQ135 under known certified NH3 gas challenge with independent reference analyzer and controlled humidity/heater",
+    "if study involves ammonium salts or aqueous NH4+, measure solution pH, temperature and independently measured NH3 vapor; do not call it NH4 gas detection",
+    "use group-wise holdout and test cross-sensitivity from other relevant gases",
+    "never promote either label to G3 before physically referenced experiment"
+  ],
+  "references": [
+    {
+      "name": "NIOSH Pocket Guide ammonia NH3 gas formula CAS",
+      "url": "https://www.cdc.gov/niosh/npg/npgd0028.html"
+    },
+    {
+      "name": "EPA aqueous ammonia equilibrium NH3 / NH4+",
+      "url": "https://www.epa.gov/sites/default/files/2019-02/documents/update-wqc-ammonia-1998.pdf"
+    }
+  ]
+}
