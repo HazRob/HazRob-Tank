@@ -9,6 +9,7 @@ import io
 import json
 import re
 import stat
+import unicodedata
 import zipfile
 from pathlib import Path
 
@@ -32,6 +33,11 @@ def _safe_parts(info):
             "ARCHIVE_UNSAFE_PATH")
     parts = name.rstrip("/").split("/")
     require(all(p and p not in (".", "..") for p in parts), "ARCHIVE_UNSAFE_PATH")
+    # Invisible Unicode control/format characters can spoof source member
+    # paths even when the ZIP checksum is valid. Ordinary multilingual
+    # filenames remain allowed.
+    require(not any(unicodedata.category(ch).startswith("C") for ch in name),
+            "ARCHIVE_UNSAFE_PATH")
     mode = (info.external_attr >> 16) & 0xffff
     require(not stat.S_ISLNK(mode), "ARCHIVE_SYMLINK_REJECTED")
     require(not (info.flag_bits & 1), "ARCHIVE_ENCRYPTED_ENTRY")
@@ -60,9 +66,17 @@ def inspect_zip(path, expected_rows=3330):
                     "ARCHIVE_UNCOMPRESSED_LIMIT")
             for info in entries:
                 parts = _safe_parts(info)
-                key = "/".join(parts).casefold()
+                # NFKC-equivalent archive paths must not masquerade as
+                # distinct source members. Keep original paths in receipts.
+                key = unicodedata.normalize("NFKC", "/".join(parts)).casefold()
                 require(key not in seen_paths, "ARCHIVE_DUPLICATE_MEMBER_PATH")
                 seen_paths.add(key)
+                folder_parts = parts if info.is_dir() else parts[:-1]
+                # A fullwidth/case-variant Ethanol directory must not be
+                # silently excluded as unrelated wine/source material.
+                require(not any(unicodedata.normalize("NFKC", p).casefold() == "ethanol"
+                                and p != "Ethanol" for p in folder_parts),
+                        "ARCHIVE_ETHANOL_FOLDER_ALIAS")
                 if info.is_dir():
                     continue
                 if "Ethanol" not in parts[:-1]:

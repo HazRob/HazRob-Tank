@@ -71,6 +71,56 @@ class MQExt10ArchiveIntakeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "ARCHIVE_DUPLICATE_MEMBER_PATH"):
                 inspect_zip(p, expected_rows=1)
 
+    def test_nfkc_equivalent_wine_member_paths_are_not_distinct(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/AQ_Wines/AQ_Wine01-B01_R01.txt", ROW),
+                        ("Data/AQ_Wines/ＡＱ_Wine01-B01_R01.txt", ROW),
+                        ("Data/Ethanol/Ea-C1_R01.txt", ROW)])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_DUPLICATE_MEMBER_PATH"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_fullwidth_ethanol_folder_cannot_hide_measurements(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/Ｅｔｈａｎｏｌ/Ea-C1_R01.txt", ROW),
+                        ("Data/Ethanol/Ea-C2_R01.txt", ROW)])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_ETHANOL_FOLDER_ALIAS"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_case_variant_ethanol_folder_cannot_hide_measurements(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/ethanol/Ea-C1_R01.txt", ROW),
+                        ("Data/Ethanol/Ea-C2_R01.txt", ROW)])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_ETHANOL_FOLDER_ALIAS"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_alias_directory_entry_rejected_before_data_count(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/Ｅｔｈａｎｏｌ/", b""),
+                        ("Data/Ethanol/Ea-C1_R01.txt", ROW)])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_ETHANOL_FOLDER_ALIAS"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_invisible_format_control_in_archive_path_is_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/AQ_Wines/" + chr(0x202e) + "Wine.txt", ROW),
+                        ("Data/Ethanol/Ea-C1_R01.txt", ROW)])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_UNSAFE_PATH"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_valid_nfc_multilingual_wine_folder_is_preserved(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/Café_Wines/wine.txt", ROW),
+                        ("Data/Ethanol/Ea-C1_R01.txt", ROW)])
+            result = inspect_zip(p, expected_rows=1)
+            self.assertEqual(result["files_scanned"], 1)
+            self.assertFalse(result["g2_qualified"])
+
     def test_numeric_duplicate_under_different_text(self):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "data.zip"
