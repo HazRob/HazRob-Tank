@@ -50,8 +50,11 @@ jobs:
           javac -d /tmp/food-freshness-classes \
             android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchCatalog.java \
             android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchEngine.java \
-            research/food_freshness/BeefResearchEngineTest.java
+            research/food_freshness/BeefResearchEngineTest.java \
+            android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefGaussianResearchEngine.java \
+            research/food_freshness/BeefGaussianResearchEngineTest.java
           java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.meat.BeefResearchEngineTest
+          java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.meat.BeefGaussianResearchEngineTest
           java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.FoodFreshnessEngineTest
           java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.FoodMeasurementDecisionTest
           ! grep -R -nE '^import com[.]hazrob[.]tank[.]chemcore|^import com[.]servoc[.]app[.]chemcore' \
