@@ -263,6 +263,14 @@ jobs:
           assert x['source_root_independence_count']==1
           print('CHEMCORE_NEXT_OCT2026_SOURCE_PORTFOLIO_G1_GATE_PASS')
           PY
+      - name: P07.1 V8 immutable eight-MQ telemetry adapter, original R_air and missing-heater regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextTelemetryMapperSmoke \
+             | tee build/chemcore-next-p01/P07-1-TELEMETRY-MAPPER.log
+          grep -q '^CHEMCORE_NEXT_P07_1_TELEMETRY_MAPPER_PASS ' \
+             build/chemcore-next-p01/P07-1-TELEMETRY-MAPPER.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -295,5 +303,6 @@ jobs:
             build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.json
             build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.log
             build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.json
+            build/chemcore-next-p01/P07-1-TELEMETRY-MAPPER.log
           if-no-files-found: warn
           retention-days: 30
