@@ -13,7 +13,7 @@ import org.json.*;
 public final class NextDecisionEnvelope {
   public static final String SCHEMA=NextDecisionPresentation.SCHEMA;
   private NextDecisionEnvelope(){}
-  public static JSONObject fromReceipt(NextDecisionStore.Receipt receipt) {
+  public static JSONObject fromReceipt(NextDecisionStore.Receipt receipt) throws JSONException {
     Objects.requireNonNull(receipt,"persisted Next receipt required");
     var frozen=receipt.sourceSnapshot;
     var decision=receipt.originalDecision;

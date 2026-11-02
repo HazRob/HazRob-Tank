@@ -45,7 +45,7 @@ public final class NextEngineRouter {
        List<ChemCoreNext.CurveBinding> verifiedCurves,
        List<ChemCoreNext.FingerprintBinding> verifiedFingerprints,
        List<ResearchFingerprintBundle.Bundle> sourceBundles,
-       int displayLimit) {
+       int displayLimit) throws org.json.JSONException {
     Objects.requireNonNull(context,"Android context");
     Objects.requireNonNull(db,"SQLite research store");
     if(sealedTelemetry==null||sessionUid==null||sessionUid.isBlank()||
