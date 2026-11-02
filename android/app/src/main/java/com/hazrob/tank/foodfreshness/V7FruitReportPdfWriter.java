@@ -277,13 +277,13 @@ public final class V7FruitReportPdfWriter {
             "D"+fmt(d.fittedStudyPosition,2)+" (source curve position ONLY)":"NOT_AVAILABLE";
         V7ReportLayoutKit.tableValue(c,new RectF(L,48*MM,L+W,74*MM),
             "Reference match: "+d.referenceId+"  |  Status: "+d.status+
-            "\\nStudy curve position: "+stage+
+            "\nStudy curve position: "+stage+
             "  |  MQ: "+d.channels+"/8",false);
         V7ReportLayoutKit.tableValue(c,new RectF(L,77*MM,L+W,105*MM),
             "Study fingerprint distance: "+fmt(d.referenceDistance,5)+
             "  |  Relative competitor separation: "+
             (Double.isFinite(d.relativeSeparation)?fmt(d.relativeSeparation*100,2)+"%":"-")+
-            "\\nDiagnostic separation is not confidence/probability.",false);
+            "\nDiagnostic separation is not confidence/probability.",false);
         V7ReportLayoutKit.tableHeader(c,new RectF(L,110*MM,L+W,126*MM),
             "القراءات الفعلية / Frozen 180-second source-comparable MQ resistance",true);
         int k=0;
@@ -302,8 +302,8 @@ public final class V7FruitReportPdfWriter {
             "قيود الاستدلال / Scientific limitations",true);
         V7ReportLayoutKit.tableValue(c,new RectF(L,257*MM,L+W,283*MM),
             "Study day index is NOT specimen age, ripeness, microbiology, or edibility."+
-            "\\nTank transfer calibration and independent food validation are NOT completed."+
-            "\\nSource: "+FoodReferenceCatalog.SOURCE_DOI,false);
+            "\nTank transfer calibration and independent food validation are NOT completed."+
+            "\nSource: "+FoodReferenceCatalog.SOURCE_DOI,false);
     }
     private static void appendixPage(Canvas c,Context ctx,int page,int count,
                                      FoodFreshnessEngine.Result result,int start,
