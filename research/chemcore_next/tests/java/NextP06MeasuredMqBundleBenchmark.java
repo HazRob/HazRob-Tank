@@ -108,7 +108,7 @@ public final class NextP06MeasuredMqBundleBenchmark {
       String coordinate=t.family==0?"SOURCE_ADC_ORIGINAL":"SOURCE_ADC_ADJACENT_DIFF";
       var sig=new FingerprintExpert.Signature(
           "original-"+cls+"-"+sensor+"-"+FAMILY[t.family],ROOT,
-          coordinate,sensor,Long.valueOf(700+cls),
+          coordinate,sensor,null,
           List.of("source_feature"),List.of(t.mean),List.of(t.sd),1);
       var obs=new FingerprintExpert.Observation(coordinate,sensor,
         "SOURCE_READING_"+row.sourceIndex,Map.of("source_feature",row.feature(t.sensor,t.family)),true);
@@ -121,7 +121,7 @@ public final class NextP06MeasuredMqBundleBenchmark {
     int requiredFamilies=entries.stream().map(x->x.featureFamily).distinct().count()>1?2:1;
     int minMatched=Math.max(minSensors,(int)Math.ceil(entries.size()*.55));
     return new ResearchFingerprintBundle.Bundle("source-category-"+cls+"-portfolio",
-      ROOT,700+cls,entries,minMatched,minSensors,requiredFamilies);
+      ROOT,(Long)null,entries,minMatched,minSensors,requiredFamilies);
   }
   private static String fmt(double x){return String.format(Locale.US,"%.8f",x);}
   private static final class Metrics {

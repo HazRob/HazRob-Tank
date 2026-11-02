@@ -58,12 +58,12 @@ public final class ResearchFingerprintBundle {
   }
   public static final class Bundle {
     public final String bundleUid,sourceRoot;
-    public final long canonicalChemicalUid;
+    public final Long canonicalChemicalUid;
     public final List<Variant> variants;
     public final int minMatchedVariants,minDistinctSensorChannels,minDistinctFeatureFamilies;
-    public Bundle(String uid,String root,long chemicalUid,List<Variant> variants,
+    public Bundle(String uid,String root,Long chemicalUid,List<Variant> variants,
                   int matchedMin,int channelsMin,int familiesMin) {
-      if(missing(uid)||missing(root)||chemicalUid<=0||variants==null||variants.isEmpty()
+      if(missing(uid)||missing(root)||(chemicalUid!=null&&chemicalUid<=0)||variants==null||variants.isEmpty()
          ||matchedMin<1||channelsMin<1||familiesMin<1||
          matchedMin>variants.size()||channelsMin>variants.size()||
          familiesMin>variants.size())
@@ -75,8 +75,7 @@ public final class ResearchFingerprintBundle {
       Set<String> variantsIds=new HashSet<>();
       for(Variant v:this.variants) {
         if(v==null||!root.equals(v.sourceSignature.sourceRoot)
-           ||v.sourceSignature.canonicalChemicalUid==null
-           ||v.sourceSignature.canonicalChemicalUid!=chemicalUid)
+           ||!Objects.equals(v.sourceSignature.canonicalChemicalUid,chemicalUid))
           throw new IllegalArgumentException("bundle source root and chemical UID must match every variant");
         if(!variantsIds.add(v.techniqueId))
           throw new IllegalArgumentException("duplicate technique in one source bundle");
@@ -86,7 +85,7 @@ public final class ResearchFingerprintBundle {
   public static final class Score {
     public final Status status;
     public final String bundleUid,sourceRoot;
-    public final long canonicalChemicalUid;
+    public final Long canonicalChemicalUid;
     public final int sourceVariants,matchedVariants,distinctSensorChannels,
         distinctFeatureFamilies;
     public final List<String> matchedSensors,matchedFeatureFamilies,diagnostics;

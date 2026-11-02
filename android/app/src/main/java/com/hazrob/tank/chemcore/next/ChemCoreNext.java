@@ -171,7 +171,9 @@ public final class ChemCoreNext {
         " physical_MQ="+score.distinctSensorChannels+
         " feature_families="+score.distinctFeatureFamilies+
         " matched_variants="+score.matchedVariants);
-      if(score.isEligibleResearchHypothesis) {
+      if(score.isEligibleResearchHypothesis && bundle.canonicalChemicalUid==null)
+        reasons.add("SOURCE_CATEGORY_UNMAPPED_NO_CAS "+bundle.bundleUid);
+      if(score.isEligibleResearchHypothesis && bundle.canonicalChemicalUid!=null) {
         raw.add(new CoreContracts.EvidenceNode(bundle.sourceRoot,
           "SOURCE_DIVERSE_FINGERPRINT_BUNDLE",bundle.variants.get(0).sensorUid,
           bundle.canonicalChemicalUid,CoreContracts.EvidencePolarity.POSITIVE,
