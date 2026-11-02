@@ -1,0 +1,29 @@
+{
+  "schema": "chemcore.next.P05.1.catalog_eligibility.g1/1",
+  "date": "2026-11-02",
+  "task": "P05.1",
+  "ci_run_id": 41391694591,
+  "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41391694591",
+  "code": "android/app/src/main/java/com/hazrob/tank/chemcore/next/ResearchCandidateGenerator.java",
+  "test": "research/chemcore_next/tests/java/ResearchCandidateGeneratorSmoke.java",
+  "test_catalog_size": 736,
+  "model_catalog_policy": "Canonical UID universe not legacy144",
+  "eligible_research_candidates_tested": [
+    0,
+    1,
+    5,
+    10,
+    12
+  ],
+  "safeguards": [
+    "candidate must exist in complete source catalog",
+    "positive single-source-root physical evidence and matching source asset required",
+    "shared ambiguous source never produces duplicate chemical candidates",
+    "source feature compatibility explicit and fail-closed",
+    "max display count is never an inference quota",
+    "GENERAL_CLASS remains separated from molecular identity",
+    "no rank probability, no ppm or safety alarm"
+  ],
+  "real_sqlite_runtime_wired": false,
+  "g3_qualified": false
+}

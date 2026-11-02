@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
-  "status": "CHEMCORE_NEXT_P04_COMPLETE_G1_P05_CANDIDATE_GENERATOR_READY",
-  "last_verified_head_sha": "ca20fb7b3a95a71fd79a69c84005d74dc187979a",
+  "status": "CHEMCORE_NEXT_P05_1_G1_ELIGIBILITY_VERIFIED",
+  "last_verified_head_sha": "e680b9773b4e73bb307023e8f489b25dca15b904",
   "active_phase": "P05",
-  "active_task": "P05.1",
-  "last_checkpoint": "P04.1–P04.6 completed research G1/source benchmark level, 25/37 core tasks; next P05.1 no fixed 144 or target count.",
-  "next_action": "P05.1 candidate eligibility in all canonical UIDs, source-root linking, dynamic 0/1/5/10/more than 10, UNKNOWN if missing.",
+  "active_task": "P05.2",
+  "last_checkpoint": "26/37 core tasks. Full catalog candidate dynamic 0..12 test passed; source-backed only, actual Tank G3=0.",
+  "next_action": "P05.2 conditional negative evidence adapter; distinguish non-evaluable from qualified negative and shared source correlations",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 25,
-    "passed_tests": 24,
+    "done_tasks": 26,
+    "passed_tests": 25,
     "failed_tests": 0,
-    "percent_complete": 35.21
+    "percent_complete": 36.62
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -1060,8 +1060,8 @@
       "id": "P05.1",
       "phase": "P05",
       "description": "مرشحون من canonical master UID والأدلة الصالحة",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_CATALOG_ELIGIBILITY_CONTRACT_NO_RUNTIME_WIRING_NO_G3",
       "depends_on": [
         "P04.6"
       ],
@@ -1072,22 +1072,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "ResearchCandidateGeneratorSmoke Java17 via chemcore-next-p01-jvm-ci.yml",
+      "test_result": "Synthetic full catalog 736, evidence eligible 0/1/5/10/12, nonlegacy UID >=150, source root compatibility and GENERAL_CLASS source labels; 2 successful CI runs including deterministic ordering.",
+      "action_run_id": 41391694591,
+      "commit_sha": "e680b9773b4e73bb307023e8f489b25dca15b904",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p05_1_candidate_source_eligibility_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
+      "last_checkpoint": "All UIDs compatible in G1 synthetic 736-entry catalog; not yet wired to actual SQLite or Android",
+      "next_action": "DONE",
       "updated_at": null
     },
     {
       "id": "P05.2",
       "phase": "P05",
       "description": "أدلة موجبة وسالبة مشروطة",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P05.1"
@@ -2562,6 +2564,15 @@
       "commit_sha": "ca20fb7b3a95a71fd79a69c84005d74dc187979a",
       "ci_run": 41391431008,
       "evidence": "research/v8_implementation/results/next_p04_6_source_fusion_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE_G1",
+      "task_id": "P05.1",
+      "description": "Full catalog 736 synthetic eligibility no fixed ten and no legacy144",
+      "ci_run": 41391694591,
+      "commit_sha": "e680b9773b4e73bb307023e8f489b25dca15b904",
+      "evidence": "research/v8_implementation/results/next_p05_1_candidate_source_eligibility_evidence.json"
     }
   ],
   "notes": [
@@ -2595,9 +2606,9 @@
   "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
   "core_program_progress": {
     "total_tasks": 37,
-    "done_tasks": 25,
-    "percent_complete": 67.57,
-    "active_task": "P05.1",
+    "done_tasks": 26,
+    "percent_complete": 70.27,
+    "active_task": "P05.2",
     "qualified_g3_techniques": 0
   },
   "separate_android_integration_scope": {
