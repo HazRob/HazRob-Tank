@@ -240,7 +240,7 @@ jobs:
           assert d['source']['version']=='6.0.0'
           h=['sensor','legacy_id','gas_label','ratio_a','ratio_b','output_scale','min_ppm','max_ppm']
           dest=pathlib.Path('build/chemcore-next-p01/OCT2026-ORIGINAL-CURVES.tsv')
-          dest.write_text('\\t'.join(h)+'\\n'+''.join('\\t'.join(str(r[k]) for k in h)+'\\n' for r in d['curves']))
+          dest.write_text('\t'.join(h)+'\n'+''.join('\t'.join(str(r[k]) for k in h)+'\n' for r in d['curves']))
           print('ORIGINAL_43_MQDATASCIENCE_SOURCE_CURVES_EXTRACTED')
           PY
           java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextOctoberEthanolSourcePortfolioDiagnostic \
