@@ -7,6 +7,7 @@ on:
       - 'research/chemcore_next/experiments/next_reference_mq4_quantitative.py'
       - 'research/chemcore_next/tests/java/NextRealMqFingerprintBenchmark.java'
       - 'research/chemcore_next/tests/java/NextP06PairedV6UciBenchmark.java'
+      - 'research/chemcore_next/tests/java/NextP06MeasuredMqBundleBenchmark.java'
       - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
       - 'research/chemcore_next/device_calibration/**'
       - 'research/chemcore_next/experiments/next_reference_uci1081_fingerprints.py'
@@ -204,6 +205,33 @@ jobs:
           assert x['same_prediction_rows']+x['different_prediction_rows']==90
           assert x['same_samples_same_concentration_holdouts'] and not x['g3_tank']
           print('CHEMCORE_NEXT_P06_2_SAME_SOURCE_PARITY_CHECK_PASS')
+          PY
+      - name: P06 source-only diverse MQ fingerprint bundle on original 6400 ADC readings
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/next-g2-results/adc-bundles/classes
+          javac -encoding UTF-8 -d /tmp/next-g2-results/adc-bundles/classes \
+              android/app/src/main/java/com/hazrob/tank/chemcore/next/CoreContracts.java \
+              android/app/src/main/java/com/hazrob/tank/chemcore/next/FingerprintExpert.java \
+              android/app/src/main/java/com/hazrob/tank/chemcore/next/ResearchFingerprintBundle.java \
+              research/chemcore_next/tests/java/NextP06MeasuredMqBundleBenchmark.java
+          java -Xmx768m -cp /tmp/next-g2-results/adc-bundles/classes \
+              com.hazrob.tank.chemcore.next.NextP06MeasuredMqBundleBenchmark \
+              research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv \
+              /tmp/next-g2-results/adc-bundles/next_measured_MQ_diverse_portfolios.json \
+              | tee /tmp/next-g2-results/adc-bundles/next_measured_MQ_diverse_portfolios.log
+          grep -q '^CHEMCORE_NEXT_REAL_ADC_BUNDLE_STRESS_PASS ' \
+              /tmp/next-g2-results/adc-bundles/next_measured_MQ_diverse_portfolios.log
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('/tmp/next-g2-results/adc-bundles/next_measured_MQ_diverse_portfolios.json')
+          v=json.loads(p.read_text())
+          assert len(v['bundles'])==5
+          assert all(r['source_test_rows']==6336 for r in v['bundles'])
+          assert not v['source_exposure_independence_proven']
+          assert v['original_ADC_not_kohm'] and v['source_domain_only_no_tank_Rair_substitution']
+          print('CHEMCORE_NEXT_MQ_SOURCE_PORTFOLIO_GROUPING_PASS')
           PY
       - name: Preserve complete source-only predictions, derived fingerprints and lineage
         uses: actions/upload-artifact@v4
