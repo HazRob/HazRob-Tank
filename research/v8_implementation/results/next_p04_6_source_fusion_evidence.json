@@ -1,0 +1,20 @@
+{
+  "schema": "chemcore.next.P04.6.independent_evidence_root.g1/1",
+  "date": "2026-11-02",
+  "task": "P04.6",
+  "ci_run_id": 41391431008,
+  "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41391431008",
+  "code": "android/app/src/main/java/com/hazrob/tank/chemcore/next/IndependentEvidenceLedger.java",
+  "test": "research/chemcore_next/tests/java/IndependentEvidenceLedgerSmoke.java",
+  "status": "G1_SOFTWARE_ONLY",
+  "capabilities": [
+    "sourceRoot grouping across curves/experts/sensors within one exposure",
+    "one source supports one root, not pseudo-independent votes",
+    "multiple UIDs from one source are AMBIGUOUS and not independently verified",
+    "positive vs conditional negative conflict visible",
+    "NOT_EVALUABLE never treated as negative or zero gas",
+    "qualitative evidence node preserved, no fake posterior"
+  ],
+  "source_validation": "no published probability calibration; no Tank gas ID",
+  "tank_g3": 0
+}

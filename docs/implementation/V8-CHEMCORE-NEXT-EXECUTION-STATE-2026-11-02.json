@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
-  "status": "CHEMCORE_NEXT_P04_5_SOURCE_BENCHMARK_CLOSED_P04_6_READY",
-  "last_verified_head_sha": "4987adcac8c999e9064b6ef1fe8562eace182169",
-  "active_phase": "P04",
-  "active_task": "P04.6",
-  "last_checkpoint": "24/37 core tasks; P04.5 real external reference source benchmark checked; no Tank G3",
-  "next_action": "P04.6 source-root deduped typed evidence node, no likelihood double count; implement and test under G1.",
+  "status": "CHEMCORE_NEXT_P04_COMPLETE_G1_P05_CANDIDATE_GENERATOR_READY",
+  "last_verified_head_sha": "ca20fb7b3a95a71fd79a69c84005d74dc187979a",
+  "active_phase": "P05",
+  "active_task": "P05.1",
+  "last_checkpoint": "P04.1–P04.6 completed research G1/source benchmark level, 25/37 core tasks; next P05.1 no fixed 144 or target count.",
+  "next_action": "P05.1 candidate eligibility in all canonical UIDs, source-root linking, dynamic 0/1/5/10/more than 10, UNKNOWN if missing.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 24,
-    "passed_tests": 23,
+    "done_tasks": 25,
+    "passed_tests": 24,
     "failed_tests": 0,
-    "percent_complete": 33.8
+    "percent_complete": 35.21
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -125,7 +125,7 @@
         "P04.5",
         "P04.6"
       ],
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "depends_on": [
         "P03"
       ],
@@ -146,7 +146,7 @@
         "P05.6",
         "P05.7"
       ],
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "depends_on": [
         "P04"
       ],
@@ -1031,8 +1031,8 @@
       "id": "P04.6",
       "phase": "P04",
       "description": "واجهة EvidenceNode موحدة دون دمج عددي أعمى",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_SOFTWARE_SOURCE_CORRELATION_DEDUP_NO_G3",
       "depends_on": [
         "P04.5"
       ],
@@ -1043,22 +1043,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "Java17 IndependentEvidenceLedgerSmoke in chemcore-next-p01-jvm-ci.yml",
+      "test_result": "G1 source root consolidation; alternative UID conflicts, NOT_EVALUABLE, negative polarity and no fake posterior; full CI success.",
+      "action_run_id": 41391431008,
+      "commit_sha": "ca20fb7b3a95a71fd79a69c84005d74dc187979a",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p04_6_source_fusion_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
+      "last_checkpoint": "P04.6 independent source roots qualitative fusion passed; no G3 or source-specific calibrated confidence",
+      "next_action": "DONE",
       "updated_at": null
     },
     {
       "id": "P05.1",
       "phase": "P05",
       "description": "مرشحون من canonical master UID والأدلة الصالحة",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P04.6"
@@ -2551,6 +2553,15 @@
         41385644195
       ],
       "evidence": "research/v8_implementation/results/next_p04_5_ml_research_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE_G1",
+      "task_id": "P04.6",
+      "description": "Source root consensus and alternative identity conflict without duplicate evidence",
+      "commit_sha": "ca20fb7b3a95a71fd79a69c84005d74dc187979a",
+      "ci_run": 41391431008,
+      "evidence": "research/v8_implementation/results/next_p04_6_source_fusion_evidence.json"
     }
   ],
   "notes": [
@@ -2584,9 +2595,9 @@
   "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
   "core_program_progress": {
     "total_tasks": 37,
-    "done_tasks": 24,
-    "percent_complete": 64.86,
-    "active_task": "P04.6",
+    "done_tasks": 25,
+    "percent_complete": 67.57,
+    "active_task": "P05.1",
     "qualified_g3_techniques": 0
   },
   "separate_android_integration_scope": {
