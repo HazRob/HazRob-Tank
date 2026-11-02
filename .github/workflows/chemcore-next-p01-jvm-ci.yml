@@ -141,6 +141,14 @@ jobs:
             | tee build/chemcore-next-p01/P05-CANDIDATE-GENERATOR.log
           grep -q '^CHEMCORE_NEXT_P05_1_CANDIDATE_PASS ' \
             build/chemcore-next-p01/P05-CANDIDATE-GENERATOR.log
+      - name: Verify P05.2 conditional negative requires separate reference and NOT_EVALUABLE
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.ConditionalEvidenceRouterSmoke \
+            | tee build/chemcore-next-p01/P05-POLARITY-ROUTER.log
+          grep -q '^CHEMCORE_NEXT_P05_2_POLARITY_PASS ' \
+            build/chemcore-next-p01/P05-POLARITY-ROUTER.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -161,5 +169,6 @@ jobs:
             build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
             build/chemcore-next-p01/P04-INDEPENDENT-ROOTS.log
             build/chemcore-next-p01/P05-CANDIDATE-GENERATOR.log
+            build/chemcore-next-p01/P05-POLARITY-ROUTER.log
           if-no-files-found: warn
           retention-days: 30
