@@ -9,14 +9,14 @@
   "v7_mutation_allowed": false,
   "old_v7_rehabilitation_branch": "ABANDONED_NOT_FOR_EXECUTION",
   "scope": "V8: full MQDataScience v7 scientific inventory and gap evaluation first; extend independent ChemCore V6 into ChemCore Next, gated; V5/V6/V7 originals preserved",
-  "status": "CHEMCORE_NEXT_SOURCES_RECORDED_SCIENTIFIC_DISCUSSION_OPEN",
+  "status": "CHEMCORE_NEXT_OWNER_17_PROPOSALS_LOGGED_SCIENTIFIC_REVIEW_OPEN",
   "app_code_changed": false,
   "firmware_changed": false,
   "apk_built": false,
   "hardware_test_pass": false,
   "latest_approved_stable_confirmed": false,
   "last_verified_sha": "8f887a28e41a33f2878bbef68926e1de28e9a97c",
-  "next_action": "Discuss owner's ChemCore Next ideas in detail; record each proposal and decision in scientific discussion register before changing engine runtime; continue full-source MQDataScience and MQSensorsLib_Docs audit afterward.",
+  "next_action": "Discuss user's 17 proposed scientific design ideas; agree on qualified sensor selectivity, negative evidence, environmental metadata, review policy, and forward/inverse validation. Do not change runtime until decisions and G1/G2/G3 gates.",
   "tasks": [
     {
       "id": "G00",
@@ -343,13 +343,17 @@
     "tests_executed_in_this_new_track": "NONE",
     "firmware_changed": false,
     "apk_built": false,
-    "discussion_state": "OWNER_IDEAS_PENDING_NO_FURTHER_DESIGN_ASSUMPTIONS",
+    "discussion_state": "OWNER_17_SCIENTIFIC_PROPOSALS_RECORDED_NOT_APPROVED",
     "decisions_pending": [
       "Owner’s scientific and architectural proposals",
       "Dual R0 reference semantics",
       "Source curve independence and applicability",
       "3D/4D runtime eligibility and grouped G2/G3",
-      "Mixture and unknown inference"
-    ]
+      "Mixture and unknown inference",
+      "Owner's 17 proposals: confirm conditional sensor positive/negative evidence, single-sensor surfacing, feedback and safety separation, central learning gates"
+    ],
+    "owner_proposals_count": 17,
+    "owner_proposals_register": "docs/research/CHEMCORE-NEXT-SCIENTIFIC-DISCUSSION-REGISTER-2026-11-02_AR.md#7-مقترحات-مالك-المشروع-العلمية-السبعة-عشر--جلسة-2026-11-02",
+    "discussion_register_commit": "136eae30da2b3ee1747de8b146ea8b20e3e0d459"
   }
 }
