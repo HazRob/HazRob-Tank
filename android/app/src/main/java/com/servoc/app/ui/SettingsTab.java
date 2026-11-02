@@ -71,6 +71,39 @@ public final class SettingsTab {
         cfg.addView(directionReverseCheck(c,"عكس الدوران في المكان (Joystick + عجلة + الأزرار؛ باستثناء المساطر)",DriveDirectionOption.PREF_REVERSE_PIVOT_ALL),UiKit.full(c));
         LinearLayout buttons=UiKit.hbox(c);Button sync=UiKit.button(c,"مزامنة");sync.setOnClickListener(v->sync());buttons.addView(sync,UiKit.weight(1));Button apply=UiKit.button(c,"تطبيق");apply.setOnClickListener(v->apply());buttons.addView(apply,UiKit.weight(1));cfg.addView(buttons,UiKit.full(c));root.addView(cfg,UiKit.full(c));
 
+        // V8 P07.3 — research engine is explicit; disabling never activates V6.
+        LinearLayout nextEngine=UiKit.card(c);
+        nextEngine.addView(UiKit.title(c,"ChemCore Next — محرك V8 البحثي"),UiKit.full(c));
+        TextView nextScope=UiKit.small(c,
+            "المحرك مخصص للتحليل البحثي غير المؤهل G3. لا تُعتمد هوية الغازات أو ppm أو حدود السلامة من هذه النتائج. إيقاف Next لا يستبدله تلقائياً بمحرك V6، بل يعرض عدم تفعيل التحليل.");
+        nextScope.setTextColor(0xFF46515E);
+        nextEngine.addView(nextScope,UiKit.full(c));
+        CheckBox nextToggle=new CheckBox(c);
+        nextToggle.setText("تفعيل ChemCore Next البحثي");
+        nextToggle.setTextColor(0xFF15202B);
+        nextToggle.setMinHeight(UiKit.dp(c,48));
+        nextToggle.setChecked(host.preferences().getBoolean(
+            com.servoc.app.chemcore.nextintegration.NextEngineRouter.FLAG,true));
+        nextToggle.setOnCheckedChangeListener((button,enabled)->{
+            boolean saved=host.preferences().edit().putBoolean(
+                com.servoc.app.chemcore.nextintegration.NextEngineRouter.FLAG,enabled).commit();
+            if(!saved){
+                button.setOnCheckedChangeListener(null);
+                button.setChecked(!enabled);
+                button.setOnCheckedChangeListener((retry,checked)->{
+                    if(!host.preferences().edit().putBoolean(
+                        com.servoc.app.chemcore.nextintegration.NextEngineRouter.FLAG,checked).commit())
+                        host.showToast("فشل حفظ تفعيل المحرك");
+                    else host.showToast(checked?"ChemCore Next بحثي • مفعل":"ChemCore Next متوقف • لا بديل تلقائي");
+                });
+                host.showToast("فشل حفظ تفعيل المحرك");
+                return;
+            }
+            host.showToast(enabled?"ChemCore Next بحثي • مفعل":"ChemCore Next متوقف • لا بديل تلقائي");
+        });
+        nextEngine.addView(nextToggle,UiKit.full(c));
+        root.addView(nextEngine,UiKit.full(c));
+
         LinearLayout cleanAir=UiKit.card(c);
         cleanAir.addView(UiKit.title(c,"معايرة R0 — للمستخدم"),UiKit.full(c));
         cleanAir.addView(UiKit.small(c,
