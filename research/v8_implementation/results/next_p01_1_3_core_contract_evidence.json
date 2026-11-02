@@ -1,0 +1,57 @@
+{
+  "schema": "hazrob.v8.chemcore_next.p01.1-1.3.g1-jvm-source-evidence/1",
+  "date": "2026-11-02",
+  "branch": "feature/tank-v8-implementation",
+  "run_id": 41372427275,
+  "run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41372427275",
+  "job_id": 125045530858,
+  "run_commit_sha": "c7ecb7af2c23bf79a1bddff7e3c0d7e662b13f52",
+  "result": "SUCCESS",
+  "compile": "javac -encoding UTF-8 -Xlint:all with JDK17 on Ubuntu",
+  "test": "com.hazrob.tank.chemcore.next.ChemCoreNextContractSmoke",
+  "assertions_passed": 28,
+  "assertions_failed": 0,
+  "source_files": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/CoreContracts.java",
+      "sha": "5dcd68c82c2abc5ab2e8c91bbf429af4fab76655"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SensorCapabilityRegistry.java",
+      "sha": "5ed6ddf95a364f11b9b428ebbc8b88ed9077b0a9"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java",
+      "sha": "d447fdc576ddb94432f2896e78b2f930976cc100"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/ChemCoreNextContractSmoke.java",
+      "sha": "33f7c24ac6e3f174874f4b8d514965e57bec4e38"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "sha": "b0566b294db0176a29f542fde2c01200ae3c76cf"
+    }
+  ],
+  "coverage": [
+    "P01.1 independent no-Android no-V6 Java skeleton",
+    "P01.2 immutable SensorInstance/DeviceProfile/Reading/Snapshot/EvidenceAsset/EvidenceNode/Candidate/Result",
+    "P01.3 dynamic physical sensor registry tested from 8 to 9",
+    "Snapshot deterministic SHA-256 reproducibility but P01.4 lossless serialization and JSON schema remains TODO",
+    "No evidence-free chemical candidate or reportable ppm flag"
+  ],
+  "test_scope": "SOFTWARE_CONTRACT_SMOKE_G1_ONLY",
+  "scientific_model_qualified": false,
+  "physical_hardware_g3": false,
+  "android_integration": false,
+  "apk_built": false,
+  "initial_failed_run": {
+    "id": 41371953145,
+    "reason": "Test expected IllegalArgumentException when immutable List correctly threw UnsupportedOperationException; corrected and rerun passed"
+  },
+  "missing_before_P01_4": [
+    "lossless replay codec roundtrip",
+    "versioned external JSON schema and decode/incompatible-version handling"
+  ],
+  "plan_exception": "P00.4 actual seeded SQLite count was being tested in parallel because immutable Next core contracts do not depend on catalog count. P00.4 must finish before any catalog integration."
+}
