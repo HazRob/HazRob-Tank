@@ -141,6 +141,14 @@ class AuditTests(unittest.TestCase):
                 issues = audit_record(x)["issues"]
                 self.assertFalse(any(s.startswith("BOUNDED_CLASSIFICATION_") for s in issues))
 
+    def test_malformed_metric_name_fails_closed_without_exception(self):
+        for name in ({}, [], 0, False, None, ""):
+            with self.subTest(name=repr(name)):
+                x = eligible_fixture()
+                x["metric_name"] = name
+                issues = audit_record(x)["issues"]
+                self.assertIn("INVALID_METRIC_NAME", issues)
+
     def test_raw_hash_must_be_verified(self):
         x=eligible_fixture();x["raw_sha256_verified_from_bytes"]=False
         self.assertIn("RAW_SOURCE_BYTES_NOT_SHA_VERIFIED",audit_record(x)["issues"])
