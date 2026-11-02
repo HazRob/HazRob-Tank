@@ -226,10 +226,10 @@ def main():
         "new research fingerprint/linear expert not yet activated in ChemCoreNext.evaluate"])
     (out/"next_mq4_source_experiment.json").write_text(
         json.dumps(report,indent=2,allow_nan=False)+"\n",encoding="utf8")
-    for mode,stats in summary.items():
+    for mode,metrics in summary.items():
         print("NEXT_MQ4_SOURCE_SCORE",mode,
-            "MAE_PPM=%.6f"%stats["mean_day_mae_ppm"],
-            "COVERAGE90=%.5f"%stats["mean_day_interval_coverage"])
+            "MAE_PPM=%.6f"%metrics["mean_day_mae_ppm"],
+            "COVERAGE90=%.5f"%metrics["mean_day_interval_coverage"])
     print("CHEMCORE_NEXT_MQ4_REAL_REFERENCE_PASS rows=%d fingerprints=%d folds=%d predictions=%d unit_transfer=%d G3=0"%
           (len(df),len(signatures),len(folds),len(predictions),len(transfers)))
 
