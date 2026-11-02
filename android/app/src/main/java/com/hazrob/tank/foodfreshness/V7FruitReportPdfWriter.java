@@ -220,10 +220,55 @@ public final class V7FruitReportPdfWriter {
         text(c,"Reference study positions D1-D5 - not actual storage days",
              new RectF(L+4*MM,270*MM,L+W-4*MM,275*MM),false,false);
     }
+    /** Draw actually captured longitudinal MQ Rs samples; never interpolate missing frames. */
+    private static void temporalCurve(Canvas c,Map<String,List<double[]>> trace,
+                                      float left,float top,float right,float bottom){
+        if(trace==null||trace.isEmpty()){
+            text(c,"No time-series data in this archival export",
+                new RectF(left,top,right,top+10*MM),false,false);
+            return;
+        }
+        double min=Double.POSITIVE_INFINITY,max=Double.NEGATIVE_INFINITY;
+        Map<String,Double> initial=new HashMap<>();
+        for(String key:FoodReferenceCatalog.SENSOR_ORDER){
+            List<double[]> list=trace.get(key);
+            if(list==null||list.isEmpty())continue;
+            for(double[] p:list){
+                if(p==null||p.length<2||!Double.isFinite(p[0])||!Double.isFinite(p[1])||p[1]<=0)continue;
+                if(!initial.containsKey(key))initial.put(key,p[1]);
+                double v=Math.log10(p[1]/initial.get(key));
+                if(Double.isFinite(v)){min=Math.min(min,v);max=Math.max(max,v);}
+            }
+        }
+        if(!Double.isFinite(min)||!Double.isFinite(max))return;
+        double span=Math.max(0.05,max-min);
+        int[] colors={0xFF2962AA,0xFFCC5A27,0xFF2B9155,0xFF804BA7,
+                      0xFFAD365C,0xFF117B86,0xFF825425,0xFF5B6472};
+        Paint pen=new Paint(Paint.ANTI_ALIAS_FLAG);pen.setStrokeWidth(1.8f);
+        for(int sensor=0;sensor<FoodReferenceCatalog.SENSOR_ORDER.size();sensor++){
+            String key=FoodReferenceCatalog.SENSOR_ORDER.get(sensor);
+            List<double[]> points=trace.get(key);
+            if(points==null||points.size()<2||!initial.containsKey(key))continue;
+            pen.setColor(colors[sensor]);
+            float prevX=Float.NaN,prevY=Float.NaN;
+            for(double[] point:points){
+                if(point==null||point.length<2||point[1]<=0||!Double.isFinite(point[1])||
+                   !Double.isFinite(point[0])){prevX=Float.NaN;continue;}
+                double value=Math.log10(point[1]/initial.get(key));
+                float x=left+(right-left)*(float)Math.max(0,Math.min(1,point[0]/180.0));
+                float y=bottom-(bottom-top)*(float)((value-min)/span);
+                if(Float.isFinite(prevX))c.drawLine(prevX,prevY,x,y,pen);
+                prevX=x;prevY=y;
+            }
+        }
+        text(c,"Measured relative Rs; 0-180 s | each line = one MQ channel",
+            new RectF(left, bottom+1*MM,right,bottom+7*MM),false,false);
+    }
     private static void measurementPage(Canvas c,Context ctx,int page,int total,
                                         FoodFreshnessEngine.Result result,
                                         Map<String,Double> readings,int samples,
-                                        long durationMs,String id,String captureTimestampUtc){
+                                        long durationMs,String id,String captureTimestampUtc,
+                                        Map<String,List<double[]>> trace){
         header(c,ctx,page,total,captureTimestampUtc);
         FoodMeasurementDecision.Decision d=FoodMeasurementDecision.fruit(readings,result.foodSelection);
         V7ReportLayoutKit.tableHeader(c,new RectF(L,27*MM,L+W,45*MM),
@@ -243,15 +288,19 @@ public final class V7FruitReportPdfWriter {
             "القراءات الفعلية / Frozen 180-second source-comparable MQ resistance",true);
         int k=0;
         for(String sensor:FoodReferenceCatalog.SENSOR_ORDER){
-            float top=(130+k*13)*MM;
+            float top=(125+k*8)*MM;
             Double v=readings.get(sensor);
-            V7ReportLayoutKit.tableValue(c,new RectF(L,top,L+W,top+12*MM),
+            V7ReportLayoutKit.tableValue(c,new RectF(L,top,L+W,top+8*MM),
                 sensor+"  |  Rs: "+(v!=null&&Double.isFinite(v)?fmt(v,5):"NOT_MEASURED"),false);
             k++;
         }
-        V7ReportLayoutKit.tableHeader(c,new RectF(L,239*MM,L+W,253*MM),
+        V7ReportLayoutKit.blankChart(c,new RectF(L,191*MM,L+W,241*MM),
+            "منحنى الاستجابة الفعلي / Actual Tank 180s sensor trace",
+            "Time 0-180 seconds","Centered log10 Rs change");
+        temporalCurve(c,trace,L+14*MM,202*MM,L+W-10*MM,231*MM);
+        V7ReportLayoutKit.tableHeader(c,new RectF(L,243*MM,L+W,255*MM),
             "قيود الاستدلال / Scientific limitations",true);
-        V7ReportLayoutKit.tableValue(c,new RectF(L,256*MM,L+W,282*MM),
+        V7ReportLayoutKit.tableValue(c,new RectF(L,257*MM,L+W,283*MM),
             "Study day index is NOT specimen age, ripeness, microbiology, or edibility."+
             "\\nTank transfer calibration and independent food validation are NOT completed."+
             "\\nSource: "+FoodReferenceCatalog.SOURCE_DOI,false);
@@ -282,13 +331,27 @@ public final class V7FruitReportPdfWriter {
                              FoodFreshnessEngine.Result result,
                              Map<String,Double> readings,int samples,long durationMs,
                              String reportId)throws Exception{
-        write(ctx,out,result,readings,samples,durationMs,reportId,"-");
+        write(ctx,out,result,readings,samples,durationMs,reportId,"-",null);
     }
     /** Optional original capture UTC; never replace with PDF export time. */
     public static void write(Context ctx,OutputStream out,
                              FoodFreshnessEngine.Result result,
                              Map<String,Double> readings,int samples,long durationMs,
                              String reportId,String captureTimestampUtc)throws Exception{
+        write(ctx,out,result,readings,samples,durationMs,reportId,
+              captureTimestampUtc,null);
+    }
+    public static void write(Context ctx,OutputStream out,
+                             FoodFreshnessEngine.Result result,
+                             Map<String,Double> readings,int samples,long durationMs,
+                             String reportId,Map<String,List<double[]>> trace)throws Exception{
+        write(ctx,out,result,readings,samples,durationMs,reportId,"-",trace);
+    }
+    public static void write(Context ctx,OutputStream out,
+                             FoodFreshnessEngine.Result result,
+                             Map<String,Double> readings,int samples,long durationMs,
+                             String reportId,String captureTimestampUtc,
+                             Map<String,List<double[]>> trace)throws Exception{
         if(ctx==null||out==null||result==null)
             throw new IllegalArgumentException("Frozen fruit result required");
         // Main matrix contains all eighteen source-selectable fruit/mix families.
@@ -303,7 +366,7 @@ public final class V7FruitReportPdfWriter {
                 if(i<=2)mainPage(c,ctx,i,pages,result,readings,samples,
                     durationMs,reportId,matches,captureTimestampUtc);
                 else if(i==3)measurementPage(c,ctx,i,pages,result,readings,samples,
-                    durationMs,reportId,captureTimestampUtc);
+                    durationMs,reportId,captureTimestampUtc,trace);
                 else appendixPage(c,ctx,i,pages,result,(i-4)*8,captureTimestampUtc);
                 pdf.finishPage(p);
             }
