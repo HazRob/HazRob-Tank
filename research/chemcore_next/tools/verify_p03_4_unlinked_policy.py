@@ -56,7 +56,12 @@ def verify():
         if status=="CAS_SPECIES_EXACT_SOURCE_LABEL":
             assert cas_valid(r["expected_cas"]), r
             assert r["expected_chemical_name"]
-            assert r["authority_url"]==NIOSH_CAS_INDEX
+            if r["source_label"]=="Ethanol":
+                assert r["expected_cas"]=="64-17-5"
+                assert r["expected_chemical_name"]=="Ethyl alcohol"
+                assert r["authority_url"]=="https://www.cdc.gov/niosh/npg/npgd0262.html"
+            else:
+                assert r["authority_url"]==NIOSH_CAS_INDEX
         elif status=="CLASS_MIXTURE_OR_NON_SPECIFIC_NOT_MOLECULE":
             assert r["source_label"].lower() in {"lpg","smoke","alcohol","nox"}
             assert not r["expected_cas"] and not r["authority_url"]
