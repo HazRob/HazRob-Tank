@@ -18,7 +18,8 @@ import java.util.Locale;
 /** Evidence-backed STATIC plots for one in-memory MQ operation; no invented timeline. */
 public final class TankInstantCharts {
     public static final String[] LABELS={
-        "مقاومة الحساسات Rs (kΩ)","نسب Rs/R0 — بصمة MQ","درجات مطابقة المرشحين"
+        "مقاومة الحساسات Rs (kΩ)","نسب Rs/R0 — بصمة MQ","درجات مطابقة المرشحين",
+        "مستوى الحدود المرجعية والتجاوزات (%)","قيم PPM المرجعية المحسوبة"
     };
     private TankInstantCharts(){}
     private static final class Value {
@@ -39,6 +40,28 @@ public final class TankInstantCharts {
                 double v=q.optDouble(type==0?"rs":"ratio",Double.NaN);
                 if(Double.isFinite(v)&&v>0)out.add(new Value(ch.key.toUpperCase(Locale.US),v));
             }
+        }else if(type==3){
+            JSONObject assessment=analysis==null?null:
+                analysis.optJSONObject("scientific_reference_screening");
+            JSONArray comparisons=assessment==null?null:assessment.optJSONArray("comparisons");
+            if(comparisons!=null)for(int i=0;i<comparisons.length();i++){
+                JSONObject row=comparisons.optJSONObject(i);if(row==null)continue;
+                double v=row.optDouble("chart_ratio_percent",Double.NaN);
+                if(!Double.isFinite(v)||v<0)continue;
+                out.add(new Value(row.optString("material_label","")+
+                    " "+row.optString("reference_role",""),v));
+            }
+        }else if(type==4){
+            JSONObject diagnostic=analysis==null?null:
+                analysis.optJSONObject("scientific_source_diagnostics");
+            JSONArray rows=diagnostic==null?null:diagnostic.optJSONArray("all_reference_models");
+            if(rows!=null)for(int i=0;i<rows.length();i++){
+                JSONObject fit=rows.optJSONObject(i);if(fit==null)continue;
+                double value=fit.optDouble("estimated_ppm",Double.NaN);
+                if(!Double.isFinite(value)||value<0)continue;
+                out.add(new Value(fit.optString("source_curve_id","")+
+                    " "+fit.optString("gas_or_class",""),value));
+            }
         }else{
             JSONArray list=analysis==null?null:analysis.optJSONArray("candidates");
             if(list!=null)for(int i=0;i<Math.min(8,list.length());i++){
@@ -54,7 +77,7 @@ public final class TankInstantCharts {
     public static Bitmap render(int type,JSONObject captured,JSONObject analysis){
         List<Value> rows=values(type,captured,analysis);
         if(rows.isEmpty())throw new IllegalArgumentException("No observed evidence for requested chart");
-        int w=1100,h=630;
+        int w=1100,h=Math.max(630,120+rows.size()*50+80);
         Bitmap bitmap=Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888);
         Canvas canvas=new Canvas(bitmap);canvas.drawColor(Color.WHITE);
         Paint ink=new Paint(Paint.ANTI_ALIAS_FLAG);ink.setColor(0xFF18283C);ink.setTextSize(25);
@@ -64,9 +87,11 @@ public final class TankInstantCharts {
         ink.setTextSize(18);ink.setColor(0xFF5B6571);
         drawRtl(canvas,"قياسات أصلية أو درجات ترشيح حسابية • ليست سلسلة زمنية",64,ink,w-55);
         double max=0;for(Value v:rows)max=Math.max(max,v.value);
-        if(type==2)max=Math.max(100,max);
+        if(type==2||type==3)max=Math.max(100,max);
         if(max<=0)max=1;
-        float top=112,span=440f/rows.size();
+        // Larger scroll-free bitmap for a complete model/threshold series.
+        int pageRows=rows.size();
+        float top=112,span=Math.max(44f,(h-190f)/pageRows);
         Paint bar=new Paint(Paint.ANTI_ALIAS_FLAG);bar.setColor(0xFF176B9A);
         for(int i=0;i<rows.size();i++){
             Value r=rows.get(i);float y=top+i*span;
@@ -76,10 +101,10 @@ public final class TankInstantCharts {
             String label=r.label;
             if(label.length()>16)label=label.substring(0,15)+"…";
             canvas.drawText(label,15,y+span*.65f,ink);
-            canvas.drawText(String.format(Locale.US,"%.2f%s",r.value,type==2?"%":""),890,y+span*.65f,ink);
+            canvas.drawText(String.format(Locale.US,"%.2f%s",r.value,type==2||type==3?"%":type==4?" ppm":""),890,y+span*.65f,ink);
         }
         ink.setColor(0xFF6B7280);ink.setTextSize(17);
-        drawRtl(canvas,"المصدر: عملية قياس واحدة مكتملة • دون نقاط تقديرية مضافة",602,ink,w-55);
+        drawRtl(canvas,"قيمة حسابية/بحثية مرتبطة بمرجع • ليست إثبات رصد أو تجاوز تعرض تنظيمي",h-28,ink,w-55);
         return bitmap;
     }
     private static void drawRtl(Canvas canvas,String value,int baseline,Paint p,int right){
