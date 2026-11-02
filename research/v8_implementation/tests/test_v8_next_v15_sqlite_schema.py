@@ -72,6 +72,17 @@ class V15Schema(unittest.TestCase):
                 self.db.execute(INSERT,sample(uid="duplicate",ppm=1))
         except sqlite3.IntegrityError:pass
         self.assertEqual(self.db.execute("SELECT count(*) FROM next_research_decisions").fetchone()[0],0)
+    def test_android_store_append_readback_and_replay_contract(self):
+        code=(ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextDecisionStore.java").read_text()
+        for clause in ("NextReplayCodec.encodeSnapshot", "NextReplayCodec.encodeResult",
+                       "NextReplayCodec.decodeSnapshot", "NextReplayCodec.decodeResult",
+                       'w.beginTransaction()', 'w.setTransactionSuccessful()',
+                       'w.insertOrThrow("next_research_decisions"', "readBack(w,uid)",
+                       "read-after-write", "receipt.engineVersion",
+                       "decision.reportablePpm", "decision.physicallyValidatedG3"):
+            self.assertIn(clause,code)
+        self.assertNotIn('UPDATE next_research_decisions SET',code)
+
     def test_java_upgrade_calls_v15(self):
         text=DB.read_text()
         self.assertIn("DB_VERSION=15",text)
