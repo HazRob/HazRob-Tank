@@ -83,7 +83,7 @@ public final class V7BeefResearchPdfWriter {
             Double read=channels==null?null:channels.get(name);
             V7ReportLayoutKit.tableValue(c,rect(L+120,rowY,170,38),val(read,4),false);
             V7ReportLayoutKit.tableValue(c,rect(L+290,rowY,W-290,38),
-                "Rs — Source units",false);
+                "Tank Rs (device units)",false);
             rowY+=38;
         }
         section(c,"مقارنة فئات الدراسة الأربع","Four research class labels",594);
@@ -144,16 +144,66 @@ public final class V7BeefResearchPdfWriter {
         text(c,"Measured Tank Rs (orange) vs study "+leading+" prototype (blue)",
              L+12,273,W-24,24,false,false);
     }
+    /** Plot collected 180s real MQ telemetry only: no synthetic or literature time series. */
+    private static void actualTimeTrace(Canvas c,Map<String,List<double[]>> traces){
+        if(traces==null||traces.isEmpty()){
+            text(c,"Live time series was not retained for this export.",
+                L+22,390,W-44,34,false,false);
+            return;
+        }
+        double min=Double.POSITIVE_INFINITY,max=Double.NEGATIVE_INFINITY;
+        java.util.Map<String,Double> initial=new java.util.LinkedHashMap<>();
+        for(String sensor:BeefResearchCatalog.SENSOR_ORDER){
+            List<double[]> points=traces.get(sensor);
+            if(points==null)continue;
+            for(double[] point:points){
+                if(point==null||point.length<2||!Double.isFinite(point[0])||
+                   !Double.isFinite(point[1])||point[1]<=0)continue;
+                if(!initial.containsKey(sensor))initial.put(sensor,point[1]);
+                double relative=Math.log10(point[1]/initial.get(sensor));
+                if(Double.isFinite(relative)){min=Math.min(min,relative);max=Math.max(max,relative);}
+            }
+        }
+        if(!Double.isFinite(min))return;
+        double span=Math.max(0.05,max-min);
+        int[] colors={0xFF286DB1,0xFFCF6231,0xFF298A52,0xFF7D4FAA,
+                      0xFFB73A61,0xFF177D87,0xFF87582A};
+        float left=L+52,right=R-38,top=382,bottom=490;
+        Paint pen=new Paint(Paint.ANTI_ALIAS_FLAG);pen.setStrokeWidth(2f);
+        for(int i=0;i<BeefResearchCatalog.SENSOR_ORDER.size();i++){
+            String sensor=BeefResearchCatalog.SENSOR_ORDER.get(i);
+            List<double[]> data=traces.get(sensor);
+            if(data==null||data.size()<2||!initial.containsKey(sensor))continue;
+            pen.setColor(colors[i]);float px=Float.NaN,py=Float.NaN;
+            for(double[] point:data){
+                if(point==null||point.length<2||!Double.isFinite(point[0])||
+                   !Double.isFinite(point[1])||point[1]<=0){px=Float.NaN;continue;}
+                double q=Math.log10(point[1]/initial.get(sensor));
+                float x=left+(right-left)*(float)Math.max(0,Math.min(1,point[0]/180.0));
+                float y=bottom-(bottom-top)*(float)((q-min)/span);
+                if(Float.isFinite(px))c.drawLine(px,py,x,y,pen);
+                px=x;py=y;
+            }
+            text(c,sensor,L+17+i*(W-34)/7,494,(W-34)/7,18,false,false);
+        }
+    }
     private static void pageTwo(Canvas c,Context ctx,BeefResearchEngine.Result result,
-                                Map<String,Double> measured,String captureTimestampUtc){
+                                Map<String,Double> measured,Map<String,List<double[]>> trace,
+                                String captureTimestampUtc){
         pageChrome(c,ctx,2,captureTimestampUtc);
         V7ReportLayoutKit.blankChart(c,rect(L,82,W,211),
             "البصمة المقاسة مقابل المرجع / Seven-MQ source comparison",
             "MQ2–MQ135", "Shape");
         measuredBeefCurve(c,result,measured);
         V7ReportLayoutKit.blankChart(c,rect(L,306,W,211),
-            "ملاحظة حول البيانات الزمنية / Temporal capture evidence",
-            "180-second capture window","Raw time series is not exported");
+            "الاستجابة الزمنية للحساسات / Actual 180s Tank MQ response",
+            "Capture time (seconds)","log10 Rs / initial Rs");
+        actualTimeTrace(c,trace);
+        BeefGaussianResearchEngine.Result gaussian=
+            BeefGaussianResearchEngine.analyze(measured);
+        text(c,"Secondary Gaussian study model: "+
+            (gaussian.ranked.isEmpty()?gaussian.status:gaussian.ranked.get(0).classCode)+
+            " (source only, no microbiological measurement)",L+14,518,W-28,22,false,false);
         // Render a chart ONLY from actual precomputed result values.
         // No synthetic confidence, no thresholding, no food quality verdict.
         float top=530;
@@ -219,13 +269,27 @@ public final class V7BeefResearchPdfWriter {
     public static void write(Context ctx,OutputStream out,BeefResearchEngine.Result result,
                              Map<String,Double> readings,int sampleCount,long ms,
                              String id,double temperatureC,double humidityPct)throws Exception{
-        write(ctx,out,result,readings,sampleCount,ms,id,temperatureC,humidityPct,"-");
+        write(ctx,out,result,readings,sampleCount,ms,id,temperatureC,humidityPct,"-",null);
     }
     /** Timestamp is the archived specimen acquisition time, not export time. */
     public static void write(Context ctx,OutputStream out,BeefResearchEngine.Result result,
                              Map<String,Double> readings,int sampleCount,long ms,
                              String id,double temperatureC,double humidityPct,
                              String captureTimestampUtc)throws Exception{
+        write(ctx,out,result,readings,sampleCount,ms,id,temperatureC,humidityPct,
+            captureTimestampUtc,null);
+    }
+    public static void write(Context ctx,OutputStream out,BeefResearchEngine.Result result,
+                             Map<String,Double> readings,int sampleCount,long ms,
+                             String id,double temperatureC,double humidityPct,
+                             Map<String,List<double[]>> trace)throws Exception{
+        write(ctx,out,result,readings,sampleCount,ms,id,temperatureC,humidityPct,"-",trace);
+    }
+    public static void write(Context ctx,OutputStream out,BeefResearchEngine.Result result,
+                             Map<String,Double> readings,int sampleCount,long ms,
+                             String id,double temperatureC,double humidityPct,
+                             String captureTimestampUtc,
+                             Map<String,List<double[]>> trace)throws Exception{
         if(ctx==null||out==null||result==null)
             throw new IllegalArgumentException("Frozen beef study result required");
         PdfDocument pdf=new PdfDocument();
@@ -235,7 +299,7 @@ public final class V7BeefResearchPdfWriter {
                 Canvas c=p.getCanvas();c.drawColor(Color.WHITE);
                 if(i==1)pageOne(c,ctx,result,readings,sampleCount,ms,id,
                     temperatureC,humidityPct,captureTimestampUtc);
-                else if(i==2)pageTwo(c,ctx,result,readings,captureTimestampUtc);
+                else if(i==2)pageTwo(c,ctx,result,readings,trace,captureTimestampUtc);
                 else pageThree(c,ctx,captureTimestampUtc);
                 pdf.finishPage(p);
             }
