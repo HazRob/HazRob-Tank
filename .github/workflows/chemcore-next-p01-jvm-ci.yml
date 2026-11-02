@@ -101,6 +101,14 @@ jobs:
             | tee build/chemcore-next-p01/P04-SOURCE-CURVE-EXPERT.log
           grep -q '^CHEMCORE_NEXT_P04_1_SOURCE_CURVE_PASS ' \
             build/chemcore-next-p01/P04-SOURCE-CURVE-EXPERT.log
+      - name: Verify P04.2 FingerprintExpert independent source-space and 1/2/8 sensor subsets
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.FingerprintExpertSmoke \
+            | tee build/chemcore-next-p01/P04-FINGERPRINT-EXPERT.log
+          grep -q '^CHEMCORE_NEXT_P04_2_FINGERPRINT_PASS ' \
+            build/chemcore-next-p01/P04-FINGERPRINT-EXPERT.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -116,5 +124,6 @@ jobs:
             build/chemcore-next-p01/P02-CLEAN-AIR-REPLAY-TEST.log
             build/chemcore-next-p01/NH3-NH4-SHARED-SOURCE-TEST.log
             build/chemcore-next-p01/P04-SOURCE-CURVE-EXPERT.log
+            build/chemcore-next-p01/P04-FINGERPRINT-EXPERT.log
           if-no-files-found: warn
           retention-days: 30
