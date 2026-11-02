@@ -104,17 +104,29 @@ def inspect_zip(path, expected_rows=3330):
         raise ValueError("MQ_EXT10_ARCHIVE_CORRUPT_OR_UNREADABLE") from exc
     require(bool(manifest), "ARCHIVE_NO_ETHANOL_FILES")
     require(len(manifest) <= 65, "ARCHIVE_MORE_ETHANOL_THAN_REPORTED")
+    # A count of 65 alone is not evidence of the six published liquid
+    # concentration levels: 65 uniquely named C1 replicates could pass it.
+    counts = {code: 0 for code in LIQUID_PERCENT_BY_CODE}
+    for sample in manifest:
+        counts[sample["concentration_code"]] += 1
+    all_levels_present = all(count > 0 for count in counts.values())
+    count_complete = len(manifest) == 65
     manifest.sort(key=lambda x: (x["concentration_code"], x["repetition"]))
     return {
         "schema": SCHEMA,
         "source_id": "MQ-EXT-10",
         "source_version_doi": "10.17632/vpc887d53s.3",
-        "source_status": "ARCHIVE_BYTES_SCANNED_UNQUALIFIED",
+        "source_status": ("ARCHIVE_BYTES_SCANNED_UNQUALIFIED" if count_complete and all_levels_present
+                          else "REPORTED_COUNT_MISSING_CONCENTRATION_LEVELS" if count_complete
+                          else "PARTIAL_ARCHIVE_BYTES_SCANNED_UNQUALIFIED"),
         "archive_sha256_computed": archive_digest,
         "publisher_archive_sha256_verified": False,
         "files_scanned": len(manifest),
         "rows_scanned": sum(x["rows"] for x in manifest),
         "reported_ethanol_measurements": 65,
+        "concentration_code_counts": counts,
+        "all_six_published_liquid_levels_present": all_levels_present,
+        "reported_ethanol_count_complete": count_complete,
         "headspace_ethanol_ppm_measured": False,
         "liquid_percent_vv_is_gas_ppm": False,
         "independent_physical_groups_verified": False,
@@ -126,7 +138,8 @@ def inspect_zip(path, expected_rows=3330):
             "PHYSICAL_GROUP_INDEPENDENCE_NOT_VERIFIED",
             "HEADSPACE_GAS_PPM_REFERENCE_NOT_MEASURED",
             "R0_CALIBRATION_NOT_VERIFIED",
-        ] + (["INCOMPLETE_REPORTED_ETHANOL_MEASUREMENTS"] if len(manifest) != 65 else []),
+        ] + (["INCOMPLETE_REPORTED_ETHANOL_MEASUREMENTS"] if not count_complete else [])
+          + (["MISSING_PUBLISHED_LIQUID_CONCENTRATION_LEVELS"] if not all_levels_present else []),
         "file_manifest": manifest,
     }
 
