@@ -66,11 +66,16 @@ def parse_numeric_rows(data, expected_rows=3330):
     numeric_digest = hashlib.sha256()
     minima = [float("inf")] * 8
     maxima = [float("-inf")] * 8
+    delimiter_mode = None
     for line in io.StringIO(decoded):
         line = line.strip()
         require(bool(line), "BLANK_DATA_ROW")
-        parts = ([x.strip() for x in line.split(",")] if "," in line
-                 else [x.strip() for x in line.split(";")] if ";" in line
+        require(not ("," in line and ";" in line), "MIXED_DELIMITERS_IN_ROW")
+        mode = "comma" if "," in line else "semicolon" if ";" in line else "whitespace"
+        require(delimiter_mode is None or delimiter_mode == mode, "INCONSISTENT_DELIMITER")
+        delimiter_mode = mode
+        parts = ([x.strip() for x in line.split(",")] if mode == "comma"
+                 else [x.strip() for x in line.split(";")] if mode == "semicolon"
                  else line.split())
         require(len(parts) == 8, "COLUMN_COUNT_NOT_EIGHT")
         try:
@@ -78,6 +83,8 @@ def parse_numeric_rows(data, expected_rows=3330):
         except ValueError as exc:
             raise ValueError("MQ_EXT10_NONNUMERIC_ROW") from exc
         require(all(math.isfinite(x) for x in values), "NONFINITE_ROW")
+        require(0.0 <= values[0] <= 100.0, "RELATIVE_HUMIDITY_OUT_OF_RANGE")
+        require(values[1] >= -273.15, "TEMPERATURE_BELOW_ABSOLUTE_ZERO")
         require(all(x > 0 for x in values[2:]), "NONPOSITIVE_RESISTANCE")
         canonical = [canonical_exact_decimal(t) for t in parts]
         numeric_digest.update(("\x1f".join(canonical) + "\n").encode("ascii"))
