@@ -1,0 +1,66 @@
+{
+  "schema": "chemcore.next.p03.3.fingerprints_and_methods_evidence/1",
+  "date": "2026-11-02",
+  "project": "ChemCore Next independent scientific engine",
+  "task": "P03.3",
+  "test_run_id": 41378638949,
+  "job_id": 125064327282,
+  "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41378638949",
+  "result": "PASS_SOURCE_PRESERVATION_ONLY",
+  "source_fingerprints": 24,
+  "source_spaces": [
+    {
+      "id": "ADC_LOG_GEOMEAN_CLASS",
+      "count": 4,
+      "dim": 8,
+      "source_root": "MQDS_6400_SOURCE_ADC",
+      "issues": "4/4 have missing/nonpositive source uncertainty scales; not fit for direct weighted distance"
+    },
+    {
+      "id": "OPERATIONAL_LOG1PLUS_CLR",
+      "count": 2,
+      "dim": 6,
+      "source_root": "ROBOFUSION_H1_OPS",
+      "issues": "Operational Hazard/Normal classes; not chemicals"
+    },
+    {
+      "id": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "count": 18,
+      "dim": 3,
+      "source_root": "UCI1081_MQ135_TEMPORAL",
+      "issues": "single-channel temporal concentration prototypes, not 8-MQ physical Tank exposure"
+    }
+  ],
+  "research_method_sources_3d_4d_regression": 3,
+  "method_porting_in_current_task": false,
+  "canonical_uid_mapped": 0,
+  "independent_physical_experiments": 0,
+  "g3_qualified": 0,
+  "files": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/GasFingerprintCatalogV6.java",
+      "sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c"
+    },
+    {
+      "path": "research/chemcore_next/fingerprints/chemcore_next_p03_3_source_fingerprints_24.json",
+      "sha": "8d699ff3809f5a1422914420f474110afc9af689"
+    },
+    {
+      "path": "research/chemcore_next/fingerprints/chemcore_next_p03_3_source_fingerprint_inventory_24.csv",
+      "sha": "49c0736f85813901541383661e403f3506979c61"
+    },
+    {
+      "path": "research/chemcore_next/fingerprints/chemcore_next_p03_3_3d4d_methods.json",
+      "sha": "e29eee7654d6f0a2912806d78c6bcfbc54254add"
+    },
+    {
+      "path": "research/chemcore_next/tools/verify_p03_3_fingerprints.py",
+      "sha": "049d59a0b3a34946fcb423a7a5931e389bc1e0be"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p03-source-provenance-ci.yml",
+      "sha": "de603bc5021f0b269208eeef63764765cf5da5bd"
+    }
+  ],
+  "continuation": "P03.4 map only source-qualified chemical identities to canonical UID 734, preserve ambiguous/no-gas/mixed sources without forced matches"
+}
