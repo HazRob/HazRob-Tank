@@ -6,6 +6,9 @@ on:
     paths:
       - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextLegacySourceUidAuditTest.java'
       - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextUnlinkedSourceCasAuditTest.java'
+      - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextUnifiedCatalogGeneralHazardTest.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemCoreNextGeneralIdentityBootstrap.java'
+      - 'android/app/src/main/java/com/servoc/app/chemical/ChemCoreNextGeneralHazardBootstrap.java'
       - 'research/chemcore_next/identity/chemcore_next_p03_4_unlinked_60_source_identity_policy.csv'
       - '.github/workflows/chemcore-next-p03-canonical-uid-ci.yml'
   workflow_dispatch:
@@ -67,8 +70,15 @@ jobs:
           gradle --no-daemon --stacktrace :app:testDebugUnitTest \
             --tests com.servoc.app.chemical.ChemCoreNextLegacySourceUidAuditTest \
             --tests com.servoc.app.chemical.ChemCoreNextUnlinkedSourceCasAuditTest \
+            --tests com.servoc.app.chemical.ChemCoreNextUnifiedCatalogGeneralHazardTest \
             2>&1 | tee ../P03-4-SQLITE-UID-TEST.log
           grep -q 'BUILD SUCCESSFUL' ../P03-4-SQLITE-UID-TEST.log
+      - name: Confirm five existing/new generic classes share main catalog and hazard table
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Rh 'CHEMCORE_NEXT_SINGLE_UNIFIED_GHS_CATALOG_PASS' \
+            source/app/build/test-results/testDebugUnitTest/
       - name: Export 49 audited source mappings from JUnit XML for offline ChemCore Next
         shell: bash
         run: |
