@@ -1,0 +1,9 @@
+sensor,reported_Rs_kohm_rounded,reported_historical_R0_kohm_rounded,original_R0_definition_verified,heater_phase_independently_verified
+MQ2,50.482,91.734,false,false
+MQ3,5.154,20.686,false,false
+MQ4,26.430,65.270,false,false
+MQ5,187.093,251.965,false,false
+MQ7,43.387,160.601,false,false
+MQ8,7.813,54.889,false,false
+MQ9,33.530,69.990,false,false
+MQ135,59.067,213.239,false,false

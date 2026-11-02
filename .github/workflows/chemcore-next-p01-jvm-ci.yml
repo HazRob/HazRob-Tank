@@ -206,6 +206,30 @@ jobs:
             | tee build/chemcore-next-p01/P06-DIVERSE-FINGERPRINT-BUNDLE.log
           grep -q '^CHEMCORE_NEXT_DIVERSE_BUNDLE_G1_PASS ' \
             build/chemcore-next-p01/P06-DIVERSE-FINGERPRINT-BUNDLE.log
+            build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.log
+            build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.json
+      - name: Replay original Oct1 2026 ethanol plus smoke 8-MQ owner source and G1 source-curve divergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextOctoberEthanolReplaySmoke \
+              research/chemcore_next/experiments/october_2026_ethanol_experiment4_8mq_recovered_rounded.csv \
+              research/chemcore_next/experiments/october_2026_ethanol_experiment4_replay_provenance.json \
+              build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.json \
+              | tee build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.log
+          grep -q '^CHEMCORE_NEXT_OCT2026_REAL_ETHANOL_REPLAY_PASS ' \
+              build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.log
+          python - <<'PY'
+          import json,pathlib
+          r=json.loads(pathlib.Path('build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.json').read_text())
+          assert r['physical_October_MQ_channels']==8
+          assert r['next_heater_filtered_6mq_candidates']==0
+          assert r['alcohol_source_curves_outside_nominal_range']==6
+          assert abs(r['source_MQ3_ethanol_equation_replay_ppm_math_only']-177.8473248739)<1e-5
+          assert not r['G3_actual_Tank_gas_challenge']
+          assert not r['historical_approx_118ppm_reproduced']
+          print('CHEMCORE_NEXT_OCT2026_8MQ_G1_EVIDENCE_GATE_PASS')
+          PY
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4

@@ -1,0 +1,86 @@
+{
+  "schema": "chemcore.next.october2026_owner_ethanol_original_experiment/1",
+  "experiment_id": "HazRob 0.10.2 Experiment 4",
+  "measurement_timestamp_utc": "2026-10-01T20:23:46Z",
+  "source_original_pdf_in_user_library": "HazRob_Report_000004_20261001_232441_١١٢٨٠٢.pdf",
+  "source_pdf_facts_verified": {
+    "firmware": "HazRob 0.10.2",
+    "api": 4,
+    "hardware_profile": "hazrob-0.10.2-hr069-1r8mq-l298n6-batt-ultra-ir-ldr-env2-v2",
+    "ads1": "0x48 OK",
+    "ads2": "0x49 OK",
+    "mq_power_on_ms": 149339,
+    "source_baseline_id": "FIELD-R0-3SESSION-20260913",
+    "source_baseline_calibration_samples": 216,
+    "observed_mq_channels": 8,
+    "time_series_recorded": false,
+    "original_screening_algorithm": "mq-fingerprint-v2-hr042",
+    "originally_reported_screening_ranking": [
+      {
+        "rank": 1,
+        "label": "Methane",
+        "score": 71.625
+      },
+      {
+        "rank": 2,
+        "label": "Hydrogen",
+        "score": 55
+      },
+      {
+        "rank": 3,
+        "label": "Propane",
+        "score": 27.6
+      },
+      {
+        "rank": 4,
+        "label": "LPG",
+        "score": 27.6
+      },
+      {
+        "rank": 5,
+        "label": "Ethanol",
+        "score": 18.9
+      },
+      {
+        "rank": 6,
+        "label": "Benzene",
+        "score": 11.9
+      }
+    ],
+    "original_status": "CANDIDATE_NOT_CONFIRMED"
+  },
+  "user_exposure_label": "96% ethanol liquid spray/use with tobacco smokers present; this is a multi-analyte ethanol + smoke interference context",
+  "concentration_note": "96% describes the ethanol liquid purity only, not measured gas-phase ppm",
+  "eight_sensor_values": "research/chemcore_next/experiments/october_2026_ethanol_experiment4_8mq_recovered_rounded.csv",
+  "numeric_provenance": "Eight Rs and historical R0 values were recovered from prior October experiment discussion/Excel interpretation and rounded to 0.001 kOhm; original Excel raw bytes and unrounded values are not currently accessible. NOT direct PDF numeric measurements.",
+  "october_historical_reference_definition": "UNKNOWN_NOT_DOCUMENTED_AS_DEVICE_AIR_RS_MEAN_OR_MANUFACTURER_R0",
+  "historical_118_ppm_note": "Approx. 118 ppm was a previous research-curve / literature-R0 comparison; complete per-source R0 constants and original ranking implementation are missing, so it is a non-reproducible historical outcome, NOT a benchmark pass criterion.",
+  "historic_october_exclusions": [
+    "MQ7",
+    "MQ9"
+  ],
+  "exclusion_rationale": "constant 5 V heater without verified manufacturer cyclic heater schedule for those module variants; exclude from source quantitative gas models",
+  "research_source_curve_manifest": "android/app/src/main/assets/chemcore_v6/reference/mq_research_curves_43.json",
+  "source_curve_provenance": "MQDataScience 6.0.0 e88f876140587a708ee84a4d4d3acbd5720274ee",
+  "original_MQ3_ethanol_curve": {
+    "a": 0.5565,
+    "b": -0.6333,
+    "ppm_scale": 50,
+    "source_min_ppm": 5.15,
+    "source_max_ppm": 500
+  },
+  "science_limits": [
+    "No original per-sensor raw time series, no instrumented ethanol headspace ppm",
+    "Legacy per-sensor R0 cannot be assumed source K matched",
+    "149.339 s power-on not proof of stable heater calibration",
+    "Tobacco smoke interference unknown, pure ethanol identity unsupported",
+    "Historical source screening scores are heuristic, not posterior",
+    "Oct31 Tank v6 quick R_air is NOT Oct1 wheeled HazRob reference and must not be substituted"
+  ],
+  "model_expectations": {
+    "historical_curve_G1_MQ3_ethanol_ppm_approx": 177.847,
+    "physical_ppm_authorized": false,
+    "molecular_gas_confirmed": false,
+    "physical_g3": false
+  }
+}
