@@ -58,6 +58,8 @@ jobs:
         run: python research/implementation_execution/g2_mq_ext10_ethanol_preflight.py --output "$RUNNER_TEMP/g2_mq_ext10_ethanol_preflight.json"
       - name: "Check MQ-EXT-10 source ZIP intake absence and provenance guards (not Tank G2)"
         run: python research/implementation_execution/g2_mq_ext10_archive_intake.py --output "$RUNNER_TEMP/g2_mq_ext10_archive_intake.json"
+      - name: "Check MQ-EXT-10 paired folder/ZIP parity receipt without raw files (not Tank G2)"
+        run: python research/implementation_execution/g2_mq_ext10_folder_zip_parity.py --output "$RUNNER_TEMP/g2_mq_ext10_folder_zip_parity.json"
       - name: "Run every offline G2 regression test (including new test files)"
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_*.py' -v
       - name: "Run full 80-technique G2 fail-closed evidence audit"
@@ -121,4 +123,5 @@ jobs:
             ${{ runner.temp }}/g2_mq4_false_alert_day_concentration.json
             ${{ runner.temp }}/g2_mq_ext10_ethanol_preflight.json
             ${{ runner.temp }}/g2_mq_ext10_archive_intake.json
+            ${{ runner.temp }}/g2_mq_ext10_folder_zip_parity.json
           if-no-files-found: error
