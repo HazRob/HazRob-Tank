@@ -41,6 +41,8 @@ def audit():
         assert row["v6_legacy_reference_index"] == orig["v6_legacy_index_not_canonical_uid"]
         assert row["candidate_eligibility"] == "NO"
         assert row["source_independence"] == "NOT_PROVEN_INDEPENDENT_EXPOSURE"
+        assert row["source_root_id"] == orig["source_root_id"]
+        assert row["source_blob_sha"] == orig["source_provenance_blob"]
         label_is_ambiguous = AMBIGUOUS.fullmatch(row["source_label"]) is not None
         if row["original_v6_curve_id"]:
             linked += 1
