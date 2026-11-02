@@ -98,3 +98,18 @@ G1: 100% mandatory numerical tests and source identity provenance; G2: task-spec
 6. Stable promotion queue (NOT_PROMOTED until complete) and rollback manifests.
 7. Summary of accepted/rejected ideas and why, retaining owner proposals 1..20.
 **Status upon writing:** plans only; research existing partial; no new tests run.
+
+
+## 10. ملحق تدقيق وتنفيذ مستودعي المصدر — 2026-11-02
+**قرار تطبيقي داخل خطة الإثراء (لا يعني تأهيل التشغيل):** تم تحديد **23 قدرة تقنية ذات فائدة**، موزعة 11 من MQDataScience و12 من MQSensorsLib، لكل منها مصدر، بصمة SHA/URL، تقنيات V6 مرتبطة، مهمة Next مستهدفة، وأولوية نقل. ليست 23 مصنفًا مستقلًا جديدًا؛ بعضها إعادة صياغة أو تدقيق أو تصحيح لمكونات كانت جزئية في V6.
+**مصفوفة النقل التفصيلية:** research/chemcore_next/mqdata_mqsensorslib_transfer_matrix_23_2026-11-02.csv.
+**P0 (أولوية للمرحلة الأساسية):** معاملات Rs الفيزيائية (SRC-MQSL-01)، الفصل بين R_air/R0_source وK_clean (SRC-MQSL-02)، فحص ADS1115 وحساسية الـADC (SRC-MQSL-03)، منع معايرة جميع القنوات عبر MQ2 (SRC-MQSL-08)، فحص طور سخان MQ7/MQ9 (SRC-MQSL-09)، عدم تقديم تشبع المقسم الكهربائي كمعلومة صالحة (SRC-MQSL-10)، معاملات كل حساس (SRC-MQSL-11)، مطابقة gas source curves والهوية الأصلية (SRC-DATA-01)، صحة علاقات إشارة MQDataScience المحوسبة مقابل قياس Tank (SRC-DATA-02).
+**P1 (بعد سلامة الطبقة الفيزيائية):** استيفاء CalValue اللوغاريتمي مع اختبارات source version (SRC-DATA-03)، تصحيح T/RH الموثق (SRC-DATA-04)، انحدار بيانات منحنيات المصنع مع تتبع النقاط (SRC-DATA-09)، توحيد صيغ المنحنى الأسية واللوغاريتمية (SRC-MQSL-04/05)، دمج MQ135 البدائل دون وزن مستقل زائد (SRC-MQSL-06)، ثم إعادة فحص دفاتر المصدر الأصلي (SRC-MQSL-07).
+**P2 (بحث وتنبؤ وتعلم بعد استكمال raw series وتراكيز/مصادر):** 3D/4D correction & forecasts (SRC-DATA-05/06)، 76 model workbench الخاضع لتقسيم مستقل (SRC-DATA-07)، نماذج المعايرة البيئية المتعددة (SRC-DATA-08)، دعم الحساسات المستقبلية (SRC-DATA-10)، feature combinations environment/time (SRC-DATA-11)، وفحص الصيغة البديلة للتعويض (SRC-MQSL-12).
+
+**ترتيب التنفيذ:** لا ينقل source code إلى Android قبل اجتياز G1 على الصيغة والمجال والتوافق. اختبار G2 منفصل عند وجود بيانات متطابقة، وتحفظ جميع الأصول الغير مفعلة بوسم RESEARCH_ONLY. تقنيات 01.4 و09.6 تبقيان غير منقولتين في V6؛ يجري تطويرهما داخل Next عندما تسمح دارة الجهاز وخطة الحركة. كل تقنية يستدعى تنفيذها ضمن معرفاتها الأصلية P02–P06، ولا تنفذ 23 خاصية دفعة واحدة.
+
+**النتيجة الراهنة من جرد P00.2:**
+- 80 سطرًا محل فحص ثابت؛ 11 مرتبطة بملفات ذات استدعاء مرصود على مستوى الفئة في سلسلة الدخول المختارة (ولا يثبت ذلك أن تقنية بعينها فعالة)، 67 لها ملفات كود دون استدعاء مثبت في تلك العينة، و02 غير منقولتين. لا يعد ذلك جرد تشغيل شاملًا ولا اختبارًا فعليًا G1/G2/G3.
+- راجع research/v8_implementation/results/next_p00_80_activation.csv وnext_p00_2_static_wiring_evidence.json.
+- اكتشاف ازدواج مسار V8: TankInstantAnalyzer يستخدم source_curve_hypotheses وتقيد legacyId < 144، بينما CompletedSessionChemCoreAnalyzer يحتوي مسارًا يستدعي ChemCoreInferenceEngine.analyze التاريخي. إصلاحهما ضمن P08/P09 بعد تأهيل Next.
