@@ -9,6 +9,8 @@ on:
       - 'android/app/src/main/java/com/servoc/app/calibration/**'
       - 'android/app/src/main/java/com/servoc/app/measurement/**'
       - 'android/app/src/main/java/com/servoc/app/ui/**'
+      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
+      - 'research/food_freshness/**'
       - 'android/app/src/main/java/com/servoc/app/data/**'
       - 'android/app/src/main/java/com/servoc/app/report/**'
       - '.github/workflows/v8-next-android-compile-gate.yml'
