@@ -13,8 +13,8 @@
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P02",
   "active_task": "P02.3",
-  "last_checkpoint": "P02.2 33 independent dual reference tests verified; total 166 JDK17 assertions pass CI 41374352329. P02.3 ready.",
-  "next_action": "P02.3 implement per-instance sensor quality (warmup, heater profile, stale/duplicates, drift, T/RH availability and measurement ranges) with fail-closed research tests.",
+  "last_checkpoint": "P02.2 DONE; P02.3 READY; I2C level translator owner clarified 5V ↔ 3.3V; source and firmware static review complete, hardware proof pending; no change to 400 kHz/R0.",
+  "next_action": "Implement P02.3 quality flags for I2C_NACK/TIMEOUT, ADS conversion-ready/staleness, per-channel heater/timestamp; maintain hardware qualification pending bench.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -609,7 +609,11 @@
       "depends_on": [
         "P02.2"
       ],
-      "source_paths": [],
+      "source_paths": [
+        "firmware/ESP32-Tank/Config.h",
+        "firmware/ESP32-Tank/Hardware.cpp",
+        "docs/research/CHEMCORE-NEXT-I2C-LEVEL-SHIFTER-ADS1115-HARDWARE-REVIEW-2026-11-02_AR.md"
+      ],
       "planned_evidence_file": "research/v8_implementation/results/next_P02_3_evidence.json",
       "acceptance_checks": [
         "sample quality and heater flags present",
@@ -621,10 +625,14 @@
       "test_result": null,
       "action_run_id": null,
       "commit_sha": null,
-      "actual_evidence_files": [],
-      "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "P02.3 implement per-instance sensor quality (warmup, heater profile, stale/duplicates, drift, T/RH availability and measurement ranges) with fail-closed research tests.",
+      "actual_evidence_files": [
+        "docs/research/CHEMCORE-NEXT-I2C-LEVEL-SHIFTER-ADS1115-HARDWARE-REVIEW-2026-11-02_AR.md"
+      ],
+      "blockers": [
+        "Level shifter model/pullup resistance/MCU-side 3.3 V rise-time not physically measured; HW-I2C-01..05 required at physical bench."
+      ],
+      "last_checkpoint": "Scientific review: correct 5V↔3.3V I2C bidirectional shifter preserves correct ADC digital code, timing and transport reliability unverified; no physical trial.",
+      "next_action": "Implement P02.3 quality flags for I2C_NACK/TIMEOUT, ADS conversion-ready/staleness, per-channel heater/timestamp; maintain hardware qualification pending bench.",
       "updated_at": null
     },
     {
@@ -2121,7 +2129,9 @@
       "depends_on": [
         "P12.5"
       ],
-      "source_paths": [],
+      "source_paths": [
+        "docs/research/CHEMCORE-NEXT-I2C-LEVEL-SHIFTER-ADS1115-HARDWARE-REVIEW-2026-11-02_AR.md"
+      ],
       "planned_evidence_file": "research/v8_implementation/results/next_P13_1_evidence.json",
       "acceptance_checks": [
         "bench evidence real measured, not software-only",
@@ -2134,7 +2144,9 @@
       "action_run_id": null,
       "commit_sha": null,
       "actual_evidence_files": [],
-      "blockers": [],
+      "blockers": [
+        "Perform HW-I2C-01..05 on physical Tank and record 100/400kHz and power/ground/ADS conversion-ready evidence before claiming hardware signal qualification."
+      ],
       "last_checkpoint": "",
       "next_action": "Perform task and record actual evidence",
       "updated_at": null
@@ -2363,6 +2375,14 @@
       "ci_run": 41374352329,
       "evidence": "research/v8_implementation/results/next_p02_2_dual_r0_evidence.json",
       "description": "R_air and source R0 model-specific K separated; 33 qualified-metadata and error tests"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "ENGINEERING_REVIEW",
+      "task_id": "P02.3",
+      "description": "Verified digital I2C level shifting should preserve ADS1115 codes; 400k timing/pullups/OS-ready bench checks proposed; no hardware validation or code change",
+      "commit_sha": "acb0162585989b0b2129a40dd43906ee4e1a4a4e",
+      "evidence": "docs/research/CHEMCORE-NEXT-I2C-LEVEL-SHIFTER-ADS1115-HARDWARE-REVIEW-2026-11-02_AR.md"
     }
   ],
   "notes": [
