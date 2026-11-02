@@ -3,141 +3,162 @@ package com.servoc.app.chemical;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import com.servoc.app.data.ExperimentsDb;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * ChemCore Next research hazard ontology for aggregate/non-molecular catalog rows.
+ * ChemCore Next category hazard enrichment IN THE EXISTING unified catalog.
  *
- * Deliberately separate from chemical_hazard_classifications:
- * GhsPictograms.allQualified() only consumes source-qualified definite PRODUCT
- * classifications. These advisory labels must NOT leak into alarms, SDS labels,
- * confirmed gas detection, clinical/occupational conclusions or measured ppm.
+ * Adds no new physical database, side library, hazard table or separate
+ * catalog view. Category identities are rows in chemicals, while their
+ * hazards use the already-shared chemical_hazard_classifications table.
  *
- * Type labels include source and a qualifier; a source-qualified *category
- * characteristic* is NOT a source-qualified formula-/product-specific GHS label.
+ * GHS icon assignment requires distinction:
+ * - SOURCE_QUALIFIED: LPG GHS02 flammable fuel gas, NIOSH source-qualified.
+ * - PROVISIONAL: potential constituent/product hazard for generic classes;
+ *   NOT a final GHS/SDS label and not rendered by legacy allQualified().
+ *
+ * The analysis engine cannot infer chemical presence, ppm or an alarm from
+ * a row's existence or from these research hazard annotations.
  */
 public final class ChemCoreNextGeneralHazardBootstrap {
     private ChemCoreNextGeneralHazardBootstrap() {}
 
-    public static final String SCHEMA = "chemcore-next-group-hazard-advisory/1";
-    public static final String GROUP = "CHEMCORE_NEXT_GROUP_HAZARD_GUIDANCE";
+    public static final String SCHEMA = "chemcore-next-unified-catalog-general-ghs/1";
+    public static final String SOURCE_ID = "CHEMCORE_NEXT_GENERAL_HAZARD_RESEARCH";
+    public static final String SOURCE_NIOSH_LPG = "https://www.cdc.gov/niosh/npg/npgd0679.html";
     public static final String SOURCE_OSHA_PHYSICAL = "https://www.osha.gov/hazcom/appendix-b";
     public static final String SOURCE_OSHA_LABEL = "https://www.osha.gov/hazcom/appendix-c";
     public static final String SOURCE_OSHA_MIXTURE = "https://www.osha.gov/hazcom/appendix-a";
-    public static final String SOURCE_NIOSH_LPG = "https://www.cdc.gov/niosh/npg/npgd0679.html";
     public static final String SOURCE_NIOSH_ETHANOL = "https://www.cdc.gov/niosh/npg/npgd0262.html";
     public static final String SOURCE_NIOSH_AMMONIA = "https://www.cdc.gov/niosh/npg/npgd0028.html";
-    public static final String SOURCE_ATSDR_NOX = "https://wwwn.cdc.gov/TSP/MMG/MMGDetails.aspx?mmgid=394&toxid=69";
-    public static final String SOURCE_ATSDR_NOX_CLASS = "https://wwwn.cdc.gov/TSP/substances/ToxSubstance.aspx?toxid=69";
+    public static final String SOURCE_NIOSH_NO2 = "https://www.cdc.gov/niosh/npg/npgd0454.html";
 
-    /** Source class evidence, never as a generic mixture SDS or confirmed analyte.
-      * name, code, relevant property, qualifier, sourceURL, hazard text, exact-context */
-    private static final String[][] ADVISORIES = {
-        {"LPG", "GHS02", "FLAMMABLE_FUEL_GAS", "CLASS_CHARACTERISTIC_SOURCE_SUPPORTED",
-            SOURCE_NIOSH_LPG, "Liquefied petroleum fuel gas is flammable",
-            "Generic LPG fuel-gas family; actual product SDS controls required GHS label"},
-        {"LPG", "GHS04", "GAS_UNDER_PRESSURE", "PRESSURIZED_PRODUCT_ONLY",
-            SOURCE_NIOSH_LPG, "LPG is transported or sold as liquefied compressed gas",
-            "Applies to pressurized/liquefied LPG packaging, not an arbitrary ambient gas plume"},
-        {"NOx", "GHS03", "OXIDIZING_POTENTIAL", "CONSTITUENT_AND_COMPOSITION_DEPENDENT",
-            SOURCE_OSHA_PHYSICAL, "Some nitrogen oxides may contribute to combustion",
-            "Not every NOx mixture is an oxidizing gas; require ISO 10156 test or composition"},
-        {"NOx", "GHS06", "POTENTIAL_ACUTE_INHALATION_TOXICITY",
-            "CONSTITUENT_AND_CONCENTRATION_DEPENDENT",
-            SOURCE_ATSDR_NOX, "NO2 is hazardous by acute inhalation; severity differs from NO",
-            "A specific NO2 substance/mixture SDS, not a blanket NOx category label"},
-        {"NOx", "GHS05", "POTENTIAL_CORROSIVE_EFFECTS",
-            "CONSTITUENT_AND_CONCENTRATION_DEPENDENT",
-            SOURCE_ATSDR_NOX, "NO2 may be corrosive and forms acids in moisture",
-            "Conditional NO2 component effect, not generic class GHS05 assignment"},
-        {"Smoke", "GHS07", "POTENTIAL_RESPIRATORY_IRRITATION",
-            "COMBUSTION_COMPOSITION_DEPENDENT",
-            SOURCE_OSHA_MIXTURE, "Combustion smoke may contain irritant vapors and particulates",
-            "Smoke is an unknown complex aerosol; formal GHS needs specified composition and hazard data"},
-        {"Alcohols (general)", "GHS02", "POTENTIAL_FLAMMABILITY",
-            "SPECIFIC_ALCOHOL_AND_FORMULATION_DEPENDENT",
-            SOURCE_NIOSH_ETHANOL, "Some alcohols, including ethanol, are flammable",
-            "Cannot generalize a definite GHS02 label to all alcohols; check individual SDS"},
-        {"Ammonium-containing materials (NH4+ source class)", "GHS07",
-            "POTENTIAL_IRRITANT_OR_AMMONIA_RELEASE",
-            "SPECIFIC_SALT_PH_TEMPERATURE_AND_EXPOSURE_DEPENDENT",
-            SOURCE_NIOSH_AMMONIA, "Some ammonium materials can release irritant NH3 under relevant chemistry",
-            "NH4+ is an aqueous ionic species, not an NH4 gas; SDS and gas NH3 evidence required"}
+    /* category name, pictogram, hazard type from existing CHECK constraint,
+     * exact classification detail, evidence status, primary URL, note.
+     * Generic labels are expressly CONDITIONAL. */
+    private static final String[][] FACTS = {
+        {"LPG", "GHS02", "FLAMMABLE", "FLAMMABLE_FUEL_GAS_LPG",
+            "SOURCE_QUALIFIED", SOURCE_NIOSH_LPG,
+            "NIOSH identifies L.P.G. as a flammable fuel-gas mixture. This is a category hazard, not detected identity or a supplier-specific label."},
+        {"LPG", "GHS04", "HARMFUL", "PRESSURIZED_LIQUEFIED_PACKAGE_ONLY",
+            "PROVISIONAL", SOURCE_NIOSH_LPG,
+            "Potential GHS04 only for qualifying pressurized LPG products; not an uncontained air sample."},
+        {"NOx", "GHS03", "OXIDIZER", "NOX_SPECIFIC_OXIDIZING_CONSTITUENT_DEPENDENT",
+            "PROVISIONAL", SOURCE_OSHA_PHYSICAL,
+            "Potential oxidizing gas depends on the actual nitrogen oxide and mixture classification; never universally assign GHS03 to NOx."},
+        {"NOx", "GHS06", "TOXIC", "NOX_NO2_COMPONENT_ACUTE_INHALATION_POTENTIAL",
+            "PROVISIONAL", SOURCE_NIOSH_NO2,
+            "Component-level NO2 inhalation toxicity; not equivalent to all NOx concentrations or a classified NOx mixture."},
+        {"NOx", "GHS05", "CORROSIVE", "NOX_NO2_COMPONENT_CORROSIVE_POTENTIAL",
+            "PROVISIONAL", SOURCE_NIOSH_NO2,
+            "Potential corrosive constituent; actual mixture may require different or no pictogram."},
+        {"Smoke", "GHS07", "IRRITANT", "COMBUSTION_SMOKE_POTENTIAL_RESPIRATORY_IRRITATION",
+            "PROVISIONAL", SOURCE_OSHA_MIXTURE,
+            "Smoke is an unknown complex aerosol; constituent evidence, source and actual mixture conditions are required for final GHS classification."},
+        {"Alcohols (general)", "GHS02", "FLAMMABLE", "SOME_ALCOHOLS_FLAMMABLE_ETHANOL_EXAMPLE",
+            "PROVISIONAL", SOURCE_NIOSH_ETHANOL,
+            "Ethanol is flammable; alcohols as a chemical family cannot all be assigned GHS02 without a specific substance or mixture."},
+        {"Ammonium-containing materials (NH4+ source class)", "GHS07", "IRRITANT",
+            "AMMONIUM_FORMULATION_DEPENDENT_NH3_RELEASE",
+            "PROVISIONAL", SOURCE_NIOSH_AMMONIA,
+            "Ammonium ion NH4+ is not a free atmospheric gas. Certain conditions may generate NH3 vapor; use actual salt/formulation SDS and reference-gas experiments."}
     };
 
+    public static final class Fact {
+        public final long chemicalUid;
+        public final String icon, classDetail, evidenceStatus, sourceUrl, explanation;
+        Fact(long id, String icon, String detail, String status, String source, String note) {
+            chemicalUid=id;this.icon=icon;classDetail=detail;
+            evidenceStatus=status;sourceUrl=source;explanation=note;
+        }
+    }
     public static final class Result {
-        public final int inserted, existing, advisoryRows;
-        public final Map<String, Long> catalogIds;
-        Result(int inserted, int existing, int advisoryRows, Map<String, Long> catalogIds) {
-            this.inserted = inserted;
-            this.existing = existing;
-            this.advisoryRows = advisoryRows;
-            this.catalogIds = Collections.unmodifiableMap(new LinkedHashMap<>(catalogIds));
+        public final int inserted, existing, totalFacts;
+        public final Map<String,Long> catalogIds;
+        Result(int inserted, int existing, Map<String,Long> ids) {
+            this.inserted=inserted;this.existing=existing;totalFacts=inserted+existing;
+            catalogIds=Collections.unmodifiableMap(new LinkedHashMap<>(ids));
         }
     }
 
+    /** Populate existing master tables only; idempotent on repeated calls. */
     public static Result ensure(ExperimentsDb db) {
-        if (db == null) throw new IllegalArgumentException("actual canonical catalog required");
-        SQLiteDatabase sql = db.getWritableDatabase();
-        // Include the 3 historical classes, seed only the 2 truly new classes.
-        ChemCoreNextGeneralIdentityBootstrap.Result catalog =
+        if (db==null) throw new IllegalArgumentException("unified master database required");
+        ChemCoreNextGeneralIdentityBootstrap.Result catalog=
             ChemCoreNextGeneralIdentityBootstrap.ensure(db);
-
-        sql.execSQL("CREATE TABLE IF NOT EXISTS chemcore_next_group_hazard_advisories (" +
-            "chemical_uid INTEGER NOT NULL," +
-            "pictogram TEXT NOT NULL CHECK(pictogram IN ('GHS01','GHS02','GHS03','GHS04','GHS05','GHS06','GHS07','GHS08','GHS09'))," +
-            "hazard_key TEXT NOT NULL," +
-            "qualifier TEXT NOT NULL," +
-            "source_url TEXT NOT NULL," +
-            "hazard_statement TEXT NOT NULL," +
-            "applicability_note TEXT NOT NULL," +
-            "catalog_scope TEXT NOT NULL DEFAULT 'RESEARCH_CLASS_ADVISORY_ONLY'," +
-            "approval_state TEXT NOT NULL DEFAULT 'NOT_PRODUCT_GHS_CLASSIFIED'," +
-            "PRIMARY KEY(chemical_uid,pictogram,hazard_key)," +
-            "FOREIGN KEY(chemical_uid) REFERENCES chemicals(uid)," +
-            "CHECK(catalog_scope='RESEARCH_CLASS_ADVISORY_ONLY')," +
-            "CHECK(approval_state='NOT_PRODUCT_GHS_CLASSIFIED'))");
-        sql.execSQL("CREATE INDEX IF NOT EXISTS ix_next_group_hazard_uid " +
-            "ON chemcore_next_group_hazard_advisories(chemical_uid)");
-
-        // Separate presentation view with explicit status. Do not merge into
-        // allQualified() or the v14 formal hazard source/chemical tables.
-        sql.execSQL("CREATE VIEW IF NOT EXISTS chemcore_next_general_hazard_catalog AS " +
-            "SELECT c.uid,c.name_en,c.cas,c.chemical_class,a.pictogram,a.hazard_key," +
-            "a.qualifier,a.source_url,a.hazard_statement,a.applicability_note," +
-            "a.catalog_scope,a.approval_state FROM chemicals c " +
-            "JOIN chemcore_next_group_hazard_advisories a ON a.chemical_uid=c.uid " +
-            "WHERE c.active=1");
-
-        int inserted = 0, existing = 0;
+        SQLiteDatabase sql=db.getWritableDatabase();
+        int inserted=0, existing=0;
         sql.beginTransaction();
         try {
-            for (String[] source : ADVISORIES) {
-                Long uid = catalog.uids.get(source[0]);
-                if (uid == null || uid <= 0) throw new IllegalStateException("group identity missing: "+source[0]);
-                ContentValues values = new ContentValues();
-                values.put("chemical_uid", uid);
-                values.put("pictogram", source[1]);
-                values.put("hazard_key", source[2]);
-                values.put("qualifier", source[3]);
-                values.put("source_url", source[4]);
-                values.put("hazard_statement", source[5]);
-                values.put("applicability_note", source[6]);
-                values.put("catalog_scope", "RESEARCH_CLASS_ADVISORY_ONLY");
-                values.put("approval_state", "NOT_PRODUCT_GHS_CLASSIFIED");
-                long changed = sql.insertWithOnConflict("chemcore_next_group_hazard_advisories",
-                    null, values, SQLiteDatabase.CONFLICT_IGNORE);
-                if (changed < 0) existing++;
-                else inserted++;
+            ContentValues provenance=new ContentValues();
+            provenance.put("source_id",SOURCE_ID);
+            provenance.put("title","ChemCore Next source-qualified and provisional class GHS research annotations");
+            provenance.put("authority","NIOSH Pocket Guide and OSHA HCS criteria (source per classification)");
+            provenance.put("url",SOURCE_OSHA_LABEL);
+            provenance.put("evidence_tier","B");
+            provenance.put("version","2026-11-02");
+            provenance.put("notes","Class hazard source references are not product-specific SDS, monitored gas identities, ppm or alarm authorization.");
+            sql.insertWithOnConflict("scientific_sources",null,provenance,SQLiteDatabase.CONFLICT_IGNORE);
+            for (String[] row:FACTS) {
+                Long uid=catalog.uids.get(row[0]);
+                if(uid==null||uid<=0)throw new IllegalStateException("missing canonical group UID "+row[0]);
+                ContentValues v=new ContentValues();
+                v.put("chemical_uid",uid);
+                v.put("hazard_category",row[2]);
+                v.put("classification_system","CHEMCORE_NEXT_GROUP_GHS_RESEARCH");
+                v.put("classification_detail",row[3]);
+                v.put("ghs_pictogram",row[1]);
+                v.put("evidence_status",row[4]);
+                v.put("source_id",SOURCE_ID);
+                v.put("source_url",row[5]);
+                v.put("source_revision","2026-11-02");
+                v.put("notes",row[6]);
+                long key=sql.insertWithOnConflict("chemical_hazard_classifications",
+                    null,v,SQLiteDatabase.CONFLICT_IGNORE);
+                if(key<0)existing++;else inserted++;
             }
             sql.setTransactionSuccessful();
         } finally {
             sql.endTransaction();
         }
-        return new Result(inserted, existing, inserted+existing, catalog.uids);
+        return new Result(inserted,existing,catalog.uids);
+    }
+
+    /**
+     * Same source-linked master hazard rows for scientific catalog browsing.
+     * Include provisional icons WITH explicit status, never as unqualified icons.
+     */
+    public static List<Fact> forMasterCatalog(ExperimentsDb db,long uid) {
+        if(db==null||uid<=0) return Collections.emptyList();
+        List<Fact> out=new ArrayList<>();
+        try(Cursor c=db.getReadableDatabase().rawQuery(
+            "SELECT hc.chemical_uid,hc.ghs_pictogram,hc.classification_detail," +
+            "hc.evidence_status,hc.source_url,hc.notes " +
+            "FROM chemical_hazard_classifications hc " +
+            "JOIN chemicals ch ON ch.uid=hc.chemical_uid " +
+            "WHERE ch.uid=? AND ch.active=1 " +
+            "AND hc.classification_system='CHEMCORE_NEXT_GROUP_GHS_RESEARCH' " +
+            "AND hc.source_id=? ORDER BY hc.ghs_pictogram,hc.classification_detail",
+            new String[]{Long.toString(uid),SOURCE_ID})) {
+            while(c.moveToNext())out.add(new Fact(c.getLong(0),c.getString(1),
+                c.getString(2),c.getString(3),c.getString(4),c.getString(5)));
+        }
+        return Collections.unmodifiableList(out);
+    }
+
+    /** Only definitive source-qualified category facts; no mixture-conditional extrapolation. */
+    public static List<String> qualifiedIcons(ExperimentsDb db,long uid) {
+        Set<String> icons=new LinkedHashSet<>();
+        for(Fact f:forMasterCatalog(db,uid))
+            if("SOURCE_QUALIFIED".equals(f.evidenceStatus))icons.add(f.icon);
+        return Collections.unmodifiableList(new ArrayList<>(icons));
     }
 }
