@@ -5,7 +5,7 @@
   "owner_authorization_utc": "2026-11-02T06:44:21Z",
   "branch": "feature/tank-v8-implementation",
   "project": "HazRob-Tank independent of original 4-wheel HazRob",
-  "execution_mode": "PLAN_REVIEW_ONLY_THIS_COMMIT",
+  "execution_mode": "IMPLEMENTING_PHASE_P07_WITH_TASK_GATES",
   "scientific_tests_postponed": true,
   "core_g3_physically_validated_techniques": 0,
   "runtime_android_next_integration_verified": false,
@@ -14,11 +14,11 @@
   "legacy_baseline": "feature/tank-v7-reports (historical V7 reports, read-only)",
   "program": {
     "total_tasks": 34,
-    "done_tasks": 0,
+    "done_tasks": 1,
     "in_progress": 0,
     "blocked": 0,
-    "planned": 34,
-    "next_task": "P07.1",
+    "planned": 33,
+    "next_task": "P07.2",
     "phases": [
       "P07",
       "P08",
@@ -116,11 +116,28 @@
       ],
       "acceptance": "G1 سلوك null/NaN/انقطاع الطاقة/8 و1 حساس؛ snapshot SHA ثابت؛ لا نقل R_air القديم أو R0_source",
       "evidence": "research/v8_implementation/results/next_p07_1_adapter_contract.json",
-      "status": "NOT_STARTED",
-      "commit_sha": null,
-      "ci_run_id": null,
+      "status": "DONE_VERIFIED",
+      "commit_sha": "9605d8909b57b5d573d8747d3166dfea6d99c46f",
+      "ci_run_id": 41403449812,
       "blocked_by": [],
-      "verification": "NOT_RUN"
+      "verification": "PASS_G1_JVM_AND_FULL_ANDROID_JAVA_COMPILE_ONLY_NOT_ANDROID_DEVICE_RUNTIME",
+      "ci_evidence": [
+        {
+          "run_id": 41403265885,
+          "kind": "G1_JVM_TELEMETRY_SOURCE_CONTRACT",
+          "checks": 25,
+          "result": "success"
+        },
+        {
+          "run_id": 41403449812,
+          "kind": "WHOLE_ANDROID_JAVA_COMPILATION_PINNED_OVERLAY",
+          "result": "success"
+        }
+      ],
+      "evidence_file": "research/v8_implementation/results/next_p07_1_adapter_contract.json",
+      "verified_at_utc": "2026-11-02",
+      "android_instrumentation_status": "NOT_RUN",
+      "physical_tank_status": "NOT_RUN"
     },
     {
       "id": "P07.2",
@@ -680,7 +697,7 @@
       "verification": "NOT_RUN"
     }
   ],
-  "last_checked_commit": "9b21fd62d81a143c71ca5f6434e437c424153465",
-  "last_verified_ci": null,
-  "next_action": "P07.1: design snapshot and adapter; no source modifications were authorized or executed in this planning commit"
+  "last_checked_commit": "49cb0d4c54c129226f518103130a169d5d1bc2e4",
+  "last_verified_ci": 41403449812,
+  "next_action": "P07.2 SQLite v15 additive immutable NextDecisionStore with readback and v14 migration tests; Android instrumentation still pending"
 }

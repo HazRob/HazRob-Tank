@@ -1,0 +1,47 @@
+{
+  "schema": "hazrob.tank.next.v8.app_task_verification/1",
+  "task": "P07.1",
+  "scope": "typed eight-MQ telemetry boundary + Android adapter; NO screen wiring yet",
+  "verified": true,
+  "source_commit": "9605d8909b57b5d573d8747d3166dfea6d99c46f",
+  "ci_runs": [
+    {
+      "run_id": 41403265885,
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41403265885",
+      "conclusion": "success",
+      "checks": 25
+    },
+    {
+      "run_id": 41403449812,
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41403449812",
+      "conclusion": "success",
+      "scope": "full staged Android Java compilation"
+    }
+  ],
+  "files": [
+    "android/app/src/main/java/com/hazrob/tank/chemcore/next/NextTelemetryMapper.java",
+    "android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextAndroidAdapter.java",
+    "research/chemcore_next/tests/java/NextTelemetryMapperSmoke.java"
+  ],
+  "validated": [
+    "8 actual installed MQ slots preserved",
+    "Device-bound firmware V6 Rs_air mean only",
+    "Raw Rs retained when reference not verified",
+    "Other robot baseline blocked",
+    "Manual and factor-scaled old R0 blocked",
+    "MQ7 and MQ9 cyclic heater not falsely qualified",
+    "Relay off and stale readings blocked",
+    "SHA-256 content reference required",
+    "Single MQ raw channel retained",
+    "Core Next UNKNOWN without source chemical evidence",
+    "Full Android overlay Java build succeeds"
+  ],
+  "not_validated": [
+    "Physical Android UI flow not executed",
+    "No owner Tank gas G3 validation",
+    "Field sessions not repaired yet",
+    "No APK built",
+    "No UI button coverage completed"
+  ],
+  "next": "P07.2"
+}
