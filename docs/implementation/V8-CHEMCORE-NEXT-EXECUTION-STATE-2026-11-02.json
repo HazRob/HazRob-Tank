@@ -10,7 +10,7 @@
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
   "status": "CHEMCORE_NEXT_34_OF_37_RESEARCH_CORE_G1_P06_G2_PENDING",
-  "last_verified_head_sha": "79e1b5dfbdbb82329389971c56c7d75e1f1423e0",
+  "last_verified_head_sha": "559bdaa0c6bfbaa8f5b0e3bcfee69aa28859bdc7",
   "active_phase": "P06",
   "active_task": "P06.3",
   "last_checkpoint": "34/37 core tasks: verified P06.1 G1 and P06.2 paired raw-MQ source deviation; diverse source MQ bundles source-only and safe category label separation CI success 41397224464; P06.3 complete-source G2 not yet qualified; G3=0.",
@@ -2681,5 +2681,18 @@
     "modes": 12,
     "status": "PRELIMINARY_COMPONENT_ONLY_NOT_COMPLETED_CHEMCORE_NEXT",
     "physical_tank_G3": false
+  },
+  "october_original_ethanol_same_readings_replay": {
+    "evidence": "research/v8_implementation/results/next_oct2026_ethanol_8mq_6mq_conditional_source_portfolio_2026-11-02.json",
+    "owner_original_8mq_true": true,
+    "physics_source_R0_unqualified": true,
+    "full_engine_result": "UNKNOWN",
+    "six_MQ_excluding_MQ7_MQ9_engine_result": "UNKNOWN",
+    "research_shadow_ethanol_rank_original_8mq": 5,
+    "research_shadow_ethanol_rank_filtered_6mq": 2,
+    "research_shadow_H2_rank_both": 1,
+    "run_id": 41401599604,
+    "g1_confirmed": true,
+    "g2_g3_upgraded": false
   }
 }

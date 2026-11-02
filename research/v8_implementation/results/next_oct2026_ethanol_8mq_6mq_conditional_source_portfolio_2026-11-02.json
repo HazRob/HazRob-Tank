@@ -1,0 +1,950 @@
+{
+  "schema": "hazrob.chemcore.next.original_october_ethanol_same_mq_source_replay/2",
+  "date": "2026-11-02",
+  "source_experiment": "HazRob 0.10.2 Experiment 4; 2026-10-01T20:23:46Z; ethanol liquid 96% plus tobacco smoke",
+  "source_exposure_gas_ppm_reference": null,
+  "original_raw_files_available": false,
+  "readings_source": "research/chemcore_next/experiments/october_2026_ethanol_experiment4_8mq_recovered_rounded.csv",
+  "source_model_path": "android/app/src/main/assets/chemcore_v6/reference/mq_research_curves_43.json",
+  "source_model_version": "6.0.0",
+  "source_model_commit": "e88f876140587a708ee84a4d4d3acbd5720274ee",
+  "actual_core_code": "android/app/src/main/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java",
+  "expert_code": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SourceCurveExpert.java",
+  "executable_G1": "research/chemcore_next/tests/java/NextOctoberEthanolSourcePortfolioDiagnostic.java",
+  "ci_run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41401599604",
+  "ci_assertions": 168,
+  "ci_conclusion": "success",
+  "source_readings": {
+    "MQ2": {
+      "rs_kohm": 50.482,
+      "historical_r0_kohm": 91.734,
+      "unqualified_rs_over_historical_r0": 0.5503085006649662
+    },
+    "MQ3": {
+      "rs_kohm": 5.154,
+      "historical_r0_kohm": 20.686,
+      "unqualified_rs_over_historical_r0": 0.24915401720970703
+    },
+    "MQ4": {
+      "rs_kohm": 26.43,
+      "historical_r0_kohm": 65.27,
+      "unqualified_rs_over_historical_r0": 0.40493335376129924
+    },
+    "MQ5": {
+      "rs_kohm": 187.093,
+      "historical_r0_kohm": 251.965,
+      "unqualified_rs_over_historical_r0": 0.7425356696366558
+    },
+    "MQ7": {
+      "rs_kohm": 43.387,
+      "historical_r0_kohm": 160.601,
+      "unqualified_rs_over_historical_r0": 0.2701539840972348
+    },
+    "MQ8": {
+      "rs_kohm": 7.813,
+      "historical_r0_kohm": 54.889,
+      "unqualified_rs_over_historical_r0": 0.14234181712182767
+    },
+    "MQ9": {
+      "rs_kohm": 33.53,
+      "historical_r0_kohm": 69.99,
+      "unqualified_rs_over_historical_r0": 0.4790684383483355
+    },
+    "MQ135": {
+      "rs_kohm": 59.067,
+      "historical_r0_kohm": 213.239,
+      "unqualified_rs_over_historical_r0": 0.2769990480165448
+    }
+  },
+  "interpretation": {
+    "qualified_next_result": "UNKNOWN",
+    "source_model_transfer_assumption_verified": false,
+    "rank_kind": "exploratory conditional inverse source-curve compatibility ordered by within-model domain curve count and factor-two cluster size, arbitrary predeclared factor two, NOT ChemCore Next candidate rank",
+    "shadow_mathematical_ppm_not_measured": true,
+    "source_root_count_independent": 1,
+    "ethanol_source_MQ3_inverse_math_only": 177.84732487397758,
+    "H2_top_in_both_arms": true,
+    "explanation": "Even known ethanol plus tobacco smoke exposure gives H2 leading source-only curve compatibility; this is a detectable false-identity risk from incompatible historical R0 and foreign research curves, not validated H2 gas identification",
+    "g1_math": "PASS",
+    "g2_physical_gas_identity": "NOT_QUALIFIED",
+    "g3_real_tank": "0",
+    "field_ppm_reportable": false
+  },
+  "views": [
+    {
+      "arm": "original_8_MQ",
+      "engine_status": "UNKNOWN",
+      "engine_eligible_candidates": 0,
+      "original_sensor_count": 8,
+      "hypothetical_nonqualified_shadow_ranking": [
+        {
+          "legacy_source_id": 75,
+          "source_label": "H2",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 3389.801927270622,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 63209119.05478443,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 3256.1479154245585,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ7",
+              "hypothetical_inverse_ppm_not_reportable": 437.0293057352758,
+              "curve_source_min_ppm": 50,
+              "curve_source_max_ppm": 4000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 3361.1215218745,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            }
+          ],
+          "curve_inside_nominal_domain": 4,
+          "largest_twofold_agreement_cluster": 3,
+          "twofold_cluster_sensors": [
+            "MQ5",
+            "MQ8",
+            "MQ2"
+          ],
+          "available_curve_count": 5,
+          "shadow_rank": 1
+        },
+        {
+          "legacy_source_id": 135,
+          "source_label": "LPG",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 2071.2657693284696,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 780889313.2486696,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 61117.12505322745,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 170.15190731433677,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ7",
+              "hypothetical_inverse_ppm_not_reportable": 13203814802973.992,
+              "curve_source_min_ppm": 50,
+              "curve_source_max_ppm": 4000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 23213518676.80111,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ9",
+              "hypothetical_inverse_ppm_not_reportable": 4520.623538332623,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            }
+          ],
+          "curve_inside_nominal_domain": 2,
+          "largest_twofold_agreement_cluster": 1,
+          "twofold_cluster_sensors": [
+            "MQ2"
+          ],
+          "available_curve_count": 7,
+          "shadow_rank": 2
+        },
+        {
+          "legacy_source_id": 20,
+          "source_label": "CO",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 231372.34504293074,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 58343750937.77491,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 7.455913985576542e+22,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 9991462.615533076,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ7",
+              "hypothetical_inverse_ppm_not_reportable": 749.9653608002908,
+              "curve_source_min_ppm": 50,
+              "curve_source_max_ppm": 4000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 1.385715035115547e+25,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ9",
+              "hypothetical_inverse_ppm_not_reportable": 3021.6286413337,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 1000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 91832.01584276804,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 1,
+          "largest_twofold_agreement_cluster": 1,
+          "twofold_cluster_sensors": [
+            "MQ7"
+          ],
+          "available_curve_count": 8,
+          "shadow_rank": 3
+        },
+        {
+          "legacy_source_id": 76,
+          "source_label": "CH4",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 23792.640494913885,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 1.1935739486392888e+49,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 12875.071527322625,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 378.1262326701407,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ7",
+              "hypothetical_inverse_ppm_not_reportable": 531019535462800750000,
+              "curve_source_min_ppm": 50,
+              "curve_source_max_ppm": 4000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 142827188804699400000,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ9",
+              "hypothetical_inverse_ppm_not_reportable": 33716.92818551439,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 1,
+          "largest_twofold_agreement_cluster": 1,
+          "twofold_cluster_sensors": [
+            "MQ5"
+          ],
+          "available_curve_count": 7,
+          "shadow_rank": 4
+        },
+        {
+          "legacy_source_id": 103,
+          "source_label": "alcohol",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 19254.140958821245,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 177.84732487397758,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 40661970083017630,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 339939.3406582371,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ7",
+              "hypothetical_inverse_ppm_not_reportable": 4.206248804372743e+28,
+              "curve_source_min_ppm": 50,
+              "curve_source_max_ppm": 4000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 2045665.9090532614,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 4579.365107269412,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 1,
+          "largest_twofold_agreement_cluster": 1,
+          "twofold_cluster_sensors": [
+            "MQ3"
+          ],
+          "available_curve_count": 7,
+          "shadow_rank": 5
+        },
+        {
+          "legacy_source_id": 78,
+          "source_label": "propane",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 2310.946240788142,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            }
+          ],
+          "curve_inside_nominal_domain": 1,
+          "largest_twofold_agreement_cluster": 1,
+          "twofold_cluster_sensors": [
+            "MQ2"
+          ],
+          "available_curve_count": 1,
+          "shadow_rank": 6
+        },
+        {
+          "legacy_source_id": 139,
+          "source_label": "smoke",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 21872.475159109927,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 447462344159.7049,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 2,
+          "shadow_rank": 7
+        },
+        {
+          "legacy_source_id": 21,
+          "source_label": "NH4/NH3",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 3059.9790670380085,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 8
+        },
+        {
+          "legacy_source_id": 23,
+          "source_label": "CO2",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 3621.01539101248,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 9
+        },
+        {
+          "legacy_source_id": 34,
+          "source_label": "Benzene",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 10556.958361555879,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 10
+        },
+        {
+          "legacy_source_id": 84,
+          "source_label": "Hexane",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 15311612.697121615,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 11
+        },
+        {
+          "legacy_source_id": 95,
+          "source_label": "Toluene",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 3689.3843632258317,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 12
+        },
+        {
+          "legacy_source_id": 110,
+          "source_label": "Acetone",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 2807.4565312486166,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 13
+        }
+      ]
+    },
+    {
+      "arm": "6_MQ_exclude_MQ7_MQ9",
+      "engine_status": "UNKNOWN",
+      "engine_eligible_candidates": 0,
+      "original_sensor_count": 6,
+      "hypothetical_nonqualified_shadow_ranking": [
+        {
+          "legacy_source_id": 75,
+          "source_label": "H2",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 3389.801927270622,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 63209119.05478443,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 3256.1479154245585,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 3361.1215218745,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            }
+          ],
+          "curve_inside_nominal_domain": 3,
+          "largest_twofold_agreement_cluster": 3,
+          "twofold_cluster_sensors": [
+            "MQ5",
+            "MQ8",
+            "MQ2"
+          ],
+          "available_curve_count": 4,
+          "shadow_rank": 1
+        },
+        {
+          "legacy_source_id": 103,
+          "source_label": "alcohol",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 19254.140958821245,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 177.84732487397758,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 40661970083017630,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 339939.3406582371,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 2045665.9090532614,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 4579.365107269412,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 1,
+          "largest_twofold_agreement_cluster": 1,
+          "twofold_cluster_sensors": [
+            "MQ3"
+          ],
+          "available_curve_count": 6,
+          "shadow_rank": 2
+        },
+        {
+          "legacy_source_id": 76,
+          "source_label": "CH4",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 23792.640494913885,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 1.1935739486392888e+49,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 12875.071527322625,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 378.1262326701407,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 142827188804699400000,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 1,
+          "largest_twofold_agreement_cluster": 1,
+          "twofold_cluster_sensors": [
+            "MQ5"
+          ],
+          "available_curve_count": 5,
+          "shadow_rank": 3
+        },
+        {
+          "legacy_source_id": 135,
+          "source_label": "LPG",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 2071.2657693284696,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            },
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 780889313.2486696,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 61117.12505322745,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 170.15190731433677,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 23213518676.80111,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 1,
+          "largest_twofold_agreement_cluster": 1,
+          "twofold_cluster_sensors": [
+            "MQ2"
+          ],
+          "available_curve_count": 5,
+          "shadow_rank": 4
+        },
+        {
+          "legacy_source_id": 78,
+          "source_label": "propane",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 2310.946240788142,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": true
+            }
+          ],
+          "curve_inside_nominal_domain": 1,
+          "largest_twofold_agreement_cluster": 1,
+          "twofold_cluster_sensors": [
+            "MQ2"
+          ],
+          "available_curve_count": 1,
+          "shadow_rank": 5
+        },
+        {
+          "legacy_source_id": 20,
+          "source_label": "CO",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 231372.34504293074,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 58343750937.77491,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 7.455913985576542e+22,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ5",
+              "hypothetical_inverse_ppm_not_reportable": 9991462.615533076,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ8",
+              "hypothetical_inverse_ppm_not_reportable": 1.385715035115547e+25,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 91832.01584276804,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 6,
+          "shadow_rank": 6
+        },
+        {
+          "legacy_source_id": 139,
+          "source_label": "smoke",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ2",
+              "hypothetical_inverse_ppm_not_reportable": 21872.475159109927,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            },
+            {
+              "sensor": "MQ4",
+              "hypothetical_inverse_ppm_not_reportable": 447462344159.7049,
+              "curve_source_min_ppm": 200,
+              "curve_source_max_ppm": 10000,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 2,
+          "shadow_rank": 7
+        },
+        {
+          "legacy_source_id": 21,
+          "source_label": "NH4/NH3",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 3059.9790670380085,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 8
+        },
+        {
+          "legacy_source_id": 23,
+          "source_label": "CO2",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 3621.01539101248,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 9
+        },
+        {
+          "legacy_source_id": 34,
+          "source_label": "Benzene",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 10556.958361555879,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 10
+        },
+        {
+          "legacy_source_id": 84,
+          "source_label": "Hexane",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ3",
+              "hypothetical_inverse_ppm_not_reportable": 15311612.697121615,
+              "curve_source_min_ppm": 5.15,
+              "curve_source_max_ppm": 500,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 11
+        },
+        {
+          "legacy_source_id": 95,
+          "source_label": "Toluene",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 3689.3843632258317,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 12
+        },
+        {
+          "legacy_source_id": 110,
+          "source_label": "Acetone",
+          "source_sensor_curves": [
+            {
+              "sensor": "MQ135",
+              "hypothetical_inverse_ppm_not_reportable": 2807.4565312486166,
+              "curve_source_min_ppm": 10,
+              "curve_source_max_ppm": 200,
+              "inside_nominal_domain": false
+            }
+          ],
+          "curve_inside_nominal_domain": 0,
+          "largest_twofold_agreement_cluster": 0,
+          "twofold_cluster_sensors": [],
+          "available_curve_count": 1,
+          "shadow_rank": 13
+        }
+      ]
+    }
+  ],
+  "decision": "Keep original scientific unknown; do not replace archived R0 with Tank October 31 values. Re-run after owner physical reference, heater schedule and controlled ethanol/smoke/blank mixture challenge."
+}
