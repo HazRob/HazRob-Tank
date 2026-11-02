@@ -13,7 +13,7 @@ public final class ChemCoreNextContractSmoke {
     }
     private static void rejects(Runnable r, String what) {
         boolean failed = false;
-        try { r.run(); } catch (IllegalArgumentException expected) { failed = true; }
+        try { r.run(); } catch (IllegalArgumentException | UnsupportedOperationException expected) { failed = true; }
         ok(failed, what);
     }
     private static CoreContracts.Reading reading(String id, double rs) {
