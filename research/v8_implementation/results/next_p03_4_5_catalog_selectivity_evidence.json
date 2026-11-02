@@ -1,0 +1,62 @@
+{
+  "schema": "chemcore.next.p03.4_5.research_only/1",
+  "date": "2026-11-02",
+  "project": "ChemCore Next independent analytical engine",
+  "status": "P03_4_AND_P03_5_COMPLETED_SOURCE_PROVENANCE_ONLY",
+  "real_sqlite_audit": {
+    "run_id": 41387250178,
+    "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41387250178",
+    "conclusion": "success",
+    "catalog_unique_uids": 736,
+    "original_734_materials_plus_2_new_general_categories": true,
+    "source_curves": 109,
+    "original_v6_historical_links": 49,
+    "source_CAS_name_unique_links": 44,
+    "general_category_source_links": 16,
+    "general_categories_existing_reused": 3,
+    "general_categories_new_added": 2,
+    "physical_gas_identifications": 0
+  },
+  "selectivity_provenance_audit": {
+    "run_id": 41387820604,
+    "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41387820604",
+    "conclusion": "success",
+    "installed_models": 8,
+    "source_target_catalog_uid_count": 21,
+    "potential_coverage_pairs": 168,
+    "pairs_with_any_source_formula": 47,
+    "pairs_without_source_formula": 121,
+    "installed_sensor_source_formulas": 62,
+    "formulas_for_noninstalled_models": 47,
+    "potential_same_sensor_source_target_overlap_pairs": 123,
+    "measured_mixture_selectivity_factors": 0,
+    "qualified_LOD_values": 0,
+    "independent_Tank_G3": 0
+  },
+  "critical_caveats": [
+    "Source identity-to-UID lookup is not physical detection; an experimental target label is not a confirmed gas in a Tank session",
+    "Missing curve never means negative measured sensor response; potential overlaps are not measured cross-interference magnitudes",
+    "Source curve coefficients cannot be compared across unrelated R0 heater/calibration conditions",
+    "Historical original NH4 label and V6 NH4/NH3 ambiguity retained as two provisional interpretations sharing one evidence root",
+    "Class hazards are stored in existing chemical_hazard_classifications, source/provisional statuses; no separate database"
+  ],
+  "files": [
+    {
+      "path": "research/chemcore_next/identity/chemcore_next_p03_4_verified_full_109_source_uid_crosswalk.csv",
+      "sha": "f8fb550e3f3fc5e4e7e2d70ae2b34295e0110b9a"
+    },
+    {
+      "path": "research/chemcore_next/selectivity/chemcore_next_p03_5_8sensor_21target_source_coverage_matrix.csv",
+      "sha": "7338e8234e45ae6b9caa3aba66735d64b0438e95"
+    },
+    {
+      "path": "research/chemcore_next/selectivity/chemcore_next_p03_5_common_sensor_target_overlap_123.csv",
+      "sha": "d979af43e88769d5da5e8aad595617acc9a5ea3c"
+    },
+    {
+      "path": "research/chemcore_next/tools/verify_p03_4_5_identity_selectivity.py",
+      "sha": "4fbeff0fc8b7a81e256748942ead51b6780e5b77"
+    }
+  ],
+  "next": "P03.6 inventory background, exposure, physical hazard GHS and actual LOD by canonical material with provenance; retain unknown values and no false alarming."
+}
