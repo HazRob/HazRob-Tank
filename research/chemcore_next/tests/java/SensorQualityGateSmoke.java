@@ -145,6 +145,8 @@ public final class SensorQualityGateSmoke {
             "identical code prompts diagnostics only");
         ok(flat.physicalSignalEligible,"constant input is not a stale conversion proof");
         ok(flat.status==SensorQualityGate.Status.LIMITED,"flat codes research uncertainty");
+        ok(flat.sourceCurveEligible,
+            "constant analog input alone does not disqualify static source models");
         ok(!flat.has(SensorQualityGate.Flag.STALE_SAMPLE),
             "healthy increasing scan IDs distinguish repeated value from stale scan");
 
