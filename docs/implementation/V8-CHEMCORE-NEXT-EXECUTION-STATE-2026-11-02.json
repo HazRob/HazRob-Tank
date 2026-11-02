@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
-  "status": "CHEMCORE_NEXT_P03_3_SOURCE_DATA_PASS_P03_4_CANONICAL_UID_NEXT",
+  "status": "CHEMCORE_NEXT_P03_4_5_SOURCE_G1_PASSED_P03_6_READY",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P03",
-  "active_task": "P03.4",
-  "last_checkpoint": "P03.4 partial: 49/109 actual master UID links, 60 conservative unresolved; NH3/NH4+ dual research labels one evidence root tested GitHub CI 41379922587, no gas identification or ppm G3.",
-  "next_action": "Continue source label/CAS reconciliation for other MQDataScience and MQSensorsLib models; preserve provisional NH3 gas vs NH4+ ion difference until G2/G3 lab experiments.",
+  "active_task": "P03.6",
+  "last_checkpoint": "Independent ChemCore Next 18/37 source/core tasks done; P03.4 109 master UID research links with true 736 catalog; P03.5 8×21 source selectivity coverage, 123 potential overlapping pairs, actual selectivity and LOD unknown. P03.6 next. Stable methane reference published separately with G3=false.",
+  "next_action": "P03.6 inspect actual unified SQLite chemistry background/exposure limits/hazard GHS provenance, preserve UNKNOWN for LOD and unsupported hazard values; no new catalog",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 16,
-    "passed_tests": 15,
+    "done_tasks": 18,
+    "passed_tests": 17,
     "failed_tests": 0,
-    "percent_complete": 22.54
+    "percent_complete": 25.35
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -786,8 +786,8 @@
       "id": "P03.4",
       "phase": "P03",
       "description": "ربط الأصل العلمي بكل canonical UID من كامل الكتالوج",
-      "status": "IN_PROGRESS",
-      "qualification": "PARTIAL_SQLITE_HISTORICAL_MAPPING_AND_SHARED_SOURCE_HYPOTHESES_G1",
+      "status": "DONE",
+      "qualification": "SOURCE_CATALOG_LINK_VERIFIED_IN_REAL_SQLITE_NOT_GAS_IDENTITY",
       "depends_on": [
         "P03.3"
       ],
@@ -798,30 +798,31 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "PARTIAL_TESTED_IN_GITHUB_ACTIONS",
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
       "test_command": null,
-      "test_result": "49/109 source records linked to 13 distinct actual SQLite UIDs; 60 intentionally unresolved. Source NH4 vs V6 NH4/NH3 retains two provisional interpretations with one evidence root and zero confirmed gases; Java G1 14 checks passed. No physical Tank G3.",
-      "action_run_id": 41379922587,
-      "commit_sha": "53b5475b5ed5de9593a74f97a564e7d9cad33839",
+      "test_result": "All 109 research formula source targets linked: 49 historical legacy UIDs +44 strict CAS/name +16 generic class; canonical 736 (734 previous +2 research classes), 0 gas identity promoted; dual NH3/NH4+ shared source tracked",
+      "action_run_id": 41387250178,
+      "commit_sha": "96b0dcb577c2f6f46bdcf2169a8934ced4245c48",
       "actual_evidence_files": [
         "research/v8_implementation/results/next_p03_4_nh3_nh4_dual_hypothesis_evidence.json",
         "research/chemcore_next/identity/chemcore_next_p03_4_initial_historical_uid_crosswalk_109.csv",
-        "research/chemcore_next/identity/chemcore_next_p03_4_nh3_nh4_shared_hypotheses.json"
+        "research/chemcore_next/identity/chemcore_next_p03_4_nh3_nh4_shared_hypotheses.json",
+        "research/v8_implementation/results/next_p03_4_5_catalog_selectivity_evidence.json",
+        "research/chemcore_next/identity/chemcore_next_p03_4_verified_full_109_source_uid_crosswalk.csv"
       ],
       "blockers": [
-        "60 nonhistorical source formula aliases lack confidently resolved canonical UID; do not infer from source label alone.",
-        "NH4 source label versus ammonia gas identity requires independent gas/reference experiment, no G3 qualification."
+        "Runtime activation and physical gas identity require source-qualified R0/heater/G2/G3; research UID lookup is not sensor classification"
       ],
-      "last_checkpoint": "Provisional NH3/NH4+ interpretations of MQDS-SRC-053 implemented; source relationship counted once; test 14 PASS; actual NH4+ is aqueous ion not atmospheric gas.",
-      "next_action": "Continue source label/CAS reconciliation for other MQDataScience and MQSensorsLib models; preserve provisional NH3 gas vs NH4+ ion difference until G2/G3 lab experiments.",
+      "last_checkpoint": "109/109 research source formula UID references resolved in verified SQLite with non-molecular category ambiguity preserved",
+      "next_action": "DONE",
       "updated_at": "2026-11-02"
     },
     {
       "id": "P03.5",
       "phase": "P03",
       "description": "مصفوفة انتقائية الحساس ومدى التداخل وحد الكشف",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "SOURCE_COVERAGE_MATRIX_ONLY_NO_REAL_SELECTIVITY_OR_LOD",
       "depends_on": [
         "P03.4"
       ],
@@ -832,22 +833,28 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
-      "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "test_result": "Eight current MQ sensor models versus 21 referenced material UIDs: 168 cells; 47 source-curve-paired; 121 no source not negative evidence; 123 potential shared-sensor target overlaps; 62 source curves currently installed, 47 for future models, 0 measured selectivity/LOD",
+      "action_run_id": 41387820604,
+      "commit_sha": "a3050474fe422690d92458d283f4c3c0c3c7b240",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p03_4_5_catalog_selectivity_evidence.json",
+        "research/chemcore_next/selectivity/chemcore_next_p03_5_8sensor_21target_source_coverage_matrix.csv",
+        "research/chemcore_next/selectivity/chemcore_next_p03_5_common_sensor_target_overlap_123.csv"
+      ],
+      "blockers": [
+        "No physical cross-interferent controlled exposures or reference LOD concentration yet; cannot rank sensitivities by uncalibrated curve coefficients"
+      ],
+      "last_checkpoint": "Source-only selectivity/overlap matrix 168+123 verified, no numerical LOD or measured cross-sensitivity fabricated",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P03.6",
       "phase": "P03",
       "description": "استكمال حقول الخلفية وLOD/limits/flammability/GHS",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P03.5"
@@ -2475,6 +2482,22 @@
       "commit_sha": "53b5475b5ed5de9593a74f97a564e7d9cad33839",
       "ci_run": 41379922587,
       "evidence": "research/v8_implementation/results/next_p03_4_nh3_nh4_dual_hypothesis_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P03.4",
+      "description": "Complete 109/109 source formula mapping to 736 canonical SQLite UIDs, 49 historical+44 exact CAS+16 general class; preserve NH4 ambiguity",
+      "ci_run": 41387250178,
+      "evidence": "research/v8_implementation/results/next_p03_4_5_catalog_selectivity_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P03.5",
+      "description": "Source-only 8x21 coverage matrix; 47 source-bearing and 121 no-source pairs, 123 unmeasured co-sensitivity pair hypotheses, LOD unknown",
+      "ci_run": 41387820604,
+      "evidence": "research/v8_implementation/results/next_p03_4_5_catalog_selectivity_evidence.json"
     }
   ],
   "notes": [
@@ -2508,9 +2531,9 @@
   "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
   "core_program_progress": {
     "total_tasks": 37,
-    "done_tasks": 16,
-    "percent_complete": 43.24,
-    "active_task": "P03.4",
+    "done_tasks": 18,
+    "percent_complete": 48.65,
+    "active_task": "P03.6",
     "qualified_g3_techniques": 0
   },
   "separate_android_integration_scope": {
