@@ -60,7 +60,7 @@ public final class V7BeefResearchPdfWriter {
     private static void pageChrome(Canvas c,Context ctx,int number,
                                    String captureTimestampUtc){
         V7ReportLayoutKit.drawHeader(c,ctx,false,
-            "تقرير فحص بصمة اللحوم البقرية","Beef Research Headspace",
+            "تقرير القياس البحثي للحوم البقرية","Beef Direct Measurement Research",
             V7ReportLayoutKit.missing(captureTimestampUtc));
         V7ReportLayoutKit.drawFooter(c,false,number,3);
     }
