@@ -35,6 +35,7 @@ class V15Schema(unittest.TestCase):
         self.db.execute("INSERT INTO measurement_sessions VALUES('old-session')")
         self.db.execute("INSERT INTO field_measurement_cycles VALUES('old-cycle')")
         for stmt in statements().values():self.db.execute(stmt)
+        self.db.commit()  # Persist V14 seed and V15 DDL before testing transactional rollback.
     def tearDown(self):self.db.close()
     def test_v14_tables_and_records_preserved(self):
         self.assertEqual(self.db.execute("SELECT payload FROM experiments").fetchone()[0],"legacy-v7-preserved")
