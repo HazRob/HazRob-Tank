@@ -271,6 +271,14 @@ jobs:
              | tee build/chemcore-next-p01/P07-1-TELEMETRY-MAPPER.log
           grep -q '^CHEMCORE_NEXT_P07_1_TELEMETRY_MAPPER_PASS ' \
              build/chemcore-next-p01/P07-1-TELEMETRY-MAPPER.log
+      - name: P07.3 source-of-truth routing, explicit V6 comparison only and no silent fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextEngineRoutingPolicySmoke \
+            | tee build/chemcore-next-p01/P07-3-ENGINE-ROUTING.log
+          grep -q '^CHEMCORE_NEXT_P07_3_NO_SILENT_FALLBACK_PASS ' \
+            build/chemcore-next-p01/P07-3-ENGINE-ROUTING.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -304,5 +312,6 @@ jobs:
             build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.log
             build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.json
             build/chemcore-next-p01/P07-1-TELEMETRY-MAPPER.log
+            build/chemcore-next-p01/P07-3-ENGINE-ROUTING.log
           if-no-files-found: warn
           retention-days: 30
