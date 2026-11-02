@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "Build/verify ChemCore Next independently first, integrate into V8 later; standards formal qualification deferred",
-  "status": "P00_1_2_3_DONE_P00_4_SOURCE_PROVENANCE_IN_PROGRESS",
+  "status": "P00_COMPLETE_P01_1_3_TESTED_P01_4_READY",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
-  "active_phase": "P00",
-  "active_task": "P00.4",
-  "last_checkpoint": "P00.1-P00.3 static inventory complete. P00.4 source assets audited; SQLite runtime count outstanding. 23 source capabilities staged; 356 algebraic MQDataScience/MQSensorsLib test points passed without hardware claims.",
-  "next_action": "Implement/execute fresh-install and upgrade SQLite count, identity collision, Stable bootstrap source/integrity and overlay build tests; do not assert exact 734 in live APK until these pass",
+  "active_phase": "P01",
+  "active_task": "P01.4",
+  "last_checkpoint": "P00.4 real SQLite 734 passed CI 41372537382; P01.1-3 independent research Java contracts 28 assertions passed CI 41372427275. P01.4 next.",
+  "next_action": "Implement and test versioned deterministic replay codec, roundtrip and incompatible schema handling; supply JSON schema or separate Android adapter contract, with CI and hashes.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 3,
-    "passed_tests": 3,
+    "done_tasks": 7,
+    "passed_tests": 7,
     "failed_tests": 0,
-    "percent_complete": 4.23
+    "percent_complete": 9.86
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -50,7 +50,7 @@
         "P00.3",
         "P00.4"
       ],
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [],
       "deliverables": [
         "research/v8_implementation/results/next_p00_summary.json"
@@ -66,7 +66,7 @@
         "P01.3",
         "P01.4"
       ],
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "depends_on": [
         "P00"
       ],
@@ -398,7 +398,7 @@
       "id": "P00.4",
       "phase": "P00",
       "description": "عد مواد الكتالوج الفعلي وجودة UID/CAS/legacy وStable",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "qualification": "SOURCE_ASSETS_AND_STABLE_CHANNEL_CHECKED_RUNTIME_DB_NOT_RUN",
       "depends_on": [
         "P00.3"
@@ -410,27 +410,27 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "SOURCE_ONLY_PARTIAL_PASS",
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
       "test_command": "Read pinned SERVOC-Android source JSON + compare ChemicalIdentityResolver to V8 DB schema and Stable channel on main",
-      "test_result": "144 source legacy names, 652 NIOSH records, 402 IDLH rows, 638 OSHA rows confirmed; 734 distinct identities declared in V6 README but actual post-bootstrap SQLite count not tested. Stable embedded 1.0.0-hr069r1 (652/49/0) documented; main remote manifest and payload both 404.",
-      "action_run_id": null,
-      "commit_sha": null,
+      "test_result": "Robolectric full bootstrap 734 active/unique UIDs=734; legacy144 and new590; repeated import734; remote Stable main manifest not published.",
+      "action_run_id": 41372537382,
+      "commit_sha": "ed65054858597edce5b5b168672f01063e0fc74d",
       "actual_evidence_files": [
-        "research/v8_implementation/results/next_p00_4_catalog_stable_source_audit.json"
+        "research/v8_implementation/results/next_p00_4_sqlite_runtime_evidence.json"
       ],
       "blockers": [
         "Need actual Android SQLite initialized/updated test to certify canonical material count and UID/CAS mapping",
         "Published HazRob main Stable manifest not present; embedded snapshot remains source reference"
       ],
-      "last_checkpoint": "Source provenance and actual NIOSH/OSHA asset counts documented; runtime master row count pending",
-      "next_action": "Implement/execute fresh-install and upgrade SQLite count, identity collision, Stable bootstrap source/integrity and overlay build tests; do not assert exact 734 in live APK until these pass",
+      "last_checkpoint": "Robolectric full bootstrap 734 active/unique UIDs=734; legacy144 and new590; repeated import734; remote Stable main manifest not published.",
+      "next_action": "DONE",
       "updated_at": "2026-11-02"
     },
     {
       "id": "P01.1",
       "phase": "P01",
       "description": "إنشاء حزمة ChemCore Next المستقلة",
-      "status": "NOT_STARTED",
+      "status": "DONE",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P00.4"
@@ -442,22 +442,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_result": "Independent Java17 core compiled and 28 assertions passed; no Android or V6 dependency.",
+      "action_run_id": 41372427275,
+      "commit_sha": "8acf785c7d56e61d275ac924cda0157a88a5915d",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p01_1_3_core_contract_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "Independent Java17 core compiled and 28 assertions passed; no Android or V6 dependency.",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P01.2",
       "phase": "P01",
       "description": "عقد Sensor/Device/Snapshot/Evidence/Result immutable",
-      "status": "NOT_STARTED",
+      "status": "DONE",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P01.1"
@@ -469,22 +471,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_result": "Immutable SensorInstance, DeviceProfile, Reading, Snapshot, EvidenceAsset/EvidenceNode, Candidate, Result source contracts; invalid values and no fake ppm tests passed.",
+      "action_run_id": 41372427275,
+      "commit_sha": "8acf785c7d56e61d275ac924cda0157a88a5915d",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p01_1_3_core_contract_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "Immutable SensorInstance, DeviceProfile, Reading, Snapshot, EvidenceAsset/EvidenceNode, Candidate, Result source contracts; invalid values and no fake ppm tests passed.",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P01.3",
       "phase": "P01",
       "description": "تسجيل capabilities للحساسات الحالية والمستقبلية",
-      "status": "NOT_STARTED",
+      "status": "DONE",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P01.2"
@@ -496,22 +500,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_result": "Dynamic registry supports 8 to 9 channels with uniqueness constraints; standalone JVM smoke test passed.",
+      "action_run_id": 41372427275,
+      "commit_sha": "8acf785c7d56e61d275ac924cda0157a88a5915d",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p01_1_3_core_contract_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "Dynamic registry supports 8 to 9 channels with uniqueness constraints; standalone JVM smoke test passed.",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P01.4",
       "phase": "P01",
       "description": "Deterministic replay والنسخ وتحويل JSON",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P01.3"
@@ -531,7 +537,7 @@
       "actual_evidence_files": [],
       "blockers": [],
       "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
+      "next_action": "Implement and test versioned deterministic replay codec, roundtrip and incompatible schema handling; supply JSON schema or separate Android adapter contract, with CI and hashes.",
       "updated_at": null
     },
     {
@@ -2288,6 +2294,42 @@
       "description": "356 pure algebraic power law inversion samples over 89 source rows, no failing sample; physical calibration not tested",
       "evidence": "research/v8_implementation/results/next_upstream_curve_formula_oracle_2026-11-02.json",
       "commit_sha": "e05fa8a8f86078a1075a0510ad8b7547c1f88667"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P00.4",
+      "commit_sha": "ed65054858597edce5b5b168672f01063e0fc74d",
+      "ci_run": 41372537382,
+      "evidence": "research/v8_implementation/results/next_p00_4_sqlite_runtime_evidence.json",
+      "description": "734 active canonical SQLite UIDs, 144 original + 590 new; repeated seed idempotence"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P01.1",
+      "commit_sha": "8acf785c7d56e61d275ac924cda0157a88a5915d",
+      "ci_run": 41372427275,
+      "evidence": "research/v8_implementation/results/next_p01_1_3_core_contract_evidence.json",
+      "description": "JDK17 no-dependency Next core contracts and dynamic registry; 28 assertions passed"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P01.2",
+      "commit_sha": "8acf785c7d56e61d275ac924cda0157a88a5915d",
+      "ci_run": 41372427275,
+      "evidence": "research/v8_implementation/results/next_p01_1_3_core_contract_evidence.json",
+      "description": "JDK17 no-dependency Next core contracts and dynamic registry; 28 assertions passed"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P01.3",
+      "commit_sha": "8acf785c7d56e61d275ac924cda0157a88a5915d",
+      "ci_run": 41372427275,
+      "evidence": "research/v8_implementation/results/next_p01_1_3_core_contract_evidence.json",
+      "description": "JDK17 no-dependency Next core contracts and dynamic registry; 28 assertions passed"
     }
   ],
   "notes": [
