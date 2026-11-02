@@ -11,6 +11,7 @@ BASE = ROOT / "research/chemcore_next/identity"
 UNIFIED = ROOT / "research/chemcore_next/source_curves/chemcore_next_p03_2_unified_109_formula_register.csv"
 HIST = BASE / "chemcore_next_p03_4_sqlite_legacy_source_49.csv"
 LOOKUP = BASE / "chemcore_next_p03_4_initial_historical_uid_crosswalk_109.csv"
+SHARED = BASE / "chemcore_next_p03_4_nh3_nh4_shared_hypotheses.json"
 AMBIGUOUS = re.compile(
     r"^(?:lpg|smoke|alcohol|nh4|nh4/nh3|ethanol/alcohol|nh4_unresolved_class)$", re.I)
 
@@ -79,6 +80,29 @@ def audit():
     assert linked == 49 and unlinked == 60, (linked, unlinked)
     assert len(canonical) == 13
     assert ambiguous == 18, "Source LPG/smoke/alcohol/NH4-NH3 deliberately flagged"
+    shared = json.loads(SHARED.read_text(encoding="utf8"))
+    variants = shared["hypotheses"]
+    assert shared["source_curve_uid"] == "MQDS-SRC-053"
+    assert shared["source_v6_curve_id"] == "MQDATA43-042"
+    assert shared["upstream_label"] == "NH4"
+    assert shared["v6_label"] == "NH4/NH3"
+    assert shared["source_a"] == 6.2968 and shared["source_b"] == -0.3892
+    assert shared["independent_experimental_evidence_count"] == 1
+    assert shared["duplicate_numerical_models_counted_for_votes"] == 1
+    assert shared["proven_independent_gas_identifications"] == 0
+    assert len(variants) == 2
+    assert {x["formula"] for x in variants} == {"NH3", "NH4+"}
+    assert {x["id"] for x in variants} == {
+        "MQ135-SRC053-NH3", "MQ135-SRC053-NH4"
+    }
+    nh3 = next(x for x in variants if x["formula"] == "NH3")
+    nh4 = next(x for x in variants if x["formula"] == "NH4+")
+    assert nh3["phase"] == "gas" and nh3["provisional_master_uid"] == 22
+    assert nh3["master_cas"] == "7664-41-7"
+    assert nh4["phase"] == "aqueous_ionic_not_free_atmospheric_gas"
+    assert nh4["provisional_master_uid"] is None and nh4["master_cas"] is None
+    assert all(not h["may_appear_as_confirmed_gas"] and not h["quantitative_ppm_qualified"] for h in variants)
+
     return {
         "schema": "chemcore.next.p03.4.historical_uid_link_ci/1",
         "status": "PASS_49_VERIFIED_LEGACY_LINKS_60_CONSERVATIVELY_UNRESOLVED",
@@ -88,6 +112,8 @@ def audit():
         "distinct_sqlite_master_uids": len(canonical),
         "ambiguous_historical_class_alias_curves": ambiguous,
         "eligible_gas_identity_approvals": 0,
+        "provisional_shared_nh3_nh4_hypotheses": 2,
+        "unique_evidence_roots_for_the_two": 1,
         "qualified_tank_g3": 0,
         "catalog_master_uids": 734,
         "real_database_ci_evidence": "https://github.com/HazRob/HazRob-Tank/actions/runs/41378951072",
@@ -105,7 +131,7 @@ if __name__ == "__main__":
         p.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print("CHEMCORE_NEXT_P03_4_UID_CROSSWALK_PASS "
           "source_rows=109 mapped=%d unresolved=%d distinct_uids=%d "
-          "ambiguous=%d gas_certifications=0" %
+          "ambiguous=%d shared_nh3_nh4=2 evidence_roots=1 gas_certifications=0" %
           (result["historically_linked_curves"],
            result["unresolved_formula_rows"],
            result["distinct_sqlite_master_uids"],
