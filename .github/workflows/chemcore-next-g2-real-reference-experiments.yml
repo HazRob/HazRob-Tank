@@ -25,6 +25,12 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --no-input numpy==2.3.5 pandas==2.2.3 scikit-learn==1.8.0
+      - name: Preflight independent ChemCore Next G2 scripts before source download
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile research/chemcore_next/experiments/next_reference_mq4_quantitative.py
+          python -m py_compile research/chemcore_next/experiments/next_reference_uci1081_fingerprints.py
       - name: Retrieve original Li-Cor MQ4 source and fail unless original SHA256 matches
         shell: bash
         run: |
