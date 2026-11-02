@@ -14,7 +14,7 @@ from pathlib import Path
 
 from g2_mq_ext10_ethanol_preflight import (
     MAX_SOURCE_BYTES_PER_FILE, LIQUID_PERCENT_BY_CODE,
-    parse_ethanol_filename, parse_numeric_rows, require,
+    parse_ethanol_filename, parse_numeric_rows, liquid_level_coverage, require,
 )
 
 SCHEMA = "hazrob.g2.mq-ext10-archive-intake.v1"
@@ -106,10 +106,7 @@ def inspect_zip(path, expected_rows=3330):
     require(len(manifest) <= 65, "ARCHIVE_MORE_ETHANOL_THAN_REPORTED")
     # A count of 65 alone is not evidence of the six published liquid
     # concentration levels: 65 uniquely named C1 replicates could pass it.
-    counts = {code: 0 for code in LIQUID_PERCENT_BY_CODE}
-    for sample in manifest:
-        counts[sample["concentration_code"]] += 1
-    all_levels_present = all(count > 0 for count in counts.values())
+    counts, all_levels_present = liquid_level_coverage(manifest)
     count_complete = len(manifest) == 65
     manifest.sort(key=lambda x: (x["concentration_code"], x["repetition"]))
     return {

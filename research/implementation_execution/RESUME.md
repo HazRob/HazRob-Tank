@@ -1,3 +1,13 @@
+## 2026-11-02 — MQ-EXT-10 folder/ZIP six-level source-completeness parity (research only)
+
+- Reviewed HEAD `75fabc9b3e6e12c2fb022d4fc3eb9093b9b8f33b`; all 21 GitHub Actions runs returned for that commit completed successfully, including G2 source/R0. No confirmed starting CI failure.
+- Fixed inconsistent source QA: loose-folder intake formerly treated 65 files all from C1 as source-count-complete while ZIP intake correctly flagged missing C2–C6. Both paths now use shared `liquid_level_coverage`; folder output includes six-level counts and an explicit missing-level blocker.
+- Added three deterministic synthetic folder regression cases and Arabic/English methodological record `G2_MQ_EXT10_FOLDER_ZIP_LEVEL_PARITY_2026-11-02.md`. No original MQ-EXT-10 archive or independently calibrated/blinded Tank exposures acquired. Published liquid v/v is not headspace gas ppm.
+- Scientific status unchanged pending new evidence: last verified `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank `records=[]`. No G2/G3 promotion. Changes restricted to research preflight/ZIP parser/tests/method/RESUME; no Stable, Android, firmware or main changes.
+- Verify new commit's CI before asserting success; source-level synthetic QA cannot substitute for physical Tank validation.
+
+---
+
 ## 2026-11-02 — MQ-EXT-10 published liquid-level completeness vs raw count (research only)
 
 - Starting HEAD `9608faa8cad5a6dfb804259e3f29697f5957d87d`: verified 21/21 GitHub Actions runs returned by the Actions collection completed successfully, including G2 source/R0 run #41444114870. No starting CI failure.

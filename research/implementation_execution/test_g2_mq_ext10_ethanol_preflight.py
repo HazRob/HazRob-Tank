@@ -2,6 +2,7 @@
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from g2_mq_ext10_ethanol_preflight import (
     inspect_file, parse_ethanol_filename, parse_numeric_rows, run,
@@ -237,6 +238,54 @@ class MQExt10EthanolPreflightTests(unittest.TestCase):
             (Path(d) / "README.txt").write_text("50,25,1,2,3,4,5,6\n")
             with self.assertRaisesRegex(ValueError, "INVALID_FILENAME"):
                 run(Path(d))
+
+    def _synthetic_folder_receipt(self, codes):
+        """Only fake filenames and deterministic metadata; no physical measurements."""
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            metadata = {}
+            for i, code in enumerate(codes):
+                name = f"Ea-{code}_R{i+1:03d}.txt"
+                p = root / name
+                p.touch()
+                metadata[name] = {
+                    "concentration_code": code,
+                    "repetition": i + 1,
+                    "rows": 3330,
+                    "sha256": f"{i+1:064x}",
+                    "numeric_trace_sha256": f"{i+1001:064x}",
+                }
+            with patch("g2_mq_ext10_ethanol_preflight.inspect_file",
+                       side_effect=lambda p: metadata[p.name]):
+                return run(root)
+
+    def test_folder_65_one_liquid_level_is_incomplete(self):
+        r = self._synthetic_folder_receipt(["C1"] * 65)
+        self.assertTrue(r["reported_ethanol_count_complete"])
+        self.assertFalse(r["all_six_published_liquid_levels_present"])
+        self.assertEqual(r["concentration_code_counts"]["C1"], 65)
+        self.assertEqual(r["concentration_code_counts"]["C6"], 0)
+        self.assertEqual(r["source_status"], "REPORTED_COUNT_MISSING_CONCENTRATION_LEVELS")
+        self.assertIn("MISSING_PUBLISHED_LIQUID_CONCENTRATION_LEVELS", r["blockers"])
+        self.assertFalse(r["g2_qualified"])
+
+    def test_folder_six_levels_but_only_six_files_is_partial(self):
+        r = self._synthetic_folder_receipt([f"C{i}" for i in range(1, 7)])
+        self.assertTrue(r["all_six_published_liquid_levels_present"])
+        self.assertFalse(r["reported_ethanol_count_complete"])
+        self.assertEqual(r["source_status"], "PARTIAL_RAW_FILES_SCANNED_UNQUALIFIED")
+        self.assertIn("INCOMPLETE_REPORTED_ETHANOL_MEASUREMENTS", r["blockers"])
+        self.assertNotIn("MISSING_PUBLISHED_LIQUID_CONCENTRATION_LEVELS", r["blockers"])
+
+    def test_folder_65_six_levels_still_not_qualified(self):
+        r = self._synthetic_folder_receipt([f"C{i % 6 + 1}" for i in range(65)])
+        self.assertTrue(r["all_six_published_liquid_levels_present"])
+        self.assertTrue(r["reported_ethanol_count_complete"])
+        self.assertEqual(sum(r["concentration_code_counts"].values()), 65)
+        self.assertEqual(r["source_status"], "RAW_FILES_SCANNED_UNQUALIFIED")
+        self.assertFalse(r["g2_qualified"])
+        self.assertFalse(r["g3_qualified"])
+        self.assertFalse(r["headspace_ethanol_ppm_measured"])
 
 
 if __name__ == "__main__":

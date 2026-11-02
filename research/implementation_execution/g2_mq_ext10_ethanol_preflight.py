@@ -104,6 +104,16 @@ def parse_numeric_rows(data, expected_rows=3330):
             "numeric_trace_sha256": numeric_digest.hexdigest()}
 
 
+def liquid_level_coverage(manifest):
+    """Summarize reported liquid v/v levels, not vapor ppm or G2 eligibility."""
+    counts = {code: 0 for code in LIQUID_PERCENT_BY_CODE}
+    for row in manifest:
+        code = row["concentration_code"]
+        require(code in counts, "UNKNOWN_LIQUID_LEVEL_CODE")
+        counts[code] += 1
+    return counts, all(count > 0 for count in counts.values())
+
+
 def inspect_file(path, expected_rows=3330):
     path = Path(path)
     require(path.is_file() and not path.is_symlink(), "NOT_REGULAR_FILE")
@@ -169,8 +179,16 @@ def run(raw_root=None):
         seen_bytes.add(row["sha256"])
         seen_numeric_traces.add(row["numeric_trace_sha256"])
         manifest.append(row)
-    result["source_status"] = ("RAW_FILES_SCANNED_UNQUALIFIED" if len(files) == 65
-                               else "PARTIAL_RAW_FILES_SCANNED_UNQUALIFIED")
+    counts, all_levels_present = liquid_level_coverage(manifest)
+    count_complete = len(manifest) == 65
+    result["source_status"] = (
+        "RAW_FILES_SCANNED_UNQUALIFIED" if count_complete and all_levels_present
+        else "REPORTED_COUNT_MISSING_CONCENTRATION_LEVELS" if count_complete
+        else "PARTIAL_RAW_FILES_SCANNED_UNQUALIFIED"
+    )
+    result["concentration_code_counts"] = counts
+    result["all_six_published_liquid_levels_present"] = all_levels_present
+    result["reported_ethanol_count_complete"] = count_complete
     result["files_scanned"] = len(files)
     result["rows_scanned"] = sum(x["rows"] for x in manifest)
     result["file_manifest"] = manifest
@@ -180,8 +198,10 @@ def run(raw_root=None):
         "HEADSPACE_GAS_PPM_REFERENCE_NOT_MEASURED",
         "R0_CALIBRATION_NOT_VERIFIED",
     ]
-    if len(files) != 65:
+    if not count_complete:
         result["blockers"].insert(0, "INCOMPLETE_REPORTED_ETHANOL_MEASUREMENTS")
+    if not all_levels_present:
+        result["blockers"].append("MISSING_PUBLISHED_LIQUID_CONCENTRATION_LEVELS")
     return result
 
 
