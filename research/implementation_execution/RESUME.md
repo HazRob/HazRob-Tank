@@ -1,3 +1,13 @@
+## 2026-11-02 — MQ-EXT-10 paired folder/ZIP raw-byte parity (research only)
+
+- Resumed from `d8ceef29dc2083cf5a6d19ed75485c5cb63c333d`; checked 11/11 PR-triggered GitHub Actions runs returned for that exact commit, all completed successfully including G2 source/R0 run #41462606929. No confirmed starting CI failure.
+- Added `g2_mq_ext10_folder_zip_parity.py`: paired original-source intake requires matching (C-level, repetition) sample sets, raw byte SHA256, exact numeric trace SHA256, parsed ranges, row counts and nominal liquid labels. It cross-reconciles six-level coverage and the published count; deterministic manifest SHA256 permits independent replay. It does not extract the ZIP or imply publisher authentication.
+- Added seven deterministic synthetic regression cases, `G2_MQ_EXT10_PAIRED_INTAKE_PARITY_2026-11-02.md`, and G2-only GitHub Actions no-raw receipt/artifact. **Original MQ-EXT-10 publisher archive and independent Tank calibrated/blinded exposures remain unavailable in this iteration.** Liquid ethanol solution v/v labels are not measured vapor ppm.
+- Changes limited to G2 research source module, test, methodology, this RESUME checkpoint, and research-branch G2 workflow. No ChemCore Stable, Android, firmware or main changes. No G2/G3 promotion: last verified `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, Tank evidence `records=[]`.
+- CI for the new implementation commit `29f0055f09868f2295426057162abdc359dddafa` was **queued** at initial check; verify exact final HEAD runs and repair confirmed failures before asserting success. Prioritize source provenance and independent physically grouped, blinded Tank measurements with traceable reference calibration.
+
+---
+
 ## 2026-11-02 — MQ-EXT-10 folder/ZIP six-level source-completeness parity (research only)
 
 - Reviewed HEAD `75fabc9b3e6e12c2fb022d4fc3eb9093b9b8f33b`; all 21 GitHub Actions runs returned for that commit completed successfully, including G2 source/R0. No confirmed starting CI failure.
