@@ -1,3 +1,14 @@
+## 2026-11-02 — MQ-EXT-10 ethanol solution-label preflight (research only)
+
+- Resumed from `52d6db3d19d27e61b8b5c1cd1a45fbabfe871f42`; independently checked **11/11** GitHub Actions runs for that exact commit completed success, including G2 source/R0 run #41393991784. No CI failure to repair at starting HEAD.
+- Reviewed the original published metadata for `MQ-EXT-10`, Mendeley Data DOI `10.17632/vpc887d53s.3` and related data descriptor DOI `10.1016/j.dib.2019.104202`. Crucial source-scope distinction: ethanol concentration labels C1-C6 denote **1%, 2.5%, 5%, 10%, 15%, 20% v/v liquid solutions**, not measured ethanol headspace ppm. Reported 65 ethanol measurements, 235 wine measurements, six MQ3/MQ4/MQ6 resistance channels (kOhm) plus RH/temperature, 3330 readings per measurement.
+- Added `g2_mq_ext10_ethanol_preflight.py`, 15 synthetic deterministic regression tests, byte-replayable `G2_MQ_EXT10_ETHANOL_PREFLIGHT_2026-11-02.json`, and Arabic methodology `G2_MQ_EXT10_ETHANOL_SOURCE_PREFLIGHT_2026-11-02_AR.md`. Local **15/15 tests pass**. The optional original-file parser checks filename concentration/repetition, eight numeric channels, finite positive resistances, exactly 3330 rows and per-file SHA256. **No original Mendeley raw file was acquired or verified in this iteration**; saved receipt truthfully states `files_scanned=0` and no physical provenance/ppm validation.
+- Integrated the preflight as a source-only G2 CI step with an artifact in `.github/workflows/g2-signal-lineage-v4.yml`. Code/test/receipt/doc/workflow changes remain on the existing research branch only. **Implementation SHA `a837ed897d179483b9acc6607d8d1a55a10ce966` GitHub Actions were queued at last check; final documentation HEAD must be checked independently.**
+- No changes to ChemCore Stable, Android, ESP32 firmware, or main. No G2/G3 promotion. Scientific gate remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank evidence `records=[]`.
+- Next: check final HEAD CI and repair any confirmed failure. Obtain original Mendeley v3 Ethanol archive and verify raw SHA256, physical groups and headspace ppm reference before any quantitative gas claim; prioritize independent, blinded Tank exposure groups with traceable calibration.
+
+---
+
 ## 2026-11-02 — MQ4 cross-model day-reference fail-closed integrity guard (research only)
 
 - Resumed from `d18ca16f19a5b6abcd2676ca7b996a5804967dac`; independently checked **11/11** associated GitHub Actions runs completed success, including G2 source/R0 #41388076572. No prior CI failure to repair.
