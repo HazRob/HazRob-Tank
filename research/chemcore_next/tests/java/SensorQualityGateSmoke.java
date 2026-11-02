@@ -162,7 +162,7 @@ public final class SensorQualityGateSmoke {
         rejects(()->new SensorQualityGate.Limits(0,60000,.2,.3,3),"bad stale threshold");
         rejects(()->new SensorQualityGate.Limits(2000,60000,Double.NaN,.3,3),
             "bad CV limit");
-        rejects(()->new SensorQualityGate.Sample("",119900,70000,10,1500,10,
+        rejects(()->new SensorQualityGate.Sample("",119900,70000,10,1500,10.0,
             SensorQualityGate.Transport.ACKED,true,true,"STEADY",25.0,50.0,true),
             "empty sensor identity");
         rejects(()->SensorQualityGate.evaluate("tank:MQ2","",NOW,null,LIMITS),
