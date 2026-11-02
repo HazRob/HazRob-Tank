@@ -45,6 +45,12 @@ public final class SignalPhysicsSmoke {
             SignalPhysics.Status.ADC_INVALID,"overflow ADS sample");
         status(SignalPhysics.fromAdcCode(verified,32768),
             SignalPhysics.Status.ADC_SATURATED,"ADC positive full scale");
+        status(SignalPhysics.fromAdcCode(verified,32767),
+            SignalPhysics.Status.ADC_SATURATED,"positive ADS last code is saturated");
+        status(SignalPhysics.fromKnownAdcVoltage(verified,-1,2.0),
+            SignalPhysics.Status.ADC_INVALID,"measured voltage cannot legitimize negative raw ADC");
+        status(SignalPhysics.fromKnownAdcVoltage(verified,32767,2.0),
+            SignalPhysics.Status.ADC_SATURATED,"measured voltage cannot legitimize saturated raw ADC");
         SignalPhysics.Observation valid=SignalPhysics.fromKnownAdcVoltage(verified,16000,2.0);
         status(valid,SignalPhysics.Status.VALID,"actual defined Vout");
         check(Math.abs(valid.rsKohm-15.0)<1e-10,
