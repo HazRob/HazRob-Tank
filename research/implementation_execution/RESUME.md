@@ -1,3 +1,14 @@
+## 2026-11-02 — External MQ4 false-alert concentration by calendar day (research only)
+
+- Resumed from `1feb36e52a370030cc26797a7a86a065dc2800cb`; independently verified **21/21** associated GitHub Actions runs completed successfully, including G2 source/R0 gate #41382485385. No previous CI failure needed repair.
+- Added exact-rational day-cluster audit `g2_mq4_false_alert_day_concentration.py`, 14 regression tests, source-derived JSON receipt and Arabic methodology. The tool replays the authenticated external MQ4 source lineage via the existing forward error-burden gate; it **does not** replay the original ZIP or create independent Tank exposure data.
+- Source-only descriptive findings: the single largest false-positive day contributes 761/1392 (54.67%) for HGB_MQ4_3_T_RH and 1145/1955 (58.57%) for RIDGE_MQ4_3_T_RH. For RIDGE_MQ4_3, dropping 2021-07-29 yields 1591/6943 reference-negative rows with FP, versus 2367/6460 after dropping 2021-07-26. These are **not** independent trials, confidence intervals, safety alarm rates, or G2/G3 certification.
+- Added the exact-day diagnostic to the research-only G2 GitHub Actions workflow and artifact list; all changes confined to `research/implementation_execution/` plus `.github/workflows/g2-signal-lineage-v4.yml` on the research branch. No ChemCore Stable, Android, firmware or main edits.
+- **Final HEAD CI verification pending** at the time of documentation; do not claim tests passed until the exact final SHA's run completes. Scientific status remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank `records=[]`; no G2/G3 promotion.
+- Next: verify exact HEAD CI and fix failures; prioritize independent blinded Tank physical exposure and traceable reference calibration evidence instead of treating repeated source-only metrics as new qualification samples.
+
+---
+
 ## 2026-11-02 — External MQ4 forward-only false-alert burden and PPV audit (research only)
 
 - Resumed from `bc0aad6099924b59b43ee63ff67833e8609bd9fc`; verified **11/11** associated GitHub Actions runs completed successfully, including G2 source/R0 #41377549584 (1107/1107 offline tests and 80-technique publication guard). No prior CI failure to repair.
