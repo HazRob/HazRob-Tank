@@ -90,7 +90,7 @@ public final class FoodFreshnessTab {
         protocolHint.setBackground(UiKit.outline(c,0xFFEDF3F9,0xFFA6B7CB));
         root.addView(protocolHint,UiKit.full(c));
         root.addView(UiKit.title(c,"نوع العينة"),UiKit.full(c));
-        foodLabels.add("جميع الأصناف");
+        foodLabels.add("اختر نوع العينة قبل الفحص");
         for(String family:FoodFreshnessEngine.fruitFamilies())foodLabels.add(family);
         foodChoice=new Spinner(c);
         foodChoice.setAdapter(UiKit.lightOptions(c,foodLabels.toArray(new String[0])));
@@ -140,7 +140,7 @@ public final class FoodFreshnessTab {
                     "مقارنة الفئات البحثية الأربع للحوم":"التشابه مع أيام دراسة الفواكه");
                 protocolHint.setText(meat?
                     "اللحوم: قياس مباشر لعينات لحم البقر وفق المرجع Wijaya 2018 (10,800 سجل، 7 MQ). تعرض أقرب فئة مرجعية ومؤشر الفصل عن الفئة الثانية؛ اختبار TS5 المتوازن 38.88% فقط، فلا يصدر حكم صلاحية.":
-                    "الفواكه: قياس مباشر ومطابقة 54 نمطًا غذائيًا من أصل 59، وحساب الموضع على منحنى أيام الدراسة D1–D5 حيث تتوفر 5 نقاط. الموضع مرجعي وليس عمرًا أو درجة نضج أو سلامة ميكروبية.");
+                    "الفواكه: يجب اختيار نوع العينة. تحدد الخوارزمية موضعًا مرجعيًا على منحنى D1–D5 داخل النوع المختار فقط. التعرف المفتوح على النوع حقق 5/45 في تجربة حجب مرجع، لذلك لم نعد نعتمده.");
                 dayGraph.invalidate();
             }
             public void onNothingSelected(android.widget.AdapterView<?> parent){}
@@ -158,6 +158,11 @@ public final class FoodFreshnessTab {
             host.showToast("يلزم اتصال حي بحساسات MQ لبدء فحص الغذاء");return;
         }
         operationMode=modeChoice.getSelectedItemPosition()==0?"MEAT":"FRUIT";
+        if("FRUIT".equals(operationMode)&&selectedFamily().isEmpty()){
+            host.showToast("اختر نوع الفاكهة أولًا؛ التعرف المفتوح غير موثوق في بيانات الدراسة");
+            status.setText("اختيار نوع الفاكهة شرط لبدء القياس البحثي");
+            return;
+        }
         capturing=true;completed=null;meatCompleted=null;interpreted=null;frozenReadings=null;reportId="";
         sum.clear();counts.clear();lastCycle.clear();signalHistory.clear();
         snapshots=0;started=SystemClock.elapsedRealtime();lastAccept=0;frozenElapsed=0;
