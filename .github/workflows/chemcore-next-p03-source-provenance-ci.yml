@@ -1,0 +1,45 @@
+name: ChemCore Next P03.2 source curve provenance and formula replay
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'research/chemcore_next/source_curves/**'
+      - 'research/chemcore_next/tools/verify_p03_2_source_curves.py'
+      - 'research/chemcore_next/mqdata_v7_source_gas_curve_register_89.csv'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceCatalog.java'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/AlternativeCurveCatalog.java'
+      - '.github/workflows/chemcore-next-p03-source-provenance-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-source-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reconcile 89 plus 6 plus 14 numeric formulas with original V6 Java
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile research/chemcore_next/tools/verify_p03_2_source_curves.py
+          python3 research/chemcore_next/tools/verify_p03_2_source_curves.py \
+            --out research/chemcore_next/source_curves/P03-2-CI-RESULT.json \
+            | tee P03-2-CURVE-VALIDATION.log
+          grep -q '^CHEMCORE_NEXT_P03_2_SOURCE_CURVES_PASS ' P03-2-CURVE-VALIDATION.log
+      - name: Preserve source audit and inverse math evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChemCore-Next-P03-2-Source-Curve-Audit
+          path: |
+            P03-2-CURVE-VALIDATION.log
+            research/chemcore_next/source_curves/P03-2-CI-RESULT.json
+          if-no-files-found: warn
+          retention-days: 30
