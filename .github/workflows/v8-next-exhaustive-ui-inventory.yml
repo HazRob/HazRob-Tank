@@ -22,6 +22,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p build
           python3 tools/v8_ui_inventory_gate.py --output build/v8-ui-full-inventory.json \
             | tee build/v8-ui-inventory-result.log
           python3 - <<'PY'
