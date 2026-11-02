@@ -256,6 +256,33 @@ def audit_record(item, repo_root=Path(".")):
                 if (isinstance(v, (int, float)) and not isinstance(v, bool)
                         and math.isfinite(v) and not 0.0 <= v <= 1.0):
                     issues.append(interval_code + ":" + field)
+    # Error magnitudes are nonnegative, while Matthews correlation is signed
+    # but bounded. These guards are diagnostic only: the cross-artifact gate
+    # still blocks all non-accuracy metrics until independently recomputable.
+    if isinstance(metric_name, str) and metric_name in ("rmse", "mae"):
+        for field in ("metric_value", "baseline_metric_value"):
+            v = item.get(field)
+            if (isinstance(v, (int, float)) and not isinstance(v, bool)
+                    and math.isfinite(v) and v < 0):
+                issues.append("NONNEGATIVE_ERROR_METRIC_OUT_OF_RANGE:" + field)
+        if isinstance(interval, dict):
+            for field in ("low", "high"):
+                v = interval.get(field)
+                if (isinstance(v, (int, float)) and not isinstance(v, bool)
+                        and math.isfinite(v) and v < 0):
+                    issues.append("NONNEGATIVE_ERROR_INTERVAL_OUT_OF_RANGE:" + field)
+    if metric_name == "matthews_corrcoef":
+        for field in ("metric_value", "baseline_metric_value"):
+            v = item.get(field)
+            if (isinstance(v, (int, float)) and not isinstance(v, bool)
+                    and math.isfinite(v) and not -1.0 <= v <= 1.0):
+                issues.append("SIGNED_CORRELATION_METRIC_OUT_OF_RANGE:" + field)
+        if isinstance(interval, dict):
+            for field in ("low", "high"):
+                v = interval.get(field)
+                if (isinstance(v, (int, float)) and not isinstance(v, bool)
+                        and math.isfinite(v) and not -1.0 <= v <= 1.0):
+                    issues.append("SIGNED_CORRELATION_INTERVAL_OUT_OF_RANGE:" + field)
     issues.extend(audit_signal_lineage(item))
     bundle_issues = audit_evidence_bundle(item, repo_root=repo_root)
     issues.extend(bundle_issues)

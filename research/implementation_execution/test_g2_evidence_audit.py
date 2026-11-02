@@ -149,6 +149,63 @@ class AuditTests(unittest.TestCase):
                 issues = audit_record(x)["issues"]
                 self.assertIn("INVALID_METRIC_NAME", issues)
 
+    def test_error_magnitude_metrics_reject_negative_scores(self):
+        for name in ("rmse", "mae"):
+            for field in ("metric_value", "baseline_metric_value"):
+                with self.subTest(name=name, field=field):
+                    x = eligible_fixture()
+                    x["metric_name"] = name
+                    x[field] = -0.001
+                    self.assertIn(
+                        "NONNEGATIVE_ERROR_METRIC_OUT_OF_RANGE:" + field,
+                        audit_record(x)["issues"])
+
+    def test_error_magnitude_metrics_reject_negative_intervals(self):
+        for name in ("rmse", "mae"):
+            for field in ("low", "high"):
+                with self.subTest(name=name, field=field):
+                    x = eligible_fixture()
+                    x["metric_name"] = name
+                    x["confidence_interval"][field] = -0.001
+                    self.assertIn(
+                        "NONNEGATIVE_ERROR_INTERVAL_OUT_OF_RANGE:" + field,
+                        audit_record(x)["issues"])
+
+    def test_mcc_scores_and_intervals_respect_signed_unit_domain(self):
+        for field, value in (("metric_value", 1.001),
+                             ("baseline_metric_value", -1.001)):
+            with self.subTest(field=field):
+                x = eligible_fixture()
+                x["metric_name"] = "matthews_corrcoef"
+                x[field] = value
+                self.assertIn(
+                    "SIGNED_CORRELATION_METRIC_OUT_OF_RANGE:" + field,
+                    audit_record(x)["issues"])
+        for field, value in (("low", -1.001), ("high", 1.001)):
+            with self.subTest(field=field):
+                x = eligible_fixture()
+                x["metric_name"] = "matthews_corrcoef"
+                x["confidence_interval"][field] = value
+                self.assertIn(
+                    "SIGNED_CORRELATION_INTERVAL_OUT_OF_RANGE:" + field,
+                    audit_record(x)["issues"])
+
+    def test_valid_error_and_signed_correlation_endpoints_remain_legal(self):
+        for name, metric, baseline, low, high in (
+                ("rmse", 0.0, 0.0, 0.0, 1.0),
+                ("mae", 0.0, 0.0, 0.0, 1.0),
+                ("matthews_corrcoef", -1.0, 1.0, -1.0, 1.0)):
+            with self.subTest(name=name):
+                x = eligible_fixture()
+                x.update(metric_name=name, metric_value=metric,
+                         baseline_metric_value=baseline)
+                x["confidence_interval"].update(low=low, high=high)
+                issues = audit_record(x)["issues"]
+                self.assertFalse(any(
+                    s.startswith(("NONNEGATIVE_ERROR_", "SIGNED_CORRELATION_"))
+                    for s in issues))
+                self.assertEqual(audit_record(x)["status"], "G2_BLOCKED")
+
     def test_raw_hash_must_be_verified(self):
         x=eligible_fixture();x["raw_sha256_verified_from_bytes"]=False
         self.assertIn("RAW_SOURCE_BYTES_NOT_SHA_VERIFIED",audit_record(x)["issues"])

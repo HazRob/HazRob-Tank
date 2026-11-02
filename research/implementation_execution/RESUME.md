@@ -1,3 +1,12 @@
+## 2026-11-02 — G2 nonnegative error / signed MCC domain (research only)
+
+- Verified the prior exact HEAD `e48b30d1c8c7e4fbe93020afea98018c639fa7cc`: 21/21 GitHub Actions runs returned as completed/success, including source/R0 gate #41480954062. No confirmed CI failure to repair.
+- Added fail-closed mathematical-domain diagnostics: RMSE/MAE scores, baselines and CI bounds cannot be negative; MCC scores, baselines and CI bounds must be within [-1,1]. Existing non-accuracy cross-artifact `METRIC_FAMILY_NOT_RECOMPUTABLE` guard remains mandatory.
+- Added four deterministic synthetic regression methods with subtests, methodology `G2_ERROR_AND_SIGNED_CORRELATION_METRIC_DOMAIN_2026-11-02_AR.md`. No raw exposures or scientific promotions claimed. Verify exact final commit CI.
+- Restricted changes to research audit module, research tests, methodology, and this RESUME. Independent Tank evidence `records=[]`; last scientific state `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Next: prioritize original qualified raw sources and physically grouped/blinded Tank exposures with traceable reference calibration.
+
+---
+
 ## 2026-11-02 — G2 bounded classification score domain (research only)
 
 - Reviewed branch starting HEAD `ef967055503e78f1e9b92fd352a60b1b0eb5590c` and its 21 returned GitHub Actions runs; all were completed successfully, including G2 source/R0. No confirmed starting CI failure.
