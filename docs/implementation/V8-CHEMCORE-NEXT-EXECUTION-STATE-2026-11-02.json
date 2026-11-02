@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
-  "status": "CHEMCORE_NEXT_P05_2_NEGATIVE_POLARITY_G1_PASSED_P05_3_READY",
-  "last_verified_head_sha": "1e23f369cf820e5115693b927097f7921e98fda0",
-  "active_phase": "P05",
-  "active_task": "P05.3",
-  "last_checkpoint": "27/37 core tasks; P05.3 pending; 12 preliminary real MQ source fingerprint modes run 41394139883. No full engine qualification.",
-  "next_action": "P05.3 evidence conflict/independence graph with conditional negative and source roots; P05.4 arbitrator follows",
+  "status": "CHEMCORE_NEXT_P05_FULL_G1_PASSED_P06_READY_RESEARCH_ONLY",
+  "last_verified_head_sha": "3e890a7dd7f26933af9130bc2af9239dc11224c4",
+  "active_phase": "P06",
+  "active_task": "P06.1",
+  "last_checkpoint": "32/37 independent core tasks. P05.3-P05.7 G1 CI success 41394928047; source benchmarks preliminary only; G3=0.",
+  "next_action": "P06.1 integrated G1 numeric and failure injection, then V6 source replay comparison and grouped G2 evaluation",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 27,
-    "passed_tests": 26,
+    "done_tasks": 32,
+    "passed_tests": 31,
     "failed_tests": 0,
-    "percent_complete": 38.03
+    "percent_complete": 45.07
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -146,7 +146,7 @@
         "P05.6",
         "P05.7"
       ],
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "depends_on": [
         "P04"
       ],
@@ -165,7 +165,7 @@
         "P06.4",
         "P06.5"
       ],
-      "status": "NOT_STARTED",
+      "status": "READY",
       "depends_on": [
         "P05"
       ],
@@ -1118,8 +1118,8 @@
       "id": "P05.3",
       "phase": "P05",
       "description": "رسم الارتباط والتداخل ومنع تكرار الدليل",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_JAVA17_UNIT_VALIDATED_RESEARCH_ONLY",
       "depends_on": [
         "P05.2"
       ],
@@ -1130,23 +1130,25 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "java ... EvidenceConflictGraphSmoke",
+      "test_result": "source-root associations, duplicated sensor/model roots, same-source alternatives and across-root contradictions passed in successful GitHub Actions run 41394928047; suite assertions=14; no G3",
+      "action_run_id": 41394928047,
+      "commit_sha": "3e890a7dd7f26933af9130bc2af9239dc11224c4",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_P05_3_g1_completion.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "G1 source suite passed; independent G2/P06 and Tank G3 still required",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P05.4",
       "phase": "P05",
       "description": "ترجيح هرمي مع حالات مخاليط ومجهول",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_JAVA17_UNIT_VALIDATED_RESEARCH_ONLY",
       "depends_on": [
         "P05.3"
       ],
@@ -1157,23 +1159,25 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "java ... NextP05InferenceSmoke",
+      "test_result": "hierarchical research-only decision and UNKNOWN/MIXTURE_UNRESOLVED states passed in successful GitHub Actions run 41394928047; suite assertions=32; no G3",
+      "action_run_id": 41394928047,
+      "commit_sha": "3e890a7dd7f26933af9130bc2af9239dc11224c4",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_P05_4_g1_completion.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "G1 source suite passed; independent G2/P06 and Tank G3 still required",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P05.5",
       "phase": "P05",
       "description": "تحقق عكسي من إعادة تفسير الإشارات",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_JAVA17_UNIT_VALIDATED_RESEARCH_ONLY",
       "depends_on": [
         "P05.4"
       ],
@@ -1184,23 +1188,25 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "java ... NextP05InferenceSmoke",
+      "test_result": "source curve proposed-ppm independent forward residual, out-of-domain and unqualified mixture abstention passed in successful GitHub Actions run 41394928047; suite assertions=32; no G3",
+      "action_run_id": 41394928047,
+      "commit_sha": "3e890a7dd7f26933af9130bc2af9239dc11224c4",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_P05_5_g1_completion.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "G1 source suite passed; independent G2/P06 and Tank G3 still required",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P05.6",
       "phase": "P05",
       "description": "ترتيب حقيقي 0 أو 1 أو 5 أو >10 مرشحًا",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_JAVA17_UNIT_VALIDATED_RESEARCH_ONLY",
       "depends_on": [
         "P05.5"
       ],
@@ -1211,23 +1217,25 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "java ... NextP05InferenceSmoke",
+      "test_result": "dynamic canonical 0/1/5/10/12 source eligible ranking without padding passed in successful GitHub Actions run 41394928047; suite assertions=32; no G3",
+      "action_run_id": 41394928047,
+      "commit_sha": "3e890a7dd7f26933af9130bc2af9239dc11224c4",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_P05_6_g1_completion.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "G1 source suite passed; independent G2/P06 and Tank G3 still required",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P05.7",
       "phase": "P05",
       "description": "فصل دليل الهوية عن أدلة إنذار الخطر",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_JAVA17_UNIT_VALIDATED_RESEARCH_ONLY",
       "depends_on": [
         "P05.6"
       ],
@@ -1238,22 +1246,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "java ... NextP05InferenceSmoke",
+      "test_result": "immutable scientific results and feedback separate from field safety and certified ppm passed in successful GitHub Actions run 41394928047; suite assertions=32; no G3",
+      "action_run_id": 41394928047,
+      "commit_sha": "3e890a7dd7f26933af9130bc2af9239dc11224c4",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_P05_7_g1_completion.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "G1 source suite passed; independent G2/P06 and Tank G3 still required",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P06.1",
       "phase": "P06",
       "description": "اختبارات G1 رياضية ووحدات وصلاحية المدخلات",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P05.7"
@@ -2617,8 +2627,8 @@
   "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
   "core_program_progress": {
     "total_tasks": 37,
-    "done_tasks": 27,
-    "percent_complete": 72.97,
+    "done_tasks": 32,
+    "percent_complete": 86.49,
     "active_task": "P05.3",
     "qualified_g3_techniques": 0
   },

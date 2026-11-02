@@ -1,0 +1,18 @@
+{
+  "schema": "chemcore.next.core_task_g1/1",
+  "task": "P05.3",
+  "date": "2026-11-02",
+  "qualification": "G1_SCIENTIFIC_SOFTWARE_ONLY_NO_TANK_G3",
+  "tested_module": "EvidenceConflictGraph",
+  "scope": "source-root associations, duplicated sensor/model roots, same-source alternatives and across-root contradictions",
+  "workflow_run_id": 41394928047,
+  "workflow_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41394928047",
+  "conclusion": "success",
+  "relevant_suite": "EvidenceConflictGraphSmoke",
+  "suite_assertions": 14,
+  "source_commit": "3e890a7dd7f26933af9130bc2af9239dc11224c4",
+  "no_verified_gas_identity": true,
+  "no_tank_reference_ppm": true,
+  "no_g3": true,
+  "next": "P06 independent integrated G1/G2, V6 comparison, resource profile and research model manifest"
+}
