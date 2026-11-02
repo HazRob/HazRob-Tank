@@ -79,7 +79,7 @@ public final class NextTelemetryMapperSmoke {
       "single source sensor remains measurable but not identified");
     bad(()->run(List.of(air,air),true),"duplicate channel fails");
     bad(()->NextTelemetryMapper.freeze(new NextTelemetryMapper.Input("id","dev","hw","fw",
-      "not a real sha",CoreContracts.Mode.INSTANT,1.,null,null,true,List.of())),
+      "not a real sha",CoreContracts.Mode.INSTANT,1L,null,null,true,List.of())),
       "fake stable sha rejected");
     boolean immutable=false;
     try{r.snapshot.readings.clear();}catch(UnsupportedOperationException ex){immutable=true;}
