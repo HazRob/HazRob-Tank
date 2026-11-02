@@ -5,7 +5,7 @@
   "owner_authorization_utc": "2026-11-02T06:44:21Z",
   "branch": "feature/tank-v8-implementation",
   "project": "HazRob-Tank independent of original 4-wheel HazRob",
-  "execution_mode": "P07.2_ANDROID12_GATE_PENDING_P07.3_ROUTER_AND_P07.4_ENVELOPE_G1_COMPILED",
+  "execution_mode": "P07.2_DONE_VERIFIED_ANDROID12_P07.3_P07.4_ACTIVE",
   "scientific_tests_postponed": true,
   "core_g3_physically_validated_techniques": 0,
   "runtime_android_next_integration_verified": false,
@@ -14,11 +14,11 @@
   "legacy_baseline": "feature/tank-v7-reports (historical V7 reports, read-only)",
   "program": {
     "total_tasks": 34,
-    "done_tasks": 1,
-    "in_progress": 3,
+    "done_tasks": 2,
+    "in_progress": 2,
     "blocked": 0,
     "planned": 30,
-    "next_task": "P07.2",
+    "next_task": "P07.3",
     "phases": [
       "P07",
       "P08",
@@ -150,13 +150,11 @@
       ],
       "acceptance": "اختبار إنشاء v15 وترحيل v14 مع المحافظة على التاريخ والمرجع؛ atomic commit, unique session+revision, readback/hash, ممنوع duplicate",
       "evidence": "research/v8_implementation/results/next_p07_2_sqlite_migration.json",
-      "status": "IN_PROGRESS",
-      "commit_sha": "773b87b37060a0b142082951af17842108fb250d",
-      "ci_run_id": 41525945844,
-      "blocked_by": [
-        "Android12 instrumentation final PASS required; prior run 41404801350 failed before tests at :app:validateSigningDebug because original prototype keystore unavailable; workflow now uses ephemeral debug signing"
-      ],
-      "verification": "G1_SQLITE_SOURCE_DDL_10_TESTS_PASS; FULL_ANDROID_COMPILE_PASS; ANDROID12_EMULATOR_PASS_NOT_YET_OBSERVED",
+      "status": "DONE_VERIFIED",
+      "commit_sha": "33fa84324e2c603258e1d6792faabf0c1def88ab",
+      "ci_run_id": 41525071725,
+      "blocked_by": [],
+      "verification": "10 REAL_SQLITE_G1_PASS + FULL_ANDROID_JAVA_COMPILE_PASS + ANDROID12_EMULATOR_3_INSTRUMENTED_TESTS_PASS",
       "evidence_file": "research/v8_implementation/results/next_p07_2_sqlite_migration.json",
       "g1_evidence": [
         {
@@ -170,8 +168,19 @@
           "conclusion": "success"
         }
       ],
-      "android_device_run_id": 41525945844,
-      "android_instrumented_status": "RERUNNING_AFTER_EMULATOR_DEBUG_SIGNING_FIX"
+      "android_device_run_id": 41525071725,
+      "android_instrumented_status": "PASS_ANDROID12_API31_THREE_TESTS",
+      "ci_evidence": [
+        {
+          "run_id": 41525071725,
+          "kind": "ANDROID12_V14_TO_V15_PERSISTENCE_AND_IMMUTABILITY",
+          "result": "success",
+          "tests": 3,
+          "description": "Migration preserves V7 tables, UNKNOWN replay idempotent after reopen, SQLite immutable update/delete denied"
+        }
+      ],
+      "verified_at_utc": "2026-11-02T21:14:39Z",
+      "physical_tank_status": "NOT_RUN"
     },
     {
       "id": "P07.3",
@@ -746,9 +755,9 @@
       "verification": "NOT_RUN"
     }
   ],
-  "last_checked_commit": "90ef967a492dfe563fd04903245381fdd24a7cff",
-  "last_verified_ci": 41525715751,
-  "next_action": "Check Android12 emulator run 41525945844 (plus later refreshed instrumented run), fix any real test failure and close P07.2 only after PASS; then wire active Next route into TankInstantAnalyzer / FieldSessions and all NextDecisionEnvelope consumers, run Android/UI parity and close P07.3–P07.4.",
+  "last_checked_commit": "47a90b82d08595a28e004b1aec3cba827303df43",
+  "last_verified_ci": 41525071725,
+  "next_action": "P07.3 finish wiring NextEngineRouter to real INSTANT/SESSION app flow; P07.4 link decision envelope across UI/PDF/XLSX and verify 12-candidate parity in latest Android12 instrumentation; then run P08.1/P08.2 and P09 failure tests.",
   "ui_coverage_gate": {
     "source_inventory_script": "tools/v8_ui_inventory_gate.py",
     "run_id": 41404510217,
