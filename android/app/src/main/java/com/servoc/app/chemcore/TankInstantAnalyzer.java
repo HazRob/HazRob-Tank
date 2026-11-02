@@ -15,8 +15,8 @@ import org.json.JSONObject;
 /**
  * ONE immutable instant gas-analysis operation. V8 routes through real ChemCore Next.
  *
- * Intentionally does NOT import/invoke predecessor inference, Stable legacy
- * screeners, food-freshness profiles, or prior AnalyticsSnapshot fallback.
+ * Does not replace Next candidate inference with predecessor ranking.
+ * Independent reference-curve algebra is visible as source diagnostics.
  * All source fits are hypotheses; no Tank physical G3 calibrated identity/ppm.
  * Historical V5 session data and field approvals are not modified.
  */
@@ -72,17 +72,34 @@ public final class TankInstantAnalyzer {
             .fromReceipt(next.receipt);
         out.put("session_id",uid);
         out.put("source_kind","ONE_FROZEN_INSTANT_SNAPSHOT_NEXT_RESEARCH_ONLY");
-        out.put("source_curve_hypotheses",new JSONArray());
-        out.put("source_curve_research_diagnostic_ledger",new JSONArray());
+        // Source-model estimates are a parallel, provenance-labelled set of
+        // mathematical diagnostics, NOT a replacement for the Next decision.
+        JSONObject scientific=com.servoc.app.chemcore.nextintegration
+            .NextScientificDiagnostics.compute(frozen,master);
+        out.put("scientific_source_diagnostics",scientific);
+        out.put("source_curve_hypotheses",scientific.getJSONArray("all_reference_models"));
+        out.put("source_curve_research_diagnostic_ledger",
+            scientific.getJSONArray("all_reference_models"));
+        out.put("quantitative_source_methods","LOG10_INVERSE_POWER_CURVES_RESEARCH");
+        out.put("numerical_source_ppm_available",scientific.optInt("computed_ppm_count",0));
+        out.put("fingerprint_model_outputs",new JSONArray());
+        out.put("fingerprint_runtime_status",
+            "NOT_RUN_NO_SOURCE_BINDINGS; DO_NOT_INVENT_FINGERPRINT_SCORES");
+        JSONArray nextExpertReasons=new JSONArray();
+        for(String diag:next.next.sourceDiagnostics)nextExpertReasons.put(diag);
+        out.put("next_algorithm_diagnostics",nextExpertReasons);
+        out.put("next_models_inspected",next.next.modelsInspected);
+        out.put("next_positive_models",next.next.positiveModels);
         out.put("legacy_inference_fallback_used",false);
         out.put("candidate_order_source","PERSISTED_NEXT_DECISION_ONLY");
         out.put("source_model_linkage_status",
-            "NOT_YET_G3_OR_TANK_SOURCE_QUALIFIED; NO_SYNTHETIC_FINGERPRINT_CANDIDATES");
+            "NEXT_IDENTITY_BINDINGS_PENDING; ALL_VALID_SOURCE_NUMERICS_VISIBLE_SEPARATELY");
         out.put("ratio_ready_mq_channels",next.original.validSourceMeasurements);
         out.put("raw_only_mq_channels",next.original.rawOnlyChannels);
         out.put("observed_channels",next.original.validSourceMeasurements);
         out.put("single_snapshot_no_temporal_series",true);
         out.put("ppm_reportable",false);
+        out.put("scientific_ppm_values_visible",true);
         out.put("operator_approved_field_session",false);
         out.put("no_firmware_heater_changes",true);
         out.put("gas_food_isolated",true);
