@@ -1,3 +1,14 @@
+## 2026-11-02 — MQ-EXT-10 lossless Decimal numeric trace (research only)
+
+- Verified prior HEAD `f93ac96223aff2ba0cb4b4d1704639ac9248b9c7` GitHub Actions runs completed successfully; no prior CI failure.
+- Found a genuine numeric-identity defect: `Decimal.normalize()` rounds at context precision 28, allowing distinct >28-digit source values to collide under `numeric_trace_sha256`. Replaced with exact `Decimal.as_tuple()` sign/digits/exponent canonicalization, preserving byte SHA256 independently.
+- Added five deterministic synthetic regression cases for high-precision separation, numeric equivalence, non-ASCII rejection, token length, and two distinct measurement files. Recorded method in `G2_MQ_EXT10_DECIMAL_PRECISION_COLLISION_2026-11-02_AR.md`. No original raw archive acquired; no new physical Tank exposure evidence.
+- One intermediate CI run for SHA `dbbfc06ca88b4500448f188cc828541795d16667` failed because newly written test fixtures contained literal `\\n` instead of newline escapes. Fixed in `f6103205c612144dcb6be8452444e936854c3d9e`. **Verify exact final HEAD CI before claiming success.**
+- Scope restricted to research source preflight/tests/method/RESUME. ChemCore Stable, Android, firmware and main untouched. `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank `records=[]`; no G2/G3 promotion.
+- Next: verify CI, repair confirmed failures, acquire original versioned source and independent blinded Tank exposures with traceable calibration.
+
+---
+
 ## 2026-11-02 — MQ-EXT-10 numeric-trace identity and blank-row integrity (research only)
 
 - Reviewed starting HEAD `de2b774befa02d0a8fa944ec3b8c1d2149dab45a`: **21/21** associated GitHub Actions runs completed success, including G2 source/R0 gate #41406146989. No confirmed starting CI failure.
