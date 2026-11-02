@@ -1,0 +1,28 @@
+name: HazRob Tank V8 ChemCore Next SQLite V15 migration and immutability
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextDecisionSchema.java'
+      - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
+      - 'research/v8_implementation/tests/test_v8_next_v15_sqlite_schema.py'
+      - '.github/workflows/v8-next-v15-sqlite-schema.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sqlite-source-migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Real SQLite engine executes exact Android V15 DDL and non-destructive migration regression
+        run: python3 -m unittest research/v8_implementation/tests/test_v8_next_v15_sqlite_schema.py -v
+      - name: Explicitly document test scope
+        run: |
+          echo 'SQLite3 source DDL and application migration wiring tested.'
+          echo 'Android onUpgrade on device/emulator still requires instrumentation.'
+          echo 'Research-only: no chemistry G3 or certified ppm.'

@@ -11,7 +11,7 @@ import java.util.List;
 
 /** Offline-first HazRob database for measurements, experiments, calibration and scientific reference data. */
 public final class ExperimentsDb extends SQLiteOpenHelper {
-    public static final int DB_VERSION=14;
+    public static final int DB_VERSION=15;
     public ExperimentsDb(Context c){super(c,"servoc.db",null,DB_VERSION);}
 
     @Override public void onCreate(SQLiteDatabase db){
@@ -19,7 +19,7 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE fingerprints(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, label TEXT NOT NULL, created_ts TEXT NOT NULL, payload TEXT NOT NULL)");
         db.execSQL("CREATE TABLE captures(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, chemical_uid INTEGER, known_ppm REAL, ts TEXT NOT NULL, session_id TEXT, temp_c REAL, rh REAL, phase TEXT, sensor_payload TEXT NOT NULL, feature_payload TEXT)");
         db.execSQL("CREATE TABLE models(id INTEGER PRIMARY KEY AUTOINCREMENT, chemical_id INTEGER NOT NULL, model_type TEXT NOT NULL, version TEXT NOT NULL, created_ts TEXT NOT NULL, training_count INTEGER, metrics TEXT, payload TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 0)");
-        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);ChemicalHazardSeedV11.ensure(db);createV13ChemicalHazardAndTechniques(db);ChemicalHazardEvidenceSeedV13.ensure(db);createV14MqR0AndAmbientView(db);MqReferenceCurveSeedV14.ensure(db);createCaptureUidIndex(db);
+        createCalibrationTables(db);db.execSQL("CREATE TABLE meta(k TEXT PRIMARY KEY, v TEXT NOT NULL)");createV6Tables(db);createV8Tables(db);createV9UserFieldTables(db);createV10FieldCycleTables(db);createV11ScientificRiskTables(db);seedLegacyChemicals(db);seedCoreSources(db);ChemicalHazardSeedV11.ensure(db);createV13ChemicalHazardAndTechniques(db);ChemicalHazardEvidenceSeedV13.ensure(db);createV14MqR0AndAmbientView(db);MqReferenceCurveSeedV14.ensure(db);createCaptureUidIndex(db);createV15NextResearchDecisionTables(db);
     }
 
     @Override public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
@@ -42,6 +42,11 @@ public final class ExperimentsDb extends SQLiteOpenHelper {
         if(oldVersion<12){createV11ScientificRiskTables(db);ChemicalHazardSeedV11.ensure(db);}
         if(oldVersion<13){createV13ChemicalHazardAndTechniques(db);ChemicalHazardEvidenceSeedV13.ensure(db);}
         if(oldVersion<14){createV14MqR0AndAmbientView(db);MqReferenceCurveSeedV14.ensure(db);}
+        if(oldVersion<15)createV15NextResearchDecisionTables(db);
+    }
+
+    private static void createV15NextResearchDecisionTables(SQLiteDatabase db){
+        com.servoc.app.chemcore.nextintegration.NextDecisionSchema.ensure(db);
     }
 
     /**
