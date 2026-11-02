@@ -1,3 +1,13 @@
+## 2026-11-02 — G2 bounded classification score domain (research only)
+
+- Reviewed branch starting HEAD `ef967055503e78f1e9b92fd352a60b1b0eb5590c` and its 21 returned GitHub Actions runs; all were completed successfully, including G2 source/R0. No confirmed starting CI failure.
+- Closed a mathematical validity gap in `g2_evidence_audit.py`: only `classification_accuracy` had a [0,1] check. Now eleven additional bounded classification metrics enforce [0,1] for metric, baseline and uncertainty interval, while preserving the historical accuracy error identifiers. Nonbounded RMSE/MAE and signed MCC are excluded.
+- Added four deterministic regression methods with subtests, plus `G2_BOUNDED_CLASSIFICATION_METRIC_DOMAIN_2026-11-02_AR.md`. Tests are synthetic evidence-gate controls only; they are not new gas exposure observations. **Verify the exact final commit's G2 CI before claiming pass.**
+- Work is restricted to research audit module, research tests, methodology and RESUME on the research branch. No ChemCore Stable, Android, firmware or main edits. Last documented scientific gate: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank evidence `records=[]`. No G2/G3 promotion.
+- Next: verify CI and repair any confirmed failure; prioritize original qualified raw sources and independently grouped, blinded Tank exposure data with traceable reference gas calibration. Do not substitute additional synthetic QA for physical evidence.
+
+---
+
 ## 2026-11-02 — MQ-EXT-10 paired folder/ZIP raw-byte parity (research only)
 
 - Resumed from `d8ceef29dc2083cf5a6d19ed75485c5cb63c333d`; checked 11/11 PR-triggered GitHub Actions runs returned for that exact commit, all completed successfully including G2 source/R0 run #41462606929. No confirmed starting CI failure.
