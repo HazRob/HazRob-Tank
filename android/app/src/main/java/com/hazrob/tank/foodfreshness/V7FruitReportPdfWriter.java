@@ -150,7 +150,111 @@ public final class V7FruitReportPdfWriter {
             "أيام مراجع الدراسة / Reference study days D1–D5";
         V7ReportLayoutKit.blankChart(c,new RectF(L,234*MM,L+W,274*MM),
             chartName,page==1?"MQ Sensor":"Study reference day",
-            page==1?"Observed resistance":"Similarity index");
+            page==1?"Centered log10 Rs":"Similarity index");
+        if(page==1)observedSourceChart(c,readings,result);
+        else studyDayChart(c,result,readings);
+    }
+    /** Use measured source-comparable log shape and original references; no invented curve. */
+    private static void observedSourceChart(Canvas c,Map<String,Double> readings,
+                                           FoodFreshnessEngine.Result result){
+        if(result.rankedTemplates.isEmpty())return;
+        String selected=result.rankedTemplates.get(0).referenceLabel;
+        double[] ref=null;
+        for(FoodReferenceCatalog.Pattern p:FoodReferenceCatalog.patterns())
+            if(p.label.equals(selected)){ref=p.vector();break;}
+        if(ref==null)return;
+        double[] obs=new double[8],reference=new double[8];boolean[] ok=new boolean[8];
+        int n=0;double a=0,b=0;
+        for(int i=0;i<8;i++){
+            Double raw=readings.get(FoodReferenceCatalog.SENSOR_ORDER.get(i));
+            if(raw!=null&&raw>0&&Double.isFinite(raw)&&ref[i]>0){
+                obs[i]=Math.log10(raw);reference[i]=Math.log10(ref[i]);
+                a+=obs[i];b+=reference[i];ok[i]=true;n++;
+            }
+        }
+        if(n<2)return;
+        a/=n;b/=n;double lo=Double.POSITIVE_INFINITY,hi=Double.NEGATIVE_INFINITY;
+        for(int i=0;i<8;i++)if(ok[i]){
+            obs[i]-=a;reference[i]-=b;
+            lo=Math.min(lo,Math.min(obs[i],reference[i]));
+            hi=Math.max(hi,Math.max(obs[i],reference[i]));
+        }
+        double span=Math.max(0.08,hi-lo);
+        float left=L+17*MM,right=L+W-12*MM,top=246*MM,bottom=266*MM;
+        Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setStrokeWidth(2.5f);
+        for(int series=0;series<2;series++){
+            p.setColor(series==0?0xFFE96920:0xFF1D65A2);
+            float px=Float.NaN,py=Float.NaN;
+            for(int i=0;i<8;i++){
+                if(!ok[i]){px=Float.NaN;continue;}
+                float x=left+(right-left)*i/7f;
+                float y=bottom-(bottom-top)*(float)(((series==0?obs[i]:reference[i])-lo)/span);
+                if(Float.isFinite(px))c.drawLine(px,py,x,y,p);
+                c.drawCircle(x,y,2.5f,p);px=x;py=y;
+            }
+        }
+        text(c,"Measured (orange) vs source (blue): "+selected,
+             new RectF(L+4*MM,269*MM,L+W-4*MM,275*MM),false,false);
+    }
+    private static void studyDayChart(Canvas c,FoodFreshnessEngine.Result result,
+                                      Map<String,Double> readings){
+        if(result.rankedTemplates.isEmpty())return;
+        String family=result.rankedTemplates.get(0).foodFamily;
+        float left=L+18*MM,right=L+W-15*MM,top=244*MM,bottom=269*MM;
+        Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setColor(0xFF1D65A2);p.setStrokeWidth(2.5f);
+        float px=Float.NaN,py=Float.NaN;
+        for(FoodFreshnessEngine.Match match:result.selectedFoodTrend){
+            if(!match.foodFamily.equals(family)||match.studyDay<1||match.studyDay>5)continue;
+            float x=left+(right-left)*(match.studyDay-1)/4f;
+            float y=bottom-(bottom-top)*(float)(match.similarityIndex/100.0);
+            if(Float.isFinite(px))c.drawLine(px,py,x,y,p);
+            c.drawCircle(x,y,3,p);px=x;py=y;
+        }
+        FoodMeasurementDecision.Decision measured=FoodMeasurementDecision.fruit(readings,result.foodSelection);
+        if(Double.isFinite(measured.fittedStudyPosition)){
+            float mx=left+(right-left)*(float)((measured.fittedStudyPosition-1)/4.0);
+            p.setColor(0xFFE96920);p.setStrokeWidth(2f);
+            c.drawLine(mx,top,mx,bottom,p);
+        }
+        text(c,"Reference study positions D1-D5 - not actual storage days",
+             new RectF(L+4*MM,270*MM,L+W-4*MM,275*MM),false,false);
+    }
+    private static void measurementPage(Canvas c,Context ctx,int page,int total,
+                                        FoodFreshnessEngine.Result result,
+                                        Map<String,Double> readings,int samples,
+                                        long durationMs,String id,String captureTimestampUtc){
+        header(c,ctx,page,total,captureTimestampUtc);
+        FoodMeasurementDecision.Decision d=FoodMeasurementDecision.fruit(readings,result.foodSelection);
+        V7ReportLayoutKit.tableHeader(c,new RectF(L,27*MM,L+W,45*MM),
+            "نتيجة القياس المستقل / Independent fruit measurement",true);
+        String stage=Double.isFinite(d.fittedStudyPosition)?
+            "D"+fmt(d.fittedStudyPosition,2)+" (source curve position ONLY)":"NOT_AVAILABLE";
+        V7ReportLayoutKit.tableValue(c,new RectF(L,48*MM,L+W,74*MM),
+            "Reference match: "+d.referenceId+"  |  Status: "+d.status+
+            "\\nStudy curve position: "+stage+
+            "  |  MQ: "+d.channels+"/8",false);
+        V7ReportLayoutKit.tableValue(c,new RectF(L,77*MM,L+W,105*MM),
+            "Study fingerprint distance: "+fmt(d.referenceDistance,5)+
+            "  |  Relative competitor separation: "+
+            (Double.isFinite(d.relativeSeparation)?fmt(d.relativeSeparation*100,2)+"%":"-")+
+            "\\nDiagnostic separation is not confidence/probability.",false);
+        V7ReportLayoutKit.tableHeader(c,new RectF(L,110*MM,L+W,126*MM),
+            "القراءات الفعلية / Frozen 180-second source-comparable MQ resistance",true);
+        int k=0;
+        for(String sensor:FoodReferenceCatalog.SENSOR_ORDER){
+            float top=(130+k*13)*MM;
+            Double v=readings.get(sensor);
+            V7ReportLayoutKit.tableValue(c,new RectF(L,top,L+W,top+12*MM),
+                sensor+"  |  Rs: "+(v!=null&&Double.isFinite(v)?fmt(v,5):"NOT_MEASURED"),false);
+            k++;
+        }
+        V7ReportLayoutKit.tableHeader(c,new RectF(L,239*MM,L+W,253*MM),
+            "قيود الاستدلال / Scientific limitations",true);
+        V7ReportLayoutKit.tableValue(c,new RectF(L,256*MM,L+W,282*MM),
+            "Study day index is NOT specimen age, ripeness, microbiology, or edibility."+
+            "\\nTank transfer calibration and independent food validation are NOT completed."+
+            "\\nSource: "+FoodReferenceCatalog.SOURCE_DOI,false);
     }
     private static void appendixPage(Canvas c,Context ctx,int page,int count,
                                      FoodFreshnessEngine.Result result,int start,
@@ -189,7 +293,7 @@ public final class V7FruitReportPdfWriter {
             throw new IllegalArgumentException("Frozen fruit result required");
         // Main matrix contains all eighteen source-selectable fruit/mix families.
         int annexPages=(result.rankedTemplates.size()+7)/8;
-        int pages=2+annexPages;
+        int pages=3+annexPages;
         Map<String,FoodFreshnessEngine.Match> matches=best(result);
         PdfDocument pdf=new PdfDocument();
         try{
@@ -198,7 +302,9 @@ public final class V7FruitReportPdfWriter {
                 Canvas c=p.getCanvas();c.drawColor(Color.WHITE);
                 if(i<=2)mainPage(c,ctx,i,pages,result,readings,samples,
                     durationMs,reportId,matches,captureTimestampUtc);
-                else appendixPage(c,ctx,i,pages,result,(i-3)*8,captureTimestampUtc);
+                else if(i==3)measurementPage(c,ctx,i,pages,result,readings,samples,
+                    durationMs,reportId,captureTimestampUtc);
+                else appendixPage(c,ctx,i,pages,result,(i-4)*8,captureTimestampUtc);
                 pdf.finishPage(p);
             }
             pdf.writeTo(out);
