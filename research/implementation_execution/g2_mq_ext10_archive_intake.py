@@ -38,6 +38,11 @@ def _safe_parts(info):
     # filenames remain allowed.
     require(not any(unicodedata.category(ch).startswith("C") for ch in name),
             "ARCHIVE_UNSAFE_PATH")
+    # NFKC can turn compatibility punctuation into path separators or dot
+    # segments. Validate each original component before canonicalizing paths.
+    normalized_parts = [unicodedata.normalize("NFKC", p) for p in parts]
+    require(all(p not in (".", "..") and "/" not in p and "\\" not in p
+                for p in normalized_parts), "ARCHIVE_UNSAFE_PATH")
     mode = (info.external_attr >> 16) & 0xffff
     require(not stat.S_ISLNK(mode), "ARCHIVE_SYMLINK_REJECTED")
     require(not (info.flag_bits & 1), "ARCHIVE_ENCRYPTED_ENTRY")
@@ -54,6 +59,8 @@ def inspect_zip(path, expected_rows=3330):
     require(len(archive_bytes) <= MAX_ARCHIVE_BYTES, "ARCHIVE_TOO_LARGE")
     archive_digest = hashlib.sha256(archive_bytes).hexdigest()
     seen_paths = set()
+    seen_file_paths = set()
+    seen_parent_paths = set()
     seen_samples = set()
     seen_bytes = set()
     seen_numeric = set()
@@ -70,7 +77,19 @@ def inspect_zip(path, expected_rows=3330):
                 # distinct source members. Keep original paths in receipts.
                 key = unicodedata.normalize("NFKC", "/".join(parts)).casefold()
                 require(key not in seen_paths, "ARCHIVE_DUPLICATE_MEMBER_PATH")
+                # An implicit directory may not also be a regular file, in
+                # either member ordering. Explicit directories are allowed.
+                segments = key.split("/")
+                parent_paths = {"/".join(segments[:i])
+                                for i in range(1, len(segments))}
+                require(not (parent_paths & seen_file_paths),
+                        "ARCHIVE_FILE_DIRECTORY_CONFLICT")
+                require(info.is_dir() or key not in seen_parent_paths,
+                        "ARCHIVE_FILE_DIRECTORY_CONFLICT")
                 seen_paths.add(key)
+                seen_parent_paths.update(parent_paths)
+                if not info.is_dir():
+                    seen_file_paths.add(key)
                 folder_parts = parts if info.is_dir() else parts[:-1]
                 # A fullwidth/case-variant Ethanol directory must not be
                 # silently excluded as unrelated wine/source material.

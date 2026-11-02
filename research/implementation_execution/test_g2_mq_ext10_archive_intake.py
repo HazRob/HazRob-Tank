@@ -250,6 +250,49 @@ class MQExt10ArchiveIntakeTests(unittest.TestCase):
             self.assertFalse(r["g2_qualified"])
             self.assertFalse(r["g3_qualified"])
 
+    def test_regular_file_cannot_be_parent_of_later_member(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/Ethanol", b"not-a-directory"),
+                        ("Data/Ethanol/Ea-C1_R01.txt", ROW)])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_FILE_DIRECTORY_CONFLICT"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_regular_file_cannot_replace_implicit_parent(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/Ethanol/Ea-C1_R01.txt", ROW),
+                        ("Data/Ethanol", b"not-a-directory")])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_FILE_DIRECTORY_CONFLICT"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_nfkc_fullwidth_slash_cannot_hide_ethanol_folder(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/Ｅｔｈａｎｏｌ／Ea-C1_R01.txt", ROW),
+                        ("Data/Ethanol/Ea-C2_R01.txt", ROW)])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_UNSAFE_PATH"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_nfkc_fullwidth_dotdot_cannot_hide_traversal(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/．．/wine.txt", ROW),
+                        ("Data/Ethanol/Ea-C1_R01.txt", ROW)])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_UNSAFE_PATH"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_explicit_directory_and_implicit_parents_remain_valid(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/Ethanol/Ea-C1_R01.txt", ROW),
+                        ("Data/Ethanol/", b""),
+                        ("Data/AQ_Wines/", b""),
+                        ("Data/AQ_Wines/wine.txt", ROW)])
+            r = inspect_zip(p, expected_rows=1)
+            self.assertEqual(r["files_scanned"], 1)
+            self.assertFalse(r["g2_qualified"])
+
 
 if __name__ == "__main__":
     unittest.main()
