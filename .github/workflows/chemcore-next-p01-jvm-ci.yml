@@ -1,0 +1,47 @@
+name: ChemCore Next P01 independent JVM contract validation
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
+      - 'research/chemcore_next/tests/java/**'
+      - '.github/workflows/chemcore-next-p01-jvm-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  next-p01-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile stand-alone Next source, no Android or V6 dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/chemcore-next-p01
+          find android/app/src/main/java/com/hazrob/tank/chemcore/next research/chemcore_next/tests/java \
+            -name '*.java' -print0 | xargs -0 javac -encoding UTF-8 -Xlint:all -d build/chemcore-next-p01
+      - name: Validate immutable contracts, sensor scalability and honest no-model result
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.ChemCoreNextContractSmoke \
+            | tee build/chemcore-next-p01/P01-CONTRACT-TEST.log
+          grep -q '^CHEMCORE_NEXT_P01_CORE_CONTRACT_SMOKE_PASS ' \
+            build/chemcore-next-p01/P01-CONTRACT-TEST.log
+      - name: Preserve source/test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChemCore-Next-P01-Core-Contract-Evidence
+          path: build/chemcore-next-p01/P01-CONTRACT-TEST.log
+          if-no-files-found: warn
+          retention-days: 30
