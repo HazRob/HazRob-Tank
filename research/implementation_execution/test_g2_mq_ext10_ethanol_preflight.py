@@ -113,6 +113,42 @@ class MQExt10EthanolPreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "DUPLICATE_MEASUREMENT_NUMERIC_TRACE"):
                 run(Path(d))
 
+    def test_long_precision_values_have_distinct_numeric_traces(self):
+        a = parse_numeric_rows(
+            b"50,25,1.1234567890123456789012345678901,2,3,4,5,6\\n",
+            expected_rows=1,
+        )
+        b = parse_numeric_rows(
+            b"50,25,1.1234567890123456789012345678902,2,3,4,5,6\\n",
+            expected_rows=1,
+        )
+        self.assertNotEqual(a["numeric_trace_sha256"], b["numeric_trace_sha256"])
+
+    def test_exact_numeric_equivalence_with_trailing_zeros(self):
+        a = parse_numeric_rows(b"50,25,1.2300,2,3,4,5,6\\n", expected_rows=1)
+        b = parse_numeric_rows(b"5e1;25;123e-2;2;3;4;5;6\\n", expected_rows=1)
+        self.assertEqual(a["numeric_trace_sha256"], b["numeric_trace_sha256"])
+
+    def test_reject_unicode_digits(self):
+        with self.assertRaisesRegex(ValueError, "INVALID_NUMERIC_TOKEN"):
+            parse_numeric_rows("50,25,١,2,3,4,5,6\\n".encode("utf-8"), expected_rows=1)
+
+    def test_reject_oversized_numeric_token(self):
+        with self.assertRaisesRegex(ValueError, "NUMERIC_TOKEN_TOO_LONG"):
+            parse_numeric_rows(("50,25," + "1" * 129 + ",2,3,4,5,6\\n").encode(),
+                               expected_rows=1)
+
+    def test_distinct_high_precision_files_not_false_duplicates(self):
+        with tempfile.TemporaryDirectory() as d:
+            for name, value in (
+                ("Ea-C1_R01.txt", "1.1234567890123456789012345678901"),
+                ("Ea-C2_R01.txt", "1.1234567890123456789012345678902"),
+            ):
+                (Path(d) / name).write_text(("50,25," + value + ",2,3,4,5,6\\n") * 3330)
+            result = run(Path(d))
+            self.assertEqual(result["files_scanned"], 2)
+            self.assertFalse(result["g2_qualified"])
+
     def test_reject_blank_data_row_instead_of_silent_skip(self):
         with self.assertRaisesRegex(ValueError, "BLANK_DATA_ROW"):
             parse_numeric_rows(b"50,25,1,2,3,4,5,6\n\n51,25,1,2,3,4,5,6\n", expected_rows=2)
