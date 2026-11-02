@@ -1,0 +1,73 @@
+{
+  "schema": "hazrob.v8.chemcore.next.p02_5.clean_air_replay/1",
+  "date": "2026-11-02",
+  "task": "P02.5",
+  "status": "PASS_G1_SOFTWARE_ONLY",
+  "github_actions_run": 41376661210,
+  "github_actions_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41376661210",
+  "job_id": 125058279403,
+  "commit_sha": "8c9f911ff73693e0acace549b9cc98a2f597cae7",
+  "assertions": {
+    "clean_air_replay": 85,
+    "contract": 28,
+    "replay_codec": 36,
+    "signal_physics": 69,
+    "dual_r0": 33,
+    "sensor_quality": 110,
+    "single_specialist": 60,
+    "all": 421
+  },
+  "scientific_protocol": {
+    "installed_sensor_models": [
+      "MQ2",
+      "MQ3",
+      "MQ4",
+      "MQ5",
+      "MQ7",
+      "MQ8",
+      "MQ9",
+      "MQ135"
+    ],
+    "warmup_seconds": 180,
+    "air_reference_average_seconds": 60,
+    "staged_source": "SYNTHETIC_FIXED_TEST_GENERATOR",
+    "source_actual_hardware": false,
+    "observed_falsely_reported_gas_ids": 0,
+    "source_R0_vs_device_R_air": "SEPARATE"
+  },
+  "verified_behaviors": [
+    "Only 60s post-warmup samples enter R_air; 180s warmup excluded",
+    "All 8 per-sensor scan cycles must advance and heater be valid",
+    "Synthetic clean air near R_air returns no positive gas identity and no unconditional negative identification",
+    "One verified specialist response is preserved without a hard two-sensor requirement",
+    "No samples or ADS conversion-not-ready result in no chemical evidence",
+    "Exact 8-MQ sensor replay and immutable hash reproduced"
+  ],
+  "source_files": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SensorQualityGate.java",
+      "sha": "54d42cd767bcc40f3c120c47e21db3cb99b73084"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SingleSensorEvidenceGate.java",
+      "sha": "1f2207eaa157c4964d73a6923b44920f8ae442cb"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/CleanAirReplayExperimentSmoke.java",
+      "sha": "32a6d6cb53bb51636c46e50358925b8b5f3e17e3"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "sha": "aebd734c9621f43af39946d3a92aa5808a0981a0"
+    }
+  ],
+  "device_tests_completed": false,
+  "measured_real_R0": false,
+  "actual_device_g3_techniques_passed": 0,
+  "android_apk_built": false,
+  "limitations": [
+    "Bench physical acquisition, per-MQ heater profiles, actual I2C converter, analog noise and reference concentration not tested",
+    "This test checks simulated values only, not detection sensitivity, selectivity, ppm or actual false positive rate"
+  ],
+  "next": "P03.1 scientific MQ source reference inventory and experimental provenance."
+}
