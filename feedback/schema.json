@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/HazRob/HazRob-Tank/blob/main/feedback/schema.json",
+  "title": "HazRob Tank V8 user-consented ChemCore Next feedback",
+  "type": "object",
+  "required": [
+    "schema",
+    "feedback_id",
+    "created_utc_ms",
+    "decision_uid",
+    "session_id",
+    "snapshot_uid",
+    "snapshot_sha256",
+    "model_version",
+    "decision_status",
+    "stable_sha256",
+    "application_package",
+    "app_version",
+    "app_version_code",
+    "user_note",
+    "public_share_consent",
+    "original_analysis",
+    "original_mq_measurements",
+    "ppm_certified",
+    "physical_g3_qualified",
+    "training_source_promotion_authorized"
+  ],
+  "properties": {
+    "schema": {
+      "const": "hazrob.tank.v8.feedback/1"
+    },
+    "feedback_id": {
+      "type": "string",
+      "pattern": "^FB-[a-f0-9-]{36}$"
+    },
+    "created_utc_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "decision_uid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_uid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "model_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stable_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "application_package": {
+      "type": "string",
+      "minLength": 1
+    },
+    "app_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "app_version_code": {
+      "type": "integer"
+    },
+    "user_note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "public_share_consent": {
+      "const": true
+    },
+    "operator_classification": {
+      "const": "UNVERIFIED_PERSONAL_OBSERVATION"
+    },
+    "original_analysis": {
+      "type": "object"
+    },
+    "original_mq_measurements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sensor_model",
+          "quality",
+          "reference_type"
+        ]
+      }
+    },
+    "temperature_c": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "relative_humidity_pct": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "ppm_certified": {
+      "const": false
+    },
+    "physical_g3_qualified": {
+      "const": false
+    },
+    "training_source_promotion_authorized": {
+      "const": false
+    }
+  },
+  "additionalProperties": true
+}
