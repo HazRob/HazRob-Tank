@@ -384,8 +384,16 @@ def audit_cross_artifact(record, repo_root=Path(".")):
         if (not blind_labels or any(not isinstance(label, str) or not label.strip()
                                     for label in blind_labels)):
             issues.append("BLIND_TEST_TARGET_LABELS_UNAVAILABLE")
-        elif len(set(blind_labels)) < 2:
-            issues.append("BLIND_TEST_SINGLE_REFERENCE_CLASS")
+        else:
+            # Compatibility aliases (e.g. fullwidth GAS_A vs ASCII GAS_A)
+            # cannot count as distinct blinded reference identities. Keep
+            # raw labels intact for replay; normalize only the diversity key.
+            canonical_labels = [unicodedata.normalize("NFKC", label)
+                                for label in blind_labels]
+            if len(set(canonical_labels)) < len(set(blind_labels)):
+                issues.append("BLIND_TEST_REFERENCE_LABEL_NFKC_ALIAS")
+            if len(set(canonical_labels)) < 2:
+                issues.append("BLIND_TEST_SINGLE_REFERENCE_CLASS")
 
     required_prediction_columns = {"exposure_id", "group_id"}
     if not predictions or any(not required_prediction_columns <= set(row) for row in predictions):

@@ -58,6 +58,35 @@ class G2BlindTargetDiversityTests(unittest.TestCase):
             self.assertIn("BLIND_TEST_TARGET_LABELS_UNAVAILABLE", result["issues"])
             self.assertEqual(result["status"], "G2_BLOCKED")
 
+    def test_fullwidth_alias_cannot_fake_second_blind_class(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            change_csv_and_rehash(record, base,
+                                  "te2,d2-s2,GAS_B,d2,s2",
+                                  "te2,d2-s2,ＧＡＳ＿Ａ,d2,s2")
+            issues = audit_cross_artifact(record, temp)
+            self.assertIn("BLIND_TEST_REFERENCE_LABEL_NFKC_ALIAS", issues)
+            self.assertIn("BLIND_TEST_SINGLE_REFERENCE_CLASS", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_distinct_ascii_blind_labels_remain_distinct(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            issues = audit_cross_artifact(record, temp)
+            self.assertNotIn("BLIND_TEST_REFERENCE_LABEL_NFKC_ALIAS", issues)
+            self.assertNotIn("BLIND_TEST_SINGLE_REFERENCE_CLASS", issues)
+
+    def test_non_accuracy_metric_does_not_inherit_alias_discrimination_gate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["metric_name"] = "rmse"
+            change_csv_and_rehash(record, base,
+                                  "te2,d2-s2,GAS_B,d2,s2",
+                                  "te2,d2-s2,ＧＡＳ＿Ａ,d2,s2")
+            issues = audit_cross_artifact(record, temp)
+            self.assertNotIn("BLIND_TEST_REFERENCE_LABEL_NFKC_ALIAS", issues)
+            self.assertIn("METRIC_FAMILY_NOT_RECOMPUTABLE", issues)
+
     def test_non_accuracy_metrics_do_not_inherit_accuracy_class_gate(self):
         with tempfile.TemporaryDirectory() as temp:
             record, base = synthetic_bundle(temp)
