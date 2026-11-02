@@ -127,7 +127,7 @@ class MQExt10ArchiveIntakeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "data.zip"
             members = [(f"Ethanol/Ea-C1_R{i:02d}.txt",
-                        f"50,25,1,2,3,4,5,{6+i}\n".replace("\\\n", "\n"))
+                        f"50,25,1,2,3,4,5,{6+i}\n")
                        for i in range(1, 66)]
             archive(p, members)
             r = inspect_zip(p, expected_rows=1)
