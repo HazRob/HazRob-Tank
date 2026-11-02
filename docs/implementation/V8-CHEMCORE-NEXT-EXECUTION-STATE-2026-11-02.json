@@ -13,7 +13,7 @@
   "last_verified_head_sha": "1e23f369cf820e5115693b927097f7921e98fda0",
   "active_phase": "P05",
   "active_task": "P05.3",
-  "last_checkpoint": "27/37 independent core tasks, P05.2 source-qualified negative / clean air deviation tests passed; G3=0; owner V6 quick clean-air eight-MQ reference captured and source/62 G1 algebraic assertions CI verified; no raw Rs/noise; G3 still 0",
+  "last_checkpoint": "27/37 core tasks; P05.3 pending; 12 preliminary real MQ source fingerprint modes run 41394139883. No full engine qualification.",
   "next_action": "P05.3 evidence conflict/independence graph with conditional negative and source roots; P05.4 arbitrator follows",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
@@ -2652,5 +2652,18 @@
     "action_assertions": 62,
     "qualification": "OWNER_SUPPLIED_BASELINE_REFERENCE_ONLY; NO_BASELINE_NOISE_STATS; NO_SOURCE_LOD; NO_G3; NO_PPM",
     "app_firmware_stable_modified": false
+  },
+  "preliminary_real_mq_fingerprint_benchmark": {
+    "evidence_file": "research/v8_implementation/results/next_preliminary_mq_fingerprint_benchmark_2026-11-02.json",
+    "workflow_run": 41394139883,
+    "source_measurement_families": [
+      "MQ4/Li-Cor CH4",
+      "MQ135/UCI1081 six gases",
+      "MQ2-MQ135/6400 smoke-class ADC"
+    ],
+    "tested_component": "FingerprintExpert.compare",
+    "modes": 12,
+    "status": "PRELIMINARY_COMPONENT_ONLY_NOT_COMPLETED_CHEMCORE_NEXT",
+    "physical_tank_G3": false
   }
 }
