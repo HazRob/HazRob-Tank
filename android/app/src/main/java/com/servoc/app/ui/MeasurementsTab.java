@@ -659,6 +659,17 @@ public final class MeasurementsTab {
         final SensorCard[] sensorCards=new SensorCard[HazRobHardwareProfile.MQ.length];
         final Button powerToggle,start,cancel,report;
         private boolean active=false;
+        private com.servoc.app.measurement.InstantCaptureGate captureGate;
+        private String instantFailure="";
+        private final android.os.Handler captureClock=
+            new android.os.Handler(android.os.Looper.getMainLooper());
+        private final Runnable captureTick=new Runnable(){
+            @Override public void run(){
+                if(!active)return;
+                refresh();
+                if(active)captureClock.postDelayed(this,1000L);
+            }
+        };
 
         LivePane(){
             view=new ScrollView(c);view.setVerticalScrollBarEnabled(true);view.setScrollbarFadingEnabled(false);box=UiKit.vbox(c);box.setPadding(UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,4),UiKit.dp(c,10));view.addView(box);
@@ -690,38 +701,77 @@ public final class MeasurementsTab {
             if(data==null||data.optJSONObject("mq")==null){
                 host.showToast("اتصل بحساسات MQ لبدء قياس آني");return;
             }
+            try {
+                // The instant capture never owns the relay: the operator must
+                // power MQ first and the actual diagnostics must acknowledge it.
+                captureGate=new com.servoc.app.measurement.InstantCaptureGate(
+                    android.os.SystemClock.elapsedRealtime(),data);
+            }catch(IllegalArgumentException ex){
+                host.showToast("تعذر بدء قياس موثق: "+ex.getMessage());return;
+            }
+            instantFailure="";
             currentOperation=null;active=true;progress.setProgress(0);
             start.setEnabled(false);cancel.setEnabled(true);report.setEnabled(false);
-            sessionCard.setText("العملية • قياس جارٍ\nاختر إنهاء لالتقاط وتحليل القراءة الختامية");
+            sessionCard.setText("تسخين MQ • 60 ثانية ثم تسجيل 60 ثانية فعلية");
+            captureClock.removeCallbacks(captureTick);
+            captureClock.postDelayed(captureTick,1000L);
             host.refreshAllTabs();
         }
+        private void abortInstant(String reason){
+            active=false;
+            captureClock.removeCallbacks(captureTick);
+            instantFailure=reason==null?"UNKNOWN":reason;
+            captureGate=null;
+            currentOperation=null;
+            start.setEnabled(true);cancel.setEnabled(false);report.setEnabled(false);
+            progress.setProgress(0);
+            sessionCard.setText("فشل القياس الآني • "+instantFailure);
+        }
         private void finishOperation(){
-            if(!active){host.showToast("ابدأ قياساً آنياً أولاً");return;}
+            if(!active||captureGate==null){host.showToast("ابدأ قياساً آنياً أولاً");return;}
             JSONObject data=host.latestDiagnostics();
-            if(data==null||data.optJSONObject("mq")==null){
-                host.showToast("لا تتوفر قراءة MQ حية لإنهاء العملية");return;
+            long mono=android.os.SystemClock.elapsedRealtime();
+            captureGate.observe(mono,data);
+            if(captureGate.hasFailure()){
+                String why=captureGate.failureReason();
+                abortInstant(why);
+                host.showToast("تعذر حفظ القياس: "+why);return;
+            }
+            if(!captureGate.isReady(mono)){
+                host.showToast(captureGate.readinessMessage(mono));return;
             }
             final JSONObject frozen;
-            try{frozen=new JSONObject(data.toString());}catch(Exception e){
+            try{
+                frozen=new JSONObject(data.toString());
+                // Immutable, original 60-second MQ source rows are kept separate
+                // from the terminal snapshot used by current Next inference.
+                // Do not claim ChemCore Next analyzed a temporal model here.
+                frozen.put("v8_instant_source_capture",captureGate.verifiedEvidence(mono));
+            }catch(Exception ex){
+                abortInstant("تعذر تجميد سلسلة القراءات المصدرية");
                 host.showToast("تعذر تجميد القراءات");return;
             }
-            active=false;cancel.setEnabled(false);
-            sessionCard.setText("العملية • يجري تحليل القراءة الختامية");
+            active=false;captureClock.removeCallbacks(captureTick);
+            cancel.setEnabled(false);
+            sessionCard.setText("حفظ قراءات 60 ثانية • يجري تحليل Next");
             final long now=System.currentTimeMillis();
             host.io().execute(()->{
                 try{
-                    TankInstantAnalyzer.Result completed=TankInstantAnalyzer.analyze(c,host.database(),frozen,now);
+                    TankInstantAnalyzer.Result completed=
+                        TankInstantAnalyzer.analyze(c,host.database(),frozen,now);
                     box.post(()->{
                         currentOperation=completed;start.setEnabled(true);report.setEnabled(true);
                         progress.setProgress(1000);
-                        sessionCard.setText("العملية مكتملة\n"+completed.channels+" قنوات MQ");
+                        sessionCard.setText("العملية مكتملة • قراءة مصدرية موثقة\n"+
+                            completed.channels+" قنوات MQ • استدلال بحثي");
                         host.refreshAllTabs();showAnalysisSection(1);
                     });
                 }catch(Exception ex){
                     box.post(()->{
                         currentOperation=null;start.setEnabled(true);report.setEnabled(false);
                         progress.setProgress(0);
-                        sessionCard.setText("العملية لم تكتمل • بيانات التحليل غير كافية");
+                        instantFailure="فشل حفظ قرار ChemCore Next";
+                        sessionCard.setText("العملية لم تكتمل • "+instantFailure);
                         host.showToast("تعذر تحليل MQ: "+ex.getClass().getSimpleName());
                     });
                 }
@@ -734,7 +784,7 @@ public final class MeasurementsTab {
                 gasCard.setText("الاستجابة\n—");
                 powerToggle.setText("تشغيل MQ");
                 TankInstantAnalyzer.Result completed=currentOperation;
-                if(active){sessionCard.setText("العملية • انقطع الاتصال أثناء القياس؛ لا توجد نتيجة مكتملة");progress.setProgress(500);}
+                if(active)abortInstant("انقطاع اتصال MQ أثناء التسجيل");
                 else if(completed!=null){sessionCard.setText("العملية مكتملة • التقرير متاح دون اتصال\n"+completed.channels+" قنوات MQ");progress.setProgress(1000);}
                 else{sessionCard.setText("العملية • لا توجد قراءات حية");progress.setProgress(0);}
                 cancel.setEnabled(active);
@@ -751,9 +801,21 @@ public final class MeasurementsTab {
             arrayCard.setText("المصفوفة "+valid+"/"+available+"\nغير مستقرة "+unstable);colorState(arrayCard,valid>=6&&unstable==0,valid>=4);
             LiveGasStateEngine.Snapshot gas=host.liveGasState();String gs=gas==null?"غير متاح":liveGasStateAr(gas.state);gasCard.setText("استجابة إشارات MQ (بحثية فقط)\n"+gs+(gas==null?"":" • "+gas.respondingChannels+" قنوات"));boolean gasNormal=false; // No laboratory-grade normal atmosphere certification at V6.boolean gasWatch=gas!=null&&(gas.state==LiveGasStateEngine.State.WARMING_UP||gas.state==LiveGasStateEngine.State.BASELINE_REQUIRED);colorState(gasCard,gasNormal,gasWatch);
             TankInstantAnalyzer.Result completed=currentOperation;
-            if(active){sessionCard.setText("العملية • جارٍ القياس");progress.setProgress(500);}
+            if(active&&captureGate!=null){
+                long at=android.os.SystemClock.elapsedRealtime();
+                captureGate.observe(at,d);
+                if(captureGate.hasFailure()){
+                    abortInstant(captureGate.failureReason());
+                }else{
+                    sessionCard.setText(captureGate.readinessMessage(at));
+                    progress.setProgress(captureGate.progressPermille(at));
+                }
+            }
             else if(completed!=null){sessionCard.setText("العملية مكتملة\n"+completed.channels+" قنوات MQ");progress.setProgress(1000);}
-            else{sessionCard.setText("العملية • جاهزة");progress.setProgress(0);}
+            else if(!instantFailure.isEmpty()){
+                sessionCard.setText("العملية فشلت • "+instantFailure);
+                progress.setProgress(0);
+            }else{sessionCard.setText("العملية • جاهزة");progress.setProgress(0);}
             colorState(sessionCard,completed!=null,active);
             cancel.setEnabled(active);report.setEnabled(completed!=null);
             for(SensorCard sc:sensorCards)sc.refresh(true,powered,relay,adc,mq==null?null:mq.optJSONObject(sc.hw.key));
