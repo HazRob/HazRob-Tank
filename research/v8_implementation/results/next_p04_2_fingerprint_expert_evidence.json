@@ -1,0 +1,43 @@
+{
+  "schema": "chemcore.next.P04.2.fingerprint.expert.g1/1",
+  "date": "2026-11-02",
+  "project": "ChemCore Next independent engine",
+  "task": "P04.2",
+  "status": "DONE_G1_SOFTWARE",
+  "ci": {
+    "id": 41390127310,
+    "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41390127310",
+    "conclusion": "success",
+    "assertions_p04_1": 44,
+    "assertions_p04_2": 34
+  },
+  "capabilities": [
+    "1/2/8 sensor research subset matching",
+    "exact same feature space, source device model and feature key map required",
+    "partial physical subset is marked and cannot replace full 8MQ signature",
+    "source missing/zero/negative scales are never silently repaired",
+    "strict numeric residual and positive source scale",
+    "stale/invalid physical samples fail closed",
+    "source root and chemical UID metadata do not become verified gas identity"
+  ],
+  "limitations": [
+    "Research standardized residuals are not posterior probabilities or calibrated quantitative ppm",
+    "Stored 24 source fingerprints include groups not directly transferable to Tank",
+    "No actual sensor matching, calibration R0, G2 independent source transfer or G3 device test in this Java smoke"
+  ],
+  "file_blobs": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/FingerprintExpert.java",
+      "sha": "44201f9058e1ed46c80270c04f98d0a05ca5dbd2"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/FingerprintExpertSmoke.java",
+      "sha": "4a4c3121becc025c1d3d0d6f03425ffea61473b6"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "sha": "db1c97f72a62a392f4d14bdc7e3848249ba089cb"
+    }
+  ],
+  "next": "P04.3 temporal expert scientific time windows; prohibit time order leakage."
+}
