@@ -394,6 +394,19 @@ public final class FieldCycleRepository {
         }finally{w.endTransaction();}
     }
 
+    /** V8: a successful capture cannot be approved without observed OFF ACK.
+     * Never alter an approved or historic V7 record.
+     */
+    public boolean markUnsafeReview(String cycleId,String safetyFault){
+        String id=required(cycleId);
+        String reason=safetyFault==null?"MQ_RELAY_SHUTDOWN_UNCONFIRMED":safetyFault.trim();
+        ContentValues v=new ContentValues();
+        v.put("state",FAILED);v.put("fail_reason",reason);v.put("updated_ts",utc());
+        return db.getWritableDatabase().update("field_measurement_cycles",v,
+            "cycle_id=? AND state=? AND approved_ts IS NULL",
+            new String[]{id,REVIEW})==1;
+    }
+
     public boolean fail(String cycleId,String reason){
         String cid=required(cycleId);String message=reason==null?"FAILED":reason.trim();
         ContentValues v=new ContentValues();v.put("state",FAILED);v.put("fail_reason",message);

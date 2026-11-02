@@ -130,6 +130,22 @@ public final class FieldCycleController {
         host.io().execute(()->{
             try{
                 int n=repo.recoverAbandoned();
+                if(n>0){
+                    try{
+                        host.robotApi().mqPower(false);
+                        JSONObject off=host.robotApi().snapshot(0,0);
+                        if(relayOn(off)||identity(off).isEmpty())
+                            throw new IllegalStateException("MQ_RELAY_OFF_NOT_ACKNOWLEDGED");
+                    }catch(Exception safetyFailure){
+                        android.util.Log.e("TankFieldCycle",
+                            "Interrupted field run: unable to confirm safe MQ relay OFF",safetyFailure);
+                        host.database().putMeta("v8_field_recovery_relay_fault",
+                            safetyFailure.getClass().getSimpleName()+":"+
+                            safetyFailure.getMessage());
+                        main.post(()->message("SAFETY_FAULT",
+                            "استعادة جلسة منقطعة: لم يُؤكد إطفاء ريلاي MQ؛ افصل طاقة الحساسات بأمان",""));
+                    }
+                }
                 if(n>0)main.post(()->{
                     if(!disposed){
                         message("RECOVERED","تم وسم "+n+" دورة منقطعة بأنها غير صالحة للاعتماد","");observer.refreshed();
@@ -317,10 +333,33 @@ public final class FieldCycleController {
                         // Stop is completed by the telemetry poll, not by this timer.
                         if(!MeasurementSessionRegistry.fieldCaptureRequested()){
                             if(repo.complete(cycleId,deviceId)){
-                                if(gas)try{host.robotApi().mqPower(false);}
-                                    catch(Exception ignored){}
+                                // Source archive plus immutable Next decision are
+                                // sealed BEFORE requesting MQ power-off. Require
+                                // physical ESP32 feedback before review approval.
+                                if(gas){
+                                    try{
+                                        host.robotApi().mqPower(false);
+                                        JSONObject after=host.robotApi().snapshot(0,0);
+                                        if(!deviceId.equals(identity(after))||relayOn(after))
+                                            throw new IllegalStateException(
+                                                "MQ_RELAY_SHUTDOWN_ACK_MISSING_OR_STILL_ON");
+                                    }catch(Exception off){
+                                        String fault="MQ_RELAY_SHUTDOWN_UNCONFIRMED: "+
+                                            off.getClass().getSimpleName();
+                                        boolean isolated=repo.markUnsafeReview(cycleId,fault);
+                                        android.util.Log.e("TankFieldCycle",
+                                            "Cannot acknowledge MQ relay shutdown",off);
+                                        final String notice=isolated?
+                                            "حُفظت البيانات لكن تعذر تأكيد إطفاء ريلاي MQ؛ "+
+                                            "الدورة غير قابلة للاعتماد. افصل طاقة الحساسات بأمان":
+                                            "خطر: تعذر تأكيد إطفاء MQ أو حظر الاعتماد؛ "+
+                                            "أوقف طاقة الحساسات يدويًا وراجع النظام";
+                                        main.post(()->end("FAILED",notice,cycleId));
+                                        return;
+                                    }
+                                }
                                 main.post(()->end("REVIEW_READY",
-                                    "اكتملت الدورة؛ اختر اعتماد القياس أو إعادته",cycleId));
+                                    "اكتملت الدورة وحُفظ قرار Next وتأكد إطفاء MQ؛ اختر الاعتماد أو الإعادة",cycleId));
                                 return;
                             }
                             // Distinguish missing Next scientific receipt
