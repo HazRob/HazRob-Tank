@@ -19,6 +19,7 @@ import com.hazrob.tank.foodfreshness.FoodFreshnessPdf;
 import com.hazrob.tank.foodfreshness.FoodReferenceCatalog;
 import com.hazrob.tank.foodfreshness.FoodMeasurementDecision;
 import com.hazrob.tank.foodfreshness.meat.BeefResearchEngine;
+import com.hazrob.tank.foodfreshness.meat.BeefGaussianResearchEngine;
 import com.hazrob.tank.foodfreshness.meat.BeefResearchPdf;
 import com.hazrob.tank.foodfreshness.meat.BeefResearchCatalog;
 
@@ -325,6 +326,20 @@ public final class FoodFreshnessTab {
                    .append("/100 (")
                    .append(item.overlap).append(" حساسات)\n");
             }
+            BeefGaussianResearchEngine.Result gaussian=
+                BeefGaussianResearchEngine.analyze(frozenReadings);
+            out.append("\nالنموذج الغاوسي البحثي المستقل (ليس احتمالًا أو قياس TVC):\n");
+            if(gaussian.ranked.isEmpty()){
+                out.append("لم يُنفذ: يلزم اكتمال قنوات MQ السبع للدراسة.\n");
+            } else {
+                for(BeefGaussianResearchEngine.ClassScore g:gaussian.ranked)
+                    out.append(g.classCode).append(" — تكلفة المطابقة ")
+                       .append(String.format(Locale.US,"%.3f",g.gaussianCost))
+                       .append(" | مرجع ").append(g.sourceRows).append(" سجل\n");
+                if(!gaussian.ranked.get(0).classCode.equals(interpreted.referenceId))
+                    out.append("ملاحظة: النموذجان مختلفان في أقرب فئة؛ النتيجة غير حاسمة.\n");
+            }
+            out.append("اختبار الحجب عبر خمس عينات مصدرية: متوسط الدقة المتوازنة للنموذج الغاوسي 62.93%؛ إحدى العينات 29.56%.\n");
             out.append("\nأداء الاختبار على عينة بحثية مستقلة: دقة متوازنة ")
                .append(String.format(Locale.US,"%.1f%%",
                      100*BeefResearchCatalog.HELDOUT_BALANCED_ACCURACY))
