@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.List;
 
 /** Stable beef-only export facade; retain Android MediaStore name/location. */
 public final class BeefResearchPdf {
@@ -17,6 +18,12 @@ public final class BeefResearchPdf {
                            Map<String,Double> channels,int sampleCount,
                            long durationMs,String id,double temperatureC,
                            double humidityPct) throws Exception {
+        return save(ctx,result,channels,sampleCount,durationMs,id,temperatureC,humidityPct,null);
+    }
+    public static Uri save(Context ctx,BeefResearchEngine.Result result,
+                           Map<String,Double> channels,int sampleCount,
+                           long durationMs,String id,double temperatureC,
+                           double humidityPct,Map<String,List<double[]>> trace) throws Exception {
         if(ctx==null||result==null||id==null||id.trim().isEmpty())
             throw new IllegalArgumentException("missing beef report input");
         if(Build.VERSION.SDK_INT<29)
@@ -31,7 +38,7 @@ public final class BeefResearchPdf {
         try(OutputStream out=ctx.getContentResolver().openOutputStream(uri)){
             if(out==null)throw new IOException("Beef PDF output unavailable");
             V7BeefResearchPdfWriter.write(ctx,out,result,channels,
-                sampleCount,durationMs,id,temperatureC,humidityPct);
+                sampleCount,durationMs,id,temperatureC,humidityPct,trace);
             return uri;
         }catch(Exception e){
             ctx.getContentResolver().delete(uri,null,null);
