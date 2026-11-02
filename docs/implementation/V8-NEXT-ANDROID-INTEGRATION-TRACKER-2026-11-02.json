@@ -221,7 +221,19 @@
         "android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java",
         "research/v8_implementation/tests/test_v8_next_instant_source_routing.py"
       ],
-      "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300"
+      "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300",
+      "code_compile": {
+        "run_id": 41527354854,
+        "conclusion": "success",
+        "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300"
+      },
+      "source_route_static_checks": {
+        "run_id": 41527354854,
+        "assertions": 6,
+        "conclusion": "success",
+        "method": "source-only structural contract"
+      },
+      "device_verification": "NOT_YET_PROVEN_FOR_ACTIVE_INSTANT_GAS_CAPTURE"
     },
     {
       "id": "P07.4",
@@ -262,7 +274,19 @@
         "android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java",
         "research/v8_implementation/tests/test_v8_next_instant_source_routing.py"
       ],
-      "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300"
+      "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300",
+      "code_compile": {
+        "run_id": 41527354854,
+        "conclusion": "success",
+        "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300"
+      },
+      "source_route_static_checks": {
+        "run_id": 41527354854,
+        "assertions": 6,
+        "conclusion": "success",
+        "method": "source-only structural contract"
+      },
+      "device_verification": "NOT_YET_PROVEN_FOR_ACTIVE_INSTANT_GAS_CAPTURE"
     },
     {
       "id": "P08.1",
@@ -305,7 +329,19 @@
         "android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java",
         "research/v8_implementation/tests/test_v8_next_instant_source_routing.py"
       ],
-      "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300"
+      "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300",
+      "code_compile": {
+        "run_id": 41527354854,
+        "conclusion": "success",
+        "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300"
+      },
+      "source_route_static_checks": {
+        "run_id": 41527354854,
+        "assertions": 6,
+        "conclusion": "success",
+        "method": "source-only structural contract"
+      },
+      "device_verification": "NOT_YET_PROVEN_FOR_ACTIVE_INSTANT_GAS_CAPTURE"
     },
     {
       "id": "P08.3",
@@ -781,9 +817,9 @@
       "verification": "NOT_RUN"
     }
   ],
-  "last_checked_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300",
-  "last_verified_ci": 41527063355,
-  "next_action": "Verify latest V8 compile/static route test run 41527354854 and current Android12 replay instrumentation; then P07.4 make all reports consume one Next frozen decision and P08/P09 implement 60s+60s countdown and race-free session completion.",
+  "last_checked_commit": "6e47a123bc4f4a10cd047c7ab583e09a75a69cb3",
+  "last_verified_ci": 41527354854,
+  "next_action": "Complete Android12 report parity test (4 tests, pending), then connect Next to field 60s recordings and all report exporters. Implement real 60+60 timed capture with relay ACK and durable readback; source model binding remains blocked on physical applicability. Verify each UI control on device.",
   "ui_coverage_gate": {
     "source_inventory_script": "tools/v8_ui_inventory_gate.py",
     "run_id": 41404510217,
