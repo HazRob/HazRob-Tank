@@ -11,6 +11,9 @@ on:
       - 'research/chemcore_next/tools/verify_p03_4_uid_crosswalk.py'
       - 'research/chemcore_next/identity/chemcore_next_p03_4_unlinked_60_source_identity_policy.csv'
       - 'research/chemcore_next/tools/verify_p03_4_unlinked_policy.py'
+      - 'research/chemcore_next/identity/chemcore_next_p03_4_verified_full_109_source_uid_crosswalk.csv'
+      - 'research/chemcore_next/selectivity/**'
+      - 'research/chemcore_next/tools/verify_p03_4_5_identity_selectivity.py'
       - 'android/app/src/main/java/com/hazrob/tank/chemcore/v6/GasFingerprintCatalogV6.java'
       - 'research/chemcore_next/tools/verify_p03_2_source_curves.py'
       - 'research/chemcore_next/mqdata_v7_source_gas_curve_register_89.csv'
@@ -68,6 +71,16 @@ jobs:
             | tee P03-4-CAS-POLICY-VALIDATION.log
           grep -q '^CHEMCORE_NEXT_P03_4_SOURCE_CAS_POLICY_PASS ' \
             P03-4-CAS-POLICY-VALIDATION.log
+      - name: Validate all 109 source UID links and 8 by 21 selectivity overlap matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile research/chemcore_next/tools/verify_p03_4_5_identity_selectivity.py
+          python3 research/chemcore_next/tools/verify_p03_4_5_identity_selectivity.py \
+            --out research/chemcore_next/selectivity/P03-4-5-CI-RESULT.json \
+            | tee P03-4-5-SELECTIVITY-VALIDATION.log
+          grep -q '^CHEMCORE_NEXT_P03_4_5_SELECTIVITY_PASS ' \
+            P03-4-5-SELECTIVITY-VALIDATION.log
       - name: Preserve source audit and inverse math evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -82,5 +95,7 @@ jobs:
             research/chemcore_next/identity/P03-4-CI-RESULT.json
             P03-4-CAS-POLICY-VALIDATION.log
             research/chemcore_next/identity/P03-4-CAS-POLICY-CI-RESULT.json
+            P03-4-5-SELECTIVITY-VALIDATION.log
+            research/chemcore_next/selectivity/P03-4-5-CI-RESULT.json
           if-no-files-found: warn
           retention-days: 30
