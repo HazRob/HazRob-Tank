@@ -53,6 +53,14 @@ jobs:
             | tee build/chemcore-next-p01/P02-SIGNAL-PHYSICS-TEST.log
           grep -q '^CHEMCORE_NEXT_P02_SIGNAL_PHYSICS_PASS ' \
             build/chemcore-next-p01/P02-SIGNAL-PHYSICS-TEST.log
+      - name: Verify P02.2 device clean-air Rs vs source R0 and provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.R0ReferenceMathSmoke \
+            | tee build/chemcore-next-p01/P02-DUAL-R0-TEST.log
+          grep -q '^CHEMCORE_NEXT_P02_DUAL_R0_PASS ' \
+            build/chemcore-next-p01/P02-DUAL-R0-TEST.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -62,5 +70,6 @@ jobs:
             build/chemcore-next-p01/P01-CONTRACT-TEST.log
             build/chemcore-next-p01/P01-REPLAY-TEST.log
             build/chemcore-next-p01/P02-SIGNAL-PHYSICS-TEST.log
+            build/chemcore-next-p01/P02-DUAL-R0-TEST.log
           if-no-files-found: warn
           retention-days: 30
