@@ -40,6 +40,13 @@ jobs:
           cat >> source/app/build.gradle <<'EOF'
 
           android {
+              // TEST-ONLY: use Android's default debug keystore in this ephemeral
+              // emulator workspace. Never modify release/prototype signing.
+              buildTypes {
+                  debug {
+                      signingConfig signingConfigs.debug
+                  }
+              }
               defaultConfig {
                   testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
               }
