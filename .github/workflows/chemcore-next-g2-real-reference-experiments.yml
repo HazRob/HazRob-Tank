@@ -1,0 +1,118 @@
+name: ChemCore Next G2 external real-reference quantitative fingerprints and open-set tests
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'research/chemcore_next/experiments/next_reference_mq4_quantitative.py'
+      - 'research/chemcore_next/experiments/next_reference_uci1081_fingerprints.py'
+      - '.github/workflows/chemcore-next-g2-real-reference-experiments.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  next-real-source-experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install frozen source-research math runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --no-input numpy==2.3.5 pandas==2.2.3 scikit-learn==1.8.0
+      - name: Retrieve original Li-Cor MQ4 source and fail unless original SHA256 matches
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/next-g2-source /tmp/next-g2-results/mq4
+          curl --fail --location --retry 3 --max-time 120 \
+            'https://conservancy.umn.edu/server/api/core/bitstreams/1542d00c-67b4-4a61-93f3-48ee1dd97208/content' \
+            -o /tmp/next-g2-source/mq4_original_10ppm_data.csv
+          echo '3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d  /tmp/next-g2-source/mq4_original_10ppm_data.csv' | sha256sum -c -
+      - name: Retrieve UCI1081 ORIGINAL 90 source exposures, pin archive and CSV SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/next-g2-results/uci
+          python research/chemcore_v6/benchmarks/extract_uci1081_verified.py \
+            --out /tmp/next-g2-source/uci90_features.csv \
+            --manifest /tmp/next-g2-results/uci/verified_original_source_manifest.json
+      - name: New ChemCore Next MQ4 source quantitative fingerprints and calibration experiments
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/experiments/next_reference_mq4_quantitative.py \
+            --source /tmp/next-g2-source/mq4_original_10ppm_data.csv \
+            --out /tmp/next-g2-results/mq4 | tee /tmp/next-g2-results/next_mq4_run.log
+          grep -q '^CHEMCORE_NEXT_MQ4_REAL_REFERENCE_PASS ' /tmp/next-g2-results/next_mq4_run.log
+      - name: New ChemCore Next MQ135 temporal source fingerprints, closed and open set
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/experiments/next_reference_uci1081_fingerprints.py \
+            --features /tmp/next-g2-source/uci90_features.csv \
+            --manifest /tmp/next-g2-results/uci/verified_original_source_manifest.json \
+            --out /tmp/next-g2-results/uci | tee /tmp/next-g2-results/next_uci_run.log
+          grep -q '^CHEMCORE_NEXT_UCI_REAL_SOURCE_PASS ' /tmp/next-g2-results/next_uci_run.log
+      - name: Enforce research integrity, source group counts and no Tank certification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv,json,pathlib
+          root=pathlib.Path('/tmp/next-g2-results')
+          mq=json.loads((root/'mq4/next_mq4_source_experiment.json').read_text())
+          uc=json.loads((root/'uci/next_uci_source_experiment.json').read_text())
+          assert mq['physical_source_rows']==14186
+          assert mq['distinct_days']==11
+          assert mq['source_observed_unique_gases']==1
+          assert mq['day_group_holdout_folds']==44
+          assert mq['heldout_predictions']==56744
+          assert mq['unseen_instance_plus_day_transfer_tests']==33
+          assert mq['fingerprints_created']>=80
+          assert mq['source_csv_sha256']=='3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d'
+          assert mq['no_tank_r0_used'] and mq['no_tank_g3']
+          assert not mq['safety_alert_qualification']
+          assert uc['n_original_exposures']==90 and uc['n_source_gases']==6
+          assert uc['temporal_train_only_fingerprints']==36
+          assert uc['grouped_heldout_concentration_folds']==6
+          assert uc['original_test_exposure_predictions']==180
+          assert uc['distinct_partition_protocol_open_set_folds']==180
+          assert uc['open_set_test_rows_reused_across_disjoint_calibration_splits']==6300
+          assert uc['no_tank_r0'] and uc['no_Tank_G3']
+          assert uc['unknown_test_gas_never_in_training_or_threshold_calibration']
+          assert not uc['source_fingerprint_models_activated_in_ChemCoreNext_evaluate']
+          assert uc['original_zip_sha256']=='813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab'
+          for m, result in mq['metrics_by_model'].items():
+              assert 0<=result['mean_day_interval_coverage']<=1
+              assert result['mean_day_mae_ppm']>=0
+          for m, result in uc['metrics_by_source_sensor_mode'].items():
+              assert 0<=result['open_set_unseen_gas_rejection_fraction']<=1
+              assert 0<=result['concentration_heldout_macro_class_accuracy']<=1
+          with (root/'mq4/next_mq4_quantitative_fingerprints.csv').open() as f:
+              rows=list(csv.DictReader(f))
+              assert len(rows)==mq['fingerprints_created']
+              assert all(row['training_day_count']=='9' for row in rows)
+          with (root/'uci/next_uci_mq135_training_fingerprints.csv').open() as f:
+              rows=list(csv.DictReader(f))
+              assert len(rows)==36
+              assert set(r['source_sensor_space'] for r in rows)=={
+                  'MQ135_3WINDOW','EXTERNAL_10SENSOR_30WINDOW_CEILING'}
+          print('CHEMCORE_NEXT_REAL_G2_SOURCE_INTEGRITY_PASS')
+          print('MQ4_METRICS',json.dumps(mq['metrics_by_model'],sort_keys=True))
+          print('UCI_METRICS',json.dumps(uc['metrics_by_source_sensor_mode'],sort_keys=True))
+          print('QUALIFICATION actual_Tank_G3=0; experimental_G2_source_only=true; no field alarm')
+          PY
+      - name: Preserve complete source-only predictions, derived fingerprints and lineage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ChemCore-Next-G2-Original-Reference-Fingerprint-Benchmark
+          path: /tmp/next-g2-results/
+          if-no-files-found: warn
+          retention-days: 30
