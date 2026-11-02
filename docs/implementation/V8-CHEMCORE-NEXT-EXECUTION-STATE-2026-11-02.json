@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "Build/verify ChemCore Next independently first, integrate into V8 later; standards formal qualification deferred",
-  "status": "P00_P01_DONE_P02_1_3_VALIDATED_JVM_P02_4_READY",
+  "status": "P00_P01_COMPLETE_P02_1_4_JVM_VERIFIED_P02_5_READY",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P02",
-  "active_task": "P02.4",
-  "last_checkpoint": "P02.3 110 JDK17 tests success CI 41376081071; 276 combined tests; P02.4 next. I2C hardware bench not done.",
-  "next_action": "P02.4 add single specialist positive sensor response and tightly qualified negative evidence; no two-sensor hard requirement and no unsupported gas identity.",
+  "active_task": "P02.5",
+  "last_checkpoint": "P02.4 source-qualified single-sensor evidence and strict negative 60/60 tests verified on CI 41376409034; 336 combined, P02.5 next.",
+  "next_action": "P02.5 deterministic software replay for clean air near baseline, repeated scan cycles, 180s/60s R_air experimental protocol, false positive prevention and absent telemetry; G1 only.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 11,
-    "passed_tests": 11,
+    "done_tasks": 12,
+    "passed_tests": 12,
     "failed_tests": 0,
-    "percent_complete": 15.49
+    "percent_complete": 16.9
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -639,8 +639,8 @@
       "id": "P02.4",
       "phase": "P02",
       "description": "استجابة حساس واحد والدليل السلبي المشروط",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_RESEARCH_JVM_NO_CHEMICAL_ID_OR_DEVICE_G3",
       "depends_on": [
         "P02.3"
       ],
@@ -651,22 +651,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_result": "P02.4 60/60 tests for specialist single sensor / conditional negative model support; 336/336 combined CI tests success",
+      "action_run_id": 41376409034,
+      "commit_sha": "24f9ba67d195f2ecf8e32e6dbffd69c8cfb8e2eb",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p02_4_single_sensor_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "P02.4 add single specialist positive sensor response and tightly qualified negative evidence; no two-sensor hard requirement and no unsupported gas identity.",
-      "updated_at": null
+      "last_checkpoint": "single MQ research signal supported; candidate identity false, unconditional negative forbidden",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P02.5",
       "phase": "P02",
       "description": "تجارب برمجية للهواء المرجعي والـR0 وscan cycles",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P02.4"
@@ -686,7 +688,7 @@
       "actual_evidence_files": [],
       "blockers": [],
       "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
+      "next_action": "P02.5 deterministic software replay for clean air near baseline, repeated scan cycles, 180s/60s R_air experimental protocol, false positive prevention and absent telemetry; G1 only.",
       "updated_at": null
     },
     {
@@ -2392,6 +2394,15 @@
       "commit_sha": "89b8230bda791b5d5e7ce0e5a4373f9b8d733013",
       "ci_run": 41376081071,
       "evidence": "research/v8_implementation/results/next_p02_3_sensor_quality_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P02.4",
+      "description": "Evidence of individual specialist MQ response, challenge-only conditional negatives and abstention; 60 tests pass",
+      "commit_sha": "24f9ba67d195f2ecf8e32e6dbffd69c8cfb8e2eb",
+      "ci_run": 41376409034,
+      "evidence": "research/v8_implementation/results/next_p02_4_single_sensor_evidence.json"
     }
   ],
   "notes": [
