@@ -1,9 +1,9 @@
 # G2 research restart checkpoint — 2026-11-03
 
 Research branch: `research/chemcore80-central-evidence-gap-analysis-20261021`.
-Verified previous HEAD: `9112ff1c9bbce3776b4736bc79cc9b7b00bdbd10` (21/21 visible GitHub Actions workflow runs completed successfully, including both G2 workflows).
+Verified prior HEAD: `0465067a78548e7f13b331ac029798b38468ca2f` (21/21 GitHub Actions runs completed successfully, including both G2 gates).
 
-Change: MQ-EXT-10 ZIP member path identity hardening. NFKC/casefold path aliases are rejected without modifying raw member names; case/fullwidth aliases of the published Ethanol folder cannot silently hide measurements; Unicode control/format characters in member names are rejected. Six deterministic synthetic regression methods added. Method: `G2_MQ_EXT10_ZIP_UNICODE_MEMBER_IDENTITY_2026-11-03_AR.md`.
+Change: MQ-EXT-10 whole-ZIP member integrity. Previously non-Ethanol members were skipped without decompression/CRC verification; now every non-Ethanol file is streamed in bounded chunks and checked against declared size, while directory entries with payload are rejected. Three deterministic synthetic regressions added. Method: `G2_MQ_EXT10_WHOLE_ZIP_MEMBER_INTEGRITY_2026-11-03_AR.md`.
 
 Reproduce:
 ```bash
@@ -12,6 +12,6 @@ python -m unittest discover -s research/implementation_execution -p 'test_g2_*.p
 python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_audit_results.json
 ```
 
-CI status: verify workflow runs for the exact final commit; no success is asserted before CI completes. If any job fails, inspect the job log and repair on this research branch only.
+CI status: check all workflow runs for the exact final commit and inspect/repair any failures on the research branch only; no success claimed before completion.
 
-Scientific gate remains unchanged: independent Tank evidence register `records=[]`; last verified `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No independent grouped, blinded, reference-calibrated Tank exposure dataset is present. Synthetic tests and source hygiene do not certify gas identity, ppm, G2 or G3. No changes to ChemCore Stable, Android, firmware or main.
+Scientific gate unchanged: independent Tank evidence `records=[]`; last verified `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No independent grouped, blinded, reference-calibrated Tank exposure data. Synthetic ZIP integrity tests cannot qualify any technique, gas identity, ppm, G2 or G3. ChemCore Stable, Android, firmware and main remain untouched.

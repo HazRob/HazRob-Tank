@@ -121,6 +121,37 @@ class MQExt10ArchiveIntakeTests(unittest.TestCase):
             self.assertEqual(result["files_scanned"], 1)
             self.assertFalse(result["g2_qualified"])
 
+    def test_corrupt_wine_member_crc_rejected_even_when_ethanol_valid(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            marker = b"wine-payload-for-crc-integrity-check"
+            with zipfile.ZipFile(p, "w", compression=zipfile.ZIP_STORED) as zf:
+                zf.writestr("Data/AQ_Wines/wine.txt", marker)
+                zf.writestr("Data/Ethanol/Ea-C1_R01.txt", ROW)
+            original = p.read_bytes()
+            self.assertEqual(original.count(marker), 1)
+            p.write_bytes(original.replace(marker, b"X" + marker[1:], 1))
+            with self.assertRaisesRegex(ValueError, "MQ_EXT10_ARCHIVE_CORRUPT_OR_UNREADABLE"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_directory_entry_with_payload_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/AQ_Wines/", b"unexpected-directory-payload"),
+                        ("Data/Ethanol/Ea-C1_R01.txt", ROW)])
+            with self.assertRaisesRegex(ValueError, "ARCHIVE_DIRECTORY_NONEMPTY"):
+                inspect_zip(p, expected_rows=1)
+
+    def test_valid_non_ethanol_binary_member_does_not_change_ethanol_count(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [("Data/AQ_Wines/binary.bin", bytes(range(256))),
+                        ("Data/Ethanol/Ea-C1_R01.txt", ROW)])
+            result = inspect_zip(p, expected_rows=1)
+            self.assertEqual(result["files_scanned"], 1)
+            self.assertEqual(result["rows_scanned"], 1)
+            self.assertFalse(result["g2_qualified"])
+
     def test_numeric_duplicate_under_different_text(self):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "data.zip"

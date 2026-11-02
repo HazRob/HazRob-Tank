@@ -78,8 +78,26 @@ def inspect_zip(path, expected_rows=3330):
                                 and p != "Ethanol" for p in folder_parts),
                         "ARCHIVE_ETHANOL_FOLDER_ALIAS")
                 if info.is_dir():
+                    # A directory entry carrying data is not an ordinary ZIP
+                    # directory and must not hide an uninspected source member.
+                    require(info.file_size == 0, "ARCHIVE_DIRECTORY_NONEMPTY")
                     continue
                 if "Ethanol" not in parts[:-1]:
+                    # Even excluded wine/auxiliary members are part of the
+                    # original archive. Drain them in bounded chunks to check
+                    # CRC and decompressed length, without treating their data
+                    # as ethanol measurements or retaining it in memory.
+                    consumed = 0
+                    with zf.open(info) as handle:
+                        while True:
+                            chunk = handle.read(64 * 1024)
+                            if not chunk:
+                                break
+                            consumed += len(chunk)
+                            require(consumed <= info.file_size,
+                                    "ARCHIVE_NON_ETHANOL_FILE_SIZE_MISMATCH")
+                    require(consumed == info.file_size,
+                            "ARCHIVE_NON_ETHANOL_FILE_SIZE_MISMATCH")
                     continue  # Published wine folders are not ethanol samples.
                 require(parts[-2] == "Ethanol" and parts.count("Ethanol") == 1,
                         "ARCHIVE_NESTED_ETHANOL_SAMPLE")
