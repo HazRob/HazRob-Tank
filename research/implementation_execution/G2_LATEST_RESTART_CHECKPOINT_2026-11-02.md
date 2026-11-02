@@ -1,8 +1,14 @@
-# G2 research restart checkpoint — 2026-11-02
+# G2 research restart checkpoint — 2026-11-03
 
 Research branch: `research/chemcore80-central-evidence-gap-analysis-20261021`.
-Base: `c2a946355f4fa90d99b701cd23b5bbc8b168c083`. This checkpoint is committed together with the NFKC blind-label collision guard; use the branch HEAD as the actual resume SHA.
+Verified base: `8da72aaa6fa87319b057db36a85593847ffbbbc5` (21/21 visible CI runs completed successfully, including both G2 workflows). Resume from the current research branch HEAD; never merge these changes to main or Stable as part of G2.
 
-Review: 21/21 visible GitHub Actions runs on base SHA succeeded, including both G2 gates. Change: canonicalize blind reference labels only for class-diversity accounting, block compatibility aliases and collapsed single-class holdout. Tests: 3 deterministic synthetic regression methods in `test_g2_blind_target_diversity.py`. Method: `G2_BLIND_LABEL_NFKC_ALIAS_2026-11-02_AR.md`.
+Change: detect NFKC-equivalent but byte-different reference gas labels across the full training/calibration/blind group manifest. Previous guard checked aliases within blind rows only; the new `GROUP_MANIFEST_REFERENCE_LABEL_NFKC_ALIAS` blocks spurious improvement over the training-only majority baseline when labels differ between partitions. Raw reference labels and all pre/post-unblinding digests remain unchanged. Four deterministic synthetic regression methods added to `test_g2_blind_target_diversity.py`. Method: `G2_REFERENCE_LABEL_CROSS_PARTITION_NFKC_2026-11-03_AR.md`.
 
-Next: verify G2 CI on exact new HEAD and repair any failure; keep `records=[]`, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14` until independently measured grouped and blinded reference-calibrated evidence is actually acquired. Never modify Stable, app, firmware or main; never promote scientific readiness from synthetic CI.
+CI status at documentation time: newly created workflow runs were queued/in progress. Do not declare the new commit CI-green until exact HEAD is checked. Investigate and repair any confirmed failures. Reproduce with:
+```bash
+python -m unittest discover -s research/implementation_execution -p 'test_g2_*.py' -v
+python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_audit_results.json
+```
+
+Scientific gate unchanged: `G2_INDEPENDENT_EVIDENCE.json` has `records=[]`; `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. Missing independent, grouped, blinded and reference-calibrated physical Tank measurements. Synthetic CI does not certify gas identity, ppm, or G2/G3 readiness. No changes to ChemCore Stable, Android, firmware or main.
