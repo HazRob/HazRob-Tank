@@ -98,7 +98,7 @@ def verify():
         assert_close(float(r["coefficient_a"]), v["a"], "alternative A")
         assert_close(float(r["coefficient_b"]), v["b"], "alternative B")
         assert r["canonical_chemical_uid"] == "", "source labels remain unresolved"
-    assert set(r["curve_uid"] for r in all_formulas) == (
+    assert set(r["source_curve_uid"] for r in all_formulas) == (
         {r["curve_uid"] for r in reused} |
         {r["curve_uid"] for r in examples}
     ), "unified records exactly union of verified primary and example layers"
