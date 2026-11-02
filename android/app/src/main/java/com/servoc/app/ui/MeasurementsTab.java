@@ -956,6 +956,82 @@ public final class MeasurementsTab {
             technicalToggle=UiKit.button(c,"إظهار البواقي والتفاصيل");technicalToggle.setOnClickListener(v->{showTechnical=!showTechnical;technical.setVisibility(showTechnical?View.VISIBLE:View.GONE);technicalToggle.setText(showTechnical?"إخفاء البواقي والتفاصيل":"إظهار البواقي والتفاصيل");});box.addView(technicalToggle,UiKit.full(c));technical=card("");technical.setVisibility(View.GONE);technical.setTextIsSelectable(true);box.addView(technical,UiKit.full(c));
             decisions=new ChemCoreDecisionRepository(host.database());
         }
+        private boolean isResearchOnlyNext(JSONObject p){
+            return p!=null&&
+                "hazrob.tank.v8.next.decision.presentation/1".equals(p.optString("schema",""));
+        }
+
+        /** Render only the original persisted ChemCore Next candidate ordering.
+         * No legacy 144 screen, no score/ppm invented by the Android UI.
+         */
+        private void renderResearchOnlyNext(JSONObject p){
+            startTracking.setEnabled(selectedCandidateId>=0);
+            screeningToggle.setVisibility(View.GONE);
+            screeningToggle.setEnabled(false);
+            screeningList.removeAllViews();
+            String status=p.optString("decision_status","UNKNOWN");
+            String decisionUid=p.optString("decision_uid","—");
+            JSONArray candidates=p.optJSONArray("candidates");
+            int n=candidates==null?0:candidates.length();
+            decisionCard.setText("ChemCore Next • بحثي فقط\nحالة القرار: "+status+
+                " • الهوية: UNKNOWN\nUID القرار: "+decisionUid+
+                "\nG3 غير مؤهل • لا يوجد تركيز ppm معتمد");
+            decisionCard.setTextColor(INFO);
+            screeningCard.setText("المرشحون المؤهلون بالأدلة: "+n+
+                " • لا يستخدم العرض قائمة 144 القديمة"+
+                "\nلا تُنشأ مرشحات بديلة عند نقص الأدلة");
+            safetyCard.setText("لا يوجد كشف معتمد للغاز أو تحذير تعرض مهني"+
+                "\nرموز GHS للمكتبة ليست دليلًا على وجود المادة");
+            exposureStyle(safetyCard,false);
+            screeningWarnings.setText("الاستنتاج البحثي لا يعتمد هوية الغاز أو ppm أو LEL"+
+                "\nUNKNOWN لا يثبت سلامة الهواء");
+            referenceInventory.setText("حدود التعرض: مراجع المواد متاحة مستقلة في المكتبة"+
+                "\nلا تُطبَّق على مرشح دون تأكيد الهوية والتركيز");
+            selected.setText(selectedCandidateId>=0?
+                "هدف تتبع اختاره المشغل (غير مكتشف): "+selectedCandidateName:
+                "المرشح المحدد: لا يوجد • يجوز الاختيار اليدوي من المكتبة");
+            ChemicalRepository catalog=new ChemicalRepository(host.database());
+            if(n==0){
+                candidateList.addView(card("UNKNOWN • لا يوجد مرشح بقرائن مؤهلة"+
+                    "\nالنتيجة الأصلية محفوظة؛ لا تحويل لفرضيات المصادر إلى كشف"),UiKit.full(c));
+            }else for(int i=0;i<n;i++){
+                JSONObject q=candidates.optJSONObject(i);
+                if(q==null)continue;
+                long uid=q.optLong("chemical_uid",-1L);
+                ChemicalRepository.Chemical found=uid<0?null:catalog.byUid(uid);
+                String label=found==null?"UID "+uid:found.label();
+                int rank=q.optInt("rank",i+1);
+                JSONArray roots=q.optJSONArray("source_roots");
+                String evidence=q.optString("evidence_summary","");
+                String rowText="#"+rank+" • "+label+
+                    "\nجذور الأدلة المستقلة: "+(roots==null?0:roots.length())+
+                    " • بحثي، بلا ppm أو نسبة كشف"+(evidence.isEmpty()?"":"\n"+evidence);
+                Button row=UiKit.button(c,rowText);
+                row.setTextColor(Color.BLACK);
+                row.setBackground(UiKit.outline(c,CARD,0xFF8994A3));
+                if(uid>=0&&uid<=Integer.MAX_VALUE){
+                    row.setOnClickListener(v->{
+                        selectedCandidateId=(int)uid;
+                        selectedCandidateName=label;
+                        selected.setText("هدف تتبع يدوي: "+label+
+                            "\nالاختيار لا يؤكد وجود المادة");
+                        startTracking.setEnabled(true);
+                    });
+                }else row.setEnabled(false);
+                candidateList.addView(row,UiKit.full(c));
+            }
+            JSONArray problems=p.optJSONArray("problems");
+            StringBuilder audit=new StringBuilder("ChemCore Next • سجل القرار غير القابل لإعادة التقييم"+
+                "\nDecision UID: "+decisionUid+
+                "\nSnapshot: "+p.optString("snapshot_sha256","—")+
+                "\nEngine: "+p.optString("model_version","—")+
+                "\nStable: "+p.optString("stable_manifest_sha256","—")+
+                "\nEligible: "+n+" • Physical G3: 0/80");
+            if(problems!=null)for(int i=0;i<problems.length();i++)
+                audit.append("\n- ").append(problems.optString(i));
+            technical.setText(audit.toString());
+        }
+
         private boolean isResearchOnlyV6(JSONObject analysis){
             return analysis!=null&&
                 ("hazrob-tank-v6-android-telemetry-bridge/1".equals(
@@ -1055,6 +1131,10 @@ public final class MeasurementsTab {
             lastRenderedAt=now;
             TankInstantAnalyzer.Result completed=currentOperation;JSONObject p=completed==null?null:completed.analysis;candidateList.removeAllViews();screeningList.removeAllViews();tracking.setText(host.trackingTargetId()>=0?"التتبع • "+host.trackingTargetName()+" (#"+host.trackingTargetId()+") • فرضية مشغل":"التتبع • لا يوجد");
             if(p==null){startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");exposureStyle(safetyCard,false);referenceInventory.setText("حدود التعرض: لا يوجد تحليل حالي.");screeningWarnings.setText("لا توجد نتيجة حالية لحساب تحذير تقديري.");technical.setText("—");return;}
+            if(isResearchOnlyNext(p)){
+                renderResearchOnlyNext(p);
+                return;
+            }
             if(isResearchOnlyV6(p)){
                 renderResearchOnlyV6(p);
                 return;

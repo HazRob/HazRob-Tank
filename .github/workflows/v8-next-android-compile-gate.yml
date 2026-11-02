@@ -14,6 +14,7 @@ on:
       - '.github/workflows/v8-next-android-compile-gate.yml'
       - 'research/v8_implementation/tests/test_v8_next_instant_source_routing.py'
       - 'research/v8_implementation/tests/test_v8_instant_capture_gate.py'
+      - 'research/v8_implementation/tests/test_v8_next_operator_pdf_parity.py'
       - 'research/v8_implementation/tests/test_v8_next_field_session_handoff.py'
       - 'research/v8_implementation/tests/test_v8_feedback_local_and_authenticated_sync.py'
   workflow_dispatch:
@@ -79,6 +80,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m unittest research/v8_implementation/tests/test_v8_instant_capture_gate.py -v
+      - name: P08 Next decision-only UI and PDF exporter source parity
+        working-directory: tank
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest research/v8_implementation/tests/test_v8_next_operator_pdf_parity.py -v
       - name: P09 field 60s stored MQ scans and explicit Next approval contract
         working-directory: tank
         shell: bash
