@@ -18,6 +18,8 @@ DOI = "10.17632/vpc887d53s.3"
 LIQUID_PERCENT_BY_CODE = {"C1": "1", "C2": "2.5", "C3": "5", "C4": "10", "C5": "15", "C6": "20"}
 SENSOR_CHANNELS = ["MQ3_A", "MQ4_A", "MQ6_A", "MQ3_B", "MQ4_B", "MQ6_B"]
 NAME_RE = re.compile(r"^Ea[-_]?C([1-6])[-_]?R([0-9]{2,3})$", re.IGNORECASE)
+NUMERIC_TOKEN_RE = re.compile(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]{1,5})?", re.ASCII)
+MAX_NUMERIC_TOKEN_LENGTH = 128
 MAX_SOURCE_BYTES_PER_FILE = 4_000_000
 
 
@@ -34,6 +36,23 @@ def parse_ethanol_filename(stem):
     repetition = int(match.group(2))
     require(repetition > 0, "INVALID_REPETITION")
     return code, repetition
+
+
+def canonical_exact_decimal(token):
+    """Lossless numeric identity; Decimal.normalize() rounds to context precision."""
+    require(len(token) <= MAX_NUMERIC_TOKEN_LENGTH, "NUMERIC_TOKEN_TOO_LONG")
+    require(NUMERIC_TOKEN_RE.fullmatch(token) is not None, "INVALID_NUMERIC_TOKEN")
+    value = Decimal(token)
+    require(value.is_finite(), "NONFINITE_ROW")
+    parts = value.as_tuple()
+    digits = list(parts.digits)
+    if not any(digits):
+        return "0"
+    exponent = parts.exponent
+    while digits[-1] == 0:
+        digits.pop()
+        exponent += 1
+    return ("-" if parts.sign else "+") + "".join(map(str, digits)) + "e" + str(exponent)
 
 
 def parse_numeric_rows(data, expected_rows=3330):
@@ -60,7 +79,7 @@ def parse_numeric_rows(data, expected_rows=3330):
             raise ValueError("MQ_EXT10_NONNUMERIC_ROW") from exc
         require(all(math.isfinite(x) for x in values), "NONFINITE_ROW")
         require(all(x > 0 for x in values[2:]), "NONPOSITIVE_RESISTANCE")
-        canonical = ["0" if Decimal(t).is_zero() else str(Decimal(t).normalize()) for t in parts]
+        canonical = [canonical_exact_decimal(t) for t in parts]
         numeric_digest.update(("\x1f".join(canonical) + "\n").encode("ascii"))
         for i, x in enumerate(values):
             minima[i] = min(minima[i], x)
