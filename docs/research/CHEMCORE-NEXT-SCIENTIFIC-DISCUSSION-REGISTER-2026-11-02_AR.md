@@ -75,3 +75,61 @@
 - `docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json`
 
 **آخر نقطة استئناف:** `CHEMCORE_NEXT_SOURCES_CAPTURED_DISCUSSION_OPEN; NO_NEW_MODEL_RUNTIME; NO_APK; TANK_G3=0`.
+
+
+## 7. مقترحات مالك المشروع العلمية السبعة عشر — جلسة 2026-11-02
+**الحالة الحاكمة:** OWNER_PROPOSALS_RECORDED / SCIENTIFIC_REVIEW_IN_PROGRESS / NO_FINAL_ADOPTION / NO_RUNTIME_CHANGE.
+**إجراء:** تحفظ الأفكار بنصها المفاهيمي ولا تفسر هذه المراجعة بأنها اعتماد تنفيذي أو نتيجة اختبار. الترميز S-01..S-17 مطابق لترقيم صاحب المشروع.
+
+| المعرف | مقترح المالك | التقدير العلمي/التحفظ | اختبار أو شرط التأهيل | الحالة |
+| --- | --- | --- | --- | --- |
+| S-01 | أولوية متفردة لاستجابة الحساس الموجه لغاز بعينه ولو اختلفت باقي النتائج | مهمة؛ حساسية المصدر للغاز لا تعني انتقائية مطلقة. لا تحجب الأدلة أحادية الحساس ولكن تسميها استجابة/ترشيحًا ما لم تؤهل الهوية | cross-sensitivity، مجال الكشف، التداخل، جودة المعايرة، تحقق Tank | للمناقشة |
+| S-02 | إظهار العلاقات بين حساسات الغازات المتشابهة، مثل الدخان وCO وCO2 | لا يجوز جعل CO أو CO2 تحصيل حاصل من كشف الدخان، فهي متغيرات مختلفة؛ استخدم الارتباط المشروط والسياق لا التكافؤ | تجارب حرق/لا حرق وغازات منفردة وPM وCO وCO2 بمرجع مستقل | للمناقشة |
+| S-03 | تشغيل كل من البصمات والمنحنيات واللوغاريتمات باستقلال ثم التحكيم | ملائم لتعدد الأدلة؛ لا يحسب المنحنى اللوغاريتمي ونفس مصدره مرتين كدليلين | مقارنات ablation، source independence، blind holdouts | للمناقشة |
+| S-04 | مراجعة التجارب محليًا ومركزيًا وتوليد Stable بالتعلم الآلي والشبكات العصبية دون تعارض | احتفظ بالسجلات الخام والإصدارات؛ لا تعلم مباشر من قياس واحد أو رأي غير موثق | traceable provenance، drift، تجميعات مستقلة، حوكمة نسخ Stable | للمناقشة |
+| S-05 | تطابق محرك Next عكسيًا مع التجارب والمختبر المركزي | نوصي بنموذج forward sensor response ثم inverse inference مع حالة خليط/مجهول | residual reconstruction، predictive checks، held-out experimental groups | للمناقشة |
+| S-06 | استكمال جدول المركبات وحدودها الطبيعية والخطرة قبل التقرير | مطلوب؛ الحد الطبيعي ليس معروفًا لكل مركب، وبعض المواد لا تملك نطاقًا طبيعيًا ذا معنى؛ فصل background/LOD/exposure/TWA/STEL/ceiling/LEL | مصادر وتواريخ وصلاحية وحدات وناقلات قياس وقيم مفقودة واضحة | للمناقشة |
+| S-07 | ذكاء حقيقي في التعامل مع الأدلة والاحتمالات المتقاطعة | نوصي بمحرك عوامل/أدلة واعتماد عدم اليقين مع UNKNOWN ومخاليط | calibrated likelihoods عند توافر بيانات ملائمة، FPR/FNR تحت تركيبات متقاطعة | للمناقشة |
+| S-08 | توحيد مصادر القوائم وعلاقات كل طرق التحليل والتقارير | قاعدة معرفية واحدة versioned ذات معرفات CAS/سجل هوية وsensor/model/provenance IDs، ومخرجات تحليل غير قابلة للتحريف | schema migration، UI/report/session/instant parity | للمناقشة |
+| S-09 | تحقق من أن مرجعية R0/الهواء النظيف المطبقة في V7 فعالة بالقياس الآني والجلسات | المصدر الحالي يؤكد CleanAirResponseGateV6 بنسبة انخفاض provisional 10% وشرط نموذجين؛ لا نثبت تكافؤ المسارين أو صحة تسمية الخصم | تدقيق V7 raw→Rs/R_air vs Rs/R0، حالات نظيف وغاز وmissing R0، exact parity replay | قيد التحقق |
+| S-10 | غياب استجابة حساس الميثانول المتخصص ينفي ترشيحات الميثانول | لا يوجد ضمن الثمانية MQ2/3/4/5/7/8/9/135 حساس ميـثانول حصري مثبت. لا نفي إلا مع valid calibrated selective negative observation وLOD وغياب masking | قياس سلبي موثق مع مادة مرجعية وحالات تركيز دون LOD وعطل الحساس | للمناقشة |
+| S-11 | مستخدم السلامة يصحح المرشحين قبل التقرير؛ وتستخدم التصحيحات لتعليم المختبر | ميزة قوية؛ السياق مثل مخزن إيثانول لا يثبت غياب ميثانول مجهول. لا حذف قياسات أو إنذارات مستقلة، بل annotate/contest، مع تقرير preliminary/final، وraw immutable | واجهة مراجعة provenance، فصل user assertion عن ground truth، audit trail، safety policy | للمناقشة |
+| S-12 | احترام مدى MQ مع ابتكار توسيع لقدرات التحليل | زيادة التمييز يمكن تحقيقها ببصمات ومصفوفات وحساسات مضافة؛ لا تمدد نطاق LOD أو ترفع صفة اعتماد دون تحقق فيزيائي | detection/selectivity/range bench and cross-validation | للمناقشة |
+| S-13 | ثمانية MQ الآن مع دعم توسع تركيبات الحساسات | واجهة sensor capability registry dynamic وليس hardcoded 8، وتسجيل الهوية الفريدة والطور والتحكم | missing/present/degraded/new-sensor regression | للمناقشة |
+| S-14 | تحليل أحادي وثنائي وجماعي وتنافري ومصفوفي | مفيد، مع ضبط الارتباط والتكرار بين الدلائل من نفس القياس، وتعقيد المجموعات | pairwise ablation, matrix tests, diversity and condition-dependence | للمناقشة |
+| S-15 | هرم احتمالات واسعة ثم تقليص واستثناء وتعزيز | مناسب مع إبقاء UNKNOWN والمخاليط وعدم الاستبعاد القاطع بقرينة ضعيفة | confusion matrix, open-set recall, traceable pruning reasons | للمناقشة |
+| S-16 | feedback حتى في وضع تتبع غاز معروف | تسجيل true/false/unsure وسبب المستخدم وقراءة مرجعية إن توفرت؛ عدم اعتبار تأكيد المستخدم شهادة تجريبية | labeled-feedback quality and central moderation | للمناقشة |
+| S-17 | مساهمات مجتمع المستخدمين عبر تبويب ونظام رفع ومراجعة قبل Stable | واقعي؛ يشبه جمع/وسم/تدريب البيانات لدى Bosch BME AI-Studio من حيث منهج التدريب، وليس إثباتًا أن Bosch تقدم نظام crowdsourcing متطابق | quarantine→triage→provenance→replicate→G2/G3→promote, privacy and consent | للمناقشة |
+
+### 7.1 تصور طبقات ChemCore Next المستنبط من هذه المقترحات — افتراضي للنقاش
+1. Hardware/Telemetry Quality: سلامة جهد ADC والريلاي والسخان والطور والتوقيت وملف المعايرة ونطاق القياس، والفصل بين فقد الإشارة والغياب الفيزيائي.
+2. Dual Physical References: R_air للإزاحة المرجعية واستجابة تغير الهواء، وR0_source لمنحنيات المصنع وفق K_air المنسوب للمصدر؛ لا نساوي R0 والطرح الحسابي.
+3. Sensor-specific Evidence: نتيجة مستقلة لكل حساس، ودلالة إيجابية وسلبية مشروطة بعلاقة الحساسية والانتقائية والـ LOD.
+4. Independent Experts: source curve، empirical fingerprint، temporal/dynamics، 3D T/RH compensation، optionally ML؛ نسخ وإسناد وعدم دمج آلي لكل المعاملات.
+5. Hypothesis Graph: ربط candidate gas أو mixture بالاستجابة المتوقعة للحساسات ونوع الجهاز/المواد والسياق وUNKNOWN وتعارض المخرجات، مع منع double counting.
+6. Forward/Inverse Laboratory Check: إعادة إنتاج vector/trajectory المتوقع من الغازات المختارة، وإظهار residual وأدلة النفي والبدائل.
+7. User Review & Safety: عرض الأدلة والمرشحين قبل إصدار تقرير تفسير نهائي، مع الاحتفاظ بالتقرير الآلي الأصلي وعدم حجب القياسات أو التنبيهات المؤهلة بقرار المستخدم.
+8. Immutable Results + Central Feedback: حفظ raw observation وcandidate ledger وتعليقات المستخدم وسجلات تجارب المؤسسة؛ pipeline تأهيل منفصل للتحديث في Stable.
+9. Multi-mode parity: آنـي وجلسات وكشف عام وتتبّع يستدعون واجهة قرار مشتركة، ويختلفون فقط في طول السلسلة الزمنية والوظائف المفعلة.
+
+### 7.2 مشكلات الأولوية والتحفظات العلمية
+- MQ3 حساس كحول وليس كاشفًا حصريًا للميثانول؛ وMQ137 الخاص بالأمونيا ليس جزءًا من الثمانية الحالية ولا هو انتقائي بالكامل للأمونيا.
+- لا تُفسر استجابة الدخان أو MQ135 كقياس CO2 نوعي، ولا يُستنتج CO من CO2 أو بالعكس بلا حساس ومرجع خاص.
+- لا يمكن احتساب اختلاف منحنيات مبنية على datasheet واحد كأدلة مستقلة.
+- السجل يميز observation وgas hypothesis وvalidated identity وexposure alarm. حد NIOSH/OSHA الزمني لا يستبدل مباشرة حد تغير هواء لحظي.
+- عند تعارض مراجعة المستخدم مع خطر فيزيائي مؤهل: يُحتفظ بالخطر ويظهر الاعتراض، ولا يجوز للمراجعة إبطال جهاز السلامة المؤهل أو حذف أصل القياس.
+- حالة MQ7/MQ9 تحتاج مراجعة heater phase الفعلية ودائرة Tank؛ لا تعادل دقائق التسخين الروتينية التهيئة الأولية الطويلة.
+- الثقة العددية أو احتمال الهوية يتطلب calibration على تجارب مستقلة؛ في البداية عرض مستويات أدلة وأسباب، لا نسب احتمالات اختراعية.
+
+### 7.3 المراجع الرسمية المرتبطة بالنقاش
+- Winsen MQ137 حساسية للأمونيا والأمينات: https://www.winsentech.com/Semiconductor_NH3_Sensor_MQ137.html
+- Winsen MQ3B حساس كحول: https://www.winsentech.com/Semiconductor_Alcohol_Sensor_MQ-3B.html
+- Winsen MQ135 غازات متنوعة: https://www.winsen-sensor.com/manual/mq135.html
+- Winsen MQ-7B heater phases CO: https://www.winsen-sensor.com/sensors/co-sensor/mq-7b.html
+- NIOSH direct-reading monitor evaluation: https://www.cdc.gov/niosh/docs/2012-162/default.html
+- OSHA direct-reading instrument calibration guidance: https://www.osha.gov/publications/shib093013
+- ISO 6145-1:2019 gas calibration mixtures: https://www.iso.org/standard/53598.html
+- ISO/IEC 17025:2017 laboratory competence: https://www.iso.org/standard/66912.html
+- Bosch BME AI-Studio train/evaluate: https://www.bosch-sensortec.com/software/bme/docs/overview/getting-started.html
+
+**استنتاج أولي:** تقترح مناقشة Next فصل أولويات تخصص الحساس عن قوة إثبات هوية الغاز، وعزل رأي المستخدم عن الحقيقة التجريبية، وإعداد اختبارات تماثل ومصداقية بين الأوضاع. لا يوجد اعتماد نهائي لميزات Next من هذه الملاحظات، ولا اختبار G3 جديد، ولا تعديل للفريموير أو APK.
