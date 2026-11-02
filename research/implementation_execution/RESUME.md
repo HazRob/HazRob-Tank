@@ -1,3 +1,13 @@
+## 2026-11-02 — MQ-EXT-10 physical-domain and delimiter source QA (research only)
+
+- Verified **11/11 returned PR-triggered GitHub Actions runs** for starting SHA `912099e678253659d69cfdbbfe340459d632ddd5` completed success, including G2 source/R0 run #41420264650. The connector returns only its first page of PR-triggered runs; no claim of exhaustively counting other events.
+- Found source-parser QA gaps: finite but physically impossible relative humidity (<0 or >100%) and Celsius temperature (< -273.15), plus inconsistent row delimiters within a source file. Added fail-closed guards and eight deterministic synthetic regression tests; see `G2_MQ_EXT10_PHYSICAL_DOMAIN_DELIMITER_GUARD_2026-11-02_AR.md`.
+- The original published MQ-EXT-10 archive is still unavailable in this iteration. No new Tank physical data, no independent blinded calibration groups, no verified headspace ppm, and no scientific promotion. Current evidence register remains `records=[]`, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- Scope: research preflight, tests, Arabic methodology, and RESUME only. No ChemCore Stable, Android, ESP32/CAM firmware or main changes. **Verify exact final HEAD CI and fix confirmed failures before claiming final success.**
+- Next: original source acquisition with byte-level provenance; independent physically grouped, blinded Tank exposures with traceable concentration reference, then 80-technique G2 review.
+
+---
+
 ## 2026-11-02 — MQ-EXT-10 lossless Decimal numeric trace (research only)
 
 - Verified prior HEAD `f93ac96223aff2ba0cb4b4d1704639ac9248b9c7` GitHub Actions runs completed successfully; no prior CI failure.
