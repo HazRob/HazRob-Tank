@@ -223,7 +223,7 @@ def main():
         limitations=["source correlations and training day fingerprints are not independent gas exposures",
         "one methane target only","conformal 90 percent interval may under-cover under environmental shifts",
         "4 ppm is a diagnostic source challenge only and not a regulatory alarm",
-        "new research fingerprint/linear expert not yet activated in ChemCoreNext.evaluate"]))
+        "new research fingerprint/linear expert not yet activated in ChemCoreNext.evaluate"])
     (out/"next_mq4_source_experiment.json").write_text(
         json.dumps(report,indent=2,allow_nan=False)+"\n",encoding="utf8")
     for mode,stats in summary.items():
