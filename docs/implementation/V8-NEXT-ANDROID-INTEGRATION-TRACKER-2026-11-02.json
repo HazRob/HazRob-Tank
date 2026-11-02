@@ -5,7 +5,7 @@
   "owner_authorization_utc": "2026-11-02T06:44:21Z",
   "branch": "feature/tank-v8-implementation",
   "project": "HazRob-Tank independent of original 4-wheel HazRob",
-  "execution_mode": "P07.2_DONE_ANDROID12_NEXT_DEFAULT_INSTANT_PATH_WIRED_PENDING_LATEST_ANDROID_COMPILE_AND_DEVICE",
+  "execution_mode": "P07_2_CLOSED_P09_1_2_3_PARTIAL_AND_COMPILED_ANDROID12_FIELD_GATES_PENDING",
   "scientific_tests_postponed": true,
   "core_g3_physically_validated_techniques": 0,
   "runtime_android_next_integration_verified": false,
@@ -15,10 +15,10 @@
   "program": {
     "total_tasks": 34,
     "done_tasks": 2,
-    "in_progress": 3,
+    "in_progress": 6,
     "blocked": 0,
-    "planned": 29,
-    "next_task": "P07.3",
+    "planned": 26,
+    "next_task": "P09.1_RELAY_AND_SESSIONS_IN_PROGRESS",
     "phases": [
       "P07",
       "P08",
@@ -405,11 +405,45 @@
       ],
       "acceptance": "مسار START→RELAY_CONFIRMED→60s→CAPTURE→60s→FLUSH→NEXT→DB_READBACK→REVIEW→SAFE_OFF؛ فقد اتصال/تعطل/Activity destroy لا يترك دورة أو relay معلقة",
       "evidence": "research/v8_implementation/results/next_p09_1_relay_lifecycle.json",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "commit_sha": null,
       "ci_run_id": null,
-      "blocked_by": [],
-      "verification": "NOT_RUN"
+      "blocked_by": [
+        "Android12 UI and physical robot relay-off ACK / disconnect / process-death fault injection not run",
+        "relay safety must be exercised on actual firmware before owner approval"
+      ],
+      "verification": "SOURCE_CODE_FIXED; OFF_REQUEST_AFTER_SEALED_NEXT; ESP32_ACK_CHECK; UNSAFE_REVIEW_BLOCK; ANDROID_COMPILE_PASS; PHYSICAL_NOT_RUN",
+      "evidence_file": "research/v8_implementation/results/next_p09_field_60s_source_handoff_2026-11-03.json",
+      "source_commit": "398d0b66f4284653dc5d93534c51e9d3400b65a0",
+      "ci_evidence": [
+        {
+          "run_id": 41529383452,
+          "result": "success",
+          "scope": "G1 15 tests raw archive/scan-cycle/60s hash"
+        },
+        {
+          "run_id": 41529693064,
+          "result": "success",
+          "scope": "4 source-only Next field handoff checks, full Android Java compile"
+        },
+        {
+          "run_id": 41530007945,
+          "result": "success",
+          "scope": "Android whole-Java compile after relay-safe review and confirmed off ACK"
+        },
+        {
+          "run_id": 41529693093,
+          "result": "pending",
+          "scope": "Android12 instrumented actual SQLite archived synthetic fixtures (not physical Tank)"
+        },
+        {
+          "run_id": 41530202132,
+          "result": "pending",
+          "scope": "static relay safety & process recovery contract checks"
+        }
+      ],
+      "android_instrumentation_status": "PENDING",
+      "physical_tank_status": "NOT_RUN"
     },
     {
       "id": "P09.2",
@@ -422,11 +456,45 @@
       ],
       "acceptance": "≥10 scan cycles متميزة، قياس وقت monotonic، 60 ثانية فعلية، hash على raw وmetadata، FAILED_REASON enum؛ ADS إن كان المصدر موجودًا فقط",
       "evidence": "research/v8_implementation/results/next_p09_2_samples_failure_matrix.json",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "commit_sha": null,
       "ci_run_id": null,
-      "blocked_by": [],
-      "verification": "NOT_RUN"
+      "blocked_by": [
+        "Android12 emulator archive tests with 61 independent scan rows are pending",
+        "field actual Tank source scan timestamps/heater and ADS not physically verified"
+      ],
+      "verification": "G1_15_SOURCE_HASH_SCAN_DEDUP_PASS; SOURCE_4_STATIC_HANDOFF_PASS; FULL_ANDROID_COMPILE_PASS; ANDROID12_ARCHIVE_INSTRUMENTATION_PENDING",
+      "evidence_file": "research/v8_implementation/results/next_p09_field_60s_source_handoff_2026-11-03.json",
+      "source_commit": "398d0b66f4284653dc5d93534c51e9d3400b65a0",
+      "ci_evidence": [
+        {
+          "run_id": 41529383452,
+          "result": "success",
+          "scope": "G1 15 tests raw archive/scan-cycle/60s hash"
+        },
+        {
+          "run_id": 41529693064,
+          "result": "success",
+          "scope": "4 source-only Next field handoff checks, full Android Java compile"
+        },
+        {
+          "run_id": 41530007945,
+          "result": "success",
+          "scope": "Android whole-Java compile after relay-safe review and confirmed off ACK"
+        },
+        {
+          "run_id": 41529693093,
+          "result": "pending",
+          "scope": "Android12 instrumented actual SQLite archived synthetic fixtures (not physical Tank)"
+        },
+        {
+          "run_id": 41530202132,
+          "result": "pending",
+          "scope": "static relay safety & process recovery contract checks"
+        }
+      ],
+      "android_instrumentation_status": "PENDING",
+      "physical_tank_status": "NOT_RUN"
     },
     {
       "id": "P09.3",
@@ -439,11 +507,45 @@
       ],
       "acceptance": "تمرير 60s series وخبراء الزمن الحقيقيين ثم حفظ decision أو UNKNOWN/INSUFFICIENT؛ إغلاق/قراءة عكسية داخل بوابة complete؛ لا انتظار قرار لن يُنشأ",
       "evidence": "research/v8_implementation/results/next_p09_3_session_next_gate.json",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "commit_sha": null,
       "ci_run_id": null,
-      "blocked_by": [],
-      "verification": "NOT_RUN"
+      "blocked_by": [
+        "End-to-end field session 60s+60s with actual robot relay and Stable installed not tested",
+        "instrumented full field cycle and PDF/XLSX Next session evidence not yet verified"
+      ],
+      "verification": "NEXT_RECEIPT_MANDATORY_FOR_V8_GAS_SESSIONS; OLD_V6_NO_LONGER_APPROVES_NEW_FIELD; READBACK_AND_DIGEST_WIRED; E2E_PENDING",
+      "evidence_file": "research/v8_implementation/results/next_p09_field_60s_source_handoff_2026-11-03.json",
+      "source_commit": "398d0b66f4284653dc5d93534c51e9d3400b65a0",
+      "ci_evidence": [
+        {
+          "run_id": 41529383452,
+          "result": "success",
+          "scope": "G1 15 tests raw archive/scan-cycle/60s hash"
+        },
+        {
+          "run_id": 41529693064,
+          "result": "success",
+          "scope": "4 source-only Next field handoff checks, full Android Java compile"
+        },
+        {
+          "run_id": 41530007945,
+          "result": "success",
+          "scope": "Android whole-Java compile after relay-safe review and confirmed off ACK"
+        },
+        {
+          "run_id": 41529693093,
+          "result": "pending",
+          "scope": "Android12 instrumented actual SQLite archived synthetic fixtures (not physical Tank)"
+        },
+        {
+          "run_id": 41530202132,
+          "result": "pending",
+          "scope": "static relay safety & process recovery contract checks"
+        }
+      ],
+      "android_instrumentation_status": "PENDING",
+      "physical_tank_status": "NOT_RUN"
     },
     {
       "id": "P09.4",
@@ -817,9 +919,9 @@
       "verification": "NOT_RUN"
     }
   ],
-  "last_checked_commit": "6e47a123bc4f4a10cd047c7ab583e09a75a69cb3",
-  "last_verified_ci": 41527354854,
-  "next_action": "Complete Android12 report parity test (4 tests, pending), then connect Next to field 60s recordings and all report exporters. Implement real 60+60 timed capture with relay ACK and durable readback; source model binding remains blocked on physical applicability. Verify each UI control on device.",
+  "last_checked_commit": "398d0b66f4284653dc5d93534c51e9d3400b65a0",
+  "last_verified_ci": 41530007945,
+  "next_action": "Check Android12 emulator archive CI 41529693093 and updated safety source CI 41530202132. If failed fix defects. Complete P09.1/2/3 Android12 real 60s field replay with Next decision; then actual Tank relay-off ACK, storage fault injection, 60s warmup +60s sample UI and PDF/XLSX parity; do not claim completed until all gates met.",
   "ui_coverage_gate": {
     "source_inventory_script": "tools/v8_ui_inventory_gate.py",
     "run_id": 41404510217,

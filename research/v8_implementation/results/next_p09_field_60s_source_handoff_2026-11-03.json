@@ -1,0 +1,72 @@
+{
+  "schema": "hazrob.tank.v8.next.field_session_partial_g1/1",
+  "phase": [
+    "P09.1",
+    "P09.2",
+    "P09.3"
+  ],
+  "status": "IMPLEMENTED_SOURCE_AND_ANDROID_COMPILE_NOT_DEVICE_VERIFIED",
+  "last_checked_commit": "398d0b66f4284653dc5d93534c51e9d3400b65a0",
+  "achievements": [
+    "60s saved original MQ source rows only, no fabricated terminal-only lab run",
+    "independent hardware scan-cycle IDs per MQ, median Rs and SHA256 archive digest",
+    "no inflation of 200ms repeated HTTP polls",
+    "mismatched or missing source_age retained as unknown sensor quality",
+    "new V8 gas session approval requires persisted ChemCore Next readback instead of legacy V6 decision",
+    "archived Next result replay incorporated into SHA256 field approval evidence",
+    "failure reason v8_field_next_failure_${measurementId} is persisted and displayed",
+    "firmware relay switched off only after archive and Next receipt; require ESP32 actual OFF feedback before REVIEW_READY",
+    "missing shutdown acknowledgment downgrades REVIEW_READY to FAILED, reapproval prohibited; safe recovery retries relay power off"
+  ],
+  "passed": [
+    {
+      "run": 41529383452,
+      "assertions": 15,
+      "type": "G1 pure Java simulated raw archive",
+      "status": "success"
+    },
+    {
+      "run": 41529693064,
+      "assertions": 4,
+      "type": "static structural routing verification and Android full Java compile",
+      "status": "success"
+    },
+    {
+      "run": 41530007945,
+      "type": "Android full Java compile with safe relay acknowledgment code",
+      "status": "success"
+    }
+  ],
+  "pending": [
+    {
+      "run": 41529693093,
+      "type": "Android12 instrumented source archive synthetic fixture, not Tank"
+    },
+    {
+      "run": 41530202132,
+      "type": "six structural field/safety tests",
+      "status": "unconfirmed"
+    },
+    {
+      "type": "full physical 60s+60s session on owner Tank",
+      "status": "NOT_RUN"
+    },
+    {
+      "type": "field PDF/XLSX parity on actual Android",
+      "status": "NOT_RUN"
+    },
+    {
+      "type": "physical relay off ACK/fault injection",
+      "status": "NOT_RUN"
+    }
+  ],
+  "scope_constraints": {
+    "real_Tank_gas_identity_confirmed": false,
+    "ppm_reportable": false,
+    "G3_qualified_techniques": 0,
+    "actual_7th_version_bug_fixed_on_device": false,
+    "V8_APK_built": false,
+    "raw_ads_added_to_excel": false
+  },
+  "test_fixtures_are_synthetic": true
+}
