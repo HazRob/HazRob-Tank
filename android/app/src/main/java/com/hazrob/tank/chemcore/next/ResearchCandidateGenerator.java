@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * P05.1 source-qualified research candidate eligibility across ALL canonical
@@ -92,8 +93,8 @@ public final class ResearchCandidateGenerator {
             if(!all.containsKey(uid))continue;
             Map<String,Set<String>> byRoot=links.get(uid);
             if(byRoot==null || !byRoot.containsKey(g.sourceRootId))continue;
-            rootsByUid.computeIfAbsent(uid,k->new HashSet<>()).add(g.sourceRootId);
-            assetsByUid.computeIfAbsent(uid,k->new HashSet<>())
+            rootsByUid.computeIfAbsent(uid,k->new TreeSet<>()).add(g.sourceRootId);
+            assetsByUid.computeIfAbsent(uid,k->new TreeSet<>())
                        .addAll(byRoot.get(g.sourceRootId));
         }
         List<Long> order=new ArrayList<>(rootsByUid.keySet());
