@@ -2,9 +2,10 @@ name: HazRob Tank food freshness module isolation
 
 on:
   push:
-    branches: [feature/tank-v6-implementation]
+    branches: [feature/tank-v6-implementation, feature/tank-v8-implementation]
     paths:
       - 'research/food_freshness/**'
+      - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
       - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
       - 'android/app/src/main/assets/food_freshness/**'
       - 'android/app/src/main/assets/chemcore_v6/**'
@@ -41,13 +42,18 @@ jobs:
           javac -d /tmp/food-freshness-classes \
             android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodReferenceCatalog.java \
             android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodFreshnessEngine.java \
-            research/food_freshness/FoodFreshnessEngineTest.java
+            research/food_freshness/FoodFreshnessEngineTest.java \
+            android/app/src/main/java/com/hazrob/tank/foodfreshness/FoodMeasurementDecision.java \
+            android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchCatalog.java \
+            android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchEngine.java \
+            research/food_freshness/FoodMeasurementDecisionTest.java
           javac -d /tmp/food-freshness-classes \
             android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchCatalog.java \
             android/app/src/main/java/com/hazrob/tank/foodfreshness/meat/BeefResearchEngine.java \
             research/food_freshness/BeefResearchEngineTest.java
           java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.meat.BeefResearchEngineTest
           java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.FoodFreshnessEngineTest
+          java -cp /tmp/food-freshness-classes com.hazrob.tank.foodfreshness.FoodMeasurementDecisionTest
           ! grep -R -nE '^import com[.]hazrob[.]tank[.]chemcore|^import com[.]servoc[.]app[.]chemcore' \
             android/app/src/main/java/com/hazrob/tank/foodfreshness
       - name: Explain boundary
