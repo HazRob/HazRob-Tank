@@ -117,7 +117,7 @@ public final class NextP06IntegratedCoreSmoke {
         CoreContracts.CalibrationReference.AIR_RS_MEAN,"READY",CoreContracts.SampleQuality.VALID));
     invalid(()->new CoreContracts.Reading("sensor",null,null,10.,null,null,
         CoreContracts.CalibrationReference.AIR_RS_MEAN,"READY",CoreContracts.SampleQuality.VALID));
-    invalid(()->evaluate(fullCatalog,(CoreContracts.EvidenceNode)null));
+    invalid(()->node("",700,CoreContracts.EvidencePolarity.POSITIVE));
     var oneGraph=EvidenceConflictGraph.construct(IndependentEvidenceLedger.consolidate(
        "source-snapshot",List.of(node("root-A",700,CoreContracts.EvidencePolarity.POSITIVE))));
     var oneResult=NextResearchDecisionPipeline.result(capture,"sha256-owner-snapshot-replay",
