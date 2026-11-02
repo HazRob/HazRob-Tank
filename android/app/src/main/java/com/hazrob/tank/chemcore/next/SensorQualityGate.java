@@ -206,7 +206,12 @@ public final class SensorQualityGate {
         }
         boolean physical=!reject;
         boolean envEligible=physical&&env;
-        boolean sourceEligible=physical&&ref&&!limited;
+        boolean sourceEligible=physical&&ref
+            &&!flags.contains(Flag.I2C_STATUS_UNKNOWN)
+            &&!flags.contains(Flag.ADS_READY_NOT_REPORTED)
+            &&!flags.contains(Flag.HEATER_WARMING)
+            &&!flags.contains(Flag.HIGH_NOISE)
+            &&!flags.contains(Flag.TEMPORAL_DRIFT);
         Status status=reject?Status.REJECTED:(limited||!env||!ref?Status.LIMITED:Status.ACCEPTED);
         return new Result(status,physical,envEligible,sourceEligible,flags,cv,drift,orderedSamples.size());
     }
