@@ -85,7 +85,6 @@ jobs:
             | tee build/chemcore-next-p01/P02-CLEAN-AIR-REPLAY-TEST.log
           grep -q '^CHEMCORE_NEXT_P02_CLEAN_AIR_REPLAY_PASS ' \
             build/chemcore-next-p01/P02-CLEAN-AIR-REPLAY-TEST.log
-            build/chemcore-next-p01/NH3-NH4-SHARED-SOURCE-TEST.log
       - name: Test shared NH3 / NH4+ interpretations and one research evidence root
         shell: bash
         run: |
@@ -107,5 +106,6 @@ jobs:
             build/chemcore-next-p01/P02-SENSOR-QUALITY-TEST.log
             build/chemcore-next-p01/P02-SINGLE-SENSOR-TEST.log
             build/chemcore-next-p01/P02-CLEAN-AIR-REPLAY-TEST.log
+            build/chemcore-next-p01/NH3-NH4-SHARED-SOURCE-TEST.log
           if-no-files-found: warn
           retention-days: 30
