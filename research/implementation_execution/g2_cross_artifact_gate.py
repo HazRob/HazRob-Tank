@@ -373,6 +373,20 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     if set(counts) != set(expected_groups):
         issues.append("GROUP_MANIFEST_MISSING_SPLIT_GROUPS")
 
+    # Accuracy on a blind set containing only one reference gas class cannot
+    # demonstrate discrimination, even if every row is correctly classified.
+    # Count physical test exposures only; calibration and training labels must
+    # not artificially inflate the blinded target diversity.
+    if record.get("metric_name") == "classification_accuracy":
+        blind_rows = [row for row in groups
+                      if expected_groups.get(row.get("group_id")) == "test_group_ids"]
+        blind_labels = [row.get("gas_reference_id") for row in blind_rows]
+        if (not blind_labels or any(not isinstance(label, str) or not label.strip()
+                                    for label in blind_labels)):
+            issues.append("BLIND_TEST_TARGET_LABELS_UNAVAILABLE")
+        elif len(set(blind_labels)) < 2:
+            issues.append("BLIND_TEST_SINGLE_REFERENCE_CLASS")
+
     required_prediction_columns = {"exposure_id", "group_id"}
     if not predictions or any(not required_prediction_columns <= set(row) for row in predictions):
         issues.append("BLIND_PREDICTIONS_SCHEMA_MISMATCH")
