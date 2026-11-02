@@ -12,7 +12,7 @@ UNIFIED = ROOT / "research/chemcore_next/source_curves/chemcore_next_p03_2_unifi
 HIST = BASE / "chemcore_next_p03_4_sqlite_legacy_source_49.csv"
 LOOKUP = BASE / "chemcore_next_p03_4_initial_historical_uid_crosswalk_109.csv"
 AMBIGUOUS = re.compile(
-    r"^(?:lpg|smoke|alcohol|nh4/nh3|ethanol/alcohol|nh4_unresolved_class)$", re.I)
+    r"^(?:lpg|smoke|alcohol|nh4|nh4/nh3|ethanol/alcohol|nh4_unresolved_class)$", re.I)
 
 def load(path):
     with path.open(encoding="utf8", newline="") as f:
@@ -49,7 +49,11 @@ def audit():
             assert row["verified_master_uid"] == hist["sqlite_master_uid"]
             assert row["verified_master_name"] == hist["master_name"]
             assert row["verified_master_cas"] == hist["master_cas"]
-            assert row["source_label"] == hist["source_label"]
+            if row["source_label"] != hist["source_label"]:
+                assert row["original_v6_curve_id"] == "MQDATA43-042", "unexpected source label drift"
+                assert row["source_label"] == "NH4" and hist["source_label"] == "NH4/NH3"
+                assert row["chemical_identity_state"] == "AMBIGUOUS_CLASS_OR_ALIAS_NOT_UNIQUE_MOLECULE"
+                assert "UPSTREAM_LABEL_CONFLICT" in row["investigation_note"]
             assert row["source_sensor"] == hist["sensor"]
             assert row["v6_legacy_reference_index"] == hist["legacy_reference_id"]
             assert 0 <= int(row["v6_legacy_reference_index"]) < 144
@@ -72,7 +76,7 @@ def audit():
     assert len(seen) == 109
     assert linked == 49 and unlinked == 60, (linked, unlinked)
     assert len(canonical) == 13
-    assert ambiguous == 17, "Source LPG/smoke/alcohol/NH4-NH3 deliberately flagged"
+    assert ambiguous == 18, "Source LPG/smoke/alcohol/NH4-NH3 deliberately flagged"
     return {
         "schema": "chemcore.next.p03.4.historical_uid_link_ci/1",
         "status": "PASS_49_VERIFIED_LEGACY_LINKS_60_CONSERVATIVELY_UNRESOLVED",
