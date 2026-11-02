@@ -1,0 +1,32 @@
+{
+  "schema": "hazrob.v8.next.upstream_curve_equation_numerical_oracle/1",
+  "date": "2026-11-02",
+  "source_file": "research/chemcore_next/mqdata_v7_source_gas_curve_register_89.csv",
+  "source_blob": "061f333a8583c4b8febd02fe27210381814cc2e0",
+  "source_rows": 89,
+  "tank_rows": 43,
+  "concentration_points_ppm": [
+    1,
+    10,
+    100,
+    1000
+  ],
+  "numerical_points": 356,
+  "bad_count": 0,
+  "failed_samples": [],
+  "max_relative_error": 3.9790393202565614e-15,
+  "pass": true,
+  "models": {
+    "source_forward": "ratio = a * (ppm/scale)^b",
+    "source_inverse_at_scale_1": "ppm=(ratio/a)^(1/b)",
+    "mq_sensors_lib_form_at_scale_1": "ppm = A * ratio^B; A=a^(-1/b), B=1/b"
+  },
+  "limited_assumptions": [
+    "All test ppm are algebraic probes, not source gas validity ranges or physical measurements",
+    "Scale=1 assumed only for mathematical coefficient conversion, not physical compatibility",
+    "Rs/R0 baseline, heater, temperature and calibration are not verified",
+    "Zero/negative/saturated input tests still required in the actual Next Java engine",
+    "Standalone JS numerical oracle is not Android/firmware G1 and not Tank G2 or G3"
+  ],
+  "app_runtime_changed": false
+}
