@@ -1,3 +1,13 @@
+## 2026-11-02 — Original Mendeley MQ-EXT-10 ZIP archive intake (research only)
+
+- Resumed from `565cd283d1f1fee036c436924398e23486afc270`; verified 21/21 GitHub Actions runs returned for that SHA completed success (11 PR-triggered + 10 push/other). No confirmed starting CI failure.
+- Added read-only, byte-consistent `g2_mq_ext10_archive_intake.py` for optional Mendeley v3 ZIP intake. It computes source archive SHA256 and parses those **same bytes**, never extracts archive members, checks Zip Slip/symlinks/encryption/duplicates/size limits, and reuses the exact-decimal 8-channel ethanol parser. Wine members are not misclassified as ethanol.
+- Added 13 synthetic adversarial regression cases, Arabic method `G2_MQ_EXT10_SAFE_ZIP_INTAKE_2026-11-02_AR.md`, and G2-only CI receipt/artifact. The new tool was locally tested against a synthetic ZIP and a local stand-in parser; full integration with the repository parser must be verified in GitHub Actions. No original Mendeley ZIP or new independent Tank raw exposure acquired.
+- No scientific promotion: original liquid v/v concentrations are **not** vapor ppm, computed archive SHA256 alone does not authenticate publisher provenance, `records=[]`, `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No ChemCore Stable, Android, firmware or main changes. **Verify CI for this final HEAD before claiming success.**
+- Next: confirm all new tests and CI artifacts; acquire independently calibrated, grouped and blinded physical Tank exposures with traceable references, or the original publisher archive for strictly source-only checks.
+
+---
+
 ## 2026-11-02 — MQ-EXT-10 exact-decimal physical boundary and underflow guard (research only)
 
 - Resumed from `401a575bff328133dad177b607356a5ca14deb3e`. Verified 11/11 returned PR-triggered GitHub Actions runs completed success, including G2 source/R0 #41428922885; no confirmed CI failure at starting HEAD. The connector only returns its first page of PR-triggered runs.
