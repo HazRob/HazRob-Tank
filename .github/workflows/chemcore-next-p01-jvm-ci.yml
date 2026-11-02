@@ -157,7 +157,6 @@ jobs:
             | tee build/chemcore-next-p01/OWNER-TANK-8MQ-AIR-BASELINE.log
           grep -q '^CHEMCORE_NEXT_OWNER_TANK_8MQ_AIR_BASELINE_PASS ' \
             build/chemcore-next-p01/OWNER-TANK-8MQ-AIR-BASELINE.log
-            build/chemcore-next-p01/P05-CONFLICT-GRAPH.log
       - name: Verify P05.3 graph dedup, alternatives and cross-source contradictions
         shell: bash
         run: |
@@ -188,5 +187,6 @@ jobs:
             build/chemcore-next-p01/P05-CANDIDATE-GENERATOR.log
             build/chemcore-next-p01/P05-POLARITY-ROUTER.log
             build/chemcore-next-p01/OWNER-TANK-8MQ-AIR-BASELINE.log
+            build/chemcore-next-p01/P05-CONFLICT-GRAPH.log
           if-no-files-found: warn
           retention-days: 30
