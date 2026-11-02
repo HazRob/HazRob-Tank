@@ -287,7 +287,6 @@ jobs:
             | tee build/chemcore-next-p01/P07-4-DECISION-PRESENTATION.log
           grep -q '^CHEMCORE_NEXT_P07_4_IMMUTABLE_DISPLAY_PASS ' \
             build/chemcore-next-p01/P07-4-DECISION-PRESENTATION.log
-            build/chemcore-next-p01/P09-2-FIELD-RAW-ARCHIVE.log
       - name: P09.2 original 60 second source archive and independent MQ scan-cycle integrity
         shell: bash
         run: |
@@ -331,5 +330,6 @@ jobs:
             build/chemcore-next-p01/P07-1-TELEMETRY-MAPPER.log
             build/chemcore-next-p01/P07-3-ENGINE-ROUTING.log
             build/chemcore-next-p01/P07-4-DECISION-PRESENTATION.log
+            build/chemcore-next-p01/P09-2-FIELD-RAW-ARCHIVE.log
           if-no-files-found: warn
           retention-days: 30
