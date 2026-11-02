@@ -27,7 +27,7 @@ public final class SensorQualityGateSmoke {
     private static SensorQualityGate.Result check(List<SensorQualityGate.Sample> samples) {
         return SensorQualityGate.evaluate("tank:MQ2","HEATER_STEADY",NOW,samples,LIMITS);
     }
-    private static SensorQualityGate.Sample custom(long time,long cycle,Integer raw,Double rs,
+    private static SensorQualityGate.Sample custom(long time,long cycle,Integer raw,double rs,
         SensorQualityGate.Transport transport,Boolean ready,Boolean power,String phase,
         long poweredFor,Double temp,Double rh,boolean hasReference) {
         return new SensorQualityGate.Sample("tank:MQ2",time,poweredFor,cycle,raw,rs,
