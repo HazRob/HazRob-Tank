@@ -7,6 +7,7 @@ on:
       - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextLegacySourceUidAuditTest.java'
       - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextUnlinkedSourceCasAuditTest.java'
       - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextUnifiedCatalogGeneralHazardTest.java'
+      - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextGeneralSourceAliasTest.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemCoreNextGeneralIdentityBootstrap.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemCoreNextGeneralHazardBootstrap.java'
       - 'research/chemcore_next/identity/chemcore_next_p03_4_unlinked_60_source_identity_policy.csv'
@@ -71,6 +72,7 @@ jobs:
             --tests com.servoc.app.chemical.ChemCoreNextLegacySourceUidAuditTest \
             --tests com.servoc.app.chemical.ChemCoreNextUnlinkedSourceCasAuditTest \
             --tests com.servoc.app.chemical.ChemCoreNextUnifiedCatalogGeneralHazardTest \
+            --tests com.servoc.app.chemical.ChemCoreNextGeneralSourceAliasTest \
             2>&1 | tee ../P03-4-SQLITE-UID-TEST.log
           grep -q 'BUILD SUCCESSFUL' ../P03-4-SQLITE-UID-TEST.log
       - name: Confirm five existing/new generic classes share main catalog and hazard table
@@ -79,6 +81,33 @@ jobs:
           set -euo pipefail
           grep -Rh 'CHEMCORE_NEXT_SINGLE_UNIFIED_GHS_CATALOG_PASS' \
             source/app/build/test-results/testDebugUnitTest/
+      - name: Export all 16 generic source-to-master category IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import glob,csv,xml.etree.ElementTree as ET
+          rows=[]
+          success=False
+          for p in glob.glob("source/app/build/test-results/testDebugUnitTest/*.xml"):
+              doc=ET.parse(p).getroot()
+              for node in doc.iter("system-out"):
+                  for line in (node.text or "").splitlines():
+                      if line.startswith("P03_4_GENERAL_SOURCE_ROW|"):
+                          values=line.split("|")[1:]
+                          assert len(values)==6,(len(values),line)
+                          rows.append(values)
+                      if line.startswith("CHEMCORE_NEXT_GENERAL_ALIAS_MAPPING_PASS"):
+                          success=True
+          assert success,"missing 16 generic aliases acceptance"
+          assert len(rows)==16 and len({x[0] for x in rows})==16
+          with open("P03-4-GENERAL-ALIAS-UID-16.csv","w",newline="",encoding="utf8") as stream:
+              writer=csv.writer(stream)
+              writer.writerow(["source_curve_uid","source_sensor","original_source_label",
+                  "canonical_general_category","existing_master_uid","qualification"])
+              writer.writerows(rows)
+          print("P03_4_GENERAL_UID_EXPORT_PASS mapped=16 categories=5 gas_identity=0")
+          PY
       - name: Export 49 audited source mappings from JUnit XML for offline ChemCore Next
         shell: bash
         run: |
@@ -150,6 +179,7 @@ jobs:
           path: |
             P03-4-UID-CROSSWALK-49.csv
             P03-4-SOURCE-UID-CROSSWALK-60.csv
+            P03-4-GENERAL-ALIAS-UID-16.csv
             P03-4-SQLITE-UID-TEST.log
             source/app/build/test-results/testDebugUnitTest/
           if-no-files-found: warn
