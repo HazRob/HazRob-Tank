@@ -1,0 +1,84 @@
+{
+  "schema": "hazrob.next.p03.1.source_inventory/1",
+  "date": "2026-11-02",
+  "task": "P03.1",
+  "status": "SOURCE_INVENTORY_COMPLETED_NOT_MODEL_VALIDATED",
+  "sources": [
+    {
+      "id": "TANK_V6_80",
+      "path": "docs/implementation/V6-CHEMCORE-80-TECHNIQUE-NEW-ENGINE-COVERAGE-2026-10-29.json",
+      "blob": "e11e8df02fc4529635d05251cffcd568b700b748",
+      "techniques": 80,
+      "partial": 78,
+      "unported": 2,
+      "g3": 0
+    },
+    {
+      "id": "MQDATASCIENCE",
+      "gas_sensor_pairs": 89,
+      "sensor_models": 21,
+      "tank_relevant_pairs": 43,
+      "regression_forecast_approaches": 76,
+      "warning": "not 76 independent gas identity classifiers; source curve duplicates must be deduplicated"
+    },
+    {
+      "id": "MQSENSORSLIB",
+      "url": "https://github.com/miguel5612/MQSensorsLib",
+      "contribution": [
+        "model-specific K clean air constants",
+        "sensitivity regression equations",
+        "heater calibration API"
+      ],
+      "warning": "Rs_air/R0=K must not be treated as measured device R0; manufacturer and library functions may share underlying source"
+    },
+    {
+      "id": "TANK_V6_SOURCE_ASSETS",
+      "gas_source_curves": 49,
+      "fingerprint_prototypes": 24,
+      "warning": "research reference assets, not 49 physical validations"
+    },
+    {
+      "id": "CANONICAL_CHEMICALS",
+      "active_unique_uids": 734,
+      "warning": "catalog size is not number of distinguishable compounds"
+    }
+  ],
+  "experiment_extraction_fields": [
+    "source_id",
+    "url_doi_commit_sha",
+    "sensor_model",
+    "sensor_batch",
+    "heater_phase",
+    "temperature_C",
+    "relative_humidity",
+    "gas_CAS",
+    "gas_concentration_reference",
+    "raw_ADC",
+    "measured_Rs",
+    "R_air",
+    "source_R0",
+    "source_K",
+    "reference_gas",
+    "experiment_group",
+    "replicate",
+    "holdout_group",
+    "uncertainty",
+    "source_curve_origin",
+    "license",
+    "independence_root"
+  ],
+  "priority_techniques": [
+    "P03.2 source-curve and K lineage",
+    "P03.3 fingerprint plus 3D environmental and 4D temporal methods",
+    "P03.4 canonical UID matching",
+    "P03.5 sensitivity overlap and conditional negative evidence",
+    "P04 expert implementations independent of source duplicates"
+  ],
+  "rejected_claims": [
+    "No newly validated gas detection",
+    "No blanket conversion of 76 regressions into 76 classifiers",
+    "No G3 approval",
+    "No assumption all 734 have measured fingerprints"
+  ],
+  "next": "P03.2 source curve and regression provenance ledger, model and sensor compatibility crosswalk"
+}
