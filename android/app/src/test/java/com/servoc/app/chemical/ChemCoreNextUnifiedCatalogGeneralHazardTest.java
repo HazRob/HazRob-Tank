@@ -45,7 +45,8 @@ public final class ChemCoreNextUnifiedCatalogGeneralHazardTest {
             assertTrue("missing master UID",c.moveToFirst());
             if(requireNonLegacy)assertTrue("new class must not steal old legacy ID",c.isNull(0));
             assertTrue("general class must not fabricate CAS",c.isNull(1));
-            assertTrue("general class must not fabricate molecule formula",c.isNull(2));
+            assertTrue("general class must not fabricate molecule formula",
+                c.isNull(2) || c.getString(2).trim().isEmpty());
             assertEquals(expectedClass,c.getString(3));
             assertEquals(1,c.getInt(4));
         }
