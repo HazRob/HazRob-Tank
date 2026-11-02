@@ -287,6 +287,15 @@ jobs:
             | tee build/chemcore-next-p01/P07-4-DECISION-PRESENTATION.log
           grep -q '^CHEMCORE_NEXT_P07_4_IMMUTABLE_DISPLAY_PASS ' \
             build/chemcore-next-p01/P07-4-DECISION-PRESENTATION.log
+            build/chemcore-next-p01/P09-2-FIELD-RAW-ARCHIVE.log
+      - name: P09.2 original 60 second source archive and independent MQ scan-cycle integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextFieldArchiveSmoke \
+            | tee build/chemcore-next-p01/P09-2-FIELD-RAW-ARCHIVE.log
+          grep -q '^CHEMCORE_NEXT_P09_2_FIELD_RAW_ARCHIVE_PASS ' \
+            build/chemcore-next-p01/P09-2-FIELD-RAW-ARCHIVE.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
