@@ -8,13 +8,13 @@
   "scientific_discussion": "docs/research/CHEMCORE-NEXT-SCIENTIFIC-DISCUSSION-REGISTER-2026-11-02_AR.md",
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
-  "project_principle": "Build/verify ChemCore Next independently first, integrate into V8 later; standards formal qualification deferred",
+  "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
   "status": "P00_P01_P02_JVM_COMPLETE_P03_1_READY",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P03",
   "active_task": "P03.2",
-  "last_checkpoint": "P03.1 documented source inventory; P03.2 source-curve ledger next. G3 0/80.",
-  "next_action": "P03.2 build per-curve provenance, source formula, MQ model and heater compatibility ledger",
+  "last_checkpoint": "ChemCore Next scope clarified: 14/37 core tasks done, P03.2 active; 34 Android integration tasks deferred; G3 still 0.",
+  "next_action": "Continue independent ChemCore Next P03.2 source curves and formula provenance. Do not run P07-P13 Android V8 integration without explicit owner request.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -2428,6 +2428,14 @@
       "description": "MQDataScience/MQSensorsLib and original 80 techniques source inventory; no runtime validation claimed",
       "commit_sha": "98888747ea6ee2e529fc936f2b6d6775bdfe878b",
       "evidence": "research/v8_implementation/results/next_p03_1_research_source_inventory.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "OWNER_SCOPE_CORRECTION",
+      "task_id": "P03.2",
+      "description": "ChemCore Next is independent product, not Android V8; P00-P06 core 37 tasks, P07-P13 deferred 34 tasks; no algorithm completion credited",
+      "commit_sha": "ca440f44a00654e54036dafbb5bf9c744b148b19",
+      "evidence": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md"
     }
   ],
   "notes": [
@@ -2435,7 +2443,8 @@
     "actual UID count and Stable approved version not measured",
     "hardware tests need actual bench; no claims based on synthetic inputs",
     "update task after every execution and save real file path/run ID/commit",
-    "G1/G2 and developer Android research edition are distinct from physical G3/safety certification"
+    "G1/G2 and developer Android research edition are distinct from physical G3/safety certification",
+    "Owner clarification 2026-11-02: ChemCore Next is the independent engine, not V8. V8 references in old filenames/branch indicate historical storage, not product identity."
   ],
   "latest_source_transfer": {
     "file": "research/chemcore_next/mqdata_mqsensorslib_transfer_matrix_23_2026-11-02.csv",
@@ -2453,5 +2462,23 @@
     "numerical_probes": 356,
     "bad": 0,
     "scientific_qualification": "ALGEBRA_ONLY_RESEARCH_ORACLE_NOT_TANK_G1_G2_G3"
+  },
+  "project_name": "ChemCore Next",
+  "product_class": "INDEPENDENT_GAS_ANALYSIS_ENGINE_NOT_AN_ANDROID_V8_RELEASE",
+  "owner_scope_decision": "ChemCore Next, NOT V8",
+  "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
+  "core_program_progress": {
+    "total_tasks": 37,
+    "done_tasks": 14,
+    "percent_complete": 37.84,
+    "active_task": "P03.2",
+    "qualified_g3_techniques": 0
+  },
+  "separate_android_integration_scope": {
+    "total_tasks": 34,
+    "authorization": "NOT_AUTHORIZED_IN_CHEMCORE_NEXT_CORE_TRACK",
+    "status": "DEFERRED",
+    "applies_to": "P07-P13 historical tasks",
+    "note": "Future Android V8 or other application integration, APK and firmware require separate owner instruction"
   }
 }
