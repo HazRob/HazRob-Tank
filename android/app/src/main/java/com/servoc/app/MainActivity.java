@@ -88,6 +88,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private volatile int lastGasAlertLevel=GasAlertCoordinator.NONE;private volatile long gasAlertSentAt=0;
     private boolean developerMode=false,entered=false,commsScheduled=false;private FrameLayout page;private android.widget.HorizontalScrollView mainTabStrip;private TextView globalStatus;private Button[] tabButtons;private int selectedTab=0;private long pendingExperimentId=-1;private String pendingFieldSessionId="";private boolean pendingFieldSessionPicker=false;
     private Button feedbackAction;
+    private android.net.ConnectivityManager.NetworkCallback feedbackNetworkCallback;
     private ControlTab controlTab;private FieldSessionsTab fieldSessionsTab;private MeasurementsTab measurementsTab;private ReportsTab reportsTab;private StatusTab statusTab;private SettingsTab settingsTab;private DeveloperTab developerTab;private View[] tabViews;
 
     @Override public void onCreate(Bundle b){
@@ -237,6 +238,43 @@ public final class MainActivity extends Activity implements HazRobHost {
         page.removeAllViews();page.addView(tabViews[index],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabButtons.length;i++){tabButtons[i].setTextColor(i==index?0xFF90CAF9:Color.DKGRAY);tabButtons[i].setBackgroundColor(i==index?0xFF263238:0xFFE0E0E0);}if(index==6&&!developerTab.isUnlocked())developerTab.requestUnlock();if(index==0&&foreground&&!isOffline())controlTab.startCamera();if(index==2)fieldSessionsTab.refresh();else if(index==3)reportsTab.refresh();else refreshVisibleTab();
     }
 
+    /** Live app connectivity callback; authenticated uploader runs off the UI thread. */
+    private void startFeedbackConnectivityMonitor(){
+        if(feedbackNetworkCallback!=null||workers.isShutdown())return;
+        android.net.ConnectivityManager cm=(android.net.ConnectivityManager)
+            getSystemService(CONNECTIVITY_SERVICE);
+        if(cm==null)return;
+        android.net.NetworkRequest req=new android.net.NetworkRequest.Builder()
+            .addCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
+        android.net.ConnectivityManager.NetworkCallback callback=
+            new android.net.ConnectivityManager.NetworkCallback(){
+            @Override public void onCapabilitiesChanged(android.net.Network network,
+                android.net.NetworkCapabilities capabilities){
+                if(capabilities.hasCapability(
+                    android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED)&&
+                    !workers.isShutdown())
+                    com.servoc.app.chemcore.nextintegration.FeedbackGithubUploader
+                        .submitWhenAvailable(getApplicationContext(),workers);
+            }
+        };
+        try{
+            cm.registerNetworkCallback(req,callback);
+            feedbackNetworkCallback=callback;
+        }catch(Exception registration){
+            android.util.Log.w("TankV8Feedback","Network monitoring unavailable");
+        }
+        com.servoc.app.chemcore.nextintegration.FeedbackGithubUploader
+            .submitWhenAvailable(getApplicationContext(),workers);
+    }
+    private void stopFeedbackConnectivityMonitor(){
+        if(feedbackNetworkCallback==null)return;
+        android.net.ConnectivityManager cm=(android.net.ConnectivityManager)
+            getSystemService(CONNECTIVITY_SERVICE);
+        if(cm!=null)try{cm.unregisterNetworkCallback(feedbackNetworkCallback);}
+            catch(Exception ignored){}
+        feedbackNetworkCallback=null;
+    }
+
     private void updateFeedbackButton(){
         if(feedbackAction==null)return;
         String uid=measurementsTab==null?"":measurementsTab.currentFeedbackDecisionUid();
@@ -299,6 +337,8 @@ public final class MainActivity extends Activity implements HazRobHost {
                         if(!uid.equals(saved.decisionUid))
                             throw new IllegalStateException("FEEDBACK_DECISION_RECEIPT_MISMATCH");
                     }
+                    com.servoc.app.chemcore.nextintegration.FeedbackGithubUploader
+                        .submitWhenAvailable(getApplicationContext(),workers);
                     ui.post(()->{
                         if(dialog.isShowing())dialog.dismiss();
                         showToast(publish?"حُفظت الملاحظات؛ تنتظر رفعاً مصادقاً عليه":
@@ -357,8 +397,9 @@ public final class MainActivity extends Activity implements HazRobHost {
     private void onTelemetryUpdated(){if(isOffline()){latestDiag=null;if(globalStatus!=null){globalStatus.setText("دون اتصال");globalStatus.setTextColor(0xFF955000);}refreshVisibleTab();return;}JSONObject d=latestDiag;if(globalStatus==null)return;if(d==null){globalStatus.setText("غير متصل");globalStatus.setTextColor(0xFFFFB74D);}else{JSONObject drv=d.optJSONObject("drive"),device=d.optJSONObject("device"),proximity=device==null?null:device.optJSONObject("proximity");boolean near=proximity!=null&&proximity.optBoolean("warning",false),stale=drv!=null&&drv.optBoolean("stale_stop",false),gas=lastGasAlertLevel>0;globalStatus.setText("متصل"+(stale?" • توقف لانقطاع أوامر القيادة":gas?" • ⚠ غازات":near?" • ⚠ جسم قريب":""));globalStatus.setTextColor(stale?0xFF985400:gas?0xFFD62828:near?0xFFD62828:0xFF167443);}refreshVisibleTab();}
     private void refreshVisibleTab(){if(!entered)return;if(selectedTab==0)controlTab.refresh();else if(selectedTab==1){measurementsTab.refresh();updateFeedbackButton();}else if(selectedTab==4)statusTab.refresh();else if(selectedTab==5)settingsTab.refresh();else if(selectedTab==6)developerTab.refresh();}
 
-    @Override protected void onResume(){super.onResume();if(!isOffline()&&!"remote".equalsIgnoreCase(prefs.getString("connection_mode","direct")))WifiRoute.bindConnectedWifi(this);foreground=true;if(entered){if(!isOffline()){startLinkService();if(selectedTab==0)controlTab.startCamera();}refreshVisibleTab();}}
+    @Override protected void onResume(){super.onResume();startFeedbackConnectivityMonitor();if(!isOffline()&&!"remote".equalsIgnoreCase(prefs.getString("connection_mode","direct")))WifiRoute.bindConnectedWifi(this);foreground=true;if(entered){if(!isOffline()){startLinkService();if(selectedTab==0)controlTab.startCamera();}refreshVisibleTab();}}
     @Override protected void onPause(){
+        stopFeedbackConnectivityMonitor();
         foreground=false;
         if(entered){
             // HR069-R1 drive dead-man: Android SAF pickers, incoming calls, app switching
