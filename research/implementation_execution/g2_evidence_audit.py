@@ -223,22 +223,37 @@ def audit_record(item, repo_root=Path(".")):
         v = item.get(metric)
         if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)):
             issues.append("INVALID_" + metric.upper())
-    # Accuracy and its interval are proportions. A signed or >100% value
-    # must not become a review candidate simply because all self-declared
-    # JSON artifacts repeat the same number and their hashes are correct.
-    # Other metric families (e.g. RMSE) intentionally have different domains.
-    if item.get("metric_name") == "classification_accuracy":
+    # A bounded classification score is a fraction in [0, 1], including
+    # its baseline and cluster-derived uncertainty interval. Only explicitly
+    # recognized metric names receive this guard; errors such as RMSE and
+    # signed correlation statistics have different mathematical domains.
+    bounded_classification_metrics = {
+        "classification_accuracy", "balanced_accuracy", "precision", "recall",
+        "specificity", "sensitivity", "f1_score", "roc_auc",
+        "positive_predictive_value", "negative_predictive_value",
+        "false_positive_rate", "false_negative_rate",
+    }
+    metric_name = item.get("metric_name")
+    if metric_name in bounded_classification_metrics:
+        # Preserve the existing error vocabulary for historical accuracy
+        # tests and evidence receipts.
+        metric_code = ("CLASSIFICATION_ACCURACY_OUT_OF_RANGE"
+                       if metric_name == "classification_accuracy"
+                       else "BOUNDED_CLASSIFICATION_METRIC_OUT_OF_RANGE")
+        interval_code = ("CLASSIFICATION_INTERVAL_OUT_OF_RANGE"
+                         if metric_name == "classification_accuracy"
+                         else "BOUNDED_CLASSIFICATION_INTERVAL_OUT_OF_RANGE")
         for field in ("metric_value", "baseline_metric_value"):
             v = item.get(field)
             if (isinstance(v, (int, float)) and not isinstance(v, bool)
                     and math.isfinite(v) and not 0.0 <= v <= 1.0):
-                issues.append("CLASSIFICATION_ACCURACY_OUT_OF_RANGE:" + field)
+                issues.append(metric_code + ":" + field)
         if isinstance(interval, dict):
             for field in ("low", "high"):
                 v = interval.get(field)
                 if (isinstance(v, (int, float)) and not isinstance(v, bool)
                         and math.isfinite(v) and not 0.0 <= v <= 1.0):
-                    issues.append("CLASSIFICATION_INTERVAL_OUT_OF_RANGE:" + field)
+                    issues.append(interval_code + ":" + field)
     issues.extend(audit_signal_lineage(item))
     bundle_issues = audit_evidence_bundle(item, repo_root=repo_root)
     issues.extend(bundle_issues)
