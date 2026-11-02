@@ -69,6 +69,14 @@ jobs:
             | tee build/chemcore-next-p01/P02-SENSOR-QUALITY-TEST.log
           grep -q '^CHEMCORE_NEXT_P02_SENSOR_QUALITY_PASS ' \
             build/chemcore-next-p01/P02-SENSOR-QUALITY-TEST.log
+      - name: Verify P02.4 one-specialist response and conditional negative evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.SingleSensorEvidenceGateSmoke \
+            | tee build/chemcore-next-p01/P02-SINGLE-SENSOR-TEST.log
+          grep -q '^CHEMCORE_NEXT_P02_SINGLE_SENSOR_EVIDENCE_PASS ' \
+            build/chemcore-next-p01/P02-SINGLE-SENSOR-TEST.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -80,5 +88,6 @@ jobs:
             build/chemcore-next-p01/P02-SIGNAL-PHYSICS-TEST.log
             build/chemcore-next-p01/P02-DUAL-R0-TEST.log
             build/chemcore-next-p01/P02-SENSOR-QUALITY-TEST.log
+            build/chemcore-next-p01/P02-SINGLE-SENSOR-TEST.log
           if-no-files-found: warn
           retention-days: 30
