@@ -1,0 +1,122 @@
+{
+  "schema": "hazrob.v8.chemcore_next.baseline_sources/1",
+  "task_id": "P00.1",
+  "date": "2026-11-02",
+  "branch": "feature/tank-v8-implementation",
+  "verified_branch_head_before_evidence_write": "3d118b98fef61c514e593d7e71ebf00ab0fbc7b9",
+  "reference_branches": {
+    "v6": {
+      "name": "feature/tank-v6-implementation",
+      "head": "cf818a9e2ea1064da37f0d9fdf6beb0de4847250"
+    },
+    "v7": {
+      "name": "feature/tank-v7-reports",
+      "head": "b344b8ac1c651794fb600baae029efd0f2522ce8"
+    }
+  },
+  "firmware_versions_from_readmes": {
+    "controller": "ESP32-Tank 0.1.6-v6-quickr0-dev (candidate, not hardware-qualified)",
+    "camera": "Cam-tank 0.1.4-v6-candidate (unreleased)"
+  },
+  "assets_reference_directory_sha": "2b520899a7c2af2cd570f5c3b1e3dc0256cd6678",
+  "stable_approved_runtime_manifest": "NOT_YET_CONFIRMED — P00.4 will identify exact approved Stable version, SHA and embedded/in-use activation",
+  "snapshot_file_checks": [
+    {
+      "file_path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/Engine.java",
+      "git_blob_sha": "4c63995cbdd8c214e922bed91496740f053742c9",
+      "role": "V6 math engine"
+    },
+    {
+      "file_path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/ChemCoreTankV6.java",
+      "git_blob_sha": "41bf19235fc2d50298f7112cbbdd08898b900a4e",
+      "role": "V6 independent coordinator"
+    },
+    {
+      "file_path": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/SourceCatalog.java",
+      "git_blob_sha": "207088bd46ef14ccce6b5fb81f6d9f6933802663",
+      "role": "source gas curves"
+    },
+    {
+      "file_path": "android/app/src/main/java/com/hazrob/tank/v6integration/TankV6TelemetryAdapter.java",
+      "git_blob_sha": "cccd8cac3e78dca3cd3fee55dadd64381442fe4e",
+      "role": "Android telemetry bridge"
+    },
+    {
+      "file_path": "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java",
+      "git_blob_sha": "c3fb91f9c7a34645aaa034399e4befadcffbc169",
+      "role": "instant candidate projection old 144"
+    },
+    {
+      "file_path": "android/app/src/main/java/com/servoc/app/chemcore/CompletedSessionChemCoreAnalyzer.java",
+      "git_blob_sha": "96cf770c813c3d2adc42af10e8fc2f97752d834c",
+      "role": "session analyzer"
+    },
+    {
+      "file_path": "android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java",
+      "git_blob_sha": "c52813a7918a8a18eb824de8045202902020c2d1",
+      "role": "canonical library repository"
+    },
+    {
+      "file_path": "firmware/ESP32-Tank/ESP32-Tank.ino",
+      "git_blob_sha": "f4d5396784d667d32703156f1e640df03624ddea",
+      "role": "main controller sketch"
+    },
+    {
+      "file_path": "firmware/ESP32-Tank/Config.h",
+      "git_blob_sha": "e4746fbd3049e5ae82b3f3ba976e75a2c749a5ac",
+      "role": "main controller version config"
+    },
+    {
+      "file_path": "firmware/Cam-tank/Cam-tank.ino",
+      "git_blob_sha": "e834cce49586360c1338ca88538ee5c241a06348",
+      "role": "camera sketch"
+    },
+    {
+      "file_path": "firmware/ESP32-Tank/README.md",
+      "git_blob_sha": "f80bb20c3d5d3b2a5839151be76848f824bfb720",
+      "role": "V6 controller candidate readme"
+    },
+    {
+      "file_path": "firmware/Cam-tank/README.md",
+      "git_blob_sha": "11b505a311b78d3c9cfe55e725ffdaa99cfb3242",
+      "role": "V6 camera candidate readme"
+    },
+    {
+      "file_path": "docs/implementation/V6-CHEMCORE-80-TECHNIQUE-NEW-ENGINE-COVERAGE-2026-10-29.json",
+      "git_blob_sha": "e11e8df02fc4529635d05251cffcd568b700b748",
+      "role": "80 technique baseline ledger"
+    },
+    {
+      "file_path": "docs/implementation/V8-CHEMCORE-NEXT-MASTER-EXECUTION-PLAN-2026-11-02_AR.md",
+      "git_blob_sha": "ad526ceb53db291455aad1668967e9803d368855",
+      "role": "current master execution plan"
+    },
+    {
+      "file_path": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
+      "git_blob_sha": "4328fca0c01d3ad2a7e342a6e402746fe2a11e24",
+      "role": "techniques enrichment plan"
+    }
+  ],
+  "source_verification": {
+    "method": "Live connected GitHub branch ref and contents SHA fetch",
+    "verified_files": 15,
+    "not_executed": [
+      "Android compile/build",
+      "firmware compile/flash",
+      "physical MQ measurement",
+      "G3 gas identity or ppm validation"
+    ]
+  },
+  "test_result": {
+    "kind": "STATIC_SOURCE_HASH_AND_BRANCH_REFERENCE_CHECK",
+    "status": "PASS",
+    "details": "V8/V6/V7 branch heads and 15 existing key source blob SHAs retrieved; missing approved Stable runtime manifest explicitly deferred to P00.4"
+  },
+  "next_task": "P00.2",
+  "caveats": [
+    "Head SHA is snapshot at initial evidence creation; following plan/evidence/state commits will advance V8 branch head",
+    "The firmware README versions are source candidate labels, not validated field/Arduino releases",
+    "Source manifest does not imply ChemCore Next runtime implementation",
+    "Approved Stable exact payload is not yet established; the directory SHA records only reference assets"
+  ]
+}
