@@ -5,6 +5,9 @@ on:
     branches: [feature/tank-v8-implementation]
     paths:
       - 'research/chemcore_next/experiments/next_reference_mq4_quantitative.py'
+      - 'research/chemcore_next/tests/java/NextRealMqFingerprintBenchmark.java'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
+      - 'research/chemcore_next/device_calibration/**'
       - 'research/chemcore_next/experiments/next_reference_uci1081_fingerprints.py'
       - 'research/chemcore_next/experiments/prepare_stable_methane_quantitative_fingerprint.py'
       - '.github/workflows/chemcore-next-g2-real-reference-experiments.yml'
@@ -140,6 +143,40 @@ jobs:
           assert d["stable_policy"]["m4_state"]=="NONE"
           assert d["source_benchmark"]["outperforms_no_MQ_baseline"] is False
           print("NEXT_STABLE_15_165_PREPUBLICATION_PASS sha256="+hashlib.sha256(f.read_bytes()).hexdigest())
+          PY
+      - name: Independently benchmark ACTUAL Next FingerprintExpert on real MQ arrays, smoke and six gas concentration levels
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '451fdd05a18db8531abc219089de071ccc0dd461  research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv' | git hash-object --stdin >/dev/null
+          test "$(git hash-object research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv)" = '451fdd05a18db8531abc219089de071ccc0dd461'
+          mkdir -p /tmp/next-g2-results/actual-next-expert /tmp/next-g2-results/actual-next-expert/classes
+          find android/app/src/main/java/com/hazrob/tank/chemcore/next \
+              -name '*.java' -print0 | xargs -0 javac -encoding UTF-8 -d /tmp/next-g2-results/actual-next-expert/classes \
+              research/chemcore_next/tests/java/NextRealMqFingerprintBenchmark.java
+          java -cp /tmp/next-g2-results/actual-next-expert/classes \
+              com.hazrob.tank.chemcore.next.NextRealMqFingerprintBenchmark \
+              /tmp/next-g2-source/uci90_features.csv \
+              research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv \
+              /tmp/next-g2-source/mq4_original_10ppm_data.csv \
+              research/chemcore_next/device_calibration/tank_8mq_v6_quick_clean_air_2026-10-31T032955Z.json \
+              /tmp/next-g2-results/actual-next-expert \
+              | tee /tmp/next-g2-results/actual-next-expert/replay.log
+          grep -q '^CHEMCORE_NEXT_REAL_MQ_FINGERPRINT_BENCHMARK_PASS ' \
+              /tmp/next-g2-results/actual-next-expert/replay.log
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('/tmp/next-g2-results/actual-next-expert/next_real_mq_fingerprint_benchmark.json')
+          d=json.loads(p.read_text())
+          assert d['core_expert'].endswith('FingerprintExpert.compare')
+          assert len(d['results'])==12
+          assert len([m for m in d['results'] if m['dataset'].startswith('MQ_EXT_03')])==7
+          assert len([m for m in d['results'] if m['dataset'].startswith('MINNESOTA')])==3
+          assert len([m for m in d['results'] if m['dataset'].startswith('UCI_')])==2
+          assert d['mq4_source']['rows']==14186
+          assert all(0<=m['accuracy_all_rows']<=1 for m in d['results'])
+          assert not d['is_end_to_end_ChemCoreNext_arbitrator']
+          print('NEXT_REAL_MQ_NEXT_FINGERPRINT_GROUP_AND_STATUS_PASS')
           PY
       - name: Preserve complete source-only predictions, derived fingerprints and lineage
         uses: actions/upload-artifact@v4
