@@ -33,7 +33,9 @@ class SourceRouting(unittest.TestCase):
         for banned in ("byLegacyId(","<144","source_curve_hypotheses\");","TankV6TelemetryAdapter.analyzeSnapshot","ChemCoreTankV6.Result analyzed"):
             if banned=='source_curve_hypotheses\");':continue
             self.assertNotIn(banned,self.next_method)
-        self.assertIn('out.put("source_curve_hypotheses",new JSONArray())',self.next_method)
+        self.assertIn("NextScientificDiagnostics.compute(frozen,master)",self.next_method)
+        self.assertIn('"scientific_source_diagnostics"',self.next_method)
+        self.assertIn('"fingerprint_runtime_status"',self.next_method)
         self.assertIn("List.of(),java.util.List.of(),java.util.List.of(),12)",self.next_method)
     def test_v6_comparison_explicit_not_inactive_fallback(self):
         v6=self.a.split("public static Result analyzeV6Comparison(",1)[1]
