@@ -9,6 +9,7 @@ import io
 import json
 import math
 import re
+from decimal import Decimal
 from pathlib import Path
 
 SCHEMA = "hazrob.g2.mq-ext10-ethanol-preflight.v1"
@@ -43,12 +44,12 @@ def parse_numeric_rows(data, expected_rows=3330):
     except UnicodeError as exc:
         raise ValueError("MQ_EXT10_SOURCE_ENCODING_UNVERIFIED") from exc
     rows = 0
+    numeric_digest = hashlib.sha256()
     minima = [float("inf")] * 8
     maxima = [float("-inf")] * 8
     for line in io.StringIO(decoded):
         line = line.strip()
-        if not line:
-            continue
+        require(bool(line), "BLANK_DATA_ROW")
         parts = ([x.strip() for x in line.split(",")] if "," in line
                  else [x.strip() for x in line.split(";")] if ";" in line
                  else line.split())
@@ -59,13 +60,16 @@ def parse_numeric_rows(data, expected_rows=3330):
             raise ValueError("MQ_EXT10_NONNUMERIC_ROW") from exc
         require(all(math.isfinite(x) for x in values), "NONFINITE_ROW")
         require(all(x > 0 for x in values[2:]), "NONPOSITIVE_RESISTANCE")
+        canonical = ["0" if Decimal(t).is_zero() else str(Decimal(t).normalize()) for t in parts]
+        numeric_digest.update(("\x1f".join(canonical) + "\n").encode("ascii"))
         for i, x in enumerate(values):
             minima[i] = min(minima[i], x)
             maxima[i] = max(maxima[i], x)
         rows += 1
         require(rows <= expected_rows, "TOO_MANY_ROWS")
     require(rows == expected_rows, "ROW_COUNT_MISMATCH")
-    return {"rows": rows, "ranges": [[minima[i], maxima[i]] for i in range(8)]}
+    return {"rows": rows, "ranges": [[minima[i], maxima[i]] for i in range(8)],
+            "numeric_trace_sha256": numeric_digest.hexdigest()}
 
 
 def inspect_file(path, expected_rows=3330):
@@ -78,7 +82,8 @@ def inspect_file(path, expected_rows=3330):
     return {"filename": path.name, "concentration_code": code,
             "nominal_liquid_ethanol_percent_vv": LIQUID_PERCENT_BY_CODE[code],
             "repetition": repetition, "sha256": hashlib.sha256(data).hexdigest(),
-            "rows": summary["rows"], "ranges": summary["ranges"]}
+            "rows": summary["rows"], "ranges": summary["ranges"],
+            "numeric_trace_sha256": summary["numeric_trace_sha256"]}
 
 
 def run(raw_root=None):
@@ -119,14 +124,18 @@ def run(raw_root=None):
             "UNSUPPORTED_EXTENSION")
     seen = set()
     seen_bytes = set()
+    seen_numeric_traces = set()
     manifest = []
     for p in files:
         row = inspect_file(p)
         key = (row["concentration_code"], row["repetition"])
         require(key not in seen, "DUPLICATE_CONCENTRATION_REPETITION")
         require(row["sha256"] not in seen_bytes, "DUPLICATE_MEASUREMENT_BYTES")
+        require(row["numeric_trace_sha256"] not in seen_numeric_traces,
+                "DUPLICATE_MEASUREMENT_NUMERIC_TRACE")
         seen.add(key)
         seen_bytes.add(row["sha256"])
+        seen_numeric_traces.add(row["numeric_trace_sha256"])
         manifest.append(row)
     result["source_status"] = ("RAW_FILES_SCANNED_UNQUALIFIED" if len(files) == 65
                                else "PARTIAL_RAW_FILES_SCANNED_UNQUALIFIED")
