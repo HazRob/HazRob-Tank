@@ -87,6 +87,7 @@ public final class MainActivity extends Activity implements HazRobHost {
     private volatile int trackingTarget=-1;private volatile String trackingName="";
     private volatile int lastGasAlertLevel=GasAlertCoordinator.NONE;private volatile long gasAlertSentAt=0;
     private boolean developerMode=false,entered=false,commsScheduled=false;private FrameLayout page;private android.widget.HorizontalScrollView mainTabStrip;private TextView globalStatus;private Button[] tabButtons;private int selectedTab=0;private long pendingExperimentId=-1;private String pendingFieldSessionId="";private boolean pendingFieldSessionPicker=false;
+    private Button feedbackAction;
     private ControlTab controlTab;private FieldSessionsTab fieldSessionsTab;private MeasurementsTab measurementsTab;private ReportsTab reportsTab;private StatusTab statusTab;private SettingsTab settingsTab;private DeveloperTab developerTab;private View[] tabViews;
 
     @Override public void onCreate(Bundle b){
@@ -165,9 +166,12 @@ public final class MainActivity extends Activity implements HazRobHost {
         if(changed)gasAlertCoordinator.reset();
     }
     private void enter(){entered=true;buildTabs();setContentView(buildShell());showTab(0);if(!isOffline()){scheduleComms();startLinkService();if(foreground)controlTab.startCamera();}else{try{stopService(new Intent(this,RobotLinkService.class));}catch(Exception ignored){}}}
-    private void buildTabs(){controlTab=new ControlTab(this,this);fieldSessionsTab=new FieldSessionsTab(this,this);measurementsTab=new MeasurementsTab(this,this);reportsTab=new ReportsTab(this,this);statusTab=new StatusTab(this,this);settingsTab=new SettingsTab(this,this);developerTab=new DeveloperTab(this,this,()->{developerMode=true;refreshAllTabs();});tabViews=new View[]{controlTab.view(),withRefresh(measurementsTab.view(),54),withRefresh(fieldSessionsTab.view(),8),withRefresh(reportsTab.view(),8),withRefresh(statusTab.view(),8),withRefresh(settingsTab.view(),8),withRefresh(developerTab.view(),54)};}
+    private void buildTabs(){controlTab=new ControlTab(this,this);fieldSessionsTab=new FieldSessionsTab(this,this);measurementsTab=new MeasurementsTab(this,this);reportsTab=new ReportsTab(this,this);statusTab=new StatusTab(this,this);settingsTab=new SettingsTab(this,this);developerTab=new DeveloperTab(this,this,()->{developerMode=true;refreshAllTabs();});tabViews=new View[]{controlTab.view(),withRefresh(measurementsTab.view(),54,true),withRefresh(fieldSessionsTab.view(),8),withRefresh(reportsTab.view(),8),withRefresh(statusTab.view(),8),withRefresh(settingsTab.view(),8),withRefresh(developerTab.view(),54)};}
     /** Compact refresh overlay in the upper-left of each non-driving tab's CONTENT; no extra row. */
     private View withRefresh(View content,int topMarginDp){
+        return withRefresh(content,topMarginDp,false);
+    }
+    private View withRefresh(View content,int topMarginDp,boolean isMeasurement){
         FrameLayout frame=new FrameLayout(this);
         frame.addView(content,new FrameLayout.LayoutParams(-1,-1));
         Button refresh=UiKit.button(this,"🔄");
@@ -178,6 +182,20 @@ public final class MainActivity extends Activity implements HazRobHost {
         FrameLayout.LayoutParams p=new FrameLayout.LayoutParams(UiKit.dp(this,44),UiKit.dp(this,44),Gravity.TOP|Gravity.LEFT);
         p.leftMargin=UiKit.dp(this,6);p.topMargin=UiKit.dp(this,topMarginDp);
         frame.addView(refresh,p);
+        if(isMeasurement){
+            feedbackAction=UiKit.button(this,"✎");
+            feedbackAction.setContentDescription("ملاحظات وتحسين نتائج ChemCore Next");
+            feedbackAction.setTextSize(20);
+            feedbackAction.setMinHeight(UiKit.dp(this,44));
+            feedbackAction.setMinWidth(UiKit.dp(this,44));
+            feedbackAction.setOnClickListener(v->openCurrentInstantFeedback());
+            FrameLayout.LayoutParams f=new FrameLayout.LayoutParams(
+                UiKit.dp(this,44),UiKit.dp(this,44),Gravity.TOP|Gravity.RIGHT);
+            f.rightMargin=UiKit.dp(this,6);
+            f.topMargin=UiKit.dp(this,topMarginDp);
+            frame.addView(feedbackAction,f);
+            feedbackAction.setVisibility(View.GONE);
+        }
         return frame;
     }
 
@@ -219,6 +237,87 @@ public final class MainActivity extends Activity implements HazRobHost {
         page.removeAllViews();page.addView(tabViews[index],new FrameLayout.LayoutParams(-1,-1));for(int i=0;i<tabButtons.length;i++){tabButtons[i].setTextColor(i==index?0xFF90CAF9:Color.DKGRAY);tabButtons[i].setBackgroundColor(i==index?0xFF263238:0xFFE0E0E0);}if(index==6&&!developerTab.isUnlocked())developerTab.requestUnlock();if(index==0&&foreground&&!isOffline())controlTab.startCamera();if(index==2)fieldSessionsTab.refresh();else if(index==3)reportsTab.refresh();else refreshVisibleTab();
     }
 
+    private void updateFeedbackButton(){
+        if(feedbackAction==null)return;
+        String uid=measurementsTab==null?"":measurementsTab.currentFeedbackDecisionUid();
+        feedbackAction.setVisibility(selectedTab==1&&!uid.isEmpty()?View.VISIBLE:View.GONE);
+    }
+    /** The dialog is bound to the exact original Next decision, not live data. */
+    private void openCurrentInstantFeedback(){
+        final String uid=measurementsTab==null?"":measurementsTab.currentFeedbackDecisionUid();
+        final JSONObject displayed=measurementsTab==null?null:measurementsTab.currentFeedbackAnalysis();
+        if(uid.isEmpty()||displayed==null){
+            showToast("أكمل القياس الآني أولاً");return;
+        }
+        LinearLayout form=UiKit.vbox(this);
+        form.setPadding(UiKit.dp(this,16),UiKit.dp(this,8),
+            UiKit.dp(this,16),UiKit.dp(this,8));
+        form.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        form.addView(UiKit.text(this,
+            "النتيجة: "+uid+"\nالحالة: "+
+            displayed.optString("decision_status","UNKNOWN")+
+            " • عدد المرشحين: "+displayed.optInt("candidate_count",0)),
+            UiKit.full(this));
+        android.widget.EditText note=new android.widget.EditText(this);
+        note.setHint("اكتب رأيك وملاحظاتك عن هذه النتيجة...");
+        note.setTextColor(0xFF172630);
+        note.setHintTextColor(0xFF526275);
+        note.setMinLines(4);note.setMaxLines(8);note.setSingleLine(false);
+        note.setInputType(android.text.InputType.TYPE_CLASS_TEXT |
+            android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        note.setGravity(Gravity.TOP|Gravity.RIGHT);
+        form.addView(note,UiKit.full(this));
+        android.widget.CheckBox consent=new android.widget.CheckBox(this);
+        consent.setText("أوافق على نشر رأيي وملخص الحساسات في GitHub العام عندما تتوفر مصادقة كتابة آمنة");
+        consent.setTextColor(0xFF172630);
+        consent.setChecked(false);
+        form.addView(consent,UiKit.full(this));
+        form.addView(UiKit.small(this,
+            "المستودع العام يمكن للجميع قراءة ملفاته. لا تكتب معلومات شخصية أو أسراراً. "+
+            "بدون موافقة يُحفظ التعليق محلياً. الموافقة لا تعني نجاح الرفع قبل وصول إيصال GitHub."),
+            UiKit.full(this));
+        android.app.AlertDialog dialog=new android.app.AlertDialog.Builder(this)
+            .setTitle("Feedback — ملاحظات التحليل")
+            .setView(form)
+            .setNegativeButton("إلغاء",(d,which)->d.dismiss())
+            .setPositiveButton("تأكيد",null).create();
+        dialog.setOnShowListener(shown->dialog.getButton(
+            android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(clicked->{
+            String comment=note.getText().toString().trim();
+            if(comment.isEmpty()){note.setError("يرجى إدخال ملاحظاتك");return;}
+            if(comment.length()>4000){note.setError("الحد الأقصى 4000 حرف");return;}
+            boolean publish=consent.isChecked();
+            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            workers.execute(()->{
+                try{
+                    var result=new com.servoc.app.chemcore.nextintegration.NextDecisionStore(db)
+                        .byId(uid);
+                    if(result==null)throw new IllegalStateException("NEXT_DECISION_NOT_FOUND");
+                    try(var queue=new com.servoc.app.chemcore.nextintegration.NextFeedbackQueue(
+                        getApplicationContext())){
+                        var saved=queue.add(getApplicationContext(),result,comment,publish);
+                        if(!uid.equals(saved.decisionUid))
+                            throw new IllegalStateException("FEEDBACK_DECISION_RECEIPT_MISMATCH");
+                    }
+                    ui.post(()->{
+                        if(dialog.isShowing())dialog.dismiss();
+                        showToast(publish?"حُفظت الملاحظات؛ تنتظر رفعاً مصادقاً عليه":
+                            "تم حفظ الملاحظات محلياً");
+                    });
+                }catch(Exception err){
+                    android.util.Log.e("TankV8Feedback","Failed to persist feedback",err);
+                    ui.post(()->{
+                        if(dialog.isShowing())
+                            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+                                .setEnabled(true);
+                        showToast("تعذر حفظ Feedback: "+err.getClass().getSimpleName());
+                    });
+                }
+            });
+        }));
+        dialog.show();
+    }
+
     private void queueDriveSend(){
         if(!entered||isOffline())return;
         driveDirty.set(true);
@@ -256,7 +355,7 @@ public final class MainActivity extends Activity implements HazRobHost {
         boolean changed=level!=lastGasAlertLevel,refresh=level>0&&now-gasAlertSentAt>=1000;if(!changed&&!refresh)return;lastGasAlertLevel=level;gasAlertSentAt=now;try{robotApi.setAlertLevel(level,3000);}catch(Exception ignored){}
     }
     private void onTelemetryUpdated(){if(isOffline()){latestDiag=null;if(globalStatus!=null){globalStatus.setText("دون اتصال");globalStatus.setTextColor(0xFF955000);}refreshVisibleTab();return;}JSONObject d=latestDiag;if(globalStatus==null)return;if(d==null){globalStatus.setText("غير متصل");globalStatus.setTextColor(0xFFFFB74D);}else{JSONObject drv=d.optJSONObject("drive"),device=d.optJSONObject("device"),proximity=device==null?null:device.optJSONObject("proximity");boolean near=proximity!=null&&proximity.optBoolean("warning",false),stale=drv!=null&&drv.optBoolean("stale_stop",false),gas=lastGasAlertLevel>0;globalStatus.setText("متصل"+(stale?" • توقف لانقطاع أوامر القيادة":gas?" • ⚠ غازات":near?" • ⚠ جسم قريب":""));globalStatus.setTextColor(stale?0xFF985400:gas?0xFFD62828:near?0xFFD62828:0xFF167443);}refreshVisibleTab();}
-    private void refreshVisibleTab(){if(!entered)return;if(selectedTab==0)controlTab.refresh();else if(selectedTab==1)measurementsTab.refresh();else if(selectedTab==4)statusTab.refresh();else if(selectedTab==5)settingsTab.refresh();else if(selectedTab==6)developerTab.refresh();}
+    private void refreshVisibleTab(){if(!entered)return;if(selectedTab==0)controlTab.refresh();else if(selectedTab==1){measurementsTab.refresh();updateFeedbackButton();}else if(selectedTab==4)statusTab.refresh();else if(selectedTab==5)settingsTab.refresh();else if(selectedTab==6)developerTab.refresh();}
 
     @Override protected void onResume(){super.onResume();if(!isOffline()&&!"remote".equalsIgnoreCase(prefs.getString("connection_mode","direct")))WifiRoute.bindConnectedWifi(this);foreground=true;if(entered){if(!isOffline()){startLinkService();if(selectedTab==0)controlTab.startCamera();}refreshVisibleTab();}}
     @Override protected void onPause(){
