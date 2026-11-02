@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "Build/verify ChemCore Next independently first, integrate into V8 later; standards formal qualification deferred",
-  "status": "P00_AND_P01_COMPLETED_P02_SIGNAL_PHYSICS_NEXT",
+  "status": "P00_P01_COMPLETE_P02_1_PASSED_P02_2_READY",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P02",
-  "active_task": "P02.1",
-  "last_checkpoint": "P01 completed (8/71): 64 real CI smoke assertions PASS. P02.1 next; no chemistry calibration or APK yet.",
-  "next_action": "P02.1: safe source-grounded ADC/ADS, Vc/RL/Vout to Rs conversion, quality flags and edge tests. Do not equate uncalibrated ESP32 counts with physical voltage.",
+  "active_task": "P02.2",
+  "last_checkpoint": "P02.1 69 real JDK17 source-based resistance physics assertions PASS CI 41374005807; P02.2 next. P00 734 SQLite verified; P01 64 contract/replay tests verified.",
+  "next_action": "P02.2: implement dual R_air and R0_source per physical sensor K, heater/reference definitions, source-class metadata, and migration fail-closed. Add JDK17 tests before marking done.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 8,
-    "passed_tests": 8,
+    "done_tasks": 9,
+    "passed_tests": 9,
     "failed_tests": 0,
-    "percent_complete": 11.27
+    "percent_complete": 12.68
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -546,8 +546,8 @@
       "id": "P02.1",
       "phase": "P02",
       "description": "ADC/ADS/voltage/RL/Vc إلى Rs وحالات العطل",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_RESEARCH_MATH_ONLY_NO_TANK_G3",
       "depends_on": [
         "P01.4"
       ],
@@ -558,22 +558,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_result": "P02.1 SignalPhysics 69/69 assertions PASS; source grounded ADS1115 6.144/32768 and MQ voltage divider RL10k, physical verification fail closed. P01 baselines rechecked 64/64; combined 133/133.",
+      "action_run_id": 41374005807,
+      "commit_sha": "04c5ea374483c2f69c51ad88089a38afe0b2abcf",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p02_1_signal_physics_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "P02.1 source math tests 69 passed, actual device voltage calibration deliberately still unverified.",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P02.2",
       "phase": "P02",
       "description": "تمييز R_air عن R0_source وK ومعنى النسبة",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P02.1"
@@ -593,7 +595,7 @@
       "actual_evidence_files": [],
       "blockers": [],
       "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
+      "next_action": "P02.2: implement dual R_air and R0_source per physical sensor K, heater/reference definitions, source-class metadata, and migration fail-closed. Add JDK17 tests before marking done.",
       "updated_at": null
     },
     {
@@ -2341,6 +2343,15 @@
       "commit_sha": "83c3e5ed423f109bb49cd2263c03494fccd0bca3",
       "ci_run": 41373436129,
       "evidence": "research/v8_implementation/results/next_p01_4_replay_codec_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P02.1",
+      "description": "G1 math/circuit-source ADS and MQ voltage conversion and invalid fail-closed, 69 physics assertions",
+      "commit_sha": "04c5ea374483c2f69c51ad88089a38afe0b2abcf",
+      "ci_run": 41374005807,
+      "evidence": "research/v8_implementation/results/next_p02_1_signal_physics_evidence.json"
     }
   ],
   "notes": [
