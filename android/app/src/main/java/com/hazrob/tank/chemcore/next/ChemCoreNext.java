@@ -54,18 +54,28 @@ public final class ChemCoreNext {
     public final List<ResearchCandidateGenerator.Material> catalog;
     public final List<CurveBinding> curves;
     public final List<FingerprintBinding> fingerprints;
+    public final List<ResearchFingerprintBundle.Bundle> bundles;
     public final int displayLimit;
     public Input(CoreContracts.DeviceProfile device,CoreContracts.Snapshot current,
                  String snapshotHash,
                  List<ResearchCandidateGenerator.Material> catalog,
                  List<CurveBinding> curves,List<FingerprintBinding> fingerprints,
                  int maxDisplay){
+      this(device,current,snapshotHash,catalog,curves,fingerprints,List.of(),maxDisplay);
+    }
+    public Input(CoreContracts.DeviceProfile device,CoreContracts.Snapshot current,
+                 String snapshotHash,
+                 List<ResearchCandidateGenerator.Material> catalog,
+                 List<CurveBinding> curves,List<FingerprintBinding> fingerprints,
+                 List<ResearchFingerprintBundle.Bundle> bundledFingerprints,
+                 int maxDisplay){
       if(device==null||current==null||snapshotHash==null||snapshotHash.isBlank()
-          ||catalog==null||curves==null||fingerprints==null||maxDisplay<0)
+          ||catalog==null||curves==null||fingerprints==null||bundledFingerprints==null||maxDisplay<0)
         throw new IllegalArgumentException("complete immutable source context required");
       this.device=device;this.current=current;sourceSnapshotHash=snapshotHash;
       this.catalog=List.copyOf(catalog);this.curves=List.copyOf(curves);
-      this.fingerprints=List.copyOf(fingerprints);displayLimit=maxDisplay;
+      this.fingerprints=List.copyOf(fingerprints);
+      this.bundles=List.copyOf(bundledFingerprints);displayLimit=maxDisplay;
     }
   }
   public static final class Output {
@@ -149,6 +159,26 @@ public final class ChemCoreNext {
         // A high residual is NOT negative evidence; it might be an
         // unseen mixture or an environmental response outside source.
         reasons.add("FINGERPRINT_HIGH_RESIDUAL_UNKNOWN "+b.reference.id);
+      }
+    }
+    // Bundle variants share one original source root even if many sensor/time/
+    // concentration templates match. Two studies may contribute two roots,
+    // never one vote per MQ channel or per algorithm.
+    for(var bundle:input.bundles) {
+      count+=bundle.variants.size();
+      var score=ResearchFingerprintBundle.evaluate(bundle,input.device,input.current);
+      reasons.add("SOURCE_BUNDLE "+bundle.bundleUid+" "+score.status+
+        " physical_MQ="+score.distinctSensorChannels+
+        " feature_families="+score.distinctFeatureFamilies+
+        " matched_variants="+score.matchedVariants);
+      if(score.isEligibleResearchHypothesis) {
+        raw.add(new CoreContracts.EvidenceNode(bundle.sourceRoot,
+          "SOURCE_DIVERSE_FINGERPRINT_BUNDLE",bundle.variants.get(0).sensorUid,
+          bundle.canonicalChemicalUid,CoreContracts.EvidencePolarity.POSITIVE,
+          "ONE correlated source root across varied MQ fingerprints; research only"));
+        assets.add(new ResearchCandidateGenerator.AssetLink(
+          bundle.sourceRoot,bundle.bundleUid,bundle.canonicalChemicalUid,true));
+        positives++;
       }
     }
     var ledger=IndependentEvidenceLedger.consolidate(input.current.uid,raw);
