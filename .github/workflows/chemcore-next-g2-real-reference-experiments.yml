@@ -6,6 +6,7 @@ on:
     paths:
       - 'research/chemcore_next/experiments/next_reference_mq4_quantitative.py'
       - 'research/chemcore_next/experiments/next_reference_uci1081_fingerprints.py'
+      - 'research/chemcore_next/experiments/prepare_stable_methane_quantitative_fingerprint.py'
       - '.github/workflows/chemcore-next-g2-real-reference-experiments.yml'
   workflow_dispatch:
 
@@ -31,6 +32,7 @@ jobs:
           set -euo pipefail
           python -m py_compile research/chemcore_next/experiments/next_reference_mq4_quantitative.py
           python -m py_compile research/chemcore_next/experiments/next_reference_uci1081_fingerprints.py
+          python -m py_compile research/chemcore_next/experiments/prepare_stable_methane_quantitative_fingerprint.py
       - name: Retrieve original Li-Cor MQ4 source and fail unless original SHA256 matches
         shell: bash
         run: |
@@ -113,6 +115,31 @@ jobs:
           print('MQ4_METRICS',json.dumps(mq['metrics_by_model'],sort_keys=True))
           print('UCI_METRICS',json.dumps(uc['metrics_by_source_sensor_mode'],sort_keys=True))
           print('QUALIFICATION actual_Tank_G3=0; experimental_G2_source_only=true; no field alarm')
+          PY
+      - name: Derive quantitative methane source fingerprint for canonical Stable research evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/next-g2-results/stable-candidate
+          python research/chemcore_next/experiments/prepare_stable_methane_quantitative_fingerprint.py \
+            --source /tmp/next-g2-source/mq4_original_10ppm_data.csv \
+            --fingerprints /tmp/next-g2-results/mq4/next_mq4_quantitative_fingerprints.csv \
+            --experiment-summary /tmp/next-g2-results/mq4/next_mq4_source_experiment.json \
+            --out /tmp/next-g2-results/stable-candidate/mq4_methane_li_cor_quantitative_source_fingerprint_v1.json \
+            --print-chunks | tee /tmp/next-g2-results/stable-candidate/source-publication-payload.log
+          grep -q '^CHEMCORE_NEXT_METHANE_STABLE_PAYLOAD_PASS ' \
+            /tmp/next-g2-results/stable-candidate/source-publication-payload.log
+          python - <<'PY'
+          import json,hashlib,pathlib
+          f=pathlib.Path("/tmp/next-g2-results/stable-candidate/mq4_methane_li_cor_quantitative_source_fingerprint_v1.json")
+          d=json.loads(f.read_text())
+          assert len(d["original_source_reference_bins_15"])==15
+          assert len(d["training_only_holdout_fingerprints_165"])==165
+          assert d["stable_policy"]["runtime_activation"] is False
+          assert d["stable_policy"]["field_ppm_authorized"] is False
+          assert d["stable_policy"]["m4_state"]=="NONE"
+          assert d["source_benchmark"]["outperforms_no_MQ_baseline"] is False
+          print("NEXT_STABLE_15_165_PREPUBLICATION_PASS sha256="+hashlib.sha256(f.read_bytes()).hexdigest())
           PY
       - name: Preserve complete source-only predictions, derived fingerprints and lineage
         uses: actions/upload-artifact@v4
