@@ -37,8 +37,8 @@ public final class NextTelemetryMapperSmoke {
     yes(Double.isNaN(get(r,"MQ2").sourceRatioOrNaN()),"device R_air never manufacturer R0");
     yes(get(r,"MQ4").quality==CoreContracts.SampleQuality.NO_SAMPLE,"no fake missing MQ4");
     yes(get(r,"MQ4").rawAdc==null,"absent raw remains null");
-    yes(r.snapshotHash256.matches("[0-9a-f]{64}"),"stable canonical hash");
-    yes(r.snapshotHash256.equals(ChemCoreNext.snapshotHash(r.snapshot)),"snap immutable reproducible");
+    yes(r.snapshotSha256.matches("[0-9a-f]{64}"),"stable canonical hash");
+    yes(r.snapshotSha256.equals(ChemCoreNext.snapshotHash(r.snapshot)),"snap immutable reproducible");
     var unknown=run(List.of(ch("mq3",25.5,25.5,"manual_device_r0",
         "UNVERIFIED_MANUAL_OR_UNAVAILABLE","tank-physical-001",0,0,true)),true);
     yes(get(unknown,"MQ3").quality==CoreContracts.SampleQuality.MISSING_R_AIR,
