@@ -125,6 +125,14 @@ jobs:
             | tee build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
           grep -q '^CHEMCORE_NEXT_P04_4_ENVIRONMENT_PASS ' \
             build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
+      - name: Verify P04.6 correlated source-root fusion, alternative hypotheses and abstention
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.IndependentEvidenceLedgerSmoke \
+            | tee build/chemcore-next-p01/P04-INDEPENDENT-ROOTS.log
+          grep -q '^CHEMCORE_NEXT_P04_6_ROOT_FUSION_PASS ' \
+            build/chemcore-next-p01/P04-INDEPENDENT-ROOTS.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -143,5 +151,6 @@ jobs:
             build/chemcore-next-p01/P04-FINGERPRINT-EXPERT.log
             build/chemcore-next-p01/P04-TEMPORAL-EXPERT.log
             build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
+            build/chemcore-next-p01/P04-INDEPENDENT-ROOTS.log
           if-no-files-found: warn
           retention-days: 30
