@@ -1,0 +1,82 @@
+{
+  "schema": "chemcore.next.real_mq_preliminary/1",
+  "status": "PRELIMINARY_COMPONENT_ONLY",
+  "date": "2026-11-02",
+  "workflow_run": 41394139883,
+  "workflow_conclusion": "success",
+  "actual_component": "FingerprintExpert.compare",
+  "results": [
+    {
+      "name": "UCI_MQ135_ENDPOINT",
+      "source_rows": 90,
+      "accuracy": 0.23333333
+    },
+    {
+      "name": "UCI_MQ135_3_TEMPORAL",
+      "source_rows": 90,
+      "accuracy": 0.25555556
+    },
+    {
+      "name": "MQ2",
+      "source_rows": 6400,
+      "accuracy": 0.4321875
+    },
+    {
+      "name": "MQ3",
+      "source_rows": 6400,
+      "accuracy": 0.70671875
+    },
+    {
+      "name": "MQ8",
+      "source_rows": 6400,
+      "accuracy": 0.52765625
+    },
+    {
+      "name": "MQ2_MQ3",
+      "source_rows": 6400,
+      "accuracy": 0.6921875
+    },
+    {
+      "name": "MQ2_MQ3_MQ5_MQ7",
+      "source_rows": 6400,
+      "accuracy": 0.76125
+    },
+    {
+      "name": "MQ_TANK_OVERLAP_6",
+      "source_rows": 6400,
+      "accuracy": 0.7815625
+    },
+    {
+      "name": "MQ_SOURCE_7",
+      "source_rows": 6400,
+      "accuracy": 0.77703125
+    },
+    {
+      "name": "METHANE_MQ4_ONE",
+      "source_rows": 14186,
+      "accuracy": 0.55477231
+    },
+    {
+      "name": "METHANE_MQ4_THREE",
+      "source_rows": 14186,
+      "accuracy": 0.55167066
+    },
+    {
+      "name": "METHANE_MQ4_THREE_T_RH",
+      "source_rows": 14186,
+      "accuracy": 0.55505428
+    }
+  ],
+  "original_sources": {
+    "methane": "University of Minnesota Li-Cor + 3 MQ4, 14186 rows, 11 days",
+    "chemical": "UCI1081 6 vapours x 50/100/200 ppb x 5, MQ135",
+    "smoke": "MQ-EXT-03 4 contiguous classes x 1600 raw 10-bit ADC rows"
+  },
+  "owner_tank_8mq_r_air": "research/chemcore_next/device_calibration/tank_8mq_v6_quick_clean_air_2026-10-31T032955Z.json",
+  "owner_baseline_not_substituted_for_other_devices": true,
+  "full_chemcore_next_arbiter_tested": false,
+  "g3_tank": false,
+  "ppm_authorized": false,
+  "qualifications": "source-only; non-independent smoke class blocks; no Tank test exposure",
+  "next_core_task": "P05.3"
+}
