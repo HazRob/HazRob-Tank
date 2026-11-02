@@ -9,14 +9,14 @@
   "v7_mutation_allowed": false,
   "old_v7_rehabilitation_branch": "ABANDONED_NOT_FOR_EXECUTION",
   "scope": "V8: full MQDataScience v7 scientific inventory and gap evaluation first; extend independent ChemCore V6 into ChemCore Next, gated; V5/V6/V7 originals preserved",
-  "status": "CHEMCORE_NEXT_P00_1_2_3_STATIC_AUDITS_DONE_P00_4_SOURCE_IN_PROGRESS",
+  "status": "CHEMCORE_NEXT_P00_P01_COMPLETE_P02_1_2_TESTED_P02_3_READY",
   "app_code_changed": false,
   "firmware_changed": false,
   "apk_built": false,
   "hardware_test_pass": false,
   "latest_approved_stable_confirmed": false,
   "last_verified_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
-  "next_action": "P00.4 verify fresh/upgrade actual SQLite unified chemical catalog count and Stable bootstrap integrity; 23 upstream source capabilities staged, 356 formula inversion probes checked; only after baseline move to core P01",
+  "next_action": "P02.3 implement per-sensor quality, warmup/age/noise/heater phase with fail-closed tests; V8 chemical unified 734 identities remain unchanged; do not show gas candidates without evidence.",
   "tasks": [
     {
       "id": "G00",
@@ -340,7 +340,7 @@
       "c3d7006561afe926ea42f7b57bc21588bb2cedb6",
       "9e818cb1e389119a16dc4b90b47d132fdb00644b"
     ],
-    "tests_executed_in_this_new_track": "P00.1 source SHA inspection; P00.2 80 ID static class matrix; P00.3 data-path static review; 356 algebraic source curve inversion probes. NO Next Java G1/Android APK/Tank G3.",
+    "tests_executed_in_this_new_track": "P00 734-row SQLite real seeded DB and stable source review; P01 64 JVM assertions; P02.1 69 source electrical assertions; P02.2 33 source-R0 normalization assertions. 166 JVM assertions pass, NO hardware G3, APK or runtime gas model.",
     "firmware_changed": false,
     "apk_built": false,
     "discussion_state": "20_OWNER_PROPOSALS_RECORDED_EXECUTION_PLAN_IN_PROGRESS",
@@ -374,9 +374,9 @@
       "scientific_methodology": "docs/architecture/CHEMCORE-NEXT-HEDAF-SCIENTIFIC-METHODOLOGY-2026-11-02_AR.md",
       "phases": 14,
       "tasks": 71,
-      "done": 3,
-      "active_task": "P00.4",
-      "last_done_task": "P00.1",
+      "done": 10,
+      "active_task": "P02.3",
+      "last_done_task": "P02.2",
       "evidence": "research/v8_implementation/results/next_p00_1_evidence.json",
       "evidence_commit": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
       "qualification": "STATIC_SOURCE_HASH_CHECK_ONLY_NO_G1_G2_G3",
@@ -389,9 +389,17 @@
       "upstream_transfer": "research/chemcore_next/mqdata_mqsensorslib_transfer_matrix_23_2026-11-02.csv",
       "formula_oracle": "research/v8_implementation/results/next_upstream_curve_formula_oracle_2026-11-02.json",
       "actual_device_catalog_count_verified": false,
-      "official_main_stable_manifest_published": false
+      "official_main_stable_manifest_published": false,
+      "last_pass_run_id": 41374352329,
+      "last_pass_run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41374352329",
+      "last_pass_assertions": 166,
+      "source_evidence": "research/v8_implementation/results/next_p02_2_dual_r0_evidence.json",
+      "exact_canonical_chemical_uids_verified": 734,
+      "source_dual_r0_math_done": true,
+      "next_runtime_inference_built": false,
+      "physical_G3_validations": 0
     },
-    "next_action": "P00.4 verify fresh/upgrade actual SQLite unified chemical catalog count and Stable bootstrap integrity; 23 upstream source capabilities staged, 356 formula inversion probes checked; only after baseline move to core P01"
+    "next_action": "P02.3 implement per-sensor quality, warmup/age/noise/heater phase with fail-closed tests; V8 chemical unified 734 identities remain unchanged; do not show gas candidates without evidence."
   },
   "authoritative_next_execution_plan": "docs/implementation/V8-CHEMCORE-NEXT-MASTER-EXECUTION-PLAN-2026-11-02_AR.md",
   "authoritative_next_execution_state": "docs/implementation/V8-CHEMCORE-NEXT-EXECUTION-STATE-2026-11-02.json"
