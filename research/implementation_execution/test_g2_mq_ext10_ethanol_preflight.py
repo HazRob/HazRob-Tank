@@ -77,6 +77,39 @@ class MQExt10EthanolPreflightTests(unittest.TestCase):
         data = b"50;25;1;2;3;4;5;6\n51;26;2;3;4;5;6;7\n"
         self.assertEqual(parse_numeric_rows(data, expected_rows=2)["rows"], 2)
 
+    def test_reject_rh_above_100_rounded_to_100_in_float(self):
+        with self.assertRaisesRegex(ValueError, "RELATIVE_HUMIDITY_OUT_OF_RANGE"):
+            parse_numeric_rows(
+                b"100.0000000000000000000000000000001,25,1,2,3,4,5,6\n",
+                expected_rows=1,
+            )
+
+    def test_reject_tiny_negative_rh_rounded_to_negative_zero(self):
+        with self.assertRaisesRegex(ValueError, "RELATIVE_HUMIDITY_OUT_OF_RANGE"):
+            parse_numeric_rows(b"-1e-99999,25,1,2,3,4,5,6\n", expected_rows=1)
+
+    def test_reject_temperature_just_below_absolute_zero_rounded_up(self):
+        with self.assertRaisesRegex(ValueError, "TEMPERATURE_BELOW_ABSOLUTE_ZERO"):
+            parse_numeric_rows(
+                b"50,-273.1500000000000000000000000000001,1,2,3,4,5,6\n",
+                expected_rows=1,
+            )
+
+    def test_reject_positive_resistance_float_underflow_explicitly(self):
+        with self.assertRaisesRegex(ValueError, "POSITIVE_RESISTANCE_FLOAT_UNDERFLOW"):
+            parse_numeric_rows(b"50,25,1e-99999,2,3,4,5,6\n", expected_rows=1)
+
+    def test_accept_high_precision_rh_just_below_100(self):
+        self.assertEqual(parse_numeric_rows(
+            b"99.9999999999999999999999999999999,25,1,2,3,4,5,6\n",
+            expected_rows=1,
+        )["rows"], 1)
+
+    def test_accept_small_positive_resistance_representable_in_float(self):
+        self.assertEqual(parse_numeric_rows(
+            b"50,25,1e-300,2,3,4,5,6\n", expected_rows=1,
+        )["rows"], 1)
+
     def test_reject_nonfinite(self):
         with self.assertRaisesRegex(ValueError, "NONFINITE_ROW"):
             parse_numeric_rows(b"50,25,1,2,3,4,5,nan", expected_rows=1)

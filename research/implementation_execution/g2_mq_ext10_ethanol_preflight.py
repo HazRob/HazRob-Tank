@@ -83,10 +83,16 @@ def parse_numeric_rows(data, expected_rows=3330):
         except ValueError as exc:
             raise ValueError("MQ_EXT10_NONNUMERIC_ROW") from exc
         require(all(math.isfinite(x) for x in values), "NONFINITE_ROW")
-        require(0.0 <= values[0] <= 100.0, "RELATIVE_HUMIDITY_OUT_OF_RANGE")
-        require(values[1] >= -273.15, "TEMPERATURE_BELOW_ABSOLUTE_ZERO")
-        require(all(x > 0 for x in values[2:]), "NONPOSITIVE_RESISTANCE")
         canonical = [canonical_exact_decimal(t) for t in parts]
+        # Exact Decimal checks precede physical-domain decisions: binary64 can
+        # round a tiny negative RH to -0.0 or an out-of-range value to 100.0.
+        exact = [Decimal(t) for t in parts]
+        require(Decimal(0) <= exact[0] <= Decimal(100), "RELATIVE_HUMIDITY_OUT_OF_RANGE")
+        require(exact[1] >= Decimal("-273.15"), "TEMPERATURE_BELOW_ABSOLUTE_ZERO")
+        require(all(x > 0 for x in exact[2:]), "NONPOSITIVE_RESISTANCE")
+        # Float ranges cannot represent a positive resistance that underflows
+        # to zero; fail closed rather than reporting a misleading 0.0 kOhm.
+        require(all(x > 0.0 for x in values[2:]), "POSITIVE_RESISTANCE_FLOAT_UNDERFLOW")
         numeric_digest.update(("\x1f".join(canonical) + "\n").encode("ascii"))
         for i, x in enumerate(values):
             minima[i] = min(minima[i], x)

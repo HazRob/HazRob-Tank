@@ -1,3 +1,12 @@
+## 2026-11-02 — MQ-EXT-10 exact-decimal physical boundary and underflow guard (research only)
+
+- Resumed from `401a575bff328133dad177b607356a5ca14deb3e`. Verified 11/11 returned PR-triggered GitHub Actions runs completed success, including G2 source/R0 #41428922885; no confirmed CI failure at starting HEAD. The connector only returns its first page of PR-triggered runs.
+- Fixed binary64 boundary-rounding weakness in ethanol preflight: physically invalid RH just above 100% or just below 0%, and Celsius just below -273.15, must fail using original exact Decimal values. A positive resistance whose float representation underflows to zero now fails with an explicit error rather than a misleading range.
+- Added six deterministic synthetic regression cases and Arabic methodology `G2_MQ_EXT10_EXACT_DECIMAL_PHYSICAL_BOUNDARY_2026-11-02_AR.md`. No original MQ-EXT-10 raw archive or independent Tank exposure data acquired; source-only research QA.
+- Changes restricted to research parser/tests/method/RESUME on research branch. No ChemCore Stable, Android, firmware or main edits. No G2/G3 promotion: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank `records=[]`. Verify exact final HEAD CI before claiming success.
+
+---
+
 ## 2026-11-02 — MQ-EXT-10 physical-domain and delimiter source QA (research only)
 
 - Verified **11/11 returned PR-triggered GitHub Actions runs** for starting SHA `912099e678253659d69cfdbbfe340459d632ddd5` completed success, including G2 source/R0 run #41420264650. The connector returns only its first page of PR-triggered runs; no claim of exhaustively counting other events.
