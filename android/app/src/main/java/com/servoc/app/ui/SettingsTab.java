@@ -101,6 +101,28 @@ public final class SettingsTab {
         });
         nextEngine.addView(nextToggle,UiKit.full(c));
         root.addView(nextEngine,UiKit.full(c));
+        LinearLayout feedbackSettings=UiKit.card(c);
+        feedbackSettings.addView(UiKit.title(c,"Feedback — GitHub الدبابة"),UiKit.full(c));
+        feedbackSettings.addView(UiKit.small(c,
+            "يمكن حفظ تقييمات القياس محليًا. مشاركة القياسات والملاحظات علنًا "+
+            "تتطلب موافقة لكل تعليق ورمز GitHub مع صلاحية Contents: write. "+
+            "المستودع العام لا يسمح بالرفع المجهول. لا تحفظ الرمز في الشيفرة أو داخل APK."),
+            UiKit.full(c));
+        Button configureFeedback=UiKit.button(c,"إعداد رمز GitHub للرفع الآمن");
+        configureFeedback.setOnClickListener(v->openFeedbackCredentialDialog(c));
+        feedbackSettings.addView(configureFeedback,UiKit.full(c));
+        Button removeFeedback=UiKit.button(c,"حذف بيانات اعتماد الرفع من هذا الجهاز");
+        UiKit.secondary(removeFeedback);
+        removeFeedback.setOnClickListener(v->{
+            com.servoc.app.chemcore.nextintegration.FeedbackGithubCredential.clear(c);
+            host.showToast("تم إلغاء بيانات اعتماد الرفع • تبقى الملاحظات محفوظة محليًا");
+        });
+        feedbackSettings.addView(removeFeedback,UiKit.full(c));
+        feedbackSettings.addView(UiKit.small(c,
+            "لا يُصنَّف أي تعليق على أنه مرفوع إلا بعد إيصال كتابة GitHub مؤكد."),
+            UiKit.full(c));
+        root.addView(feedbackSettings,UiKit.full(c));
+
 
         LinearLayout cleanAir=UiKit.card(c);
         cleanAir.addView(UiKit.title(c,"معايرة R0 — للمستخدم"),UiKit.full(c));
@@ -184,6 +206,51 @@ public final class SettingsTab {
     }
 
     public void release(){if(userCalibration!=null)userCalibration.release();}
+    private void openFeedbackCredentialDialog(Context context){
+        EditText token=new EditText(context);
+        token.setHint("github_pat_… / ghp_…");
+        token.setInputType(InputType.TYPE_CLASS_TEXT|
+            InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        token.setSingleLine(true);
+        token.setTextColor(0xFF172630);
+        token.setHintTextColor(0xFF596879);
+        token.setPadding(UiKit.dp(context,16),UiKit.dp(context,12),
+            UiKit.dp(context,16),UiKit.dp(context,12));
+        android.app.AlertDialog dialog=new android.app.AlertDialog.Builder(context)
+            .setTitle("بيانات اعتماد رفع Feedback")
+            .setMessage("أدخل رمزًا بصلاحية كتابة محتويات مستودع HazRob-Tank فقط. "+
+                "يحفظ مشفرًا باستخدام Android Keystore ولا يدخل في كود APK. "+
+                "رموز GitHub ليست كلمات مرور قصيرة اعتباطية.")
+            .setView(token)
+            .setNegativeButton("إلغاء",(d,w)->d.dismiss())
+            .setPositiveButton("حفظ",null).create();
+        dialog.setOnShowListener(shown->dialog.getButton(
+            android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v->{
+            String entered=token.getText().toString().trim();
+            if(entered.isEmpty()){token.setError("أدخل رمز GitHub فعليًا");return;}
+            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            host.io().execute(()->{
+                try{
+                    com.servoc.app.chemcore.nextintegration.FeedbackGithubCredential
+                        .store(context,entered);
+                    com.servoc.app.chemcore.nextintegration.FeedbackGithubUploader
+                        .submitWhenAvailable(context,host.io());
+                    ((android.app.Activity)context).runOnUiThread(()->{
+                        if(dialog.isShowing())dialog.dismiss();
+                        host.showToast("حُفظت بيانات اعتماد GitHub بشكل مشفر");
+                    });
+                }catch(Exception rejected){
+                    ((android.app.Activity)context).runOnUiThread(()->{
+                        if(dialog.isShowing())dialog.getButton(
+                            android.app.AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                        token.setError("صيغة رمز GitHub غير صحيحة أو فشل التخزين الآمن");
+                    });
+                }
+            });
+        }));
+        dialog.show();
+    }
+
     public View view(){return workspace;}
 
     public void refresh(){
