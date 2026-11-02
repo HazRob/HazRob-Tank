@@ -43,7 +43,7 @@ public final class FoodMeasurementDecision {
     public static Decision meat(Map<String,Double> rs){
         BeefResearchEngine.Result result=BeefResearchEngine.analyze(rs);
         List<String> notes=new ArrayList<>();
-        notes.add("BEFF_2018_TS1_TS4_TRAIN_TS5_HOLDOUT");
+        notes.add("BEEF_2018_TS1_TS4_TRAIN_TS5_HOLDOUT");
         notes.add("HELDOUT_BALANCED_ACCURACY_0.3888_NOT_VALIDATED_FOR_TANK");
         notes.add("NO_TVC_MEASURED_NO_EDIBILITY_DECISION");
         int overlap=result.validChannels;
@@ -68,6 +68,14 @@ public final class FoodMeasurementDecision {
      * It does NOT project a new date, infer microbial counts, or certify ripeness.
      */
     public static Decision fruit(Map<String,Double> rs,String selectedFruit){
+        // 45-profile source-only leave-one-day-out: unknown fruit identity
+        // 5/45 correctly classified. Operator MUST declare food family.
+        if(selectedFruit==null||FoodFreshnessEngine.family(selectedFruit).isEmpty()) {
+            return new Decision("FRUIT","SELECT_FOOD_TYPE_REQUIRED",
+                "يجب تحديد نوع الفاكهة قبل الفحص؛ التعرف المفتوح غير مؤهل",
+                "",FoodReferenceCatalog.SOURCE_DOI,Double.NaN,Double.NaN,Double.NaN,
+                0,0,java.util.Collections.singletonList("SOURCE_UNKNOWN_FRUIT_IDENTIFICATION_5_OF_45"));
+        }
         List<FoodFreshnessEngine.Reading> input=new ArrayList<>();
         if(rs!=null)for(Map.Entry<String,Double> row:rs.entrySet())
             input.add(new FoodFreshnessEngine.Reading(row.getKey(),row.getValue()));
