@@ -1,5 +1,6 @@
 """Deterministic regressions for source-only MQ4 alert burden (not Tank G2)."""
 import copy
+import json
 import unittest
 
 from g2_mq4_forward_error_burden import evaluate, run, summary
@@ -18,6 +19,13 @@ class ErrorBurdenTests(unittest.TestCase):
         self.assertEqual(len(r["models"]), 5)
         self.assertFalse(r["g2_qualified"])
         self.assertFalse(r["g3_qualified"])
+
+    def test_committed_receipt_matches_recomputed_metrics(self):
+        saved = json.loads(
+            (ROOT / "G2_MQ4_FORWARD_ERROR_BURDEN_2026-11-02.json").read_text(
+                encoding="utf-8"))
+        self.assertEqual(run(), saved)
+        self.assertFalse(saved["threshold_is_safety_limit"])
 
     def test_model_confusion_and_precision(self):
         r = evaluate(self.source)
