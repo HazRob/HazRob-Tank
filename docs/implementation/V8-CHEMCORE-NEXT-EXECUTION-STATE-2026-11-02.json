@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "Build/verify ChemCore Next independently first, integrate into V8 later; standards formal qualification deferred",
-  "status": "DOCUMENTED_EXECUTION_PLAN_ONLY",
-  "last_verified_head_sha": null,
+  "status": "BASELINE_P00_1_DONE_P00_2_READY",
+  "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P00",
-  "active_task": "P00.1",
-  "last_checkpoint": "Planning docs authored; P00.1 READY and no actual P00 work under new plan has been marked complete",
-  "next_action": "P00.1: inspect pinned V8/V6/V7/firmware/Stable refs and create source baseline manifest; record SHA and evidence",
+  "active_task": "P00.2",
+  "last_checkpoint": "P00.1 source reference manifest committed f7aa046597301ecc1c5d67b2617abaa8284ac16a; P00.2 next; exact Approved Stable still unknown",
+  "next_action": "P00.2: inspect all 80 technique IDs; map classes, real runtime consumers and test coverage; produce next_p00_80_activation.csv and summary",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 0,
-    "passed_tests": 0,
+    "done_tasks": 1,
+    "passed_tests": 1,
     "failed_tests": 0,
-    "percent_complete": 0
+    "percent_complete": 1.41
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -311,8 +311,8 @@
       "id": "P00.1",
       "phase": "P00",
       "description": "تثبيت SHA وHEAD لكل مسار V8/V6/firmware/stable",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "STATIC_SOURCE_REPRODUCIBILITY_VERIFIED_NOT_G1_G2_G3",
       "depends_on": [],
       "source_paths": [],
       "planned_evidence_file": "research/v8_implementation/results/next_P00_1_evidence.json",
@@ -321,22 +321,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
+      "test_status": "PASSED_STATIC_SOURCE_INSPECTION",
+      "test_command": "Connected GitHub branch HEAD reference and contents blob SHA fetch",
+      "test_result": "Branch refs V8/V6/V7 + 15 core app/firmware/plan source blob SHA verified; approved Stable exact manifest pending P00.4",
       "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "commit_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p00_1_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "P00.1 static source hash manifest saved and committed",
+      "next_action": "NONE — continue P00.2",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P00.2",
       "phase": "P00",
       "description": "جرد تقنيات V6 الثمانين ومَن يستدعي كل تقنية",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P00.1"
@@ -356,7 +358,7 @@
       "actual_evidence_files": [],
       "blockers": [],
       "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
+      "next_action": "P00.2: inspect all 80 technique IDs; map classes, real runtime consumers and test coverage; produce next_p00_80_activation.csv and summary",
       "updated_at": null
     },
     {
@@ -2229,6 +2231,14 @@
       "event": "PLAN_CREATED",
       "description": "Core-first execution plan and 20 owner ideas captured. No code tests or APK/G3 attributed to this state.",
       "commit_sha": null
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P00.1",
+      "description": "Branch and 15 source SHAs verified in connected GitHub; no code/test build",
+      "commit_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
+      "evidence": "research/v8_implementation/results/next_p00_1_evidence.json"
     }
   ],
   "notes": [
