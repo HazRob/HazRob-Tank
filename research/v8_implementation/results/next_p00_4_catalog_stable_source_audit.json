@@ -2,7 +2,7 @@
   "schema": "hazrob.v8.chemcore_next.p00_4.source_review/1",
   "task_id": "P00.4",
   "date": "2026-11-02",
-  "status": "IN_PROGRESS_RUNTIME_DATABASE_AND_PUBLISHED_STABLE_NOT_FULLY_VERIFIED",
+  "status": "SOURCE_REVIEW_AND_REAL_SQLITE_BOOTSTRAP_VERIFIED",
   "verified_source_repo": "sohpany/SERVOC-Android",
   "pinned_android_source_commit": "6281d3eb7c1c961ce63b0b5e4ae0792874626720",
   "source_assets": {
@@ -39,12 +39,21 @@
   },
   "catalog_observations": {
     "published_v6_readme_declared_distinct_master_materials": 734,
-    "actual_device_sqlite_count_verified": false,
+    "actual_device_sqlite_count_verified": true,
     "seed_niosh_rows": 652,
     "legacy_labels": 144,
     "observational_source_only_naive_name_union": 716,
-    "naive_union_caveat": "Name-only combination is NOT full ChemicalIdentityResolver; later NIOSH IDLH/OSHA importers resolveOrCreate further identities using CAS and source links. 716 neither confirms nor refutes claimed final 734. Do not print as runtime count.",
-    "requirement": "Fresh-install and upgraded SQLite on original pinned baseline overlay must report exact COUNT(*), active UID unique counts, legacy resolution, duplicate CAS ambiguities and all 734-ish material mapping."
+    "naive_union_caveat": "Source-name-only dry-run underestimated final 734 because authoritative CAS/source imports resolve additional identities; real SQLite bootstrap takes precedence.",
+    "requirement": "Fresh-install and upgraded SQLite on original pinned baseline overlay must report exact COUNT(*), active UID unique counts, legacy resolution, duplicate CAS ambiguities and all 734-ish material mapping.",
+    "real_android_sqlite_robolectric_verified": {
+      "master_count": 734,
+      "active_count": 734,
+      "legacy_count": 144,
+      "nonlegacy_count": 590,
+      "unique_uid_count": 734,
+      "repeat_seed_count": 734,
+      "run_id": 41372537382
+    }
   },
   "stable": {
     "documented_embedded_version": "1.0.0-hr069r1",
@@ -60,18 +69,14 @@
   },
   "blockers": [
     {
-      "id": "P00.4-RUNTIME-COUNT",
-      "reason": "SQLite instance seeded by full pinned Android project (with overlay and upgrade paths) not executed during this review",
-      "resolution": "Run Android/JVM database boot and capture actual count and UID/CAS integrity evidence in V8 P07 integration harness"
-    },
-    {
       "id": "P00.4-PUBLISHED-STABLE",
       "reason": "No manifest.json/payload in official HazRob/HazRob-Tank main updates channel",
       "resolution": "Use pinned embedded 1.0.0-hr069r1 pending a properly validated Stable release, no fake upgrade"
     }
   ],
-  "source_tests_run": "SOURCE_DIRECTORY_AND_JSON_PARSE_AND_REFERENCE_CHECK_ONLY",
+  "source_tests_run": "PINNED_ANDROID_ROBOLECTRIC_SQLITE_FRESH_INSTALL_AND_IDEMPOTENCE_PASS",
   "physical_tests_run": false,
   "app_built": false,
-  "next_action": "Acquire real post-bootstrap SQLite catalog count; keep P00.4 open until confirmed. Independent core mathematics may be prototyped without falsely declaring catalog integration complete."
+  "next_action": "P00.4 source baseline complete; exact current active remote Stable on individual users' phones cannot be inferred, and stable payload integrity needs P11 acceptance. Continue P01.4.",
+  "runtime_evidence": "research/v8_implementation/results/next_p00_4_sqlite_runtime_evidence.json"
 }
