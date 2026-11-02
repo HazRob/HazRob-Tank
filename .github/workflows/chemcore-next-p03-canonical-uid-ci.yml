@@ -127,6 +127,8 @@ jobs:
               writer=csv.writer(f)
               writer.writerow(headers)
               writer.writerows(rows)
+          for rec in rows:
+              print("P03_4_CAS_ROW|"+"|".join(rec))
           count=sum(bool(x[5]) for x in rows)
           print(f"P03_4_CAS_EXPORT_PASS rows={len(rows)} exact_mapped={count} abstained={len(rows)-count} identity_qualified=0")
           PY
