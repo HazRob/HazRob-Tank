@@ -80,6 +80,24 @@ public final class ChemCoreNextContractSmoke {
         rejects(() -> snapshot(Arrays.asList(reading("tank:MQ2", 8.0), reading("tank:MQ2", 7.0))),
             "duplicate physical channel in snapshot rejected");
 
+
+        CoreContracts.DeviceProfile profile = new CoreContracts.DeviceProfile(
+            "tank-demo", "TANK-DOIT-V1", "ESP32-TANK-CANDIDATE", eight);
+        ok(profile.installedSensors.size() == 9, "device supports expandable inventory");
+        rejects(() -> profile.installedSensors.clear(), "device profile immutable");
+        rejects(() -> new CoreContracts.DeviceProfile("x","hw","fw",
+            Arrays.asList(eight.get(0),eight.get(0))), "duplicated device sensor rejected");
+        CoreContracts.EvidenceAsset theoretical = new CoreContracts.EvidenceAsset(
+            "curve-mq2-h2", "datasheet-root", "https://example.org/datasheet",
+            "git-sha", "MQ2", "H2", CoreContracts.EvidenceAsset.Origin.DATASHEET,
+            null, 10.0, 1000.0);
+        ok(theoretical.canonicalChemicalUid == null, "unresolved source label does not invent chemical UID");
+        ok(theoretical.withinDeclaredPpmRange(100.0), "source range boundaries tracked");
+        ok(!theoretical.withinDeclaredPpmRange(1.0), "out of source range is not silently accepted");
+        rejects(() -> new CoreContracts.EvidenceAsset("id","root","url","rev","MQ2","H2",
+            CoreContracts.EvidenceAsset.Origin.DATASHEET,null,100.0,10.0),
+            "invalid curve concentration interval rejected");
+
         CoreContracts.Reading missing = new CoreContracts.Reading("tank:MQ2", null, null,
             null, null, null, CoreContracts.CalibrationReference.NOT_AVAILABLE,
             "NOT_RECORDED", CoreContracts.SampleQuality.NO_SAMPLE);
