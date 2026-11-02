@@ -1,0 +1,2241 @@
+{
+  "schema": "hazrob.tank.v8.chemcore_next.execution_state/1",
+  "plan_version": "2026-11-02-1.0",
+  "created_date": "2026-11-02",
+  "repository": "HazRob/HazRob-Tank",
+  "branch": "feature/tank-v8-implementation",
+  "master_plan": "docs/implementation/V8-CHEMCORE-NEXT-MASTER-EXECUTION-PLAN-2026-11-02_AR.md",
+  "scientific_discussion": "docs/research/CHEMCORE-NEXT-SCIENTIFIC-DISCUSSION-REGISTER-2026-11-02_AR.md",
+  "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
+  "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
+  "project_principle": "Build/verify ChemCore Next independently first, integrate into V8 later; standards formal qualification deferred",
+  "status": "DOCUMENTED_EXECUTION_PLAN_ONLY",
+  "last_verified_head_sha": null,
+  "active_phase": "P00",
+  "active_task": "P00.1",
+  "last_checkpoint": "Planning docs authored; P00.1 READY and no actual P00 work under new plan has been marked complete",
+  "next_action": "P00.1: inspect pinned V8/V6/V7/firmware/Stable refs and create source baseline manifest; record SHA and evidence",
+  "gates": {
+    "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
+    "physical_g3_qualified": 0,
+    "apk_v8_build_verified": false
+  },
+  "progress": {
+    "total_phases": 14,
+    "total_tasks": 71,
+    "done_tasks": 0,
+    "passed_tests": 0,
+    "failed_tests": 0,
+    "percent_complete": 0
+  },
+  "allowed_statuses": [
+    "NOT_STARTED",
+    "READY",
+    "IN_PROGRESS",
+    "BLOCKED",
+    "CODE_COMPLETE_UNTESTED",
+    "TEST_FAILED",
+    "TEST_PASSED",
+    "DONE",
+    "DEFERRED"
+  ],
+  "phases": [
+    {
+      "id": "P00",
+      "name": "تثبيت خط الأساس والجرد",
+      "group": "BASELINE",
+      "task_ids": [
+        "P00.1",
+        "P00.2",
+        "P00.3",
+        "P00.4"
+      ],
+      "status": "READY",
+      "depends_on": [],
+      "deliverables": [
+        "research/v8_implementation/results/next_p00_summary.json"
+      ]
+    },
+    {
+      "id": "P01",
+      "name": "إنشاء نواة Next وعقودها",
+      "group": "CORE",
+      "task_ids": [
+        "P01.1",
+        "P01.2",
+        "P01.3",
+        "P01.4"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P00"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p01_summary.json"
+      ]
+    },
+    {
+      "id": "P02",
+      "name": "صحة الإشارة والمعايرة",
+      "group": "CORE",
+      "task_ids": [
+        "P02.1",
+        "P02.2",
+        "P02.3",
+        "P02.4",
+        "P02.5"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P01"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p02_summary.json"
+      ]
+    },
+    {
+      "id": "P03",
+      "name": "الأدلة والمصادر والمواد الموحدة",
+      "group": "CORE",
+      "task_ids": [
+        "P03.1",
+        "P03.2",
+        "P03.3",
+        "P03.4",
+        "P03.5",
+        "P03.6"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P02"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p03_summary.json"
+      ]
+    },
+    {
+      "id": "P04",
+      "name": "محركات الخبراء التحليلية المستقلة",
+      "group": "CORE",
+      "task_ids": [
+        "P04.1",
+        "P04.2",
+        "P04.3",
+        "P04.4",
+        "P04.5",
+        "P04.6"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P03"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p04_summary.json"
+      ]
+    },
+    {
+      "id": "P05",
+      "name": "محرك التحكيم والاستدلال",
+      "group": "CORE",
+      "task_ids": [
+        "P05.1",
+        "P05.2",
+        "P05.3",
+        "P05.4",
+        "P05.5",
+        "P05.6",
+        "P05.7"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P04"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p05_summary.json"
+      ]
+    },
+    {
+      "id": "P06",
+      "name": "اختبارات النواة قبل تكامل V8",
+      "group": "CORE_TEST",
+      "task_ids": [
+        "P06.1",
+        "P06.2",
+        "P06.3",
+        "P06.4",
+        "P06.5"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P05"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p06_summary.json"
+      ]
+    },
+    {
+      "id": "P07",
+      "name": "ربط Android/SQLite",
+      "group": "APP",
+      "task_ids": [
+        "P07.1",
+        "P07.2",
+        "P07.3",
+        "P07.4"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P06"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p07_summary.json"
+      ]
+    },
+    {
+      "id": "P08",
+      "name": "القياس الآني والمرشحون",
+      "group": "APP",
+      "task_ids": [
+        "P08.1",
+        "P08.2",
+        "P08.3",
+        "P08.4",
+        "P08.5"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P07"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p08_summary.json"
+      ]
+    },
+    {
+      "id": "P09",
+      "name": "الجلسات والمواقع والتتبع",
+      "group": "APP",
+      "task_ids": [
+        "P09.1",
+        "P09.2",
+        "P09.3",
+        "P09.4",
+        "P09.5"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P08"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p09_summary.json"
+      ]
+    },
+    {
+      "id": "P10",
+      "name": "المختبر والمعايرة",
+      "group": "APP",
+      "task_ids": [
+        "P10.1",
+        "P10.2",
+        "P10.3",
+        "P10.4",
+        "P10.5"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P09"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p10_summary.json"
+      ]
+    },
+    {
+      "id": "P11",
+      "name": "المركبات وStable والمساهمات",
+      "group": "APP",
+      "task_ids": [
+        "P11.1",
+        "P11.2",
+        "P11.3",
+        "P11.4",
+        "P11.5"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P10"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p11_summary.json"
+      ]
+    },
+    {
+      "id": "P12",
+      "name": "التقارير واختبارات V8 الشاملة",
+      "group": "APP_TEST",
+      "task_ids": [
+        "P12.1",
+        "P12.2",
+        "P12.3",
+        "P12.4",
+        "P12.5"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P11"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p12_summary.json"
+      ]
+    },
+    {
+      "id": "P13",
+      "name": "اختبار الجهاز وبناء APK V8",
+      "group": "BUILD",
+      "task_ids": [
+        "P13.1",
+        "P13.2",
+        "P13.3",
+        "P13.4",
+        "P13.5"
+      ],
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "P12"
+      ],
+      "deliverables": [
+        "research/v8_implementation/results/next_p13_summary.json"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "P00.1",
+      "phase": "P00",
+      "description": "تثبيت SHA وHEAD لكل مسار V8/V6/firmware/stable",
+      "status": "READY",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P00_1_evidence.json",
+      "acceptance_checks": [
+        "manifest hashes versions reproducible",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P00.2",
+      "phase": "P00",
+      "description": "جرد تقنيات V6 الثمانين ومَن يستدعي كل تقنية",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P00.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P00_2_evidence.json",
+      "acceptance_checks": [
+        "complete 80-line inventory and activation status",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P00.3",
+      "phase": "P00",
+      "description": "فحص ربط الإشارة بالمرشحين وبالجلسات والتقارير",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P00.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P00_3_evidence.json",
+      "acceptance_checks": [
+        "wiring graph traces instant/session/legacy",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P00.4",
+      "phase": "P00",
+      "description": "عد مواد الكتالوج الفعلي وجودة UID/CAS/legacy وStable",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P00.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P00_4_evidence.json",
+      "acceptance_checks": [
+        "verified SQL count and mapping integrity",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P01.1",
+      "phase": "P01",
+      "description": "إنشاء حزمة ChemCore Next المستقلة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P00.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P01_1_evidence.json",
+      "acceptance_checks": [
+        "JVM compile no Activity dependency",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P01.2",
+      "phase": "P01",
+      "description": "عقد Sensor/Device/Snapshot/Evidence/Result immutable",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P01.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P01_2_evidence.json",
+      "acceptance_checks": [
+        "schema units source hashes verified",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P01.3",
+      "phase": "P01",
+      "description": "تسجيل capabilities للحساسات الحالية والمستقبلية",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P01.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P01_3_evidence.json",
+      "acceptance_checks": [
+        "dynamic registry missing/new sensor tests",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P01.4",
+      "phase": "P01",
+      "description": "Deterministic replay والنسخ وتحويل JSON",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P01.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P01_4_evidence.json",
+      "acceptance_checks": [
+        "identical input identical output and round-trip pass",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P02.1",
+      "phase": "P02",
+      "description": "ADC/ADS/voltage/RL/Vc إلى Rs وحالات العطل",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P01.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P02_1_evidence.json",
+      "acceptance_checks": [
+        "invalid voltages handled not fictional outputs",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P02.2",
+      "phase": "P02",
+      "description": "تمييز R_air عن R0_source وK ومعنى النسبة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P02.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P02_2_evidence.json",
+      "acceptance_checks": [
+        "correct ratio and migration tests",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P02.3",
+      "phase": "P02",
+      "description": "قياس noise/drift/phase/T-RH وسلامة العينات",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P02.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P02_3_evidence.json",
+      "acceptance_checks": [
+        "sample quality and heater flags present",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P02.4",
+      "phase": "P02",
+      "description": "استجابة حساس واحد والدليل السلبي المشروط",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P02.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P02_4_evidence.json",
+      "acceptance_checks": [
+        "single sensor evidence retained, invalid negative suppressed",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P02.5",
+      "phase": "P02",
+      "description": "تجارب برمجية للهواء المرجعي والـR0 وscan cycles",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P02.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P02_5_evidence.json",
+      "acceptance_checks": [
+        "clean air false positives documented",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P03.1",
+      "phase": "P03",
+      "description": "جرد أبحاث MQ ومشاريعها مع منهج وخطوات التجارب",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P02.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P03_1_evidence.json",
+      "acceptance_checks": [
+        "source records and search provenance",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P03.2",
+      "phase": "P03",
+      "description": "سجل منحنيات V6/MQDataScience/MQSensorsLib ومعادلاتها",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P03.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P03_2_evidence.json",
+      "acceptance_checks": [
+        "canonical curves deduplicated with source identity",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P03.3",
+      "phase": "P03",
+      "description": "سجل البصمات والأدوات و3D و4D ونوع المصدر",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P03.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P03_3_evidence.json",
+      "acceptance_checks": [
+        "evidence assets classified experimental/digitized/synthetic",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P03.4",
+      "phase": "P03",
+      "description": "ربط الأصل العلمي بكل canonical UID من كامل الكتالوج",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P03.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P03_4_evidence.json",
+      "acceptance_checks": [
+        "nonlegacy mappings and no-model coverage tested",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P03.5",
+      "phase": "P03",
+      "description": "مصفوفة انتقائية الحساس ومدى التداخل وحد الكشف",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P03.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P03_5_evidence.json",
+      "acceptance_checks": [
+        "speciality matrix includes absent-data uncertainty",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P03.6",
+      "phase": "P03",
+      "description": "استكمال حقول الخلفية وLOD/limits/flammability/GHS",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P03.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P03_6_evidence.json",
+      "acceptance_checks": [
+        "verified source and unknown values preserved",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P04.1",
+      "phase": "P04",
+      "description": "CurveExpert الصيغ المباشرة والعكسية",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P03.6"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P04_1_evidence.json",
+      "acceptance_checks": [
+        "source inversion parity and range checks",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P04.2",
+      "phase": "P04",
+      "description": "FingerprintExpert البصمات والمجموعات الفردية والزوجية",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P04.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P04_2_evidence.json",
+      "acceptance_checks": [
+        "match residual and physical-subset tests",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P04.3",
+      "phase": "P04",
+      "description": "TemporalExpert زمن التغير والاستعادة و4D",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P04.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P04_3_evidence.json",
+      "acceptance_checks": [
+        "time-series required and time leakage blocked",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P04.4",
+      "phase": "P04",
+      "description": "EnvironmentExpert استجابات الحرارة والرطوبة و3D",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P04.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P04_4_evidence.json",
+      "acceptance_checks": [
+        "correction applied only when source compatible",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P04.5",
+      "phase": "P04",
+      "description": "MLResearchExpert تجارب مقارنة مجموعة من 76 نموذجًا",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P04.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P04_5_evidence.json",
+      "acceptance_checks": [
+        "baseline and grouped validation controls",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P04.6",
+      "phase": "P04",
+      "description": "واجهة EvidenceNode موحدة دون دمج عددي أعمى",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P04.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P04_6_evidence.json",
+      "acceptance_checks": [
+        "root dependency and method provenance preserved",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P05.1",
+      "phase": "P05",
+      "description": "مرشحون من canonical master UID والأدلة الصالحة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P04.6"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P05_1_evidence.json",
+      "acceptance_checks": [
+        "nonlegacy chemical can appear iff evidence exists",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P05.2",
+      "phase": "P05",
+      "description": "أدلة موجبة وسالبة مشروطة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P05.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P05_2_evidence.json",
+      "acceptance_checks": [
+        "NOT_EVALUABLE distinct from valid negative",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P05.3",
+      "phase": "P05",
+      "description": "رسم الارتباط والتداخل ومنع تكرار الدليل",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P05.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P05_3_evidence.json",
+      "acceptance_checks": [
+        "same source counted once",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P05.4",
+      "phase": "P05",
+      "description": "ترجيح هرمي مع حالات مخاليط ومجهول",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P05.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P05_4_evidence.json",
+      "acceptance_checks": [
+        "candidate reasons, UNKNOWN and mixture supported",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P05.5",
+      "phase": "P05",
+      "description": "تحقق عكسي من إعادة تفسير الإشارات",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P05.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P05_5_evidence.json",
+      "acceptance_checks": [
+        "forward residual and applicability visible",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P05.6",
+      "phase": "P05",
+      "description": "ترتيب حقيقي 0 أو 1 أو 5 أو >10 مرشحًا",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P05.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P05_6_evidence.json",
+      "acceptance_checks": [
+        "no filled candidates and stable ordering",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P05.7",
+      "phase": "P05",
+      "description": "فصل دليل الهوية عن أدلة إنذار الخطر",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P05.6"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P05_7_evidence.json",
+      "acceptance_checks": [
+        "research results never trigger certified safety logic",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P06.1",
+      "phase": "P06",
+      "description": "اختبارات G1 رياضية ووحدات وصلاحية المدخلات",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P05.7"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P06_1_evidence.json",
+      "acceptance_checks": [
+        "mandatory numerical tests run, results stored",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P06.2",
+      "phase": "P06",
+      "description": "مقارنة إعادة تشغيل عينات V6 وNext",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P06.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P06_2_evidence.json",
+      "acceptance_checks": [
+        "difference analysis with original fixed input",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P06.3",
+      "phase": "P06",
+      "description": "اختبار G2 ببيانات معروفة مستقلة مجموعات",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P06.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P06_3_evidence.json",
+      "acceptance_checks": [
+        "heldout grouped split and baseline tracked",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P06.4",
+      "phase": "P06",
+      "description": "اختبارات أداء وذاكرة Android-compatible JVM",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P06.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P06_4_evidence.json",
+      "acceptance_checks": [
+        "latency and memory measured",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P06.5",
+      "phase": "P06",
+      "description": "تجميد نموذج Next research manifest مع القيود",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P06.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P06_5_evidence.json",
+      "acceptance_checks": [
+        "versioned checksums and gate result",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P07.1",
+      "phase": "P07",
+      "description": "NextAndroidAdapter من telemetry",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P06.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P07_1_evidence.json",
+      "acceptance_checks": [
+        "physical signal parity with core snapshot",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P07.2",
+      "phase": "P07",
+      "description": "ترحيل قاعدة البيانات وحفظ النتيجة immutable",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P07.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P07_2_evidence.json",
+      "acceptance_checks": [
+        "migration and history preservation pass",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P07.3",
+      "phase": "P07",
+      "description": "FeatureFlag Next/V6 والرجوع عند الفشل",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P07.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P07_3_evidence.json",
+      "acceptance_checks": [
+        "same mode rollback works",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P07.4",
+      "phase": "P07",
+      "description": "اختبارات قرار واحد عبر جميع جهات العرض",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P07.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P07_4_evidence.json",
+      "acceptance_checks": [
+        "result id and source hash consistent",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P08.1",
+      "phase": "P08",
+      "description": "عداد 60 ثانية + 60 ثانية في القياس الآني",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P07.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P08_1_evidence.json",
+      "acceptance_checks": [
+        "real sample time and success/failure evidence",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P08.2",
+      "phase": "P08",
+      "description": "إصلاح legacy144 وترتيب المحرك في TankInstantAnalyzer",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P08.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P08_2_evidence.json",
+      "acceptance_checks": [
+        "canonical eligible candidates and no source-ledger ordering",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P08.3",
+      "phase": "P08",
+      "description": "واجهة ChemCore وملخص الأدلة والرسوم",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P08.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P08_3_evidence.json",
+      "acceptance_checks": [
+        "candidate count accurate and UNKNOWN visible",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P08.4",
+      "phase": "P08",
+      "description": "تقرير PDF للقياس الآني من نتيجة واحدة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P08.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P08_4_evidence.json",
+      "acceptance_checks": [
+        "PDF values match immutable result",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P08.5",
+      "phase": "P08",
+      "description": "تتبع غاز محدد والتغذية الراجعة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P08.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P08_5_evidence.json",
+      "acceptance_checks": [
+        "feedback of detection/nondetection saved",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P09.1",
+      "phase": "P09",
+      "description": "ضبط عمل relay والعد والحفظ والتحقق ثم الإطفاء",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P08.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P09_1_evidence.json",
+      "acceptance_checks": [
+        "safe timeout and SQLite readback verified",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P09.2",
+      "phase": "P09",
+      "description": "تسجيل raw/ADS/scan cycles وسبب فشل كل محاولة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P09.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P09_2_evidence.json",
+      "acceptance_checks": [
+        "no invalid sample approved",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P09.3",
+      "phase": "P09",
+      "description": "استخدام Next في CompletedSessionChemCoreAnalyzer",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P09.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P09_3_evidence.json",
+      "acceptance_checks": [
+        "no hidden legacy fallback and matching core results",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P09.4",
+      "phase": "P09",
+      "description": "إدارة مواقع وجلسات متعددة وتتبع غاز",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P09.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P09_4_evidence.json",
+      "acceptance_checks": [
+        "canonical site/session association",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P09.5",
+      "phase": "P09",
+      "description": "إثبات عدم اختلاق بيانات PM/O2 غير المتوافرة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P09.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P09_5_evidence.json",
+      "acceptance_checks": [
+        "missing sensors explicitly marked",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P10.1",
+      "phase": "P10",
+      "description": "ربط المختبر بتجارب وبصمات وغاز مرجعي",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P09.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P10_1_evidence.json",
+      "acceptance_checks": [
+        "lab experiment traceability",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P10.2",
+      "phase": "P10",
+      "description": "معايرة R0 اليدوية 3 دقائق +1 دقيقة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P10.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P10_2_evidence.json",
+      "acceptance_checks": [
+        "timer and R_air/R0 definitions preserved",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P10.3",
+      "phase": "P10",
+      "description": "مقارنة ناتج النموذج بالتجربة المختبرية",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P10.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P10_3_evidence.json",
+      "acceptance_checks": [
+        "forward inverse mismatch recorded",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P10.4",
+      "phase": "P10",
+      "description": "توثيق مراجعة المختبر المركزي دون ترقية تلقائية",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P10.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P10_4_evidence.json",
+      "acceptance_checks": [
+        "feedback source and status immutable",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P10.5",
+      "phase": "P10",
+      "description": "اختبار استقلال نضارة الأغذية عن ChemCore",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P10.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P10_5_evidence.json",
+      "acceptance_checks": [
+        "food engine isolation and UI smoke tests",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P11.1",
+      "phase": "P11",
+      "description": "توحيد البحث والتتبع والمرشحين بالمكتبة الرئيسية",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P10.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P11_1_evidence.json",
+      "acceptance_checks": [
+        "one canonical uid and status columns",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P11.2",
+      "phase": "P11",
+      "description": "تضمين Stable والتحديث بالاستعلام والتحقق والرجوع",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P11.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P11_2_evidence.json",
+      "acceptance_checks": [
+        "stable manifest integrity and offline pass",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P11.3",
+      "phase": "P11",
+      "description": "واجهة تصحيح المستخدم وإبقاء النتيجة الأصلية",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P11.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P11_3_evidence.json",
+      "acceptance_checks": [
+        "review annotations not overwrite measurement",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P11.4",
+      "phase": "P11",
+      "description": "قائمة رفع التعليقات إلى المختبر بعد الموافقة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P11.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P11_4_evidence.json",
+      "acceptance_checks": [
+        "queued records and acknowledgments simulated only unless backend real",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P11.5",
+      "phase": "P11",
+      "description": "تبويب مساهمات المستخدمين والتحقق قبل Stable",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P11.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P11_5_evidence.json",
+      "acceptance_checks": [
+        "quarantine and moderation gates",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P12.1",
+      "phase": "P12",
+      "description": "توحيد كافة تقارير PDF/XLSX لقرار Next",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P11.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P12_1_evidence.json",
+      "acceptance_checks": [
+        "report result parity across all formats",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P12.2",
+      "phase": "P12",
+      "description": "ADS raw للجلسات Excel عند وجود قراءة حقيقية",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P12.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P12_2_evidence.json",
+      "acceptance_checks": [
+        "no invented raw values",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P12.3",
+      "phase": "P12",
+      "description": "إصلاح جودة الواجهات والرسوم والخانات",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P12.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P12_3_evidence.json",
+      "acceptance_checks": [
+        "UI visual accessibility and data chart tests",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P12.4",
+      "phase": "P12",
+      "description": "فحص الاتصال والحركة والكاميرا وEcho والقوائم الأخرى",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P12.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P12_4_evidence.json",
+      "acceptance_checks": [
+        "no regressions with safe movement",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P12.5",
+      "phase": "P12",
+      "description": "اختبارات Android end-to-end وSQLite والفشل",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P12.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P12_5_evidence.json",
+      "acceptance_checks": [
+        "CI jobs passed with reproducible artifacts",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P13.1",
+      "phase": "P13",
+      "description": "فحص hardware bench للحساسات وrelay وEcho والاتصال",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P12.5"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P13_1_evidence.json",
+      "acceptance_checks": [
+        "bench evidence real measured, not software-only",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P13.2",
+      "phase": "P13",
+      "description": "G3 تجارب مرجعية على Tank عند توفر مختبر آمن",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P13.1"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P13_2_evidence.json",
+      "acceptance_checks": [
+        "physical status honest, research release allowed without G3",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P13.3",
+      "phase": "P13",
+      "description": "بناء APK حقيقي وإصدارات firmware فقط إذا لزمت",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P13.2"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P13_3_evidence.json",
+      "acceptance_checks": [
+        "Actions run + artifact SHA + exact revision",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P13.4",
+      "phase": "P13",
+      "description": "دورة فحص المستخدم ومعالجة عيوب النسخة",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P13.3"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P13_4_evidence.json",
+      "acceptance_checks": [
+        "issues and retests logged",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    },
+    {
+      "id": "P13.5",
+      "phase": "P13",
+      "description": "توثيق قرار الإصدار وREADME والرجوع",
+      "status": "NOT_STARTED",
+      "qualification": "NOT_ASSESSED",
+      "depends_on": [
+        "P13.4"
+      ],
+      "source_paths": [],
+      "planned_evidence_file": "research/v8_implementation/results/next_P13_5_evidence.json",
+      "acceptance_checks": [
+        "release status scientifically qualified",
+        "commit and actual evidence file verified",
+        "task status plus tracker updated"
+      ],
+      "test_status": "NOT_RUN",
+      "test_command": null,
+      "test_result": null,
+      "action_run_id": null,
+      "commit_sha": null,
+      "actual_evidence_files": [],
+      "blockers": [],
+      "last_checkpoint": "",
+      "next_action": "Perform task and record actual evidence",
+      "updated_at": null
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-11-02",
+      "event": "PLAN_CREATED",
+      "description": "Core-first execution plan and 20 owner ideas captured. No code tests or APK/G3 attributed to this state.",
+      "commit_sha": null
+    }
+  ],
+  "notes": [
+    "Do not treat historical 78 partial techniques as 78 complete Next tasks",
+    "actual UID count and Stable approved version not measured",
+    "hardware tests need actual bench; no claims based on synthetic inputs",
+    "update task after every execution and save real file path/run ID/commit",
+    "G1/G2 and developer Android research edition are distinct from physical G3/safety certification"
+  ]
+}
