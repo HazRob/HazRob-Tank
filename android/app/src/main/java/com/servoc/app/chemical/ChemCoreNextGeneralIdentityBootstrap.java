@@ -16,7 +16,7 @@ import java.util.Map;
  * v14 unified materials table. Intentionally not wired into V6/V8 launch:
  * the independent ChemCore Next catalog initializer calls this explicitly.
  *
- * All entries have null CAS/formula and no GHS, LOD, ppm, reference gas or
+ * New category entries have null CAS/formula and no GHS, LOD, ppm, reference gas or
  * occupational limits. An NH4 source token is an ionic category, NOT NH4 gas.
  */
 public final class ChemCoreNextGeneralIdentityBootstrap {
@@ -96,11 +96,22 @@ public final class ChemCoreNextGeneralIdentityBootstrap {
             if (cursor.moveToNext())
                 throw new IllegalStateException("duplicate active catalog identity name: " + name);
             cursor.moveToFirst();
-            if ((!cursor.isNull(1) && !String.valueOf(cursor.getInt(1)).equals(legacyIndex))
+            if ((legacyIndex.isEmpty() ? !cursor.isNull(1) : (cursor.isNull(1) || !String.valueOf(cursor.getInt(1)).equals(legacyIndex)))
                 || !empty(cursor.getString(2))
                 || !empty(cursor.getString(3))
-                || !requiredClass.equals(cursor.getString(4)))
+                || (!empty(cursor.getString(4)) && !requiredClass.equals(cursor.getString(4))))
                 throw new IllegalStateException("existing row is incompatible with research category: " + name);
+            if (empty(cursor.getString(4))) {
+                // Reuse and classify a historically seeded generic entry;
+                // do not create a second LPG/Smoke/NOx row or change legacy UID.
+                ContentValues classify = new ContentValues();
+                classify.put("chemical_class", requiredClass);
+                int changed = sql.update("chemicals", classify,
+                    "uid=? AND (chemical_class IS NULL OR trim(chemical_class)='')",
+                    new String[]{Long.toString(uid)});
+                if (changed != 1)
+                    throw new IllegalStateException("failed to retain existing category UID");
+            }
             if (uid <= 0) throw new IllegalStateException("bad existing UID");
             return uid;
         }
