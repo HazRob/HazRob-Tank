@@ -1,0 +1,91 @@
+name: ChemCore Next original MQ6400 source generic-category fingerprint stress
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'research/chemcore_next/experiments/next_reference_mq6400_class_prototypes.py'
+      - '.github/workflows/chemcore-next-g2-mq6400-categories.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  next-6400-source-classes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout actual ChemCore Next experiment
+        uses: actions/checkout@v4
+        with:
+          path: tank
+      - name: Checkout exact original captured MQ-EXT-03 source blob
+        uses: actions/checkout@v4
+        with:
+          repository: HazRob/HazRob-Tank
+          ref: research/mq-open-measurements-audit-20261021
+          path: source-mq-original
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed reproducible algorithm packages
+        run: python -m pip install --no-input numpy==2.3.5 scikit-learn==1.8.0
+      - name: Confirm source is original version-locked 6400 10-bit ADC data
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chemcore-next-source /tmp/chemcore-next-mq6400-results
+          cp source-mq-original/research/datasets/external/mq_ext_03_multimodal_github_mirror_6400.csv \
+            /tmp/chemcore-next-source/mq_ext_03_original.csv
+          test "$(git hash-object /tmp/chemcore-next-source/mq_ext_03_original.csv)" = \
+            '451fdd05a18db8531abc219089de071ccc0dd461'
+          python -m py_compile \
+            tank/research/chemcore_next/experiments/next_reference_mq6400_class_prototypes.py
+      - name: Evaluate blocked source class prototypes and out-of-class abstention
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tank/research/chemcore_next/experiments/next_reference_mq6400_class_prototypes.py \
+            --source /tmp/chemcore-next-source/mq_ext_03_original.csv \
+            --out /tmp/chemcore-next-mq6400-results \
+            | tee /tmp/chemcore-next-mq6400-results/source_class_run.log
+          grep -q '^CHEMCORE_NEXT_MQ6400_CATEGORY_PASS ' \
+            /tmp/chemcore-next-mq6400-results/source_class_run.log
+      - name: Enforce class-only and no false ppm/GHS/G2/G3 promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pathlib,csv
+          root=pathlib.Path('/tmp/chemcore-next-mq6400-results')
+          j=json.loads((root/'next_mq6400_source_category_experiment.json').read_text())
+          assert j['source_rows']==6400
+          assert j['source_class_fingerprints_training_only']==128
+          assert j['train_cal_test_contiguous_block_folds']==32
+          assert j['open_set_distinct_calibration_unknown_folds']==96
+          assert len(j['source_classes'])==4
+          assert len(j['source_sensor_channels'])==7
+          assert len(j['tank_model_overlapping_channels'])==6
+          assert j['original_github_blob_sha1']=='451fdd05a18db8531abc219089de071ccc0dd461'
+          assert not j['gas_identity_confirmed']
+          assert not j['ppm_qualified']
+          assert not j['physical_Tank_G3']
+          assert j['independently_replicated_exposures']==0
+          assert not j['activated_in_ChemCoreNext_evaluate']
+          with (root/'next_mq6400_source_class_fingerprints.csv').open() as f:
+              r=list(csv.DictReader(f))
+              assert len(r)==128
+              assert set(x['source_class'] for x in r)==set(j['source_classes'])
+              assert all(x['class_to_molecular_CAS_mapping_approved']=='False' for x in r)
+          print('CHEMCORE_NEXT_MQ6400_CLASS_SOURCE_INTEGRITY_PASS')
+          print('SOURCE_CLASS_METRICS',json.dumps(j['metrics'],sort_keys=True))
+          PY
+      - name: Preserve all source-only class fingerprints and heldout predictions
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ChemCore-Next-MQ6400-Original-Category-Fingerprints
+          path: /tmp/chemcore-next-mq6400-results/
+          if-no-files-found: warn
+          retention-days: 30
