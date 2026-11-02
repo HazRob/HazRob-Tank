@@ -93,7 +93,7 @@ public final class SourceCurveExpertSmoke {
         ok(mismatch.abstention==SourceCurveExpert.AbstentionReason.SENSOR_MODEL_MISMATCH,
             "MQ7 cannot apply MQ2 curve");
         SourceCurveExpert.Output badHeater=SourceCurveExpert.evaluate(source,instance,
-            reading(ratio500*10,10,"HEATER_CYCLE_LOW",CoreContracts.SampleQuality.VALID),
+            reading(ratio500*10,10.0,"HEATER_CYCLE_LOW",CoreContracts.SampleQuality.VALID),
             qualified);
         ok(badHeater.abstention==SourceCurveExpert.AbstentionReason.HEATER_PHASE_UNQUALIFIED,
             "heater profile mismatch blocks source model");
@@ -131,12 +131,12 @@ public final class SourceCurveExpertSmoke {
         ok(synthetic.sourceRoot.equals(source.sourceRoot),"source-root provenance preserved");
         double ratioOutside=SourceCurveExpert.forwardSourceRatio(source,15000);
         SourceCurveExpert.Output outside=SourceCurveExpert.evaluate(source,instance,
-            reading(ratioOutside*10,10,"HEATER_STEADY",
+            reading(ratioOutside*10,10.0,"HEATER_STEADY",
                 CoreContracts.SampleQuality.VALID),qualified);
         ok(outside.decision==SourceCurveExpert.Decision.OUTSIDE_SOURCE_DOMAIN,
             "source extrapolation blocked");
         ok(outside.researchOnlyPpm==null,"no extrapolated ppm output");
-        CoreContracts.Reading stale=reading(ratio500*10,10,"HEATER_STEADY",
+        CoreContracts.Reading stale=reading(ratio500*10,10.0,"HEATER_STEADY",
             CoreContracts.SampleQuality.STALE);
         ok(SourceCurveExpert.evaluate(source,instance,stale,qualified).abstention
            ==SourceCurveExpert.AbstentionReason.READING_INVALID_OR_MISSING,
@@ -148,7 +148,7 @@ public final class SourceCurveExpertSmoke {
             SourceCurveExpert.Equation.RATIO_EQUALS_A_TIMES_PPM_OVER_SCALE_POWER_B,
             6.2968,-0.3892,1.0,1.0,10000.0,"HEATER_STEADY");
         ok(SourceCurveExpert.evaluate(unknownLabel,instance,reading(
-            SourceCurveExpert.forwardSourceRatio(unknownLabel,100)*10,10,
+            SourceCurveExpert.forwardSourceRatio(unknownLabel,100)*10,10.0,
             "HEATER_STEADY",CoreContracts.SampleQuality.VALID),qualified)
             .canonicalChemicalUid==null,
             "NH4 source label never assigned molecular UID");
