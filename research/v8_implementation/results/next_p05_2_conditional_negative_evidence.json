@@ -1,0 +1,34 @@
+{
+  "schema": "chemcore.next.P05.2.conditional_negative_g1/1",
+  "date": "2026-11-02",
+  "task": "P05.2",
+  "ci": {
+    "run_id": 41392138917,
+    "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41392138917",
+    "conclusion": "success"
+  },
+  "source_code": [
+    "android/app/src/main/java/com/hazrob/tank/chemcore/next/R0ReferenceMath.java",
+    "android/app/src/main/java/com/hazrob/tank/chemcore/next/SingleSensorEvidenceGate.java",
+    "android/app/src/main/java/com/hazrob/tank/chemcore/next/ConditionalEvidenceRouter.java"
+  ],
+  "test": "research/chemcore_next/tests/java/ConditionalEvidenceRouterSmoke.java",
+  "clean_air_policy": {
+    "device_baseline": "R_air=measured clean air mean physical Rs in kOhm; distinct from manufacturer R0_source",
+    "relative_response": "log(Rs/R_air)",
+    "research_response_threshold": "max(qualified source LOD in abs-log-ratio, 3*physical clean air baseline noise in abs-log-ratio)",
+    "must_match_verified_response_direction": true,
+    "missing_lod_or_air_reference": "NOT_EVALUABLE",
+    "minor_clean_air_variation": "NO_POSITIVE_GAS_EVIDENCE",
+    "physical_heater_and_ads_quality_required": true,
+    "negative_requires": "independent measured challenge, source verified expected response >=2*detection threshold and separate source root",
+    "G3_Tank_validation": "NOT_PERFORMED"
+  },
+  "status": "G1_VALIDATED_NO_FIELD_PPM_OR_GAS_ID",
+  "limitations": [
+    "Experimental clean air thresholds are per physical sensor and source heater phase; must be measured on actual Tank before field use",
+    "No reliable source-specific LOD was established for 21 referenced chemical targets in earlier P03.6 gate",
+    "No app integration P07-P13 is authorized within independent core program"
+  ],
+  "source_inference_only": true
+}

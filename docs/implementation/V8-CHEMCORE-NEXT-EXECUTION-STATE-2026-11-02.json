@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
-  "status": "CHEMCORE_NEXT_P05_1_G1_ELIGIBILITY_VERIFIED",
-  "last_verified_head_sha": "e680b9773b4e73bb307023e8f489b25dca15b904",
+  "status": "CHEMCORE_NEXT_P05_2_NEGATIVE_POLARITY_G1_PASSED_P05_3_READY",
+  "last_verified_head_sha": "192b63d8c384181dc4f7d5c033df122524d37c1d",
   "active_phase": "P05",
-  "active_task": "P05.2",
-  "last_checkpoint": "26/37 core tasks. Full catalog candidate dynamic 0..12 test passed; source-backed only, actual Tank G3=0.",
-  "next_action": "P05.2 conditional negative evidence adapter; distinguish non-evaluable from qualified negative and shared source correlations",
+  "active_task": "P05.3",
+  "last_checkpoint": "27/37 independent core tasks, P05.2 source-qualified negative / clean air deviation tests passed; G3=0",
+  "next_action": "P05.3 evidence conflict/independence graph with conditional negative and source roots; P05.4 arbitrator follows",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 26,
-    "passed_tests": 25,
+    "done_tasks": 27,
+    "passed_tests": 26,
     "failed_tests": 0,
-    "percent_complete": 36.62
+    "percent_complete": 38.03
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -1089,8 +1089,8 @@
       "id": "P05.2",
       "phase": "P05",
       "description": "أدلة موجبة وسالبة مشروطة",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_CONDITIONAL_POLARITY_SOURCE_ONLY_NO_TANK_G3",
       "depends_on": [
         "P05.1"
       ],
@@ -1101,22 +1101,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "ConditionalEvidenceRouterSmoke Java17 integrated P01 JVM CI",
+      "test_result": "Source-locked conditional negative requires LOD+clean-air noise and separate reference provenance, invalid or missing calibration abstains; full CI passed.",
+      "action_run_id": 41392138917,
+      "commit_sha": "192b63d8c384181dc4f7d5c033df122524d37c1d",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p05_2_conditional_negative_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
+      "last_checkpoint": "P05.2 G1 passed; independently sourced challenge negative only, no field gas absence asserted",
+      "next_action": "DONE",
       "updated_at": null
     },
     {
       "id": "P05.3",
       "phase": "P05",
       "description": "رسم الارتباط والتداخل ومنع تكرار الدليل",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P05.2"
@@ -2573,6 +2575,15 @@
       "ci_run": 41391694591,
       "commit_sha": "e680b9773b4e73bb307023e8f489b25dca15b904",
       "evidence": "research/v8_implementation/results/next_p05_1_candidate_source_eligibility_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE_G1",
+      "task_id": "P05.2",
+      "description": "Clean-air Rs/R_air signal against qualified log-ratio LOD and independent negative challenge provenance; no false negative absence",
+      "ci_run": 41392138917,
+      "commit_sha": "192b63d8c384181dc4f7d5c033df122524d37c1d",
+      "evidence": "research/v8_implementation/results/next_p05_2_conditional_negative_evidence.json"
     }
   ],
   "notes": [
@@ -2606,9 +2617,9 @@
   "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
   "core_program_progress": {
     "total_tasks": 37,
-    "done_tasks": 26,
-    "percent_complete": 70.27,
-    "active_task": "P05.2",
+    "done_tasks": 27,
+    "percent_complete": 72.97,
+    "active_task": "P05.3",
     "qualified_g3_techniques": 0
   },
   "separate_android_integration_scope": {
