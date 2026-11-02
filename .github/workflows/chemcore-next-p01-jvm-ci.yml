@@ -173,6 +173,23 @@ jobs:
             | tee build/chemcore-next-p01/P05-INFERENCE-SAFETY.log
           grep -q '^CHEMCORE_NEXT_P05_4_7_INFERENCE_PASS ' \
             build/chemcore-next-p01/P05-INFERENCE-SAFETY.log
+      - name: P06.1 and P06.4 integrated real owner baseline G1 fail-closed and JVM resource profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextP06IntegratedCoreSmoke \
+            build/chemcore-next-p01 | tee build/chemcore-next-p01/P06-G1-INTEGRATED.log
+          grep -q '^CHEMCORE_NEXT_P06_1_4_INTEGRATED_G1_PASS ' \
+            build/chemcore-next-p01/P06-G1-INTEGRATED.log
+          python - <<'PY'
+          import json,pathlib
+          d=json.loads(pathlib.Path('build/chemcore-next-p01/p06_resource_profile.json').read_text())
+          assert d['scenario']=='736_material_catalog_two_source_roots_research_only'
+          assert d['measurements']==1500
+          assert not d['benchmarks_android_device'] and not d['g3'] and not d['ppm_authorized']
+          assert d['latency_p99_ms']>=d['latency_p95_ms']>=d['latency_median_ms']>=0
+          print('CHEMCORE_NEXT_P06_1_4_RESOURCE_REPORT_PASS')
+          PY
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -197,5 +214,7 @@ jobs:
             build/chemcore-next-p01/OWNER-TANK-8MQ-AIR-BASELINE.log
             build/chemcore-next-p01/P05-CONFLICT-GRAPH.log
             build/chemcore-next-p01/P05-INFERENCE-SAFETY.log
+            build/chemcore-next-p01/P06-G1-INTEGRATED.log
+            build/chemcore-next-p01/p06_resource_profile.json
           if-no-files-found: warn
           retention-days: 30
