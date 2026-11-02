@@ -13,6 +13,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/report/**'
       - '.github/workflows/v8-next-android-compile-gate.yml'
       - 'research/v8_implementation/tests/test_v8_next_instant_source_routing.py'
+      - 'research/v8_implementation/tests/test_v8_next_field_session_handoff.py'
   workflow_dispatch:
 
 permissions:
@@ -70,6 +71,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m unittest research/v8_implementation/tests/test_v8_next_instant_source_routing.py -v
+      - name: P09 field 60s stored MQ scans and explicit Next approval contract
+        working-directory: tank
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest research/v8_implementation/tests/test_v8_next_field_session_handoff.py -v
       - name: Preserve reproducible compile-only build notes
         if: always()
         shell: bash

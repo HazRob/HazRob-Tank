@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""V8 P09 telemetry-to-Next handshake: static structural gate only."""
+import pathlib
+import unittest
+ROOT=pathlib.Path(__file__).resolve().parents[3]
+def read(p):return (ROOT/"android/app/src/main/java/com/servoc/app"/p).read_text()
+class FieldHandoff(unittest.TestCase):
+    def test_finalization_uses_saved_series_not_terminal_v6(self):
+        s=read("measurement/TelemetryRecorder.java")
+        field=s.split('if(fieldCaptureSession&&"ready".equalsIgnoreCase(state))',1)[1].split('}else if(!wasChemCore&&!fieldCaptureSession',1)[0]
+        for marker in ("requiresGasDecision(db,completed)","NextFieldArchiveBridge",
+                       ".analyzeAndPersist(appContext,db,completed,snapshot,",
+                       "v8_field_next_failure_"):
+            self.assertIn(marker,field)
+        self.assertNotIn("CompletedSessionChemCoreAnalyzer",field)
+    def test_field_source_has_60s_and_unique_scan_gates(self):
+        s=read("chemcore/nextintegration/NextFieldArchiveBridge.java")
+        for marker in ("telemetry_samples WHERE session_id=? ORDER BY t_ms,id",
+                       "SOURCE_ARCHIVE_ELIGIBLE_FOR_RESEARCH_UNKNOWN_ONLY",
+                       "SOURCE_ARCHIVE", "medianRsKohm","source.sourceSha256",
+                       "CoreContracts.Mode.FIELD_SESSION","FIELD_RELAY_NOT_ON_AT_CAPTURE_SEAL"):
+            if marker=="SOURCE_ARCHIVE_ELIGIBLE_FOR_RESEARCH_UNKNOWN_ONLY":continue
+            self.assertIn(marker,s)
+        source=(ROOT/"android/app/src/main/java/com/hazrob/tank/chemcore/next/NextFieldArchive.java").read_text()
+        for marker in ("coverageMs>=58000L", "distinctGlobalGasScanCycles",
+                       "putIfAbsent(p.cycle,p)","unique.get", "sourceSha256"):
+            if marker=="distinctGlobalGasScanCycles": self.assertIn(marker,source)
+            else: self.assertIn(marker,source)
+    def test_approval_requires_next_not_any_v6_decision(self):
+        s=read("field/FieldCycleRepository.java")
+        method=s.split("private boolean hasRequiredChemCoreDecision(",1)[1].split("private static boolean hasMeasuredEvidence(",1)[0]
+        self.assertIn("NextDecisionStore",method)
+        self.assertIn('startsWith("FIELD-ARCHIVE-")',method)
+        self.assertNotIn("ChemCoreDecisionRepository",method)
+        digest=s.split("private static String evidenceDigest(",1)[1]
+        self.assertIn("FROM next_research_decisions WHERE session_id=?",digest)
+    def test_missing_next_receipt_yields_reason(self):
+        s=read("measurement/FieldCycleController.java")
+        self.assertIn("FIELD_NEXT_DECISION_NOT_PERSISTED",s)
+        self.assertIn("FIELD_COMPLETION_GATE_FAILED",s)
+if __name__=="__main__":unittest.main(verbosity=2)
