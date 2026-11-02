@@ -1,0 +1,951 @@
+{
+  "schema": "hazrob.v8.next_android_integration_qa_tracker/1",
+  "date": "2026-11-02",
+  "status": "PLAN_PREPARED_NO_APP_CODE_EXECUTED",
+  "branch": "feature/tank-v8-implementation",
+  "plan_path": "docs/implementation/V8-ANDROID-CHEMCORE-NEXT-INTEGRATION-AND-V7-DEFECT-REMEDIATION-PLAN-2026-11-02_AR.md",
+  "scientific_core_status": "P06 separate gate, no inferred approval",
+  "authorized_scope": "architecture/forensic review/planning; implementation not executed by this tracker",
+  "source_head_at_review": "57d0733d058683bcd1072ddd0d1f7d84089b7a67",
+  "total_application_tasks": 34,
+  "completed_application_tasks": 0,
+  "known_code_contract_findings": [
+    {
+      "id": "F01",
+      "title": "Finalize timeout/recorder ack race",
+      "severity": "HIGH",
+      "owner_task": "P09.1",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F02",
+      "title": "Swallowed ChemCore analysis exception",
+      "severity": "CRITICAL",
+      "owner_task": "P09.2",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F03",
+      "title": "Boolean-only completion gate reason",
+      "severity": "CRITICAL",
+      "owner_task": "P09.2",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F04",
+      "title": "Legacy 144 mapper / source curve insertion list",
+      "severity": "CRITICAL",
+      "owner_task": "P08.2",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F05",
+      "title": "Fixed screening UI / int UID / max12",
+      "severity": "HIGH",
+      "owner_task": "P08.3",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F06",
+      "title": "Lab analysis still wired to V6",
+      "severity": "HIGH",
+      "owner_task": "P10.1",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F07",
+      "title": "Settings nested R0 navigation lifecycle",
+      "severity": "HIGH",
+      "owner_task": "P10.2",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F08",
+      "title": "SQLite schema migration may surface generic error",
+      "severity": "HIGH",
+      "owner_task": "P07.2",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F09",
+      "title": "Reports source-binding and 144 chart labels",
+      "severity": "HIGH",
+      "owner_task": "P12.1",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F10",
+      "title": "Repeated polling vs independent MQ scan cycles",
+      "severity": "HIGH",
+      "owner_task": "P07.1",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F11",
+      "title": "Completed session V6 screening path",
+      "severity": "HIGH",
+      "owner_task": "P09.3",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    },
+    {
+      "id": "F12",
+      "title": "Food freshness isolation must be preserved",
+      "severity": "MEDIUM",
+      "owner_task": "P12.4",
+      "evidence": "STATIC_SOURCE_REVIEW_NOT_DEVICE_ROOT_CAUSE_CONFIRMED",
+      "status": "OPEN"
+    }
+  ],
+  "gates": {
+    "A_SOURCE_SCHEMA": {
+      "status": "NOT_RUN",
+      "required_for_release": true
+    },
+    "B_ACQUISITION": {
+      "status": "NOT_RUN",
+      "required_for_release": true
+    },
+    "C_FAIL_SAFE": {
+      "status": "NOT_RUN",
+      "required_for_release": true
+    },
+    "D_DYNAMIC_CANDIDATE": {
+      "status": "NOT_RUN",
+      "required_for_release": true
+    },
+    "E_UI_ID_CONSISTENCY": {
+      "status": "NOT_RUN",
+      "required_for_release": true
+    },
+    "F_NATIVE_PDF_XLSX": {
+      "status": "NOT_RUN",
+      "required_for_release": true
+    },
+    "G_DEVICE_BUILD_RELEASE": {
+      "status": "NOT_RUN",
+      "required_for_release": true
+    }
+  },
+  "tasks": [
+    {
+      "id": "P07.1",
+      "phase": "P07",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P06_CORE_FINAL_GATE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F10"
+      ]
+    },
+    {
+      "id": "P07.2",
+      "phase": "P07",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P06_CORE_FINAL_GATE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F08"
+      ]
+    },
+    {
+      "id": "P07.3",
+      "phase": "P07",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P06_CORE_FINAL_GATE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P07.4",
+      "phase": "P07",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P06_CORE_FINAL_GATE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P08.1",
+      "phase": "P08",
+      "status": "PLANNED",
+      "blocked_by": [
+        "PREVIOUS_PHASE_ACCEPTANCE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P08.2",
+      "phase": "P08",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P08.1"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F04"
+      ]
+    },
+    {
+      "id": "P08.3",
+      "phase": "P08",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P08.2"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F05"
+      ]
+    },
+    {
+      "id": "P08.4",
+      "phase": "P08",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P08.3"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P08.5",
+      "phase": "P08",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P08.4"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P09.1",
+      "phase": "P09",
+      "status": "PLANNED",
+      "blocked_by": [
+        "PREVIOUS_PHASE_ACCEPTANCE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F01"
+      ]
+    },
+    {
+      "id": "P09.2",
+      "phase": "P09",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P09.1"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F02",
+        "F03"
+      ]
+    },
+    {
+      "id": "P09.3",
+      "phase": "P09",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P09.2"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F11"
+      ]
+    },
+    {
+      "id": "P09.4",
+      "phase": "P09",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P09.3"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P09.5",
+      "phase": "P09",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P09.4"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P10.1",
+      "phase": "P10",
+      "status": "PLANNED",
+      "blocked_by": [
+        "PREVIOUS_PHASE_ACCEPTANCE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F06"
+      ]
+    },
+    {
+      "id": "P10.2",
+      "phase": "P10",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P10.1"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F07"
+      ]
+    },
+    {
+      "id": "P10.3",
+      "phase": "P10",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P10.2"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P10.4",
+      "phase": "P10",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P10.3"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P10.5",
+      "phase": "P10",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P10.4"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P11.1",
+      "phase": "P11",
+      "status": "PLANNED",
+      "blocked_by": [
+        "PREVIOUS_PHASE_ACCEPTANCE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P11.2",
+      "phase": "P11",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P11.1"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P11.3",
+      "phase": "P11",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P11.2"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P11.4",
+      "phase": "P11",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P11.3"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P11.5",
+      "phase": "P11",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P11.4"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P12.1",
+      "phase": "P12",
+      "status": "PLANNED",
+      "blocked_by": [
+        "PREVIOUS_PHASE_ACCEPTANCE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F09"
+      ]
+    },
+    {
+      "id": "P12.2",
+      "phase": "P12",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P12.1"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P12.3",
+      "phase": "P12",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P12.2"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P12.4",
+      "phase": "P12",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P12.3"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": [
+        "F12"
+      ]
+    },
+    {
+      "id": "P12.5",
+      "phase": "P12",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P12.4"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P13.1",
+      "phase": "P13",
+      "status": "PLANNED",
+      "blocked_by": [
+        "PREVIOUS_PHASE_ACCEPTANCE"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P13.2",
+      "phase": "P13",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P13.1"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P13.3",
+      "phase": "P13",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P13.2"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P13.4",
+      "phase": "P13",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P13.3"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    },
+    {
+      "id": "P13.5",
+      "phase": "P13",
+      "status": "PLANNED",
+      "blocked_by": [
+        "P13.4"
+      ],
+      "source_commit": null,
+      "action_run_id": null,
+      "test_evidence": null,
+      "device_qa": null,
+      "reviewer_acceptance": null,
+      "linked_defects": []
+    }
+  ],
+  "acceptance_scenarios": [
+    {
+      "id": "A01",
+      "requirement": "V6/V7 SQLite migration with backup preserves old results",
+      "phase": "P07",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "A02",
+      "requirement": "source UID >144 and 64bit preserved no int narrowing",
+      "phase": "P08",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "A03",
+      "requirement": "duplicate source_root not counted independent",
+      "phase": "P08",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "A04",
+      "requirement": "R_air Vs source R0 separate calibrated source",
+      "phase": "P10",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "A05",
+      "requirement": "Stable offline update atomic rollback metadata flags",
+      "phase": "P11",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "B01",
+      "requirement": "field gas+physical default selected",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "B02",
+      "requirement": "60s+60s monotonic actual samples",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "B03",
+      "requirement": "R0 180s+60s independent operation",
+      "phase": "P10",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "B04",
+      "requirement": "scan_cycle unique vs 200ms duplicated poll",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "B05",
+      "requirement": "all selected families availability masks",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "B06",
+      "requirement": "relay ACK != HTTP success",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "B07",
+      "requirement": "stop ACK + raw flush + DB readback before review",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C01",
+      "requirement": "lost device identity mid warmup fails closed",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C02",
+      "requirement": "lost telemetry and network drops capture",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C03",
+      "requirement": "relay stop while sampling yields FAILED audit",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C04",
+      "requirement": "TelemetryRecorder analysis error persists typed status",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C05",
+      "requirement": "SQLite full/write fail preserves previous approved data",
+      "phase": "P07",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C06",
+      "requirement": "process death sampling/restart safe relay stop",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C07",
+      "requirement": "process death during finalization no false success",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C08",
+      "requirement": "concurrent Instant+Lab+Field rejected with reason",
+      "phase": "P07",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C09",
+      "requirement": "retry creates immutable attempt and prevents double approve",
+      "phase": "P09",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "C10",
+      "requirement": "old R0 change cannot alter past archived report",
+      "phase": "P10",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "D01",
+      "requirement": "candidate 0 and UNKNOWN",
+      "phase": "P08",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "D02",
+      "requirement": "candidate 1,5,10,12,40 no padding",
+      "phase": "P08",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "D03",
+      "requirement": "fingerprint source correlation not duplicate votes",
+      "phase": "P08",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "D04",
+      "requirement": "new snapshot changes list; no stale cache",
+      "phase": "P08",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "D05",
+      "requirement": "manual tracking selection not gas detection",
+      "phase": "P08",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "D06",
+      "requirement": "source model mismatched heater returns abstention",
+      "phase": "P10",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "D07",
+      "requirement": "october ethanol 8MQ/6MQ reproduce UNKNOWN",
+      "phase": "P10",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "E01",
+      "requirement": "Instant/Field/Reports same persisted result ID",
+      "phase": "P12",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "E02",
+      "requirement": "site/session tabs stable after rotate/process restart",
+      "phase": "P12",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "E03",
+      "requirement": "unqualified category smoke no false molecular CAS",
+      "phase": "P11",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "E04",
+      "requirement": "calibration page startup does not crash",
+      "phase": "P10",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "F01",
+      "requirement": "six original native Android PDFs render text/plots",
+      "phase": "P12",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "F02",
+      "requirement": "XLSX source raw MQ ADS if captured/no fabricated",
+      "phase": "P12",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "F03",
+      "requirement": "site reports include exactly approved cycles",
+      "phase": "P12",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "F04",
+      "requirement": "Arabic RTL with long paragraphs/page breaks",
+      "phase": "P12",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "F05",
+      "requirement": "tampered SHA blocks report and preserves audit",
+      "phase": "P12",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "F06",
+      "requirement": "food freshness separate fruit/meat source models",
+      "phase": "P12",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "G01",
+      "requirement": "Android 12 no ANR memory latency or black text",
+      "phase": "P13",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "G02",
+      "requirement": "signed reproducible release artifact APK SHA",
+      "phase": "P13",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "G03",
+      "requirement": "physical device relay watchdog and network loss",
+      "phase": "P13",
+      "status": "NOT_RUN",
+      "artifact": null
+    },
+    {
+      "id": "G04",
+      "requirement": "G3 scientific qualification separate from APK acceptance",
+      "phase": "P13",
+      "status": "NOT_RUN",
+      "artifact": null
+    }
+  ],
+  "notes": [
+    "Full ChemCore Next G3 gas identity/ppm 0/80; never infer from app QA",
+    "V6 and Stable preserved; no firmware or Android APK modified in planning turn",
+    "All app tests require evidence, commit, action run and source hashes",
+    "Do not overwrite archived calibrated R0 with newer Tank reference",
+    "Priority: session capture/analysis atomicity, dynamic canonical candidate provenance, single source reports"
+  ]
+}
