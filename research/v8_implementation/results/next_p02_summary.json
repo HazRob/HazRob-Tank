@@ -1,0 +1,55 @@
+{
+  "schema": "hazrob.v8.chemcore.next.p02.summary/1",
+  "date": "2026-11-02",
+  "phase": "P02",
+  "status": "DONE_SOFTWARE_G1_ONLY",
+  "tasks_done": [
+    "P02.1",
+    "P02.2",
+    "P02.3",
+    "P02.4",
+    "P02.5"
+  ],
+  "latest_ci_run": 41376661210,
+  "combined_assertions_passed": 421,
+  "combined_assertions_failed": 0,
+  "components": [
+    "SignalPhysics.java",
+    "R0ReferenceMath.java",
+    "SensorQualityGate.java",
+    "SingleSensorEvidenceGate.java",
+    "CleanAirReplayExperimentSmoke.java"
+  ],
+  "scientific_constraints": [
+    "Only observation and source evidence; no confirmed gas IDs",
+    "Source gas sensitivity models are research fixtures, not promoted",
+    "No false chemical IDs from clean air in synthetic eight-sensor replay",
+    "Valid single specialist evidence not hidden by two-sensor requirement",
+    "Conditional negative only with independent reference challenge and source detection floor",
+    "I2C 5↔3.3V level shifter not an ADC analog scaling correction",
+    "No firmware changes; hardware 400k timing and OS bit unresolved"
+  ],
+  "actual_Tank_G3_qualified_count": 0,
+  "old_v6_engine_unmodified": true,
+  "unified_master_catalog_count_real_sqlite": 734,
+  "android_v8_release_built": false,
+  "next_task": "P03.1",
+  "source_files": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SensorQualityGate.java",
+      "sha": "54d42cd767bcc40f3c120c47e21db3cb99b73084"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SingleSensorEvidenceGate.java",
+      "sha": "1f2207eaa157c4964d73a6923b44920f8ae442cb"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/CleanAirReplayExperimentSmoke.java",
+      "sha": "32a6d6cb53bb51636c46e50358925b8b5f3e17e3"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "sha": "aebd734c9621f43af39946d3a92aa5808a0981a0"
+    }
+  ]
+}
