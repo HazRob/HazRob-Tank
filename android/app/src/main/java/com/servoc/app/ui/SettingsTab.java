@@ -84,22 +84,20 @@ public final class SettingsTab {
         nextToggle.setMinHeight(UiKit.dp(c,48));
         nextToggle.setChecked(host.preferences().getBoolean(
             com.servoc.app.chemcore.nextintegration.NextEngineRouter.FLAG,true));
+        final boolean[] nextToggleReverting={false};
         nextToggle.setOnCheckedChangeListener((button,enabled)->{
+            if(nextToggleReverting[0])return;
             boolean saved=host.preferences().edit().putBoolean(
                 com.servoc.app.chemcore.nextintegration.NextEngineRouter.FLAG,enabled).commit();
             if(!saved){
-                button.setOnCheckedChangeListener(null);
+                nextToggleReverting[0]=true;
                 button.setChecked(!enabled);
-                button.setOnCheckedChangeListener((retry,checked)->{
-                    if(!host.preferences().edit().putBoolean(
-                        com.servoc.app.chemcore.nextintegration.NextEngineRouter.FLAG,checked).commit())
-                        host.showToast("فشل حفظ تفعيل المحرك");
-                    else host.showToast(checked?"ChemCore Next بحثي • مفعل":"ChemCore Next متوقف • لا بديل تلقائي");
-                });
-                host.showToast("فشل حفظ تفعيل المحرك");
-                return;
+                nextToggleReverting[0]=false;
+                host.showToast("فشل حفظ تفعيل المحرك • لم يتغير الإعداد");
+            }else{
+                host.showToast(enabled?"ChemCore Next بحثي • مفعل":
+                    "ChemCore Next متوقف • لا بديل تلقائي");
             }
-            host.showToast(enabled?"ChemCore Next بحثي • مفعل":"ChemCore Next متوقف • لا بديل تلقائي");
         });
         nextEngine.addView(nextToggle,UiKit.full(c));
         root.addView(nextEngine,UiKit.full(c));
