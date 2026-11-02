@@ -6,6 +6,7 @@ on:
     paths:
       - 'research/chemcore_next/experiments/next_reference_mq4_quantitative.py'
       - 'research/chemcore_next/tests/java/NextRealMqFingerprintBenchmark.java'
+      - 'research/chemcore_next/tests/java/NextP06PairedV6UciBenchmark.java'
       - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
       - 'research/chemcore_next/device_calibration/**'
       - 'research/chemcore_next/experiments/next_reference_uci1081_fingerprints.py'
@@ -177,6 +178,32 @@ jobs:
           assert all(0<=m['accuracy_all_rows']<=1 for m in d['results'])
           assert not d['is_end_to_end_ChemCoreNext_arbitrator']
           print('NEXT_REAL_MQ_NEXT_FINGERPRINT_GROUP_AND_STATUS_PASS')
+          PY
+      - name: P06.2 paired identical actual MQ135 source exposures against V6 softmax research baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/next-g2-results/v6-paired/classes
+          javac -encoding UTF-8 -d /tmp/next-g2-results/v6-paired/classes \
+              android/app/src/main/java/com/hazrob/tank/chemcore/v6/ClassicalLearningV6.java \
+              android/app/src/main/java/com/hazrob/tank/chemcore/next/FingerprintExpert.java \
+              research/chemcore_next/tests/java/NextP06PairedV6UciBenchmark.java
+          java -cp /tmp/next-g2-results/v6-paired/classes \
+              com.hazrob.tank.chemcore.next.NextP06PairedV6UciBenchmark \
+              /tmp/next-g2-source/uci90_features.csv \
+              /tmp/next-g2-results/v6-paired/p06_same_source_uci_next_vs_v6.json \
+              | tee /tmp/next-g2-results/v6-paired/p06_same_source_uci_next_vs_v6.log
+          grep -q '^CHEMCORE_NEXT_P06_2_PAIRED_SOURCE_REPLAY_PASS ' \
+              /tmp/next-g2-results/v6-paired/p06_same_source_uci_next_vs_v6.log
+          python - <<'PY'
+          import json,pathlib
+          path=pathlib.Path('/tmp/next-g2-results/v6-paired/p06_same_source_uci_next_vs_v6.json')
+          x=json.loads(path.read_text())
+          assert x['source_test_rows']==90
+          assert x['v6_correct']<=90 and x['next_correct']<=90
+          assert x['same_prediction_rows']+x['different_prediction_rows']==90
+          assert x['same_samples_same_concentration_holdouts'] and not x['g3_tank']
+          print('CHEMCORE_NEXT_P06_2_SAME_SOURCE_PARITY_CHECK_PASS')
           PY
       - name: Preserve complete source-only predictions, derived fingerprints and lineage
         uses: actions/upload-artifact@v4
