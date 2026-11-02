@@ -121,7 +121,9 @@ public final class NextFeedbackQueue extends SQLiteOpenHelper {
     JSONArray sensors=new JSONArray();
     for(CoreContracts.Reading r:receipt.sourceSnapshot.readings){
       JSONObject sensor=new JSONObject();
-      sensor.put("uid",r.sensorUid);
+      // Public feedback uses MQ model only, not the unique robot device UID.
+      String model=r.sensorUid.substring(r.sensorUid.lastIndexOf(':')+1);
+      sensor.put("sensor_model",model);
       sensor.put("raw_adc",r.rawAdc==null?JSONObject.NULL:r.rawAdc);
       sensor.put("rs_kohm",finiteValue(r.rsKohm));
       sensor.put("device_air_reference_kohm",finiteValue(r.rAirKohm));
@@ -188,12 +190,13 @@ public final class NextFeedbackQueue extends SQLiteOpenHelper {
       "feedback_id=? AND status='PENDING_AUTH'",new String[]{feedbackId});
   }
   /** Only a real successful authenticated GitHub write result can call this. */
-  public boolean confirmRemoteReceipt(String id,String remoteReceipt,String expectedPayloadSha){
+  boolean confirmRemoteReceipt(String id,String remoteReceipt,String expectedPayloadSha){
     Record found=get(id);
     if(found==null||!found.publicConsent||!PENDING_AUTH.equals(found.status)||
         !found.payloadSha256.equals(expectedPayloadSha)||
         remoteReceipt==null||!remoteReceipt.startsWith(
-          "https://github.com/HazRob/HazRob-Tank/blob/"))
+          "https://github.com/HazRob/HazRob-Tank/blob/main/feedback/records/")||
+        !remoteReceipt.endsWith("/"+id+".json"))
       return false;
     ContentValues v=new ContentValues();
     v.put("status",SENT);v.put("receipt_url",remoteReceipt);

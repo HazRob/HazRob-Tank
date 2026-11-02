@@ -69,6 +69,8 @@ public final class NextFeedbackQueueInstrumentedTest {
       assertEquals(1,json.getJSONArray("original_mq_measurements").length());
       assertEquals(25.0,json.getJSONArray("original_mq_measurements")
         .getJSONObject(0).getDouble("rs_kohm"),0.000001);
+      assertEquals("MQ3",json.getJSONArray("original_mq_measurements")
+        .getJSONObject(0).getString("sensor_model"));
       assertEquals(ChemCoreNext.VERSION,json.getString("model_version"));
       assertFalse(json.getBoolean("ppm_certified"));
       assertFalse(json.getBoolean("training_source_promotion_authorized"));
@@ -95,7 +97,7 @@ public final class NextFeedbackQueueInstrumentedTest {
         "not-original-sha"));
       assertEquals(NextFeedbackQueue.PENDING_AUTH,q.get(r.id).status);
       assertTrue(q.confirmRemoteReceipt(r.id,
-        "https://github.com/HazRob/HazRob-Tank/blob/main/feedback/records/verified.json",
+        "https://github.com/HazRob/HazRob-Tank/blob/main/feedback/records/2026/11/"+r.id+".json",
         r.payloadSha256));
       assertEquals(NextFeedbackQueue.SENT,q.get(r.id).status);
       assertEquals(0,q.pending(10).size());
