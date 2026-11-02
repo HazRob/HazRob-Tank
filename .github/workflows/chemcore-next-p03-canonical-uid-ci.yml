@@ -8,6 +8,8 @@ on:
       - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextUnlinkedSourceCasAuditTest.java'
       - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextUnifiedCatalogGeneralHazardTest.java'
       - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextGeneralSourceAliasTest.java'
+      - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextSourceRiskCoverageAuditTest.java'
+      - 'research/chemcore_next/risk/chemcore_next_p03_6_21_material_uid_scope.csv'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemCoreNextGeneralIdentityBootstrap.java'
       - 'android/app/src/main/java/com/servoc/app/chemical/ChemCoreNextGeneralHazardBootstrap.java'
       - 'research/chemcore_next/identity/chemcore_next_p03_4_unlinked_60_source_identity_policy.csv'
@@ -54,6 +56,8 @@ jobs:
           cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/
           cp tank/research/chemcore_next/identity/chemcore_next_p03_4_unlinked_60_source_identity_policy.csv \
             source/app/src/main/assets/chemcore_next_p03_4_unlinked_60_source_identity_policy.csv
+          cp tank/research/chemcore_next/risk/chemcore_next_p03_6_21_material_uid_scope.csv \
+            source/app/src/main/assets/chemcore_next_p03_6_21_material_uid_scope.csv
           mkdir -p source/app/src/test/java
           cp -a tank/android/app/src/test/java/. source/app/src/test/java/
           cat >> source/app/build.gradle <<'GRADLE'
@@ -73,6 +77,7 @@ jobs:
             --tests com.servoc.app.chemical.ChemCoreNextUnlinkedSourceCasAuditTest \
             --tests com.servoc.app.chemical.ChemCoreNextUnifiedCatalogGeneralHazardTest \
             --tests com.servoc.app.chemical.ChemCoreNextGeneralSourceAliasTest \
+            --tests com.servoc.app.chemical.ChemCoreNextSourceRiskCoverageAuditTest \
             2>&1 | tee ../P03-4-SQLITE-UID-TEST.log
           grep -q 'BUILD SUCCESSFUL' ../P03-4-SQLITE-UID-TEST.log
       - name: Confirm five existing/new generic classes share main catalog and hazard table
@@ -173,6 +178,43 @@ jobs:
           count=sum(bool(x[5]) for x in rows)
           print(f"P03_4_CAS_EXPORT_PASS rows={len(rows)} exact_mapped={count} abstained={len(rows)-count} identity_qualified=0")
           PY
+      - name: Export 21 canonical material GHS/background/flammability/LOD audits
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import glob,xml.etree.ElementTree as ET,csv
+          entries=[]
+          summary=None
+          for path in glob.glob("source/app/build/test-results/testDebugUnitTest/*.xml"):
+              doc=ET.parse(path).getroot()
+              for node in doc.iter("system-out"):
+                  for line in (node.text or "").splitlines():
+                      if line.startswith("NEXT_P03_6_RISK_ROW|"):
+                          vals=line.split("|")[1:]
+                          assert len(vals)==18,(len(vals),line)
+                          entries.append(vals)
+                      if line.startswith("CHEMCORE_NEXT_P03_6_RISK_COVERAGE_PASS"):
+                          summary=line
+          assert summary, "missing actual P03.6 coverage PASS marker"
+          assert len(entries)==21,len(entries)
+          assert len({v[0] for v in entries})==21
+          assert all(v[14]=="UNKNOWN_NOT_MEASURED" and v[15]=="0" and v[16]=="0" and v[17]=="NOT_DEVICE_G3" for v in entries)
+          head=["uid","name","cas","source_exposure_limit_rows",
+                "qualified_background_rows","any_background_rows","qualified_GHS_rows",
+                "provisional_GHS_rows","source_LFL_rows","source_UFL_rows",
+                "LFL_percent_volume","LFL_source","UFL_percent_volume","UFL_source",
+                "model_LOD_status","qualified_model_LOD_rows","occupational_alarm_rows",
+                "device_qualification"]
+          with open("P03-6-ACTUAL-RISK-COVERAGE-21.csv","w",encoding="utf8",newline="") as file:
+              writer=csv.writer(file)
+              writer.writerow(head)
+              writer.writerows(entries)
+          for x in entries:
+              print("NEXT_P03_6_EXPORT_ROW|"+"|".join(x))
+          print(summary)
+          print("CHEMCORE_NEXT_P03_6_EXPORT_PASS rows=21 LOD_qualified=0 alarms=0")
+          PY
       - name: Preserve actual UID export and database test artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -182,6 +224,7 @@ jobs:
             P03-4-UID-CROSSWALK-49.csv
             P03-4-SOURCE-UID-CROSSWALK-60.csv
             P03-4-GENERAL-ALIAS-UID-16.csv
+            P03-6-ACTUAL-RISK-COVERAGE-21.csv
             P03-4-SQLITE-UID-TEST.log
             source/app/build/test-results/testDebugUnitTest/
           if-no-files-found: warn
