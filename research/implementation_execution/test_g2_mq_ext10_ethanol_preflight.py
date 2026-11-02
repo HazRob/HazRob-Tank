@@ -44,6 +44,39 @@ class MQExt10EthanolPreflightTests(unittest.TestCase):
         self.assertEqual(parse_numeric_rows(b"50 25 1 2 3 4 5 6", expected_rows=1)["rows"], 1)
         self.assertEqual(parse_numeric_rows(b"50;25;1;2;3;4;5;6", expected_rows=1)["rows"], 1)
 
+    def test_reject_negative_relative_humidity(self):
+        with self.assertRaisesRegex(ValueError, "RELATIVE_HUMIDITY_OUT_OF_RANGE"):
+            parse_numeric_rows(b"-0.1,25,1,2,3,4,5,6\n", expected_rows=1)
+
+    def test_reject_relative_humidity_above_100_percent(self):
+        with self.assertRaisesRegex(ValueError, "RELATIVE_HUMIDITY_OUT_OF_RANGE"):
+            parse_numeric_rows(b"100.1,25,1,2,3,4,5,6\n", expected_rows=1)
+
+    def test_accept_relative_humidity_physical_boundaries(self):
+        data = b"0,25,1,2,3,4,5,6\n100,25,1,2,3,4,5,6\n"
+        self.assertEqual(parse_numeric_rows(data, expected_rows=2)["rows"], 2)
+
+    def test_reject_temperature_below_absolute_zero(self):
+        with self.assertRaisesRegex(ValueError, "TEMPERATURE_BELOW_ABSOLUTE_ZERO"):
+            parse_numeric_rows(b"50,-273.16,1,2,3,4,5,6\n", expected_rows=1)
+
+    def test_accept_temperature_at_absolute_zero_boundary(self):
+        self.assertEqual(parse_numeric_rows(
+            b"50,-273.15,1,2,3,4,5,6\n", expected_rows=1)["rows"], 1)
+
+    def test_reject_delimiter_switch_between_rows(self):
+        data = b"50,25,1,2,3,4,5,6\n51;26;2;3;4;5;6;7\n"
+        with self.assertRaisesRegex(ValueError, "INCONSISTENT_DELIMITER"):
+            parse_numeric_rows(data, expected_rows=2)
+
+    def test_reject_mixed_delimiters_within_row(self):
+        with self.assertRaisesRegex(ValueError, "MIXED_DELIMITERS_IN_ROW"):
+            parse_numeric_rows(b"50,25;1,2,3,4,5,6\n", expected_rows=1)
+
+    def test_accept_consistent_semicolon_rows(self):
+        data = b"50;25;1;2;3;4;5;6\n51;26;2;3;4;5;6;7\n"
+        self.assertEqual(parse_numeric_rows(data, expected_rows=2)["rows"], 2)
+
     def test_reject_nonfinite(self):
         with self.assertRaisesRegex(ValueError, "NONFINITE_ROW"):
             parse_numeric_rows(b"50,25,1,2,3,4,5,nan", expected_rows=1)
