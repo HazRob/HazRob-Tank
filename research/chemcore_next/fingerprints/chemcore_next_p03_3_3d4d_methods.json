@@ -1,0 +1,79 @@
+{
+  "schema": "chemcore.next.p03.3.method_source_register/1",
+  "date": "2026-11-02",
+  "scope": "RESEARCH_METHODS_NOT_ACTIVE_OR_QUALIFIED",
+  "methods": [
+    {
+      "id": "MQDATA-3D-T-RH",
+      "name": "3D environmental response surfaces",
+      "url": "https://github.com/abcdaaaaaaaaa/MQDataScience/blob/main/DataScience/3D_Surface/3DSurface.py",
+      "sha": "0f55b726e07730d2cfa4f33f72da46b65d0a31e6",
+      "sensor_scope": "MQ families listed in MQInfo.py; only 8 installed on Tank",
+      "inputs": [
+        "sensor model",
+        "source gas response coefficients",
+        "temperature",
+        "relative humidity",
+        "clean-air reference context"
+      ],
+      "outputs": [
+        "modeled 3D concentration/response surface",
+        "visualization"
+      ],
+      "not_an_independent_exposure": true,
+      "ready_for_next_code": false,
+      "required_validation": "Numerical equivalence of source method, known correction domain and matched R0/heater meaning, then grouped calibration dataset",
+      "target": "P04.4"
+    },
+    {
+      "id": "MQDATA-4D-TEMPORAL",
+      "name": "4D time/temperature/RH sensor trajectory visualization and prediction",
+      "url": "https://github.com/abcdaaaaaaaaa/MQDataScience/blob/main/DataScience/4D_Curve/4DCurve.py",
+      "sha": "cc620184f38461fa02ae1c8a52033d04e91c176d",
+      "sensor_scope": "time series from Excel source",
+      "inputs": [
+        "4D_Datas.xlsx containing Mode and time observations",
+        "time vector",
+        "MQ model",
+        "temperature",
+        "relative humidity",
+        "response history"
+      ],
+      "outputs": [
+        "modeled temporal surfaces",
+        "predictions and visualization"
+      ],
+      "not_an_independent_exposure": true,
+      "ready_for_next_code": false,
+      "required_validation": "Must retain time-group holdout and measured-vs-predicted differentiation; no 4D observation from single instant snapshot",
+      "target": "P04.3"
+    },
+    {
+      "id": "MQDATA-76-REGRESSION",
+      "name": "Forecast/regression model workbench, not 76 gas identification experts",
+      "url": "https://github.com/abcdaaaaaaaaa/MQDataScience/blob/main/DataScience/Requirements/PredictData.py",
+      "sha": "bacf95948714dbe76f09c57e3db14cbc60616580",
+      "sensor_scope": "supported source models, training data required",
+      "inputs": [
+        "raw time series",
+        "observed target",
+        "grouped experiment IDs",
+        "feature T RH and optionally time"
+      ],
+      "outputs": [
+        "research forecasts/regression fits"
+      ],
+      "not_an_independent_exposure": true,
+      "ready_for_next_code": false,
+      "required_validation": "Compare with simple baseline under grouped or temporal holdout, no leakage, report abstention outside training domain",
+      "target": "P04.5"
+    }
+  ],
+  "invariants": [
+    "Keep food freshness task separate from gas identity",
+    "No 3D/4D generated surfaces count as independent physical evidence",
+    "No synthetic or extrapolated environmental surfaces promoted to Stable without separate tested input"
+  ],
+  "source_qualification": "SOURCE_INSPECTED_NOT_PORTED",
+  "g3_qualified": 0
+}
