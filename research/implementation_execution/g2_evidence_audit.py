@@ -234,7 +234,7 @@ def audit_record(item, repo_root=Path(".")):
         "false_positive_rate", "false_negative_rate",
     }
     metric_name = item.get("metric_name")
-    if metric_name in bounded_classification_metrics:
+    if isinstance(metric_name, str) and metric_name in bounded_classification_metrics:
         # Preserve the existing error vocabulary for historical accuracy
         # tests and evidence receipts.
         metric_code = ("CLASSIFICATION_ACCURACY_OUT_OF_RANGE"
