@@ -107,6 +107,43 @@ public final class ResearchFingerprintBundle {
   }
   private static boolean missing(String value){return value==null||value.isBlank();}
 
+  /**
+   * External benchmark adapter for original MQ 10-bit ADC-only recordings.
+   * Never invent Rs, RL, R_air, R0, heater phase or certified ppm from an ADC.
+   * This form cannot be used to perform any Tank physical or source-R0
+   * verification; explicit source-root and source-hardware checks apply.
+   */
+  public static final class SourceAdcCapture {
+    public final String sourceRoot,originalSourceRecordUid;
+    public final Map<String,Integer> originalAdcBySensorUid;
+    public final boolean originalSourceRecordVerified;
+    public SourceAdcCapture(String root,String recordUid,Map<String,Integer> adc,
+                            boolean physicallyRecordedSourceVerified) {
+      if(missing(root)||missing(recordUid)||adc==null)
+        throw new IllegalArgumentException("original ADC source provenance required");
+      Map<String,Integer> copy=new TreeMap<>();
+      for(var e:adc.entrySet()){
+        if(missing(e.getKey())||e.getValue()==null||
+           e.getValue()<0||e.getValue()>1023)
+          throw new IllegalArgumentException("source 10bit ADC must be actual bounded reading");
+        copy.put(e.getKey(),e.getValue());
+      }
+      sourceRoot=root;originalSourceRecordUid=recordUid;
+      originalAdcBySensorUid=Collections.unmodifiableMap(copy);
+      originalSourceRecordVerified=physicallyRecordedSourceVerified;
+    }
+  }
+  public static Score evaluateSourceOnly(Bundle bundle,SourceAdcCapture capture){
+    if(bundle==null||capture==null)throw new IllegalArgumentException("bundle and ADC source");
+    if(!bundle.sourceRoot.equals(capture.sourceRoot)||!capture.originalSourceRecordVerified)
+      return new Score(bundle,Status.SOURCE_DOMAIN_MISMATCH,
+        0,new TreeSet<>(),new TreeSet<>(),List.of("UNQUALIFIED_SOURCE_HARDWARE_ROOT"));
+    Map<String,Boolean> good=new HashMap<>();
+    for(var v:bundle.variants)good.put(v.sensorUid,
+      capture.originalAdcBySensorUid.containsKey(v.sensorUid));
+    return scoreSourceVariants(bundle,good,true);
+  }
+
   /** Bundle passed means *one* source-research hypothesis, never one per MQ. */
   public static Score evaluate(Bundle b,CoreContracts.DeviceProfile device,
                                CoreContracts.Snapshot snapshot) {
@@ -118,18 +155,27 @@ public final class ResearchFingerprintBundle {
     for(var s:device.installedSensors)sensors.put(s.uid,s);
     Map<String,CoreContracts.Reading> readings=new HashMap<>();
     for(var r:snapshot.readings)readings.put(r.sensorUid,r);
+    Map<String,Boolean> physicallyValid=new HashMap<>();
+    for(Variant v:b.variants) {
+      CoreContracts.SensorInstance instance=sensors.get(v.sensorUid);
+      CoreContracts.Reading r=readings.get(v.sensorUid);
+      physicallyValid.put(v.sensorUid,instance!=null&&r!=null
+        &&r.quality==CoreContracts.SampleQuality.VALID
+        &&instance.model.equals(v.sourceSignature.sensorModel));
+    }
+    return scoreSourceVariants(b,physicallyValid,snapshot.mqRelayOn);
+  }
+  private static Score scoreSourceVariants(Bundle b,Map<String,Boolean> physicallyValid,
+                                           boolean powered) {
     Set<String> acceptedSensors=new TreeSet<>(),acceptedFamilies=new TreeSet<>();
     Set<String> acceptedVariantClusters=new HashSet<>();
     List<String> diag=new ArrayList<>();
     int matched=0;
     Status firstFailure=null;
-    if(!snapshot.mqRelayOn)return new Score(b,Status.NOT_EVALUABLE,
+    if(!powered)return new Score(b,Status.NOT_EVALUABLE,
       0,acceptedSensors,acceptedFamilies,List.of("MQ_RELAY_NOT_ON"));
     for(Variant v:b.variants){
-      CoreContracts.SensorInstance instance=sensors.get(v.sensorUid);
-      CoreContracts.Reading r=readings.get(v.sensorUid);
-      if(instance==null||r==null||r.quality!=CoreContracts.SampleQuality.VALID
-          ||!instance.model.equals(v.sourceSignature.sensorModel)) {
+      if(!Boolean.TRUE.equals(physicallyValid.get(v.sensorUid))) {
         if(firstFailure==null)firstFailure=Status.INVALID_PHYSICAL_SENSOR;
         diag.add(v.techniqueId+":MISSING_OR_INVALID_MQ_CHANNEL");
         continue;
