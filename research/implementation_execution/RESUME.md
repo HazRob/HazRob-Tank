@@ -1,3 +1,13 @@
+## 2026-11-02 — MQ-EXT-10 published liquid-level completeness vs raw count (research only)
+
+- Starting HEAD `9608faa8cad5a6dfb804259e3f29697f5957d87d`: verified 21/21 GitHub Actions runs returned by the Actions collection completed successfully, including G2 source/R0 run #41444114870. No starting CI failure.
+- Identified source QA defect: 65 unique ethanol measurements could all belong to C1 yet be labeled as matching the 65 published ethanol measurements. Added independent per-code C1–C6 counts, six-level coverage flag, separate total-count flag, explicit incomplete statuses and fail-closed blocker for missing published liquid concentration levels. This is **liquid v/v source completeness**, never headspace vapor ppm.
+- Added three reproducible synthetic ZIP regression cases: 65 C1-only samples, six-level six-file partial archive, and 65 files across all six levels still unqualified. Added Arabic method `G2_MQ_EXT10_SIX_LEVEL_COVERAGE_2026-11-02_AR.md`. Source ZIP remains absent; no new physical Tank exposure or publisher SHA verification.
+- Changes restricted to research ZIP intake, its tests, Arabic method and this checkpoint on the research branch. No ChemCore Stable, Android, firmware, or main edits. G2 remains unqualified: last verified `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank `records=[]`.
+- CI for code/doc commit `7f489a1285bd45380c74d639c34355aa2ce985d2` was queued at first check. **Verify final HEAD CI and fix any confirmed failures before claiming success.** Next priority: independent calibrated blinded Tank exposures and source provenance; source-only synthetic QA cannot complete G2.
+
+---
+
 ## 2026-11-02 — Original Mendeley MQ-EXT-10 ZIP archive intake (research only)
 
 - Resumed from `565cd283d1f1fee036c436924398e23486afc270`; verified 21/21 GitHub Actions runs returned for that SHA completed success (11 PR-triggered + 10 push/other). No confirmed starting CI failure.
