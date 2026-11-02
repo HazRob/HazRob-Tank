@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "Build/verify ChemCore Next independently first, integrate into V8 later; standards formal qualification deferred",
-  "status": "BASELINE_P00_1_DONE_P00_2_READY",
+  "status": "P00_STATIC_SOURCE_AUDIT_DONE_CATALOG_STABLE_CHECK_NEXT",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P00",
-  "active_task": "P00.2",
-  "last_checkpoint": "P00.1 source reference manifest committed f7aa046597301ecc1c5d67b2617abaa8284ac16a; P00.2 next; exact Approved Stable still unknown",
-  "next_action": "P00.2: inspect all 80 technique IDs; map classes, real runtime consumers and test coverage; produce next_p00_80_activation.csv and summary",
+  "active_task": "P00.4",
+  "last_checkpoint": "P00.1–P00.3 done as STATIC source research only; P00.4 READY. Transfer matrix from MQDataScience (11) and MQSensorsLib (12) committed 4868be464fae34fb0167cc21060aed7cd8294169.",
+  "next_action": "P00.4: verify actual unified catalog count and Stable approved snapshot provenance from source/seed/test; do not invent live database count",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 1,
-    "passed_tests": 1,
+    "done_tasks": 3,
+    "passed_tests": 3,
     "failed_tests": 0,
-    "percent_complete": 1.41
+    "percent_complete": 4.23
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -338,8 +338,8 @@
       "id": "P00.2",
       "phase": "P00",
       "description": "جرد تقنيات V6 الثمانين ومَن يستدعي كل تقنية",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "STATIC_SOURCE_INVENTORY_ONLY_METHOD_RUNTIME_UNVERIFIED",
       "depends_on": [
         "P00.1"
       ],
@@ -350,23 +350,27 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
+      "test_status": "PASSED_80_ID_CLASS_CODE_COVERAGE_CHECK",
+      "test_command": "GitHub source 80-row ID reconciliation + core entrypoint class reference scan",
+      "test_result": "80/80 mapped; 67 source-class present without demonstrated entrypoint call, 11 class references present but per-technique method activation unknown, 2 unported",
       "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "commit_sha": "f8765cafd7d5df31ac6ceac19de30e9c2a909faf",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p00_80_activation.csv",
+        "research/v8_implementation/results/next_p00_2_static_wiring_evidence.json",
+        "research/chemcore_next/mqdata_mqsensorslib_transfer_matrix_23_2026-11-02.csv"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "P00.2: inspect all 80 technique IDs; map classes, real runtime consumers and test coverage; produce next_p00_80_activation.csv and summary",
-      "updated_at": null
+      "last_checkpoint": "Static 80-row matrix and 23-source transfer plan committed; actual technique invocation test deferred G1/P06",
+      "next_action": "DONE; method activation tests remain in P06 and technique validation",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P00.3",
       "phase": "P00",
       "description": "فحص ربط الإشارة بالمرشحين وبالجلسات والتقارير",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "STATIC_V8_DATA_FLOW_TRACE_NOT_RUNTIME_PARITY",
       "depends_on": [
         "P00.2"
       ],
@@ -377,22 +381,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
+      "test_status": "PASSED_STATIC_SOURCE_CALL_GRAPH_CHECK",
+      "test_command": "Manual source trace from TankInstantAnalyzer and CompletedSessionChemCoreAnalyzer through adapters and databases",
+      "test_result": "Eight integration gaps documented, including legacy144, source order, two-sensor gate, separate legacy session engine, and unknown R0/Stable parity",
       "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "commit_sha": "e92f75b0813a55c80ff4251e1cc56445a340d342",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p00_data_flow.md"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "P00.3 source-flow report committed; no Android tests",
+      "next_action": "DONE; all runtime parity tests scheduled P06–P12",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P00.4",
       "phase": "P00",
       "description": "عد مواد الكتالوج الفعلي وجودة UID/CAS/legacy وStable",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P00.3"
@@ -412,7 +418,7 @@
       "actual_evidence_files": [],
       "blockers": [],
       "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
+      "next_action": "P00.4: verify actual unified catalog count and Stable approved snapshot provenance from source/seed/test; do not invent live database count",
       "updated_at": null
     },
     {
@@ -2239,6 +2245,28 @@
       "description": "Branch and 15 source SHAs verified in connected GitHub; no code/test build",
       "commit_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
       "evidence": "research/v8_implementation/results/next_p00_1_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P00.2",
+      "description": "80 ID class-level inventory, 11 class callsite, 67 unproven paths, 2 unported; no runtime qualification",
+      "commit_sha": "f8765cafd7d5df31ac6ceac19de30e9c2a909faf",
+      "evidence": [
+        "research/v8_implementation/results/next_p00_80_activation.csv",
+        "research/v8_implementation/results/next_p00_2_static_wiring_evidence.json",
+        "research/chemcore_next/mqdata_mqsensorslib_transfer_matrix_23_2026-11-02.csv"
+      ]
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P00.3",
+      "description": "V8 instant/session routing static gap map committed",
+      "commit_sha": "e92f75b0813a55c80ff4251e1cc56445a340d342",
+      "evidence": [
+        "research/v8_implementation/results/next_p00_data_flow.md"
+      ]
     }
   ],
   "notes": [
@@ -2247,5 +2275,14 @@
     "hardware tests need actual bench; no claims based on synthetic inputs",
     "update task after every execution and save real file path/run ID/commit",
     "G1/G2 and developer Android research edition are distinct from physical G3/safety certification"
-  ]
+  ],
+  "latest_source_transfer": {
+    "file": "research/chemcore_next/mqdata_mqsensorslib_transfer_matrix_23_2026-11-02.csv",
+    "commit": "4868be464fae34fb0167cc21060aed7cd8294169",
+    "capabilities_total": 23,
+    "mqdata": 11,
+    "mqsensorslib": 12,
+    "in_runtime": false,
+    "description": "23 source-derived benefits, not 23 new independently validated classification models"
+  }
 }
