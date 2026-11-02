@@ -1,0 +1,77 @@
+{
+  "schema": "hazrob.v8.chemcore_next.p00_4.source_review/1",
+  "task_id": "P00.4",
+  "date": "2026-11-02",
+  "status": "IN_PROGRESS_RUNTIME_DATABASE_AND_PUBLISHED_STABLE_NOT_FULLY_VERIFIED",
+  "verified_source_repo": "sohpany/SERVOC-Android",
+  "pinned_android_source_commit": "6281d3eb7c1c961ce63b0b5e4ae0792874626720",
+  "source_assets": {
+    "legacy_java_catalog": {
+      "path": "app/src/main/java/com/servoc/app/chemical/ChemicalCatalog.java",
+      "sha": "2e3d769767beb123d6d67f1cc65372541c5c857c",
+      "legacy_count": 144
+    },
+    "niosh_seed": {
+      "path": "app/src/main/assets/generated/niosh/niosh_chemicals.json",
+      "sha": "1a768d52833e624218bc05ff48e9485a29065e4d",
+      "seed_records": 652
+    },
+    "niosh_manifest": {
+      "path": "app/src/main/assets/generated/niosh/manifest.json",
+      "sha": "e310c5b473eb8ae4eac44ca3bffff6e91b435bbc"
+    },
+    "niosh_idlh": {
+      "path": "app/src/main/assets/generated/exposure/niosh_idlh.json",
+      "sha": "af1b632725684a2ce4307756ef979839ed42ba9b",
+      "records": 402
+    },
+    "osha_z1": {
+      "path": "app/src/main/assets/generated/exposure/osha_z1/osha_z1.json",
+      "sha": "e44ed147d63b8a7924674a7ff11f3f1f5470e859",
+      "records": 638
+    }
+  },
+  "v8_source_reference": {
+    "chemical_repo_sha": "c52813a7918a8a18eb824de8045202902020c2d1",
+    "chemical_count_sql": "SELECT COUNT(*) FROM v14_unified_chemical_catalog",
+    "source_view": "v14_unified_chemical_catalog",
+    "original_144_provenance_only": true
+  },
+  "catalog_observations": {
+    "published_v6_readme_declared_distinct_master_materials": 734,
+    "actual_device_sqlite_count_verified": false,
+    "seed_niosh_rows": 652,
+    "legacy_labels": 144,
+    "observational_source_only_naive_name_union": 716,
+    "naive_union_caveat": "Name-only combination is NOT full ChemicalIdentityResolver; later NIOSH IDLH/OSHA importers resolveOrCreate further identities using CAS and source links. 716 neither confirms nor refutes claimed final 734. Do not print as runtime count.",
+    "requirement": "Fresh-install and upgraded SQLite on original pinned baseline overlay must report exact COUNT(*), active UID unique counts, legacy resolution, duplicate CAS ambiguities and all 734-ish material mapping."
+  },
+  "stable": {
+    "documented_embedded_version": "1.0.0-hr069r1",
+    "documented_embedded_identities": 652,
+    "documented_source_response_priors": 49,
+    "documented_M4_device_calibrations": 0,
+    "embedded_installer_source_sha": "0e0d956266ef6f6ef8138af28c4f6ce12bacf256",
+    "android_source_generates_embedded_asset_at_build": true,
+    "remote_hazrob_main_manifest_status": "404_NOT_PUBLISHED",
+    "remote_hazrob_main_payload_status": "404_NOT_PUBLISHED",
+    "approved_newer_stable_version_verified": false,
+    "distinguish": "Catalog 734 source claim != embedded Stable 652 identities. Neither implies sensor evidence for all materials."
+  },
+  "blockers": [
+    {
+      "id": "P00.4-RUNTIME-COUNT",
+      "reason": "SQLite instance seeded by full pinned Android project (with overlay and upgrade paths) not executed during this review",
+      "resolution": "Run Android/JVM database boot and capture actual count and UID/CAS integrity evidence in V8 P07 integration harness"
+    },
+    {
+      "id": "P00.4-PUBLISHED-STABLE",
+      "reason": "No manifest.json/payload in official HazRob/HazRob-Tank main updates channel",
+      "resolution": "Use pinned embedded 1.0.0-hr069r1 pending a properly validated Stable release, no fake upgrade"
+    }
+  ],
+  "source_tests_run": "SOURCE_DIRECTORY_AND_JSON_PARSE_AND_REFERENCE_CHECK_ONLY",
+  "physical_tests_run": false,
+  "app_built": false,
+  "next_action": "Acquire real post-bootstrap SQLite catalog count; keep P00.4 open until confirmed. Independent core mathematics may be prototyped without falsely declaring catalog integration complete."
+}
