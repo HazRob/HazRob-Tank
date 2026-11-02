@@ -1,0 +1,686 @@
+{
+  "schema": "hazrob.tank.v8.next_android_application_execution/1",
+  "document": "docs/implementation/V8-NEXT-ANDROID-INTEGRATION-AND-V7-REMEDIATION-PLAN-2026-11-02_AR.md",
+  "created_utc": "2026-11-02",
+  "owner_authorization_utc": "2026-11-02T06:44:21Z",
+  "branch": "feature/tank-v8-implementation",
+  "project": "HazRob-Tank independent of original 4-wheel HazRob",
+  "execution_mode": "PLAN_REVIEW_ONLY_THIS_COMMIT",
+  "scientific_tests_postponed": true,
+  "core_g3_physically_validated_techniques": 0,
+  "runtime_android_next_integration_verified": false,
+  "apk_v8_built": false,
+  "core_previous_checkpoint_reference": "docs/implementation/V8-CHEMCORE-NEXT-EXECUTION-STATE-2026-11-02.json",
+  "legacy_baseline": "feature/tank-v7-reports (historical V7 reports, read-only)",
+  "program": {
+    "total_tasks": 34,
+    "done_tasks": 0,
+    "in_progress": 0,
+    "blocked": 0,
+    "planned": 34,
+    "next_task": "P07.1",
+    "phases": [
+      "P07",
+      "P08",
+      "P09",
+      "P10",
+      "P11",
+      "P12",
+      "P13"
+    ]
+  },
+  "critical_findings": [
+    {
+      "id": "D01",
+      "type": "STATIC_CONFIRMED",
+      "component": "TankInstantAnalyzer",
+      "description": "Displayed candidates are produced using source_curve_hypotheses insertion order and legacyId <144, not independently ranked Next decisions"
+    },
+    {
+      "id": "D02",
+      "type": "STATIC_CONFIRMED",
+      "component": "FieldCycleRepository.complete",
+      "description": "Completion requires independently persisted chemcore decision; upstream asynchronous creation/telemetry recording not shown as transactional end-to-end handshake"
+    },
+    {
+      "id": "D03",
+      "type": "STATIC_CONFIRMED",
+      "component": "FieldCycleController",
+      "description": "6 s telemetry freshness, 12 s startup/flush wait, application Activity-owned timer, explicit relay cleanup; all can cause incomplete operation if not coordinated"
+    },
+    {
+      "id": "D04",
+      "type": "STATIC_CONFIRMED",
+      "component": "FieldCycleRepository.hasMeasuredEvidence",
+      "description": "Requires at least ten unique MQ scan cycles; physical/particles 10 eligible samples; invalid input prevents completion"
+    },
+    {
+      "id": "D05",
+      "type": "STATIC_CONFIRMED",
+      "component": "CompletedSessionChemCoreAnalyzer",
+      "description": "Uses historic V6/legacy ChemCoreInferenceEngine, not new ChemCoreNext; needs single decision path and frozen R0"
+    },
+    {
+      "id": "D06",
+      "type": "STATIC_CONFIRMED",
+      "component": "SettingsTab/DeveloperR0Tab",
+      "description": "Settings opens calibration via lazily created DeveloperR0Tab; past user opening/calibration failures require Android recreation reproduction, not assumed fixed"
+    },
+    {
+      "id": "D07",
+      "type": "STATIC_CONFIRMED",
+      "component": "MeasurementsTab/Reports",
+      "description": "Legacy 144 screening view and posterior presentation plus several report writers can diverge from Next decision"
+    },
+    {
+      "id": "D08",
+      "type": "STATIC_CONFIRMED",
+      "component": "DB",
+      "description": "ExperimentsDb currently DB_VERSION 14 and no adopted Next-specific immutable decision schema"
+    },
+    {
+      "id": "D09",
+      "type": "SOURCE_DESIGN_GAP",
+      "component": "Next core",
+      "description": "P06.3 and P06.5 pending in prior state; source-specific G3 calibration never established; public release blocked"
+    },
+    {
+      "id": "D10",
+      "type": "REPRODUCTION_PENDING",
+      "component": "Echo/camera/UI/report actual device",
+      "description": "User observed failures; software code and emulator/device evidence necessary before classifying root cause"
+    }
+  ],
+  "gates": {
+    "app_research_integration": "G1 + controlled G2 limitations + research_only labelling + CI",
+    "owner_test_apk": "all P0 fixed, Android compile and end-to-end regression PASS, no G3 claim",
+    "safety_or_public_release": "requires qualified G3 and owner acceptance; separate gate"
+  },
+  "priority_order": [
+    "V8-A0 base+single immutable Next decision",
+    "V8-A1 session recording and relay safety",
+    "V8-A2 candidate source mapping & live measurement",
+    "V8-A3 all UIs/SQLite/Stable/lab/tracking",
+    "V8-A4 reports/migration/device regressions",
+    "V8-A5 test APK + owner QA + release gate"
+  ],
+  "tasks": [
+    {
+      "id": "P07.1",
+      "priority": "P0",
+      "title": "NextAndroidAdapter: تجميد التليمترية وتحويلها",
+      "files": [
+        "android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextAndroidAdapter.java",
+        "com/servoc/app/calibration/AcceptedR0Normalizer.java",
+        "com/hazrob/tank/chemcore/next/ChemCoreNext.java"
+      ],
+      "acceptance": "G1 سلوك null/NaN/انقطاع الطاقة/8 و1 حساس؛ snapshot SHA ثابت؛ لا نقل R_air القديم أو R0_source",
+      "evidence": "research/v8_implementation/results/next_p07_1_adapter_contract.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P07.2",
+      "priority": "P0",
+      "title": "SQLite V15 ترحيل محافظ وسجل قرارات غير قابل لإعادة الكتابة",
+      "files": [
+        "data/ExperimentsDb.java",
+        "chemcore/nextintegration/NextDecisionStore.java",
+        "chemcore/ChemCoreDecisionRepository.java"
+      ],
+      "acceptance": "اختبار إنشاء v15 وترحيل v14 مع المحافظة على التاريخ والمرجع؛ atomic commit, unique session+revision, readback/hash, ممنوع duplicate",
+      "evidence": "research/v8_implementation/results/next_p07_2_sqlite_migration.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P07.3",
+      "priority": "P0",
+      "title": "FeatureFlag: تفعيل Next البحثي مع rollback صريح",
+      "files": [
+        "chemcore/nextintegration/NextEngineRouter.java",
+        "app/ReleaseAudit.java",
+        "SettingsTab.java"
+      ],
+      "acceptance": "Next RESEARCH_ONLY افتراضيًا في البناء التجريبي؛ V6 كمسار مقارنة/تشخيص معلن وليس ترتيبًا مخفيًا؛ كل قرار يوثق engine_id",
+      "evidence": "research/v8_implementation/results/next_p07_3_router_flag.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P07.4",
+      "priority": "P0",
+      "title": "DecisionEnvelope واحد للواجهات والتقارير",
+      "files": [
+        "chemcore/nextintegration/NextDecisionEnvelope.java",
+        "TankInstantAnalyzer.java",
+        "CompletedSessionChemCoreAnalyzer.java"
+      ],
+      "acceptance": "نفس decision_uid/hash/ordered UIDs وUNKNOWN بجميع المستهلكين؛ round-trip واختبار العبث/إعادة التشغيل",
+      "evidence": "research/v8_implementation/results/next_p07_4_decision_parity.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P08.1",
+      "priority": "P1",
+      "title": "آلة حالات القياس الآني وعدادات 60+60 حقيقية",
+      "files": [
+        "ui/MeasurementsTab.java",
+        "measurement/MeasurementSessionRegistry.java"
+      ],
+      "acceptance": "0–60 إحماء ثم 60–120 جمع فِعلي؛ عداد إحماء/قياس/حفظ/تحليل؛ منع نجاح قبل ≥60s و≥10 scan cycles مع أسباب فشل",
+      "evidence": "research/v8_implementation/results/next_p08_1_instant_states.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P08.2",
+      "priority": "P0",
+      "title": "إزالة legacy144 والمرشحين الثابتين من المسار التشغيلي",
+      "files": [
+        "chemcore/TankInstantAnalyzer.java",
+        "ui/MeasurementsTab.java",
+        "chemcore/nextintegration/NextEngineRouter.java"
+      ],
+      "acceptance": "لا ترتيب source_curve_hypotheses ولا rank من first appearance؛ 0/1/5/10/12 مرشح مؤهل من UID كامل؛ الترتيب يتغير مع اختلاف الأدلة؛ لا حشو",
+      "evidence": "research/v8_implementation/results/next_p08_2_ranked_dynamic.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P08.3",
+      "priority": "P1",
+      "title": "عرض Next وUNKNOWN والأدلة/البصمات والأسباب",
+      "files": [
+        "ui/ChemCoreAnalysisTab.java",
+        "ui/MeasurementsTab.java",
+        "chemcore/ChemCoreAnalysisPresenter.java"
+      ],
+      "acceptance": "تبويبا ChemCore والمرشحون، تنويهات G1/G2/G3، عدد الحساسات والطرق/الأصول، positive/negative/unqualified، لا posterior مزيف",
+      "evidence": "research/v8_implementation/results/next_p08_3_operator_visual.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P08.4",
+      "priority": "P1",
+      "title": "تقرير PDF آني من decision وحيد",
+      "files": [
+        "report/TankInstantReportPdf.java",
+        "report/TankInstantV7PdfWriter.java",
+        "report/TankInstantCharts.java"
+      ],
+      "acceptance": "مساواة UID/rank/snapshot_hash مع الشاشة؛ PDF A4/Arabic 0–N؛ UNKNOWN لا ppm أو GHS ككشف؛ اختبار فتح PDF",
+      "evidence": "research/v8_implementation/results/next_p08_4_instant_pdf_parity.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P08.5",
+      "priority": "P1",
+      "title": "التتبع المقصود والتصحيح دون اعتماد هوية",
+      "files": [
+        "ui/MeasurementsTab.java",
+        "tracking/TargetTracking.java",
+        "chemcore/nextintegration/NextFeedbackStore.java"
+      ],
+      "acceptance": "اختيار canonical UID ومراقبة اتجاه Rs وتغير الزمن حتى عند UNKNOWN؛ المستخدم لا يؤهل الغاز ولا يمحو decision الأصلي",
+      "evidence": "research/v8_implementation/results/next_p08_5_tracking_feedback.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P09.1",
+      "priority": "P0",
+      "title": "إصلاح ملكية الريلاي والجلسات عبر durable state machine",
+      "files": [
+        "measurement/FieldCycleController.java",
+        "measurement/MeasurementSessionRegistry.java",
+        "field/FieldCycleRepository.java"
+      ],
+      "acceptance": "مسار START→RELAY_CONFIRMED→60s→CAPTURE→60s→FLUSH→NEXT→DB_READBACK→REVIEW→SAFE_OFF؛ فقد اتصال/تعطل/Activity destroy لا يترك دورة أو relay معلقة",
+      "evidence": "research/v8_implementation/results/next_p09_1_relay_lifecycle.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P09.2",
+      "priority": "P0",
+      "title": "تثبيت عينات MQ/ADS وأسباب فشل قابلة للتشخيص",
+      "files": [
+        "field/FieldCycleRepository.java",
+        "data/ExperimentsDb.java",
+        "measurement/FieldCycleController.java"
+      ],
+      "acceptance": "≥10 scan cycles متميزة، قياس وقت monotonic، 60 ثانية فعلية، hash على raw وmetadata، FAILED_REASON enum؛ ADS إن كان المصدر موجودًا فقط",
+      "evidence": "research/v8_implementation/results/next_p09_2_samples_failure_matrix.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P09.3",
+      "priority": "P0",
+      "title": "ربط تحليل Next بنتيجة الجلسة قبل انتقالها إلى REVIEW",
+      "files": [
+        "chemcore/CompletedSessionChemCoreAnalyzer.java",
+        "field/FieldCycleRepository.java",
+        "chemcore/nextintegration/NextDecisionStore.java"
+      ],
+      "acceptance": "تمرير 60s series وخبراء الزمن الحقيقيين ثم حفظ decision أو UNKNOWN/INSUFFICIENT؛ إغلاق/قراءة عكسية داخل بوابة complete؛ لا انتظار قرار لن يُنشأ",
+      "evidence": "research/v8_implementation/results/next_p09_3_session_next_gate.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P09.4",
+      "priority": "P1",
+      "title": "مواقع وجلسات ومحاولات متعددة واستئناف آمن",
+      "files": [
+        "ui/FieldSessionsTab.java",
+        "field/FieldSessionRepository.java",
+        "field/FieldCycleRepository.java"
+      ],
+      "acceptance": "استرداد العمليات بعد process death وتمييز retry/superseded؛ الاعتماد فقط بعد evidence check؛ التنقل بين المواقع لا يخلط نتائجها",
+      "evidence": "research/v8_implementation/results/next_p09_4_session_recovery.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P09.5",
+      "priority": "P1",
+      "title": "عدم اختلاق بيانات PM/O2 والقياسات الفيزيائية",
+      "files": [
+        "ui/FieldSessionsTab.java",
+        "field/FieldCycleRepository.java",
+        "chemcore/nextintegration/NextAndroidAdapter.java"
+      ],
+      "acceptance": "خيارات gas/particles/physical تختبر منفصلة ومختلطة؛ غير موجود→UNAVAILABLE لا صفر ولا fake report؛ اختبارات selected-mode 8 cases",
+      "evidence": "research/v8_implementation/results/next_p09_5_missing_sensors.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P10.1",
+      "priority": "P1",
+      "title": "المختبر: تجربة موثقة ومرجع وتركيز ومصفوفة خام",
+      "files": [
+        "ui/AnalyticalLabTab.java",
+        "ui/ExperimentsTab.java",
+        "ui/DeveloperExperimentsTab.java"
+      ],
+      "acceptance": "للتجربة خصائص المصدر، نوع خليط، ppm مرجعي إن وُجد، calibration campaign، evidence root؛ محاكاة منفصلة وواضحة",
+      "evidence": "research/v8_implementation/results/next_p10_1_laboratory.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P10.2",
+      "priority": "P0",
+      "title": "إصلاح مسار R_air/R0 في الإعدادات والمطور",
+      "files": [
+        "ui/SettingsTab.java",
+        "ui/DeveloperR0Tab.java",
+        "calibration/ManualR0Calibration.java",
+        "calibration/FirmwareR0Contract.java"
+      ],
+      "acceptance": "180s+60s فقط للمعايرة؛ حفظ 8 قيم atomically وfirmware session/device/provenance؛ فتح/عودة/إلغاء/استيراد/حفظ وrestart Android12 بلا crash",
+      "evidence": "research/v8_implementation/results/next_p10_2_calibration_3plus1.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P10.3",
+      "priority": "P1",
+      "title": "سجلات مقارنة التجربة بالبصمات والمصادر دون ترقية",
+      "files": [
+        "ui/AnalyticalLabTab.java",
+        "chemcore/next/ResearchFingerprintBundle.java"
+      ],
+      "acceptance": "مرجع المصدر الأصلي ونطاقه وR0_source والدخان/المخاليط؛ تقرير اختلاف النتائج؛ لا تغيير active model من تجربة غير مؤهلة",
+      "evidence": "research/v8_implementation/results/next_p10_3_lab_comparison.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P10.4",
+      "priority": "P1",
+      "title": "مراجعة المختبر المركزي وسجل الاعتماد العلمي",
+      "files": [
+        "ui/DeveloperExperimentsTab.java",
+        "data/ExperimentsDb.java",
+        "chemcore/nextintegration/NextFeedbackStore.java"
+      ],
+      "acceptance": "feedback append-only، provenance/consent/reviewer؛ انتقال G1→G2→G3 بعناصر الأدلة المحددة دون اعتماد تلقائي",
+      "evidence": "research/v8_implementation/results/next_p10_4_scientific_review.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P10.5",
+      "priority": "P1",
+      "title": "استقلال نضارة الأغذية عن محرك الغازات",
+      "files": [
+        "ui/FoodFreshnessTab.java",
+        "com/hazrob/tank/foodfreshness"
+      ],
+      "acceptance": "اختبار اللحوم والفواكه وتقاريرها لا تستدعي Next الغازي ولا تغير قرار التعرض الغازي أو قائمة المرشحين",
+      "evidence": "research/v8_implementation/results/next_p10_5_food_isolation.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P11.1",
+      "priority": "P0",
+      "title": "مصدر هوية واحد من مكتبة المواد الموحدة",
+      "files": [
+        "chemical/ChemicalRepository.java",
+        "ui/MeasurementsTab.java",
+        "ui/ChemicalExperimentMatrixDialog.java"
+      ],
+      "acceptance": "كل المرشحين والتتبع وتقارير المختبر بمفتاح chemical.uid؛ 734 molecular/2 generic حسب manifest المثبت لا افتراض على الجهاز؛ مواد لا نموذج لها تظهر لا تتعرف",
+      "evidence": "research/v8_implementation/results/next_p11_1_canonical_uid_matrix.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P11.2",
+      "priority": "P1",
+      "title": "Stable مدمج وتحديثات استعلام/تفعيل آمن وrollback",
+      "files": [
+        "chemcore/library/ChemCoreLibraryManager.java",
+        "chemcore/library/ChemCoreLibraryUpdateClient.java",
+        "assets/chemcore_v6"
+      ],
+      "acceptance": "تعطل الشبكة لا يفقد النسخة المدمجة؛ SHA/schema/app compatibility قبل التفعيل؛ التحديث لا يغير النتيجة القديمة؛ مقارنة 49 source priors وDB provenance",
+      "evidence": "research/v8_implementation/results/next_p11_2_stable_inquiry_update.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P11.3",
+      "priority": "P1",
+      "title": "مراجعة وتصحيح المشغل مع حفظ القرار الأصلي",
+      "files": [
+        "chemcore/nextintegration/NextFeedbackStore.java",
+        "ui/MeasurementsTab.java",
+        "ui/AnalyticalLabTab.java"
+      ],
+      "acceptance": "جدول مراجعات منفصل append-only؛ لا overwrite لنتيجة محفوظة، الإسناد إلى snapshot_uid والمصدر والمالك",
+      "evidence": "research/v8_implementation/results/next_p11_3_operator_review.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P11.4",
+      "priority": "P1",
+      "title": "قائمة إرسال اختياري للمختبر بدون إرسال وهمي",
+      "files": [
+        "chemcore/nextintegration/NextContributionQueue.java",
+        "ui/CentralLibraryDashboardTab.java"
+      ],
+      "acceptance": "local PENDING→SENT فقط بعد receipt من backend معتمد؛ لا سرية/ملفات خام ترفع دون إذن؛ offline retry idempotent",
+      "evidence": "research/v8_implementation/results/next_p11_4_upload_receipts.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P11.5",
+      "priority": "P2",
+      "title": "تبويب المساهمات العلمية للمواد والمنحنيات",
+      "files": [
+        "ui/CentralLibraryDashboardTab.java",
+        "ui/DeveloperExperimentsTab.java"
+      ],
+      "acceptance": "المقترحات quarantined، المصدر والترخيص وR0 والقياسات ومرجع الهوية؛ لا إدراج في Stable حتى لجنة ومراجعة Evidence Gate",
+      "evidence": "research/v8_implementation/results/next_p11_5_community_review.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P12.1",
+      "priority": "P0",
+      "title": "توحيد كل تقارير PDF وXLSX على قرار Next الأصلي",
+      "files": [
+        "report/TankInstantV7PdfWriter.java",
+        "report/V7FieldSessionPdfWriter.java",
+        "report/SmartFieldSessionXlsxWriter.java",
+        "report/SiteSummaryReportExporter.java"
+      ],
+      "acceptance": "تقرير آنية/جلسة/موقع/مختبر/مقارنة، نفس decision_uid/snapshot_sha/UID/rank/status؛ لا إعادة استدلال داخل exporter",
+      "evidence": "research/v8_implementation/results/next_p12_1_report_parity.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P12.2",
+      "priority": "P1",
+      "title": "حقول ADS raw الفيزيائية في جلسات Excel إن وُجدت",
+      "files": [
+        "report/SmartFieldSessionXlsxWriter.java",
+        "field/FieldCycleRepository.java"
+      ],
+      "acceptance": "تحقق raw ADC/ADS من source payload وإظهار MISSING صريح؛ توافق Excel; test no fabricated columns",
+      "evidence": "research/v8_implementation/results/next_p12_2_ads_export.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P12.3",
+      "priority": "P1",
+      "title": "إصلاح الواجهات والألوان والتنقل والقوائم والرسوم",
+      "files": [
+        "ui/MeasurementsTab.java",
+        "ui/FieldSessionsTab.java",
+        "ui/ReportsTab.java",
+        "ui/SettingsTab.java"
+      ],
+      "acceptance": "Android 12: الخطوط/التباين/حقول بيضاء على بيضاء/المؤقت/الرسم عند null؛ rotation/theme/background لا تعطل الجلسة",
+      "evidence": "research/v8_implementation/results/next_p12_3_ui_accessibility.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P12.4",
+      "priority": "P1",
+      "title": "عدم رجوع العيوب غير الكيميائية في V7",
+      "files": [
+        "ui/StatusTab.java",
+        "hardware/RobotApi.java",
+        "camera",
+        "firmware Echo"
+      ],
+      "acceptance": "AP/remote/camera/motor/stop on loss, HC-SR04/voltage level/echo timeout, BME/mic/flame; regression بدون تعديل firmware إلا عند ثبوت الحاجة",
+      "evidence": "research/v8_implementation/results/next_p12_4_hardware_regression.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P12.5",
+      "priority": "P0",
+      "title": "اختبارات تكامل Android وSQLite والتقارير والفشل",
+      "files": [
+        "android/app/src/androidTest",
+        "android/app/src/test",
+        ".github/workflows/v8-next-android-qa.yml"
+      ],
+      "acceptance": "اختبارات SQLite 14→15، force-stop/network loss, 0–N rank, duplicate tap, ANR, PDF/XLSX open, runtime flags; لا قبول مع فشل CI",
+      "evidence": "research/v8_implementation/results/next_p12_5_end_to_end.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P13.1",
+      "priority": "P1",
+      "title": "اختبار منصة Tank الحقيقي للريلاي والحساسات وإيقاف الأمان",
+      "files": [
+        "firmware/ESP32-Tank",
+        "app/measurement",
+        "robot hardware checklist"
+      ],
+      "acceptance": "8 MQ/2 ADS/relay/scan timestamp/BME/Echo/communication، فقد الاتصال وtimeout وحفظ/عودة؛ تسجيل ملفات raw ومخطط أسلاك",
+      "evidence": "research/v8_implementation/results/next_p13_1_bench.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P13.2",
+      "priority": "P2",
+      "title": "G3 منفصل مع غازات مرجعية ومختبر آمن",
+      "files": [
+        "research/chemcore_next/physical_g3/",
+        "device logs"
+      ],
+      "acceptance": "0/80 حاليًا؛ لا تأهيل ميداني حتى قياسات gas reference مستقل ومعايرة ومجموعات تعرّض مستقلة؛ ليس شرط بناء APK بحثي مشروط",
+      "evidence": "research/v8_implementation/results/next_p13_2_physical_g3.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P13.3",
+      "priority": "P1",
+      "title": "بناء APK V8 تجريبي قابل للاختبار مع حدود علمية",
+      "files": [
+        "github actions/gradle",
+        "app/ReleaseAudit.java",
+        "Stable embedded"
+      ],
+      "acceptance": "source pinned, Android Java17 SDK36 Gradle9.5, versionCode جديد، appId com.hazrob.tank، sign/sha/artifact، APK research-only؛ إصدار عام مقيد بـG3",
+      "evidence": "research/v8_implementation/results/next_p13_3_apk_provenance.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P13.4",
+      "priority": "P1",
+      "title": "تحليل ملاحظات مالك الروبوت وإصلاح عيوب النسخة",
+      "files": [
+        "docs/implementation/",
+        "app test device"
+      ],
+      "acceptance": "استخراج logs وعينات وscreen recordings وfailure IDs، reproducible→fix→regression→new test APK دون حذف قاعدة المستخدم",
+      "evidence": "research/v8_implementation/results/next_p13_4_owner_qa.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "P13.5",
+      "priority": "P1",
+      "title": "README وبوابة الإصدار/الرجوع وختم manifest",
+      "files": [
+        "README.md",
+        "docs/implementation/",
+        "CI"
+      ],
+      "acceptance": "توثيق sha engine/Android/Stable/APK/firmware، known limitations، backup/restore، منع claim G3 والتمييز TEST/RELEASE",
+      "evidence": "research/v8_implementation/results/next_p13_5_release_gate.json",
+      "status": "NOT_STARTED",
+      "commit_sha": null,
+      "ci_run_id": null,
+      "blocked_by": [],
+      "verification": "NOT_RUN"
+    }
+  ],
+  "last_checked_commit": "9b21fd62d81a143c71ca5f6434e437c424153465",
+  "last_verified_ci": null,
+  "next_action": "P07.1: design snapshot and adapter; no source modifications were authorized or executed in this planning commit"
+}
