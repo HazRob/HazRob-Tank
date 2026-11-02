@@ -1,0 +1,48 @@
+name: HazRob V8 complete UI, reports and procedure audit inventory
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/**'
+      - 'tools/v8_ui_inventory_gate.py'
+      - '.github/workflows/v8-next-exhaustive-ui-inventory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  all-source-ui-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate original source-indexed all-control and report audit register
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/v8_ui_inventory_gate.py --output build/v8-ui-full-inventory.json \
+            | tee build/v8-ui-inventory-result.log
+          python3 - <<'PY'
+          import json
+          p='build/v8-ui-full-inventory.json'
+          d=json.load(open(p,encoding='utf-8'))
+          assert d['module_count']>=50
+          assert d['report_module_count']>=20
+          assert len(d['sites'])==d['detected_control_event_report_procedure_sites']
+          assert not d['all_controls_verified']
+          assert d['release_gate'].startswith('BLOCKED')
+          assert all(not s['android_test_run'] for s in d['sites'])
+          print('V8_UI_SCOPE_REGISTER_STRUCTURAL_PASS',
+             'source_items',len(d['sites']),'device_verified',False)
+          PY
+      - name: Upload full per-control QA ledger and source coverage evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V8-Full-UI-Report-Procedure-Inventory
+          path: |
+            build/v8-ui-full-inventory.json
+            build/v8-ui-inventory-result.log
+          retention-days: 90
+          if-no-files-found: error
