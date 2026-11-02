@@ -87,5 +87,30 @@ class DayConcentrationTests(unittest.TestCase):
         self.mutate(lambda b: b["models"].pop("RIDGE_MQ4_1"), "SOURCE_SHAPE")
 
 
+    def test_cross_model_daily_row_transfer_rejected(self):
+        # Conserves all aggregate counts while moving reference-negative
+        # rows between two dates for just one model.
+        def edit(b):
+            days = b["models"]["RIDGE_MQ4_3"]["days"]
+            days["2021-07-25"]["tn"] -= 1
+            days["2021-07-25"]["rows"] -= 1
+            days["2021-07-27"]["tn"] += 1
+            days["2021-07-27"]["rows"] += 1
+        self.mutate(edit, "CROSS_MODEL_DAY_REFERENCE")
+
+    def test_cross_model_daily_label_transfer_rejected(self):
+        # Conserves each day's row count and all aggregate confusion counts,
+        # but moves one reference-positive label between days.
+        def edit(b):
+            days = b["models"]["RIDGE_MQ4_3"]["days"]
+            days["2021-07-25"]["tp"] -= 1
+            days["2021-07-25"]["tn"] += 1
+            days["2021-07-25"]["reference_positive"] -= 1
+            days["2021-07-27"]["tp"] += 1
+            days["2021-07-27"]["tn"] -= 1
+            days["2021-07-27"]["reference_positive"] += 1
+        self.mutate(edit, "CROSS_MODEL_DAY_REFERENCE")
+
+
 if __name__ == "__main__":
     unittest.main()
