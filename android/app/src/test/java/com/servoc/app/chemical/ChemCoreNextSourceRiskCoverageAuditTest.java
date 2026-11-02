@@ -32,6 +32,12 @@ public final class ChemCoreNextSourceRiskCoverageAuditTest {
             return value;
         }
     }
+    private static int countNoParam(SQLiteDatabase db, String query) {
+        try(Cursor c=db.rawQuery(query,null)) {
+            assertTrue(c.moveToFirst());
+            return c.getInt(0);
+        }
+    }
     private static String maybe(String x) {
         return x == null ? "" : x.replace("|","/").replace('\n',' ');
     }
@@ -165,10 +171,9 @@ public final class ChemCoreNextSourceRiskCoverageAuditTest {
             }
             assertEquals(21,inspected.size());
             assertEquals(0,withModelLod);
-            assertEquals(0,count(sql,
+            assertEquals(0,countNoParam(sql,
                 "SELECT COUNT(*) FROM sqlite_master WHERE type IN ('table','view') " +
-                "AND name LIKE 'chemcore_next_group_hazard%'",
-                0));
+                "AND name LIKE 'chemcore_next_group_hazard%'"));
             System.out.println("CHEMCORE_NEXT_P03_6_RISK_COVERAGE_PASS"
                 +" catalog=736 materials=21 with_exposure="+withExposure
                 +" with_qualified_background="+withBackground
