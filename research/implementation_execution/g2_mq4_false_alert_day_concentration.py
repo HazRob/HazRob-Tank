@@ -43,6 +43,7 @@ def make_report(burden):
             burden.get("reference_positives") == 1425,
             "SOURCE_SHAPE")
     results = {}
+    reference_day_shape = {}
     for name, model in sorted(models.items()):
         require(type(model) is dict and type(model.get("days")) is dict and
                 set(model["days"]) == set(days) and
@@ -62,6 +63,14 @@ def make_report(burden):
                     type(record.get("reference_positive")) is int and
                     record["reference_positive"] == record["tp"] + record["fn"],
                     "DAY_CONFUSION")
+            # All models score the same physical source rows and labels on each day.
+            # Aggregate reconciliation alone cannot detect a cross-day transfer.
+            reference_shape = (record["rows"], record["reference_positive"])
+            if day in reference_day_shape:
+                require(reference_day_shape[day] == reference_shape,
+                        "CROSS_MODEL_DAY_REFERENCE")
+            else:
+                reference_day_shape[day] = reference_shape
             daily[day] = {
                 "false_positives": record["fp"],
                 "reference_negatives": record["fp"] + record["tn"],
