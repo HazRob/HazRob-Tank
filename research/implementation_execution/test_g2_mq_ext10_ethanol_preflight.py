@@ -101,6 +101,28 @@ class MQExt10EthanolPreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "DUPLICATE_MEASUREMENT_BYTES"):
                 run(Path(d))
 
+    def test_numeric_trace_digest_normalizes_numeric_notation(self):
+        a = parse_numeric_rows(b"50,25,1,2,3,4,5,6\n", expected_rows=1)
+        b = parse_numeric_rows(b"5e1;25.0;1.00;2;3;4;5;6\n", expected_rows=1)
+        self.assertEqual(a["numeric_trace_sha256"], b["numeric_trace_sha256"])
+
+    def test_reject_numeric_duplicate_with_different_file_bytes(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "Ea-C1_R01.txt").write_text("50,25,1,2,3,4,5,6\n" * 3330)
+            (Path(d) / "Ea-C2_R01.txt").write_text("5e1;25.0;1.00;2;3;4;5;6\n" * 3330)
+            with self.assertRaisesRegex(ValueError, "DUPLICATE_MEASUREMENT_NUMERIC_TRACE"):
+                run(Path(d))
+
+    def test_reject_blank_data_row_instead_of_silent_skip(self):
+        with self.assertRaisesRegex(ValueError, "BLANK_DATA_ROW"):
+            parse_numeric_rows(b"50,25,1,2,3,4,5,6\n\n51,25,1,2,3,4,5,6\n", expected_rows=2)
+
+    def test_distinct_numeric_measurements_are_not_duplicates(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "Ea-C1_R01.txt").write_text("50,25,1,2,3,4,5,6\n" * 3330)
+            (Path(d) / "Ea-C2_R01.txt").write_text("51,25,1,2,3,4,5,6\n" * 3330)
+            self.assertEqual(run(Path(d))["files_scanned"], 2)
+
     def test_reject_hidden_nested_measurement_directory(self):
         with tempfile.TemporaryDirectory() as d:
             (Path(d) / "Ea-C1_R01.txt").write_text("50,25,1,2,3,4,5,6\n" * 3330)
