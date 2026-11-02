@@ -1,0 +1,66 @@
+{
+  "schema": "hazrob.tank.v8.next.user_feedback_partial/1",
+  "date": "2026-11-03",
+  "branch": "feature/tank-v8-implementation",
+  "commit": "b0c6551e5b0fb8455cb88c92f0fbd7ff8c38292b",
+  "status": "FEATURE_CODE_IMPLEMENTED_ANDROID_COMPILE_PASSED_SOURCE_EARLIER; FULL_DEVICE_UPLOAD_NOT_VERIFIED",
+  "device_ui": {
+    "floating_button": "top-right opposite refresh top-left, measurements only",
+    "visibility": "after a completed immutable ChemCore Next instant decision",
+    "dialog": [
+      "Original decision id and candidate status",
+      "Free text opinion <=4000 characters",
+      "Cancel",
+      "Confirm",
+      "Optional per-record public GitHub consent unchecked by default"
+    ],
+    "measurement_lineage": "from original persisted NextDecisionStore receipt, not from mutable current telemetry",
+    "operator_feedback_changes_engine_decision": false
+  },
+  "local_storage": {
+    "database": "hazrob_feedback_outbox.db",
+    "schema_version": 1,
+    "immutable_payload": true,
+    "distinct_from_historical_V7_records": true,
+    "record_statuses": [
+      "LOCAL_ONLY",
+      "PENDING_AUTH",
+      "SENT"
+    ],
+    "capture_summary": [
+      "MQ sensor models and original Rs/air source quality",
+      "candidate ranking/decision UID and snapshot SHA256",
+      "real app version/name and research engine version",
+      "user note and consent"
+    ]
+  },
+  "remote": {
+    "repository": "HazRob/HazRob-Tank",
+    "branch": "main",
+    "directory": "feedback/records/YYYY/MM/FB-UUID.json",
+    "method": "GitHub HTTPS Contents API PUT",
+    "network": "validated internet only, not ESP32 local AP",
+    "authentication": "user-entered fine-grained GitHub PAT encrypted by Android Keystore, NOT embedded",
+    "anonymous_public_repository_write_possible": false,
+    "sent_only_after_authenticated_github_write_and_receipt": true,
+    "automatic_retry_while_app_open": true,
+    "automatic_retry_after_android_process_terminated": false,
+    "actual_remote_write_verified": false
+  },
+  "quality": {
+    "Android_full_compile_success_run": 41536494279,
+    "Android_latest_compile_pending": 41536649129,
+    "Android12_feedback_outbox_test_pending": 41536649060,
+    "source_static_tests": 6,
+    "UI_instrumentation_true": false,
+    "credential_exposed_in_source": false,
+    "scientific_feedback_accepted_as_ground_truth": false,
+    "G3": 0
+  },
+  "gates_pending": [
+    "Android12 4 instrumented synthetic outbox tests",
+    "Actual phone Feedback button RTL, cancel/save, restore",
+    "Authenticated GitHub write receipt with operator-supplied valid GitHub PAT",
+    "App closed and internet restored background scheduling beyond current running-app callback"
+  ]
+}

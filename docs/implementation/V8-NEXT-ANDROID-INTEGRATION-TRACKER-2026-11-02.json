@@ -5,7 +5,7 @@
   "owner_authorization_utc": "2026-11-02T06:44:21Z",
   "branch": "feature/tank-v8-implementation",
   "project": "HazRob-Tank independent of original 4-wheel HazRob",
-  "execution_mode": "P07_2_CLOSED_P09_1_2_3_PARTIAL_AND_COMPILED_ANDROID12_FIELD_GATES_PENDING",
+  "execution_mode": "P11_3_AND_P11_4_FEEDBACK_WRITTEN_ANDROID12_AND_REAL_GITHUB_AUTH_PENDING",
   "scientific_tests_postponed": true,
   "core_g3_physically_validated_techniques": 0,
   "runtime_android_next_integration_verified": false,
@@ -15,10 +15,10 @@
   "program": {
     "total_tasks": 34,
     "done_tasks": 2,
-    "in_progress": 6,
+    "in_progress": 8,
     "blocked": 0,
-    "planned": 26,
-    "next_task": "P09.1_RELAY_AND_SESSIONS_IN_PROGRESS",
+    "planned": 24,
+    "next_task": "P11.3_FEEDBACK_LOCAL_ANDROID12",
     "phases": [
       "P07",
       "P08",
@@ -710,11 +710,33 @@
       ],
       "acceptance": "جدول مراجعات منفصل append-only؛ لا overwrite لنتيجة محفوظة، الإسناد إلى snapshot_uid والمصدر والمالك",
       "evidence": "research/v8_implementation/results/next_p11_3_operator_review.json",
-      "status": "NOT_STARTED",
-      "commit_sha": null,
+      "status": "IN_PROGRESS",
+      "commit_sha": "b0c6551e5b0fb8455cb88c92f0fbd7ff8c38292b",
       "ci_run_id": null,
-      "blocked_by": [],
-      "verification": "NOT_RUN"
+      "blocked_by": [
+        "Four Android12 feedback outbox tests on final HEAD must pass",
+        "Open floating Feedback button and verify keyboard/RTL/Cancel/Confirm and resume on Android12 real UI"
+      ],
+      "verification": "FEEDBACK_DIALOG_AND_APPEND_ONLY_SQLITE_CODE_WRITTEN; JAVA_ANDROID_COMPILE_41536494279_PASS; ANDROID12_FEEDBACK_INSTRUMENTATION_PENDING",
+      "android_instrumentation_status": "NOT_PASSED",
+      "physical_tank_status": "NOT_REQUIRED_FOR_UI_LOCAL_SAVE_BUT_REAL_INSTANT_RESULT_END_TO_END_PENDING",
+      "ci_evidence": [
+        {
+          "run_id": 41536494279,
+          "status": "success",
+          "scope": "Full Android compile and 6 static feedback gates before latest sensor-UID redaction"
+        },
+        {
+          "run_id": 41536649129,
+          "status": "pending",
+          "scope": "Latest source compile after redaction changes"
+        },
+        {
+          "run_id": 41536649060,
+          "status": "pending",
+          "scope": "Android12 local outbox synthetic 4 tests; no real GitHub upload"
+        }
+      ]
     },
     {
       "id": "P11.4",
@@ -726,11 +748,34 @@
       ],
       "acceptance": "local PENDING→SENT فقط بعد receipt من backend معتمد؛ لا سرية/ملفات خام ترفع دون إذن؛ offline retry idempotent",
       "evidence": "research/v8_implementation/results/next_p11_4_upload_receipts.json",
-      "status": "NOT_STARTED",
-      "commit_sha": null,
+      "status": "IN_PROGRESS",
+      "commit_sha": "b0c6551e5b0fb8455cb88c92f0fbd7ff8c38292b",
       "ci_run_id": null,
-      "blocked_by": [],
-      "verification": "NOT_RUN"
+      "blocked_by": [
+        "Authenticated real write with a genuine user-provided fine-grained GitHub PAT; the supplied short code is not a valid GitHub PAT format",
+        "Successful GitHub remote receipt and outbox SENT must be verified (no token embedded)",
+        "Process-dead background scheduling optional enhancement still pending"
+      ],
+      "verification": "GITHUB_API_AUTHENTICATED_UPLOAD_SENDER_CODE_WRITTEN; AndroidKeyStore CREDENTIALS_SETTINGS; REAL_WRITE_NOT_VERIFIED; BACKGROUND_PROCESS_DEAD_RETRY_PENDING",
+      "android_instrumentation_status": "NOT_PASSED",
+      "physical_tank_status": "NOT_REQUIRED_FOR_UI_LOCAL_SAVE_BUT_REAL_INSTANT_RESULT_END_TO_END_PENDING",
+      "ci_evidence": [
+        {
+          "run_id": 41536494279,
+          "status": "success",
+          "scope": "Full Android compile and 6 static feedback gates before latest sensor-UID redaction"
+        },
+        {
+          "run_id": 41536649129,
+          "status": "pending",
+          "scope": "Latest source compile after redaction changes"
+        },
+        {
+          "run_id": 41536649060,
+          "status": "pending",
+          "scope": "Android12 local outbox synthetic 4 tests; no real GitHub upload"
+        }
+      ]
     },
     {
       "id": "P11.5",
@@ -919,9 +964,9 @@
       "verification": "NOT_RUN"
     }
   ],
-  "last_checked_commit": "2281b90c06f83d2b5b07766ce321fa052846eddd",
-  "last_verified_ci": 41530202132,
-  "next_action": "Check Android12 emulator archive CI 41529693093 and updated safety source CI 41530202132. If failed fix defects. Complete P09.1/2/3 Android12 real 60s field replay with Next decision; then actual Tank relay-off ACK, storage fault injection, 60s warmup +60s sample UI and PDF/XLSX parity; do not claim completed until all gates met.",
+  "last_checked_commit": "b0c6551e5b0fb8455cb88c92f0fbd7ff8c38292b",
+  "last_verified_ci": 41536494279,
+  "next_action": "Inspect 41536649129 Android build and 41536649060 emulator feedback tests; correct failures. Exercise popup UI after completed Next instant measurement. For upload, operator must input a genuine GitHub PAT through encrypted Settings and explicitly consent per record; test real GitHub Contents API remote receipt before calling functionality complete. Never hard-code user-supplied credentials.",
   "ui_coverage_gate": {
     "source_inventory_script": "tools/v8_ui_inventory_gate.py",
     "run_id": 41404510217,
