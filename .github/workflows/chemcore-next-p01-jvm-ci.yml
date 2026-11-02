@@ -228,6 +228,41 @@ jobs:
           assert not r['historical_approx_118ppm_reproduced']
           print('CHEMCORE_NEXT_OCT2026_8MQ_G1_EVIDENCE_GATE_PASS')
           PY
+      - name: Replay original Oct ethanol 8MQ with complete Next source-curve research portfolios and heater filtered 6MQ
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pathlib
+          source=pathlib.Path('android/app/src/main/assets/chemcore_v6/reference/mq_research_curves_43.json')
+          d=json.loads(source.read_text())
+          assert d['curve_count']==43 and len(d['curves'])==43
+          assert d['source']['version']=='6.0.0'
+          h=['sensor','legacy_id','gas_label','ratio_a','ratio_b','output_scale','min_ppm','max_ppm']
+          dest=pathlib.Path('build/chemcore-next-p01/OCT2026-ORIGINAL-CURVES.tsv')
+          dest.write_text('\\t'.join(h)+'\\n'+''.join('\\t'.join(str(r[k]) for k in h)+'\\n' for r in d['curves']))
+          print('ORIGINAL_43_MQDATASCIENCE_SOURCE_CURVES_EXTRACTED')
+          PY
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextOctoberEthanolSourcePortfolioDiagnostic \
+              research/chemcore_next/experiments/october_2026_ethanol_experiment4_8mq_recovered_rounded.csv \
+              build/chemcore-next-p01/OCT2026-ORIGINAL-CURVES.tsv \
+              build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.json \
+              | tee build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.log
+          grep -q '^CHEMCORE_NEXT_OCT_ETHANOL_PORTFOLIO_DIAGNOSTIC_PASS ' \
+              build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.log
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.json')
+          x=json.loads(p.read_text())
+          a,b=x['source_experimental_arms']
+          assert a['next_engine_decision']=='UNKNOWN' and b['next_engine_decision']=='UNKNOWN'
+          assert a['engine_eligible_candidates']==b['engine_eligible_candidates']==0
+          assert a['original_MQ_channels']==8 and b['original_MQ_channels']==6
+          assert a['shadow_ranking_HYPOTHETICAL_R0_SOURCE_ONLY'][0]['legacy_id']==75
+          assert not x['chemical_identity_confirmed'] and not x['gas_ppm_reportable']
+          assert x['source_root_independence_count']==1
+          print('CHEMCORE_NEXT_OCT2026_SOURCE_PORTFOLIO_G1_GATE_PASS')
+          PY
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -258,5 +293,7 @@ jobs:
             build/chemcore-next-p01/P06-DIVERSE-FINGERPRINT-BUNDLE.log
             build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.log
             build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.json
+            build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.log
+            build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.json
           if-no-files-found: warn
           retention-days: 30
