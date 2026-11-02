@@ -1,0 +1,48 @@
+{
+  "schema": "hazrob.v8.next.p02_4.single_sensor_evidence/1",
+  "date": "2026-11-02",
+  "task": "P02.4",
+  "status": "PASS_JVM_G1_ONLY",
+  "run_id": 41376409034,
+  "run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41376409034",
+  "run_commit": "f95b26eaf064947985e1865206d9fb1326afd7cc",
+  "job_id": 125057493727,
+  "assertions": {
+    "p01_contract": 28,
+    "p01_replay": 36,
+    "p02_physics": 69,
+    "p02_r0": 33,
+    "p02_quality": 110,
+    "p02_single_sensor": 60,
+    "combined": 336
+  },
+  "features": [
+    "No mandatory 2-sensor threshold for research evidence",
+    "Positive signal requires source model mapped to canonical UID, matched sensor/heater, valid scan/I2C/ADS quality and LOD over noise floor",
+    "Positive sensor response is only research candidate support; chemical identity and ppm remain unconfirmed",
+    "Non-response at unknown field concentration never creates chemical exclusion",
+    "Only an independently referenced known-concentration challenge with a source-expected response >=2x detection threshold can record CONDITIONAL_NEGATIVE sensor-model support",
+    "Cross-sensitivity and wrong-direction responses abstain/ambiguous; no false identity"
+  ],
+  "scope_limits": [
+    "Challenge negatives are controlled sensor model evidence, not proof of absence of a chemical already independently known present",
+    "Models and independent challenge metadata are synthetic test fixtures",
+    "No actual Tank G3 or concentration certification",
+    "No Android engine adapter yet"
+  ],
+  "sources": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SingleSensorEvidenceGate.java",
+      "sha": "1f2207eaa157c4964d73a6923b44920f8ae442cb"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/SingleSensorEvidenceGateSmoke.java",
+      "sha": "2ea08482bc6942e10bef916d361c8fe75b99e663"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "sha": "110de335a9297cfdecc174557ad6b8085924c989"
+    }
+  ],
+  "next": "P02.5 deterministic clean-air synthetic sensor scan and manual 180s warmup 60s baseline test."
+}
