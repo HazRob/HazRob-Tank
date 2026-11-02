@@ -1,0 +1,801 @@
+{
+  "schema": "chemcore.next.p03.3.gas_signature_source_records/1",
+  "date": "2026-11-02",
+  "origin": "android/app/src/main/java/com/hazrob/tank/chemcore/v6/GasFingerprintCatalogV6.java",
+  "blob_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+  "source_root_blobs": {
+    "MQDS_6400_SOURCE_ADC": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+    "ROBOFUSION_H1_OPS": "8484d576926ba8a97dd00d8b4feff6a3bce0f9a1",
+    "UCI1081_MQ135_TEMPORAL": "bf3ab5777c3cd8fa570d75a1db117008dc751720"
+  },
+  "counts": {
+    "MQDS_6400_SOURCE_ADC": 4,
+    "ROBOFUSION_H1_OPS": 2,
+    "UCI1081_MQ135_TEMPORAL": 18
+  },
+  "dimension_rule": "No cross-space numeric distances; feature spaces require separate transforms with matched sensor/fixture/provenance",
+  "record_count": 24,
+  "scientific_quality": "Original vector coordinates, missing values, and source scale signs preserved; no fabricated G3/canonical UIDs",
+  "records": [
+    {
+      "id": "MQDS-ADC-1",
+      "source_root_id": "MQDS_6400_SOURCE_ADC",
+      "feature_space": "ADC_LOG_GEOMEAN_CLASS",
+      "source_label": "Mixture",
+      "legacy_reference_id": null,
+      "source_declared_ppm": null,
+      "source_count": 1600,
+      "vector": [
+        0.14451613138166264,
+        -0.006557602534055202,
+        null,
+        -0.018714246497049322,
+        0.034035113638107184,
+        -0.13017332874094964,
+        null,
+        -0.023106067247713295
+      ],
+      "source_scale_raw": [
+        -0.10078106448469856,
+        -0.10112804005375722,
+        null,
+        -0.0240786770560068,
+        -0.11980312634069774,
+        -0.30558144410860255,
+        null,
+        -0.07048066877423846
+      ],
+      "vector_dimension": 8,
+      "available_coordinates": 6,
+      "source_scale_positive_everywhere": false,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "SOURCE_FEATURES_CONTAIN_MISSING_COORDINATES",
+        "UNRELIABLE_SCALE_NOT_VALID_POSITIVE_UNCERTAINTY",
+        "CLASS_AGGREGATE_NOT_GAS_IDENTITY"
+      ]
+    },
+    {
+      "id": "MQDS-ADC-2",
+      "source_root_id": "MQDS_6400_SOURCE_ADC",
+      "feature_space": "ADC_LOG_GEOMEAN_CLASS",
+      "source_label": "NoGas",
+      "legacy_reference_id": null,
+      "source_declared_ppm": null,
+      "source_count": 1600,
+      "vector": [
+        0.12498835906336048,
+        -0.02573839928329876,
+        null,
+        -0.11494440624404334,
+        0.03352940317580413,
+        0.055099278564652104,
+        null,
+        -0.07293423527647566
+      ],
+      "source_scale_raw": [
+        0,
+        0,
+        null,
+        0,
+        0,
+        0,
+        null,
+        0
+      ],
+      "vector_dimension": 8,
+      "available_coordinates": 6,
+      "source_scale_positive_everywhere": false,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "SOURCE_FEATURES_CONTAIN_MISSING_COORDINATES",
+        "UNRELIABLE_SCALE_NOT_VALID_POSITIVE_UNCERTAINTY",
+        "CLASS_AGGREGATE_NOT_GAS_IDENTITY"
+      ]
+    },
+    {
+      "id": "MQDS-ADC-3",
+      "source_root_id": "MQDS_6400_SOURCE_ADC",
+      "feature_space": "ADC_LOG_GEOMEAN_CLASS",
+      "source_label": "Perfume",
+      "legacy_reference_id": null,
+      "source_declared_ppm": null,
+      "source_count": 1600,
+      "vector": [
+        0.12025620912805247,
+        -0.029695890125608568,
+        null,
+        -0.10875113617345523,
+        0.03833535904155618,
+        0.049855623197665344,
+        null,
+        -0.07000016506821004
+      ],
+      "source_scale_raw": [
+        -0.0017800975000977148,
+        -0.0010054384070995557,
+        null,
+        0.009145322505798362,
+        0.007758008300962309,
+        -0.002291602931776464,
+        null,
+        0.00588612264347589
+      ],
+      "vector_dimension": 8,
+      "available_coordinates": 6,
+      "source_scale_positive_everywhere": false,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "SOURCE_FEATURES_CONTAIN_MISSING_COORDINATES",
+        "UNRELIABLE_SCALE_NOT_VALID_POSITIVE_UNCERTAINTY",
+        "CLASS_AGGREGATE_NOT_GAS_IDENTITY"
+      ]
+    },
+    {
+      "id": "MQDS-ADC-4",
+      "source_root_id": "MQDS_6400_SOURCE_ADC",
+      "feature_space": "ADC_LOG_GEOMEAN_CLASS",
+      "source_label": "Smoke",
+      "legacy_reference_id": null,
+      "source_declared_ppm": null,
+      "source_count": 1600,
+      "vector": [
+        0.14201234214440056,
+        -0.08164799707385735,
+        null,
+        -0.12089452941781541,
+        0.11093763602489017,
+        0.11353977778801395,
+        null,
+        -0.16394722946563162
+      ],
+      "source_scale_raw": [
+        -0.07946634119749144,
+        -0.15239992206909012,
+        null,
+        -0.1024404474523036,
+        -0.019082091429445468,
+        -0.0380498250551697,
+        null,
+        -0.1875033184676875
+      ],
+      "vector_dimension": 8,
+      "available_coordinates": 6,
+      "source_scale_positive_everywhere": false,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "SOURCE_FEATURES_CONTAIN_MISSING_COORDINATES",
+        "UNRELIABLE_SCALE_NOT_VALID_POSITIVE_UNCERTAINTY",
+        "CLASS_AGGREGATE_NOT_GAS_IDENTITY"
+      ]
+    },
+    {
+      "id": "ROBOFUSION-1",
+      "source_root_id": "ROBOFUSION_H1_OPS",
+      "feature_space": "OPERATIONAL_LOG1PLUS_CLR",
+      "source_label": "Hazard_1",
+      "legacy_reference_id": null,
+      "source_declared_ppm": null,
+      "source_count": 1167,
+      "vector": [
+        -0.16218385913659927,
+        0.6895123557707743,
+        -0.4128213009720952,
+        -0.6769106258203069,
+        0.29794005163845416,
+        -0.23639028919702562
+      ],
+      "source_scale_raw": [
+        0.8886916640838581,
+        0.5262006722158789,
+        0.2560133917667277,
+        0.41780831256948464,
+        0.39548286634707874,
+        0.5210604240378981
+      ],
+      "vector_dimension": 6,
+      "available_coordinates": 6,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "8484d576926ba8a97dd00d8b4feff6a3bce0f9a1",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "OPERATIONAL_HAZARD_CATEGORY_NOT_CHEMICAL_IDENTITY"
+      ]
+    },
+    {
+      "id": "ROBOFUSION-2",
+      "source_root_id": "ROBOFUSION_H1_OPS",
+      "feature_space": "OPERATIONAL_LOG1PLUS_CLR",
+      "source_label": "Normal",
+      "legacy_reference_id": null,
+      "source_declared_ppm": null,
+      "source_count": 41537,
+      "vector": [
+        0.8011661207651951,
+        0.402437045582265,
+        -0.39388039777911077,
+        -0.4590498997274038,
+        0.2211885748434197,
+        -0.19371184833674884
+      ],
+      "source_scale_raw": [
+        1.0517744348091893,
+        0.29324754503949085,
+        0.2631175161079973,
+        0.29760337032955236,
+        0.15955579247931517,
+        0.21871404741378692
+      ],
+      "vector_dimension": 6,
+      "available_coordinates": 6,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "8484d576926ba8a97dd00d8b4feff6a3bce0f9a1",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "OPERATIONAL_HAZARD_CATEGORY_NOT_CHEMICAL_IDENTITY"
+      ]
+    },
+    {
+      "id": "UCI1081-1",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "acetone",
+      "legacy_reference_id": 110,
+      "source_declared_ppm": 0.05,
+      "source_count": 5,
+      "vector": [
+        0.9471726656594102,
+        -0.05282733434058982,
+        -0.0001020131817406828
+      ],
+      "source_scale_raw": [
+        0.00980476726457954,
+        0.009804767264579548,
+        0.00005861296147482387
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-2",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "acetone",
+      "legacy_reference_id": 110,
+      "source_declared_ppm": 0.1,
+      "source_count": 5,
+      "vector": [
+        0.9888940917168723,
+        -0.011105908283127675,
+        -0.00010289208288192724
+      ],
+      "source_scale_raw": [
+        0.00641322488444055,
+        0.006413224884440553,
+        0.00003455894373514109
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-3",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "acetone",
+      "legacy_reference_id": 110,
+      "source_declared_ppm": 0.2,
+      "source_count": 5,
+      "vector": [
+        1.0875920684856115,
+        0.08759206848561164,
+        -0.00012442770718107437
+      ],
+      "source_scale_raw": [
+        0.028079036373951302,
+        0.028079036373951313,
+        0.00004920774473103757
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-4",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "ethanol",
+      "legacy_reference_id": 103,
+      "source_declared_ppm": 0.05,
+      "source_count": 5,
+      "vector": [
+        0.9802306111743464,
+        -0.019769388825653607,
+        -0.000051612458695940605
+      ],
+      "source_scale_raw": [
+        0.04395086399315833,
+        0.043950863993158354,
+        0.00004098334645152228
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-5",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "ethanol",
+      "legacy_reference_id": 103,
+      "source_declared_ppm": 0.1,
+      "source_count": 5,
+      "vector": [
+        0.9892271801284812,
+        -0.01077281987151892,
+        -0.00007862603112373994
+      ],
+      "source_scale_raw": [
+        0.03321371083021935,
+        0.033213710830219324,
+        0.00004487188927771207
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-6",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "ethanol",
+      "legacy_reference_id": 103,
+      "source_declared_ppm": 0.2,
+      "source_count": 5,
+      "vector": [
+        1.0393299753556526,
+        0.03932997535565262,
+        -0.00011999201950062765
+      ],
+      "source_scale_raw": [
+        0.012333365398591431,
+        0.012333365398591447,
+        0.000028689632775597798
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-7",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "ethyl_acetate",
+      "legacy_reference_id": 115,
+      "source_declared_ppm": 0.05,
+      "source_count": 5,
+      "vector": [
+        1.0009883215002444,
+        0.0009883215002444283,
+        -0.000055721656272808216
+      ],
+      "source_scale_raw": [
+        0.027454459688526632,
+        0.027454459688526594,
+        0.00021084085465277822
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-8",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "ethyl_acetate",
+      "legacy_reference_id": 115,
+      "source_declared_ppm": 0.1,
+      "source_count": 5,
+      "vector": [
+        1.0413023513347217,
+        0.04130235133472178,
+        -0.000005985994020072758
+      ],
+      "source_scale_raw": [
+        0.020426883207872608,
+        0.02042688320787263,
+        0.00001900137562879991
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-9",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "ethyl_acetate",
+      "legacy_reference_id": 115,
+      "source_declared_ppm": 0.2,
+      "source_count": 5,
+      "vector": [
+        1.1005356085055553,
+        0.10053560850555525,
+        -0.00015771217606695172
+      ],
+      "source_scale_raw": [
+        0.023554234715926214,
+        0.023554234715926266,
+        0.00004136575287794867
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-10",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "hexane",
+      "legacy_reference_id": 84,
+      "source_declared_ppm": 0.05,
+      "source_count": 5,
+      "vector": [
+        0.9792934942184143,
+        -0.020706505781585775,
+        -0.00003136971041978479
+      ],
+      "source_scale_raw": [
+        0.01816256643916169,
+        0.018162566439161688,
+        0.0000805557741168219
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-11",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "hexane",
+      "legacy_reference_id": 84,
+      "source_declared_ppm": 0.1,
+      "source_count": 5,
+      "vector": [
+        1.0261762826834249,
+        0.026176282683424847,
+        -0.00013409964829437965
+      ],
+      "source_scale_raw": [
+        0.03998021781596643,
+        0.03998021781596645,
+        0.00019575138956547873
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-12",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "hexane",
+      "legacy_reference_id": 84,
+      "source_declared_ppm": 0.2,
+      "source_count": 5,
+      "vector": [
+        1.0277219976207355,
+        0.027721997620735343,
+        -0.000002419742388098896
+      ],
+      "source_scale_raw": [
+        0.03526952187442293,
+        0.035269521874422935,
+        0.00011994400901181091
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-13",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "isopropanol",
+      "legacy_reference_id": 105,
+      "source_declared_ppm": 0.05,
+      "source_count": 5,
+      "vector": [
+        0.9968429659822575,
+        -0.003157034017742396,
+        0.00016604636795900958
+      ],
+      "source_scale_raw": [
+        0.022990137664622604,
+        0.02299013766462259,
+        0.00013262278603191522
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-14",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "isopropanol",
+      "legacy_reference_id": 105,
+      "source_declared_ppm": 0.1,
+      "source_count": 5,
+      "vector": [
+        1.0408696307609202,
+        0.04086963076092036,
+        0.00007171785093704554
+      ],
+      "source_scale_raw": [
+        0.016573079782033616,
+        0.016573079782033626,
+        0.0001795970841398506
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-15",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "isopropanol",
+      "legacy_reference_id": 105,
+      "source_declared_ppm": 0.2,
+      "source_count": 5,
+      "vector": [
+        1.113069244907486,
+        0.11306924490748589,
+        0.00000992160045571917
+      ],
+      "source_scale_raw": [
+        0.025365980233572432,
+        0.02536598023357249,
+        0.00009964066656491931
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-16",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "toluene",
+      "legacy_reference_id": 95,
+      "source_declared_ppm": 0.05,
+      "source_count": 5,
+      "vector": [
+        0.9194322008475577,
+        -0.08056779915244236,
+        -0.00010795971238577898
+      ],
+      "source_scale_raw": [
+        0.004673259865444617,
+        0.004673259865444627,
+        0.00002677468619386007
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-17",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "toluene",
+      "legacy_reference_id": 95,
+      "source_declared_ppm": 0.1,
+      "source_count": 5,
+      "vector": [
+        0.9374965110369715,
+        -0.06250348896302856,
+        -0.00005424176816525187
+      ],
+      "source_scale_raw": [
+        0.03190035033695658,
+        0.03190035033695657,
+        0.00002773339245667165
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    },
+    {
+      "id": "UCI1081-18",
+      "source_root_id": "UCI1081_MQ135_TEMPORAL",
+      "feature_space": "MQ135_BASELINE_NORMALIZED_TEMPORAL",
+      "source_label": "toluene",
+      "legacy_reference_id": 95,
+      "source_declared_ppm": 0.2,
+      "source_count": 5,
+      "vector": [
+        0.9311672305273309,
+        -0.06883276947266923,
+        -0.00006510050355498193
+      ],
+      "source_scale_raw": [
+        0.004840560470093378,
+        0.004840560470093369,
+        0.000021120678354664773
+      ],
+      "vector_dimension": 3,
+      "available_coordinates": 3,
+      "source_scale_positive_everywhere": true,
+      "eligible_for_direct_tank_candidate": false,
+      "canonical_uid": null,
+      "qualification": "RESEARCH_PROTOTYPE_NO_G3",
+      "source_library_blob": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "prototype_code_sha": "a6a69e616b94b540bb883fa9c76d8198c69a9f4c",
+      "blocks": [
+        "UCI_TEMPORAL_FEATURES_NOT_MULTI_SENSOR_TANK_FINGERPRINT"
+      ]
+    }
+  ]
+}
