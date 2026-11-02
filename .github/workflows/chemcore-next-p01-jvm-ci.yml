@@ -133,6 +133,14 @@ jobs:
             | tee build/chemcore-next-p01/P04-INDEPENDENT-ROOTS.log
           grep -q '^CHEMCORE_NEXT_P04_6_ROOT_FUSION_PASS ' \
             build/chemcore-next-p01/P04-INDEPENDENT-ROOTS.log
+      - name: Verify P05.1 full-catalog source-linked candidate generation, 0 to more than 10
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.ResearchCandidateGeneratorSmoke \
+            | tee build/chemcore-next-p01/P05-CANDIDATE-GENERATOR.log
+          grep -q '^CHEMCORE_NEXT_P05_1_CANDIDATE_PASS ' \
+            build/chemcore-next-p01/P05-CANDIDATE-GENERATOR.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -152,5 +160,6 @@ jobs:
             build/chemcore-next-p01/P04-TEMPORAL-EXPERT.log
             build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
             build/chemcore-next-p01/P04-INDEPENDENT-ROOTS.log
+            build/chemcore-next-p01/P05-CANDIDATE-GENERATOR.log
           if-no-files-found: warn
           retention-days: 30
