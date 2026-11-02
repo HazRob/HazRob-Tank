@@ -8,6 +8,7 @@ on:
       - 'research/chemcore_next/tests/java/NextRealMqFingerprintBenchmark.java'
       - 'research/chemcore_next/tests/java/NextP06PairedV6UciBenchmark.java'
       - 'research/chemcore_next/tests/java/NextP06MeasuredMqBundleBenchmark.java'
+      - 'research/chemcore_next/tests/java/NextP06FingerprintDeviationAudit.java'
       - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
       - 'research/chemcore_next/device_calibration/**'
       - 'research/chemcore_next/experiments/next_reference_uci1081_fingerprints.py'
@@ -232,6 +233,30 @@ jobs:
           assert not v['source_exposure_independence_proven']
           assert v['original_ADC_not_kohm'] and v['source_domain_only_no_tank_Rair_substitution']
           print('CHEMCORE_NEXT_MQ_SOURCE_PORTFOLIO_GROUPING_PASS')
+          PY
+      - name: P06 isolate where MQ135 Next differs from V6 and test scale/time-feature ablations
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/next-g2-results/deviation-audit/classes
+          javac -encoding UTF-8 -d /tmp/next-g2-results/deviation-audit/classes \
+              android/app/src/main/java/com/hazrob/tank/chemcore/v6/ClassicalLearningV6.java \
+              android/app/src/main/java/com/hazrob/tank/chemcore/next/FingerprintExpert.java \
+              research/chemcore_next/tests/java/NextP06FingerprintDeviationAudit.java
+          java -cp /tmp/next-g2-results/deviation-audit/classes \
+              com.hazrob.tank.chemcore.next.NextP06FingerprintDeviationAudit \
+              /tmp/next-g2-source/uci90_features.csv \
+              /tmp/next-g2-results/deviation-audit/next_source_stage_deviation.json \
+              | tee /tmp/next-g2-results/deviation-audit/next_source_stage_deviation.log
+          grep -q '^CHEMCORE_NEXT_P06_DEVIATION_DIAG_PASS ' \
+              /tmp/next-g2-results/deviation-audit/next_source_stage_deviation.log
+          python - <<'PY'
+          import json,pathlib
+          d=json.loads(pathlib.Path('/tmp/next-g2-results/deviation-audit/next_source_stage_deviation.json').read_text())
+          assert d['original_exposures']==90 and len(d['research_classifiers'])==5
+          assert all(0<=m['correct_total']<=90 for m in d['research_classifiers'])
+          assert not d['G3_tank'] and not d['gas_identity_certified']
+          print('NEXT_SOURCE_DEVIATION_ABLATION_REPORT_PASS')
           PY
       - name: Preserve complete source-only predictions, derived fingerprints and lineage
         uses: actions/upload-artifact@v4
