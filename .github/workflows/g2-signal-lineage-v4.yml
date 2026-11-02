@@ -54,6 +54,8 @@ jobs:
         run: python research/implementation_execution/g2_mq4_forward_error_burden.py --output "$RUNNER_TEMP/g2_mq4_forward_error_burden.json"
       - name: "Audit external MQ4 false-alert concentration across calendar days (not Tank G2)"
         run: python research/implementation_execution/g2_mq4_false_alert_day_concentration.py --output "$RUNNER_TEMP/g2_mq4_false_alert_day_concentration.json"
+      - name: "Preflight MQ-EXT-10 published ethanol liquid v/v labels (not vapor ppm or Tank G2)"
+        run: python research/implementation_execution/g2_mq_ext10_ethanol_preflight.py --output "$RUNNER_TEMP/g2_mq_ext10_ethanol_preflight.json"
       - name: "Run every offline G2 regression test (including new test files)"
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_*.py' -v
       - name: "Run full 80-technique G2 fail-closed evidence audit"
@@ -115,4 +117,5 @@ jobs:
             ${{ runner.temp }}/g2_mq4_reference_boundary_truth.json
             ${{ runner.temp }}/g2_mq4_forward_error_burden.json
             ${{ runner.temp }}/g2_mq4_false_alert_day_concentration.json
+            ${{ runner.temp }}/g2_mq_ext10_ethanol_preflight.json
           if-no-files-found: error
