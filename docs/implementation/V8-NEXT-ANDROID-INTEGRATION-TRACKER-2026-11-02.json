@@ -5,7 +5,7 @@
   "owner_authorization_utc": "2026-11-02T06:44:21Z",
   "branch": "feature/tank-v8-implementation",
   "project": "HazRob-Tank independent of original 4-wheel HazRob",
-  "execution_mode": "P07.2_DONE_VERIFIED_ANDROID12_P07.3_P07.4_ACTIVE",
+  "execution_mode": "P07.2_DONE_ANDROID12_NEXT_DEFAULT_INSTANT_PATH_WIRED_PENDING_LATEST_ANDROID_COMPILE_AND_DEVICE",
   "scientific_tests_postponed": true,
   "core_g3_physically_validated_techniques": 0,
   "runtime_android_next_integration_verified": false,
@@ -15,9 +15,9 @@
   "program": {
     "total_tasks": 34,
     "done_tasks": 2,
-    "in_progress": 2,
+    "in_progress": 3,
     "blocked": 0,
-    "planned": 30,
+    "planned": 29,
     "next_task": "P07.3",
     "phases": [
       "P07",
@@ -197,9 +197,10 @@
       "commit_sha": "90ef967a492dfe563fd04903245381fdd24a7cff",
       "ci_run_id": 41525715751,
       "blocked_by": [
-        "Android12 Settings feature-toggle UI test and router active data-driven call site required; current router is implemented but not yet wired to the instantaneous or session analysis path"
+        "Android12 Settings interaction and toggle persistence on emulator not yet proven",
+        "all field session and lab entrypoints must use Next rather than V6"
       ],
-      "verification": "G1_ROUTING_PASS_12; SETTINGS_TOGGLE_ADDED; FULL_ANDROID_COMPILE_PASS; END_TO_END_NOT_COMPLETE",
+      "verification": "SOURCE_ROUTE_ACTIVE_IN_TANK_INSTANT_ANALYZER; SETTINGS_FLAG_DURABLE; G1_JVM_PASS; COMPILE_LAST_CONFIRMED_41527063355; LATEST_CI_PENDING",
       "ci_evidence": [
         {
           "run_id": 41525622327,
@@ -213,7 +214,14 @@
         }
       ],
       "android_instrumentation_status": "NOT_YET_PASSED",
-      "physical_tank_status": "NOT_RUN"
+      "physical_tank_status": "NOT_RUN",
+      "verified_at_utc": null,
+      "evidence_files": [
+        "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java",
+        "android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java",
+        "research/v8_implementation/tests/test_v8_next_instant_source_routing.py"
+      ],
+      "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300"
     },
     {
       "id": "P07.4",
@@ -230,9 +238,10 @@
       "commit_sha": "2edf734cde185d93fb626faaa3b45e7fefe98528",
       "ci_run_id": 41525715751,
       "blocked_by": [
-        "Display/report consumer wiring and parity on Android12 instrumented test required; immutable envelope exists but not all PDF/XLSX exports consume it yet"
+        "All PDF/XLSX and historical session reports still need frozen Next envelope instead of separate inference",
+        "Android12 instrumentation for dynamic 12-candidate parity pending"
       ],
-      "verification": "G1_DISPLAY_PASS_32; IMMUTABLE_JSON_ENVELOPE_COMPILES; ANDROID12_PDF_PARITY_INSTRUMENTATION_PENDING",
+      "verification": "DISPLAY_ENVELOPE_IMPLEMENTED_AND_COMPILED; ACTIVE_INSTANT_ROUTE_USES_PERSISTED_ENVELOPE; PDF_XLSX/ANDROID_PARITY_PENDING",
       "ci_evidence": [
         {
           "run_id": 41525622327,
@@ -246,7 +255,14 @@
         }
       ],
       "android_instrumentation_status": "NOT_YET_PASSED",
-      "physical_tank_status": "NOT_RUN"
+      "physical_tank_status": "NOT_RUN",
+      "verified_at_utc": null,
+      "evidence_files": [
+        "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java",
+        "android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java",
+        "research/v8_implementation/tests/test_v8_next_instant_source_routing.py"
+      ],
+      "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300"
     },
     {
       "id": "P08.1",
@@ -275,11 +291,21 @@
       ],
       "acceptance": "لا ترتيب source_curve_hypotheses ولا rank من first appearance؛ 0/1/5/10/12 مرشح مؤهل من UID كامل؛ الترتيب يتغير مع اختلاف الأدلة؛ لا حشو",
       "evidence": "research/v8_implementation/results/next_p08_2_ranked_dynamic.json",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "commit_sha": null,
       "ci_run_id": null,
-      "blocked_by": [],
-      "verification": "NOT_RUN"
+      "blocked_by": [
+        "P11.1 qualified source bindings not activated yet, so current Next legitimately produces UNKNOWN",
+        "Android12 measured-source candidate list and UI report parity pending"
+      ],
+      "verification": "LEGACY_144_SOURCE_RANKING_REMOVED_FROM_DEFAULT_INSTANT_ANALYZER; DYNAMIC_NEXT_UID_PROJECTION_WIRED; REAL_SOURCE_MODEL_CATALOG_BINDING_AND_UI_0_N_END_TO_END_PENDING",
+      "verified_at_utc": null,
+      "evidence_files": [
+        "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java",
+        "android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java",
+        "research/v8_implementation/tests/test_v8_next_instant_source_routing.py"
+      ],
+      "source_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300"
     },
     {
       "id": "P08.3",
@@ -755,9 +781,9 @@
       "verification": "NOT_RUN"
     }
   ],
-  "last_checked_commit": "47a90b82d08595a28e004b1aec3cba827303df43",
-  "last_verified_ci": 41525071725,
-  "next_action": "P07.3 finish wiring NextEngineRouter to real INSTANT/SESSION app flow; P07.4 link decision envelope across UI/PDF/XLSX and verify 12-candidate parity in latest Android12 instrumentation; then run P08.1/P08.2 and P09 failure tests.",
+  "last_checked_commit": "fe240de2fe8d95fb5c0b3b1f0c04658b4b9cc300",
+  "last_verified_ci": 41527063355,
+  "next_action": "Verify latest V8 compile/static route test run 41527354854 and current Android12 replay instrumentation; then P07.4 make all reports consume one Next frozen decision and P08/P09 implement 60s+60s countdown and race-free session completion.",
   "ui_coverage_gate": {
     "source_inventory_script": "tools/v8_ui_inventory_gate.py",
     "run_id": 41404510217,
