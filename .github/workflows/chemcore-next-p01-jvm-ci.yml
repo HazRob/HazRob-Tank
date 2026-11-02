@@ -117,7 +117,6 @@ jobs:
             | tee build/chemcore-next-p01/P04-TEMPORAL-EXPERT.log
           grep -q '^CHEMCORE_NEXT_P04_3_TEMPORAL_PASS ' \
             build/chemcore-next-p01/P04-TEMPORAL-EXPERT.log
-            build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
       - name: Verify P04.4 source-qualified environmental 3D transform and abstentions
         shell: bash
         run: |
@@ -142,5 +141,7 @@ jobs:
             build/chemcore-next-p01/NH3-NH4-SHARED-SOURCE-TEST.log
             build/chemcore-next-p01/P04-SOURCE-CURVE-EXPERT.log
             build/chemcore-next-p01/P04-FINGERPRINT-EXPERT.log
+            build/chemcore-next-p01/P04-TEMPORAL-EXPERT.log
+            build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
           if-no-files-found: warn
           retention-days: 30
