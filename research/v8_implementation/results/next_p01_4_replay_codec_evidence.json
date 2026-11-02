@@ -1,0 +1,49 @@
+{
+  "schema": "hazrob.chemcore.next.p01_4/replay_code_evidence/1",
+  "date": "2026-11-02",
+  "task": "P01.4",
+  "ci_run_id": 41373436129,
+  "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41373436129",
+  "ci_commit": "a76d79bb727754db5030846b5fb17473e8c291a0",
+  "ci_job_id": 125048537662,
+  "ci_result": "SUCCESS",
+  "jdk": "17",
+  "no_android_dependencies": true,
+  "contract_assertions_passed": 28,
+  "replay_assertions_passed": 36,
+  "total_assertions_passed": 64,
+  "snapshot_roundtrip": "bit-exact doubles, raw ADC, R_air/R0, heater profile, stable hash and monotonic timestamp",
+  "decision_roundtrip": "linked to unchanged immutable snapshot including canonical nonlegacy UIDs, source roots, reason statuses",
+  "fail_closed_cases": [
+    "unknown envelope version",
+    "unknown record type",
+    "invalid base64",
+    "SHA256 mismatch",
+    "mismatched raw sample",
+    "mismatched Stable manifest",
+    "wrong record kind",
+    "invalid UTF8 or length",
+    "concatenation/trailing bytes"
+  ],
+  "source_files": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/NextReplayCodec.java",
+      "sha": "2df88725522f5f8d594e4b528c4fceda334cb675"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/NextReplayCodecSmoke.java",
+      "sha": "fc6b3ae269c018f02e11a0b1c325e7a97a9d7e96"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "sha": "609816852d373e8be13309cb2d67d59d573bded2"
+    }
+  ],
+  "limits": [
+    "Research envelope only, SHA integrity not authentication/signature",
+    "No chemical inference yet",
+    "No JSON Android interface; separate adapter required at P07",
+    "No physical calibration/G2/G3"
+  ],
+  "next": "P02.1 safe ADC/electric signal conversion with device-specific circuit and uncertainty constraints"
+}
