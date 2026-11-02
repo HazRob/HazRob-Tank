@@ -1,0 +1,15 @@
+{
+  "schema": "chemcore.next.P06.1_integrated_g1/1",
+  "date": "2026-11-02",
+  "outcome": "G1_INTEGRATED_JAVA_PASS",
+  "source_commit": "969d9984a4876e9592459a24b3ba2a77e1a501ce",
+  "run_id": 41395278326,
+  "run_conclusion": "success",
+  "owner_reference": "research/chemcore_next/device_calibration/tank_8mq_v6_quick_clean_air_2026-10-31T032955Z.json",
+  "checks": 98,
+  "reference_count": 8,
+  "source_synthetic_perturbations_not_measured_exposure": true,
+  "source_root_fail_closed": true,
+  "physical_tank_G3": false,
+  "source_report": "docs/research/CHEMCORE-NEXT-DIVERSE-FINGERPRINT-BUNDLES-AND-DEVIATION-2026-11-02_AR.md"
+}

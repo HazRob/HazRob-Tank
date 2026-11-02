@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
-  "status": "CHEMCORE_NEXT_P05_FULL_G1_PASSED_P06_READY_RESEARCH_ONLY",
-  "last_verified_head_sha": "3e890a7dd7f26933af9130bc2af9239dc11224c4",
+  "status": "CHEMCORE_NEXT_34_OF_37_RESEARCH_CORE_G1_P06_G2_PENDING",
+  "last_verified_head_sha": "79e1b5dfbdbb82329389971c56c7d75e1f1423e0",
   "active_phase": "P06",
-  "active_task": "P06.1",
-  "last_checkpoint": "32/37 independent core tasks. P05.3-P05.7 G1 CI success 41394928047; source benchmarks preliminary only; G3=0.",
-  "next_action": "P06.1 integrated G1 numeric and failure injection, then V6 source replay comparison and grouped G2 evaluation",
+  "active_task": "P06.3",
+  "last_checkpoint": "34/37 core tasks: verified P06.1 G1 and P06.2 paired raw-MQ source deviation; diverse source MQ bundles source-only and safe category label separation CI success 41397224464; P06.3 complete-source G2 not yet qualified; G3=0.",
+  "next_action": "P06.3 complete-source G2 validation only with legitimate independent exposure/day/device group inputs; P06.4 Android-compatible JVM performance stress; P06.5 research-only freeze",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 32,
+    "done_tasks": 34,
     "passed_tests": 31,
     "failed_tests": 0,
-    "percent_complete": 45.07
+    "percent_complete": 47.89
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -165,7 +165,7 @@
         "P06.4",
         "P06.5"
       ],
-      "status": "READY",
+      "status": "IN_PROGRESS",
       "depends_on": [
         "P05"
       ],
@@ -1263,8 +1263,8 @@
       "id": "P06.1",
       "phase": "P06",
       "description": "اختبارات G1 رياضية ووحدات وصلاحية المدخلات",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_SOURCE_COMPARATIVE_RESEARCH_ONLY",
       "depends_on": [
         "P05.7"
       ],
@@ -1275,23 +1275,26 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PASSED_IN_GITHUB_ACTIONS_NOT_FIELD_G3",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_result": "G1 integration verified with actual owner's 8 air-reference values and 98 numerical/edge assertions",
+      "action_run_id": 41395278326,
+      "commit_sha": "969d9984a4876e9592459a24b3ba2a77e1a501ce",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_P06_1_g1_integrated.json",
+        "docs/research/CHEMCORE-NEXT-DIVERSE-FINGERPRINT-BUNDLES-AND-DEVIATION-2026-11-02_AR.md"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "Source-qualified research software only. Full G2 and Tank G3 not promoted",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P06.2",
       "phase": "P06",
       "description": "مقارنة إعادة تشغيل عينات V6 وNext",
-      "status": "NOT_STARTED",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_SOURCE_COMPARATIVE_RESEARCH_ONLY",
       "depends_on": [
         "P06.1"
       ],
@@ -1302,22 +1305,25 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PASSED_IN_GITHUB_ACTIONS_NOT_FIELD_G3",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_result": "Paired same-source V6 vs Next on 90 real MQ135 exposures and controlled feature/scaling ablation",
+      "action_run_id": 41397224464,
+      "commit_sha": "3c427532ecf68d74351aeea1c316234d2c7b3b68",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_P06_2_paired_source_deviation.json",
+        "docs/research/CHEMCORE-NEXT-DIVERSE-FINGERPRINT-BUNDLES-AND-DEVIATION-2026-11-02_AR.md"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "Source-qualified research software only. Full G2 and Tank G3 not promoted",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P06.3",
       "phase": "P06",
       "description": "اختبار G2 ببيانات معروفة مستقلة مجموعات",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P06.2"
@@ -2627,8 +2633,8 @@
   "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
   "core_program_progress": {
     "total_tasks": 37,
-    "done_tasks": 32,
-    "percent_complete": 86.49,
+    "done_tasks": 34,
+    "percent_complete": 91.89,
     "active_task": "P05.3",
     "qualified_g3_techniques": 0
   },

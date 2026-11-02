@@ -1,0 +1,20 @@
+{
+  "schema": "chemcore.next.P06.2_paired_source_stage_comparison/1",
+  "date": "2026-11-02",
+  "outcome": "SOURCE_REPLAY_COMPARISON_PASSED_PERFORMANCE_GAP_RETAINED",
+  "run_id": 41397224464,
+  "run_conclusion": "success",
+  "original_source": "UCI1081 90 actual MQ135 exposures 6 gases x [50,100,200] ppb x5",
+  "source_holdout": "whole concentration levels",
+  "same_source_features": true,
+  "v6_softmax_correct": 35,
+  "next_class_specific_3_window_correct": 23,
+  "next_pooled_sd_3_window_correct": 25,
+  "next_class_specific_endpoint_correct": 21,
+  "next_pooled_sd_endpoint_correct": 24,
+  "source_category_bundle_modes": 5,
+  "source_bundle_run_id": 41397224464,
+  "independent_source_exposure_qualified": false,
+  "tank_G3": false,
+  "report": "docs/research/CHEMCORE-NEXT-DIVERSE-FINGERPRINT-BUNDLES-AND-DEVIATION-2026-11-02_AR.md"
+}
