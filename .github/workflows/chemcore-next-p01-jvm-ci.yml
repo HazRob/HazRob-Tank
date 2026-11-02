@@ -37,11 +37,21 @@ jobs:
             | tee build/chemcore-next-p01/P01-CONTRACT-TEST.log
           grep -q '^CHEMCORE_NEXT_P01_CORE_CONTRACT_SMOKE_PASS ' \
             build/chemcore-next-p01/P01-CONTRACT-TEST.log
+      - name: Verify versioned immutable snapshot and decision replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextReplayCodecSmoke \
+            | tee build/chemcore-next-p01/P01-REPLAY-TEST.log
+          grep -q '^CHEMCORE_NEXT_P01_REPLAY_CODEC_PASS ' \
+            build/chemcore-next-p01/P01-REPLAY-TEST.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ChemCore-Next-P01-Core-Contract-Evidence
-          path: build/chemcore-next-p01/P01-CONTRACT-TEST.log
+          path: |
+            build/chemcore-next-p01/P01-CONTRACT-TEST.log
+            build/chemcore-next-p01/P01-REPLAY-TEST.log
           if-no-files-found: warn
           retention-days: 30
