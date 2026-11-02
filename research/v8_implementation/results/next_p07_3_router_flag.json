@@ -1,0 +1,27 @@
+{
+  "schema": "hazrob.tank.v8.app_task_partial_evidence/1",
+  "task": "P07.3",
+  "status": "CODE_AND_G1_COMPILE_VERIFIED_RUNTIME_PENDING",
+  "sha": "90ef967a492dfe563fd04903245381fdd24a7cff",
+  "software_tests": {
+    "run": 41525622327,
+    "assertions": 12,
+    "conclusion": "success"
+  },
+  "android_compile": {
+    "run": 41525715751,
+    "conclusion": "success"
+  },
+  "implemented": [
+    "NextEngineRoutingPolicy",
+    "NextEngineRouter",
+    "Stable raw payload SHA256 verification",
+    "explicit Settings research mode checkbox with durable rollback"
+  ],
+  "not_yet_verified": [
+    "real Settings checkbox on Android12",
+    "active measurement and session call-site uses Next router",
+    "V6 comparison operator boundary"
+  ],
+  "g3": false
+}

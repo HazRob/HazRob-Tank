@@ -1,0 +1,27 @@
+{
+  "schema": "hazrob.tank.v8.app_task_partial_evidence/1",
+  "task": "P07.4",
+  "status": "CODE_AND_G1_COMPILE_VERIFIED_RUNTIME_PENDING",
+  "sha": "2edf734cde185d93fb626faaa3b45e7fefe98528",
+  "software_tests": {
+    "run": 41525622327,
+    "assertions": 32,
+    "conclusion": "success"
+  },
+  "android_compile": {
+    "run": 41525715751,
+    "conclusion": "success"
+  },
+  "implemented": [
+    "NextDecisionPresentation immutable core",
+    "NextDecisionEnvelope Android JSON",
+    "assertParity UID/hash/order check",
+    "12-candidate instrumentation test source"
+  ],
+  "not_yet_verified": [
+    "Android12 instrumentation",
+    "all instant/session/site/lab/report producer-consumers wired to Next",
+    "PDF/XLSX generated report readback"
+  ],
+  "g3": false
+}
