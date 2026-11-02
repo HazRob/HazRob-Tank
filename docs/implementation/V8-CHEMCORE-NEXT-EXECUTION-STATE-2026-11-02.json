@@ -10,10 +10,10 @@
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
   "status": "CHEMCORE_NEXT_P05_2_NEGATIVE_POLARITY_G1_PASSED_P05_3_READY",
-  "last_verified_head_sha": "192b63d8c384181dc4f7d5c033df122524d37c1d",
+  "last_verified_head_sha": "1e23f369cf820e5115693b927097f7921e98fda0",
   "active_phase": "P05",
   "active_task": "P05.3",
-  "last_checkpoint": "27/37 independent core tasks, P05.2 source-qualified negative / clean air deviation tests passed; G3=0",
+  "last_checkpoint": "27/37 independent core tasks, P05.2 source-qualified negative / clean air deviation tests passed; G3=0; owner V6 quick clean-air eight-MQ reference captured and source/62 G1 algebraic assertions CI verified; no raw Rs/noise; G3 still 0",
   "next_action": "P05.3 evidence conflict/independence graph with conditional negative and source roots; P05.4 arbitrator follows",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
@@ -2628,5 +2628,29 @@
     "status": "DEFERRED",
     "applies_to": "P07-P13 historical tasks",
     "note": "Future Android V8 or other application integration, APK and firmware require separate owner instruction"
+  },
+  "latest_owner_supplied_device_reference": {
+    "type": "OWNER_SUPPLIED_8MQ_DEVICE_CLEAN_AIR_BASELINE",
+    "measurement_timestamp_utc": "2026-10-31T03:29:55Z",
+    "firmware_session": "FIRMWARE-V6-QUICK-R0-1793417395633",
+    "firmware_r0_definition": "DEVICE_CLEAN_AIR_RS_MEAN",
+    "samples_per_sensor": 437,
+    "sensors": [
+      "MQ2",
+      "MQ3",
+      "MQ4",
+      "MQ5",
+      "MQ7",
+      "MQ8",
+      "MQ9",
+      "MQ135"
+    ],
+    "quantitative_fixture": "research/chemcore_next/device_calibration/tank_8mq_v6_quick_clean_air_2026-10-31T032955Z.json",
+    "automatic_test": "research/chemcore_next/tests/java/OwnerTankCleanAirBaselineSmoke.java",
+    "action_run_id": 41392858109,
+    "action_conclusion": "success",
+    "action_assertions": 62,
+    "qualification": "OWNER_SUPPLIED_BASELINE_REFERENCE_ONLY; NO_BASELINE_NOISE_STATS; NO_SOURCE_LOD; NO_G3; NO_PPM",
+    "app_firmware_stable_modified": false
   }
 }
