@@ -12,6 +12,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/data/**'
       - 'android/app/src/main/java/com/servoc/app/report/**'
       - '.github/workflows/v8-next-android-compile-gate.yml'
+      - 'research/v8_implementation/tests/test_v8_next_instant_source_routing.py'
   workflow_dispatch:
 
 permissions:
@@ -63,6 +64,12 @@ jobs:
         run: |
           set -euo pipefail
           gradle --no-daemon --stacktrace :app:compileDebugJavaWithJavac
+      - name: Verify active V8 Next instantaneous routing and no predecessor candidate fallbacks
+        working-directory: tank
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest research/v8_implementation/tests/test_v8_next_instant_source_routing.py -v
       - name: Preserve reproducible compile-only build notes
         if: always()
         shell: bash
