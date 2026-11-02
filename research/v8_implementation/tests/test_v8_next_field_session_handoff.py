@@ -34,6 +34,27 @@ class FieldHandoff(unittest.TestCase):
         self.assertNotIn("ChemCoreDecisionRepository",method)
         digest=s.split("private static String evidenceDigest(",1)[1]
         self.assertIn("FROM next_research_decisions WHERE session_id=?",digest)
+    def test_mq_relay_off_only_after_frozen_archive_and_next_decision_with_ack(self):
+        controller=read("measurement/FieldCycleController.java")
+        part=controller.split("if(repo.complete(cycleId,deviceId)){",1)[1].split("private void stopWithFailure(",1)[0]
+        for token in ("host.robotApi().mqPower(false)",
+                      "host.robotApi().snapshot(0,0)",
+                      "repo.markUnsafeReview(cycleId,fault)",
+                      'end("REVIEW_READY",',
+                      'end("FAILED",notice,cycleId)'):
+            self.assertIn(token,part)
+        self.assertLess(part.index("mqPower(false)"),part.index('end("REVIEW_READY",'))
+        repository=read("field/FieldCycleRepository.java")
+        method=repository.split("public boolean markUnsafeReview(",1)[1].split("public boolean fail(",1)[0]
+        self.assertIn("approved_ts IS NULL",method)
+        self.assertIn("new String[]{id,REVIEW}",method)
+        self.assertIn("v.put(\"state\",FAILED)",method)
+    def test_recover_interrupted_cycle_requires_relay_off_ack(self):
+        s=read("measurement/FieldCycleController.java")
+        recovered=s.split("public void recoverInterrupted(){",1)[1].split("public void retry(",1)[0]
+        for condition in ("repo.recoverAbandoned()","host.robotApi().mqPower(false)",
+                          "MQ_RELAY_OFF_NOT_ACKNOWLEDGED","SAFETY_FAULT"):
+            self.assertIn(condition,recovered)
     def test_missing_next_receipt_yields_reason(self):
         s=read("measurement/FieldCycleController.java")
         self.assertIn("FIELD_NEXT_DECISION_NOT_PERSISTED",s)
