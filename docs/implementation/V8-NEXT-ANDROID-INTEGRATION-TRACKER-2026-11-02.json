@@ -717,7 +717,7 @@
         "Four Android12 feedback outbox tests on final HEAD must pass",
         "Open floating Feedback button and verify keyboard/RTL/Cancel/Confirm and resume on Android12 real UI"
       ],
-      "verification": "FEEDBACK_DIALOG_AND_APPEND_ONLY_SQLITE_CODE_WRITTEN; JAVA_ANDROID_COMPILE_41536494279_PASS; ANDROID12_FEEDBACK_INSTRUMENTATION_PENDING",
+      "verification": "FEEDBACK_DIALOG_AND_APPEND_ONLY_SQLITE_CODE_WRITTEN; JAVA_ANDROID_COMPILE_41536494279_PASS; ANDROID12_FEEDBACK_INSTRUMENTATION_PENDING; ANDROID_BUILD_SUCCESS_AND_6_FEEDBACK_SOURCE_TESTS_41536649129",
       "android_instrumentation_status": "NOT_PASSED",
       "physical_tank_status": "NOT_REQUIRED_FOR_UI_LOCAL_SAVE_BUT_REAL_INSTANT_RESULT_END_TO_END_PENDING",
       "ci_evidence": [
@@ -728,7 +728,7 @@
         },
         {
           "run_id": 41536649129,
-          "status": "pending",
+          "status": "success",
           "scope": "Latest source compile after redaction changes"
         },
         {
@@ -756,7 +756,7 @@
         "Successful GitHub remote receipt and outbox SENT must be verified (no token embedded)",
         "Process-dead background scheduling optional enhancement still pending"
       ],
-      "verification": "GITHUB_API_AUTHENTICATED_UPLOAD_SENDER_CODE_WRITTEN; AndroidKeyStore CREDENTIALS_SETTINGS; REAL_WRITE_NOT_VERIFIED; BACKGROUND_PROCESS_DEAD_RETRY_PENDING",
+      "verification": "GITHUB_API_AUTHENTICATED_UPLOAD_SENDER_CODE_WRITTEN; AndroidKeyStore CREDENTIALS_SETTINGS; REAL_WRITE_NOT_VERIFIED; BACKGROUND_PROCESS_DEAD_RETRY_PENDING; ANDROID_BUILD_SUCCESS_AND_6_FEEDBACK_SOURCE_TESTS_41536649129",
       "android_instrumentation_status": "NOT_PASSED",
       "physical_tank_status": "NOT_REQUIRED_FOR_UI_LOCAL_SAVE_BUT_REAL_INSTANT_RESULT_END_TO_END_PENDING",
       "ci_evidence": [
@@ -767,7 +767,7 @@
         },
         {
           "run_id": 41536649129,
-          "status": "pending",
+          "status": "success",
           "scope": "Latest source compile after redaction changes"
         },
         {
@@ -964,8 +964,8 @@
       "verification": "NOT_RUN"
     }
   ],
-  "last_checked_commit": "b0c6551e5b0fb8455cb88c92f0fbd7ff8c38292b",
-  "last_verified_ci": 41536494279,
+  "last_checked_commit": "35c8a214664d2ca292cf576ea370517547528018",
+  "last_verified_ci": 41536649129,
   "next_action": "Inspect 41536649129 Android build and 41536649060 emulator feedback tests; correct failures. Exercise popup UI after completed Next instant measurement. For upload, operator must input a genuine GitHub PAT through encrypted Settings and explicitly consent per record; test real GitHub Contents API remote receipt before calling functionality complete. Never hard-code user-supplied credentials.",
   "ui_coverage_gate": {
     "source_inventory_script": "tools/v8_ui_inventory_gate.py",

@@ -45,17 +45,21 @@
     "sent_only_after_authenticated_github_write_and_receipt": true,
     "automatic_retry_while_app_open": true,
     "automatic_retry_after_android_process_terminated": false,
-    "actual_remote_write_verified": false
+    "actual_remote_write_verified": false,
+    "default_branch_folder_exists": true,
+    "default_branch_setup_commit": "14511b87ac9f6c9cc5f3cf78f253eff34044eabb",
+    "schema_url": "https://github.com/HazRob/HazRob-Tank/blob/main/feedback/schema.json"
   },
   "quality": {
     "Android_full_compile_success_run": 41536494279,
-    "Android_latest_compile_pending": 41536649129,
     "Android12_feedback_outbox_test_pending": 41536649060,
     "source_static_tests": 6,
     "UI_instrumentation_true": false,
     "credential_exposed_in_source": false,
     "scientific_feedback_accepted_as_ground_truth": false,
-    "G3": 0
+    "G3": 0,
+    "Android_latest_compile_success_run": 41536649129,
+    "source_static_tests_result": "6/6 PASS, source structural only"
   },
   "gates_pending": [
     "Android12 4 instrumented synthetic outbox tests",
