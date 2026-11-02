@@ -1,0 +1,29 @@
+{
+  "schema": "hazrob.tank.v8.app_task_pending_evidence/1",
+  "task": "P07.2",
+  "revision": "research-only immutable SQLite V15",
+  "status": "AWAITING_ANDROID12_EMULATOR_ACCEPTANCE",
+  "source_commit": "773b87b37060a0b142082951af17842108fb250d",
+  "passed": [
+    {
+      "workflow": 41404510132,
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41404510132",
+      "scope": "source DDL against real sqlite3, 10 tests"
+    },
+    {
+      "workflow": 41404510271,
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41404510271",
+      "scope": "full pinned-overlay Android compile"
+    }
+  ],
+  "pending": [
+    {
+      "workflow": 41404801350,
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41404801350",
+      "scope": "Android12 runtime V14→V15 preservation, unknown replay idempotency, duplicate and immutable trigger"
+    }
+  ],
+  "no_user_database_mutated": true,
+  "apk_generated": false,
+  "g3": false
+}
