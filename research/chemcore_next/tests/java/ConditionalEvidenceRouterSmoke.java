@@ -10,7 +10,7 @@ public final class ConditionalEvidenceRouterSmoke {
     private static SensorQualityGate.Result quality(boolean ready){
         return SensorQualityGate.evaluate("physical:MQ8","HEATER_READY",120000,
             List.of(new SensorQualityGate.Sample("physical:MQ8",119900,70000,2345,10234,8.0,
-                SensorQualityGate.Transport.ACKED,ready,true,"HEATER_READY",24,47,true)),
+                SensorQualityGate.Transport.ACKED,ready,true,"HEATER_READY",24.0,47.0,true)),
             new SensorQualityGate.Limits(2000,60000,.2,.3,3));
     }
     private static SingleSensorEvidenceGate.SensitivityModel model(boolean hasLod){
