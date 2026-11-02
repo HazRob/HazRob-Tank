@@ -99,5 +99,48 @@ class G2BlindTargetDiversityTests(unittest.TestCase):
             self.assertIn("METRIC_FAMILY_NOT_RECOMPUTABLE", issues)
 
 
+    def test_training_to_blind_compatibility_alias_blocks_candidate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            # Blind diversity remains two distinct classes; the prior
+            # blind-only alias check did not see the training spelling.
+            change_csv_and_rehash(record, base,
+                                  "tr,d1-s1,GAS_A,d1,s1",
+                                  "tr,d1-s1,ＧＡＳ＿Ａ,d1,s1")
+            issues = audit_cross_artifact(record, temp)
+            self.assertIn("GROUP_MANIFEST_REFERENCE_LABEL_NFKC_ALIAS", issues)
+            self.assertNotIn("BLIND_TEST_REFERENCE_LABEL_NFKC_ALIAS", issues)
+            self.assertNotIn("BLIND_TEST_SINGLE_REFERENCE_CLASS", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_calibration_to_blind_compatibility_alias_blocks_candidate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            change_csv_and_rehash(record, base,
+                                  "ca,d1-s2,GAS_B,d1,s2",
+                                  "ca,d1-s2,ＧＡＳ＿Ｂ,d1,s2")
+            issues = audit_cross_artifact(record, temp)
+            self.assertIn("GROUP_MANIFEST_REFERENCE_LABEL_NFKC_ALIAS", issues)
+            self.assertNotIn("BLIND_TEST_REFERENCE_LABEL_NFKC_ALIAS", issues)
+            self.assertEqual(audit_record(record, temp)["status"], "G2_BLOCKED")
+
+    def test_consistent_reference_labels_have_no_manifest_alias_issue(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = synthetic_bundle(temp)
+            self.assertNotIn("GROUP_MANIFEST_REFERENCE_LABEL_NFKC_ALIAS",
+                             audit_cross_artifact(record, temp))
+
+    def test_non_accuracy_metric_does_not_gain_new_classification_gate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, base = synthetic_bundle(temp)
+            record["metric_name"] = "rmse"
+            change_csv_and_rehash(record, base,
+                                  "tr,d1-s1,GAS_A,d1,s1",
+                                  "tr,d1-s1,ＧＡＳ＿Ａ,d1,s1")
+            issues = audit_cross_artifact(record, temp)
+            self.assertNotIn("GROUP_MANIFEST_REFERENCE_LABEL_NFKC_ALIAS", issues)
+            self.assertIn("METRIC_FAMILY_NOT_RECOMPUTABLE", issues)
+
+
 if __name__ == "__main__":
     unittest.main()
