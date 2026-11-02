@@ -1,0 +1,48 @@
+{
+  "schema": "hazrob.chemcore.next.p03.6.source_risk_coverage/1",
+  "date": "2026-11-02",
+  "qualification": "SOURCE_CATALOG_COVERAGE_ONLY_NO_MEASURED_SENSOR_LOD",
+  "status": "PASSED_ACTUAL_SQLITE_TEST",
+  "ci_run": 41388369661,
+  "ci_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41388369661",
+  "catalog_active": 736,
+  "source_target_uid_count": 21,
+  "with_source_numeric_exposure_limits": 13,
+  "with_qualified_background": 0,
+  "with_source_qualified_ghs_symbols": 2,
+  "with_provisional_ghs_symbols": 4,
+  "with_source_LFL": 10,
+  "with_source_UFL": 10,
+  "with_qualified_sensor_lod": 0,
+  "with_occupational_alarm_authorization": 0,
+  "actual_Tank_G3_validation": 0,
+  "notes": [
+    "No qualified natural-air reference range in the tested 21 material set; 0 means missing source-range, not normal air or zero concentration",
+    "Methane legacy UID77 lacks source exposure/LEL despite separate external CH4 quantitative source file in Stable central; do not auto-import environmental limits",
+    "Ethanol legacy UID104 CAS absent, external NIOSH ethyl alcohol UID499 CAS 64-17-5; no forced merge",
+    "Research GHS provisional classifications remain outside source-qualified GHS alarm path",
+    "No current MQ sensor-specific physically measured LOD or qualified ppm available"
+  ],
+  "files": [
+    {
+      "path": "research/chemcore_next/risk/chemcore_next_p03_6_actual_21_material_source_risk_coverage.csv",
+      "sha": "98241d9ff95abee6dbebcad63effd1b1287af403"
+    },
+    {
+      "path": "research/chemcore_next/risk/chemcore_next_p03_6_hazard_background_interpretation.md",
+      "sha": "9d4122fcd9dc3e7345144ccab9d1ba28054825f5"
+    },
+    {
+      "path": "research/chemcore_next/risk/chemcore_next_p03_6_21_material_uid_scope.csv",
+      "sha": "ad117a0bfb301313c9c6f8872de77ffd7060adb7"
+    },
+    {
+      "path": "android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextSourceRiskCoverageAuditTest.java",
+      "sha": "d7744d26b2c9c4db63091cbe4660324015736526"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p03-canonical-uid-ci.yml",
+      "sha": "7d5580c9861ebc4620e3daa0e9a8596650005a88"
+    }
+  ]
+}
