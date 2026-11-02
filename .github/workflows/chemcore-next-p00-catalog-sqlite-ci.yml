@@ -1,0 +1,82 @@
+name: HazRob Tank V8 P00.4 actual SQLite catalog audit
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'android/app/src/test/java/com/servoc/app/chemical/CatalogSourceRuntimeCountTest.java'
+      - '.github/workflows/chemcore-next-p00-catalog-sqlite-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p00-4-sqlite-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout V8 overlay
+        uses: actions/checkout@v4
+        with:
+          path: tank
+      - name: Checkout original pinned public Android base
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Compose Tank V8 additive source overlay and Robolectric test-only dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/
+          mkdir -p source/app/src/test/java
+          cp -a tank/android/app/src/test/java/. source/app/src/test/java/
+          cat >> source/app/build.gradle <<'GRADLE'
+          // Test-only P00.4 support. No APK or runtime release.
+          android {
+              testOptions {
+                  unitTests.includeAndroidResources = true
+              }
+          }
+          dependencies {
+              testImplementation 'org.robolectric:robolectric:4.14.1'
+              testImplementation 'androidx.test:core:1.6.1'
+          }
+          GRADLE
+      - name: Execute fresh-install Android SQLite catalog bootstrap and repeat-seed idempotence
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --stacktrace :app:testDebugUnitTest \
+            --tests com.servoc.app.chemical.CatalogSourceRuntimeCountTest \
+            2>&1 | tee ../P00-4-SQLITE-CATALOG-TEST.log
+          grep -q 'BUILD SUCCESSFUL' ../P00-4-SQLITE-CATALOG-TEST.log
+      - name: Upload exact test output even after failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-V8-P00-4-SQLite-Catalog-Evidence
+          path: |
+            P00-4-SQLITE-CATALOG-TEST.log
+            source/app/build/test-results/testDebugUnitTest/
+            source/app/build/reports/tests/testDebugUnitTest/
+          retention-days: 30
+          if-no-files-found: warn
