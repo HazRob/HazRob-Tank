@@ -12,9 +12,9 @@
   "status": "P00_P01_P02_JVM_COMPLETE_P03_1_READY",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P03",
-  "active_task": "P03.1",
-  "last_checkpoint": "P02 completed 5 of 5 tasks. Latest real JDK17 run 41376661210 PASS 421/421; 13/71 tasks completed. Actual Tank G3 0, no V8 APK; start P03.1 source provenance.",
-  "next_action": "Audit MQ scientific studies/source datasets and original experiment steps; preserve source roots, digitizations, simulations separate; no importing unfounded chemical identities.",
+  "active_task": "P03.2",
+  "last_checkpoint": "P03.1 documented source inventory; P03.2 source-curve ledger next. G3 0/80.",
+  "next_action": "P03.2 build per-curve provenance, source formula, MQ model and heater compatibility ledger",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 13,
+    "done_tasks": 14,
     "passed_tests": 13,
     "failed_tests": 0,
-    "percent_complete": 18.31
+    "percent_complete": 19.72
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -698,8 +698,8 @@
       "id": "P03.1",
       "phase": "P03",
       "description": "جرد أبحاث MQ ومشاريعها مع منهج وخطوات التجارب",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "SOURCE_INVENTORY_ONLY",
       "depends_on": [
         "P02.5"
       ],
@@ -710,22 +710,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "SOURCE_DOCUMENTATION_REVIEW_NO_RUNTIME_TEST",
       "test_command": null,
-      "test_result": null,
+      "test_result": "Cross-source inventory and extraction fields recorded; not an ML or sensor test",
       "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "commit_sha": "98888747ea6ee2e529fc936f2b6d6775bdfe878b",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p03_1_research_source_inventory.json"
+      ],
       "blockers": [],
       "last_checkpoint": "",
-      "next_action": "Audit MQ scientific studies/source datasets and original experiment steps; preserve source roots, digitizations, simulations separate; no importing unfounded chemical identities.",
+      "next_action": "DONE",
       "updated_at": null
     },
     {
       "id": "P03.2",
       "phase": "P03",
       "description": "سجل منحنيات V6/MQDataScience/MQSensorsLib ومعادلاتها",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P03.1"
@@ -2418,6 +2420,14 @@
         "research/v8_implementation/results/next_p02_5_clean_air_replay_evidence.json",
         "research/v8_implementation/results/next_p02_summary.json"
       ]
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P03.1",
+      "description": "MQDataScience/MQSensorsLib and original 80 techniques source inventory; no runtime validation claimed",
+      "commit_sha": "98888747ea6ee2e529fc936f2b6d6775bdfe878b",
+      "evidence": "research/v8_implementation/results/next_p03_1_research_source_inventory.json"
     }
   ],
   "notes": [
