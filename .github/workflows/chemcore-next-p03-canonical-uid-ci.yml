@@ -106,6 +106,8 @@ jobs:
               writer.writerow(["source_curve_uid","source_sensor","original_source_label",
                   "canonical_general_category","existing_master_uid","qualification"])
               writer.writerows(rows)
+          for rec in rows:
+              print("P03_4_GENERAL_UID_ROW|"+"|".join(rec))
           print("P03_4_GENERAL_UID_EXPORT_PASS mapped=16 categories=5 gas_identity=0")
           PY
       - name: Export 49 audited source mappings from JUnit XML for offline ChemCore Next
