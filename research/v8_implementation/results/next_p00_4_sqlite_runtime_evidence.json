@@ -1,0 +1,46 @@
+{
+  "schema": "hazrob.v8.next.p00.4.real_sqlite_runtime/1",
+  "task": "P00.4",
+  "date": "2026-11-02",
+  "status": "PASS",
+  "type": "Robolectric actual Android SQLite using pinned SERVOC-Android + V8 source overlay",
+  "source_repo": "sohpany/SERVOC-Android",
+  "source_pin": "6281d3eb7c1c961ce63b0b5e4ae0792874626720",
+  "test_class": "com.servoc.app.chemical.CatalogSourceRuntimeCountTest",
+  "test_file": "android/app/src/test/java/com/servoc/app/chemical/CatalogSourceRuntimeCountTest.java",
+  "ci_workflow": ".github/workflows/chemcore-next-p00-catalog-sqlite-ci.yml",
+  "ci_run_id": 41372537382,
+  "ci_run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41372537382",
+  "ci_commit_sha": "5f4261f269f8782dc7c2bfca9853bef228ce68a3",
+  "ci_job_id": 125045865297,
+  "ci_conclusion": "success",
+  "db_table": "v14_unified_chemical_catalog",
+  "counts": {
+    "legacy_before": 144,
+    "canonical_all": 734,
+    "active": 734,
+    "nonlegacy": 590,
+    "unique_uids": 734,
+    "after_repeat_seed": 734
+  },
+  "assertions": {
+    "exact_view_count_equals_repo_count": true,
+    "all_uid_unique": true,
+    "legacy_count_144": true,
+    "duplicate_legacy_rows_zero": true,
+    "idempotent_second_import": true,
+    "active_total_734_observed": true
+  },
+  "source_stable": {
+    "documented_embedded_version": "1.0.0-hr069r1",
+    "snapshot_identities": 652,
+    "source_response_priors": 49,
+    "device_M4_calibrations": 0,
+    "stable_remote_main_manifest": "NOT_PUBLISHED_404",
+    "payload_digest_verified_in_this_runtime_test": false,
+    "device_active_newer_remote_version_not_checked": true
+  },
+  "meaning": "Total master material identities confirmed in SQLite post bootstrap; does not imply 734 distinguishable gas models nor physical Tank gas identification.",
+  "physical_validation": "NOT_RUN",
+  "next": "P01 Next contract/replay work then source curve and canonical UID mapping in P03"
+}
