@@ -371,11 +371,16 @@ public final class TankInstantV7PdfWriter {
         JSONObject risk=next.optJSONObject("scientific_reference_screening");
         JSONArray comparisons=risk==null?null:risk.optJSONArray("comparisons");
         JSONArray ghss=risk==null?null:risk.optJSONArray("material_ghs_references");
+        JSONArray nextCandidates=next.optJSONArray("candidates");
+        int nCandidates=nextCandidates==null?0:nextCandidates.length();
+        if(nCandidates!=next.optInt("candidate_count",nCandidates))
+            throw new IllegalArgumentException("Next candidate ledger count mismatch");
         int nc=curves==null?0:curves.length();
         int nr=comparisons==null?0:comparisons.length();
         int ng=ghss==null?0:ghss.length();
         int curvePages=(nc+14)/15,riskPages=(nr+11)/12,ghsPages=(ng+11)/12;
-        int total=1+curvePages+riskPages+ghsPages;
+        int candidatePages=(nCandidates+13)/14;
+        int total=1+candidatePages+curvePages+riskPages+ghsPages;
         JSONObject presentation=new JSONObject(next.toString());
         presentation.put("open_set_status",
             "Next "+next.optString("decision_status","UNKNOWN")+" • research");
@@ -406,6 +411,30 @@ public final class TankInstantV7PdfWriter {
         try {
             mainPage(pdf,telemetry,presentation,operationId,capturedUtcMs,total);
             int page=2;
+            for(int offset=0;offset<nCandidates;offset+=14){
+                PdfDocument.Page pg=pdf.startPage(
+                    new PdfDocument.PageInfo.Builder(W,H,page).create());
+                Canvas canvas=pg.getCanvas();canvas.drawColor(WHITE);
+                header(canvas,Long.toString(capturedUtcMs));footer(canvas,page,total);
+                right(canvas,"مرشحو ChemCore Next من القرار المجمد",M,94,W-2*M,14,true,INK);
+                right(canvas,"فرضيات بحثية لا تمثل إثباتًا للهوية أو نسبة احتمال مُعايرة",
+                    M,119,W-2*M,11,false,MEDIUM);
+                for(int i=offset;i<Math.min(nCandidates,offset+14);i++){
+                    JSONObject q=nextCandidates.optJSONObject(i);
+                    if(q==null||q.optInt("rank",-1)!=i+1||
+                       q.optLong("chemical_uid",-1)<=0)
+                        throw new IllegalArgumentException("Next stored candidate rank/UID corrupted");
+                    float yy=151+44f*(i-offset),width=W-2*M;
+                    rect(canvas,M,yy,width,43,i%2==0?WHITE:0xFFF4F4F4);
+                    border(canvas,M,yy,width,43);
+                    right(canvas,"#"+q.optInt("rank")+" • UID "+
+                        q.optLong("chemical_uid")+" • RESEARCH_ONLY",
+                        M+mm(2),yy+3,width-mm(4),11,true,INK);
+                    right(canvas,q.optString("evidence_summary","—"),
+                        M+mm(2),yy+23,width-mm(4),9,false,MEDIUM);
+                }
+                pdf.finishPage(pg);page++;
+            }
             for(int offset=0;offset<nc;offset+=15){
                 detailPage(pdf,curves,offset,Math.min(15,nc-offset),page++,total,capturedUtcMs);
             }
