@@ -45,7 +45,6 @@ jobs:
             | tee build/chemcore-next-p01/P01-REPLAY-TEST.log
           grep -q '^CHEMCORE_NEXT_P01_REPLAY_CODEC_PASS ' \
             build/chemcore-next-p01/P01-REPLAY-TEST.log
-            build/chemcore-next-p01/P02-SIGNAL-PHYSICS-TEST.log
       - name: Verify P02.1 ADC1115 MQ divider resistance calculations
         shell: bash
         run: |
@@ -62,5 +61,6 @@ jobs:
           path: |
             build/chemcore-next-p01/P01-CONTRACT-TEST.log
             build/chemcore-next-p01/P01-REPLAY-TEST.log
+            build/chemcore-next-p01/P02-SIGNAL-PHYSICS-TEST.log
           if-no-files-found: warn
           retention-days: 30
