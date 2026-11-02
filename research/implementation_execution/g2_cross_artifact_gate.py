@@ -373,6 +373,23 @@ def audit_cross_artifact(record, repo_root=Path(".")):
     if set(counts) != set(expected_groups):
         issues.append("GROUP_MANIFEST_MISSING_SPLIT_GROUPS")
 
+    # The same reference identity must not acquire different Unicode spellings
+    # across training, calibration and blind test. A training GAS_A and blind
+    # fullwidth ＧＡＳ＿Ａ could otherwise lower the exact-string majority
+    # baseline score while leaving two apparent blind classes. Compare only
+    # NFKC identity keys; preserve the original bytes for locked-digest replay.
+    # This is a consistency check, not proof of chemical identity.
+    if record.get("metric_name") == "classification_accuracy":
+        reference_forms = {}
+        for row in groups:
+            if expected_groups.get(row.get("group_id")) in parts:
+                label = row.get("gas_reference_id")
+                if isinstance(label, str) and label.strip():
+                    key = unicodedata.normalize("NFKC", label)
+                    reference_forms.setdefault(key, set()).add(label)
+        if any(len(forms) > 1 for forms in reference_forms.values()):
+            issues.append("GROUP_MANIFEST_REFERENCE_LABEL_NFKC_ALIAS")
+
     # Accuracy on a blind set containing only one reference gas class cannot
     # demonstrate discrimination, even if every row is correctly classified.
     # Count physical test exposures only; calibration and training labels must
