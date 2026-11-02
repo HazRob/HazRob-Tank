@@ -77,6 +77,11 @@ public final class TankInstantAnalyzer {
         JSONObject scientific=com.servoc.app.chemcore.nextintegration
             .NextScientificDiagnostics.compute(frozen,master);
         out.put("scientific_source_diagnostics",scientific);
+        // Reference thresholds and GHS are sourced from the same unified
+        // catalog. Calculated alerts remain conditional research comparisons.
+        JSONObject screening=com.servoc.app.chemcore.nextintegration
+            .NextReferenceRiskBridge.evaluate(db,scientific);
+        out.put("scientific_reference_screening",screening);
         out.put("source_curve_hypotheses",scientific.getJSONArray("all_reference_models"));
         out.put("source_curve_research_diagnostic_ledger",
             scientific.getJSONArray("all_reference_models"));
