@@ -1,0 +1,106 @@
+name: ChemCore Next P03.4 source-to-734-SQLite canonical UID research audit
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextLegacySourceUidAuditTest.java'
+      - '.github/workflows/chemcore-next-p03-canonical-uid-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p03-4-independent-source-catalog-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout Tank source overlay (engine research only, not APK)
+        uses: actions/checkout@v4
+        with:
+          path: tank
+      - name: Checkout pinned original catalog base
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK test platform
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Apply V8 storage overlay for independent engine/catalog verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/
+          mkdir -p source/app/src/test/java
+          cp -a tank/android/app/src/test/java/. source/app/src/test/java/
+          cat >> source/app/build.gradle <<'GRADLE'
+          android { testOptions { unitTests.includeAndroidResources = true } }
+          dependencies {
+              testImplementation 'org.robolectric:robolectric:4.14.1'
+              testImplementation 'androidx.test:core:1.6.1'
+          }
+          GRADLE
+      - name: Run actual SQLite 49-curve historical lookup to master UID, no gas identity claim
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --stacktrace :app:testDebugUnitTest \
+            --tests com.servoc.app.chemical.ChemCoreNextLegacySourceUidAuditTest \
+            2>&1 | tee ../P03-4-SQLITE-UID-TEST.log
+          grep -q 'BUILD SUCCESSFUL' ../P03-4-SQLITE-UID-TEST.log
+      - name: Export 49 audited source mappings from JUnit XML for offline ChemCore Next
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import csv,glob,xml.etree.ElementTree as ET
+          found=[]
+          success=False
+          for path in glob.glob("source/app/build/test-results/testDebugUnitTest/*.xml"):
+              root=ET.parse(path).getroot()
+              for node in root.iter("system-out"):
+                  for line in (node.text or "").splitlines():
+                      if line.startswith("P03_4_LEGACY_CROSSWALK|"):
+                          cells=line.split("|")[1:]
+                          assert len(cells)==7, (len(cells),line)
+                          found.append(cells)
+                      elif line.startswith("P03_4_LEGACY_MAPPING_PASS"):
+                          success=True
+          assert success, "missing test run success marker"
+          assert len(found)==49, "expected exactly 49 reference mappings"
+          assert len({row[0] for row in found})==49, "duplicate source curve IDs"
+          with open("P03-4-UID-CROSSWALK-49.csv","w",newline="",encoding="utf8") as fh:
+              writer=csv.writer(fh)
+              writer.writerow(["v6_source_curve_id","source_sensor","source_label","legacy_reference_id","actual_sqlite_master_uid","master_name","master_cas"])
+              writer.writerows(found)
+          for row in found:
+              print("P03_4_UID_ROW|"+ "|".join(row))
+          print("P03_4_UID_EXPORT_PASS rows=49 qualified_gas_identifications=0")
+          PY
+      - name: Preserve actual UID export and database test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChemCore-Next-P03-4-Historical-UID-Evidence
+          path: |
+            P03-4-UID-CROSSWALK-49.csv
+            P03-4-SQLITE-UID-TEST.log
+            source/app/build/test-results/testDebugUnitTest/
+          if-no-files-found: warn
+          retention-days: 30
