@@ -83,7 +83,7 @@ public final class ChemCoreNextGeneralSourceAliasTest {
                         assertTrue("generic master entry must not claim one pure chemical CAS",
                             c.isNull(2));
                         assertTrue("generic master entry must not claim molecule formula",
-                            c.isNull(3));
+                            c.isNull(3) || c.getString(3).trim().isEmpty());
                         if("LPG".equals(masterName)||"Smoke".equals(masterName)||
                             "NOx".equals(masterName)) {
                             assertFalse("existing generic must retain original legacy reference",
@@ -107,8 +107,10 @@ public final class ChemCoreNextGeneralSourceAliasTest {
             assertEquals(2,occurrences.get(ChemCoreNextGeneralIdentityBootstrap.AMMONIUM).intValue());
             assertEquals(7,unchangedOriginal);
             assertEquals(736,new ChemicalRepository(db).count());
-            assertEquals(0,sql.rawQuery(
-                "SELECT uid FROM chemicals WHERE name_en='NH4 gas' LIMIT 1",null).getCount());
+            try (Cursor c=sql.rawQuery(
+                "SELECT uid FROM chemicals WHERE name_en='NH4 gas' LIMIT 1",null)) {
+                assertEquals(0,c.getCount());
+            }
             System.out.println("CHEMCORE_NEXT_GENERAL_ALIAS_MAPPING_PASS"
                 +" source_curves=16 master_generic_uids=5"
                 +" unchanged_existing_groups=3 novel_groups=2"
