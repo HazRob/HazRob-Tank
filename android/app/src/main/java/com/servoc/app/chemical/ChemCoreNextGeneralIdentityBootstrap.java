@@ -22,12 +22,18 @@ import java.util.Map;
 public final class ChemCoreNextGeneralIdentityBootstrap {
     public static final String VERSION = "chemcore-next-general-identities/1";
     public static final String ORIGIN = "CHEMCORE_NEXT_RESEARCH_ONTOLOGY";
+    public static final String LPG = "LPG";
+    public static final String SMOKE = "Smoke";
+    public static final String NOX = "NOx";
     public static final String ALCOHOLS = "Alcohols (general)";
     public static final String AMMONIUM = "Ammonium-containing materials (NH4+ source class)";
 
     private static final String[][] ENTRIES = {
-        {ALCOHOLS, "الكحولات (فئة عامة)", "RESEARCH_CHEMICAL_FAMILY_NOT_SPECIFIC_MOLECULE"},
-        {AMMONIUM, "مواد تحتوي على الأمونيوم (فئة مصادر)", "AMMONIUM_ION_SOURCE_CLASS_NOT_GAS"}
+        {LPG, "غاز البترول المسال (خليط)", "MIXTURE_FUEL", "135"},
+        {SMOKE, "الدخان (خليط/هباء معقد)", "MIXTURE_COMPLEX_AEROSOL", "139"},
+        {NOX, "أكاسيد النيتروجين (فئة)", "AGGREGATE_REACTIVE_GAS_FAMILY", "141"},
+        {ALCOHOLS, "الكحولات (فئة عامة)", "RESEARCH_CHEMICAL_FAMILY_NOT_SPECIFIC_MOLECULE", ""},
+        {AMMONIUM, "مواد تحتوي على الأمونيوم (فئة مصادر)", "AMMONIUM_ION_SOURCE_CLASS_NOT_GAS", ""}
     };
     private ChemCoreNextGeneralIdentityBootstrap() {}
 
@@ -49,8 +55,8 @@ public final class ChemCoreNextGeneralIdentityBootstrap {
         sql.beginTransaction();
         try {
             for (String[] entry : ENTRIES) {
-                String name = entry[0], type = entry[2];
-                Long existing = lookupExact(sql, name, type);
+                String name = entry[0], type = entry[2], legacyIndex = entry[3];
+                Long existing = lookupExact(sql, name, type, legacyIndex);
                 if (existing != null) {
                     present++;
                     ids.put(name, existing);
@@ -66,7 +72,7 @@ public final class ChemCoreNextGeneralIdentityBootstrap {
                 // chemical hazards, GHS, limits or sensor identity claims.
                 long uid = sql.insertOrThrow("chemicals", null, values);
                 if (uid <= 0) throw new IllegalStateException("failed to allocate category UID");
-                Long check = lookupExact(sql, name, type);
+                Long check = lookupExact(sql, name, type, legacyIndex);
                 if (check == null || check != uid)
                     throw new IllegalStateException("category UID readback mismatch");
                 ids.put(name, uid);
@@ -80,7 +86,7 @@ public final class ChemCoreNextGeneralIdentityBootstrap {
     }
 
     /** Fail closed on homonyms, duplicate active identities or CAS/formula attached to a class. */
-    private static Long lookupExact(SQLiteDatabase sql, String name, String requiredClass) {
+    private static Long lookupExact(SQLiteDatabase sql, String name, String requiredClass, String legacyIndex) {
         try (Cursor cursor = sql.rawQuery(
             "SELECT uid,legacy_id,cas,formula,chemical_class,record_source " +
             "FROM chemicals WHERE active=1 AND lower(trim(name_en))=lower(trim(?))",
@@ -90,7 +96,7 @@ public final class ChemCoreNextGeneralIdentityBootstrap {
             if (cursor.moveToNext())
                 throw new IllegalStateException("duplicate active catalog identity name: " + name);
             cursor.moveToFirst();
-            if (!cursor.isNull(1)
+            if ((!cursor.isNull(1) && !String.valueOf(cursor.getInt(1)).equals(legacyIndex))
                 || !empty(cursor.getString(2))
                 || !empty(cursor.getString(3))
                 || !requiredClass.equals(cursor.getString(4)))
