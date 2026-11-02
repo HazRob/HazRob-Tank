@@ -1,10 +1,13 @@
-name: HazRob Tank V8 Next SQLite on Android 12 emulator
+name: HazRob Tank V8 Android12 source validation - Next and Food
 
 on:
   push:
     branches: [feature/tank-v8-implementation]
     paths:
       - 'android/app/src/androidTest/java/com/servoc/app/chemcore/nextintegration/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/food/**'
+      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
+      - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/nextintegration/**'
       - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
       - '.github/workflows/v8-next-android-device-sqlite-gate.yml'
@@ -82,7 +85,7 @@ jobs:
           mkdir -p v8-android-test-scope
           echo "runner=${{ github.run_id }}" > v8-android-test-scope/scope.txt
           echo "Android API=31; ephemeral emulator; tests V14->V15 and stored UNKNOWN replay" >> v8-android-test-scope/scope.txt
-          echo "No physical Tank data, UI coverage or gas G3 test performed" >> v8-android-test-scope/scope.txt
+          echo "No physical Tank food validation, gas G3, or full UI accessibility test performed" >> v8-android-test-scope/scope.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
