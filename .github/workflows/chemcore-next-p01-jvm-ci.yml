@@ -109,7 +109,6 @@ jobs:
             | tee build/chemcore-next-p01/P04-FINGERPRINT-EXPERT.log
           grep -q '^CHEMCORE_NEXT_P04_2_FINGERPRINT_PASS ' \
             build/chemcore-next-p01/P04-FINGERPRINT-EXPERT.log
-            build/chemcore-next-p01/P04-TEMPORAL-EXPERT.log
       - name: Verify P04.3 source-locked temporal 4D features with real-clock guards
         shell: bash
         run: |
