@@ -412,7 +412,7 @@
         "Android12 UI and physical robot relay-off ACK / disconnect / process-death fault injection not run",
         "relay safety must be exercised on actual firmware before owner approval"
       ],
-      "verification": "SOURCE_CODE_FIXED; OFF_REQUEST_AFTER_SEALED_NEXT; ESP32_ACK_CHECK; UNSAFE_REVIEW_BLOCK; ANDROID_COMPILE_PASS; PHYSICAL_NOT_RUN",
+      "verification": "SOURCE_CODE_FIXED; OFF_REQUEST_AFTER_SEALED_NEXT; ESP32_ACK_CHECK; UNSAFE_REVIEW_BLOCK; ANDROID_COMPILE_PASS; PHYSICAL_NOT_RUN; V8_FIELD_SAFETY_STATIC_6_PASS_41530202132",
       "evidence_file": "research/v8_implementation/results/next_p09_field_60s_source_handoff_2026-11-03.json",
       "source_commit": "398d0b66f4284653dc5d93534c51e9d3400b65a0",
       "ci_evidence": [
@@ -438,8 +438,8 @@
         },
         {
           "run_id": 41530202132,
-          "result": "pending",
-          "scope": "static relay safety & process recovery contract checks"
+          "scope": "static relay safety & process recovery contract checks",
+          "result": "success"
         }
       ],
       "android_instrumentation_status": "PENDING",
@@ -463,7 +463,7 @@
         "Android12 emulator archive tests with 61 independent scan rows are pending",
         "field actual Tank source scan timestamps/heater and ADS not physically verified"
       ],
-      "verification": "G1_15_SOURCE_HASH_SCAN_DEDUP_PASS; SOURCE_4_STATIC_HANDOFF_PASS; FULL_ANDROID_COMPILE_PASS; ANDROID12_ARCHIVE_INSTRUMENTATION_PENDING",
+      "verification": "G1_15_SOURCE_HASH_SCAN_DEDUP_PASS; SOURCE_4_STATIC_HANDOFF_PASS; FULL_ANDROID_COMPILE_PASS; ANDROID12_ARCHIVE_INSTRUMENTATION_PENDING; V8_FIELD_SAFETY_STATIC_6_PASS_41530202132",
       "evidence_file": "research/v8_implementation/results/next_p09_field_60s_source_handoff_2026-11-03.json",
       "source_commit": "398d0b66f4284653dc5d93534c51e9d3400b65a0",
       "ci_evidence": [
@@ -489,8 +489,8 @@
         },
         {
           "run_id": 41530202132,
-          "result": "pending",
-          "scope": "static relay safety & process recovery contract checks"
+          "scope": "static relay safety & process recovery contract checks",
+          "result": "success"
         }
       ],
       "android_instrumentation_status": "PENDING",
@@ -514,7 +514,7 @@
         "End-to-end field session 60s+60s with actual robot relay and Stable installed not tested",
         "instrumented full field cycle and PDF/XLSX Next session evidence not yet verified"
       ],
-      "verification": "NEXT_RECEIPT_MANDATORY_FOR_V8_GAS_SESSIONS; OLD_V6_NO_LONGER_APPROVES_NEW_FIELD; READBACK_AND_DIGEST_WIRED; E2E_PENDING",
+      "verification": "NEXT_RECEIPT_MANDATORY_FOR_V8_GAS_SESSIONS; OLD_V6_NO_LONGER_APPROVES_NEW_FIELD; READBACK_AND_DIGEST_WIRED; E2E_PENDING; V8_FIELD_SAFETY_STATIC_6_PASS_41530202132",
       "evidence_file": "research/v8_implementation/results/next_p09_field_60s_source_handoff_2026-11-03.json",
       "source_commit": "398d0b66f4284653dc5d93534c51e9d3400b65a0",
       "ci_evidence": [
@@ -540,8 +540,8 @@
         },
         {
           "run_id": 41530202132,
-          "result": "pending",
-          "scope": "static relay safety & process recovery contract checks"
+          "scope": "static relay safety & process recovery contract checks",
+          "result": "success"
         }
       ],
       "android_instrumentation_status": "PENDING",
@@ -919,8 +919,8 @@
       "verification": "NOT_RUN"
     }
   ],
-  "last_checked_commit": "398d0b66f4284653dc5d93534c51e9d3400b65a0",
-  "last_verified_ci": 41530007945,
+  "last_checked_commit": "2281b90c06f83d2b5b07766ce321fa052846eddd",
+  "last_verified_ci": 41530202132,
   "next_action": "Check Android12 emulator archive CI 41529693093 and updated safety source CI 41530202132. If failed fix defects. Complete P09.1/2/3 Android12 real 60s field replay with Next decision; then actual Tank relay-off ACK, storage fault injection, 60s warmup +60s sample UI and PDF/XLSX parity; do not claim completed until all gates met.",
   "ui_coverage_gate": {
     "source_inventory_script": "tools/v8_ui_inventory_gate.py",

@@ -35,17 +35,18 @@
       "run": 41530007945,
       "type": "Android full Java compile with safe relay acknowledgment code",
       "status": "success"
+    },
+    {
+      "run": 41530202132,
+      "assertions": 6,
+      "type": "static safety handoff and replay source tests, plus 6 instant source route checks",
+      "status": "success"
     }
   ],
   "pending": [
     {
       "run": 41529693093,
       "type": "Android12 instrumented source archive synthetic fixture, not Tank"
-    },
-    {
-      "run": 41530202132,
-      "type": "six structural field/safety tests",
-      "status": "unconfirmed"
     },
     {
       "type": "full physical 60s+60s session on owner Tank",
