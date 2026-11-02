@@ -28,7 +28,7 @@ jobs:
           set -euo pipefail
           mkdir -p build/chemcore-next-p01
           find android/app/src/main/java/com/hazrob/tank/chemcore/next research/chemcore_next/tests/java \
-            -name '*.java' ! -name 'NextP06PairedV6UciBenchmark.java' -print0 | xargs -0 javac -encoding UTF-8 -Xlint:all -d build/chemcore-next-p01
+            -name '*.java' ! -name 'NextP06PairedV6UciBenchmark.java' ! -name 'NextP06FingerprintDeviationAudit.java' -print0 | xargs -0 javac -encoding UTF-8 -Xlint:all -d build/chemcore-next-p01
       - name: Validate immutable contracts, sensor scalability and honest no-model result
         shell: bash
         run: |
