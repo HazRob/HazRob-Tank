@@ -323,7 +323,17 @@ public final class FieldCycleController {
                                     "اكتملت الدورة؛ اختر اعتماد القياس أو إعادته",cycleId));
                                 return;
                             }
-                            throw new IllegalStateException("البيانات الفعلية لا تحقق شروط الاعتماد");
+                            // Distinguish missing Next scientific receipt
+                            // from insufficient raw scans / telemetry quality.
+                            FieldCycleRepository.Cycle failedLink=repo.byId(cycleId);
+                            String fid=failedLink==null?"":failedLink.measurementId;
+                            String nextFailure=fid.isEmpty()?"":host.database().getMeta(
+                                "v8_field_next_failure_"+fid,"");
+                            if(!nextFailure.isEmpty())
+                                throw new IllegalStateException(
+                                    "FIELD_NEXT_DECISION_NOT_PERSISTED: "+nextFailure);
+                            throw new IllegalStateException(
+                                "FIELD_COMPLETION_GATE_FAILED: duration, raw cycles, mode or Next receipt");
                         }
                         if(at-finalizeRequestedMs>12000L)
                             throw new IllegalStateException("تعذر إنهاء حفظ العينات خلال 12 ثانية");

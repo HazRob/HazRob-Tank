@@ -134,16 +134,47 @@ public final class TelemetryRecorder {
         }catch(Exception ignored){}
         db.getWritableDatabase().update("measurement_sessions",v,"session_id=?",new String[]{completed});
 
-        // Ordinary completed measurements must produce a persisted ChemCore screening ranking.
-        // Candidate ranking is allowed here; named identity and reportable ppm remain gated elsewhere.
-        if(!wasChemCore&&"ready".equalsIgnoreCase(state)){
+        // V8 field captures are finalized ONLY from the persisted real 60s
+        // MQ series, never from the single last /diag frame or V6 candidates.
+        // An archived UNKNOWN Next decision is valid research evidence; lack
+        // of ANY decision is a genuine failure, not permission to approve.
+        if(fieldCaptureSession&&"ready".equalsIgnoreCase(state)){
+            try{
+                boolean gas=com.servoc.app.chemcore.nextintegration.NextFieldArchiveBridge
+                    .requiresGasDecision(db,completed);
+                if(gas){
+                    long recordedDuration=Math.max(0,endedMonotonic-startedElapsed);
+                    var next=com.servoc.app.chemcore.nextintegration.NextFieldArchiveBridge
+                        .analyzeAndPersist(appContext,db,completed,snapshot,
+                            recordedDuration,endedUtcMs);
+                    db.putMeta("last_next_field_decision_uid",next.decision.receipt.decisionUid);
+                    db.putMeta("last_next_field_session_id",completed);
+                    db.putMeta("last_next_field_source_sha256",next.source.sourceSha256);
+                }
+            }catch(Exception ex){
+                String reason=ex.getClass().getSimpleName()+":"+
+                    (ex.getMessage()==null?"UNSPECIFIED":ex.getMessage());
+                db.putMeta("v8_field_next_failure_"+completed,reason);
+                android.util.Log.e("TankV8FieldNext",
+                    "Stored field capture cannot be accepted without Next receipt",ex);
+            }
+        }else if(!wasChemCore&&!fieldCaptureSession&&"ready".equalsIgnoreCase(state)){
+            // Historical non-field captures are retained in their own V6
+            // comparison ledger; this does not promote them as Next results.
             try{
                 long duration=Math.max(0,endedMonotonic-startedElapsed);
-                CompletedSessionChemCoreAnalyzer.Outcome analysis=CompletedSessionChemCoreAnalyzer.analyzeAndPersist(appContext,db,completed,snapshot,duration,fieldCaptureSession);
+                CompletedSessionChemCoreAnalyzer.Outcome analysis=
+                    CompletedSessionChemCoreAnalyzer.analyzeAndPersist(
+                        appContext,db,completed,snapshot,duration,false);
                 db.putMeta("last_chemcore_screening_session_id",completed);
-                db.putMeta("last_chemcore_screening_candidate_count",Integer.toString(analysis.candidateCount));
-                db.putMeta("last_chemcore_screening_observed_channels",Integer.toString(analysis.observedChannels));
-            }catch(Exception ignored){}
+                db.putMeta("last_chemcore_screening_candidate_count",
+                    Integer.toString(analysis.candidateCount));
+                db.putMeta("last_chemcore_screening_observed_channels",
+                    Integer.toString(analysis.observedChannels));
+            }catch(Exception ex){
+                android.util.Log.w("TankV8HistoricalComparison",
+                    "Legacy non-field inference did not produce a comparison",ex);
+            }
         }
 
         lastCompletedSessionId=completed;db.putMeta("last_measurement_session_id",completed);db.putMeta("last_measurement_session_terminal_state",state);

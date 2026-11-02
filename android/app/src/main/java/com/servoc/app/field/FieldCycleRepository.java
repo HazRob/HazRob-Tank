@@ -419,8 +419,18 @@ public final class FieldCycleRepository {
     private boolean hasRequiredChemCoreDecision(String measurementId,boolean gas){
         if(!gas)return true;
         try{
-            return new com.servoc.app.chemcore.ChemCoreDecisionRepository(db)
-                .latestPayloadForSession(measurementId)!=null;
+            // V8 completed field evidence must contain the source-linked Next
+            // replayed UNKNOWN/research decision. An old V6 screening row
+            // alone is insufficient for a NEW V8 field cycle.
+            var next=new com.servoc.app.chemcore.nextintegration.NextDecisionStore(db)
+                .latestForSession(measurementId);
+            return next!=null &&
+                next.sourceSnapshot.mode==
+                    com.hazrob.tank.chemcore.next.CoreContracts.Mode.FIELD_SESSION &&
+                next.snapshotUid.startsWith("FIELD-ARCHIVE-") &&
+                next.snapshotSha256.equals(
+                    com.hazrob.tank.chemcore.next.ChemCoreNext.snapshotHash(
+                        next.sourceSnapshot));
         }catch(Exception ex){return false;}
     }
 
@@ -496,6 +506,18 @@ public final class FieldCycleRepository {
                     add(d,Long.toString(decisions.getLong(0)));
                     add(d,Long.toString(decisions.getLong(1)));
                     add(d,nz(decisions.getString(2)));
+                }
+            }
+            // A new V8 field research decision is sealed into the approved
+            // evidence chain. Legacy V7 measurements have no Next row and
+            // keep their original SHA validation formula unchanged.
+            try(Cursor next=w.rawQuery(
+                "SELECT decision_uid,snapshot_sha256,stable_sha256,engine_version,"+
+                "decision_status,snapshot_replay,result_replay "+
+                "FROM next_research_decisions WHERE session_id=? ORDER BY created_utc_ms,decision_uid",
+                new String[]{measurementId})){
+                while(next.moveToNext()){
+                    for(int i=0;i<7;i++)add(d,nz(next.getString(i)));
                 }
             }
             StringBuilder out=new StringBuilder();
