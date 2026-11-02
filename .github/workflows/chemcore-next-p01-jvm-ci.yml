@@ -61,6 +61,7 @@ jobs:
             | tee build/chemcore-next-p01/P02-DUAL-R0-TEST.log
           grep -q '^CHEMCORE_NEXT_P02_DUAL_R0_PASS ' \
             build/chemcore-next-p01/P02-DUAL-R0-TEST.log
+            build/chemcore-next-p01/NH3-NH4-SHARED-SOURCE-TEST.log
       - name: Verify P02.3 sensor quality and I2C conversion-ready provenance
         shell: bash
         run: |
@@ -85,6 +86,14 @@ jobs:
             | tee build/chemcore-next-p01/P02-CLEAN-AIR-REPLAY-TEST.log
           grep -q '^CHEMCORE_NEXT_P02_CLEAN_AIR_REPLAY_PASS ' \
             build/chemcore-next-p01/P02-CLEAN-AIR-REPLAY-TEST.log
+      - name: Test shared NH3 / NH4+ interpretations and one research evidence root
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.SharedSourceHypothesesSmoke \
+            | tee build/chemcore-next-p01/NH3-NH4-SHARED-SOURCE-TEST.log
+          grep -q '^CHEMCORE_NEXT_NH3_NH4_SHARED_SOURCE_PASS ' \
+            build/chemcore-next-p01/NH3-NH4-SHARED-SOURCE-TEST.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
