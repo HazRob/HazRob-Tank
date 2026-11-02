@@ -1,3 +1,13 @@
+## 2026-11-02 — MQ-EXT-10 numeric-trace identity and blank-row integrity (research only)
+
+- Reviewed starting HEAD `de2b774befa02d0a8fa944ec3b8c1d2149dab45a`: **21/21** associated GitHub Actions runs completed success, including G2 source/R0 gate #41406146989. No confirmed starting CI failure.
+- Extended source-only ethanol preflight with exact-Decimal ordered eight-channel `numeric_trace_sha256`, preserving the independent byte SHA256; reject semantically identical numeric traces even if CSV delimiters or number notation differ, and reject blank data rows.
+- Added four synthetic deterministic regression tests and Arabic method `G2_MQ_EXT10_NUMERIC_TRACE_INTEGRITY_2026-11-02_AR.md`. Existing no-raw JSON receipt remains unchanged and byte-replay checked.
+- Research branch only: parser, tests, method, and RESUME. No changes to ChemCore Stable, Android, firmware or main. No original Mendeley v3 raw archive acquired, no independent calibrated/blinded Tank exposures. Scientific status remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, Tank evidence `records=[]`; no G2/G3 promotion.
+- Check exact final HEAD CI before claiming success. Next prioritize authenticated original source and independent physical Tank exposure groups.
+
+---
+
 ## 2026-11-02 — MQ-EXT-10 source duplication and nested-entry integrity (research only)
 
 - Verified 21/21 Actions runs for starting SHA `82663531b24ca1a46e5dc10cbb6e731103d4ddd5` completed success, including G2 gate #41400032448.
