@@ -1,3 +1,13 @@
+## 2026-11-02 — G2 blind target class-diversity gate (research only)
+
+- Resumed exact research HEAD `272af14ebc8544381d9eac571cc4d16f68edae09`; all 11 PR-associated GitHub Actions runs returned for that commit were completed/success, including G2 source/R0. Research HEAD matched the checkpoint.
+- Added a fail-closed `BLIND_TEST_SINGLE_REFERENCE_CLASS` diagnostic for accuracy evidence when every physically held-out exposure has the same gas reference label. Added `BLIND_TEST_TARGET_LABELS_UNAVAILABLE` for absent/blank blind truth; train/calibration labels do not count as blind classes. This is a minimum discrimination requirement, not a sample-power guarantee.
+- Added five deterministic synthetic regressions in `test_g2_blind_target_diversity.py` and Arabic methodology `G2_BLIND_CLASS_DIVERSITY_2026-11-02_AR.md`. Code and tests are restricted to `research/implementation_execution/`.
+- Implementation/documentation HEAD before this checkpoint: `af179d90840db9950c2fe04d01de1c5b9c8c2d07`. CI had not yet appeared for that exact commit when first checked. Verify final HEAD's CI and repair confirmed failures; do not claim CI success prematurely.
+- No original independent Tank gas exposure evidence was acquired. Last scientific gate remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent `records=[]`. No G2/G3 promotion; no ChemCore Stable/Android/firmware/main modifications. Continue physical source acquisition and blinded reference-calibrated grouped experiments.
+
+---
+
 ## 2026-11-02 — G2 explicit metric-name allowlist and alias rejection (research only)
 
 - Reviewed starting research HEAD `e8e414472df91f49e7780008f21c5bf3328ce6af`: its 21 returned GitHub Actions runs were completed/success, including G2 source/R0. No confirmed CI failure.
