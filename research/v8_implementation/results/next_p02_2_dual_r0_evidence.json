@@ -1,0 +1,57 @@
+{
+  "schema": "hazrob.chemcore.next.p02_2.dual_r0_evidence/1",
+  "date": "2026-11-02",
+  "task": "P02.2",
+  "run_id": 41374352329,
+  "run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41374352329",
+  "run_commit": "66cb30ff8c4155172cc033b5a9088d603461dc94",
+  "run_job": 125051273171,
+  "conclusion": "PASS",
+  "jdk_version": 17,
+  "assertions": {
+    "p01_1_3": 28,
+    "p01_4": 36,
+    "p02_1": 69,
+    "p02_2": 33,
+    "total": 166
+  },
+  "verified_mathematical_semantics": [
+    "P02.2 V6 firmware definition DEVICE_CLEAN_AIR_RS_MEAN maps to R_air observed",
+    "Historical MQ_FACTOR_SCALED_R0_NOT_AIR_RS stays legacy source R0, never repurposed as R_air",
+    "MQSensorsLib calibrated source reference R0_source = R_air / K_model only if explicitly sourced K",
+    "R_air airRatio Rs/R_air remains usable without source K for clean air evidence",
+    "Model/heater/source compatibility must be checked and mismatch never silently yields source ratio",
+    "Non-qualified source curve K research only, not actual Tank G3",
+    "Invalid/no Rs or R_air produces no ratios or claimed signal"
+  ],
+  "sources": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/R0ReferenceMath.java",
+      "blob_sha": "7d796ca203dacfe012fe0fe228d194764ac71202"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/R0ReferenceMathSmoke.java",
+      "blob_sha": "d7286240c9b0658026c45b3547f3d3fb1d2e853c"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "blob_sha": "1deecaeda01e0d2720f84ed30e93c0058b0618ee"
+    },
+    {
+      "path": "firmware/ESP32-Tank/Hardware.cpp",
+      "blob_sha": "d28f529089d1546d641e1cc0eade9874defb5ffe"
+    },
+    {
+      "path": "firmware/ESP32-Tank/Config.h",
+      "blob_sha": "e4746fbd3049e5ae82b3f3ba976e75a2c749a5ac"
+    }
+  ],
+  "limitations": [
+    "No actual Tank hardware calibration",
+    "No physical heater switching verification",
+    "Source K examples used as algebraic fixtures only",
+    "A labVerifiedForThisDevice boolean is research metadata, not evidence of G3 on its own; production approval requires full independent scientific gates",
+    "No source-curve ppm certification"
+  ],
+  "next": "P02.3 sensor health/age/noise/phase validity; P10 later operational manual R0 UI 3+1"
+}
