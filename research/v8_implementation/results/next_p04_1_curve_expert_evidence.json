@@ -1,0 +1,61 @@
+{
+  "schema": "chemcore.next.P04.1.curve_expert.G1/1",
+  "date": "2026-11-02",
+  "phase": "P04",
+  "task": "P04.1",
+  "status": "DONE_G1_ALGEBRAIC_AND_FAIL_CLOSED",
+  "run_id": 41389758695,
+  "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41389758695",
+  "test_passed": 44,
+  "source_models": [
+    {
+      "source_family": "MQDataScience",
+      "equation": "ratio=a*(ppm/source_ppm_scale)^b",
+      "case": "MQDS-SRC-001",
+      "example_coefficients": {
+        "a": 17.6135,
+        "b": -0.4539
+      },
+      "warning": "scale=1 in smoke fixture for invertibility only, source numeric scale not verified"
+    },
+    {
+      "source_family": "MQSensorsLib",
+      "equation": "ppm=a*(Rs/R0_source)^b",
+      "case": "MQSL-EX-001",
+      "example_coefficients": {
+        "a": 605.18,
+        "b": -3.937
+      },
+      "warning": "manufacturer/original source R0 is not Tank R0"
+    }
+  ],
+  "gate_tests": [
+    "inverse/forward roundtrip on both non-interchangeable source formula forms",
+    "NaN/negative/zero/malformed coefficient guards",
+    "no source scale substitution",
+    "sensor model and heater phase matching",
+    "source R0 must have separately qualified metadata",
+    "ppm range extrapolation explicitly blocked",
+    "missing/stale physical reading abstains",
+    "synthetic fully declared fixture never issues gas identity or G3"
+  ],
+  "code_sources": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SourceCurveExpert.java",
+      "sha": "2f5479645eb60c4b5b0089a3928d95646d434fbc"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/SourceCurveExpertSmoke.java",
+      "sha": "8b23362fe76c89a1cbb9c9633cf21f20c7f5853f"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "sha": "cff58c59553d2fc7cbe91a84d040e8a343c9b0f3"
+    }
+  ],
+  "actual_tank_g3_qualified": false,
+  "live_field_ppm": false,
+  "source_comparison_g2_qualified": false,
+  "full_curve_catalog_active": false,
+  "next": "P04.2 FingerprintExpert: 1/2/8 sensor feature-space compatible distance and incomplete uncertainty abstention."
+}
