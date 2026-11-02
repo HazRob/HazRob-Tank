@@ -5,6 +5,8 @@ on:
     branches: [feature/tank-v8-implementation]
     paths:
       - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextLegacySourceUidAuditTest.java'
+      - 'android/app/src/test/java/com/servoc/app/chemical/ChemCoreNextUnlinkedSourceCasAuditTest.java'
+      - 'research/chemcore_next/identity/chemcore_next_p03_4_unlinked_60_source_identity_policy.csv'
       - '.github/workflows/chemcore-next-p03-canonical-uid-ci.yml'
   workflow_dispatch:
 
@@ -46,6 +48,8 @@ jobs:
           cp -a tank/android/app/src/main/java/. source/app/src/main/java/
           cp -a tank/android/app/src/main/res/. source/app/src/main/res/
           cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/
+          cp tank/research/chemcore_next/identity/chemcore_next_p03_4_unlinked_60_source_identity_policy.csv \
+            source/app/src/main/assets/chemcore_next_p03_4_unlinked_60_source_identity_policy.csv
           mkdir -p source/app/src/test/java
           cp -a tank/android/app/src/test/java/. source/app/src/test/java/
           cat >> source/app/build.gradle <<'GRADLE'
@@ -55,13 +59,14 @@ jobs:
               testImplementation 'androidx.test:core:1.6.1'
           }
           GRADLE
-      - name: Run actual SQLite 49-curve historical lookup to master UID, no gas identity claim
+      - name: Run 49 legacy and 60 NIOSH-CAS source identity lookups against actual 734-master SQLite
         shell: bash
         working-directory: source
         run: |
           set -euo pipefail
           gradle --no-daemon --stacktrace :app:testDebugUnitTest \
             --tests com.servoc.app.chemical.ChemCoreNextLegacySourceUidAuditTest \
+            --tests com.servoc.app.chemical.ChemCoreNextUnlinkedSourceCasAuditTest \
             2>&1 | tee ../P03-4-SQLITE-UID-TEST.log
           grep -q 'BUILD SUCCESSFUL' ../P03-4-SQLITE-UID-TEST.log
       - name: Export 49 audited source mappings from JUnit XML for offline ChemCore Next
@@ -93,6 +98,38 @@ jobs:
               print("P03_4_UID_ROW|"+ "|".join(row))
           print("P03_4_UID_EXPORT_PASS rows=49 qualified_gas_identifications=0")
           PY
+      - name: Export 60 strict-CAS source mappings and abstention classifications
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import csv, glob, xml.etree.ElementTree as ET
+          rows=[]
+          passed=False
+          for path in glob.glob("source/app/build/test-results/testDebugUnitTest/*.xml"):
+              root=ET.parse(path).getroot()
+              for node in root.iter("system-out"):
+                  for line in (node.text or "").splitlines():
+                      if line.startswith("P03_4_CAS_SOURCE_ROW|"):
+                          v=line.split("|")[1:]
+                          assert len(v)==10,(len(v),line)
+                          rows.append(v)
+                      elif line.startswith("P03_4_CAS_AUDIT_PASS"):
+                          passed=True
+                          print(line)
+          assert passed, "CAS audit success output missing"
+          assert len(rows)==60, f"expected 60 source labels, got {len(rows)}"
+          assert len({x[0] for x in rows})==60, "duplicate source ID"
+          headers=["source_curve_uid","sensor_model","source_label","source_policy",
+                   "catalog_resolution_status","catalog_master_uid",
+                   "catalog_name","catalog_cas","origin_root","source_blob_sha"]
+          with open("P03-4-SOURCE-UID-CROSSWALK-60.csv","w",encoding="utf8",newline="") as f:
+              writer=csv.writer(f)
+              writer.writerow(headers)
+              writer.writerows(rows)
+          count=sum(bool(x[5]) for x in rows)
+          print(f"P03_4_CAS_EXPORT_PASS rows={len(rows)} exact_mapped={count} abstained={len(rows)-count} identity_qualified=0")
+          PY
       - name: Preserve actual UID export and database test artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -100,6 +137,7 @@ jobs:
           name: ChemCore-Next-P03-4-Historical-UID-Evidence
           path: |
             P03-4-UID-CROSSWALK-49.csv
+            P03-4-SOURCE-UID-CROSSWALK-60.csv
             P03-4-SQLITE-UID-TEST.log
             source/app/build/test-results/testDebugUnitTest/
           if-no-files-found: warn
