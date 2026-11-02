@@ -880,8 +880,10 @@ public final class MeasurementsTab {
         }
         private boolean isResearchOnlyV6(JSONObject analysis){
             return analysis!=null&&
-                "hazrob-tank-v6-android-telemetry-bridge/1".equals(
-                    analysis.optString("schema",""));
+                ("hazrob-tank-v6-android-telemetry-bridge/1".equals(
+                    analysis.optString("schema","")) ||
+                 "hazrob.tank.v8.next.decision.presentation/1".equals(
+                    analysis.optString("schema","")));
         }
         /** Research-only V6 presentation: no legacy posterior, hazard ranking,
          * occupational exposure alerts or automatic target tracking.
@@ -891,6 +893,7 @@ public final class MeasurementsTab {
             // tracking; never promote a source hypothesis to confirmed gas.
             startTracking.setEnabled(selectedCandidateId>=0);
             screeningToggle.setEnabled(false);
+            screeningToggle.setVisibility(View.GONE);
             selected.setText(selectedCandidateId>=0?
                 "مادة محددة من الفهرس الموحد • "+selectedCandidateName+
                 " • تتبع استدلالي وليس رصد هوية":
@@ -899,7 +902,7 @@ public final class MeasurementsTab {
                 "الهوية: UNKNOWN • لم تثبت المعايرة الفيزيائية G3\n"+
                 "لا يوجد تركيز ppm معتمد أو احتمال كشف موثوق");
             decisionCard.setTextColor(INFO);
-            screeningCard.setText("فحص المصادر: فرضيات مستقلة، دون استبعاد آلي"+
+            screeningCard.setText("فحص المصادر: أدلة مستقلة، لا تحقق هوية"+
                 "\nمصادر Rs/R0 صالحة "+p.optInt("ratio_ready_mq_channels",0)+
                 " • قراءات بغير R0 "+p.optInt("raw_only_mq_channels",0));
             safetyCard.setText("سلامة الغاز والتعرض: غير مؤهل لإصدار تحذير مهني"+
@@ -978,6 +981,7 @@ public final class MeasurementsTab {
                 renderResearchOnlyV6(p);
                 return;
             }
+            screeningToggle.setVisibility(View.VISIBLE);
             screeningToggle.setEnabled(true);
             String chemical=p.optString("chemical","—"),outcome=p.optString("outcome","—"),tier=p.optString("evidence_tier","—");double post=p.optDouble("top_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN);TankPpmEstimate.Result estimate=TankPpmEstimate.from(p);boolean ppmOk=estimate.reportable;double ppm=estimate.ppm;
             decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+" • Δ "+pct(margin)+" • "+tier+(estimate.available()?" • "+String.format(Locale.US,"%.2f ppm • %s",ppm,estimate.qualityAr()):" • لا يوجد رقم PPM محسوب"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);

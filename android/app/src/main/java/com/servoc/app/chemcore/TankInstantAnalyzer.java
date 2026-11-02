@@ -13,7 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * ONE immutable instant gas-analysis operation. V6-only for new operations.
+ * ONE immutable instant gas-analysis operation. V8 routes through real ChemCore Next.
  *
  * Intentionally does NOT import/invoke predecessor inference, Stable legacy
  * screeners, food-freshness profiles, or prior AnalyticsSnapshot fallback.
@@ -38,8 +38,60 @@ public final class TankInstantAnalyzer {
         return analyze(null,db,live,timestamp);
     }
 
+    /** Real V8 operator path. No silent legacy candidate projection or source R0 transfer. */
     public static Result analyze(android.content.Context androidContext,ExperimentsDb db,
                                  JSONObject live,long timestamp)throws Exception {
+        if(androidContext==null||db==null||live==null||timestamp<=0)
+            throw new IllegalArgumentException("Android context and original MQ snapshot required");
+        final JSONObject frozen=new JSONObject(live.toString());
+        if(frozen.optJSONObject("mq")==null)
+            throw new IllegalArgumentException("missing original MQ sensor readings");
+        final String uid="INSTANT-"+timestamp;
+        // Read exact canonical master UID, not a legacy 0..143 source index.
+        ChemicalRepository master=new ChemicalRepository(db);
+        java.util.List<com.hazrob.tank.chemcore.next.ResearchCandidateGenerator.Material> catalog=
+            new java.util.ArrayList<>();
+        for(ChemicalRepository.Chemical item:master.all(5000)){
+            String kind=item.chemicalClass==null?"":item.chemicalClass.toLowerCase(java.util.Locale.ROOT);
+            boolean generic=kind.contains("mixture")||kind.contains("generic")||
+                kind.contains("general");
+            catalog.add(new com.hazrob.tank.chemcore.next.ResearchCandidateGenerator.Material(
+                item.uid,item.label(),generic?
+                com.hazrob.tank.chemcore.next.ResearchCandidateGenerator.MaterialKind.GENERAL_CLASS:
+                com.hazrob.tank.chemcore.next.ResearchCandidateGenerator.MaterialKind.MOLECULAR_CHEMICAL));
+        }
+        // Only qualified Tank-linked source assets may be passed here. Those
+        // links are not yet promoted (P11.1 / G3=0), therefore an unknown result
+        // is scientifically required, not an invented legacy 144 shortlist.
+        com.servoc.app.chemcore.nextintegration.NextEngineRouter.Outcome next=
+            com.servoc.app.chemcore.nextintegration.NextEngineRouter.analyzeAndPersist(
+                androidContext,db,frozen,uid,uid,timestamp,
+                com.hazrob.tank.chemcore.next.CoreContracts.Mode.INSTANT,
+                catalog,java.util.List.of(),java.util.List.of(),java.util.List.of(),12);
+        JSONObject out=com.servoc.app.chemcore.nextintegration.NextDecisionEnvelope
+            .fromReceipt(next.receipt);
+        out.put("session_id",uid);
+        out.put("source_kind","ONE_FROZEN_INSTANT_SNAPSHOT_NEXT_RESEARCH_ONLY");
+        out.put("source_curve_hypotheses",new JSONArray());
+        out.put("source_curve_research_diagnostic_ledger",new JSONArray());
+        out.put("legacy_inference_fallback_used",false);
+        out.put("candidate_order_source","PERSISTED_NEXT_DECISION_ONLY");
+        out.put("source_model_linkage_status",
+            "NOT_YET_G3_OR_TANK_SOURCE_QUALIFIED; NO_SYNTHETIC_FINGERPRINT_CANDIDATES");
+        out.put("ratio_ready_mq_channels",next.original.validSourceMeasurements);
+        out.put("raw_only_mq_channels",next.original.rawOnlyChannels);
+        out.put("observed_channels",next.original.validSourceMeasurements);
+        out.put("single_snapshot_no_temporal_series",true);
+        out.put("ppm_reportable",false);
+        out.put("operator_approved_field_session",false);
+        out.put("no_firmware_heater_changes",true);
+        out.put("gas_food_isolated",true);
+        return new Result(uid,timestamp,frozen,out,next.original.validSourceMeasurements);
+    }
+
+    /** V6 PREDECESSOR COMPARISON ONLY, never automatic fallback from Next. */
+    public static Result analyzeV6Comparison(android.content.Context androidContext,
+                                 ExperimentsDb db,JSONObject live,long timestamp)throws Exception {
         if(live==null||db==null||timestamp<=0)
             throw new IllegalArgumentException("Immutable original gas snapshot required");
         // Freeze first: any later telemetry or R0 updates must not change this
