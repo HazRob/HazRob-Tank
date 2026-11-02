@@ -9,14 +9,14 @@
   "v7_mutation_allowed": false,
   "old_v7_rehabilitation_branch": "ABANDONED_NOT_FOR_EXECUTION",
   "scope": "V8: full MQDataScience v7 scientific inventory and gap evaluation first; extend independent ChemCore V6 into ChemCore Next, gated; V5/V6/V7 originals preserved",
-  "status": "CHEMCORE_NEXT_OWNER_17_PROPOSALS_LOGGED_SCIENTIFIC_REVIEW_OPEN",
+  "status": "CHEMCORE_NEXT_OWNER_20_PROPOSALS_RECORDED_SCIENTIFIC_REVIEW_OPEN",
   "app_code_changed": false,
   "firmware_changed": false,
   "apk_built": false,
   "hardware_test_pass": false,
   "latest_approved_stable_confirmed": false,
   "last_verified_sha": "8f887a28e41a33f2878bbef68926e1de28e9a97c",
-  "next_action": "Discuss user's 17 proposed scientific design ideas; agree on qualified sensor selectivity, negative evidence, environmental metadata, review policy, and forward/inverse validation. Do not change runtime until decisions and G1/G2/G3 gates.",
+  "next_action": "Discuss and design S18 MQ literature systematic evidence map, S19 published evidence asset ingestion/source independence, S20 candidate eligibility from unified DB beyond 144 legacy ids with no forced top-10. Verify V8 instant code before edits; G1/G2/G3 required.",
   "tasks": [
     {
       "id": "G00",
@@ -66,23 +66,23 @@
       "id": "R04",
       "title": "Candidate ranking and routing vs source ledger",
       "status": "REPRODUCED_IN_FROZEN_V7",
-      "next_action": "Repair V7 candidate list after independent ChemCore V6 mathematical and grouped-data validation; never route source_curve_hypotheses as ranked operator results",
+      "next_action": "Audit and correct V8 instant legacyId<144 chemical mapping, projection from source hypotheses rather than V6 rankedCandidates, and no evidence-free fill to 10; implement only after Next architecture/qualification; test all 0/1/5/10/>10 eligible scenarios",
       "evidence_file": "research/v8_implementation/results/candidate_replay_10case.json",
       "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
       "verified_commit": null,
       "action_run": null,
-      "notes": "Historical frozen V7 software replays: Actions 41171598687 and 41173692574; do not claim V8 fix."
+      "notes": "Confirmed V8 source TankInstantAnalyzer.java blob c3fb91f9c7a34645aaa034399e4befadcffbc169; runtime fix NOT done."
     },
     {
       "id": "R05",
       "title": "Full unified 734-material catalog and per-field evidence provenance",
       "status": "SOURCE_DIAGNOSED",
-      "next_action": "Audit completeness all fields then source-qualified fill; unknown remains unknown, verify migrations",
+      "next_action": "Runtime count and unified 734-ish catalog full completeness assessment; connect all canonical material UIDs to source-qualified gas evidence; absent evidence remains absent",
       "evidence_file": "research/v8_implementation/results/chemical_completeness_audit.csv",
       "test_status": "NOT_RUN_IN_NEW_V8_TRACK",
       "verified_commit": null,
       "action_run": null,
-      "notes": null
+      "notes": "Legacy 144 is provenance only in ChemicalRepository.java; instant analyzer still uses legacyId <144 for display; actual DB row count not measured this pass."
     },
     {
       "id": "R06",
@@ -343,7 +343,7 @@
     "tests_executed_in_this_new_track": "NONE",
     "firmware_changed": false,
     "apk_built": false,
-    "discussion_state": "OWNER_17_SCIENTIFIC_PROPOSALS_RECORDED_NOT_APPROVED",
+    "discussion_state": "OWNER_20_SCIENTIFIC_PROPOSALS_RECORDED_NOT_IMPLEMENTED",
     "decisions_pending": [
       "Owner’s scientific and architectural proposals",
       "Dual R0 reference semantics",
@@ -352,8 +352,20 @@
       "Mixture and unknown inference",
       "Owner's 17 proposals: confirm conditional sensor positive/negative evidence, single-sensor surfacing, feedback and safety separation, central learning gates"
     ],
-    "owner_proposals_count": 17,
+    "owner_proposals_count": 20,
     "owner_proposals_register": "docs/research/CHEMCORE-NEXT-SCIENTIFIC-DISCUSSION-REGISTER-2026-11-02_AR.md#7-مقترحات-مالك-المشروع-العلمية-السبعة-عشر--جلسة-2026-11-02",
-    "discussion_register_commit": "136eae30da2b3ee1747de8b146ea8b20e3e0d459"
+    "discussion_register_commit": "549532ad9bc273177318c574ffd5b6dd6d50d5ef",
+    "candidate_mapping_audit": {
+      "status": "REPRODUCED_IN_V8_SOURCE_NO_FIX",
+      "source": "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java",
+      "source_sha": "c3fb91f9c7a34645aaa034399e4befadcffbc169",
+      "finding": "legacyId>=0 && legacyId<144 mapping; display constructed from source_curve_hypotheses rather than actual rankedCandidates; top10 may be elsewhere",
+      "desired": "Unified chemical UIDs, model-qualified evidence only, dynamic 0..N display, UNKNOWN retained, no filler"
+    },
+    "next_research_targets": [
+      "S18 systematic MQ research and project source-map with reproducibility and hardware provenance",
+      "S19 EvidenceAsset registry for all published curves/fingerprints/log models and simulations",
+      "S20 shared canonical chemical UID across instant/sessions/tracking and qualified candidateCount"
+    ]
   }
 }
