@@ -1,3 +1,13 @@
+## 2026-11-02 — G2 explicit metric-name allowlist and alias rejection (research only)
+
+- Reviewed starting research HEAD `e8e414472df91f49e7780008f21c5bf3328ce6af`: its 21 returned GitHub Actions runs were completed/success, including G2 source/R0. No confirmed CI failure.
+- Added a fail-closed `UNSUPPORTED_OR_NONCANONICAL_METRIC_NAME` diagnostic for nonempty but unrecognized metric names, including aliases/case/edge whitespace; preserved `INVALID_METRIC_NAME` for non-text/blank names. The existing non-accuracy independent recomputation gate remains mandatory.
+- Added four deterministic synthetic regression methods in `test_g2_metric_name_allowlist.py` and Arabic methodology `G2_METRIC_NAME_ALLOWLIST_2026-11-02_AR.md`. Re-run full G2 CI on the exact resulting commit before claiming success.
+- Scope: research-only audit code, synthetic tests, methodology, and RESUME. No Stable/Android/firmware/main changes. Independent Tank evidence remains `records=[]`; last documented `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`. No G2/G3 promotion.
+- Next: check final commit CI and repair failures; obtain original independently source-qualified raw data and physically grouped/blinded Tank exposures with traceable reference calibration.
+
+---
+
 ## 2026-11-02 — G2 nonnegative error / signed MCC domain (research only)
 
 - Verified the prior exact HEAD `e48b30d1c8c7e4fbe93020afea98018c639fa7cc`: 21/21 GitHub Actions runs returned as completed/success, including source/R0 gate #41480954062. No confirmed CI failure to repair.

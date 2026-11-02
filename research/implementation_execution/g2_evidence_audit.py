@@ -236,6 +236,11 @@ def audit_record(item, repo_root=Path(".")):
     metric_name = item.get("metric_name")
     if not isinstance(metric_name, str) or not metric_name.strip():
         issues.append("INVALID_METRIC_NAME")
+    elif metric_name not in (bounded_classification_metrics |
+                             {"rmse", "mae", "matthews_corrcoef"}):
+        # Unrecognized spellings have no independently replayable G2 metric
+        # adapter. Do not treat a near-alias or arbitrary score as eligible.
+        issues.append("UNSUPPORTED_OR_NONCANONICAL_METRIC_NAME")
     if isinstance(metric_name, str) and metric_name in bounded_classification_metrics:
         # Preserve the existing error vocabulary for historical accuracy
         # tests and evidence receipts.
