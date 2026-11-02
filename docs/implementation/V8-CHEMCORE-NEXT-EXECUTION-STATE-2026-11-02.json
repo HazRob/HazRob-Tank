@@ -13,8 +13,8 @@
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P03",
   "active_task": "P03.4",
-  "last_checkpoint": "ChemCore Next independent core P03.3: 24 fingerprints (4+2+18) plus 3 3D/4D/regression methods source-preserved in CI 41378638949. P03.4 canonical UID mapping next.",
-  "next_action": "P03.4 link source gas chemical identities conservatively to 734 canonical SQLite UID; no fabricated mapping for class, mixture or ambiguous labels.",
+  "last_checkpoint": "P03.4 partial: 49/109 actual master UID links, 60 conservative unresolved; NH3/NH4+ dual research labels one evidence root tested GitHub CI 41379922587, no gas identification or ppm G3.",
+  "next_action": "Continue source label/CAS reconciliation for other MQDataScience and MQSensorsLib models; preserve provisional NH3 gas vs NH4+ ion difference until G2/G3 lab experiments.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -786,8 +786,8 @@
       "id": "P03.4",
       "phase": "P03",
       "description": "ربط الأصل العلمي بكل canonical UID من كامل الكتالوج",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "IN_PROGRESS",
+      "qualification": "PARTIAL_SQLITE_HISTORICAL_MAPPING_AND_SHARED_SOURCE_HYPOTHESES_G1",
       "depends_on": [
         "P03.3"
       ],
@@ -798,16 +798,23 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_TESTED_IN_GITHUB_ACTIONS",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
-      "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "test_result": "49/109 source records linked to 13 distinct actual SQLite UIDs; 60 intentionally unresolved. Source NH4 vs V6 NH4/NH3 retains two provisional interpretations with one evidence root and zero confirmed gases; Java G1 14 checks passed. No physical Tank G3.",
+      "action_run_id": 41379922587,
+      "commit_sha": "53b5475b5ed5de9593a74f97a564e7d9cad33839",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p03_4_nh3_nh4_dual_hypothesis_evidence.json",
+        "research/chemcore_next/identity/chemcore_next_p03_4_initial_historical_uid_crosswalk_109.csv",
+        "research/chemcore_next/identity/chemcore_next_p03_4_nh3_nh4_shared_hypotheses.json"
+      ],
+      "blockers": [
+        "60 nonhistorical source formula aliases lack confidently resolved canonical UID; do not infer from source label alone.",
+        "NH4 source label versus ammonia gas identity requires independent gas/reference experiment, no G3 qualification."
+      ],
+      "last_checkpoint": "Provisional NH3/NH4+ interpretations of MQDS-SRC-053 implemented; source relationship counted once; test 14 PASS; actual NH4+ is aqueous ion not atmospheric gas.",
+      "next_action": "Continue source label/CAS reconciliation for other MQDataScience and MQSensorsLib models; preserve provisional NH3 gas vs NH4+ ion difference until G2/G3 lab experiments.",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P03.5",
@@ -2459,6 +2466,15 @@
       "commit_sha": "393f522747f04c4d56c8a7ab931838e357e6a50c",
       "ci_run": 41378638949,
       "evidence": "research/v8_implementation/results/next_p03_3_fingerprint_source_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "OWNER_PROVISIONAL_DUAL_LABEL_POLICY_IMPLEMENTED",
+      "task_id": "P03.4",
+      "description": "One MQ135 source relation, NH3 gas and NH4+ ionic provisional research labels; source-root not duplicated; 14 JDK17 CI assertions passed, no G2/G3",
+      "commit_sha": "53b5475b5ed5de9593a74f97a564e7d9cad33839",
+      "ci_run": 41379922587,
+      "evidence": "research/v8_implementation/results/next_p03_4_nh3_nh4_dual_hypothesis_evidence.json"
     }
   ],
   "notes": [
