@@ -69,6 +69,10 @@ jobs:
             --tests com.servoc.app.chemical.CatalogSourceRuntimeCountTest \
             2>&1 | tee ../P00-4-SQLITE-CATALOG-TEST.log
           grep -q 'BUILD SUCCESSFUL' ../P00-4-SQLITE-CATALOG-TEST.log
+          echo "P00.4 catalog runtime observation (from JUnit XML):"
+          grep -Rh 'P00_4_SQLITE_CATALOG_RUNTIME_PASS' app/build/test-results/testDebugUnitTest/ || {
+            echo "Missing runtime-count diagnostic in XML"; exit 1;
+          }
       - name: Upload exact test output even after failure
         if: always()
         uses: actions/upload-artifact@v4
