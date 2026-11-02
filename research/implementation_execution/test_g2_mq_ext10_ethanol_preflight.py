@@ -1,0 +1,96 @@
+"""Deterministic synthetic source-parser tests; never substitute for raw exposures."""
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from g2_mq_ext10_ethanol_preflight import (
+    inspect_file, parse_ethanol_filename, parse_numeric_rows, run,
+)
+
+
+class MQExt10EthanolPreflightTests(unittest.TestCase):
+    def test_source_only_status(self):
+        r = run()
+        self.assertEqual(r["source_id"], "MQ-EXT-10")
+        self.assertEqual(r["files_scanned"], 0)
+        self.assertFalse(r["g2_qualified"])
+        self.assertFalse(r["g3_qualified"])
+        self.assertFalse(r["headspace_ethanol_ppm_measured"])
+        self.assertFalse(r["liquid_percent_vv_is_gas_ppm"])
+
+    def test_saved_receipt_byte_replay(self):
+        path = Path(__file__).resolve().parent / "G2_MQ_EXT10_ETHANOL_PREFLIGHT_2026-11-02.json"
+        encoded = json.dumps(run(), ensure_ascii=False, sort_keys=True,
+                             separators=(",", ":"), allow_nan=False) + "\n"
+        self.assertEqual(path.read_bytes(), encoded.encode("utf-8"))
+
+    def test_filename_concentration_codes(self):
+        self.assertEqual(parse_ethanol_filename("Ea-C1_R01"), ("C1", 1))
+        self.assertEqual(parse_ethanol_filename("EaC6R010"), ("C6", 10))
+
+    def test_reject_unknown_concentration(self):
+        with self.assertRaisesRegex(ValueError, "INVALID_FILENAME"):
+            parse_ethanol_filename("Ea-C7_R01")
+
+    def test_reject_unverified_gas_ppm_in_filename(self):
+        with self.assertRaisesRegex(ValueError, "INVALID_FILENAME"):
+            parse_ethanol_filename("Ea-10000ppm_R01")
+
+    def test_valid_eight_channel_rows(self):
+        d = b"50,25,1,2,3,4,5,6\n51,26,2,3,4,5,6,7\n"
+        self.assertEqual(parse_numeric_rows(d, expected_rows=2)["rows"], 2)
+
+    def test_whitespace_and_semicolon(self):
+        self.assertEqual(parse_numeric_rows(b"50 25 1 2 3 4 5 6", expected_rows=1)["rows"], 1)
+        self.assertEqual(parse_numeric_rows(b"50;25;1;2;3;4;5;6", expected_rows=1)["rows"], 1)
+
+    def test_reject_nonfinite(self):
+        with self.assertRaisesRegex(ValueError, "NONFINITE_ROW"):
+            parse_numeric_rows(b"50,25,1,2,3,4,5,nan", expected_rows=1)
+
+    def test_reject_nonpositive_resistance(self):
+        with self.assertRaisesRegex(ValueError, "NONPOSITIVE_RESISTANCE"):
+            parse_numeric_rows(b"50,25,1,2,0,4,5,6", expected_rows=1)
+
+    def test_reject_wrong_column_count(self):
+        with self.assertRaisesRegex(ValueError, "COLUMN_COUNT_NOT_EIGHT"):
+            parse_numeric_rows(b"50,25,1,2,3,4,5", expected_rows=1)
+
+    def test_reject_unexpected_row_count(self):
+        with self.assertRaisesRegex(ValueError, "ROW_COUNT_MISMATCH"):
+            parse_numeric_rows(b"50,25,1,2,3,4,5,6", expected_rows=2)
+
+    def test_reject_header_without_verified_format(self):
+        with self.assertRaisesRegex(ValueError, "NONNUMERIC_ROW"):
+            parse_numeric_rows(b"RH,T,MQ3,MQ4,MQ6,MQ3,MQ4,MQ6", expected_rows=1)
+
+    def test_synthetic_file_provenance(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "Ea-C1_R01.txt"
+            p.write_text("50,25,1,2,3,4,5,6\n" * 3330)
+            row = inspect_file(p)
+            self.assertEqual(row["rows"], 3330)
+            self.assertEqual(row["nominal_liquid_ethanol_percent_vv"], "1")
+            self.assertEqual(len(row["sha256"]), 64)
+            result = run(Path(d))
+            self.assertEqual(result["files_scanned"], 1)
+            self.assertEqual(result["rows_scanned"], 3330)
+            self.assertIn("INCOMPLETE_REPORTED_ETHANOL_MEASUREMENTS", result["blockers"])
+            self.assertFalse(result["g2_qualified"])
+
+    def test_duplicate_repetition_fail_closed(self):
+        with tempfile.TemporaryDirectory() as d:
+            for name in ("Ea-C1_R01.txt", "EaC1R01.csv"):
+                (Path(d) / name).write_text("50,25,1,2,3,4,5,6\n" * 3330)
+            with self.assertRaisesRegex(ValueError, "DUPLICATE_CONCENTRATION_REPETITION"):
+                run(Path(d))
+
+    def test_reject_unknown_file(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "README.txt").write_text("50,25,1,2,3,4,5,6\n")
+            with self.assertRaisesRegex(ValueError, "INVALID_FILENAME"):
+                run(Path(d))
+
+
+if __name__ == "__main__":
+    unittest.main()
