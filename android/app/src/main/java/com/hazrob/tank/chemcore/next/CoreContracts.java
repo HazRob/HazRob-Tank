@@ -89,6 +89,61 @@ public final class CoreContracts {
         }
     }
 
+
+    /** Immutable physical device inventory. Model names are never sensor UIDs. */
+    public static final class DeviceProfile {
+        public final String deviceUid, hardwareRevision, firmwareBuild;
+        public final List<SensorInstance> installedSensors;
+        public DeviceProfile(String deviceUid, String hardwareRevision, String firmwareBuild,
+                             List<SensorInstance> installedSensors) {
+            this.deviceUid = required(deviceUid, "device UID");
+            this.hardwareRevision = required(hardwareRevision, "hardware revision");
+            this.firmwareBuild = required(firmwareBuild, "firmware build");
+            if (installedSensors == null) throw new IllegalArgumentException("sensor inventory required");
+            List<SensorInstance> copy = new ArrayList<>(installedSensors);
+            Set<String> seen = new HashSet<>();
+            for (SensorInstance sensor : copy)
+                if (sensor == null || !seen.add(sensor.uid))
+                    throw new IllegalArgumentException("duplicate/null physical sensor in device profile");
+            this.installedSensors = Collections.unmodifiableList(copy);
+        }
+    }
+
+    /** Source and applicability, not evidence of physical calibration by itself. */
+    public static final class EvidenceAsset {
+        public enum Origin { MEASURED_REFERENCE, DATASHEET, DIGITIZED, SIMULATED, COMPUTED, RESEARCH }
+        public final String assetUid, sourceRootUid, sourceUrl, sourceRevision;
+        public final String sensorModel, chemicalLabel;
+        public final Origin origin;
+        public final Long canonicalChemicalUid;
+        public final Double ppmMin, ppmMax;
+        public EvidenceAsset(String assetUid, String sourceRootUid, String sourceUrl,
+                             String sourceRevision, String sensorModel,
+                             String chemicalLabel, Origin origin, Long canonicalChemicalUid,
+                             Double ppmMin, Double ppmMax) {
+            this.assetUid = required(assetUid, "asset UID");
+            this.sourceRootUid = required(sourceRootUid, "source root UID");
+            this.sourceUrl = required(sourceUrl, "source URL");
+            this.sourceRevision = required(sourceRevision, "source revision");
+            this.sensorModel = required(sensorModel, "source sensor model");
+            this.chemicalLabel = required(chemicalLabel, "source chemical label");
+            this.origin = Objects.requireNonNull(origin, "source origin");
+            if (canonicalChemicalUid != null && canonicalChemicalUid <= 0)
+                throw new IllegalArgumentException("chemical UID must be positive");
+            this.canonicalChemicalUid = canonicalChemicalUid;
+            positive(ppmMin, "ppm lower bound");
+            positive(ppmMax, "ppm upper bound");
+            if (ppmMin != null && ppmMax != null && ppmMin > ppmMax)
+                throw new IllegalArgumentException("source ppm range reversed");
+            this.ppmMin = ppmMin;
+            this.ppmMax = ppmMax;
+        }
+        public boolean withinDeclaredPpmRange(double ppm) {
+            return Double.isFinite(ppm) && ppm > 0 && (ppmMin == null || ppm >= ppmMin)
+                && (ppmMax == null || ppm <= ppmMax);
+        }
+    }
+
     public static final class Snapshot {
         public final String uid, deviceUid, stableManifestHash;
         public final Mode mode;
