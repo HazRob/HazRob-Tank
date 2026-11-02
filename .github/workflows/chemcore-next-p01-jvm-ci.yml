@@ -117,6 +117,15 @@ jobs:
             | tee build/chemcore-next-p01/P04-TEMPORAL-EXPERT.log
           grep -q '^CHEMCORE_NEXT_P04_3_TEMPORAL_PASS ' \
             build/chemcore-next-p01/P04-TEMPORAL-EXPERT.log
+            build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
+      - name: Verify P04.4 source-qualified environmental 3D transform and abstentions
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.EnvironmentEvidenceExpertSmoke \
+            | tee build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
+          grep -q '^CHEMCORE_NEXT_P04_4_ENVIRONMENT_PASS ' \
+            build/chemcore-next-p01/P04-ENVIRONMENT-EXPERT.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
