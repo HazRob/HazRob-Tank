@@ -82,7 +82,9 @@ public final class NextFieldArchive {
             throw new IllegalArgumentException("unknown physically recorded sensor "+model);
           Scan p=entry.getValue();
           if(p==null||p.cycle<0||!Double.isFinite(p.rsKohm)||p.rsKohm<=0||
-              p.ageMs<0||p.ageMs>6000L)continue;
+              // Unknown age is preserved as -1: archived scan evidence may exist,
+              // but the downstream sensor-quality gate will mark it STALE.
+              (p.ageMs>=0&&p.ageMs>6000L))continue;
           unique.get(model).putIfAbsent(p.cycle,p);
           globalCycles.add(p.cycle);
         }

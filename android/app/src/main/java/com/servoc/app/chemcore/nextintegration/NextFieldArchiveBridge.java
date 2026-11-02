@@ -30,7 +30,7 @@ public final class NextFieldArchiveBridge {
     return NextFieldArchiveModelKeys.isPhysicalInstalled(model);
   }
   private static long age(JSONObject x){
-    return x.optLong("last_ok_age_ms",Long.MAX_VALUE);
+    return x.has("last_ok_age_ms")?x.optLong("last_ok_age_ms",-1L):-1L;
   }
   private static Map<String,NextFieldArchive.Scan> parseScans(String mqRaw){
     Map<String,NextFieldArchive.Scan> sensors=new LinkedHashMap<>();
@@ -44,7 +44,7 @@ public final class NextFieldArchiveBridge {
         long cycle=src.optLong("scan_cycle",-1);
         double rs=src.optDouble("rs",Double.NaN);
         long freshness=age(src);
-        if(cycle<0||!Double.isFinite(rs)||rs<=0||freshness<0||freshness>6000L)
+        if(cycle<0||!Double.isFinite(rs)||rs<=0||(freshness>=0&&freshness>6000L))
           continue;
         sensors.put(ch.key,new NextFieldArchive.Scan(cycle,rs,freshness));
       }

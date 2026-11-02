@@ -17,6 +17,18 @@ public final class NextFieldArchiveSmoke {
     yes(full.qualifiedChannels.get("mq2").medianRsKohm==130,"median real Rs not last snapshot");
     yes(full.sourceSha256.matches("[0-9a-f]{64}"),"hashed entire source telemetry rows");
     yes(full.sourceSha256.equals(NextFieldArchive.summarize(valid).sourceSha256),"replay deterministic");
+    // Some firmware snapshots omit last_ok_age_ms. Keep the archived Rs as
+    // research evidence but mark it unqualified (age=-1), never invent 0ms.
+    List<NextFieldArchive.Row> unknownAge=new ArrayList<>();
+    for(int i=0;i<61;i++)unknownAge.add(new NextFieldArchive.Row(i*1000L,
+      "{\"temp\":23}","{\"mq2\":{\"rs\":"+i+"}}",
+      "{\"sample_seq\":"+i+"}",Map.of("mq2",
+        new NextFieldArchive.Scan(i,80.0+i,-1L))));
+    var rawUnknown=NextFieldArchive.summarize(unknownAge);
+    yes(rawUnknown.hasMeasuredEvidence(),"independent archived scans preserved with unknown age");
+    yes(rawUnknown.qualifiedChannels.get("mq2").lastAgeMs==-1,
+      "unknown freshness is not asserted 0ms");
+
     List<NextFieldArchive.Row> duplicates=new ArrayList<>();
     for(int i=0;i<61;i++)duplicates.add(row(i*1000L,i/10,100+i));
     var dup=NextFieldArchive.summarize(duplicates);
