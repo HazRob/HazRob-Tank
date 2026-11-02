@@ -54,7 +54,7 @@ def real(value):
 
 
 def git_blob_sha1(raw):
-    return hashlib.sha1(b'blob ' + str(len(raw)).encode('ascii') + b'\\0' + raw).hexdigest()
+    return hashlib.sha1(b'blob ' + str(len(raw)).encode('ascii') + bytes([0]) + raw).hexdigest()
 
 
 def derive(obj):
@@ -177,7 +177,7 @@ def main():
     args = parser.parse_args()
     result = audit_bytes(args.receipt.read_bytes())
     rendered = json.dumps(result, ensure_ascii=False, indent=2,
-                          sort_keys=True, allow_nan=False) + '\\n'
+                          sort_keys=True, allow_nan=False) + chr(10)
     if args.output:
         args.output.write_text(rendered, encoding='utf-8')
     else:
