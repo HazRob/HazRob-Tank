@@ -1,0 +1,111 @@
+{
+  "schema": "hazrob.chemcore.next.user_supplied_tank_clean_air/1",
+  "observation_id": "TANK-V6-QUICK-R0-1793417395633",
+  "record_kind": "physical_robot_clean_air_resistance_baseline_with_unverified_environment",
+  "measurement_timestamp_utc": "2026-10-31T03:29:55Z",
+  "date_source": "APP_R0_SCREENSHOTS_AND_SESSION_TIMESTAMP",
+  "owner_submitted_utc_date": "2026-11-02",
+  "context_note": "Owner described measurement as yesterday dawn; preserve app-reported UTC timestamp as recorded instead of silently adjusting date.",
+  "source_label": "firmware_clean_air_r0",
+  "firmware_session_id": "FIRMWARE-V6-QUICK-R0-1793417395633",
+  "firmware_protocol": "V6_QUICK_R0",
+  "r0_definition": "DEVICE_CLEAN_AIR_RS_MEAN",
+  "firmware_warmup_seconds": 180,
+  "firmware_sample_window_seconds": 60,
+  "samples_per_sensor": 437,
+  "sensor_unit": "kOhm",
+  "resistance_definition": "R_air = arithmetic mean of valid physical Rs samples during one 60-second reference-air interval",
+  "electrical_assumption": {
+    "r_load_kohm_in_firmware": 10,
+    "mq_supply_v_in_firmware": 5,
+    "ads1115_full_scale_v_in_firmware": 6.144,
+    "actual_physical_rl_and_vdd_verified": false
+  },
+  "device_identity": {
+    "device_label": "HazRob Tank owner supplied",
+    "serial_or_device_id": null,
+    "physical_mq_module_serials": null
+  },
+  "heater_phase_verified": false,
+  "measurement_environment": {
+    "temperature_c": null,
+    "relative_humidity_percent": null,
+    "ambient_contaminants_verified_absent": false,
+    "independent_reference_gas_ppm": null
+  },
+  "noise_and_dispersion": {
+    "raw_per_sample_rs": null,
+    "per_sensor_stddev": null,
+    "per_sensor_baseline_noise_log_ratio": null,
+    "drift": null
+  },
+  "r_air_kohm_by_sensor": {
+    "MQ2": 92.1417313,
+    "MQ3": 25.5138416,
+    "MQ4": 37.8870316,
+    "MQ5": 158.0950317,
+    "MQ7": 62.5898705,
+    "MQ8": 36.5759659,
+    "MQ9": 56.4506149,
+    "MQ135": 113.6592255
+  },
+  "screenshot_provenance": [
+    {
+      "uploaded_name": "1000828366.png",
+      "sha256": "74464c5ddae144dfc2f0dcf7fe89b2c6a3a9e51a1444ec89c458a9e089a96e14",
+      "channels": [
+        "MQ2",
+        "MQ3",
+        "MQ4"
+      ]
+    },
+    {
+      "uploaded_name": "1000828367.png",
+      "sha256": "84a2199ee42e0e46de93e716ff2db34fec430196e0301067ea46bc38855f41c2",
+      "channels": [
+        "MQ4",
+        "MQ5",
+        "MQ7"
+      ]
+    },
+    {
+      "uploaded_name": "1000828368.png",
+      "sha256": "ff14579216de4341a7101845f966c0ea2601a582e89c604f89dc777aca5e4e19",
+      "channels": [
+        "MQ7",
+        "MQ8",
+        "MQ9"
+      ]
+    },
+    {
+      "uploaded_name": "1000828369.png",
+      "sha256": "f845e47c59c884256af27519033a751406c87a8634ecf7b1fe0374f35ee5d8da",
+      "channels": [
+        "MQ9",
+        "MQ135"
+      ]
+    }
+  ],
+  "source_code_reconciliation": [
+    "firmware/ESP32-Tank/Hardware.cpp: V6 quick mean calSum[i]/calCount[i] (no legacy cleanAir factor)",
+    "firmware/ESP32-Tank/Config.h: Cfg::RL=10.0f, MQ_VCC=5.0f, ADS_FULL_SCALE_V=6.144f",
+    "android/app/src/main/java/com/servoc/app/ui/DeveloperR0Tab.java: displays Rs/R0 in kOhm and 437 source samples",
+    "android/app/src/main/java/com/hazrob/tank/chemcore/next/R0ReferenceMath.java: DEVICE_CLEAN_AIR_RS_MEAN is not manufacturer R0_source"
+  ],
+  "research_usage": {
+    "same_sensor_same_physical_scale_relative_ratio": "Q=Rs_current/R_air",
+    "log_ratio": "ln(Q)",
+    "can_calculate_per_sensor_noise_from_mean_only": false,
+    "can_establish_sensitivity_or_lod_from_mean_only": false,
+    "can_establish_ppm_from_mean_only": false,
+    "can_claim_clean_air_is_zero_contaminants": false,
+    "can_certify_gas_identity": false,
+    "physical_tank_g3_qualified": false,
+    "snapshot_historical_baselines_immutable": true,
+    "overwrites_android_calibration": false,
+    "overwrites_unified_chemical_master": false,
+    "modifies_stable": false
+  },
+  "qualification": "OWNER_PROVIDED_DEVICE_BASELINE_CAPTURE_G3_PENDING",
+  "expected_replay": "baseline/reference identity Q=1 is an algebraic G1 check only; do not count as independent physical validation"
+}

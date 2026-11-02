@@ -149,6 +149,14 @@ jobs:
             | tee build/chemcore-next-p01/P05-POLARITY-ROUTER.log
           grep -q '^CHEMCORE_NEXT_P05_2_POLARITY_PASS ' \
             build/chemcore-next-p01/P05-POLARITY-ROUTER.log
+      - name: Replay owner-supplied real eight-MQ clean-air baseline as G1 algebra only
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.OwnerTankCleanAirBaselineSmoke \
+            | tee build/chemcore-next-p01/OWNER-TANK-8MQ-AIR-BASELINE.log
+          grep -q '^CHEMCORE_NEXT_OWNER_TANK_8MQ_AIR_BASELINE_PASS ' \
+            build/chemcore-next-p01/OWNER-TANK-8MQ-AIR-BASELINE.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -170,5 +178,6 @@ jobs:
             build/chemcore-next-p01/P04-INDEPENDENT-ROOTS.log
             build/chemcore-next-p01/P05-CANDIDATE-GENERATOR.log
             build/chemcore-next-p01/P05-POLARITY-ROUTER.log
+            build/chemcore-next-p01/OWNER-TANK-8MQ-AIR-BASELINE.log
           if-no-files-found: warn
           retention-days: 30
