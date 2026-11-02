@@ -1,0 +1,58 @@
+{
+  "schema": "chemcore.next.p03.2.research_curve_evidence/1",
+  "date": "2026-11-02",
+  "project": "ChemCore Next standalone engine",
+  "stage": "P03.2",
+  "status": "DONE_SOURCE_RECONCILIATION_RESEARCH_ONLY",
+  "ci": {
+    "run": 41378249375,
+    "job": "125063...",
+    "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41378249375",
+    "conclusion": "success",
+    "commit_sha": "ffa162d004795e5144eb602e6e7b285a827546b0",
+    "acceptance": "CHEMCORE_NEXT_P03_2_SOURCE_CURVES_PASS rows=109 reused_v6=43 mqsensorslib=14 tested_inverse=464 g3=0 mapped_uid=0"
+  },
+  "counts": {
+    "mqdata_original": 89,
+    "mqdata_curves_reused_in_v6": 43,
+    "v6_alternative_mq135": 6,
+    "mqsensorslib_example_formulas": 14,
+    "total_distinct_numeric_equation_records": 109,
+    "installed_sensor_model_equations": 62,
+    "future_sensor_equations": 47,
+    "inverse_algebraic_probes": 464,
+    "canonical_uid_resolved": 0,
+    "actual_G3_qualified": 0
+  },
+  "principles": [
+    "Same 43 V6 coefficients map 1:1 to original MQDataScience coefficients, so never double-count them as independent evidence",
+    "MQSensorsLib 6 MQ135 example equations are repeated in its ADS1115 example, deduplicated to one evidence source",
+    "MQSensorsLib regression form ppm = a*ratio^b differs from MQDataScience ratio = a*(ppm/scale)^b; cannot mix coefficients directly",
+    "Reference R0, heater profile, manufacturer origin, source ppm scale and CAS/UID require additional qualification; research V6 scale stored separately from source specification",
+    "Source chemical labels including smoke/alcohol/NH4/NH3 need identity resolution, and unknown source identities must not enter candidate list",
+    "No ChemCore Next curves activated yet and no physical gas experiments run"
+  ],
+  "evidence_files": [
+    {
+      "path": "research/chemcore_next/source_curves/chemcore_next_p03_2_source_curve_ledger_95.csv",
+      "sha": "32e930b3b924c4c706149bf5af76fecb6dbb1410"
+    },
+    {
+      "path": "research/chemcore_next/source_curves/chemcore_next_p03_2_mqsensorslib_examples_14.csv",
+      "sha": "fa2a3d57624e7e0a2bfd2bb3c96703f88ccd7554"
+    },
+    {
+      "path": "research/chemcore_next/source_curves/chemcore_next_p03_2_unified_109_formula_register.csv",
+      "sha": "50369f8e25ffed10f2bb2a3168dd86330e4b1ade"
+    },
+    {
+      "path": "research/chemcore_next/tools/verify_p03_2_source_curves.py",
+      "sha": "bbdf8a6f672476303f28acb0f2ca2c2997beb486"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p03-source-provenance-ci.yml",
+      "sha": "72533d9a93abce8e8749088819ad50d32295bc20"
+    }
+  ],
+  "next": "P03.3 24 fingerprint references and 3D/4D time/environment source methods; later P03.4 canonical UID mapping"
+}
