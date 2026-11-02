@@ -990,6 +990,81 @@ public final class MeasurementsTab {
             selected.setText(selectedCandidateId>=0?
                 "هدف تتبع اختاره المشغل (غير مكتشف): "+selectedCandidateName:
                 "المرشح المحدد: لا يوجد • يجوز الاختيار اليدوي من المكتبة");
+            JSONObject quantitative=p.optJSONObject("scientific_source_diagnostics");
+            JSONArray models=quantitative==null?null:quantitative.optJSONArray("all_reference_models");
+            JSONObject risk=p.optJSONObject("scientific_reference_screening");
+            JSONArray comparisons=risk==null?null:risk.optJSONArray("comparisons");
+            JSONArray materialGhs=risk==null?null:risk.optJSONArray("material_ghs_references");
+            StringBuilder referenceText=new StringBuilder(
+                "مقارنات المصدر البحثية • التعرض/حد الاشتعال الأدنى LFL/الخلفية الطبيعية");
+            referenceText.append("\nجميع النسب مشروطة بفرضية نوع الغاز ومرجع R0؛ ليست إنذار سلامة معتمدًا");
+            if(comparisons==null||comparisons.length()==0) {
+                referenceText.append("\nلم تتوفر حدود موثقة قابلة للمقارنة بوحدات متوافقة");
+            } else for(int ix=0;ix<comparisons.length();ix++){
+                JSONObject hit=comparisons.optJSONObject(ix);if(hit==null)continue;
+                double value=hit.optDouble("estimated_ppm",Double.NaN);
+                double percentage=hit.optDouble("percent_of_reference",Double.NaN);
+                referenceText.append("\n").append(hit.optString("material_label","—"))
+                    .append(" • ").append(hit.optString("reference_role","—"))
+                    .append(" • ").append(hit.optString("level","—"))
+                    .append(" • ").append(String.format(Locale.US,"%.4g ppm",value))
+                    .append(" / ").append(String.format(Locale.US,"%.4g ppm",hit.optDouble("reference_ppm",Double.NaN)))
+                    .append(" (").append(String.format(Locale.US,"%.1f%%",percentage)).append(")")
+                    .append(" • ").append(hit.optString("source_id","—"));
+            }
+            screeningWarnings.setText(referenceText.toString());
+            referenceInventory.setText(
+                "المراجع المستعملة: "+(comparisons==null?0:comparisons.length())+
+                " مقارنة مصدرية؛ خلفية طبيعية وOEL وLFL بحسب توثيق كل مادة\n"+
+                "تجاوز تركيز لحظي لحد TWA/STEL لا يثبت تجاوز متوسط التعرض الزمني.");
+            StringBuilder scientificText=new StringBuilder(
+                "ChemCore Next • النتائج الحسابية الكاملة دون حجب\n"+
+                "القرار: "+decisionUid+" • تصنيف الهوية: "+status+
+                "\nG3=0/80 لا يمنع إظهار المعادلات العددية البحثية.");
+            if(models!=null)for(int ix=0;ix<models.length();ix++){
+                JSONObject m=models.optJSONObject(ix);if(m==null)continue;
+                scientificText.append("\n\n[")
+                    .append(m.optString("source_curve_id","—")).append("] ")
+                    .append(m.optString("sensor_model","")).append(" • ")
+                    .append(m.optString("gas_or_class",""))
+                    .append(" • ").append(m.optString("status","—"));
+                Object ppmValue=m.opt("estimated_ppm");
+                if(ppmValue instanceof Number)
+                    scientificText.append(" • ppm≈")
+                        .append(String.format(Locale.US,"%.6g",((Number)ppmValue).doubleValue()));
+                scientificText.append("\n").append(m.optString("source_equation",""))
+                    .append(" • a=").append(m.optDouble("a",Double.NaN))
+                    .append(" b=").append(m.optDouble("b",Double.NaN))
+                    .append(" • المصدر ").append(m.optString("source_root","—"));
+            }
+            JSONArray algorithms=p.optJSONArray("next_algorithm_diagnostics");
+            scientificText.append("\n\nالتقنيات والخوارزميات — التي تم تنفيذها: ")
+                .append(p.optInt("next_models_inspected",0))
+                .append("؛ مخرجات مصدرية موجبة: ")
+                .append(p.optInt("next_positive_models",0));
+            if(algorithms!=null)for(int i=0;i<algorithms.length();i++)
+                scientificText.append("\n").append(algorithms.optString(i));
+            scientificText.append("\nالبصمات: ")
+                .append(p.optString("fingerprint_runtime_status","غير معروف"));
+            scientificText.append("\n\nمقارنات المراجع التفصيلية:\n")
+                .append(referenceText);
+            if(materialGhs!=null)for(int k=0;k<materialGhs.length();k++){
+                JSONObject material=materialGhs.optJSONObject(k);if(material==null)continue;
+                JSONArray codes=material.optJSONArray("ghs_pictograms");
+                if(codes==null||codes.length()==0)continue;
+                LinearLayout materialRow=UiKit.hbox(c);
+                TextView classification=UiKit.small(c,
+                    "GHS • "+material.optString("reference_material_label","—")+
+                    "\nتصنيف خطر للمادة المرجعية — وليس إثبات رصدها");
+                materialRow.addView(classification,new LinearLayout.LayoutParams(0,-2,1f));
+                GhsPictograms.addImages(materialRow,c,GhsPictograms.fromJson(codes),30,9);
+                candidateList.addView(materialRow,UiKit.full(c));
+            }
+            technical.setText(scientificText.toString());
+            technical.setTextColor(TEXT);
+            technical.setVisibility(View.VISIBLE);
+            showTechnical=true;technicalToggle.setText("إخفاء البواقي والتفاصيل");
+
             ChemicalRepository catalog=new ChemicalRepository(host.database());
             if(n==0){
                 candidateList.addView(card("UNKNOWN • لا يوجد مرشح بقرائن مؤهلة"+
@@ -1029,7 +1104,7 @@ public final class MeasurementsTab {
                 "\nEligible: "+n+" • Physical G3: 0/80");
             if(problems!=null)for(int i=0;i<problems.length();i++)
                 audit.append("\n- ").append(problems.optString(i));
-            technical.setText(audit.toString());
+            technical.setText(technical.getText()+"\n\n"+audit);
         }
 
         private boolean isResearchOnlyV6(JSONObject analysis){
