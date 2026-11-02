@@ -1,0 +1,52 @@
+{
+  "schema": "hazrob.v8.chemcore.next.p02_3.sensor_quality/1",
+  "date": "2026-11-02",
+  "task": "P02.3",
+  "status": "G1_JDK17_TEST_PASS",
+  "run_id": 41376081071,
+  "run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41376081071",
+  "run_commit": "a4b46ac020cca5c0bee8f0370bbf1bad913ba330",
+  "job_id": 125056496476,
+  "assertions": {
+    "immutable": 28,
+    "replay": 36,
+    "signal_physics": 69,
+    "dual_r0": 33,
+    "sensor_quality": 110,
+    "all": 276
+  },
+  "verified_checks": [
+    "I2C NACK and TIMEOUT and BUS_RECOVERING are hard invalids",
+    "Missing conversion-ready metadata is LIMITED, not accepted as source model evidence",
+    "Recorded increasing scan cycle and max-age required",
+    "Stale timestamp, duplicates, invalid ADC and off/wrong heater fail closed",
+    "Valid raw Rs preserved when BME unavailable; environmental model prohibited",
+    "High sample CV/large temporal changes diagnostic and limited, never automatically classified as sensor failure",
+    "Identical raw codes do not prove stale ADC and do not alone disqualify a stable source curve",
+    "R0 availability required for source curve eligibility; absence does not delete raw measurement"
+  ],
+  "qualification_limits": [
+    "JVM synthetic fixtures, not actual I2C/ADC or robot validation",
+    "Existing firmware does not export conversion-ready OS bit per reading; missing status remains LIMITED",
+    "90%/100% formula hypotheses not chemical qualification",
+    "400k I2C kept; physical HW-I2C-01..05 outstanding"
+  ],
+  "source_files": [
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SensorQualityGate.java",
+      "sha": "54d42cd767bcc40f3c120c47e21db3cb99b73084"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/SensorQualityGateSmoke.java",
+      "sha": "33317c853ad25a74219a3fa85108b2c9f3b2305f"
+    },
+    {
+      "path": ".github/workflows/chemcore-next-p01-jvm-ci.yml",
+      "sha": "8ed22a4ca42c9d6b8b6747009f1a97d950ba6bc9"
+    }
+  ],
+  "device_G3_validation": 0,
+  "android_apk_built": false,
+  "firmware_modified": false,
+  "next": "P02.4 individual sensor response and conditional negative evidence"
+}
