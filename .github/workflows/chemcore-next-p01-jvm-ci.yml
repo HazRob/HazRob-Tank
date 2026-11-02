@@ -279,6 +279,14 @@ jobs:
             | tee build/chemcore-next-p01/P07-3-ENGINE-ROUTING.log
           grep -q '^CHEMCORE_NEXT_P07_3_NO_SILENT_FALLBACK_PASS ' \
             build/chemcore-next-p01/P07-3-ENGINE-ROUTING.log
+      - name: P07.4 immutable Next decision display parity 0-80 and tampering gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextDecisionPresentationSmoke \
+            | tee build/chemcore-next-p01/P07-4-DECISION-PRESENTATION.log
+          grep -q '^CHEMCORE_NEXT_P07_4_IMMUTABLE_DISPLAY_PASS ' \
+            build/chemcore-next-p01/P07-4-DECISION-PRESENTATION.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -313,5 +321,6 @@ jobs:
             build/chemcore-next-p01/OCT2026-ETHANOL-PORTFOLIO-DIAGNOSTIC.json
             build/chemcore-next-p01/P07-1-TELEMETRY-MAPPER.log
             build/chemcore-next-p01/P07-3-ENGINE-ROUTING.log
+            build/chemcore-next-p01/P07-4-DECISION-PRESENTATION.log
           if-no-files-found: warn
           retention-days: 30
