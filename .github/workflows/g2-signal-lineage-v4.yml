@@ -52,6 +52,8 @@ jobs:
         run: python research/implementation_execution/g2_mq4_reference_boundary_truth.py --output "$RUNNER_TEMP/g2_mq4_reference_boundary_truth.json"
       - name: "Reconcile external MQ4 forward-day PPV and false alarm burden (not Tank G2)"
         run: python research/implementation_execution/g2_mq4_forward_error_burden.py --output "$RUNNER_TEMP/g2_mq4_forward_error_burden.json"
+      - name: "Audit external MQ4 false-alert concentration across calendar days (not Tank G2)"
+        run: python research/implementation_execution/g2_mq4_false_alert_day_concentration.py --output "$RUNNER_TEMP/g2_mq4_false_alert_day_concentration.json"
       - name: "Run every offline G2 regression test (including new test files)"
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_*.py' -v
       - name: "Run full 80-technique G2 fail-closed evidence audit"
@@ -112,4 +114,5 @@ jobs:
             ${{ runner.temp }}/g2_mq4_cross_receipt.json
             ${{ runner.temp }}/g2_mq4_reference_boundary_truth.json
             ${{ runner.temp }}/g2_mq4_forward_error_burden.json
+            ${{ runner.temp }}/g2_mq4_false_alert_day_concentration.json
           if-no-files-found: error
