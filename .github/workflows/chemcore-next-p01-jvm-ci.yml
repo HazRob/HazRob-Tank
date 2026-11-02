@@ -190,6 +190,14 @@ jobs:
           assert d['latency_p99_ms']>=d['latency_p95_ms']>=d['latency_median_ms']>=0
           print('CHEMCORE_NEXT_P06_1_4_RESOURCE_REPORT_PASS')
           PY
+      - name: P06 integrated single-entrypoint ChemCoreNext source experts through source-root arbitration
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.ChemCoreNextOrchestratorSmoke \
+            | tee build/chemcore-next-p01/P06-ORCHESTRATOR.log
+          grep -q '^CHEMCORE_NEXT_P06_ORCHESTRATOR_PASS ' \
+            build/chemcore-next-p01/P06-ORCHESTRATOR.log
       - name: Preserve source/test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -216,5 +224,6 @@ jobs:
             build/chemcore-next-p01/P05-INFERENCE-SAFETY.log
             build/chemcore-next-p01/P06-G1-INTEGRATED.log
             build/chemcore-next-p01/p06_resource_profile.json
+            build/chemcore-next-p01/P06-ORCHESTRATOR.log
           if-no-files-found: warn
           retention-days: 30
