@@ -133,3 +133,43 @@
 - Bosch BME AI-Studio train/evaluate: https://www.bosch-sensortec.com/software/bme/docs/overview/getting-started.html
 
 **استنتاج أولي:** تقترح مناقشة Next فصل أولويات تخصص الحساس عن قوة إثبات هوية الغاز، وعزل رأي المستخدم عن الحقيقة التجريبية، وإعداد اختبارات تماثل ومصداقية بين الأوضاع. لا يوجد اعتماد نهائي لميزات Next من هذه الملاحظات، ولا اختبار G3 جديد، ولا تعديل للفريموير أو APK.
+
+
+## 8. مقترحات المالك الإضافية S-18 إلى S-20 — جلسة 2026-11-02 (00:35 UTC)
+**الحالة:** OWNER_PROPOSALS_RECORDED / PRELIMINARY_SOURCE_REVIEW / APPROVAL_AND_TESTS_PENDING.
+هذه امتداد مباشر للمواد S-01..S-17. التسجيل لا يعني اكتمال البحث المنهجي، ولا التأهيل أو تشغيل كود جديد.
+
+### S-18 مراجعة منهجية لمشاريع وأبحاث حساسات MQ
+**مقترح المالك:** دراسة كل الأبحاث والمشاريع التي استخدمت MQ وفهم كيف نفذت التجارب وآلية التحليل.
+**تفسير قابل للتنفيذ:** systematic/scoping evidence map متدرج ومنفتح التحديث (ليس ادعاء إمكان حصر حرفي لكل ورقة منشورة) لـ MQ/MOX/e-nose: نوع حساسات وطراز/دفعة ودائرة/سخان/مدة burn-in وR_air/R0 وADC وT/RH وتدفق/حجرة القياس ومعيار الغاز وتركيزه الحقيقي ومدة التعرض، نوع الغاز النقي/الخليط، sample size، مصدر label truth، استقلال المجموعات والتقسيم train/test، شيفرة/بيانات وقابلية الإعادة، دقة/خطأ/حدود التعميم. سجل واحد لكل أصل مصدر مع روابط DOI/URL والترخيص وSHA أو تاريخ النسخة وتاريخ استرجاع، ووسم SOURCE_REVIEWED/PARSED/REPRODUCED/G2/G3.
+**الأولويات:** وثائق المصنّع (Winsen/Hanwei)، MQDataScience 7، MQSensorsLib/Datasheets info.xlsx، الدراسات التي تنشر بيانات MQ خام وتراكيز مرجعية ومخاليط أو انحرافًا زمنيًا، ثم مشاريع إلكترونية تشرح hardware/software، مع التصنيف بين خبرة تطبيقية وبيانات مؤهلة.
+**مصادر افتتاحية للاستقصاء** (عناوين وملخصات لا تعني أن إعادة التنفيذ تمت):
+- Wörner et al. 2025، dataset لانجراف مصفوفة MOS خلال سنة، Journal Scientific Data، DOI 10.1038/s41597-025-05993-8، بيانات Zenodo DOI 10.5281/zenodo.15681119، دفتر استخراج خصائص؛ أهمية grouped time/longitudinal holdout.
+- Physical Confounding Factors Affecting Gas Sensors Response: A Review on Effects and Compensation Strategies for Electronic Nose Applications (Chemosensors 2023), https://www.mdpi.com/2227-9040/11/10/514 ؛ يوضح humidity، temperature، air flow، chamber.
+- Evolution of Electronic Noses from Research Objects to Engineered Environmental Odour Monitoring Systems: A Review of Standardization Approaches (2019) https://pmc.ncbi.nlm.nih.gov/articles/PMC6627819/ ؛ جودة وتحقق وتقييس المصفوفات.
+- Sensor array optimization for the electronic nose via different deep learning methods (Sensors and Actuators B, 2024), DOI 10.1016/j.snb.2024.135579 ؛ اختيار حجم المصفوفة والتصنيف، وليس إثبات Tank.
+- Investigation of Chemiresisitive Electronic Nose for the Analysis of Multiple Analytes Using Pattern Recognition Algorithm (2024), https://link.springer.com/article/10.1007/s11220-024-00487-0 ؛ استجابات ديناميكية لأربع قنوات وأنماط متعددة، دراسة تختلف عن طراز MQ الموجود في Tank ولا تنقل معايرتها.
+
+### S-19 جمع واستثمار جميع الأدوات والمنحنيات والبصمات والمعادلات المنشورة
+**مقترح المالك:** الإفادة من كل وسيلة منشورة، ولو تجريبية أو محوسبة، في التعريف والكميات.
+**نظام التسجيل المقترح:** EvidenceAsset {asset_id, origin_url, paper_doi, sensor_models, chemical_ids, data_type [raw_experiment/datasheet_digitized/simulation/synthetic/manufacturer_fit/software_model], output_type [qualitative/quantitative/forecast], curve_equation, parameter_units, R0_definition, temperature, humidity, sampling, heater, reference_instrument, source_domain_ppm, raw_data_link, independent_source_root, license, source_sha, reproducible, validation_tier, allowed_runtime_use}.
+**حماية علمية:** الاستفادة تعني ingest/inspect/reproduce/compare وليس النقل التشغيلي الأعمى. المنحنى الاصطناعي أو المستخرج من رسم المصنع مصدر فرضيات/معرفة نظرية، وليس رصدًا ميدانيًا مستقلًا، ولا يثبت دقة PPM أو هوية الغازات على Tank. توحيد المعادلات بالنسبة إلى اتجاه Rs/R0 ووحدات القياس والمجال والتكرار المصدري. تصنيف الأدوات حسب الوظيفة (fingerprinting, forward source model, inverse ppm, feature extraction, compensation, ML, 3D/4D, mixture/open set) وربطها بمحرك Next القابل للتأهيل.
+
+### S-20 توحيد مرشحي القياس الآني مع ~734 مادة وعدم ملء Top-10 اعتباطًا
+**مقترح المالك:** إزالة حصر الـ144 بحيث تكون جميع مواد المكتبة الموحدة ~734 مؤهلة لدخول فضاء الترشيح، مع عدم فرض 10 مرشحين إن توفرت أدلة لـ5 فقط.
+**نتيجة تدقيق الشيفرة في V8 snapshot (لا تدل على إتمام الإصلاح):**
+- `android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java` Git blob `c3fb91f9c7a34645aaa034399e4befadcffbc169`, lines 66..123: builds `candidates` from `source_curve_hypotheses` (source ledger) via `LinkedHashMap`; line 83 enforces `legacyId>=0 && legacyId<144` and `master.byLegacyId()`. Physical report explicitly UNKNOWN and no certified PPM. Thus an actual legacy 144 mapping restriction exists in instant display adapter; it is not evidence the entire ChemCore engine knows only 144.
+- `android/app/src/main/java/com/servoc/app/chemical/ChemicalRepository.java` Git blob `c52813a7918a8a18eb824de8045202902020c2d1` offers `count(),search(),byUid(),byLegacyId()` over `v14_unified_chemical_catalog`; legacy 144 is a provenance flag. Precise current runtime row count NOT measured in this audit; use `count()` and DB integrity migration tests, never infer exact 734 at runtime.
+- `com.hazrob.tank.chemcore.v6.Engine.Result.rankedCandidates` exists with a best-fit score but its V6 ranking is research-only, not a calibrated gas identity probability.
+- The fixed top 10 **may exist at UI presentation level**; the inspected `TankInstantAnalyzer.java` itself does not impose a 10-item cutoff. Do not claim the literal cap was found there.
+**Next design requirement proposal:** `CandidateUniverse = ALL active unified material UIDs` (not just legacy ids); `EvidenceEligibility = valid physical observation + applicable qualified curve/fingerprint/other independent evidence + successful chemical UID canonical resolution`. Materials with no evidence return no candidate rather than filler; identity is not established by catalog membership. Rank qualified evidence using scientifically audited methods, control correlated duplicates, open-set UNKNOWN retained; `visibleCandidates=firstN(evidenceQualifiedRankedCandidates,N)` where N is presentation maximum only. Preserve remaining valid candidates on-demand, record excluded reasons and include single-sensor findings with provisional tier rather than hiding, subject to quality checks and source applicability. Handle 0,1,5,>10 qualified hypotheses gracefully; do not claim exact count=5 without run evidence. Do not penalize a gas for absence of model in most sensors (missing model vs valid negative observation). 
+**Acceptance:** 
+1. Database canonical count and mapping test covers legacy and nonlegacy material with verified independent source identities.
+2. Cases: 0,1,5,10,>10 qualified candidates; invalid R0; single specialized sensor; no applicable curves; mixture and UNKNOWN.
+3. Assert `displayCount=min(maxShown,qualifiedCount)` and never a fabricated rank/candidate.
+4. Differentiate analyzable catalog coverage: `totalMaterials`, `materialsWithSourceCurves`, `materialsWithValidatedFingerprints`, `materialsWithQualifiedTankEvidence`.
+5. Verify a new nonlegacy UID from a qualified source path can appear; do not fabricate evidence for the remaining library rows.
+6. Instant, sessions, tracking and reports share qualified ranking and immutable candidate IDs, with parity tests.
+7. No silent dedup across chemically distinct identities; legacy class to canonical CAS requires qualified mapping; unresolvable remain open-set evidence.
+
+**State and permission:** Ideas S-18..S-20 recorded for scientific discussion, NOT approved for immediate runtime change. No G1/G2/G3 Next acceptance test executed here; no APK/firmware edit. Next work after design agreement: systematic evidence ingestion, mapping of existing source models to unified UIDs, candidate eligibility/ranking gate implementation + tests.
