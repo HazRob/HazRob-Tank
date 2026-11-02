@@ -1,0 +1,84 @@
+{
+  "schema": "chemcore.next.P04.5.ml_source_research/1",
+  "date": "2026-11-02",
+  "task": "P04.5",
+  "status": "SOURCE_RESEARCH_BENCHMARKS_PASSED_NO_TANK_TRANSFER",
+  "model_inventory_scope": {
+    "models_in_source_library": 76,
+    "all_models_individually_retrained": false,
+    "subset_evaluated": [
+      "training-median baseline",
+      "MQ4 single-sensor Ridge",
+      "MQ4 sensor-array Ridge",
+      "MQ4 array+T/RH Ridge",
+      "MQ6400 logistic regression 7-source-channel and 6-Tank-overlap models",
+      "UCI MQ135 temporal plus external 10-sensor source ceiling"
+    ]
+  },
+  "source_workflows": [
+    {
+      "run_id": 41386477615,
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41386477615",
+      "conclusion": "success",
+      "data": "original pinned MQ4 14,186 physical source rows across 11 days; UCI1081 90 original exposures",
+      "qualification": "EXTERNAL_SOURCE_G2_RESEARCH_ONLY"
+    },
+    {
+      "run_id": 41385644195,
+      "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41385644195",
+      "conclusion": "success",
+      "data": "MQ6400 4 class recordings 6400 ADC rows",
+      "qualification": "SOFTWARE_STRESS_NOT_INDEPENDENT_EXPOSURE_G2"
+    }
+  ],
+  "mq4": {
+    "data_source": "University of Minnesota Conservancy Li-Cor CH4 and three MQ4 instances",
+    "source_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+    "source_physical_rows": 14186,
+    "distinct_days": 11,
+    "leave_whole_day_out_folds": 44,
+    "heldout_predictions": 56744,
+    "reference_median_mae_ppm": 0.8436704979550199,
+    "source_array_environment_ridge_mae_ppm": 0.8871429954759783,
+    "source_array_ridge_mae_ppm": 0.9216414999296337,
+    "source_single_ridge_mae_ppm": 0.9211805914842638,
+    "source_environment_model_outperforms_baseline": false,
+    "source_fingerprints_training_only": 165
+  },
+  "uci": {
+    "original_exposures": 90,
+    "source_gas_labels": 6,
+    "model_source_space": "MQ135_3WINDOW",
+    "heldout_concentration_macro_class_accuracy": 0.3333333333333333,
+    "open_set_unseen_gas_rejection_fraction": 0.6362962962962964,
+    "source10_channel_ceiling_heldout_macro_accuracy": 0.7222222222222223,
+    "source10_channel_open_set_unknown_rejection": 0.47407407407407415,
+    "qualification": "EXTERNAL_HARDWARE_NOT_TANK"
+  },
+  "mq6400": {
+    "n_rows": 6400,
+    "independent_replicated_exposures": 0,
+    "source_label_classes": [
+      "NoGas",
+      "Perfume",
+      "Smoke",
+      "Mixture"
+    ],
+    "seven_channel_class_accuracy": 0.805,
+    "six_overlap_channel_accuracy": 0.8075,
+    "six_overlap_unknown_rejection": 0.566406,
+    "qualification": "SOURCE_CLASS_ONLY_NOT_INDEPENDENT_G2"
+  },
+  "scientific_limitations": [
+    "72+ regression transforms remain unqualified as molecular gas classifiers; 76 inventory is not 76 distinct gas detection capabilities",
+    "No joint benchmark of source datasets is valid without reconciling sensor electronics and source feature spaces",
+    "UCI original group holdout != Tank physical calibration",
+    "MQ6400 temporal blocks are fragments of 4 contiguous class recordings, not independent exposures",
+    "Methane model source environment ridge does not beat no-MQ baseline",
+    "No Tank calibration R0, no field ppm, no alarm thresholds, no GHS from class outputs"
+  ],
+  "runtime_activation": false,
+  "gas_identity_confirmed": false,
+  "tank_g3_qualified": false,
+  "next": "P04.6 build canonical EvidenceNode interface, independent source-root dedup and fail-closed uncertainty; then P05 arbitration"
+}

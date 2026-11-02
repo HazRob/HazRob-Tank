@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
-  "status": "CHEMCORE_NEXT_P04_1_TO_4_G1_PASSED_P04_5_READY",
+  "status": "CHEMCORE_NEXT_P04_5_SOURCE_BENCHMARK_CLOSED_P04_6_READY",
   "last_verified_head_sha": "4987adcac8c999e9064b6ef1fe8562eace182169",
   "active_phase": "P04",
-  "active_task": "P04.5",
-  "last_checkpoint": "23/37 ChemCore Next core tasks done; P04.1 to P04.4 G1 software CI passed; source-only qualification and Tank G3=0.",
-  "next_action": "P04.5: audit and execute source-group-safe ML experiments; never label time-blocks as independent physical exposures; no Android deployment.",
+  "active_task": "P04.6",
+  "last_checkpoint": "24/37 core tasks; P04.5 real external reference source benchmark checked; no Tank G3",
+  "next_action": "P04.6 source-root deduped typed evidence node, no likelihood double count; implement and test under G1.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 23,
-    "passed_tests": 22,
+    "done_tasks": 24,
+    "passed_tests": 23,
     "failed_tests": 0,
-    "percent_complete": 32.39
+    "percent_complete": 33.8
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -1002,8 +1002,8 @@
       "id": "P04.5",
       "phase": "P04",
       "description": "MLResearchExpert تجارب مقارنة مجموعة من 76 نموذجًا",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "EXTERNAL_SOURCE_BENCHMARK_ONLY_NOT_TANK_G3",
       "depends_on": [
         "P04.4"
       ],
@@ -1014,22 +1014,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_SOURCE_RESEARCH_GITHUB_ACTIONS",
+      "test_command": "GitHub Actions runs 41386477615 and 41385644195 (pinned external sources)",
+      "test_result": "MQ4 14186 rows, UCI 90 original exposures and MQ6400 6400 source rows; no physical Tank transfer. Source MQ4 env Ridge MAE 0.887 > baseline 0.844 ppm; MQ6400 no independent exposures.",
+      "action_run_id": 41386477615,
+      "commit_sha": "b91c8bde3ff226236b305fbfaa50d969977441be",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p04_5_ml_research_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
+      "last_checkpoint": "External source quantitative G2 & source category stress workflows passed; 76 inventory not all retrained and source results never deploy.",
+      "next_action": "DONE; source ML not runtime authorized",
       "updated_at": null
     },
     {
       "id": "P04.6",
       "phase": "P04",
       "description": "واجهة EvidenceNode موحدة دون دمج عددي أعمى",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P04.5"
@@ -2538,6 +2540,17 @@
       "commit_sha": "4987adcac8c999e9064b6ef1fe8562eace182169",
       "ci_run": 41391032078,
       "evidence": "research/v8_implementation/results/next_p04_4_environment_expert_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE_RESEARCH_ONLY",
+      "task_id": "P04.5",
+      "description": "Verified pinned external real source MQ4 and UCI experiments, MQ6400 class-only stress; source MAE 0.887 vs baseline 0.844; do not deploy G2 as Tank G3",
+      "ci_runs": [
+        41386477615,
+        41385644195
+      ],
+      "evidence": "research/v8_implementation/results/next_p04_5_ml_research_evidence.json"
     }
   ],
   "notes": [
@@ -2571,9 +2584,9 @@
   "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
   "core_program_progress": {
     "total_tasks": 37,
-    "done_tasks": 23,
-    "percent_complete": 62.16,
-    "active_task": "P04.5",
+    "done_tasks": 24,
+    "percent_complete": 64.86,
+    "active_task": "P04.6",
     "qualified_g3_techniques": 0
   },
   "separate_android_integration_scope": {
