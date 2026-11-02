@@ -317,8 +317,11 @@ public final class TankInstantV7PdfWriter {
         float gap=7,cardW=(full-2*gap)/3f;
         tag(c,M,113,cardW,"الهوية / Identity",engine.optString("open_set_status","UNKNOWN"));
         tag(c,M+cardW+gap,113,cardW,"الاستجابة / MQ",""+engine.optInt("observed_mq_channels",0)+" channels");
+        JSONObject diagnostics=engine.optJSONObject("scientific_source_diagnostics");
         tag(c,M+2*(cardW+gap),113,cardW,"التركيز / PPM",
-            engine.optBoolean("reportable_ppm",false)?"Engine: reportable":"Not reportable");
+            diagnostics!=null?"Research source fits: "+
+              diagnostics.optInt("computed_ppm_count",0):
+              engine.optBoolean("reportable_ppm",false)?"Engine: reportable":"Not reportable");
         Map<String,JSONObject> ledger=channelLedger(engine);
         float tableW=331;
         table(c,telemetry,ledger,RIGHT-tableW,200,tableW);
@@ -344,10 +347,139 @@ public final class TankInstantV7PdfWriter {
             rect(c,M,rowY,w,37,i%2==0?WHITE:0xFFF1F1F1);border(c,M,rowY,w,37);
             right(c,"#"+(start+i+1)+" "+o.optString("gas_or_class","—")+
                 "  /  "+o.optString("sensor_model","—"),M+mm(2),rowY+3,w-mm(4),12,true,INK);
-            left(c,"Ref: "+o.optString("source_curve_id","—"),M+mm(2),rowY+20,w-mm(4),12,false,INK);
+            double sourcePpm=o.optDouble("estimated_ppm",Double.NaN);
+            left(c,"Ref: "+o.optString("source_curve_id","—")+
+                (Double.isFinite(sourcePpm)?" • ppm≈"+format(sourcePpm,3)+" [conditional]":"")+
+                " • "+o.optString("status",""),M+mm(2),rowY+20,w-mm(4),10,false,INK);
         }
         doc.finishPage(page);
     }
+    /** The adopted V7 report design is the single visual template for V8 Next.
+     * This method adds evidence pages and retains original header/logo/cards/
+     * MQ matrix/radar/footer. Its numerical records come from frozen analysis.
+     */
+    public static void writeNext(OutputStream out,JSONObject telemetry,JSONObject next,
+                                 String operationId,long capturedUtcMs)throws Exception {
+        if(out==null||telemetry==null||next==null||operationId==null)
+            throw new IllegalArgumentException("original Next report evidence required");
+        String decision=next.optString("decision_uid","");
+        String digest=next.optString("snapshot_sha256","");
+        if(decision.isEmpty()||digest.isEmpty())
+            throw new IllegalArgumentException("Next decision provenance required");
+        JSONObject science=next.optJSONObject("scientific_source_diagnostics");
+        JSONArray curves=science==null?null:science.optJSONArray("all_reference_models");
+        JSONObject risk=next.optJSONObject("scientific_reference_screening");
+        JSONArray comparisons=risk==null?null:risk.optJSONArray("comparisons");
+        JSONArray ghss=risk==null?null:risk.optJSONArray("material_ghs_references");
+        int nc=curves==null?0:curves.length();
+        int nr=comparisons==null?0:comparisons.length();
+        int ng=ghss==null?0:ghss.length();
+        int curvePages=(nc+14)/15,riskPages=(nr+11)/12,ghsPages=(ng+11)/12;
+        int total=1+curvePages+riskPages+ghsPages;
+        JSONObject presentation=new JSONObject(next.toString());
+        presentation.put("open_set_status",
+            "Next "+next.optString("decision_status","UNKNOWN")+" • research");
+        presentation.put("observed_mq_channels",next.optInt("observed_channels",0));
+        JSONObject mq=telemetry.optJSONObject("mq");
+        JSONArray measured=new JSONArray();
+        int realR0=0;
+        for(String key:MQ){
+            JSONObject q=mq==null?null:mq.optJSONObject(key.toLowerCase(Locale.US));
+            if(q==null)continue;
+            double rs=q.optDouble("rs",Double.NaN);
+            double r0=q.optDouble("r0",Double.NaN);
+            JSONObject row=new JSONObject();
+            row.put("sensor_model",key);
+            if(Double.isFinite(rs)&&rs>0&&Double.isFinite(r0)&&r0>0){
+                row.put("rs_r0_ratio_research",rs/r0);
+                realR0++;
+            }
+            row.put("r0_clean_air_device_evidence_qualified",false);
+            measured.put(row);
+        }
+        presentation.put("original_mq_channel_evidence",measured);
+        presentation.put("ratio_ready_mq_channels",realR0);
+        presentation.put("baseline_response_gate",new JSONObject()
+            .put("state","RESEARCH_REFERENCE_SCREENING_ONLY")
+            .put("accepted_device_r0_channels",realR0));
+        PdfDocument pdf=new PdfDocument();
+        try {
+            mainPage(pdf,telemetry,presentation,operationId,capturedUtcMs,total);
+            int page=2;
+            for(int offset=0;offset<nc;offset+=15){
+                detailPage(pdf,curves,offset,Math.min(15,nc-offset),page++,total,capturedUtcMs);
+            }
+            for(int offset=0;offset<nr;offset+=12){
+                PdfDocument.Page pg=pdf.startPage(
+                    new PdfDocument.PageInfo.Builder(W,H,page).create());
+                Canvas c=pg.getCanvas();c.drawColor(WHITE);
+                header(c,Long.toString(capturedUtcMs));footer(c,page,total);
+                right(c,"مقارنات حدود التعرض وLFL والخلفية الطبيعية (مشروطة)",
+                    M,95,W-2*M,13,true,INK);
+                right(c,"تقديرات منحنيات مصدرية وليست قياس تعرض معتمدًا أو تحقق هوية",
+                    M,119,W-2*M,11,false,MEDIUM);
+                float y=151,w=W-2*M;
+                for(int i=offset;i<Math.min(nr,offset+12);i++){
+                    JSONObject q=comparisons.optJSONObject(i);if(q==null)continue;
+                    float yy=y+51*(i-offset);
+                    rect(c,M,yy,w,49,i%2==0?WHITE:0xFFF4F4F4);border(c,M,yy,w,49);
+                    String kind=q.optString("reference_role","—");
+                    double pct=q.optDouble("percent_of_reference",Double.NaN);
+                    right(c,q.optString("material_label","—")+" • "+kind+
+                        " • "+q.optString("level","—"),M+4,yy+2,w-8,10,true,INK);
+                    right(c,"مقدر "+format(q.optDouble("estimated_ppm",Double.NaN),3)+
+                        " ppm • مرجع "+format(q.optDouble("reference_ppm",Double.NaN),3)+
+                        " ppm • "+format(pct,1)+"%",M+4,yy+16,w-8,9,false,INK);
+                    // 100% is the source reference, 10% LFL the precautionary
+                    // policy. Printed percentage remains untruncated.
+                    float barX=M+8,barY=yy+34,barWidth=300f;
+                    rect(c,barX,barY,barWidth,7,0xFFE3E3E3);
+                    if(Double.isFinite(pct)&&pct>=0)
+                        rect(c,barX,barY,barWidth*(float)Math.min(1.0,pct/100.0),
+                            7,pct>=100?0xFFB32620:0xFF376D8C);
+                    line(c,barX+barWidth,barY-3,barX+barWidth,barY+10,BLACK,1);
+                    if("LFL".equals(kind))
+                        line(c,barX+barWidth*.1f,barY-2,barX+barWidth*.1f,
+                            barY+9,0xFF955000,1);
+                    left(c,q.optString("source_curve_id","—"),M+320,yy+31,w-324,8,false,INK);
+                }
+                right(c,"تجاوز TWA/STEL لحظيًا لا يثبت تجاوز المتوسط الزمني للوردية",
+                    M,768,W-2*M,11,false,MEDIUM);
+                pdf.finishPage(pg);
+                page++;
+            }
+            for(int offset=0;offset<ng;offset+=12){
+                PdfDocument.Page pg=pdf.startPage(
+                    new PdfDocument.PageInfo.Builder(W,H,page).create());
+                Canvas c=pg.getCanvas();c.drawColor(WHITE);
+                header(c,Long.toString(capturedUtcMs));footer(c,page,total);
+                right(c,"رموز GHS — تصنيف خطورة المواد المرجعية",
+                    M,93,W-2*M,13,true,INK);
+                right(c,"الرمز يُعرّف خطر مادة مفترضة ولا يثبت رصدها بالروبوت",
+                    M,116,W-2*M,11,false,MEDIUM);
+                for(int i=offset;i<Math.min(ng,offset+12);i++){
+                    JSONObject item=ghss.optJSONObject(i);if(item==null)continue;
+                    float yy=151+52f*(i-offset);
+                    rect(c,M,yy,W-2*M,50,i%2==0?WHITE:0xFFF4F4F4);
+                    border(c,M,yy,W-2*M,50);
+                    right(c,item.optString("reference_material_label","—")+
+                        " • UID "+item.optLong("chemical_uid",-1),
+                        M+4,yy+6,270,10,true,INK);
+                    JSONArray arr=item.optJSONArray("ghs_pictograms");
+                    java.util.List<String> codes=
+                        com.servoc.app.chemical.GhsPictograms.fromJson(arr);
+                    if(application!=null){
+                        com.servoc.app.chemical.GhsPictograms.drawOnPdf(
+                            c,application,codes,M+285,yy+4,38,4,6);
+                    }
+                    left(c,codes.toString(),M+285,yy+41,260,9,false,INK);
+                }
+                pdf.finishPage(pg);page++;
+            }
+            pdf.writeTo(out);
+        }finally{pdf.close();}
+    }
+
     public static void write(OutputStream out,JSONObject telemetry,JSONObject engine,
                              String operationId,long measurementTimeUtcMs)throws Exception {
         if(out==null||telemetry==null||engine==null||operationId==null)
