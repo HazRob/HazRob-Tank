@@ -1,3 +1,14 @@
+## 2026-11-02 — External MQ4 forward-only false-alert burden and PPV audit (research only)
+
+- Resumed from `bc0aad6099924b59b43ee63ff67833e8609bd9fc`; verified **11/11** associated GitHub Actions runs completed successfully, including G2 source/R0 #41377549584 (1107/1107 offline tests and 80-technique publication guard). No prior CI failure to repair.
+- Added `g2_mq4_forward_error_burden.py` to authenticate the SHA-pinned external MQ4 forward-only source and its four-receipt lineage, reconcile each of five models' seven daily confusion matrices against aggregate totals, and derive precision/PPV, sensitivity, specificity, balanced accuracy, F1, and false positives per 1,000 reference negatives. Undefined denominators are null; no fake 0%/100% is imputed.
+- Saved full daily and aggregate result `G2_MQ4_FORWARD_ERROR_BURDEN_2026-11-02.json`, source-only Arabic method `G2_MQ4_FORWARD_ERROR_BURDEN_2026-11-02_AR.md`, and deterministic regression tests `test_g2_mq4_forward_error_burden.py` (13 cases, including full saved-receipt replay and tampering). Updated the G2 research-only workflow to publish its independently recomputed JSON as an Actions artifact. No raw ZIP is replayed by CI.
+- Descriptive source-only finding: `RIDGE_MQ4_3` 1,289 TP, 136 FN, 2,367 FP, 5,533 TN across 9,325 rows; PPV 35.257112%, and 613 false-positive rows on 2021-07-31, a zero-reference-positive day. These rows are autocorrelated external observations, not independent Tank exposures or field alarm rates.
+- All modifications restricted to `research/implementation_execution/` and the G2-only workflow on the existing research branch. No ChemCore Stable, Android, firmware, or main changes; no scientific G2/G3 promotion. Independent Tank ledger remains `records=[]`, and G2 publication guard status remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`.
+- **CI verification still required for new code/test/receipt/workflow HEAD**; inspect GitHub Actions for this exact final documentation SHA, repair genuine failures, and avoid claiming a passing run until verified. Continue toward independently calibrated, blinded physical exposure groups rather than treating further source-only metrics as new qualification samples.
+
+---
+
 ## 2026-11-02 — Original-source MQ4 reference-label replay and hypothetical threshold-boundary audit (research only)
 
 - Resumed from `9fbc8bd803c57fde545317658206f3f406b2c584`; verified **11/11** associated GitHub Actions runs completed **success**, including source/R0 G2 gate #41372507478. No outstanding CI failure to repair at starting HEAD.
