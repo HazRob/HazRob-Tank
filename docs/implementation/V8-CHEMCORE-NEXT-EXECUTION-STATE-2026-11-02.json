@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "Build/verify ChemCore Next independently first, integrate into V8 later; standards formal qualification deferred",
-  "status": "P00_STATIC_SOURCE_AUDIT_DONE_CATALOG_STABLE_CHECK_NEXT",
+  "status": "P00_1_2_3_DONE_P00_4_SOURCE_PROVENANCE_IN_PROGRESS",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P00",
   "active_task": "P00.4",
-  "last_checkpoint": "P00.1–P00.3 done as STATIC source research only; P00.4 READY. Transfer matrix from MQDataScience (11) and MQSensorsLib (12) committed 4868be464fae34fb0167cc21060aed7cd8294169.",
-  "next_action": "P00.4: verify actual unified catalog count and Stable approved snapshot provenance from source/seed/test; do not invent live database count",
+  "last_checkpoint": "P00.1-P00.3 static inventory complete. P00.4 source assets audited; SQLite runtime count outstanding. 23 source capabilities staged; 356 algebraic MQDataScience/MQSensorsLib test points passed without hardware claims.",
+  "next_action": "Implement/execute fresh-install and upgrade SQLite count, identity collision, Stable bootstrap source/integrity and overlay build tests; do not assert exact 734 in live APK until these pass",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -398,8 +398,8 @@
       "id": "P00.4",
       "phase": "P00",
       "description": "عد مواد الكتالوج الفعلي وجودة UID/CAS/legacy وStable",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "IN_PROGRESS",
+      "qualification": "SOURCE_ASSETS_AND_STABLE_CHANNEL_CHECKED_RUNTIME_DB_NOT_RUN",
       "depends_on": [
         "P00.3"
       ],
@@ -410,16 +410,21 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
+      "test_status": "SOURCE_ONLY_PARTIAL_PASS",
+      "test_command": "Read pinned SERVOC-Android source JSON + compare ChemicalIdentityResolver to V8 DB schema and Stable channel on main",
+      "test_result": "144 source legacy names, 652 NIOSH records, 402 IDLH rows, 638 OSHA rows confirmed; 734 distinct identities declared in V6 README but actual post-bootstrap SQLite count not tested. Stable embedded 1.0.0-hr069r1 (652/49/0) documented; main remote manifest and payload both 404.",
       "action_run_id": null,
       "commit_sha": null,
-      "actual_evidence_files": [],
-      "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "P00.4: verify actual unified catalog count and Stable approved snapshot provenance from source/seed/test; do not invent live database count",
-      "updated_at": null
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p00_4_catalog_stable_source_audit.json"
+      ],
+      "blockers": [
+        "Need actual Android SQLite initialized/updated test to certify canonical material count and UID/CAS mapping",
+        "Published HazRob main Stable manifest not present; embedded snapshot remains source reference"
+      ],
+      "last_checkpoint": "Source provenance and actual NIOSH/OSHA asset counts documented; runtime master row count pending",
+      "next_action": "Implement/execute fresh-install and upgrade SQLite count, identity collision, Stable bootstrap source/integrity and overlay build tests; do not assert exact 734 in live APK until these pass",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P01.1",
@@ -2267,6 +2272,22 @@
       "evidence": [
         "research/v8_implementation/results/next_p00_data_flow.md"
       ]
+    },
+    {
+      "at": "2026-11-02",
+      "event": "PARTIAL_EVIDENCE",
+      "task_id": "P00.4",
+      "description": "Pinned legacy/NIOSH/IDLH/OSHA assets checked; actual SQLite catalog count and Stable approval outstanding",
+      "evidence": "research/v8_implementation/results/next_p00_4_catalog_stable_source_audit.json",
+      "commit_sha": "d63d09f61b825670b2e4625c4a822b2603d3bf46"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "NUMERICAL_ORACLE",
+      "task_id": "P04.1_PRELIM_RESEARCH_NOT_COMPLETION",
+      "description": "356 pure algebraic power law inversion samples over 89 source rows, no failing sample; physical calibration not tested",
+      "evidence": "research/v8_implementation/results/next_upstream_curve_formula_oracle_2026-11-02.json",
+      "commit_sha": "e05fa8a8f86078a1075a0510ad8b7547c1f88667"
     }
   ],
   "notes": [
@@ -2284,5 +2305,13 @@
     "mqsensorslib": 12,
     "in_runtime": false,
     "description": "23 source-derived benefits, not 23 new independently validated classification models"
+  },
+  "chemcore_next_upstream_math_oracle": {
+    "path": "research/v8_implementation/results/next_upstream_curve_formula_oracle_2026-11-02.json",
+    "commit": "e05fa8a8f86078a1075a0510ad8b7547c1f88667",
+    "models": 89,
+    "numerical_probes": 356,
+    "bad": 0,
+    "scientific_qualification": "ALGEBRA_ONLY_RESEARCH_ORACLE_NOT_TANK_G1_G2_G3"
   }
 }
