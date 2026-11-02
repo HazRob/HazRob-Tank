@@ -85,6 +85,29 @@ class MQExt10EthanolPreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "DUPLICATE_CONCENTRATION_REPETITION"):
                 run(Path(d))
 
+    def test_reject_duplicate_bytes_across_concentrations(self):
+        with tempfile.TemporaryDirectory() as d:
+            raw = "50,25,1,2,3,4,5,6\n" * 3330
+            for name in ("Ea-C1_R01.txt", "Ea-C2_R01.txt"):
+                (Path(d) / name).write_text(raw)
+            with self.assertRaisesRegex(ValueError, "DUPLICATE_MEASUREMENT_BYTES"):
+                run(Path(d))
+
+    def test_reject_duplicate_bytes_across_repetitions(self):
+        with tempfile.TemporaryDirectory() as d:
+            raw = "50,25,1,2,3,4,5,6\n" * 3330
+            for name in ("Ea-C1_R01.txt", "Ea-C1_R02.txt"):
+                (Path(d) / name).write_text(raw)
+            with self.assertRaisesRegex(ValueError, "DUPLICATE_MEASUREMENT_BYTES"):
+                run(Path(d))
+
+    def test_reject_hidden_nested_measurement_directory(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "Ea-C1_R01.txt").write_text("50,25,1,2,3,4,5,6\n" * 3330)
+            (Path(d) / "additional_measurements").mkdir()
+            with self.assertRaisesRegex(ValueError, "NONREGULAR_OR_NESTED_SOURCE_ENTRY"):
+                run(Path(d))
+
     def test_reject_unknown_file(self):
         with tempfile.TemporaryDirectory() as d:
             (Path(d) / "README.txt").write_text("50,25,1,2,3,4,5,6\n")

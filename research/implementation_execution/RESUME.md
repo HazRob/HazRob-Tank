@@ -1,3 +1,13 @@
+## 2026-11-02 — MQ-EXT-10 source duplication and nested-entry integrity (research only)
+
+- Verified 21/21 Actions runs for starting SHA `82663531b24ca1a46e5dc10cbb6e731103d4ddd5` completed success, including G2 gate #41400032448.
+- Fixed source-only ethanol preflight blind spots: identical raw measurement bytes under different concentration/repetition names now fail closed; nested, symlinked or nonregular source entries cannot be silently skipped.
+- Added three synthetic deterministic regression cases and Arabic/English methodology record `G2_MQ_EXT10_SOURCE_DUPLICATION_GUARD_2026-11-02.md`. CI test discovery already covers these tests. No original raw archive obtained or replayed, and the no-raw JSON receipt remains unchanged.
+- Changes are limited to research parser/tests/docs/RESUME on the research branch. No ChemCore Stable, Android, firmware or main changes. No G2/G3 promotion: `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank ledger `records=[]`.
+- Final HEAD CI must be checked independently; prioritize authenticated original raw data and independent calibrated/blinded Tank exposure groups.
+
+---
+
 ## 2026-11-02 — MQ-EXT-10 ethanol solution-label preflight (research only)
 
 - Resumed from `52d6db3d19d27e61b8b5c1cd1a45fbabfe871f42`; independently checked **11/11** GitHub Actions runs for that exact commit completed success, including G2 source/R0 run #41393991784. No CI failure to repair at starting HEAD.

@@ -109,18 +109,24 @@ def run(raw_root=None):
         return result
     root = Path(raw_root)
     require(root.is_dir() and not root.is_symlink(), "RAW_ROOT_NOT_DIRECTORY")
-    files = sorted(p for p in root.iterdir() if p.is_file())
+    entries = sorted(root.iterdir())
+    require(all(p.is_file() and not p.is_symlink() for p in entries),
+            "NONREGULAR_OR_NESTED_SOURCE_ENTRY")
+    files = entries
     require(len(files) > 0, "NO_ETHANOL_FILES")
     require(len(files) <= 65, "MORE_FILES_THAN_REPORTED_MEASUREMENTS")
     require(all(p.suffix.lower() in {".txt", ".csv", ".dat"} for p in files),
             "UNSUPPORTED_EXTENSION")
     seen = set()
+    seen_bytes = set()
     manifest = []
     for p in files:
         row = inspect_file(p)
         key = (row["concentration_code"], row["repetition"])
         require(key not in seen, "DUPLICATE_CONCENTRATION_REPETITION")
+        require(row["sha256"] not in seen_bytes, "DUPLICATE_MEASUREMENT_BYTES")
         seen.add(key)
+        seen_bytes.add(row["sha256"])
         manifest.append(row)
     result["source_status"] = ("RAW_FILES_SCANNED_UNQUALIFIED" if len(files) == 65
                                else "PARTIAL_RAW_FILES_SCANNED_UNQUALIFIED")
