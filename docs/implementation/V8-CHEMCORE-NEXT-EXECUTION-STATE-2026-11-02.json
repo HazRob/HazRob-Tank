@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "ChemCore Next research and analytical engine independent of Android V8. Only P00-P06 are in the currently authorized core program; P07-P13 historical Android integration tasks are deferred pending separately explicit instruction.",
-  "status": "CHEMCORE_NEXT_INDEPENDENT_ENGINE_P03_2_PASS_P03_3_READY",
+  "status": "CHEMCORE_NEXT_P03_3_SOURCE_DATA_PASS_P03_4_CANONICAL_UID_NEXT",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
   "active_phase": "P03",
-  "active_task": "P03.3",
-  "last_checkpoint": "Independent ChemCore Next: 15/37 core tasks complete; P03.2 source curve dedup 109 records and 464 inverse algebra tests passed GitHub Actions 41378249375. Next P03.3.",
-  "next_action": "P03.3 build original 24-fingerprint provenance records and classify 3D/4D research methods without treating independent feature spaces as one measurement.",
+  "active_task": "P03.4",
+  "last_checkpoint": "ChemCore Next independent core P03.3: 24 fingerprints (4+2+18) plus 3 3D/4D/regression methods source-preserved in CI 41378638949. P03.4 canonical UID mapping next.",
+  "next_action": "P03.4 link source gas chemical identities conservatively to 734 canonical SQLite UID; no fabricated mapping for class, mixture or ambiguous labels.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 15,
-    "passed_tests": 14,
+    "done_tasks": 16,
+    "passed_tests": 15,
     "failed_tests": 0,
-    "percent_complete": 21.13
+    "percent_complete": 22.54
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -757,8 +757,8 @@
       "id": "P03.3",
       "phase": "P03",
       "description": "سجل البصمات والأدوات و3D و4D ونوع المصدر",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "SOURCE_PRESERVATION_AND_FEATURE_SPACE_G1_STATIC_ONLY",
       "depends_on": [
         "P03.2"
       ],
@@ -769,22 +769,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
-      "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
+      "test_command": "python3 research/chemcore_next/tools/verify_p03_3_fingerprints.py --out research/chemcore_next/fingerprints/P03-3-CI-RESULT.json",
+      "test_result": "24 source fingerprints preserved exactly, 3 distinct incompatible feature spaces (4×8D,2×6D,18×3D), 4 malformed-for-weighting source scales flagged, 3 source method families 3D/4D/regression traced; no G2 or G3.",
+      "action_run_id": 41378638949,
+      "commit_sha": "393f522747f04c4d56c8a7ab931838e357e6a50c",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p03_3_fingerprint_source_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Perform task and record actual evidence",
-      "updated_at": null
+      "last_checkpoint": "Source vectors and 3D/4D methods registered, provenance verified; no independent experimental validation or ChemCore Next model activation.",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P03.4",
       "phase": "P03",
       "description": "ربط الأصل العلمي بكل canonical UID من كامل الكتالوج",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P03.3"
@@ -2448,6 +2450,15 @@
       "commit_sha": "b4ebc05e7cd4fd5cdad9b8a2e563684ae15c254c",
       "ci_run": 41378249375,
       "evidence": "research/v8_implementation/results/next_p03_2_source_curves_evidence.json"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P03.3",
+      "description": "24 original research fingerprints and source 3D/4D/regression methods preserved with separate dimensional spaces and four invalid uncertainty vectors",
+      "commit_sha": "393f522747f04c4d56c8a7ab931838e357e6a50c",
+      "ci_run": 41378638949,
+      "evidence": "research/v8_implementation/results/next_p03_3_fingerprint_source_evidence.json"
     }
   ],
   "notes": [
@@ -2481,9 +2492,9 @@
   "canonical_scope_document": "docs/implementation/CHEMCORE-NEXT-INDEPENDENT-PROJECT-SCOPE-2026-11-02_AR.md",
   "core_program_progress": {
     "total_tasks": 37,
-    "done_tasks": 15,
-    "percent_complete": 40.54,
-    "active_task": "P03.3",
+    "done_tasks": 16,
+    "percent_complete": 43.24,
+    "active_task": "P03.4",
     "qualified_g3_techniques": 0
   },
   "separate_android_integration_scope": {
