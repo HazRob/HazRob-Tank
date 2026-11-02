@@ -1,3 +1,14 @@
+## 2026-11-02 — MQ4 cross-model day-reference fail-closed integrity guard (research only)
+
+- Resumed from `d18ca16f19a5b6abcd2676ca7b996a5804967dac`; independently checked **11/11** associated GitHub Actions runs completed success, including G2 source/R0 #41388076572. No prior CI failure to repair.
+- Identified an integrity gap in `g2_mq4_false_alert_day_concentration.py`: per-model daily confusion matrices reconciled to aggregate totals but did not require **the same daily row counts and reference-positive counts across all five models**. Cross-day transfers within one model could preserve aggregates yet distort day-cluster conclusions.
+- Added fail-closed `MQ4_DAY_FP_CROSS_MODEL_DAY_REFERENCE` validation of each calendar day's `(rows, reference_positive)` against the first model. Added two deterministic regression tests that transfer (a) a reference-negative row and (b) a reference-positive label between days while conserving the aggregate totals. Existing source-authentication and receipt-replay tests remain in place; original result receipt is unchanged.
+- Documented the change in `G2_MQ4_CROSS_MODEL_DAY_REFERENCE_GUARD_2026-11-02_AR.md`. Modifications restricted to the two G2 research Python files, Arabic method, and this RESUME entry on the research branch. No ChemCore Stable, Android, firmware, or main changes.
+- **CI for this final documentation HEAD must be verified separately**; do not claim success until completed. No original raw ZIP replay or new independent Tank exposure data in this iteration. Scientific status remains `g2_pass_candidates=0`, `g2_blocked=80`, `source_blocked=14`, independent Tank `records=[]`; no G2/G3 promotion.
+- Next: verify exact final HEAD GitHub Actions and repair genuine failures. Prioritize prospectively grouped, blinded Tank exposures with traceable reference calibrations rather than additional source-only analyses.
+
+---
+
 ## 2026-11-02 — External MQ4 false-alert concentration by calendar day (research only)
 
 - Resumed from `1feb36e52a370030cc26797a7a86a065dc2800cb`; independently verified **21/21** associated GitHub Actions runs completed successfully, including G2 source/R0 gate #41382485385. No previous CI failure needed repair.
