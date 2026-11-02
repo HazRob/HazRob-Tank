@@ -48,6 +48,8 @@ jobs:
         run: python research/implementation_execution/g2_mq4_receipt_lineage_ci.py --output "$RUNNER_TEMP/g2_mq4_receipt_lineage.json"
       - name: "Cross-bind pinned MQ4 raw-day and forward-day source receipts (not Tank G2)"
         run: python research/implementation_execution/g2_mq4_cross_receipt_raw_forward.py --output "$RUNNER_TEMP/g2_mq4_cross_receipt.json"
+      - name: "Verify source-authenticated MQ4 4-ppm reference labels and hypothetical boundary receipt (not Tank G2)"
+        run: python research/implementation_execution/g2_mq4_reference_boundary_truth.py --output "$RUNNER_TEMP/g2_mq4_reference_boundary_truth.json"
       - name: "Run every offline G2 regression test (including new test files)"
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_*.py' -v
       - name: "Run full 80-technique G2 fail-closed evidence audit"
@@ -106,4 +108,5 @@ jobs:
             ${{ runner.temp }}/g2_replay_integrity.json
             ${{ runner.temp }}/g2_mq4_receipt_lineage.json
             ${{ runner.temp }}/g2_mq4_cross_receipt.json
+            ${{ runner.temp }}/g2_mq4_reference_boundary_truth.json
           if-no-files-found: error
