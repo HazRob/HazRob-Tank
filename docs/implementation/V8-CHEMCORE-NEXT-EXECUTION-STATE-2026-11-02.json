@@ -9,12 +9,12 @@
   "technique_enrichment": "docs/research/CHEMCORE-NEXT-TECHNIQUE-ENRICHMENT-PLAN-2026-11-02_AR.md",
   "v8_tracker": "docs/implementation/V8-IMPLEMENTATION-TRACKER-2026-11-02.json",
   "project_principle": "Build/verify ChemCore Next independently first, integrate into V8 later; standards formal qualification deferred",
-  "status": "P00_COMPLETE_P01_1_3_TESTED_P01_4_READY",
+  "status": "P00_AND_P01_COMPLETED_P02_SIGNAL_PHYSICS_NEXT",
   "last_verified_head_sha": "f7aa046597301ecc1c5d67b2617abaa8284ac16a",
-  "active_phase": "P01",
-  "active_task": "P01.4",
-  "last_checkpoint": "P00.4 real SQLite 734 passed CI 41372537382; P01.1-3 independent research Java contracts 28 assertions passed CI 41372427275. P01.4 next.",
-  "next_action": "Implement and test versioned deterministic replay codec, roundtrip and incompatible schema handling; supply JSON schema or separate Android adapter contract, with CI and hashes.",
+  "active_phase": "P02",
+  "active_task": "P02.1",
+  "last_checkpoint": "P01 completed (8/71): 64 real CI smoke assertions PASS. P02.1 next; no chemistry calibration or APK yet.",
+  "next_action": "P02.1: safe source-grounded ADC/ADS, Vc/RL/Vout to Rs conversion, quality flags and edge tests. Do not equate uncalibrated ESP32 counts with physical voltage.",
   "gates": {
     "core_to_android": "Requires P01-P06 tested and documented; research-only mode may be separately qualified",
     "physical_g3_qualified": 0,
@@ -23,10 +23,10 @@
   "progress": {
     "total_phases": 14,
     "total_tasks": 71,
-    "done_tasks": 7,
-    "passed_tests": 7,
+    "done_tasks": 8,
+    "passed_tests": 8,
     "failed_tests": 0,
-    "percent_complete": 9.86
+    "percent_complete": 11.27
   },
   "allowed_statuses": [
     "NOT_STARTED",
@@ -66,7 +66,7 @@
         "P01.3",
         "P01.4"
       ],
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "depends_on": [
         "P00"
       ],
@@ -85,7 +85,7 @@
         "P02.4",
         "P02.5"
       ],
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "depends_on": [
         "P01"
       ],
@@ -517,8 +517,8 @@
       "id": "P01.4",
       "phase": "P01",
       "description": "Deterministic replay والنسخ وتحويل JSON",
-      "status": "READY",
-      "qualification": "NOT_ASSESSED",
+      "status": "DONE",
+      "qualification": "G1_JVM_CONTRACT_AND_REPLAY_SMOKE_ONLY",
       "depends_on": [
         "P01.3"
       ],
@@ -529,22 +529,24 @@
         "commit and actual evidence file verified",
         "task status plus tracker updated"
       ],
-      "test_status": "NOT_RUN",
+      "test_status": "PASSED_IN_CONNECTED_GITHUB_ACTIONS",
       "test_command": null,
-      "test_result": null,
-      "action_run_id": null,
-      "commit_sha": null,
-      "actual_evidence_files": [],
+      "test_result": "JDK17 compile; 28 immutable contracts + 36 versioned binary snapshot/decision replay assertions passed; SHA256 integrity, schema, source and Stable binding tested.",
+      "action_run_id": 41373436129,
+      "commit_sha": "83c3e5ed423f109bb49cd2263c03494fccd0bca3",
+      "actual_evidence_files": [
+        "research/v8_implementation/results/next_p01_4_replay_codec_evidence.json"
+      ],
       "blockers": [],
-      "last_checkpoint": "",
-      "next_action": "Implement and test versioned deterministic replay codec, roundtrip and incompatible schema handling; supply JSON schema or separate Android adapter contract, with CI and hashes.",
-      "updated_at": null
+      "last_checkpoint": "P01.4 replay codec roundtrip passed on real GitHub Actions; runtime integration not done.",
+      "next_action": "DONE",
+      "updated_at": "2026-11-02"
     },
     {
       "id": "P02.1",
       "phase": "P02",
       "description": "ADC/ADS/voltage/RL/Vc إلى Rs وحالات العطل",
-      "status": "NOT_STARTED",
+      "status": "READY",
       "qualification": "NOT_ASSESSED",
       "depends_on": [
         "P01.4"
@@ -2330,6 +2332,15 @@
       "ci_run": 41372427275,
       "evidence": "research/v8_implementation/results/next_p01_1_3_core_contract_evidence.json",
       "description": "JDK17 no-dependency Next core contracts and dynamic registry; 28 assertions passed"
+    },
+    {
+      "at": "2026-11-02",
+      "event": "TASK_DONE",
+      "task_id": "P01.4",
+      "description": "Versioned byte-faithful immutable snapshot/decision replay 36/36 tests and base contracts 28/28 success",
+      "commit_sha": "83c3e5ed423f109bb49cd2263c03494fccd0bca3",
+      "ci_run": 41373436129,
+      "evidence": "research/v8_implementation/results/next_p01_4_replay_codec_evidence.json"
     }
   ],
   "notes": [
