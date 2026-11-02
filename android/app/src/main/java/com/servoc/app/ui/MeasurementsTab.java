@@ -995,6 +995,11 @@ public final class MeasurementsTab {
             JSONObject risk=p.optJSONObject("scientific_reference_screening");
             JSONArray comparisons=risk==null?null:risk.optJSONArray("comparisons");
             JSONArray materialGhs=risk==null?null:risk.optJSONArray("material_ghs_references");
+            int thresholdHits=risk==null?0:risk.optInt("at_or_above_count",0);
+            int precautionHits=risk==null?0:risk.optInt("early_count",0);
+            safetyCard.setText("⚠ مقارنات حسابية مشروطة بالمراجع\n"+
+                "عند/فوق الحد: "+thresholdHits+" • إنذارات استباقية: "+precautionHits+
+                "\nتقديرات المصدر ليست كشف غاز أو تجاوز تعرض مهني مثبت");
             StringBuilder referenceText=new StringBuilder(
                 "مقارنات المصدر البحثية • التعرض/حد الاشتعال الأدنى LFL/الخلفية الطبيعية");
             referenceText.append("\nجميع النسب مشروطة بفرضية نوع الغاز ومرجع R0؛ ليست إنذار سلامة معتمدًا");
