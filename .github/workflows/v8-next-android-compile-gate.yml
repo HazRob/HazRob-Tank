@@ -1,0 +1,77 @@
+name: HazRob Tank V8 ChemCore Next Android compilation gate
+
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'android/app/src/main/java/com/servoc/app/chemcore/nextintegration/**'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
+      - 'android/app/src/main/java/com/servoc/app/calibration/**'
+      - 'android/app/src/main/java/com/servoc/app/measurement/**'
+      - 'android/app/src/main/java/com/servoc/app/ui/**'
+      - 'android/app/src/main/java/com/servoc/app/data/**'
+      - 'android/app/src/main/java/com/servoc/app/report/**'
+      - '.github/workflows/v8-next-android-compile-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-java17-compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout audited V8 source
+        uses: actions/checkout@v4
+        with:
+          path: tank
+      - name: Checkout frozen independent Android app base
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay V8 source to ephemeral compilation workspace, not released
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          if test -d tank/android/app/src/main/assets; then mkdir -p source/app/src/main/assets; cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/; fi
+          if test -d tank/android/app/src/test/java; then mkdir -p source/app/src/test/java; cp -a tank/android/app/src/test/java/. source/app/src/test/java/; fi
+          test -f source/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextAndroidAdapter.java
+          test -f source/app/src/main/java/com/hazrob/tank/chemcore/next/NextTelemetryMapper.java
+      - name: Set Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Provision SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Compile complete staged Android Java app, no APK release
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --stacktrace :app:compileDebugJavaWithJavac
+      - name: Preserve reproducible compile-only build notes
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p v8-qa
+          printf '%s\n' "run=${{ github.run_id }}" "sha=${{ github.sha }}" "scope=Android Java compilation only" "not_an_apk=true" "physical_Tank_G3=false" "android_device_UI_tests=false" > v8-qa/compile-scope.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HazRob-V8-Next-Android-Compile-Scope
+          path: v8-qa/
+          retention-days: 30
