@@ -26,7 +26,7 @@ public final class NextAndroidAdapter {
     return Double.isFinite(v)&&v>=0&&v<=65535&&v==Math.floor(v)?(int)v:-1;
   }
   public static NextTelemetryMapper.Frozen freeze(JSONObject original,
-      String snapshotUid,String verifiedStablePayloadSha256,CoreContracts.Mode mode){
+      String snapshotUid,String verifiedStablePayloadSha256,CoreContracts.Mode mode) throws org.json.JSONException{
     if(original==null)throw new IllegalArgumentException("actual robot /data required");
     final JSONObject data=new JSONObject(original.toString());
     String deviceUid=data.optString("device_id","").trim();
