@@ -123,5 +123,52 @@ class MQExt10ArchiveIntakeTests(unittest.TestCase):
             self.assertFalse(r["g3_qualified"])
 
 
+    def test_sixty_five_files_all_c1_is_not_complete_six_level_source(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            members = [(f"Ethanol/Ea-C1_R{i:02d}.txt",
+                        f"50,25,1,2,3,4,5,{6+i}\n".replace("\\\n", "\n"))
+                       for i in range(1, 66)]
+            archive(p, members)
+            r = inspect_zip(p, expected_rows=1)
+            self.assertEqual(r["files_scanned"], 65)
+            self.assertTrue(r["reported_ethanol_count_complete"])
+            self.assertFalse(r["all_six_published_liquid_levels_present"])
+            self.assertEqual(r["concentration_code_counts"]["C1"], 65)
+            self.assertEqual(r["concentration_code_counts"]["C6"], 0)
+            self.assertEqual(r["source_status"], "REPORTED_COUNT_MISSING_CONCENTRATION_LEVELS")
+            self.assertIn("MISSING_PUBLISHED_LIQUID_CONCENTRATION_LEVELS", r["blockers"])
+            self.assertFalse(r["g2_qualified"])
+
+    def test_six_levels_with_only_six_files_remains_partial(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [(f"Ethanol/Ea-C{i}_R01.txt", f"50,25,1,2,3,4,5,{6+i}\n")
+                        for i in range(1, 7)])
+            r = inspect_zip(p, expected_rows=1)
+            self.assertTrue(r["all_six_published_liquid_levels_present"])
+            self.assertFalse(r["reported_ethanol_count_complete"])
+            self.assertIn("INCOMPLETE_REPORTED_ETHANOL_MEASUREMENTS", r["blockers"])
+            self.assertNotIn("MISSING_PUBLISHED_LIQUID_CONCENTRATION_LEVELS", r["blockers"])
+            self.assertEqual(r["source_status"], "PARTIAL_ARCHIVE_BYTES_SCANNED_UNQUALIFIED")
+
+    def test_sixty_five_across_six_levels_still_not_scientifically_qualified(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "data.zip"
+            archive(p, [(f"Ethanol/Ea-C{(i % 6)+1}_R{(i // 6)+1:02d}.txt",
+                         f"50,25,1,2,3,4,5,{6+i}\n")
+                        for i in range(65)])
+            r = inspect_zip(p, expected_rows=1)
+            self.assertTrue(r["all_six_published_liquid_levels_present"])
+            self.assertTrue(r["reported_ethanol_count_complete"])
+            self.assertEqual(sum(r["concentration_code_counts"].values()), 65)
+            self.assertEqual(r["source_status"], "ARCHIVE_BYTES_SCANNED_UNQUALIFIED")
+            self.assertNotIn("INCOMPLETE_REPORTED_ETHANOL_MEASUREMENTS", r["blockers"])
+            self.assertNotIn("MISSING_PUBLISHED_LIQUID_CONCENTRATION_LEVELS", r["blockers"])
+            self.assertFalse(r["publisher_archive_sha256_verified"])
+            self.assertFalse(r["g2_qualified"])
+            self.assertFalse(r["g3_qualified"])
+
+
 if __name__ == "__main__":
     unittest.main()
