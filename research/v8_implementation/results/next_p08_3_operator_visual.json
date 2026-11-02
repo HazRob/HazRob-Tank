@@ -1,0 +1,31 @@
+{
+  "task": "P08.3",
+  "status": "IN_PROGRESS",
+  "source_commit": "429738c549b31adfd4b1829894a22da3bb8cb46f",
+  "ci": {
+    "run_id": 41539200267,
+    "conclusion": "success",
+    "scope": "source and compile"
+  },
+  "original_decision_fields": [
+    "decision_uid",
+    "decision_status",
+    "snapshot_sha256",
+    "model_version",
+    "candidates[].rank",
+    "candidates[].chemical_uid",
+    "candidates[].source_roots"
+  ],
+  "unqualified_outputs_blocked": [
+    "ppm",
+    "posterior",
+    "hazard alarm",
+    "GHS-as-detection"
+  ],
+  "pending": [
+    "Android device UI screen run",
+    "RTL, null, 0–N candidate views",
+    "rotation/recreation and manual tracking interaction"
+  ],
+  "physical_g3_qualified": false
+}

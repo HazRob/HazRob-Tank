@@ -1,0 +1,30 @@
+{
+  "task": "P08.1",
+  "status": "IN_PROGRESS",
+  "source_commit": "3642550c27469f52ce6204bb24b4621ada734b45",
+  "final_compile_commit": "429738c549b31adfd4b1829894a22da3bb8cb46f",
+  "source_files": [
+    "android/app/src/main/java/com/servoc/app/measurement/InstantCaptureGate.java",
+    "android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java"
+  ],
+  "source_gates": {
+    "warmup_ms": 60000,
+    "sampling_ms": 60000,
+    "minimum_source_span_ms": 58000,
+    "minimum_distinct_scan_cycles": 10,
+    "monotonic_clock": true,
+    "duplicate_scan_cycle_rejected": true
+  },
+  "ci": {
+    "run_id": 41539200267,
+    "conclusion": "success",
+    "tests": "source structural + Android Java compile"
+  },
+  "pending": [
+    "Android12 countdown and lifecycles",
+    "ESP32 MQ relay/scan cycle field bench",
+    "source DB persistence and process-death recovery",
+    "end-to-end measurement/analysis/visual PDF validation"
+  ],
+  "physical_g3_qualified": false
+}

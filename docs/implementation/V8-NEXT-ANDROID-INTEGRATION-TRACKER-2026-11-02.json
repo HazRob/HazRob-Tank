@@ -5,7 +5,7 @@
   "owner_authorization_utc": "2026-11-02T06:44:21Z",
   "branch": "feature/tank-v8-implementation",
   "project": "HazRob-Tank independent of original 4-wheel HazRob",
-  "execution_mode": "P11_3_AND_P11_4_FEEDBACK_WRITTEN_ANDROID12_AND_REAL_GITHUB_AUTH_PENDING",
+  "execution_mode": "P08_1_P08_3_P08_4_SOURCE_COMPILED_ANDROID_RUNTIME_PENDING;FEEDBACK_AUTH_PENDING",
   "scientific_tests_postponed": true,
   "core_g3_physically_validated_techniques": 0,
   "runtime_android_next_integration_verified": false,
@@ -15,10 +15,10 @@
   "program": {
     "total_tasks": 34,
     "done_tasks": 2,
-    "in_progress": 8,
+    "in_progress": 11,
     "blocked": 0,
-    "planned": 24,
-    "next_task": "P11.3_FEEDBACK_LOCAL_ANDROID12",
+    "planned": 21,
+    "next_task": "P08.1_ANDROID12_DEVICE_TIMING_AND_FAILURE_CASES",
     "phases": [
       "P07",
       "P08",
@@ -298,11 +298,19 @@
       ],
       "acceptance": "0–60 إحماء ثم 60–120 جمع فِعلي؛ عداد إحماء/قياس/حفظ/تحليل؛ منع نجاح قبل ≥60s و≥10 scan cycles مع أسباب فشل",
       "evidence": "research/v8_implementation/results/next_p08_1_instant_states.json",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "commit_sha": null,
       "ci_run_id": null,
       "blocked_by": [],
-      "verification": "NOT_RUN"
+      "verification": "NOT_RUN",
+      "status_note": "Source gate and original MQ capture wired; monotonic 60+60, >=10 unique scan cycles and >=58s observed span. Android compile+structural checks PASS 41539200267; real Android/Tank timer, relay ACK, interruption/recreation and raw-series persistence tests PENDING.",
+      "last_source_commit": "429738c549b31adfd4b1829894a22da3bb8cb46f",
+      "latest_ci": {
+        "run_id": 41539200267,
+        "conclusion": "success",
+        "scope": "Android Java17 compile + Python source structural tests; no device UI or Tank gas qualification",
+        "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41539200267"
+      }
     },
     {
       "id": "P08.2",
@@ -354,11 +362,19 @@
       ],
       "acceptance": "تبويبا ChemCore والمرشحون، تنويهات G1/G2/G3، عدد الحساسات والطرق/الأصول، positive/negative/unqualified، لا posterior مزيف",
       "evidence": "research/v8_implementation/results/next_p08_3_operator_visual.json",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "commit_sha": null,
       "ci_run_id": null,
       "blocked_by": [],
-      "verification": "NOT_RUN"
+      "verification": "NOT_RUN",
+      "status_note": "Separate ChemCore Next operator rendering wired from immutable decision UID, original ordered canonical UIDs, source roots and UNKNOWN; original catalog lookup for label only. Android compilation+structural checks PASS 41539200267; emulator UI tests PENDING.",
+      "last_source_commit": "429738c549b31adfd4b1829894a22da3bb8cb46f",
+      "latest_ci": {
+        "run_id": 41539200267,
+        "conclusion": "success",
+        "scope": "Android Java17 compile + Python source structural tests; no device UI or Tank gas qualification",
+        "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41539200267"
+      }
     },
     {
       "id": "P08.4",
@@ -371,11 +387,19 @@
       ],
       "acceptance": "مساواة UID/rank/snapshot_hash مع الشاشة؛ PDF A4/Arabic 0–N؛ UNKNOWN لا ppm أو GHS ككشف؛ اختبار فتح PDF",
       "evidence": "research/v8_implementation/results/next_p08_4_instant_pdf_parity.json",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "commit_sha": null,
       "ci_run_id": null,
       "blocked_by": [],
-      "verification": "NOT_RUN"
+      "verification": "NOT_RUN",
+      "status_note": "Next-specific multi-page PDF exporter from original immutable candidate order, decision UID/hash and original MQ source summary; no invented ppm, hazard detection, or legacy ranking. Android compile+structural checks PASS 41539200267; PDF runtime open/RTL/pagination tests PENDING.",
+      "last_source_commit": "429738c549b31adfd4b1829894a22da3bb8cb46f",
+      "latest_ci": {
+        "run_id": 41539200267,
+        "conclusion": "success",
+        "scope": "Android Java17 compile + Python source structural tests; no device UI or Tank gas qualification",
+        "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41539200267"
+      }
     },
     {
       "id": "P08.5",
@@ -990,5 +1014,13 @@
     "all_controls_verified": false,
     "physical_tank_tested": false,
     "scope": "source-indexed only; popup/dynamic UI requires Android runtime traversal"
+  },
+  "latest_source_checkpoint": {
+    "source_commit": "429738c549b31adfd4b1829894a22da3bb8cb46f",
+    "source_g1_android_compile_run": 41539200267,
+    "source_inventory_run": 41539200149,
+    "source_g1_pass": true,
+    "android_device_ui_verified": false,
+    "actual_tank_bench_verified": false
   }
 }
