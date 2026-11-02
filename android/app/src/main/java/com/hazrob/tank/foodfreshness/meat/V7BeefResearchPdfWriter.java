@@ -103,15 +103,57 @@ public final class V7BeefResearchPdfWriter {
         text(c,"Research similarity is NOT a microbial TVC result or food-safety verdict.",
             L+8,764,W-16,21,false,true);
     }
+    private static void measuredBeefCurve(Canvas c,BeefResearchEngine.Result result,
+                                         Map<String,Double> observed){
+        if(result.rankedClasses.isEmpty()||observed==null)return;
+        String leading=result.rankedClasses.get(0).classCode;
+        double[] reference=null;
+        for(BeefResearchCatalog.Template template:BeefResearchCatalog.classes())
+            if(template.label.equals(leading)){reference=template.logShape();break;}
+        if(reference==null)return;
+        double[] x=new double[7],y=new double[7];
+        boolean[] active=new boolean[7];double avg=0,refAvg=0;int n=0;
+        for(int i=0;i<7;i++){
+            Double raw=observed.get(BeefResearchCatalog.SENSOR_ORDER.get(i));
+            if(raw==null||raw<=0||!Double.isFinite(raw))continue;
+            x[i]=Math.log10(raw);y[i]=reference[i];avg+=x[i];refAvg+=y[i];
+            active[i]=true;n++;
+        }
+        if(n<2)return;
+        avg/=n;refAvg/=n;
+        double min=Double.POSITIVE_INFINITY,max=Double.NEGATIVE_INFINITY;
+        for(int i=0;i<7;i++)if(active[i]){
+            x[i]-=avg;y[i]-=refAvg;
+            min=Math.min(min,Math.min(x[i],y[i]));
+            max=Math.max(max,Math.max(x[i],y[i]));
+        }
+        float left=L+50,right=R-48,top=162,bottom=266;
+        double span=Math.max(0.08,max-min);
+        Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setStrokeWidth(3f);
+        for(int series=0;series<2;series++){
+            p.setColor(series==0?0xFFE86820:0xFF246EAA);
+            float px=Float.NaN,py=Float.NaN;
+            for(int i=0;i<7;i++){
+                if(!active[i]){px=Float.NaN;continue;}
+                float cx=left+(right-left)*i/6f;
+                float cy=bottom-(bottom-top)*(float)(((series==0?x[i]:y[i])-min)/span);
+                if(Float.isFinite(px))c.drawLine(px,py,cx,cy,p);
+                c.drawCircle(cx,cy,3f,p);px=cx;py=cy;
+            }
+        }
+        text(c,"Measured Tank Rs (orange) vs study "+leading+" prototype (blue)",
+             L+12,273,W-24,24,false,false);
+    }
     private static void pageTwo(Canvas c,Context ctx,BeefResearchEngine.Result result,
-                                String captureTimestampUtc){
+                                Map<String,Double> measured,String captureTimestampUtc){
         pageChrome(c,ctx,2,captureTimestampUtc);
         V7ReportLayoutKit.blankChart(c,rect(L,82,W,211),
             "البصمة المقاسة مقابل المرجع / Seven-MQ source comparison",
             "MQ2–MQ135", "Shape");
+        measuredBeefCurve(c,result,measured);
         V7ReportLayoutKit.blankChart(c,rect(L,306,W,211),
-            "استجابة الحساسات أثناء الفحص / Actual Tank 180s response",
-            "Tank scan time (s)","MQ");
+            "ملاحظة حول البيانات الزمنية / Temporal capture evidence",
+            "180-second capture window","Raw time series is not exported");
         // Render a chart ONLY from actual precomputed result values.
         // No synthetic confidence, no thresholding, no food quality verdict.
         float top=530;
@@ -193,7 +235,7 @@ public final class V7BeefResearchPdfWriter {
                 Canvas c=p.getCanvas();c.drawColor(Color.WHITE);
                 if(i==1)pageOne(c,ctx,result,readings,sampleCount,ms,id,
                     temperatureC,humidityPct,captureTimestampUtc);
-                else if(i==2)pageTwo(c,ctx,result,captureTimestampUtc);
+                else if(i==2)pageTwo(c,ctx,result,readings,captureTimestampUtc);
                 else pageThree(c,ctx,captureTimestampUtc);
                 pdf.finishPage(p);
             }
