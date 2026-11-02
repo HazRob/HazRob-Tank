@@ -1,0 +1,52 @@
+{
+  "schema": "chemcore.next.p03.4.dual_hypotheses/1",
+  "date": "2026-11-02",
+  "request": "Represent MQ135 original NH4 label and V6 NH4/NH3 interpretation as two provisional hypotheses until controlled lab tests distinguish source meaning.",
+  "status": "IMPLEMENTED_AND_G1_SOURCE_TESTED",
+  "source_curve_uid": "MQDS-SRC-053",
+  "source_equation_a": 6.2968,
+  "source_equation_b": -0.3892,
+  "original_label": "NH4",
+  "v6_source_label": "NH4/NH3",
+  "hypothesis_count": 2,
+  "independent_source_roots": 1,
+  "nh3_provisional_catalog_uid": 22,
+  "nh4_catalog_uid": null,
+  "nh4_material_phase": "aqueous ammonium ion; not a distinct atmospheric NH4 gas",
+  "g2_validation": false,
+  "g3_validation": false,
+  "physical_ppm_qualified": false,
+  "source_ci": {
+    "run": 41379701647,
+    "result": "PASS 109 source crosswalk and 2 hypotheses same root"
+  },
+  "java_ci": {
+    "run": 41379922587,
+    "url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41379922587",
+    "status": "SUCCESS",
+    "assertions": 14
+  },
+  "files": [
+    {
+      "path": "research/chemcore_next/identity/chemcore_next_p03_4_nh3_nh4_shared_hypotheses.json",
+      "sha": "31dac1059e9b61853433582c9ab3248d2f4816d4"
+    },
+    {
+      "path": "android/app/src/main/java/com/hazrob/tank/chemcore/next/SharedSourceHypotheses.java",
+      "sha": "b4415d1aa5ba33c42e4289aa27d983769606bb05"
+    },
+    {
+      "path": "research/chemcore_next/tests/java/SharedSourceHypothesesSmoke.java",
+      "sha": "e40c679a61aa6912c22634fc38c697156de139ed"
+    },
+    {
+      "path": "research/chemcore_next/tools/verify_p03_4_uid_crosswalk.py",
+      "sha": "499356f343caac9acd95ec5e63fda14195d0ace2"
+    },
+    {
+      "path": "research/chemcore_next/identity/chemcore_next_p03_4_initial_historical_uid_crosswalk_109.csv",
+      "sha": "476a0c4c84f7a4980824030b9e4b727850fae0f9"
+    }
+  ],
+  "next": "P03.4 further chemical identity/source alias mapping; lab G3 test for NH3 (gas) and ammonium-containing materials with NH3 vapor and independent reference, no direct NH4+ gas claim."
+}
