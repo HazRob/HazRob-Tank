@@ -99,6 +99,73 @@ public final class NextInstantCapturePdfInstrumentedTest {
       }finally{pdf.delete();}
     }
   }
+  @Test public void referenceThresholdsPreserveConditionalPercentages(){
+    var m=com.hazrob.tank.chemcore.next.ReferenceThresholdEngine.class;
+    assertEquals(10.0,
+      com.hazrob.tank.chemcore.next.ReferenceThresholdEngine.percent(10,100),0.000001);
+    assertEquals("EARLY_WARNING",
+      com.hazrob.tank.chemcore.next.ReferenceThresholdEngine.level(12,100,true,false));
+    assertEquals("EARLY_WARNING",
+      com.hazrob.tank.chemcore.next.ReferenceThresholdEngine.level(95,100,false,false));
+    assertEquals("AT_OR_ABOVE_REFERENCE",
+      com.hazrob.tank.chemcore.next.ReferenceThresholdEngine.level(15,10,false,true));
+    assertEquals(15000.0,
+      com.hazrob.tank.chemcore.next.ReferenceThresholdEngine.ppmReference(
+         1.5,"vol%",true),0.01);
+    assertNull(com.hazrob.tank.chemcore.next.ReferenceThresholdEngine.ppmReference(
+         20,"mg/m3",false));
+  }
+
+  @Test public void brandedNextPdfContainsOriginalSourceAndRiskAppendices()throws Exception{
+    JSONObject original=diag(11,true,true);
+    JSONObject candidate=new JSONObject().put("rank",1)
+      .put("chemical_uid",1001)
+      .put("evidence_summary","synthetic research source for report layout");
+    JSONObject science=new JSONObject();
+    JSONArray curves=new JSONArray();
+    for(int i=0;i<2;i++)curves.put(new JSONObject()
+      .put("source_curve_id","MQDATA43-SYN-"+i)
+      .put("sensor_model","MQ3").put("gas_or_class","synthetic test")
+      .put("source_root","TEST_REFERENCE")
+      .put("estimated_ppm",120.0+i).put("status","RESEARCH_WITHIN_SOURCE_DOMAIN"));
+    science.put("all_reference_models",curves);
+    science.put("computed_ppm_count",2);
+    JSONObject ref=new JSONObject().put("reference_role","LFL")
+      .put("material_label","synthetic test").put("source_curve_id","TEST_REF")
+      .put("level","EARLY_WARNING").put("estimated_ppm",120.0)
+      .put("reference_ppm",1000.0).put("percent_of_reference",12.0);
+    JSONObject risks=new JSONObject().put("comparisons",new JSONArray().put(ref))
+      .put("material_ghs_references",new JSONArray().put(
+          new JSONObject().put("chemical_uid",1001)
+          .put("reference_material_label","synthetic test")
+          .put("ghs_pictograms",new JSONArray().put("GHS02"))));
+    JSONObject next=new JSONObject()
+      .put("schema","hazrob.tank.v8.next.decision.presentation/1")
+      .put("decision_uid","NEXT-SYN-001").put("decision_status","RESEARCH_CANDIDATES")
+      .put("snapshot_sha256",repeat('a',64))
+      .put("stable_manifest_sha256",repeat('b',64))
+      .put("model_version","chemcore-next-test")
+      .put("candidate_count",1).put("candidates",new JSONArray().put(candidate))
+      .put("scientific_source_diagnostics",science)
+      .put("scientific_reference_screening",risks);
+    File pdf=File.createTempFile("hazrob-next-branded", ".pdf",
+      InstrumentationRegistry.getInstrumentation().getTargetContext().getCacheDir());
+    try{
+      try(FileOutputStream output=new FileOutputStream(pdf)){
+        TankInstantReportPdf.write(output,original,next,"SIMULATED",1730000000000L);
+      }
+      try(ParcelFileDescriptor fd=ParcelFileDescriptor.open(pdf,ParcelFileDescriptor.MODE_READ_ONLY);
+          PdfRenderer renderer=new PdfRenderer(fd)){
+        assertEquals(5,renderer.getPageCount());
+        for(int i=0;i<renderer.getPageCount();i++){
+          PdfRenderer.Page page=renderer.openPage(i);
+          assertEquals(595,page.getWidth());assertEquals(842,page.getHeight());
+          page.close();
+        }
+      }
+    }finally{pdf.delete();}
+  }
+
   private static String repeat(char c,int n){
     char[] a=new char[n];java.util.Arrays.fill(a,c);return new String(a);
   }
