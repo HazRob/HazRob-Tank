@@ -53,8 +53,10 @@ public final class NextAndroidAdapter {
         status=quality==null?"":quality.optString("status","");
       }
       int raw=rawAdc(x);
-      Double voltage=finite(x,"adc");
-      if(voltage==null)voltage=finite(x,"vadc");
+      // "adc" can be a raw code on firmware variants; never relabel it volts.
+      Double voltage=finite(x,"adc_voltage_v");
+      if(voltage==null)voltage=finite(x,"voltage_v");
+      if(voltage!=null&&(voltage<0||voltage>5.5))voltage=null;
       readings.add(new NextTelemetryMapper.Channel(hw.key,
         raw<0?null:raw,voltage,finite(x,"rs"),deviceRAir,
         x.optBoolean("ok",x.optBoolean("valid",false)),
