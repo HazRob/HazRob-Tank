@@ -206,8 +206,6 @@ jobs:
             | tee build/chemcore-next-p01/P06-DIVERSE-FINGERPRINT-BUNDLE.log
           grep -q '^CHEMCORE_NEXT_DIVERSE_BUNDLE_G1_PASS ' \
             build/chemcore-next-p01/P06-DIVERSE-FINGERPRINT-BUNDLE.log
-            build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.log
-            build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.json
       - name: Replay original Oct1 2026 ethanol plus smoke 8-MQ owner source and G1 source-curve divergence
         shell: bash
         run: |
@@ -258,5 +256,7 @@ jobs:
             build/chemcore-next-p01/p06_resource_profile.json
             build/chemcore-next-p01/P06-ORCHESTRATOR.log
             build/chemcore-next-p01/P06-DIVERSE-FINGERPRINT-BUNDLE.log
+            build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.log
+            build/chemcore-next-p01/OCT2026-ETHANOL-REPLAY.json
           if-no-files-found: warn
           retention-days: 30
