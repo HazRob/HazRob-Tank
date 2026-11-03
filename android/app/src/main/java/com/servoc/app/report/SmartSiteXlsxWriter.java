@@ -15,6 +15,13 @@ public final class SmartSiteXlsxWriter {
 
     public static void write(OutputStream out,SiteSummaryReportExporter.SiteBundle b)throws Exception{
         if(out==null||b==null)throw new IllegalArgumentException("output/site required");
+        // Modern V8 sites are summarized from the independent immutable Next
+        // decision belonging to EACH approved field session. Preserve old
+        // legacy exports only for entirely historical sites.
+        if(NextSiteEvidenceCharts.hasAnyNext(b.sessions)){
+            V8NextSiteXlsxWriter.write(out,b);
+            return;
+        }
         SiteReportIntelligence.SitePlan plan=SiteReportIntelligence.plan(b.sessions);
         List<SmartXlsxPackage.Sheet> sheets=new ArrayList<>();
         sheets.add(new SmartXlsxPackage.Sheet("الملخص التنفيذي",executive(b,plan)));
