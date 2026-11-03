@@ -90,7 +90,7 @@ public final class FieldCycleController {
         }
         busy=true;stopping=false;gas=modes.gas;
         message("ARMING","جارٍ تجهيز دورة قياس مستقلة...",cycleId);
-        host.io().execute(()->{
+        try{host.io().execute(()->{
             FieldCycleRepository.Cycle row=null;
             try{
                 if(MeasurementSessionRegistry.chemCoreCaptureRequested()||
@@ -143,7 +143,12 @@ public final class FieldCycleController {
                 if(disposed)MeasurementSessionRegistry.endFieldOperation();
                 else main.post(()->end("FAILED","تعذر بدء القياس: "+ex.getMessage(),failedId));
             }
-        });
+        });}catch(RuntimeException rejected){
+            // No ARMING worker was accepted, therefore no relay ON was sent.
+            MeasurementSessionRegistry.endFieldOperation();
+            busy=false;stopping=false;gas=false;
+            message("FAILED","تعذر جدولة بدء القياس: "+rejected.getMessage(),"");
+        }
     }
 
     /** Recover abandoned reservations following an OS process restart. */
@@ -230,7 +235,7 @@ public final class FieldCycleController {
             return;
         }
         busy=true;
-        host.io().execute(()->{
+        try{host.io().execute(()->{
             FieldCycleRepository.Cycle row=null;
             try{
                 if(MeasurementSessionRegistry.fieldCaptureRequested()||
@@ -256,14 +261,19 @@ public final class FieldCycleController {
                 if(disposed)MeasurementSessionRegistry.endFieldOperation();
                 else main.post(()->end("FAILED","تعذر إعادة القياس: "+reason,predecessor));
             }
-        });
+        });}catch(RuntimeException rejected){
+            // No retry worker means the predecessor remains unchanged.
+            MeasurementSessionRegistry.endFieldOperation();
+            busy=false;
+            message("FAILED","تعذر جدولة إعادة القياس: "+rejected.getMessage(),predecessor);
+        }
     }
 
     private void startReserved(FieldCycleRepository.Cycle reserved){
         if(disposed||busy)return;
         busy=true;stopping=false;gas=reserved.modes.gas;
         final String cid=reserved.id;
-        host.io().execute(()->{
+        try{host.io().execute(()->{
             try{
                 JSONObject before=host.robotApi().snapshot(0,0);
                 if(reserved.modes.particles&&!particlesAvailable(before))
@@ -303,7 +313,14 @@ public final class FieldCycleController {
                 if(disposed)MeasurementSessionRegistry.endFieldOperation();
                 else main.post(()->end("FAILED","فشلت إعادة القياس: "+ex.getMessage(),cid));
             }
-        });
+        });}catch(RuntimeException rejected){
+            // The retry attempt exists but was never armed.
+            failWorker(cid,"RETRY_ARMING_WORKER_UNAVAILABLE",false);
+            MeasurementSessionRegistry.endFieldOperation();
+            busy=false;
+            message("FAILED","تعذر جدولة تشغيل المحاولة: "+rejected.getMessage(),cid);
+            observer.refreshed();
+        }
     }
 
     public void approve(String id){
@@ -314,7 +331,7 @@ public final class FieldCycleController {
                 "الاعتماد محظور: إطفاء ريلاي MQ غير مؤكد بعد انقطاع سابق","");return;
         }
         busy=true;
-        host.io().execute(()->{
+        try{host.io().execute(()->{
             boolean ok=false;
             try{ok=repo.approve(id);}catch(Exception ex){
                 android.util.Log.e("TankFieldCycle","Cannot approve cycle",ex);
@@ -322,14 +339,17 @@ public final class FieldCycleController {
             final boolean approved=ok;
             main.post(()->end(approved?"APPROVED":"FAILED",
                 approved?"تم اعتماد دورة القياس وحفظها":"تعذر الاعتماد: لم تُثبت دورة مكتملة صالحة",id));
-        });
+        });}catch(RuntimeException rejected){
+            busy=false;
+            message("FAILED","تعذر جدولة اعتماد القياس؛ لم تُعدّل حالة الاعتماد: "+rejected.getMessage(),id);
+        }
     }
 
     /** Deletes only unapproved terminal attempts. Approved evidence is immutable. */
     public void delete(String cycleId){
         if(disposed||busy)return;
         busy=true;
-        host.io().execute(()->{
+        try{host.io().execute(()->{
             boolean deleted=false;
             try{deleted=repo.deleteUnapproved(cycleId);}
             catch(Exception ex){android.util.Log.e("TankFieldCycle","Deletion refused",ex);}
@@ -337,7 +357,10 @@ public final class FieldCycleController {
             main.post(()->end(success?"DELETED":"DELETE_REFUSED",
                 success?"حُذفت بيانات المحاولة غير المعتمدة مع بقاء رقمها في السجل":
                     "لا يُسمح بحذف قياس معتمد أو مرتبط بمصدر علمي",cycleId));
-        });
+        });}catch(RuntimeException rejected){
+            busy=false;
+            message("DELETE_REFUSED","تعذر جدولة الحذف؛ لم تتغير بيانات القياس: "+rejected.getMessage(),cycleId);
+        }
     }
 
     private void onTick(){
