@@ -367,7 +367,11 @@ public final class FieldCycleController {
                                                 "MQ_RELAY_SHUTDOWN_ACK_MISSING_OR_STILL_ON");
                                     }catch(Exception off){
                                         String fault="MQ_RELAY_SHUTDOWN_UNCONFIRMED: "+
-                                            off.getClass().getSimpleName();
+                                            off.getClass().getSimpleName()+": "+off.getMessage();
+                                        // Seal the safety lock alongside the archived
+                                        // failure. New scans remain blocked until the
+                                        // device positively acknowledges relay OFF.
+                                        host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,fault);
                                         boolean isolated=repo.markUnsafeReview(cycleId,fault);
                                         android.util.Log.e("TankFieldCycle",
                                             "Cannot acknowledge MQ relay shutdown",off);
