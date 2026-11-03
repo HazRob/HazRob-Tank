@@ -1,0 +1,45 @@
+name: HazRob Tank V8 P11.1 R0 source-reference equivalence G1
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - 'research/chemcore_next/experiments/v8_r0_reference_transform_g1.py'
+      - '.github/workflows/v8-next-r0-reference-equivalence-g1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-reference-algebra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run 2925 deterministic numerical assertions with recorded Tank R_air
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p r0-g1-evidence
+          python3 research/chemcore_next/experiments/v8_r0_reference_transform_g1.py > r0-g1-evidence/dual-r0-research-math.json
+          python3 -m json.tool r0-g1-evidence/dual-r0-research-math.json > /dev/null
+          python3 - <<'PY'
+          import json
+          obj=json.load(open("r0-g1-evidence/dual-r0-research-math.json"))
+          assert obj["numeric_assertions_passed"]==2925
+          assert obj["curve_count"]==13 and obj["measured_Tank_air_reference_channels"]==8
+          assert obj["max_relative_equivalence_error"]<3e-14
+          assert obj["physical_Rs_measurements_used"] is False
+          assert obj["all_source_gas_identities_and_ppm_qualified"] is False
+          print("R0_DUAL_REFERENCE_G1_PASS assertions=2925 no_physical_g3=true")
+          PY
+      - name: Upload research-only numerical evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HazRob-V8-P11-R0-G1-Research-Only
+          path: r0-g1-evidence/
+          retention-days: 30
