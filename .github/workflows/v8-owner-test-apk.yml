@@ -1,0 +1,210 @@
+name: HazRob Tank V8 ChemCore Next owner test APK
+
+# Owner authorized a V8 APK on 2026-11-03. This is an independently
+# installable DEBUG/TEST artifact, not G3-certified nor a production upgrade.
+on:
+  push:
+    branches: [feature/tank-v8-implementation]
+    paths:
+      - '.github/workflows/v8-owner-test-apk.yml'
+      - 'android/app/src/main/java/**'
+      - 'android/app/src/main/res/**'
+      - 'android/app/src/main/assets/**'
+      - 'tools/prepare_v8_stable_source.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-v8-chemcore-next-test-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout independent HazRob Tank V8 source
+        uses: actions/checkout@v4
+        with:
+          path: tank
+
+      - name: Checkout frozen Android base (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+
+      - name: Stage V8 overlay, independent package, version and default debug signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          if test -d tank/android/app/src/main/res; then
+            cp -a tank/android/app/src/main/res/. source/app/src/main/res/
+          fi
+          if test -d tank/android/app/src/main/assets; then
+            mkdir -p source/app/src/main/assets
+            cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/
+          fi
+          if test -d tank/android/app/src/test/java; then
+            mkdir -p source/app/src/test/java
+            cp -a tank/android/app/src/test/java/. source/app/src/test/java/
+          fi
+          test -f source/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextEngineRouter.java
+          test -f source/app/src/main/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java
+          mkdir -p source/tools
+          cp tank/tools/prepare_v8_stable_source.py source/tools/prepare_v8_stable_source.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("source/app/build.gradle")
+          s=p.read_text(encoding="utf-8")
+          substitutions=(
+             ("applicationId 'com.servoc.app'", "applicationId 'com.hazrob.tank'"),
+             ("versionName '0.10.2'", "versionName '8.0'"),
+             ("versionCode 30", "versionCode 8"),
+             ("debug { signingConfig signingConfigs.prototype }", "debug { }"),
+          )
+          for old,new in substitutions:
+              if s.count(old)!=1:
+                  raise SystemExit("Pinned Android Gradle source mismatch: "+old)
+              s=s.replace(old,new,1)
+          key="buildConfigField 'String', 'CHEMCORE_LIBRARY_MANIFEST_URL', "
+          empty=key+"'"+chr(34)*2+"'"
+          if s.count(empty)!=1:
+              raise SystemExit("Missing original Stable manifest endpoint")
+          stable="https://raw.githubusercontent.com/HazRob/HazRob-Tank/main/updates/chemcore-stable/manifest.json"
+          s=s.replace(empty,key+"'"+chr(34)+stable+chr(34)+"'",1)
+          p.write_text(s,encoding="utf-8")
+          manifest=Path("source/app/src/main/AndroidManifest.xml")
+          m=manifest.read_text(encoding="utf-8")
+          changed,n=re.subn(r'android:label="[^"]*"','android:label="HazRob Tank V8"',m,count=1)
+          if n!=1:raise SystemExit("Missing Android app label")
+          manifest.write_text(changed,encoding="utf-8")
+          release=Path("source/app/src/main/java/com/servoc/app/ReleaseAudit.java").read_text()
+          if not all(x in release for x in (
+              'VERSION="8.0"', "DATABASE_SCHEMA=15", "TANK-V8-CHEMCORE-NEXT",
+              "GAS_RESPONSE_AUDIBLE_ALERT=false",
+          )): raise SystemExit("V8 identity or scientific qualification guard mismatch")
+          PY
+          python3 source/tools/prepare_v8_stable_source.py source
+
+      - name: Rebuild and validate offline ChemCore Stable content for V8
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 tools/build_hr069_embedded_stable.py --out-dir app/build/generated/hazrobAssets/generated/chemcore/embedded_stable
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          root=Path("app/build/generated/hazrobAssets/generated/chemcore/embedded_stable")
+          manifest=json.loads((root/"manifest.json").read_text(encoding="utf-8"))
+          data=(root/manifest["payload_file"]).read_bytes()
+          assert manifest["min_app_version"]==manifest["max_app_version"]=="8.0"
+          assert manifest["chemical_count"]==652
+          assert manifest["calibration_count"]==0
+          assert manifest["payload_sha256"]==hashlib.sha256(data).hexdigest()
+          assert manifest["payload_size_bytes"]==len(data)
+          print("Pinned Stable library verified; content remains research-only.")
+          PY
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK API 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Set up Gradle 9.5
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+
+      - name: Verify V8 core/source UI and immutable source contracts
+        shell: bash
+        working-directory: tank
+        run: |
+          set -euo pipefail
+          python3 -m unittest \
+            research/v8_implementation/tests/test_v8_next_instant_source_routing.py \
+            research/v8_implementation/tests/test_v8_instant_capture_gate.py \
+            research/v8_implementation/tests/test_v8_next_field_session_handoff.py \
+            research/v8_implementation/tests/test_v8_next_operator_pdf_parity.py \
+            research/v8_implementation/tests/test_v8_p11_5_operator_dual_r0.py \
+            research/v8_implementation/tests/test_v8_p11_6_r0_pdf_parity.py \
+            research/v8_implementation/tests/test_v8_report_data_lineage_and_v7_geometry.py \
+            research/v8_implementation/tests/test_v8_feedback_local_and_authenticated_sync.py \
+            research/v8_implementation/tests/test_v8_mq_sensor_card_resilience.py \
+            -v
+
+      - name: Compile and assemble real V8 application APK
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --stacktrace :app:compileDebugJavaWithJavac
+          gradle --no-daemon --stacktrace :app:assembleDebug
+
+      - name: Validate APK manifest, embedded Stable, SHA256 and default debug signer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,shutil,zipfile
+          apk=Path("source/app/build/outputs/apk/debug/app-debug.apk")
+          assert apk.is_file() and apk.stat().st_size>1_000_000
+          with zipfile.ZipFile(apk) as z:
+              prefix="assets/generated/chemcore/embedded_stable/"
+              m=json.loads(z.read(prefix+"manifest.json"))
+              data=z.read(prefix+m["payload_file"])
+              assert m["min_app_version"]==m["max_app_version"]=="8.0"
+              assert m["chemical_count"]==652 and m["calibration_count"]==0
+              assert hashlib.sha256(data).hexdigest()==m["payload_sha256"]
+              assert "classes.dex" in z.namelist()
+          folder=Path("v8-test-apk"); folder.mkdir(exist_ok=True)
+          dest=folder/"HazRob-Tank-V8-ChemCore-Next-TEST.apk"
+          shutil.copyfile(apk,dest)
+          digest=hashlib.sha256(dest.read_bytes()).hexdigest()
+          (folder/"SHA256SUMS.txt").write_text(digest+"  "+dest.name+"\n")
+          (folder/"BUILD-MANIFEST.json").write_text(json.dumps({
+              "application_id":"com.hazrob.tank",
+              "version_name":"8.0","version_code":8,
+              "repo_sha":os.environ["GITHUB_SHA"],
+              "apk_sha256":digest,"apk_size":dest.stat().st_size,
+              "signing":"Android default debug key",
+              "database_schema":15,
+              "engine":"ChemCore Next research-only",
+              "firmware":"ESP32 Tank V6 API4 unchanged",
+              "stable_identity_count":652,
+              "stable_calibration_count":0,
+              "physical_tank_qualified":False,
+              "gas_identity_or_ppm_certified":False
+          },ensure_ascii=False,indent=2)+"\n")
+          (folder/"INSTALL-NOTES.txt").write_text(
+              "HazRob Tank V8 ChemCore Next TEST APK (debug signing).\n"
+              "Not a production or G3-certified release. No certified gas identity, ppm or MQ safety alarm.\n"
+              "May NOT install over an existing app signed with a different key.\n"
+              "DO NOT UNINSTALL an installed app before exporting and verifying preserved sessions, sites, R0 and settings.\n"
+              "Research R_air and source-specific R0 are distinct. Firmware V6 API4 remains unchanged.\n"
+              "The local feedback outbox requires explicit public consent and authorized GitHub credentials to upload.\n")
+          print("APK ready:",dest,"SHA256",digest)
+          PY
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging v8-test-apk/HazRob-Tank-V8-ChemCore-Next-TEST.apk | tee v8-test-apk/aapt-badging.txt
+          grep -q "package: name='com.hazrob.tank' versionCode='8' versionName='8.0'" v8-test-apk/aapt-badging.txt
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs v8-test-apk/HazRob-Tank-V8-ChemCore-Next-TEST.apk | tee v8-test-apk/signing-verification.txt
+
+      - name: Upload complete V8 APK and evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: HazRob-Tank-V8-ChemCore-Next-TEST-APK
+          path: v8-test-apk/
+          retention-days: 45
+          if-no-files-found: error
