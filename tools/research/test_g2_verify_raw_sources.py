@@ -67,6 +67,30 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertTrue(result["all_verified"])
         self.assertFalse(result["scientific_qualification"])
 
+    def test_alias_path_is_detected_as_duplicate(self):
+        alias = dict(self.entry(), source_id="alias", path="sub/../sample.bin")
+        result = verify({"sources": [self.entry(), alias]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][1]["error"], "unsafe_path")
+
+    def test_repeated_separator_path_is_detected_as_duplicate(self):
+        alias = dict(self.entry(), source_id="alias", path="sub//../sample.bin")
+        result = verify({"sources": [self.entry(), alias]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][1]["error"], "unsafe_path")
+
+    def test_non_string_source_identity_blocked(self):
+        entry = dict(self.entry(), source_id=42)
+        result = verify({"sources": [entry]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "invalid_source_id")
+
+    def test_non_string_hash_blocked(self):
+        entry = dict(self.entry(), sha256=123)
+        result = verify({"sources": [entry]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "invalid_sha256")
+
     def test_empty_source_identity_blocked(self):
         entry = self.entry()
         entry["source_id"] = " "
