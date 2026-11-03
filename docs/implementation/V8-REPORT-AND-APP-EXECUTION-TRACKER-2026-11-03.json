@@ -36,29 +36,29 @@
     {
       "id": "V8-F02",
       "title": "Field cycle, R0, relay and instantaneous stages",
-      "status": "SOURCE_VERIFIED",
+      "status": "CI_PASS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": null,
+      "ci_run_id": 41568248265,
       "changed_files": [
         "android/app/src/main/java/com/servoc/app/ui/FieldSessionsTab.java",
         "android/app/src/main/java/com/servoc/app/field/FieldCycleRepository.java"
       ],
-      "result": "Unified approve measurement/session action and rejected/failed attempts reasons UI; source code and compile gate pass; no actual sensor/relay bench",
-      "blocking_issue": "Physical device cycle/relay unavailable",
-      "next_action": "Instrument Android12 one-to-one approval and failed/retry states, and run real device relay/timer later"
+      "result": "Android13 PASS 237 fixture assertions: rejects duplicate review without partial approval, atomically approves sole valid measurement and parent session, blocks reapproval and second scan; test-only transaction fully rolled back",
+      "blocking_issue": "Hardware relay OFF ACK / 60s measurements must be checked on physical Tank",
+      "next_action": "Physical Android/Tank timing/retry/relay test; add operator UI tap/navigation test"
     },
     {
       "id": "V8-F03",
       "title": "ChemCore Next Stable candidate and decision parity",
-      "status": "IN_PROGRESS",
+      "status": "SOURCE_VERIFIED",
       "note": "",
       "source_sha": null,
       "ci_run_id": 41563441119,
       "changed_files": [],
-      "result": "Next field/site integration successfully rendered on Android13 41563441088; additional 60-sec MQ transient and duplicate scan-cycle chart tests pending",
-      "blocking_issue": "Latest Android12 original-source temporal chart differential not yet complete",
-      "next_action": "Read bitmap test results; verify one session ID, immutable receipt SHA and no stale legacy field/site conclusions"
+      "result": "Source-bound Next charts, field/site reports and Next Excel writer audited; Android13 source SHA and report outputs PASS run 41568248265",
+      "blocking_issue": "Separate physical-source MQ time chart Android12 and Tank G3 remain unverified at this checkpoint",
+      "next_action": "Review latest Android12 chart pixel suite, then bench on Tank"
     },
     {
       "id": "V8-F04",
@@ -82,11 +82,11 @@
       "status": "CI_PASS",
       "note": "",
       "source_sha": "7316d6c7940f0e0e52ea7b3e841dc45518f3640a",
-      "ci_run_id": 41563441088,
+      "ci_run_id": 41568248265,
       "changed_files": [],
-      "result": "Latest updated Next executive PDF + legacy PDF + mixed-source site PDF + 20-sheet Excel Android13 passed: 181 fixture assertions, 6/6/5 pages, SHA intact and tamper rejected",
+      "result": "Android13 PASS Next PDF6 with exclusive Next-only source appendix, historical PDF6 retaining V6, site PDF5 with two independent sessions, SHA tamper checks",
       "blocking_issue": null,
-      "next_action": "Android12 separate kinetic chart bitmaps pending and on-device human clipping/quality check"
+      "next_action": "Manual Arabic clipping and long candidate notes page review; device source later"
     },
     {
       "id": "V8-F06",
@@ -121,11 +121,11 @@
       "status": "CI_PASS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41563441088,
+      "ci_run_id": 41568248265,
       "changed_files": [],
-      "result": "Expanded 20-sheet original telemetry Excel validated on actual Android13 production exporter, unchanged source SHA",
+      "result": "Three workbooks: historical 20, Next field 20, mixed site 6, shared approved SmartXlsxPackage V7 formatting same SHA256, RTL/frozen header/dark style and real numeric cells",
       "blocking_issue": null,
-      "next_action": "Physical phone open/export and manual source audit if required"
+      "next_action": "Open on actual mobile Excel viewer and verify wide sheet readability"
     },
     {
       "id": "V8-F09",
@@ -133,11 +133,11 @@
       "status": "CI_PASS",
       "note": "",
       "source_sha": "0e8d8695a27b8e075c7166368047c4b8860034c1",
-      "ci_run_id": 41563441183,
+      "ci_run_id": 41568248265,
       "changed_files": [],
-      "result": "Complete Android compile and G1 source contract PASS at d0afceb; V7 PDF page grid/layout unchanged",
+      "result": "V7 layout unchanged, PDF 842x595 across Next+historical pages; Next appendix preserves 6-page output; shared XLSX format-source SHA pinned",
       "blocking_issue": null,
-      "next_action": "Review Android13 Next-source PDF page render and clipping"
+      "next_action": "Human visual inspection of long Arabic labels and chart clipping"
     },
     {
       "id": "V8-F10",
@@ -145,11 +145,11 @@
       "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41563441183,
+      "ci_run_id": 41567686809,
       "changed_files": [],
-      "result": "Compile/G1 PASS d0afceb and Android13 full report/Excel PASS 41563441088; Android12 new kinetic chart source QA pending 41563441119",
+      "result": "Android Java compile + G1 success at 9588cc; Android13 export and F02 atomic approval success 41568248265; Android12 separate entire UI/chem Next gate still requires latest confirmation",
       "blocking_issue": null,
-      "next_action": "Wait for final CI outcomes by polling, not background user promise"
+      "next_action": "Review remaining Android12 UI and Next pixel test run; leave APK blocked until all gate evidence"
     },
     {
       "id": "V8-F11",
@@ -295,5 +295,29 @@
     "xlsx_sheets": 20,
     "emulator_android_api": 33,
     "source_SHA_integrity": true
+  },
+  "next_reports_and_style_checkpoint": "docs/implementation/V8-NEXT-REPORTS-EXCEL-STYLE-F02-CHECKPOINT-2026-11-03_AR.md",
+  "latest_f02_atomic_and_f05_reports_pass": {
+    "run_id": 41568248265,
+    "status": "SUCCESS",
+    "source_commit": "009d5f02946baf81e0018657490e3daa73b07693",
+    "fixture_assertions": 237,
+    "one_measurement_one_session_atomic": true,
+    "double_review_approval_denied": true,
+    "second_scan_after_approval_denied": true,
+    "pdf_legacy_pages": 6,
+    "pdf_next_pages": 6,
+    "pdf_site_pages": 5,
+    "xlsx_sheets_legacy": 20,
+    "xlsx_sheets_next": 20,
+    "xlsx_sheets_site": 6,
+    "xlsx_approved_style_sha_prefix": "51459c5d1a66dbc07e",
+    "physical_tank_validated": false
+  },
+  "latest_pending_f02_rerun": {
+    "run_id": 41568397468,
+    "status": "IN_PROGRESS",
+    "source_commit": "80a6973be6501fdb7442410b257146866a625b78",
+    "note": "Additional constraint-safe duplicate attempt test; prior strict attempt PASSED 41568248265"
   }
 }
