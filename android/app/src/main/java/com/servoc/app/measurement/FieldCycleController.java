@@ -24,6 +24,7 @@ public final class FieldCycleController {
         void refreshed();
     }
     private static final long WARMUP_MS=60000L,SAMPLING_MS=60000L,STALE_MS=6000L;
+    public static final String RELAY_RECOVERY_FAULT_KEY="v8_field_recovery_relay_fault";
     private final HazRobHost host;
     private final FieldCycleRepository repo;
     private final Handler main=new Handler(Looper.getMainLooper());
@@ -66,6 +67,10 @@ public final class FieldCycleController {
 
     public void begin(String sessionId,FieldCycleRepository.Options modes){
         if(disposed||busy)return;
+        if(!host.database().getMeta(RELAY_RECOVERY_FAULT_KEY,"").isEmpty()){
+            message("SAFETY_FAULT",
+                "تعذر تأكيد إطفاء ريلاي MQ بعد انقطاع سابق؛ أعد الاتصال وأعد فتح الجلسات للتحقق من حالة OFF","");return;
+        }
         if(modes==null)throw new IllegalArgumentException("measurement modes required");
         if(!MeasurementSessionRegistry.reserveFieldOperation()){
             message("BLOCKED","هناك قياس أو تحليل نشط؛ أكمله أولاً","");
@@ -130,24 +135,27 @@ public final class FieldCycleController {
         host.io().execute(()->{
             try{
                 int n=repo.recoverAbandoned();
+                boolean previousSafetyFault=!host.database().getMeta(
+                    RELAY_RECOVERY_FAULT_KEY,"").isEmpty();
                 boolean relaySafetyFault=false;
-                if(n>0){
+                if(n>0||previousSafetyFault){
                     try{
                         host.robotApi().mqPower(false);
                         JSONObject off=host.robotApi().snapshot(0,0);
                         if(!relayOffAcknowledged(off)||identity(off).isEmpty())
                             throw new IllegalStateException("MQ_RELAY_OFF_NOT_ACKNOWLEDGED");
+                        host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,"");
                     }catch(Exception safetyFailure){
                         relaySafetyFault=true;
                         android.util.Log.e("TankFieldCycle",
                             "Interrupted field run: unable to confirm safe MQ relay OFF",safetyFailure);
-                        host.database().putMeta("v8_field_recovery_relay_fault",
+                        host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,
                             safetyFailure.getClass().getSimpleName()+":"+
                             safetyFailure.getMessage());
                     }
                 }
                 final boolean unsafeRelay=relaySafetyFault;
-                if(n>0)main.post(()->{
+                if(n>0||previousSafetyFault)main.post(()->{
                     if(!disposed){
                         message(unsafeRelay?"SAFETY_FAULT":"RECOVERED",
                             unsafeRelay?
@@ -165,6 +173,10 @@ public final class FieldCycleController {
     /** The predecessor remains immutable; retry always creates a new numbered attempt. */
     public void retry(String predecessor){
         if(disposed||busy)return;
+        if(!host.database().getMeta(RELAY_RECOVERY_FAULT_KEY,"").isEmpty()){
+            message("SAFETY_FAULT",
+                "إعادة القياس محظورة حتى تأكيد إطفاء ريلاي MQ بعد الانقطاع السابق","");return;
+        }
         if(!MeasurementSessionRegistry.reserveFieldOperation()){
             message("BLOCKED","هناك قياس أو تحليل نشط؛ أكمله أولاً",predecessor);
             return;
@@ -244,7 +256,12 @@ public final class FieldCycleController {
     }
 
     public void approve(String id){
-        if(disposed||busy)return;busy=true;
+        if(disposed||busy)return;
+        if(!host.database().getMeta(RELAY_RECOVERY_FAULT_KEY,"").isEmpty()){
+            message("SAFETY_FAULT",
+                "الاعتماد محظور: إطفاء ريلاي MQ غير مؤكد بعد انقطاع سابق","");return;
+        }
+        busy=true;
         host.io().execute(()->{
             boolean ok=false;
             try{ok=repo.approve(id);}catch(Exception ex){
