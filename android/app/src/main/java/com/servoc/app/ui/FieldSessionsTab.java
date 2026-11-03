@@ -59,8 +59,16 @@ public final class FieldSessionsTab {
             public void changed(String state,String message,String id){
                 main.post(()->{if(disposed)return;
                     if("REVIEW_READY".equals(state)&&id!=null&&!id.isEmpty())latestCycleId=id;
+                    // A live safety fault must lock controls immediately,
+                    // not only after the asynchronous SQLite refresh returns.
+                    if("SAFETY_FAULT".equals(state))relayRecoverySafetyFault=true;
+                    if("SAFETY_FAULT".equals(state)||"FAILED".equals(state)){
+                        failureDetails.setText(("SAFETY_FAULT".equals(state)?
+                            "تعذر تأكيد أمان ريلاي MQ: ":"سبب فشل قياس الجلسة: ")+message);
+                        failureDetails.setVisibility(View.VISIBLE);
+                    }
                     cycleStatus.setText(message);renderCycleButtons(state);
-                    if("BLOCKED".equals(state))refresh();
+                    if("BLOCKED".equals(state)||"SAFETY_FAULT".equals(state))refresh();
                 });
             }
             public void refreshed(){main.post(()->{if(!disposed)refresh();});}
@@ -489,7 +497,8 @@ public final class FieldSessionsTab {
         physicalCheck.setEnabled(available&&selectedCanBegin&&!relayRecoverySafetyFault);
     }
     private void renderCycleButtons(String stage){
-        boolean locked=cycleDriver.busy()||"ARMING".equals(stage)||
+        boolean locked=relayRecoverySafetyFault||"SAFETY_FAULT".equals(stage)||
+            cycleDriver.busy()||"ARMING".equals(stage)||
             "WARMUP".equals(stage)||"SAMPLING".equals(stage)||
             "SAMPLING_WAIT".equals(stage)||"FINALIZING".equals(stage);
         boolean ready="REVIEW_READY".equals(stage);
@@ -500,9 +509,9 @@ public final class FieldSessionsTab {
         retryMeasurement.setEnabled(canApprove);
         approveMeasurement.setEnabled(canApprove);
         deleteMeasurement.setEnabled(canApprove);
-        gasCheck.setEnabled(!locked&&selectedCanBegin);
-        particleCheck.setEnabled(!locked&&selectedCanBegin);
-        physicalCheck.setEnabled(!locked&&selectedCanBegin);
+        gasCheck.setEnabled(!locked&&selectedCanBegin&&!relayRecoverySafetyFault);
+        particleCheck.setEnabled(!locked&&selectedCanBegin&&!relayRecoverySafetyFault);
+        physicalCheck.setEnabled(!locked&&selectedCanBegin&&!relayRecoverySafetyFault);
     }
 
     private interface NameResult{void accept(String name);}
