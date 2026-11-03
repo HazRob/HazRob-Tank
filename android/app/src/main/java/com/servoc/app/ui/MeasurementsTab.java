@@ -47,6 +47,7 @@ import com.servoc.app.chemcore.TankCandidateHazardBadges;
 import com.servoc.app.chemcore.TankInstantAnalyzer;
 import com.servoc.app.report.TankInstantCharts;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
+import com.servoc.app.chemcore.nextintegration.NextResearchOperatorText;
 import com.servoc.app.chemcore.ChemCoreLabQuality;
 import com.servoc.app.data.ExperimentQueries;
 import com.servoc.app.field.FieldSessionRepository;
@@ -830,11 +831,24 @@ public final class MeasurementsTab {
     private final class SensorCard {
         final HazRobHardwareProfile.Channel hw;final LinearLayout root;final TextView head,data;final AlphaAnimation pulse;
         SensorCard(HazRobHardwareProfile.Channel hw){this.hw=hw;root=UiKit.card(c);head=UiKit.text(c,"");head.setTextSize(14);head.setTypeface(Typeface.DEFAULT_BOLD);root.addView(head,UiKit.full(c));data=UiKit.small(c,"");data.setTextColor(0xFF37474F);root.addView(data,UiKit.full(c));pulse=new AlphaAnimation(.45f,1f);pulse.setDuration(450);pulse.setRepeatMode(Animation.REVERSE);pulse.setRepeatCount(Animation.INFINITE);}
+        private String sourceChannelText(JSONObject q){
+            String volts="—";
+            if(q!=null){
+                double verified=q.optDouble("adc_voltage_v",Double.NaN);
+                if(!Double.isFinite(verified))verified=q.optDouble("voltage_v",Double.NaN);
+                if(Double.isFinite(verified))
+                    volts=String.format(Locale.US,"%.3f V",verified);
+            }
+            return "Raw "+num(q,"raw",0)+
+                " • adc أصلي "+num(q,"adc",3)+" (الوحدة غير مثبتة)"+
+                " • VADC موثق "+volts+
+                " • AO أصلي "+num(q,"ao",3);
+        }
         void refresh(boolean connected,boolean powered,JSONObject relay,JSONObject adc,JSONObject q){
-            head.clearAnimation();if(!connected){head.setBackgroundColor(0xFF424242);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+" • غير متصل");data.setText("Raw — • Vadc — • Vao — • Rs/R0 —");return;}
+            head.clearAnimation();if(!connected){head.setBackgroundColor(0xFF424242);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+" • غير متصل");data.setText("Raw — • adc (الوحدة غير مثبتة) — • VADC موثق — • Rs/R0 الجهاز —");return;}
             if(!powered){head.setBackgroundColor(0xFF455A64);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+" • MQ OFF");data.setText(InstantMqWarningEngine.target(hw.key));return;}
             boolean adsReady=adc!=null&&adc.optBoolean(hw.adsIndex==0?"ads1":"ads2",false);if(!adsReady){head.setBackgroundColor(0xFFB71C1C);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+" • ADS"+(hw.adsIndex+1)+" غير مكتشف");data.setText("تحقق من التغذية وSDA/SCL وADDR");return;}
-            long powerMs=relay==null?0:relay.optLong("power_ms",0);boolean qValid=q!=null&&q.optBoolean("ok",q.optBoolean("valid",false));if(!qValid){boolean settling=powerMs>0&&powerMs<LiveSensorDiagnostic.SETTLE_DIAGNOSTIC_MS;head.setBackgroundColor(settling?0xFF616161:0xFFEF6C00);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+(settling?" • انتظار القراءة":" • إشارة غير صالحة"));data.setText("Raw "+num(q,"raw",0)+" • Vadc "+num(q,"adc",3)+" V • Vao "+num(q,"ao",3)+" V");return;}
+            long powerMs=relay==null?0:relay.optLong("power_ms",0);boolean qValid=q!=null&&q.optBoolean("ok",q.optBoolean("valid",false));if(!qValid){boolean settling=powerMs>0&&powerMs<LiveSensorDiagnostic.SETTLE_DIAGNOSTIC_MS;head.setBackgroundColor(settling?0xFF616161:0xFFEF6C00);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+(settling?" • انتظار القراءة":" • إشارة غير صالحة"));data.setText(sourceChannelText(q));return;}
             int warm=Math.max(0,host.preferences().getInt("warm",60));long remain=Math.max(0,warm*1000L-powerMs);boolean ready=remain==0;SensorHealthEngine.Snapshot health=host.sensorHealth(hw.key);InstantMqWarningEngine.Result warn=InstantMqWarningEngine.evaluate(hw.key,q,health);boolean baseline=health!=null&&Double.isFinite(health.baselineRatio)&&health.baselineRatio>0&&!warn.usedFallbackBaseline;
             if(!ready){head.setBackgroundColor(0xFF616161);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+" • تسخين "+clock(remain));}
             else if(!baseline){head.setBackgroundColor(0xFF546E7A);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+" • خط الأساس غير متحقق • لا إنذار غاز");}
@@ -843,7 +857,7 @@ public final class MeasurementsTab {
             else if(warn.level==InstantMqWarningEngine.Level.RESPONSE){head.setBackgroundColor(0xFF00695C);head.setTextColor(Color.WHITE);head.setText("↕ "+hw.key.toUpperCase(Locale.US)+" • استجابة مرصودة");}
             else{head.setBackgroundColor(0xFF1565C0);head.setTextColor(Color.WHITE);head.setText(hw.key.toUpperCase(Locale.US)+(baseline?" • جاهز":" • خط الأساس غير متحقق"));}
             double ratio=AcceptedR0Normalizer.ratio(hw.key,q),acceptedR0=ManualR0Calibration.get(hw.key),fwR0=q.optDouble("firmware_r0",Double.NaN);boolean fwSync=Double.isFinite(fwR0)&&Double.isFinite(acceptedR0)&&acceptedR0>0&&Math.abs(fwR0-acceptedR0)/acceptedR0<=0.001;String delta=baseline&&Double.isFinite(warn.delta)?String.format(Locale.US,"%+.1f%%",100.0*warn.delta):"—";String trend="—";if(health!=null&&Double.isFinite(health.baselineRatio)&&health.baselineRatio>0&&Double.isFinite(ratio))trend=ratio>health.baselineRatio?"↑":"↓";
-            data.setText("Δ "+delta+" • اتجاه "+trend+" • Noise CV "+(health!=null&&Double.isFinite(health.noiseCv)?String.format(Locale.US,"%.1f%%",100*health.noiseCv):"—")+"\nRaw "+num(q,"raw",0)+" • Vadc "+num(q,"adc",3)+" V • Vao "+num(q,"ao",3)+" V\nRs "+num(q,"rs",3)+" • Rs/R0 "+(Double.isFinite(ratio)?String.format(Locale.US,"%.3f",ratio):"—")+" • R0 "+(Double.isFinite(acceptedR0)?String.format(Locale.US,"%.3f kΩ",acceptedR0):"—")+"\n"+(fwSync?"R0 متزامن":"App R0 authority")+" • "+(health==null?"تشخيص الحساس غير متاح":SensorHealthEngine.stateAr(health.state)));
+             data.setText("Δ "+delta+" • اتجاه "+trend+" • Noise CV "+(health!=null&&Double.isFinite(health.noiseCv)?String.format(Locale.US,"%.1f%%",100*health.noiseCv):"—")+"\n"+sourceChannelText(q)+"\nRs "+num(q,"rs",3)+" • Rs/R0 الجهاز "+(Double.isFinite(ratio)?String.format(Locale.US,"%.3f",ratio):"—")+" • R0 الجهاز "+(Double.isFinite(acceptedR0)?String.format(Locale.US,"%.3f kΩ",acceptedR0):"—")+"\nتعريف R0: "+ManualR0Calibration.getDefinition(hw.key)+"\n"+(fwSync?"R0 متزامن":"مرجع التطبيق للجهاز")+" • "+(health==null?"تشخيص الحساس غير متاح":SensorHealthEngine.stateAr(health.state)));
         }
     }
 
@@ -935,7 +949,7 @@ public final class MeasurementsTab {
 
     private final class AnalysisResultsPane {
         final ScrollView view;final LinearLayout box,candidateList,screeningList;
-        final TextView decisionCard,screeningCard,safetyCard,tracking,selected,referenceInventory,screeningWarnings;
+        final TextView decisionCard,screeningCard,safetyCard,tracking,selected,referenceInventory,screeningWarnings,dualReferenceCard;
         TextView technical;
         final Button startTracking,screeningToggle,technicalToggle;
         final ChemCoreDecisionRepository decisions;
@@ -946,6 +960,10 @@ public final class MeasurementsTab {
             box.addView(UiKit.title(c,"نتائج ChemCore"),UiKit.full(c));
             decisionCard=kpi("القرار: —");box.addView(decisionCard,UiKit.full(c));
             screeningCard=card("فحص 144: —");box.addView(screeningCard,UiKit.full(c));
+            dualReferenceCard=card("المرجع المزدوج: لا توجد نتيجة علمية محفوظة");
+            dualReferenceCard.setTextIsSelectable(true);
+            dualReferenceCard.setVisibility(View.GONE);
+            box.addView(dualReferenceCard,UiKit.full(c));
             safetyCard=card("السلامة والتعرض: —");box.addView(safetyCard,UiKit.full(c));
             screeningWarnings=card("تحذيرات PPM التقديرية\n—");screeningWarnings.setTextIsSelectable(true);box.addView(screeningWarnings,UiKit.full(c));
             referenceInventory=card("حدود التعرض المرجعية\n—");referenceInventory.setTextIsSelectable(true);box.addView(referenceInventory,UiKit.full(c));
@@ -995,15 +1013,19 @@ public final class MeasurementsTab {
                 "هدف تتبع اختاره المشغل (غير مكتشف): "+selectedCandidateName:
                 "المرشح المحدد: لا يوجد • يجوز الاختيار اليدوي من المكتبة");
             JSONObject quantitative=p.optJSONObject("scientific_source_diagnostics");
+            dualReferenceCard.setText(NextResearchOperatorText.summary(quantitative));
+            dualReferenceCard.setTextColor(TEXT);
+            dualReferenceCard.setVisibility(View.VISIBLE);
             JSONArray models=quantitative==null?null:quantitative.optJSONArray("all_reference_models");
             JSONObject risk=p.optJSONObject("scientific_reference_screening");
             JSONArray comparisons=risk==null?null:risk.optJSONArray("comparisons");
             JSONArray materialGhs=risk==null?null:risk.optJSONArray("material_ghs_references");
             int thresholdHits=risk==null?0:risk.optInt("at_or_above_count",0);
             int precautionHits=risk==null?0:risk.optInt("early_count",0);
-            safetyCard.setText("⚠ مقارنات حسابية مشروطة بالمراجع\n"+
-                "عند/فوق الحد: "+thresholdHits+" • إنذارات استباقية: "+precautionHits+
-                "\nتقديرات المصدر ليست كشف غاز أو تجاوز تعرض مهني مثبت");
+            safetyCard.setText("مقارنة فرضيات المصدر بالحدود المرجعية (ليست إنذارًا)\n"+
+                "نتائج حسابية عند/فوق المرجع: "+thresholdHits+
+                " • ضمن النطاق الاحترازي الافتراضي: "+precautionHits+
+                "\nلا يوجد تأكيد لوجود الغاز أو تركيز تعرض مهني؛ لا قرار سلامة من هذه المقارنات");
             StringBuilder referenceText=new StringBuilder(
                 "مقارنات المصدر البحثية • التعرض/حد الاشتعال الأدنى LFL/الخلفية الطبيعية");
             referenceText.append("\nجميع النسب مشروطة بفرضية نوع الغاز ومرجع R0؛ ليست إنذار سلامة معتمدًا");
@@ -1031,20 +1053,9 @@ public final class MeasurementsTab {
                 "القرار: "+decisionUid+" • تصنيف الهوية: "+status+
                 "\nG3=0/80 لا يمنع إظهار المعادلات العددية البحثية.");
             if(models!=null)for(int ix=0;ix<models.length();ix++){
-                JSONObject m=models.optJSONObject(ix);if(m==null)continue;
-                scientificText.append("\n\n[")
-                    .append(m.optString("source_curve_id","—")).append("] ")
-                    .append(m.optString("sensor_model","")).append(" • ")
-                    .append(m.optString("gas_or_class",""))
-                    .append(" • ").append(m.optString("status","—"));
-                Object ppmValue=m.opt("estimated_ppm");
-                if(ppmValue instanceof Number)
-                    scientificText.append(" • ppm≈")
-                        .append(String.format(Locale.US,"%.6g",((Number)ppmValue).doubleValue()));
-                scientificText.append("\n").append(m.optString("source_equation",""))
-                    .append(" • a=").append(m.optDouble("a",Double.NaN))
-                    .append(" b=").append(m.optDouble("b",Double.NaN))
-                    .append(" • المصدر ").append(m.optString("source_root","—"));
+                JSONObject m=models.optJSONObject(ix);
+                if(m!=null)scientificText.append("\n\n")
+                    .append(NextResearchOperatorText.curveLine(m));
             }
             JSONArray algorithms=p.optJSONArray("next_algorithm_diagnostics");
             scientificText.append("\n\nالتقنيات والخوارزميات — التي تم تنفيذها: ")
@@ -1127,6 +1138,7 @@ public final class MeasurementsTab {
          * occupational exposure alerts or automatic target tracking.
          */
         private void renderResearchOnlyV6(JSONObject p){
+            dualReferenceCard.setVisibility(View.GONE);
             // Manual selection remains permitted for exploratory gradient
             // tracking; never promote a source hypothesis to confirmed gas.
             startTracking.setEnabled(selectedCandidateId>=0);
@@ -1214,7 +1226,7 @@ public final class MeasurementsTab {
             if(lastRenderedAt>0&&now-lastRenderedAt<750L)return;
             lastRenderedAt=now;
             TankInstantAnalyzer.Result completed=currentOperation;JSONObject p=completed==null?null:completed.analysis;candidateList.removeAllViews();screeningList.removeAllViews();tracking.setText(host.trackingTargetId()>=0?"التتبع • "+host.trackingTargetName()+" (#"+host.trackingTargetId()+") • فرضية مشغل":"التتبع • لا يوجد");
-            if(p==null){startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");exposureStyle(safetyCard,false);referenceInventory.setText("حدود التعرض: لا يوجد تحليل حالي.");screeningWarnings.setText("لا توجد نتيجة حالية لحساب تحذير تقديري.");technical.setText("—");return;}
+            if(p==null){dualReferenceCard.setVisibility(View.GONE);startTracking.setEnabled(selectedCandidateId>=0);decisionCard.setText("القرار: لا توجد نتيجة محفوظة — يسمح بالتتبع الاستدلالي قبل المعايرة");screeningCard.setText("فحص 144: —");safetyCard.setText("السلامة والتعرض: —");exposureStyle(safetyCard,false);referenceInventory.setText("حدود التعرض: لا يوجد تحليل حالي.");screeningWarnings.setText("لا توجد نتيجة حالية لحساب تحذير تقديري.");technical.setText("—");return;}
             if(isResearchOnlyNext(p)){
                 renderResearchOnlyNext(p);
                 return;
@@ -1223,6 +1235,7 @@ public final class MeasurementsTab {
                 renderResearchOnlyV6(p);
                 return;
             }
+            dualReferenceCard.setVisibility(View.GONE);
             screeningToggle.setVisibility(View.VISIBLE);
             screeningToggle.setEnabled(true);
             String chemical=p.optString("chemical","—"),outcome=p.optString("outcome","—"),tier=p.optString("evidence_tier","—");double post=p.optDouble("top_posterior",Double.NaN),margin=p.optDouble("posterior_separation_margin",Double.NaN);TankPpmEstimate.Result estimate=TankPpmEstimate.from(p);boolean ppmOk=estimate.reportable;double ppm=estimate.ppm;
