@@ -116,6 +116,10 @@ class FieldHandoff(unittest.TestCase):
             self.assertIn('getMeta(RELAY_EXPECTED_DEVICE_KEY,"")',body)
         self.assertIn('putMeta(RELAY_EXPECTED_DEVICE_KEY,id)',s)
         self.assertIn('MQ_RELAY_OFF_ACK_WRONG_DEVICE',s)
+        self.assertEqual(s.count('MQ_RELAY_OFF_WRONG_DEVICE_PREFLIGHT'),3)
+        self.assertLess(method.index('MQ_RELAY_OFF_WRONG_DEVICE_PREFLIGHT'),
+                        method.index('host.robotApi().mqPower(false)'))
+        self.assertIn('JSONObject beforeOff=host.robotApi().snapshot(0,0)',s)
         ui=read("ui/FieldSessionsTab.java")
         self.assertIn('FieldCycleController.RELAY_EXPECTED_DEVICE_KEY',ui)
         self.assertIn("relayRecoverySafetyFault",ui)
