@@ -1,6 +1,6 @@
 {
   "schema": "hazrob.tank.v8.frozen_scope_report_app_execution/1",
-  "last_checked": "2026-11-03T01:13:00Z",
+  "last_checked": "2026-11-03",
   "branch": "feature/tank-v8-implementation",
   "repo": "HazRob/HazRob-Tank",
   "scope_freeze_approved": true,
@@ -36,26 +36,29 @@
     {
       "id": "V8-F02",
       "title": "Field cycle, R0, relay and instantaneous stages",
-      "status": "PLANNED",
+      "status": "SOURCE_VERIFIED",
       "note": "",
       "source_sha": null,
       "ci_run_id": null,
-      "changed_files": [],
-      "result": null,
-      "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "changed_files": [
+        "android/app/src/main/java/com/servoc/app/ui/FieldSessionsTab.java",
+        "android/app/src/main/java/com/servoc/app/field/FieldCycleRepository.java"
+      ],
+      "result": "Unified approve measurement/session action and rejected/failed attempts reasons UI; source code and compile gate pass; no actual sensor/relay bench",
+      "blocking_issue": "Physical device cycle/relay unavailable",
+      "next_action": "Instrument Android12 one-to-one approval and failed/retry states, and run real device relay/timer later"
     },
     {
       "id": "V8-F03",
       "title": "ChemCore Next Stable candidate and decision parity",
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": null,
+      "ci_run_id": 41563441119,
       "changed_files": [],
-      "result": null,
-      "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "result": "Next receipts source verified and mapped to all 12 V7-aligned panels; temporal kinetics and site per-source recurrence added",
+      "blocking_issue": "Android12 new temporal plot differential still in progress",
+      "next_action": "Read bitmap test results; verify one session ID, immutable receipt SHA and no stale legacy field/site conclusions"
     },
     {
       "id": "V8-F04",
@@ -76,14 +79,14 @@
     {
       "id": "V8-F05",
       "title": "R03 field session and R04 site source chart fidelity",
-      "status": "CI_PASS",
+      "status": "IN_PROGRESS",
       "note": "",
       "source_sha": "7316d6c7940f0e0e52ea7b3e841dc45518f3640a",
-      "ci_run_id": 41557779295,
+      "ci_run_id": 41563441088,
       "changed_files": [],
-      "result": "Android13 end-to-end real production R03 6-page PDF, R04 5-page PDF across two independently approved sessions, 16 XLSX sheets, full XML validity, original archived evidence SHA preserved, per-child source tamper rejected. RUN SUCCESS",
-      "blocking_issue": null,
-      "next_action": "Human visual review of captured PDFs, and review source series completeness across all chart slots; physical Tank still pending"
+      "result": "Legacy R03/R04 source-vetted PDF+20-sheet XLSX passed run 41563156609; new Next second-session source and per-site recurrence report scenario running",
+      "blocking_issue": "Next-specific Android13 full report not yet completed",
+      "next_action": "Check Next fixture PDF 2 analytical pages and site per-session source-root evidence, run 41563441088"
     },
     {
       "id": "V8-F06",
@@ -118,11 +121,11 @@
       "status": "CI_PASS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41557779295,
+      "ci_run_id": 41563156609,
       "changed_files": [],
-      "result": "Production field-session XLSX 16 worksheets present with correct V6 appendix sheets and workbook XML; archived approved data unchanged. Pass Android13",
+      "result": "Previous Android13 real production export test verified 20 worksheets (14 original + 2 V6 + 4 V8) and original source SHA unchanged",
       "blocking_issue": null,
-      "next_action": "Additional site cross-export and real device file downloads and opening remain separate"
+      "next_action": "Additional Next-site scenario and manual Excel data quality review"
     },
     {
       "id": "V8-F09",
@@ -130,11 +133,11 @@
       "status": "CI_PASS",
       "note": "",
       "source_sha": "0e8d8695a27b8e075c7166368047c4b8860034c1",
-      "ci_run_id": 41555405022,
+      "ci_run_id": 41563441183,
       "changed_files": [],
-      "result": "Approved V7ReportLayoutKit and V7FieldChartLayout Git blob SHA-1 unchanged; G1 seven-report source tests passed in full Android compile run",
+      "result": "Android source and approved V7 layout/hash regression passed at d0afceb; no page box or chart geometry changed",
       "blocking_issue": null,
-      "next_action": "Physical PDF page-image comparison and Arabic clipping not yet covered by G1"
+      "next_action": "Review Android13 Next-source PDF page render and clipping"
     },
     {
       "id": "V8-F10",
@@ -142,11 +145,11 @@
       "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41557779295,
+      "ci_run_id": 41563441183,
       "changed_files": [],
-      "result": "Compile Android source and R01/R02/R05/R06/R07 PDF Android12 pass; R03/R04 field/site PDF+XLSX Android13 PASS run 41557779295; F01/F02/F03 incomplete.",
+      "result": "Latest completed Android Java compile+G1 at d0afceb succeeded; Android12 new plots/Android13 site Next tests pending",
       "blocking_issue": null,
-      "next_action": "F01 UI buttons and Settings R0, F02 field timing, F03 scientific Next UI/DB/report consistency"
+      "next_action": "Wait for final CI outcomes by polling, not background user promise"
     },
     {
       "id": "V8-F11",
@@ -237,5 +240,33 @@
     "source_digest_unchanged": true,
     "artifact_id": 13195855319,
     "device_validation": false
+  },
+  "next_report_scientific_map": "docs/implementation/V8-NEXT-FIELD-SITE-CHART-SOURCE-REVIEW-2026-11-03_AR.md",
+  "next_report_changes": [
+    "V8NextChartRenderer.java: original-archive log Rs temporal kinetics, deduplicated scan coverage",
+    "SmartFieldSessionPdfWriter.java: 12 existing V7 slots use Next, executive table/title/outcome/source parity",
+    "NextSiteEvidenceCharts.java: per-independent-session Next roots and UID recurrence",
+    "SiteSummaryReportExporter.java: prefer actual Next receipt and no stale V7 chemistry or false ppm",
+    "SiteReportIntelligence.java: V8 status count, no legacy 144 recurrence when Next receipt exists",
+    "V8NextTemporalChartInstrumentedTest.java: Android bitmap differential",
+    "V8MultiSessionSiteFixtureActivity.java: second signed approved session includes CI-only Next receipt before SHA, Next field PDF and site pixel checks"
+  ],
+  "latest_verified_v8_next_report_compile": {
+    "run_id": 41563441183,
+    "status": "SUCCESS",
+    "source_commit": "d0afceb147c60b08fe36250358f5e5360b00a274",
+    "scope": "real complete source compile and G1 report parity, not emulator"
+  },
+  "latest_pending_next_chart_device": {
+    "run_id": 41563441119,
+    "status": "IN_PROGRESS",
+    "source_commit": "d0afceb147c60b08fe36250358f5e5360b00a274",
+    "scope": "Android12 V8 Next chart kinetics and per-channel scan coverage pixel QA"
+  },
+  "latest_pending_next_site_report": {
+    "run_id": 41563441088,
+    "status": "IN_PROGRESS",
+    "source_commit": "d0afceb147c60b08fe36250358f5e5360b00a274",
+    "scope": "Android13 two approved sessions one Next research receipt, full PDF and 20-sheet XLSX QA"
   }
 }
