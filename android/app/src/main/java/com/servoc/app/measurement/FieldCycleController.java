@@ -56,6 +56,16 @@ public final class FieldCycleController {
             catch(Exception ex){
                 android.util.Log.e("TankFieldCycle","Cannot cancel active cycle",ex);
                 MeasurementSessionRegistry.requestFieldStop("error");
+                if(turnOff){
+                    // No worker means no source-qualified OFF evidence. Preserve
+                    // the lock for the next process rather than forgetting it.
+                    try{host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,
+                        "MQ_RELAY_RELEASE_WORKER_UNAVAILABLE: "+ex.getClass().getSimpleName());}
+                    catch(Exception dbFailure){
+                        android.util.Log.e("TankFieldCycle",
+                            "Cannot persist shutdown safety fault",dbFailure);
+                    }
+                }
             }
         }else if(!busy){
             MeasurementSessionRegistry.endFieldOperation();
@@ -171,7 +181,9 @@ public final class FieldCycleController {
                         message(unsafeRelay?"SAFETY_FAULT":"RECOVERED",
                             unsafeRelay?
                                 "استعادة جلسة منقطعة: لم يُؤكد إطفاء ريلاي MQ؛ افصل طاقة الحساسات بأمان":
-                                "تم وسم "+n+" دورة منقطعة بأنها غير صالحة للاعتماد","");
+                                previousSafetyFault||!expectedDevice.isEmpty()?
+                                    "تم تأكيد إطفاء ريلاي MQ للروبوت المسجل وإزالة قفل السلامة":
+                                    "تم وسم "+n+" دورة منقطعة بأنها غير صالحة للاعتماد","");
                         observer.refreshed();
                     }
                 });
@@ -439,13 +451,27 @@ public final class FieldCycleController {
         // Keep the controller locked while the worker persists failure and
         // obtains a positive OFF acknowledgement from the physical device.
         main.removeCallbacks(tick);
-        host.io().execute(()->{
-            boolean unsafeRelay=failWorker(cid,reason,turnOff);
-            final String message=unsafeRelay?
-                reason+" • خطر: لم يُؤكد إطفاء ريلاي MQ؛ أوقف الطاقة بأمان":
-                reason;
-            main.post(()->end(unsafeRelay?"SAFETY_FAULT":"FAILED",message,cid));
-        });
+        try{
+            host.io().execute(()->{
+                boolean unsafeRelay=failWorker(cid,reason,turnOff);
+                final String message=unsafeRelay?
+                    reason+" • خطر: لم يُؤكد إطفاء ريلاي MQ؛ أوقف الطاقة بأمان":
+                    reason;
+                main.post(()->end(unsafeRelay?"SAFETY_FAULT":"FAILED",message,cid));
+            });
+        }catch(RuntimeException unavailable){
+            android.util.Log.e("TankFieldCycle","Cannot schedule safe measurement abort",unavailable);
+            if(turnOff){
+                try{host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,
+                    "MQ_RELAY_ABORT_WORKER_UNAVAILABLE: "+unavailable.getClass().getSimpleName());}
+                catch(Exception dbFailure){android.util.Log.e("TankFieldCycle",
+                    "Unable to retain relay safety lock",dbFailure);}
+            }
+            MeasurementSessionRegistry.requestFieldStop("error");
+            end(turnOff?"SAFETY_FAULT":"FAILED",
+                turnOff?"تعذر جدولة إيقاف القياس؛ حالة ريلاي MQ غير مؤكدة، افصل الطاقة بأمان":
+                    "تعذر إنهاء دورة القياس",cid);
+        }
     }
     /** Fail closed even when cancellation or Activity destruction interrupted
      * an MQ capture. A successful HTTP power-off command is NOT device ACK.
