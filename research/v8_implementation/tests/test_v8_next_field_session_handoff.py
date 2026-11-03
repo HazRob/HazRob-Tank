@@ -155,4 +155,16 @@ class FieldHandoff(unittest.TestCase):
         for control in ('beginMeasurement','retryMeasurement','approveMeasurement',
                         'deleteMeasurement','gasCheck','particleCheck','physicalCheck'):
             self.assertIn(control+'.setEnabled(false)',clear)
+    def test_f01_late_review_callback_cannot_approve_unbound_session(self):
+        ui=read("ui/FieldSessionsTab.java")
+        render=ui.split('private void renderCycleButtons(String stage){',1)[1]
+        self.assertIn('selectedHasReviewMeasurement&&!selectedHasApprovedMeasurement',render)
+        self.assertIn('!selectedSessionId.isEmpty()',render)
+        self.assertIn('"BLOCKED".equals(stage)',render)
+        self.assertIn('"DELETING".equals(stage)',render)
+        loader=ui.split('private void showSessionLoadError(){',1)[1].split('private void renderSessionUi(',1)[0]
+        self.assertIn('clearCycleSelection(relayRecoverySafetyFault?',loader)
+        self.assertIn('جميع أوامر البدء والاعتماد معطلة',loader)
+        self.assertIn('beginMeasurement.setEnabled(false)',ui.split('private void clearCycleSelection(',1)[1])
+
 if __name__=="__main__":unittest.main(verbosity=2)
