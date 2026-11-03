@@ -86,12 +86,27 @@ def main():
         })
     assert checks==2925 and max_relative<3e-14
     assert all(x["clean_air_model_nonzero_ppm"]>0 for x in comparison)
+    # Safety regression: the previous air-normalized response gate may compare
+    # Rs/R_air with a 10% relative drop threshold (0.90). If a converted
+    # source R0 is written over R_air, this original gate can miss changes.
+    # This is a hypothetical gate-behavior test, not an alarm accuracy claim.
+    hypothetical_air_drop=0.5
+    gate_cutoff=0.9
+    safety_checks=0
+    for model,k in SOURCE_EXAMPLE_K.items():
+        air_ratio=hypothetical_air_drop
+        source_ratio=hypothetical_air_drop*k
+        assert air_ratio<gate_cutoff
+        assert not source_ratio<gate_cutoff
+        safety_checks+=2
     report={
         "schema":"hazrob.tank.v8.p11_1.r0_reference_equivalence_g1/1",
         "scope":"MATH_AND_SOURCE_EXAMPLE_ONLY_NO_HARDWARE_OR_G3",
         "physical_Rs_measurements_used":False,
         "curve_count":len(CURVES), "measured_Tank_air_reference_channels":8,
         "numeric_assertions_passed":checks,
+        "hypothetical_air_normalization_gate_assertions_passed":safety_checks,
+        "hypothetical_50pct_air_drop_missed_if_source_ratio_used":len(SOURCE_EXAMPLE_K),
         "max_relative_equivalence_error":max_relative,
         "naive_multiplier_range":[min(c["wrong_naive_over_correct_factor"] for c in comparison),
                                   max(c["wrong_naive_over_correct_factor"] for c in comparison)],
