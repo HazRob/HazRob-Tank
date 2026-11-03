@@ -55,8 +55,8 @@
     {
       "id": "V8-F03",
       "title": "ChemCore Next Stable candidate and decision parity",
-      "status": "CI_PASS_SOURCE_ONLY",
-      "note": " F03 resumed: source-model research ratios now use Next receipt's device-bound frozen AIR_RS_MEAN, not raw firmware r0 (5d788ba,d811548). Relay ON signals validated consistently in instant and field (ef64063,19fcee6). 43+6 archived source curves linked to Next via Qualification.unverified: abstention diagnostics only, no source R0 equivalence/identity/ppm; instant and field wired (43af534,a775ebc,51fd779).",
+      "status": "SOURCE_G1_PASS_NEW_CI_PENDING",
+      "note": " F03 resumed: source-model research ratios now use Next receipt's device-bound frozen AIR_RS_MEAN, not raw firmware r0 (5d788ba,d811548). Relay ON signals validated consistently in instant and field (ef64063,19fcee6). 43+6 archived source curves linked to Next via Qualification.unverified: abstention diagnostics only, no source R0 equivalence/identity/ppm; instant and field wired (43af534,a775ebc,51fd779). Source ledger 109 reconciled: original 89 MQDataScience, 6 alternative MQ135, 14 MQSensorsLib examples; 49 V6 archived equations connected as nonpromoting; remaining 60 = 13 Tank-sensor research examples pending primary evidence + 47 for sensors absent on Tank. F03 source-scale provenance labels added at 241786b; latest compile pending.",
       "source_sha": "e0f59f1da3a23a49a8105502d9e1361f62cf4b69",
       "ci_run_id": 41576799501,
       "changed_files": [
@@ -68,7 +68,7 @@
       ],
       "result": "Java17 complete staged Android compile + 47 static source-contract checks PASS run 41576799501 at e0f59f1; Next 49 source curves inspected only for abstention, no physical G3 evidence.",
       "blocking_issue": "G2/G3 source equivalence, physical Tank, source trained fingerprints and 60 further equations not automatically active; added diagnostic expert outcomes are non-promoting.",
-      "next_action": "Next source reconciliation: compare the 109 formulas ledger (49 mapped vs other 60), qualify source R0/heater/threshold from primary evidence; never populate candidate ranks or ppm without provenance. Do not repeat F01/F02 UI tests by default."
+      "next_action": "Review Java compile 41577218413 at ef1f4615, then triage 13 installed-sensor MQSensorsLib example formulas at P11.1; do not import missing 47-sensor equations into Tank inference. Keep G3=0."
     },
     {
       "id": "V8-F04",
@@ -469,6 +469,16 @@
     "unqualified_for_gas_detection": true,
     "source_record_register": "research/chemcore_next/source_curves/chemcore_next_p03_2_unified_109_formula_register.csv",
     "checkpoint": "docs/implementation/V8-F03-NEXT-RESEARCH-SOURCE-RECONCILIATION-2026-11-03_AR.md",
-    "remaining_unbound_formulas_subject_to_source_review": 60
+    "remaining_unbound_formulas_subject_to_source_review": 60,
+    "source_register_count": 109,
+    "nonlinked_count": 60,
+    "unlinked_installed": 13,
+    "unlinked_hardware_absent": 47,
+    "all_source_r0_and_heater_qualified": false,
+    "source_manifest_blob": "50369f8e25ffed10f2bb2a3168dd86330e4b1ade",
+    "triage_csv": "research/chemcore_next/source_curves/v8_f03_unlinked_60_formula_triage_2026-11-03.csv",
+    "latest_compile_run": 41577218413,
+    "latest_compile_status": "IN_PROGRESS",
+    "last_confirmed_compile_success": 41576799501
   }
 }
