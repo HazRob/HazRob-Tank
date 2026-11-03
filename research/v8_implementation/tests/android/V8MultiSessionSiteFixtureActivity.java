@@ -273,6 +273,80 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             new FieldCycleRepository(db).byId(cycle2)),
             "second independently approved session verified by production digest");
     }
+    /**
+     * P11.3 negative replay gates: a forged K, a swapped immutable Next UID
+     * or a replaced source-archive digest must NEVER enter an XLSX result.
+     * Includes the pre-P11 missing-meta migration policy, which exports
+     * original archived Next without inventing any dual-reference numbers.
+     */
+    private void verifyDualReferenceExcelReadback(ExperimentsDb db,
+            File nextWorkbook)throws Exception{
+        final String sid="MS-N06G-02";
+        final String key="v8_field_next_dual_reference_"+sid;
+        final String saved=db.getMeta(key,"");
+        require(!saved.isBlank(),"P11 fixture source-specific R0 metadata persisted");
+        try(ZipFile report=new ZipFile(nextWorkbook)){
+            java.io.ByteArrayOutputStream cells=new java.io.ByteArrayOutputStream();
+            for(java.util.Enumeration<? extends ZipEntry> files=report.entries();
+                files.hasMoreElements();){
+                ZipEntry e=files.nextElement();
+                if(e.getName().matches("xl/worksheets/sheet[0-9]+\\\\.xml")){
+                    try(java.io.InputStream input=report.getInputStream(e)){
+                        byte[] buffer=new byte[8192];int n;
+                        while((n=input.read(buffer))>=0)if(n>0)cells.write(buffer,0,n);
+                    }
+                }
+            }
+            String xml=cells.toString(StandardCharsets.UTF_8.name());
+            require(xml.contains("MQSL-EX-007")&&xml.contains("MQDATA43-001")&&
+                xml.contains("SOURCE_BOUND_RESEARCH_ONLY_G3_NOT_QUALIFIED")&&
+                xml.contains("R0 source derived")&&xml.contains("RESEARCH"),
+                "actual 20-sheet production XLSX includes 49+13 research formula rows");
+        }
+        for(int attempt=0;attempt<3;attempt++){
+            JSONObject altered=new JSONObject(saved);
+            if(attempt==0)altered.put("next_decision_uid","NEXT-FORGED-OTHER-SESSION");
+            else if(attempt==1)altered.put("source_archive_sha256","0".repeat(64));
+            else{
+                JSONObject scientific=altered.getJSONObject("scientific_source_diagnostics");
+                org.json.JSONArray models=scientific.getJSONArray("all_reference_models");
+                boolean changed=false;
+                for(int i=0;i<models.length();i++){
+                    JSONObject m=models.optJSONObject(i);
+                    if(m!=null&&"MQSL-EX-007".equals(m.optString("source_curve_id"))){
+                        m.put("source_example_clean_air_K",8.30);
+                        changed=true;break;
+                    }
+                }
+                require(changed,"pinned source K present for tamper test");
+            }
+            try{
+                db.putMeta(key,altered.toString());
+                boolean refused=false;
+                try{
+                    FieldSessionReportExporter.writeXlsx(
+                        new ByteArrayOutputStream(),db,"FS-N06G-APPROVED-2",null);
+                }catch(IllegalStateException expected){
+                    refused=expected.getMessage()!=null&&
+                        expected.getMessage().startsWith("P11_FIELD_LEDGER_");
+                }
+                require(refused,"P11 sourced Excel rejects tampered ledger variation "+attempt);
+            }finally{db.putMeta(key,saved);}
+        }
+        // Historical pre-P11 measurements remain exportable without claiming
+        // a dual-reference numerical result that did not exist at capture time.
+        try{
+            db.putMeta(key,"");
+            ByteArrayOutputStream legacyCompatible=new ByteArrayOutputStream();
+            FieldSessionReportExporter.writeXlsx(
+                legacyCompatible,db,"FS-N06G-APPROVED-2",null);
+            require(legacyCompatible.size()>5500,
+                "historical Next measurement exports with an explicit missing-P11 note");
+        }finally{db.putMeta(key,saved);}
+        require(db.getMeta(key,"").equals(saved),
+            "P11 tamper and migration tests never mutate archived source provenance");
+    }
+
     private void verifyMultiSessionSite(ExperimentsDb db,byte[] baseline)throws Exception{
         SiteSummaryReportExporter.SiteBundle site=
             SiteSummaryReportExporter.resolve(db,"SITE-N06G");
@@ -340,6 +414,7 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             output.write(nextXlsx.toByteArray());
         }
         require(nextXlsx.size()>5500,"Next field XLSX source-bound production bytes");
+        verifyDualReferenceExcelReadback(db,nextXlsxFile);
         ByteArrayOutputStream siteXlsx=new ByteArrayOutputStream();
         SmartSiteXlsxWriter.write(siteXlsx,
             SiteSummaryReportExporter.resolve(db,"SITE-N06G"));
