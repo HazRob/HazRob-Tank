@@ -359,7 +359,7 @@ public final class TankInstantV7PdfWriter {
             String reason=o.optString("failure_reason_code","");
             String provenance;
             if(!reason.isEmpty()){
-                provenance="سبب عدم الحساب: "+
+                provenance="سبب عدم الحساب ["+reason+"]: "+
                     NextResearchOperatorText.cause(reason);
             }else if("MQSENSORSLIB_PINNED_LIBRARY_EXAMPLE".equals(
                     o.optString("source_class",""))){
@@ -370,7 +370,7 @@ public final class TankInstantV7PdfWriter {
             }else{
                 provenance="R_air not independently matched to source R0 • RESEARCH ONLY";
             }
-            right(c,provenance,M+mm(2),rowY+27,w-mm(4),7.4f,false,MEDIUM);
+            right(c,provenance,M+mm(2),rowY+24,w-mm(4),7.1f,false,MEDIUM);
         }
         doc.finishPage(page);
     }
