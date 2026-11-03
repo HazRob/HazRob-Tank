@@ -98,9 +98,8 @@ public final class NextFieldArchiveBridge {
     JSONObject safe=new JSONObject(terminal.toString());
     if(safe.optString("device_id","").isBlank())
       throw new IllegalStateException("FIELD_TERMINAL_DEVICE_ID_MISSING");
-    JSONObject relay=safe.optJSONObject("relay");
-    if(relay==null||!relay.optBoolean("on",relay.optInt("mask",0)!=0))
-      throw new IllegalStateException("FIELD_RELAY_NOT_ON_AT_CAPTURE_SEAL");
+    if(!NextAndroidAdapter.relayConfirmedOn(safe))
+      throw new IllegalStateException("FIELD_RELAY_NOT_ON_OR_INCONSISTENT_AT_CAPTURE_SEAL");
     JSONObject values=new JSONObject();
     for(var ch:archive.qualifiedChannels.values()){
       JSONObject v=new JSONObject();
