@@ -546,9 +546,23 @@ public final class FieldCycleController {
         }
         return true;
     }
+    /** An ON acknowledgement must be just as explicit as OFF. A mismatched
+     * boolean/mask pair, cached malformed JSON or missing field cannot start
+     * a 120-second acquisition against an unconfirmed heater state.
+     */
     private static boolean relayOn(JSONObject d){
         JSONObject r=d==null?null:d.optJSONObject("relay");
-        return r!=null&&r.optBoolean("on",r.optInt("mask",0)!=0);
+        if(r==null||(!r.has("on")&&!r.has("mask")))return false;
+        if(r.has("on")){
+            Object state=r.opt("on");
+            if(!(state instanceof Boolean)||!((Boolean)state))return false;
+        }
+        if(r.has("mask")){
+            Object mask=r.opt("mask");
+            if(!(mask instanceof Number)||!Double.isFinite(((Number)mask).doubleValue())||
+               ((Number)mask).doubleValue()!=1.0)return false;
+        }
+        return true;
     }
     private static String identity(JSONObject d){return d==null?"":d.optString("device_id","").trim();}
     /** Reject nonexistent PM rather than saving a fictitious zero concentration. */
