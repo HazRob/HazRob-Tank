@@ -7,6 +7,7 @@ import android.os.ParcelFileDescriptor;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import com.hazrob.tank.emissions.EmissionSessionStore;
+import com.hazrob.tank.emissions.EmissionEngineConfig;
 import com.hazrob.tank.emissions.EmissionResearchEngine;
 import com.hazrob.tank.emissions.EmissionReportPdf;
 import org.json.JSONObject;
@@ -26,7 +27,15 @@ public final class EmissionSessionInstrumentedTest {
         Context ctx=InstrumentationRegistry.getInstrumentation().getTargetContext();
         EmissionSessionStore db=new EmissionSessionStore(ctx);
         String salt=Long.toHexString(System.nanoTime());
-        long engineOne=db.create("محرك ديزل - CI "+salt);
+        EmissionEngineConfig configuration=EmissionEngineConfig.of(
+            EmissionEngineConfig.LIQUID,EmissionEngineConfig.COMPRESSION,
+            300.0,5.0,1500.0,65.0,0.8,null,false);
+        long engineOne=db.create("محرك ديزل - CI "+salt,configuration);
+        assertEquals("LIQUID_LT400",db.engines().stream()
+            .filter(e->e.id==engineOne).findFirst().get().ifcProfile);
+        assertEquals("WITHIN_IFC_TABLE_1_1_2_SCOPE_BY_ENTERED_VALUES",
+            db.engines().stream().filter(e->e.id==engineOne)
+                .findFirst().get().config.applicability());
         long engineTwo=db.create("مولد منفصل - CI "+salt);
         try{
             Map<String,Double> signals=new LinkedHashMap<>();
@@ -68,13 +77,20 @@ public final class EmissionSessionInstrumentedTest {
             assertTrue(first.getJSONArray("pollutants").getJSONObject(2)
                 .getJSONArray("next_source_hypotheses").length()==1);
 
-            assertEquals(EmissionResearchEngine.INFERENCE,first.optString("mode"));
+            assertEquals("CHEMCORE_NEXT_SCOPED_EMISSIONS",first.optString("mode"));
             for(int i=0;i<first.getJSONArray("pollutants").length();i++){
                 JSONObject p=first.getJSONArray("pollutants").getJSONObject(i);
                 assertTrue(p.isNull("value_ppm"));
                 assertFalse(p.optBoolean("exceeded",true));
             }
             db.addMeasurement(engineOne,first);
+            assertEquals(1,db.count(engineOne));
+            try{
+                db.addMeasurement(engineOne,first);
+                fail("second measurement must be rejected by engine 1:1 constraint");
+            }catch(IllegalStateException expected){
+                assertTrue(expected.getMessage().contains("ONE_MEASUREMENT"));
+            }
             assertEquals(1,db.count(engineOne));
             assertEquals(0,db.count(engineTwo));
             assertEquals(engineOne,db.latest(engineOne).optLong("engine_id"));
