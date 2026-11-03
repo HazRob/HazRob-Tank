@@ -20,6 +20,10 @@ class MqSensorCardResilienceTest(unittest.TestCase):
         self.assertIn("data.setTextColor(0xFF37474F)", self.sensor)
         self.assertNotIn("data.setTextColor(0xFFCFD8DC)", self.sensor)
 
+    def test_missing_baseline_not_described_as_ready_or_embedded(self):
+        self.assertIn('baseline?" • جاهز":" • خط الأساس غير متحقق"', self.sensor)
+        self.assertNotIn('" • baseline مدمج"', self.sensor)
+
     def test_unavailable_diagnostic_does_not_dereference_null_health(self):
         self.assertIn("SensorHealthEngine.Snapshot health=host.sensorHealth(hw.key)", self.sensor)
         self.assertRegex(
