@@ -172,6 +172,19 @@
       "result": null,
       "blocking_issue": null,
       "next_action": "Device bench and owner qualification"
+    },
+    {
+      "id": "V8-P11.2",
+      "title": "ChemCore Next dual R_air / per-source R0 reference compatibility",
+      "status": "G1_SOURCE_AND_ANDROID_COMPILE_PASS_G2_G3_PENDING",
+      "source_sha": "fe6eeb2e6ce223eae0d4415731f44201927f34b0",
+      "ci_run_id": 41583931823,
+      "reference_math": "R0_source=R_air/K_source; Rs/R0_source=K_source*(Rs/R_air)",
+      "output_scope": "62 source bindings, 13 MQSL dual-reference numerical estimates research-only, 47 absent-sensor formulas archived",
+      "safety": "R_air immutable; K source unqualified; no identity, safety alarm, physical G3 or qualified ppm",
+      "field_capture": "NextFieldArchiveBridge preserves source-archive digest + decision UID and stores dual-reference diagnostic in SQLite meta",
+      "checkpoint": "docs/implementation/V8-P11-DUAL-R0-CHEMCORE-NEXT-2026-11-03_AR.md",
+      "next_action": "readback/export of field source ledger in expanded Excel and physical G2/G3"
     }
   ],
   "priority_now": [
@@ -480,5 +493,31 @@
     "latest_compile_run": 41577218413,
     "latest_compile_status": "SUCCESS",
     "last_confirmed_compile_success": 41576799501
+  },
+  "latest_v8_p11_dual_r0": {
+    "status": "SOURCE_G1_JAVA17_AND_ANDROID_COMPILE_SUCCESS_G3_NOT_RUN",
+    "checkpoint": "docs/implementation/V8-P11-DUAL-R0-CHEMCORE-NEXT-2026-11-03_AR.md",
+    "source_commit": "fe6eeb2e6ce223eae0d4415731f44201927f34b0",
+    "g1_run": 41583931823,
+    "android_compile_run": 41583899922,
+    "math_assertions_python": 2925,
+    "math_assertions_java": 991,
+    "static_contract_tests": 7,
+    "original_equations_total": 109,
+    "v6_experimental_equations_research_only": 49,
+    "mqsensorslib_installed_research_only": 13,
+    "models_bound_to_next_abstention_only": 62,
+    "formulas_non_installed_archived": 47,
+    "preserve_measured_r_air": true,
+    "source_r0_derived_per_curve": true,
+    "physical_source_k_heater_domain_qualified": false,
+    "ppm_certified": false,
+    "physical_tank_g3_validated": 0,
+    "field_source_json_sqlite_meta_key_prefix": "v8_field_next_dual_reference_",
+    "field_next_source_decision_digest_bound": true,
+    "apk_built": false,
+    "report_pdf_geometry_changed": false,
+    "field_xlsx_export_consumes_new_dual_r0_ledger": false,
+    "next_step": "Connect persisted field dual-reference research ledger to expanded Excel and verify mobile SQLite readback; separate physical G2/G3 calibration."
   }
 }
