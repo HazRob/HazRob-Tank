@@ -9,6 +9,7 @@ import android.graphics.pdf.PdfDocument;
 import com.servoc.app.ReleaseAudit;
 import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
+import com.servoc.app.chemcore.nextintegration.NextDecisionStore;
 import com.servoc.app.data.ExperimentQueries;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.SessionSeries;
@@ -47,6 +48,12 @@ public final class SmartFieldSessionPdfWriter {
         if(b.analyticalContract==null)throw new IllegalStateException("SmartReport analytical contract missing");
         SmartReportAnalyticalContract contract=b.analyticalContract;
         List<Evidence> all=evidence(db,b.measurementSessionIds);Evidence primary=primaryFromBundle(b,contract,all);Consensus cs=consensus(all);
+        // A field session contains one accepted measurement. If its original
+        // ChemCore Next receipt exists, ALL Next panels below MUST bind to
+        // that exact measurement ID, never to a current/live decision.
+        NextDecisionStore.Receipt next=new NextDecisionStore(db)
+            .latestForSession(b.primaryMeasurementSessionId);
+        if(next!=null)V8NextChartRenderer.requireSameSession(next,b.primaryMeasurementSessionId);
         SessionSeries.Series s=contract.series();JSONObject q=contract.decision();
         ReportIntelligence.ReportPlan plan=ReportIntelligence.plan(s,q,b.measurementSessionIds.size());JSONObject hazard=CandidateHazardContext.evaluate(db,q);
         boolean crossSession=all.size()>1;
@@ -60,10 +67,20 @@ public final class SmartFieldSessionPdfWriter {
         int v6Pages=(v6Count+1)/2;
         int total=basePages+cyclePages+v6Pages;
         PdfDocument pdf=new PdfDocument();
-        PdfDocument.Page p=page(pdf,1);executiveOverview(p.getCanvas(),b,all,primary,plan,hazard,cs);chrome(p.getCanvas(),1,total,b,plan);pdf.finishPage(p);
+        PdfDocument.Page p=page(pdf,1);executiveOverview(p.getCanvas(),b,all,primary,plan,hazard,cs,next);chrome(p.getCanvas(),1,total,b,plan);pdf.finishPage(p);
         p=page(pdf,2);sensorSix(p.getCanvas(),primary);chrome(p.getCanvas(),2,total,b,plan);pdf.finishPage(p);
-        p=page(pdf,3);chemCoreSix(p.getCanvas(),primary);chrome(p.getCanvas(),3,total,b,plan);pdf.finishPage(p);
-        p=page(pdf,4);contextSix(p.getCanvas(),primary,plan);chrome(p.getCanvas(),4,total,b,plan);pdf.finishPage(p);
+        p=page(pdf,3);
+        if(next!=null){
+            title(p.getCanvas(),"ChemCore Next • الأدلة والاستدلال • 6 مخططات",42);
+            V8NextChartRenderer.drawPdfDecisionSix(p.getCanvas(),grid6(),next,s);
+        }else chemCoreSix(p.getCanvas(),primary);
+        chrome(p.getCanvas(),3,total,b,plan);pdf.finishPage(p);
+        p=page(pdf,4);
+        if(next!=null){
+            title(p.getCanvas(),"ChemCore Next • مصادر القياس والجودة • 6 مخططات",42);
+            V8NextChartRenderer.drawPdfContextSix(p.getCanvas(),grid6(),next,s);
+        }else contextSix(p.getCanvas(),primary,plan);
+        chrome(p.getCanvas(),4,total,b,plan);pdf.finishPage(p);
         if(crossSession){p=page(pdf,5);crossSessionAndMethodology(p.getCanvas(),b,all,primary,plan,chemicals,cs);chrome(p.getCanvas(),5,total,b,plan);pdf.finishPage(p);}
         for(int chunk=0;chunk<cyclePages;chunk++){
             int pageNo=basePages+chunk+1;
@@ -89,12 +106,41 @@ public final class SmartFieldSessionPdfWriter {
     private static PdfDocument.Page page(PdfDocument pdf,int n){return pdf.startPage(new PdfDocument.PageInfo.Builder(PAGE_WIDTH,PAGE_HEIGHT,n).create());}
     private static RectF[] grid6(){RectF[] r=new RectF[6];float left=34,top=68,gx=10,gy=12,w=(PAGE_WIDTH-68-2*gx)/3f,h=(PAGE_HEIGHT-68-38-gy)/2f;for(int row=0;row<2;row++)for(int col=0;col<3;col++){int i=row*3+col;float x=left+col*(w+gx),y=top+row*(h+gy);r[i]=new RectF(x,y,x+w,y+h);}return r;}
 
-    private static void executiveOverview(Canvas c,FieldSessionReportExporter.Bundle b,List<Evidence> all,Evidence primary,ReportIntelligence.ReportPlan plan,JSONObject hazard,Consensus cs){
+    private static void executiveOverview(Canvas c,FieldSessionReportExporter.Bundle b,List<Evidence> all,Evidence primary,ReportIntelligence.ReportPlan plan,JSONObject hazard,Consensus cs,NextDecisionStore.Receipt next){
         title(c,"الملخص التنفيذي • "+plan.modeAr,42);float y=74;String[][] rows={{"الموقع",b.site.name},{"الجلسة",b.fieldSession.name},{"الحالة",b.fieldSession.status},{"جلسات القياس",String.valueOf(all.size())},{"مرجع التحليل",primary==null?"—":shorten(primary.sessionId,32)}};for(String[] r:rows){labelValue(c,r[0],r[1],y);y+=22;}
-        JSONObject q=primary==null?null:primary.decision;metric(c,420,72,178,70,"المرشح الأعلى",q==null?"—":topCandidate(q),q==null?"—":q.optString("evidence_tier","—"),0xFFFFF3E0);metric(c,610,72,190,70,"ثبات الجلسة",cs.count+" / "+cs.total,shorten(cs.label,24)+" • "+pct(cs.meanPosterior),0xFFE8F5E9);metric(c,420,152,178,70,"الجودة",primary==null?"—":(primary.validMq()<0?"MQ —":"MQ "+primary.validMq()+"/8"),"Posterior "+pct(plan.topPosterior)+" • OOD "+fmt(plan.oodScore),0xFFF4F6F8);metric(c,610,152,190,70,"مصفوفة 144",plan.panelCandidateSupported+" دعم","Evaluated "+plan.panelEvaluated+"/"+plan.panelTarget,0xFFE0F7FA);
+        JSONObject q=primary==null?null:primary.decision;
+        if(next!=null){
+            var result=next.originalDecision;
+            String candidate=result.rankedEligibleCandidates.isEmpty()?"UNKNOWN":
+                "UID "+result.rankedEligibleCandidates.get(0).canonicalChemicalUid;
+            int valid=0;
+            for(var reading:next.sourceSnapshot.readings)
+                if(reading.quality==com.hazrob.tank.chemcore.next.CoreContracts.SampleQuality.VALID)valid++;
+            metric(c,420,72,178,70,"مرشح Next البحثي",candidate,
+                result.status.name(),0xFFFFF3E0);
+            metric(c,610,72,190,70,"الأدلة المستقلة",Integer.toString(result.evidence.size()),
+                "Candidate roots • "+result.rankedEligibleCandidates.size()+" UIDs",0xFFE8F5E9);
+            metric(c,420,152,178,70,"جودة القنوات","MQ "+valid+"/8",
+                "Frozen original • no invented confidence",0xFFF4F6F8);
+            metric(c,610,152,190,70,"مرجع القرار",shorten(next.decisionUid,19),
+                "Stable SHA "+shorten(next.sourceSnapshot.stableManifestHash,15),0xFFE0F7FA);
+        }else{
+            metric(c,420,72,178,70,"المرشح الأعلى",q==null?"—":topCandidate(q),q==null?"—":q.optString("evidence_tier","—"),0xFFFFF3E0);
+            metric(c,610,72,190,70,"ثبات الجلسة",cs.count+" / "+cs.total,shorten(cs.label,24)+" • "+pct(cs.meanPosterior),0xFFE8F5E9);
+            metric(c,420,152,178,70,"الجودة",primary==null?"—":(primary.validMq()<0?"MQ —":"MQ "+primary.validMq()+"/8"),"Posterior "+pct(plan.topPosterior)+" • OOD "+fmt(plan.oodScore),0xFFF4F6F8);
+            metric(c,610,152,190,70,"مصفوفة 144",plan.panelCandidateSupported+" دعم","Evaluated "+plan.panelEvaluated+"/"+plan.panelTarget,0xFFE0F7FA);
+        }
         text(c,"جلسات القياس الفنية",42,212,11,Color.BLACK,true);String[] h={"Session","Samples","Duration","Outcome","Top candidate","Post.","MQ"};float[] x={42,248,310,380,490,655,735};for(int i=0;i<h.length;i++)text(c,h[i],x[i],236,7.5f,Color.DKGRAY,true);float yy=258;int shown=0;for(Evidence e:all){if(shown++>=7)break;boolean p=primary!=null&&e.sessionId.equals(primary.sessionId);if(p)box(c,36,yy-14,765,23,0xFFE3F2FD);text(c,(p?"★ ":"")+shorten(e.sessionId,29),x[0],yy,7.2f,Color.BLACK,p);text(c,String.valueOf(e.samples()),x[1],yy,7.2f,Color.BLACK,false);text(c,String.format(Locale.US,"%.1fs",e.durationMs()/1000.0),x[2],yy,7.2f,Color.BLACK,false);text(c,shorten(e.outcome(),15),x[3],yy,7.2f,Color.BLACK,false);text(c,shorten(e.topCandidate(),20),x[4],yy,7.2f,Color.BLACK,false);text(c,pct(e.posterior()),x[5],yy,7.2f,Color.BLACK,false);text(c,e.validMq()<0?"—":e.validMq()+"/8",x[6],yy,7.2f,Color.BLACK,false);yy+=25;}
         if(all.size()>7)text(c,"+ "+(all.size()-7)+" جلسات إضافية في Excel التفصيلي",42,yy+4,8,Color.DKGRAY,false);
-        if(hazard!=null&&hazard.optJSONArray("candidates")!=null&&hazard.optJSONArray("candidates").length()>0)CandidateHazardCharts.executiveStrip(c,new RectF(42,442,800,526),hazard);
+        if(next==null&&hazard!=null&&hazard.optJSONArray("candidates")!=null&&
+           hazard.optJSONArray("candidates").length()>0)
+            CandidateHazardCharts.executiveStrip(c,new RectF(42,442,800,526),hazard);
+        else if(next!=null){
+            text(c,"Next decision: "+shorten(next.decisionUid,45)+
+                " • SHA "+shorten(next.snapshotSha256,24),42,470,9,Color.DKGRAY,false);
+            text(c,"All chemical conclusions above refer ONLY to this archived measurement",
+                42,492,8.5f,Color.DKGRAY,false);
+        }
         text(c,"Screening لا يساوي هوية مؤكدة أو PPM؛ M4 وحده يسمح بالقياس الكمي المهني.",42,548,8,Color.DKGRAY,false);
     }
 
