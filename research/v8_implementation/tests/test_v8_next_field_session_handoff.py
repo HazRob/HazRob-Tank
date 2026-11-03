@@ -141,4 +141,18 @@ class FieldHandoff(unittest.TestCase):
             self.assertIn(control+'.setEnabled(',buttons)
         for control in ('gasCheck','particleCheck','physicalCheck'):
             self.assertIn(control+'.setEnabled(!locked&&selectedCanBegin&&!relayRecoverySafetyFault)',buttons)
+    def test_f01_empty_sites_and_sessions_clear_old_cycle_ids(self):
+        ui=read("ui/FieldSessionsTab.java")
+        render=ui.split('private void renderSessionUi(SessionData data){',1)[1].split('private static CheckBox measurementCheck',1)[0]
+        self.assertGreaterEqual(render.count('clearCycleSelection(data.relaySafetyFault);return;'),2)
+        clear=ui.split('private void clearCycleSelection(String relayFault){',1)[1].split('private void renderCycleWorkspace(',1)[0]
+        for required in ('latestCycleId="";','selectedCanBegin=false;',
+                         'selectedHasApprovedMeasurement=false;',
+                         'selectedHasReviewMeasurement=false;',
+                         'relayRecoverySafetyFault=relayFault!=null&&!relayFault.isEmpty();',
+                         'failureDetails.setVisibility(View.VISIBLE)'):
+            self.assertIn(required,clear)
+        for control in ('beginMeasurement','retryMeasurement','approveMeasurement',
+                        'deleteMeasurement','gasCheck','particleCheck','physicalCheck'):
+            self.assertIn(control+'.setEnabled(false)',clear)
 if __name__=="__main__":unittest.main(verbosity=2)
