@@ -438,7 +438,8 @@ public final class FieldCycleController {
         }
         if(r.has("mask")){
             Object mask=r.opt("mask");
-            if(!(mask instanceof Number)||((Number)mask).intValue()!=0)return false;
+            if(!(mask instanceof Number)||!Double.isFinite(((Number)mask).doubleValue())||
+               ((Number)mask).doubleValue()!=0.0)return false;
         }
         return true;
     }
