@@ -49,6 +49,7 @@ public final class FieldSessionsTab {
     private String latestCycleId="";
     private boolean selectedCanBegin=false,selectedHasApprovedMeasurement=false;
     private boolean selectedHasReviewMeasurement=false;
+    private boolean relayRecoverySafetyFault=false;
     private String selectedSiteId="";
 
     public FieldSessionsTab(Context c,HazRobHost host){
@@ -240,11 +241,13 @@ public final class FieldSessionsTab {
         final List<FieldSessionRepository.FieldSession> children,approved;
         final java.util.Map<String,Integer> counts;
         final List<FieldCycleRepository.Cycle> cycleRows;
+        final String relaySafetyFault;
         SessionData(FieldSessionRepository.FieldSession a,List<FieldSessionRepository.Site> ss,
                 String id,List<FieldSessionRepository.FieldSession> c,
                 List<FieldSessionRepository.FieldSession> p,java.util.Map<String,Integer> n,
-                List<FieldCycleRepository.Cycle> rows){
+                List<FieldCycleRepository.Cycle> rows,String relayFault){
             active=a;sites=ss;siteId=id;children=c;approved=p;counts=n;cycleRows=rows;
+            relaySafetyFault=relayFault==null?"":relayFault;
         }
     }
 
@@ -277,7 +280,10 @@ public final class FieldSessionsTab {
                             ?new java.util.HashMap<>():repo.measurementCountsForSite(id);
                     List<FieldCycleRepository.Cycle> rows=requestedSession.isEmpty()
                         ?new ArrayList<>():cycles.forSession(requestedSession);
-                    snapshot=new SessionData(active,ss,id,children,approved,counts,rows);
+                    String relayFault=host.database().getMeta(
+                        FieldCycleController.RELAY_RECOVERY_FAULT_KEY,"");
+                    snapshot=new SessionData(active,ss,id,children,approved,counts,rows,
+                        relayFault);
                 }catch(RuntimeException ex){failure=ex;}
                 final SessionData result=snapshot;
                 final RuntimeException error=failure;
@@ -421,7 +427,9 @@ public final class FieldSessionsTab {
         latestCycleId=recent==null?"":recent.id;
         selectedHasApprovedMeasurement=approved||hasApprovedCycle;
         selectedHasReviewMeasurement=hasReview;
-        selectedCanBegin=active&&!selectedHasApprovedMeasurement&&!hasReview;
+        relayRecoverySafetyFault=!data.relaySafetyFault.isEmpty();
+        selectedCanBegin=active&&!selectedHasApprovedMeasurement&&!hasReview&&
+            !relayRecoverySafetyFault;
         boolean available=!cycleDriver.busy();
         if(available){
             if(recent!=null&&FieldCycleRepository.FAILED.equals(recent.state)){
@@ -448,33 +456,43 @@ public final class FieldSessionsTab {
                     recent.attempt+" • الحالة "+recent.state+
                     (hasReview?" • اختر الاعتماد أو إعادة المحاولة":"")+
                     (recent.measurementId.isEmpty()?"":" • المصدر "+recent.measurementId));
+            if(relayRecoverySafetyFault){
+                cycleStatus.setText("تحذير أمان: قياس الجلسة محظور حتى تأكيد إطفاء ريلاي MQ");
+                failureDetails.setText("فشل تأكيد حالة ريلاي MQ بعد انقطاع سابق. "+
+                    "أعد الاتصال بالروبوت ثم أعد فتح تبويب الجلسات للتحقق من حالة OFF. "+
+                    "السبب الفني: "+data.relaySafetyFault);
+                failureDetails.setVisibility(View.VISIBLE);
+            }
         }
         beginMeasurement.setEnabled(available&&selectedCanBegin&&(
             recent==null||FieldCycleRepository.DELETED.equals(recent.state)||
             FieldCycleRepository.SUPERSEDED.equals(recent.state)));
         boolean review=recent!=null&&recent.reviewReady()&&available&&
             !selectedHasApprovedMeasurement;
-        approveMeasurement.setEnabled(review&&active);
+        approveMeasurement.setEnabled(review&&active&&!relayRecoverySafetyFault);
         deleteMeasurement.setEnabled(available&&!selectedHasApprovedMeasurement&&
             recent!=null&&(recent.reviewReady()||
             FieldCycleRepository.FAILED.equals(recent.state)||
             FieldCycleRepository.CANCELLED.equals(recent.state)||
             FieldCycleRepository.SUPERSEDED.equals(recent.state)));
         retryMeasurement.setEnabled(available&&active&&!selectedHasApprovedMeasurement&&
+            !relayRecoverySafetyFault&&
             recent!=null&&(recent.reviewReady()||
             FieldCycleRepository.FAILED.equals(recent.state)||
             FieldCycleRepository.CANCELLED.equals(recent.state)));
-        gasCheck.setEnabled(available&&selectedCanBegin);
-        particleCheck.setEnabled(available&&selectedCanBegin);
-        physicalCheck.setEnabled(available&&selectedCanBegin);
+        gasCheck.setEnabled(available&&selectedCanBegin&&!relayRecoverySafetyFault);
+        particleCheck.setEnabled(available&&selectedCanBegin&&!relayRecoverySafetyFault);
+        physicalCheck.setEnabled(available&&selectedCanBegin&&!relayRecoverySafetyFault);
     }
     private void renderCycleButtons(String stage){
         boolean locked=cycleDriver.busy()||"ARMING".equals(stage)||
             "WARMUP".equals(stage)||"SAMPLING".equals(stage)||
             "SAMPLING_WAIT".equals(stage)||"FINALIZING".equals(stage);
         boolean ready="REVIEW_READY".equals(stage);
-        boolean canApprove=!locked&&!selectedHasApprovedMeasurement&&ready;
-        beginMeasurement.setEnabled(!locked&&selectedCanBegin&&latestCycleId.isEmpty());
+        boolean canApprove=!locked&&!selectedHasApprovedMeasurement&&
+            !relayRecoverySafetyFault&&ready;
+        beginMeasurement.setEnabled(!locked&&selectedCanBegin&&
+            !relayRecoverySafetyFault&&latestCycleId.isEmpty());
         retryMeasurement.setEnabled(canApprove);
         approveMeasurement.setEnabled(canApprove);
         deleteMeasurement.setEnabled(canApprove);
