@@ -179,7 +179,7 @@ public final class SiteSummaryReportExporter {
         PdfDocument pdf=new PdfDocument();int pageNo=1;PdfDocument.Page p=page(pdf,pageNo);overview(p.getCanvas(),b,plan);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);
         for(int chunk=0;chunk<matrixPages;chunk++){p=page(pdf,pageNo);matrix(p.getCanvas(),b,chunk);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);}
         for(int chunk=0;chunk<cyclePages;chunk++){p=page(pdf,pageNo);cycleMatrix(p.getCanvas(),b,chunk);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);}
-        p=page(pdf,pageNo);recurrence(p.getCanvas(),plan);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);
+        p=page(pdf,pageNo);recurrence(p.getCanvas(),b,plan);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);
         p=page(pdf,pageNo);priority(p.getCanvas(),b,plan);chrome(p.getCanvas(),pageNo,total,b);pdf.finishPage(p);pdf.writeTo(out);pdf.close();
     }
 
@@ -189,7 +189,15 @@ public final class SiteSummaryReportExporter {
         title(c,"الملخص التنفيذي للموقع",42);int active=0,closed=0,measurements=0;String first="",last="";for(SessionSummary s:b.sessions){if(s.bundle.fieldSession.active())active++;else closed++;measurements+=s.bundle.measurementSessionIds.size();String t=s.bundle.fieldSession.startedTs;if(first.isEmpty()||t.compareTo(first)<0)first=t;if(last.isEmpty()||t.compareTo(last)>0)last=t;}
         labelValue(c,"الموقع",b.site.name,76);labelValue(c,"Site ID",b.site.id,100);labelValue(c,"ملاحظات",b.site.notes==null||b.site.notes.isEmpty()?"—":shorten(b.site.notes,72),124);labelValue(c,"الفترة",first.isEmpty()?"—":first+" → "+last,148);
         metric(c,42,185,170,82,"الجلسات",String.valueOf(plan.totalSessions),"نشطة "+active+" • منتهية "+closed,0xFFE3F2FD);metric(c,225,185,170,82,"Measurement Sessions",String.valueOf(measurements),"مرتبطة بجلسات مستقلة",0xFFF3E5F5);metric(c,408,185,170,82,"جلسات محللة",String.valueOf(plan.analyticalSessions),"Identified "+plan.identifiedSessions,0xFFE8F5E9);metric(c,591,185,170,82,"كمّي M4",String.valueOf(plan.quantifiedSessions),"PPM reportable per session",0xFFFFF3E0);
-        metric(c,42,282,170,82,"144 session evidence",String.valueOf(plan.sessionsWithPositive144Evidence),"من "+plan.sessionsWith144+" جلسة لديها panel",0xFFE0F7FA);metric(c,225,282,170,82,"Open/Mixture/OOD",String.valueOf(plan.openSetOrMixtureSessions),"لا تُعامل كهويات مؤكدة",0xFFFFF3E0);metric(c,408,282,170,82,"قياس غير صالح",String.valueOf(plan.invalidSessions),"Quality-only",plan.invalidSessions>0?0xFFFFEBEE:0xFFF5F5F5);metric(c,591,282,170,82,"جلسات حرجة",String.valueOf(plan.criticalSessions),"مرجع صحي/LFL",plan.criticalSessions>0?0xFFFFEBEE:0xFFE8F5E9);
+        metric(c,42,282,170,82,NextSiteEvidenceCharts.hasAnyNext(b.sessions)?
+            "Next source roots":"144 session evidence",
+            String.valueOf(NextSiteEvidenceCharts.hasAnyNext(b.sessions)?
+                NextSiteEvidenceCharts.independentRoots(b.sessions):
+                plan.sessionsWithPositive144Evidence),
+            NextSiteEvidenceCharts.hasAnyNext(b.sessions)?
+                "جذور أدلة أصلية مستقلة":"من "+plan.sessionsWith144+" جلسة لديها panel",
+            0xFFE0F7FA);metric(c,225,282,170,82,"UNKNOWN / MIXTURE",String.valueOf(plan.openSetOrMixtureSessions),
+            "لا تُعامل كهويات مؤكدة",0xFFFFF3E0);metric(c,408,282,170,82,"قياس غير صالح",String.valueOf(plan.invalidSessions),"Quality-only",plan.invalidSessions>0?0xFFFFEBEE:0xFFF5F5F5);metric(c,591,282,170,82,"جلسات حرجة",String.valueOf(plan.criticalSessions),"مرجع صحي/LFL",plan.criticalSessions>0?0xFFFFEBEE:0xFFE8F5E9);
         text(c,"قراءة التقرير",42,405,11,Color.BLACK,true);float y=427;for(int i=0;i<Math.min(4,plan.findings.size());i++){text(c,"• "+shorten(plan.findings.get(i),125),42,y,8.2f,i==0&&plan.criticalSessions>0?0xFFC62828:Color.DKGRAY,false);y+=22;}
         text(c,"يقارن التقرير الجلسات ككيانات مستقلة ويحلل تكرار الدليل عبر 144 مادة. لا متوسط PPM بين الجلسات، ولا Tracking، ولا تحويل EST إلى إنذار مهني.",42,540,8,Color.DKGRAY,false);
     }
@@ -198,7 +206,14 @@ public final class SiteSummaryReportExporter {
         int start=chunk*ROWS_PER_MATRIX_PAGE,end=Math.min(b.sessions.size(),start+ROWS_PER_MATRIX_PAGE);title(c,"مصفوفة جلسات الموقع "+(chunk+1),42);float y=76;
         text(c,"#",29,y,7.2f,Color.DKGRAY,true);text(c,"الجلسة",48,y,7.2f,Color.DKGRAY,true);text(c,"البدء",155,y,7.2f,Color.DKGRAY,true);text(c,"قياس",272,y,7.2f,Color.DKGRAY,true);text(c,"Outcome",309,y,7.2f,Color.DKGRAY,true);text(c,"المادة",390,y,7.2f,Color.DKGRAY,true);text(c,"Support",486,y,7.2f,Color.DKGRAY,true);text(c,"144+",541,y,7.2f,Color.DKGRAY,true);text(c,"الخطر",580,y,7.2f,Color.DKGRAY,true);text(c,"PPM",697,y,7.2f,Color.DKGRAY,true);text(c,"سلامة",774,y,7.2f,Color.DKGRAY,true);y+=18;
         if(start>=end){text(c,"لا توجد جلسات تحت هذا الموقع.",42,112,11,Color.DKGRAY,false);return;}
-        for(int i=start;i<end;i++){SessionSummary s=b.sessions.get(i);Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor((i&1)==0?0xFFF7F8FA:Color.WHITE);p.setStyle(Paint.Style.FILL);c.drawRect(new RectF(26,y-13,816,y+7),p);JSONObject h=s.priorityHazard();String hazard=h==null?"—":shorten("#"+h.optInt("rank",0)+" "+h.optString("hazard_symbols","")+" "+hazardLabel(h),16);text(c,String.valueOf(i+1),29,y,6.5f,Color.BLACK,false);text(c,shorten(s.bundle.fieldSession.name,14),48,y,6.5f,Color.BLACK,false);text(c,shorten(s.bundle.fieldSession.startedTs,16),155,y,6.5f,Color.BLACK,false);text(c,String.valueOf(s.bundle.measurementSessionIds.size()),272,y,6.5f,Color.BLACK,false);text(c,shorten(s.outcome,11),309,y,6.5f,Color.BLACK,false);text(c,shorten(s.chemical,13),390,y,6.5f,Color.BLACK,false);text(c,pct100(s.analyticalConfidencePct),486,y,6.5f,Color.BLACK,false);text(c,String.valueOf(s.panelSupportedCount),541,y,6.5f,Color.BLACK,false);text(c,hazard,580,y,6.3f,hazardColor(h),false);text(c,s.ppmReportable&&Double.isFinite(s.ppm)?fmt(s.ppm):"—",697,y,6.5f,Color.BLACK,false);text(c,s.critical()?"⚠":s.safetyGate?"OK":"—",788,y,7.3f,s.critical()?0xFFC62828:Color.DKGRAY,true,Paint.Align.CENTER);y+=24;}
+        for(int i=start;i<end;i++){SessionSummary s=b.sessions.get(i);Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor((i&1)==0?0xFFF7F8FA:Color.WHITE);p.setStyle(Paint.Style.FILL);c.drawRect(new RectF(26,y-13,816,y+7),p);JSONObject h=s.priorityHazard();String hazard=h==null?"—":shorten("#"+h.optInt("rank",0)+" "+h.optString("hazard_symbols","")+" "+hazardLabel(h),16);text(c,String.valueOf(i+1),29,y,6.5f,Color.BLACK,false);text(c,shorten(s.bundle.fieldSession.name,14),48,y,6.5f,Color.BLACK,false);text(c,shorten(s.bundle.fieldSession.startedTs,16),155,y,6.5f,Color.BLACK,false);text(c,String.valueOf(s.bundle.measurementSessionIds.size()),272,y,6.5f,Color.BLACK,false);text(c,shorten(s.outcome,11),309,y,6.5f,Color.BLACK,false);
+            text(c,shorten(s.chemical,13),390,y,6.5f,Color.BLACK,false);
+            text(c,s.hasNext?"—":pct100(s.analyticalConfidencePct),
+                486,y,6.5f,Color.BLACK,false);
+            text(c,s.hasNext?Integer.toString(s.next.originalDecision.evidence.size()):
+                Integer.toString(s.panelSupportedCount),541,y,6.5f,Color.BLACK,false);
+            text(c,s.hasNext?"NEXT RESEARCH":hazard,580,y,6.3f,
+                s.hasNext?Color.DKGRAY:hazardColor(h),false);text(c,s.ppmReportable&&Double.isFinite(s.ppm)?fmt(s.ppm):"—",697,y,6.5f,Color.BLACK,false);text(c,s.critical()?"⚠":s.safetyGate?"OK":"—",788,y,7.3f,s.critical()?0xFFC62828:Color.DKGRAY,true,Paint.Align.CENTER);y+=24;}
         text(c,"Support = positive-evidence index، وليس احتمالًا. خانة الخطر تعرض المرشح الأعلى أولوية سياقية مع رتبته؛ الإنذار الفعلي يبقى M4-gated.",42,535,7.2f,Color.DKGRAY,false);text(c,"PPM يبقى مرتبطًا بكل جلسة ولا يُجمع أو يُتوسط على مستوى الموقع.",42,551,7.2f,Color.DKGRAY,false);
     }
 
@@ -253,12 +268,32 @@ public final class SiteSummaryReportExporter {
         text(c,"لا يتم تصنيف المحاولات FAILED/SUPERSEDED/DELETED كقياسات ناجحة.",36,551,8,Color.DKGRAY,false);
     }
 
-    private static void recurrence(Canvas c,SiteReportIntelligence.SitePlan plan){
-        title(c,"تكرار الأدلة الكيميائية عبر الموقع",42);SiteReportCharts.recurrence144(c,new RectF(36,70,405,548),plan);SiteReportCharts.topRecurrence(c,new RectF(430,70,806,548),plan);
+    private static void recurrence(Canvas c,SiteBundle b,SiteReportIntelligence.SitePlan plan){
+        if(NextSiteEvidenceCharts.hasAnyNext(b.sessions)){
+            title(c,"ChemCore Next • تكرار الأدلة البحثية للموقع",42);
+            NextSiteEvidenceCharts.rootRecurrence(c,new RectF(36,70,405,548),b.sessions);
+            NextSiteEvidenceCharts.candidateRecurrence(c,new RectF(430,70,806,548),b.sessions);
+        }else{
+            title(c,"تكرار الأدلة الكيميائية عبر الموقع",42);
+            SiteReportCharts.recurrence144(c,new RectF(36,70,405,548),plan);
+            SiteReportCharts.topRecurrence(c,new RectF(430,70,806,548),plan);
+        }
     }
 
     private static void priority(Canvas c,SiteBundle b,SiteReportIntelligence.SitePlan plan){
-        title(c,"الأولوية التحليلية ومخاطر المرشحين",42);SiteReportCharts.sessionOutcomeBars(c,new RectF(36,70,405,272),plan);hazardContextTable(c,new RectF(430,70,806,548),b.sessions);text(c,"الجداول التقديرية تساعد على ترتيب ما يحتاج إلى تأكيد؛ لا تستبدل تقييم التعرض M4 ولا تُنشئ قرار امتثال.",36,542,7.6f,Color.DKGRAY,false);
+        if(NextSiteEvidenceCharts.hasAnyNext(b.sessions)){
+            title(c,"ChemCore Next • قرارات الجلسات ومصادرها",42);
+            NextSiteEvidenceCharts.decisionStatuses(c,new RectF(36,70,405,272),b.sessions);
+            NextSiteEvidenceCharts.originalEvidenceTable(c,new RectF(430,70,806,548),b.sessions);
+            text(c,"هذه مقارنة أصل الأدلة والمرشحين البحثيين فقط؛ لا PPM أو إنذار أو هوية مؤكدة.",
+                36,542,7.6f,Color.DKGRAY,false);
+        }else{
+            title(c,"الأولوية التحليلية ومخاطر المرشحين",42);
+            SiteReportCharts.sessionOutcomeBars(c,new RectF(36,70,405,272),plan);
+            hazardContextTable(c,new RectF(430,70,806,548),b.sessions);
+            text(c,"الجداول التقديرية تساعد على ترتيب ما يحتاج إلى تأكيد؛ لا تستبدل تقييم التعرض M4 ولا تُنشئ قرار امتثال.",
+                36,542,7.6f,Color.DKGRAY,false);
+        }
     }
 
     private static void hazardContextTable(Canvas c,RectF r,List<SessionSummary> sessions){
