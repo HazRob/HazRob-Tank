@@ -62,9 +62,14 @@ public final class FieldSessionReportExporter {
             if(!cycles.verifyApprovedEvidence(cycle))
                 throw new IllegalStateException("Approved cycle evidence or ChemCore result changed: "+cycle.id);
         }
-        if(approvedIds.isEmpty()||approvedIds.size()!=sessions.size()||
+        // V8: every Field Session has exactly ONE accepted acquisition.
+        // Retry attempts remain visible in the audit appendix, never merged
+        // into the source chart. Existing legacy multi-approved data is
+        // preserved on disk but cannot be silently exported as one scan.
+        if(approvedIds.size()!=1||sessions.size()!=1||
             !approvedIds.equals(new HashSet<>(sessions)))
-            throw new IllegalStateException("Report integrity: approved cycles do not match session measurements");
+            throw new IllegalStateException(
+                "Report integrity: exactly one approved measurement required per field session");
         List<ExperimentQueries.Record> records=new ArrayList<>();
         for(String sid:sessions)records.addAll(ExperimentQueries.bySessionId(db,sid));
         ChemCoreDecisionRepository decisions=new ChemCoreDecisionRepository(db);
