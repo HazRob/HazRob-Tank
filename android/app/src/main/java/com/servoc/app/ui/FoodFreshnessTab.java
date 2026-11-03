@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.SystemClock;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -61,6 +63,16 @@ public final class FoodFreshnessTab {
     private final HashMap<String,List<PlotPoint>> signalHistory=new HashMap<>();
     private final List<String> foodLabels=new ArrayList<>();
     private boolean capturing=false;
+    // The capture clock must not stop when the operator switches sub-tabs.
+    // All telemetry reads remain deduplicated by original firmware scan_cycle.
+    private final Handler captureHandler=new Handler(Looper.getMainLooper());
+    private final Runnable captureClock=new Runnable(){
+        @Override public void run(){
+            if(!capturing)return;
+            refresh();
+            if(capturing)captureHandler.postDelayed(this,1000);
+        }
+    };
     private long started=0,lastAccept=0,frozenElapsed=0;
     private int snapshots=0;
     private double tempSum=0,humiditySum=0,finalTemperature=Double.NaN,finalHumidity=Double.NaN;
@@ -175,9 +187,12 @@ public final class FoodFreshnessTab {
         results.setText("جاري تسجيل بصمة الأغذية، لا تغيّر العينة أثناء الفحص.");
         status.setText("القياس جارٍ — 0/180 ثانية");
         signalGraph.invalidate();dayGraph.clear();
+        captureHandler.removeCallbacks(captureClock);
         refresh();
+        if(capturing)captureHandler.postDelayed(captureClock,1000);
     }
-    /** Refresh is invoked ONLY by the existing Android telemetry UI refresh. */
+    /** Each capture owns a 1 s monotonic-clock tick; tab refreshes are safe
+     * additional consumers because repeated firmware scan_cycle is rejected. */
     public void refresh(){
         if(!capturing)return;
         long now=SystemClock.elapsedRealtime(),elapsed=Math.max(0,now-started);
@@ -242,7 +257,9 @@ public final class FoodFreshnessTab {
             complete();
             return;
         }
-        capturing=false;completed=null;meatCompleted=null;interpreted=null;
+        capturing=false;
+        captureHandler.removeCallbacks(captureClock);
+        completed=null;meatCompleted=null;interpreted=null;
         frozenReadings=null;reportId="";frozenElapsed=0;
         finish.setEnabled(false);start.setEnabled(true);
         export.setEnabled(false);foodChoice.setEnabled(true);
@@ -262,6 +279,7 @@ public final class FoodFreshnessTab {
             return;
         }
         capturing=false;
+        captureHandler.removeCallbacks(captureClock);
         finish.setEnabled(false);start.setEnabled(true);
         foodChoice.setEnabled(true);modeChoice.setEnabled(true);
         frozenReadings=averaged();
