@@ -88,6 +88,9 @@ class FieldHandoff(unittest.TestCase):
         self.assertIn("MeasurementSessionRegistry.reserveFieldOperation()",method)
         self.assertIn("MeasurementSessionRegistry.endFieldOperation()",method)
         self.assertIn("finally{",method)
+        self.assertIn("busy=true; // release() must not release recovery's operation lease.",method)
+        self.assertIn("busy=false;",method)
+        self.assertLess(method.index("busy=true;"),method.index("host.robotApi().mqPower(false)"))
         self.assertIn("MQ_RELAY_RECOVERY_WORKER_UNAVAILABLE",method)
         self.assertLess(method.index("reserveFieldOperation()"),
                         method.index("repo.recoverAbandoned()"))
