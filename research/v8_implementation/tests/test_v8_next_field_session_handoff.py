@@ -125,4 +125,20 @@ class FieldHandoff(unittest.TestCase):
         self.assertIn("relayRecoverySafetyFault",ui)
         self.assertIn("data.relaySafetyFault",ui)
         self.assertIn("approveMeasurement.setEnabled(review&&active&&!relayRecoverySafetyFault)",ui)
+    def test_f01_f02_live_safety_fault_locks_ui_before_async_refresh(self):
+        ui=read("ui/FieldSessionsTab.java")
+        callback=ui.split('public void changed(String state,String message,String id){',1)[1].split('public void refreshed()',1)[0]
+        self.assertIn('if("SAFETY_FAULT".equals(state))relayRecoverySafetyFault=true;',callback)
+        self.assertIn('failureDetails.setVisibility(View.VISIBLE)',callback)
+        self.assertIn('renderCycleButtons(state)',callback)
+        self.assertLess(callback.index('relayRecoverySafetyFault=true'),
+                        callback.index('renderCycleButtons(state)'))
+        self.assertIn('if("BLOCKED".equals(state)||"SAFETY_FAULT".equals(state))refresh()',callback)
+        buttons=ui.split('private void renderCycleButtons(String stage){',1)[1].split('private interface NameResult',1)[0]
+        self.assertIn('boolean locked=relayRecoverySafetyFault||"SAFETY_FAULT".equals(stage)',buttons)
+        for control in ('beginMeasurement','retryMeasurement','approveMeasurement',
+                        'gasCheck','particleCheck','physicalCheck'):
+            self.assertIn(control+'.setEnabled(',buttons)
+        for control in ('gasCheck','particleCheck','physicalCheck'):
+            self.assertIn(control+'.setEnabled(!locked&&selectedCanBegin&&!relayRecoverySafetyFault)',buttons)
 if __name__=="__main__":unittest.main(verbosity=2)
