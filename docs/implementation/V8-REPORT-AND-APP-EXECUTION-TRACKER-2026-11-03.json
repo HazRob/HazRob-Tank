@@ -37,16 +37,16 @@
       "id": "V8-F02",
       "title": "Field cycle, R0, relay and instantaneous stages",
       "status": "IN_PROGRESS",
-      "note": "Atomic one-cycle and parent approval PASS 237 assertions F05 41569572553; initial Android12 34-test suite PASS 41570919863 at 679d202a. Later F02 fixes are newer and their Android12 replay tests are not confirmed. Recovery now binds original ESP32 ID, persists ON device before ON command, denies control until OFF ACK, refuses wrong-device commands with preflight, serializes recovery with shared FieldOperation lease and maintains owner through Activity release.",
-      "source_sha": "c5498fb98b3ce1508def8be5d88b6ea5c3fb3905",
-      "ci_run_id": 41570919863,
+      "note": "F02: source-stable 60+60 field capture; relay ON/OFF ACK must be consistent, original ESP32 device_id bound across restarts, and recovery owns field-operation lease. R0 cross-layer Android instrumented 180s+60s one-window test created at 91db787a and wired to device workflow at 7647e1b. Earlier F02 Android12 source gate 41570919863 and 41571856859 SUCCESS; latest R0 test RUNNING, not qualified.",
+      "source_sha": "7647e1b3234927ea9dae4b11f4df9baefca749af",
+      "ci_run_id": 41573508821,
       "changed_files": [
         "android/app/src/main/java/com/servoc/app/ui/FieldSessionsTab.java",
         "android/app/src/main/java/com/servoc/app/field/FieldCycleRepository.java"
       ],
-      "result": "Confirmed current source and regression structural gates; Android compile PASS 41573052981 after recovery ownership. Android12 latest run 41573131210 pending, latest safety static test compile 41573161113 pending.",
-      "blocking_issue": "Latest modified on-device F02 relay tests not yet PASS; direct/remote fresh physical relay feedback and real Tank timing remain unqualified.",
-      "next_action": "Check build 41573161113 and Android12 41573131210; demand device-id preflight, relay ON/OFF fields, 60+60 actual sample cadence, process kill/restart, and no reapproval before physical F02 gate."
+      "result": "G1 field safety regression + Android compilation PASSED on earlier commits; original F05 atomic field approval 237 test checks passed. V8 R0 Android instrumentation has not yet completed, and no Tank electrical verification.",
+      "blocking_issue": "Latest Android12 R0 device-run 41573508821 pending; Tank real relay voltage/current OFF acknowledgment, 60+60 telemetry, 180+60 R0 eight-channel reference verification and UI operation remain not tested. Firmware relay.on/mask reports software state, NOT independently verified contact voltage.",
+      "next_action": "Read 41573508821 result and distinguish emulator infra from real assertion failure; then bench test R0/relay and keep a source-signed logs+SOP. No APK release."
     },
     {
       "id": "V8-F03",
@@ -143,13 +143,13 @@
       "id": "V8-F10",
       "title": "Full compile / instrumentation automated gates",
       "status": "IN_PROGRESS",
-      "note": "",
+      "note": "Last verified compile PASS 41573052981 on 2ba345cf; Android 12 R0 instrumented new run 41573508821 in progress at checkpoint.",
       "source_sha": null,
       "ci_run_id": 41573161113,
       "changed_files": [],
       "result": "Latest full Android debug Java compile + V8 F02 structural tests PASS 41573161113 at 8a09be. Initial 34 Android12 instrumented tests PASS 41570919863 at older 679d202a; API31 run 41573131210 for c5498fb remains IN_PROGRESS.",
       "blocking_issue": null,
-      "next_action": "Validate latest Android12 instrumented run 41573131210 and newer run when available; record emulator SDK failures separately from failures in assertion/production. Physical MQTT telemetry freshness and Tank G3 are outside cloud scope."
+      "next_action": "Verify Android12 run 41573508821 against exact SHA 7647e1b; retain F11 blocking until real Tank, UI RTL and owner acceptance."
     },
     {
       "id": "V8-F11",
@@ -172,7 +172,7 @@
     "V8-F09",
     "V8-F10"
   ],
-  "source_head_at_last_audit": "8a09be187bed566d55d65a330871b9c19c894111",
+  "source_head_at_last_audit": "7647e1b3234927ea9dae4b11f4df9baefca749af",
   "report_ci_instrumented_run": 41569572553,
   "report_ci_instrumented_status": "SUCCESS",
   "compile_and_g1_static_test": {
@@ -378,5 +378,20 @@
     "status": "SUCCESS",
     "sha": "e5f152ed6b62ed13b2c515bc7106894d056fb5bc",
     "scope": "V14/15 SQLite + Next decisions + report rendering Android12 emulator. Prior run 41568863791 failed emulator boot; not product failure."
+  },
+  "latest_v8_r0_f02_checkpoint": {
+    "test_commit": "91db787a94de0ae97af1042ce20ef89359dff132",
+    "workflow_commit": "7647e1b3234927ea9dae4b11f4df9baefca749af",
+    "instrumented_run_id": 41573508821,
+    "instrumented_status_at_checkpoint": "IN_PROGRESS",
+    "quick_r0_warmup_ms": 180000,
+    "quick_r0_sampling_ms": 60000,
+    "single_window": true,
+    "all_eight_channels_required": true,
+    "min_valid_samples_per_channel": 10,
+    "firmware_state_only_not_electrical_proof": true,
+    "actual_hardware_calibration_validated": false,
+    "tank_g3_validated": false,
+    "apk_release_ready": false
   }
 }
