@@ -1,0 +1,132 @@
+{
+  "schema": "hazrob.v8.report_source_binding_evidence/1",
+  "date": "2026-11-03",
+  "repo": "HazRob/HazRob-Tank",
+  "branch": "feature/tank-v8-implementation",
+  "approved_visual_baseline": {
+    "layout_file": "com/servoc/app/report/V7ReportLayoutKit.java",
+    "git_blob_sha1": "0e8d8695a27b8e075c7166368047c4b8860034c1",
+    "chart_layout_file": "com/servoc/app/report/V7FieldChartLayout.java",
+    "chart_layout_blob_sha1": "86802317f76482554756cec6646359a18c5ddf62",
+    "status": "UNCHANGED_G1_PASS",
+    "ci": 41555405022
+  },
+  "source_file_base": "android/app/src/main/java",
+  "reports": [
+    {
+      "id": "R01",
+      "title": "Instant gas",
+      "writer": "com/servoc/app/report/TankInstantV7PdfWriter.java",
+      "writer_blob": "337546f030b260e0a8f56687e709c966d542a5ef",
+      "production_entry": "TankInstantReportPdf.write",
+      "source": "immutable captured MQ telemetry + ChemCore Next decision_uid/snapshot_sha256",
+      "plots": [
+        "sensor Rs/R0 table",
+        "source-driven MQ research radar",
+        "source curve hypotheses and source risk ledger"
+      ],
+      "scientific_boundary": "source ppm estimates not a certified exposure finding",
+      "qa": "Android12 R01 differential telemetry/Next radar test",
+      "state": "SOURCE_VERIFIED_ANDROID12_PENDING"
+    },
+    {
+      "id": "R02",
+      "title": "Physical and particles",
+      "writer": "com/servoc/app/report/V7PhysicalReportPdfWriter.java",
+      "writer_blob": "8964970e4609b95b5aab383beffc6831a03efc8d",
+      "production_entry": "TankPhysicalSnapshotPdf.write",
+      "source": "same immutable physical snapshot; env/sound/particles/light/wind metrics",
+      "plots": [
+        "15 physical measurement rows and derived thermal rows",
+        "temporal chart slots remain intentionally blank if no archived time series"
+      ],
+      "scientific_boundary": "no invented physical time series or derivation inside PDF",
+      "qa": "Android12 R02 temperature source differential and PDF page render",
+      "state": "SOURCE_VERIFIED_ANDROID12_PENDING"
+    },
+    {
+      "id": "R03",
+      "title": "Approved field session",
+      "writer": "com/servoc/app/report/SmartFieldSessionPdfWriter.java",
+      "writer_blob": "4ed883086a9c120716e7bb6465e26eb815d1cd03",
+      "production_entry": "FieldSessionReportExporter.writePdf",
+      "source": "approved immutable FieldSessionReportExporter.Bundle; primary Series by session ID + bound ChemCore decision",
+      "plots": [
+        "6 MQ real series",
+        "6 analytics for same session",
+        "6 context charts",
+        "multi-session trends only from approved sessions"
+      ],
+      "scientific_boundary": "V7FieldSessionPdfWriter is layout-only and not the production exporter; V8 Next field archived decision parity still requires instrumented verification",
+      "qa": "G1 approved archive origin guard passed; complete R03 Android12 field SQLite fixture pending",
+      "state": "SOURCE_VERIFIED_ARCHIVE_RUNTIME_PENDING"
+    },
+    {
+      "id": "R04",
+      "title": "Site summary",
+      "writer": "com/servoc/app/report/SiteSummaryReportExporter.java",
+      "writer_blob": "11272f900c4aa25875a6430be342460606452944",
+      "production_entry": "SiteSummaryReportExporter.writePdf",
+      "source": "approvedSessionsForSite and FieldSessionReportExporter.resolve for each independently verified session",
+      "plots": [
+        "site session matrix",
+        "cycle result matrix",
+        "session recurrence and priority context"
+      ],
+      "scientific_boundary": "V7SiteVisualPdfWriter is a blank layout fixture, not active exporter; cross-session Next parity on device pending",
+      "qa": "G1 approved-site consistency guard passed; multiple archival sessions pixel/rank checks pending",
+      "state": "SOURCE_VERIFIED_SITE_RUNTIME_PENDING"
+    },
+    {
+      "id": "R05",
+      "title": "Fruit freshness",
+      "writer": "com/hazrob/tank/foodfreshness/V7FruitReportPdfWriter.java",
+      "writer_blob": "82f02bed0a2396160117f60eb103ddf6b00cfd50",
+      "production_entry": "FoodFreshnessPdf.save",
+      "source": "single frozen 180-second MQ trace, frozen Rs averages, independent food literature reference",
+      "plots": [
+        "observed vs source MQ log pattern",
+        "food family D1–D5 source curve only",
+        "actual acquired MQ time trace"
+      ],
+      "scientific_boundary": "study day is not specimen age/food safety",
+      "qa": "Android12 two-trace source-specific graph pixel differential; existing source-only models CI passed",
+      "state": "SOURCE_VERIFIED_ANDROID12_PENDING"
+    },
+    {
+      "id": "R06",
+      "title": "Beef freshness",
+      "writer": "com/hazrob/tank/foodfreshness/meat/V7BeefResearchPdfWriter.java",
+      "writer_blob": "00a20a1caedd7e0bb875c6bbc387f06765131c85",
+      "production_entry": "BeefResearchPdf.save",
+      "source": "single frozen 180-second MQ trace and independent beef source reference classes",
+      "plots": [
+        "seven MQ observed vs reference",
+        "actual 180-second Rs changes",
+        "four class similarities, source-heldout confusion matrix"
+      ],
+      "scientific_boundary": "not microbial total viable count, no edible/inedible certification",
+      "qa": "Android12 two-trace source-specific graph pixel differential; source G1 food model parity passed",
+      "state": "SOURCE_VERIFIED_ANDROID12_PENDING"
+    },
+    {
+      "id": "R07",
+      "title": "Emissions of separately registered engine",
+      "writer": "com/hazrob/tank/emissions/EmissionReportPdf.java",
+      "writer_blob": "69810f0888e33a05ffc0dcb20fb123617c6eb12d",
+      "production_entry": "EmissionsTab.exportPdf per selected engine",
+      "source": "one SQLite engine_id, one immutable emission scan, frozen ChemCore Next receipt, user-set engine IFC profile",
+      "plots": [
+        "eight source pollutant rows as applicable",
+        "real MQ captured resistance ledger",
+        "ALL source curve models paginated nine per page with study ppm"
+      ],
+      "scientific_boundary": "IFC thresholds matched by fuel/engine class/basis; if not comparable, label non-evaluable and no false exceedance",
+      "qa": "Android12 selected-engine multi-model five-page PDF + model-count pixel differential",
+      "state": "SOURCE_VERIFIED_ANDROID12_PENDING"
+    }
+  ],
+  "test_file": "android/app/src/androidTest/java/com/servoc/app/report/ReportChartDataParityInstrumentedTest.java",
+  "last_android12_validation_run": 41555700519,
+  "validator_note": "Data differential fixtures are not Tank field validation. Reference plotting and Android12 pixel variation tests are distinct from real sensor calibration."
+}
