@@ -68,8 +68,18 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertEqual(result["results"][0]["error"], "unsafe_path")
 
     def test_single_backslash_rejected(self):
-        result = verify({"sources": [self.entry("sub\\\\sample.bin")]}, self.root)
+        result = verify({"sources": [self.entry("sub\\sample.bin")]}, self.root)
         self.assertEqual(result["results"][0]["error"], "unsafe_path")
+
+    def test_manifest_rejects_non_object_entry(self):
+        result = verify({"sources": [None]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "invalid_source_entry")
+
+    def test_rejects_duplicate_identity_even_with_different_path(self):
+        entry = self.entry("missing.bin")
+        result = verify({"sources": [self.entry(), entry]}, self.root)
+        self.assertEqual(result["results"][1]["error"], "duplicate_source_id")
 
     def test_invalid_hash(self):
         result = verify({"sources": [self.entry(sha="invalid")]}, self.root)
