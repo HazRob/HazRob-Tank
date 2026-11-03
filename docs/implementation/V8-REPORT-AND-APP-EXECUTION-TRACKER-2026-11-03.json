@@ -207,6 +207,17 @@
       "blocking_issue": "No physical Tank multi-gas reference G2/G3, ppm/identity remains research-only; production APK release not built.",
       "checkpoint": "docs/implementation/V8-P11-4-RAW-ADC-ENV-SITE-DUAL-R0-2026-11-03_AR.md",
       "next_action": "Review operator-facing research/NOT_EVALUABLE states and calibration display against frozen dual-R0 ledger; G2/G3 physical separately."
+    },
+    {
+      "id": "V8-P11.5",
+      "title": "Operator dual-R0 and NOT_EVALUABLE presentation",
+      "status": "ANDROID_G1_COMPILE_AND_EMULATOR_PASS_NO_G3",
+      "source_sha": "07ce0b9daa5ef88616a281bf5d7031f94fb55605",
+      "ci_run_id": 41588409417,
+      "result": "257 Android emulator fixture asserts; 62 source equations and explicit reasons; MQ2 conditional calculation and absent MQ8 abstention; original ADC fields not labeled voltage; Excel/PDF unchanged.",
+      "blocking_issue": "Actual phone UI interactions and physical Tank source calibration not yet verified; no release APK; G3 0/80.",
+      "checkpoint": "docs/implementation/V8-P11-5-NEXT-DUAL-R0-OPERATOR-UI-2026-11-03_AR.md",
+      "next_action": "P11.6 inspect R_air calibration UI and source-abstention rendering in PDF content, preserving existing layout; Android screen-touch tests independent."
     }
   ],
   "priority_now": [
@@ -606,5 +617,31 @@
     "released_apk": false,
     "test_artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/41586887553/artifacts/13208581408",
     "next_step": "Review operator-facing research/NOT_EVALUABLE states and calibration display against frozen dual-R0 ledger; G2/G3 physical separately."
+  },
+  "latest_v8_p11_operator_ui": {
+    "status": "G1_ANDROID_COMPILE_AND_EMULATOR_OPERATOR_PRESENTATION_PASS",
+    "checkpoint": "docs/implementation/V8-P11-5-NEXT-DUAL-R0-OPERATOR-UI-2026-11-03_AR.md",
+    "source_sha": "07ce0b9daa5ef88616a281bf5d7031f94fb55605",
+    "android_g1_compile_run": 41588353532,
+    "android_g1_compile_result": "SUCCESS",
+    "android_emulator_f05_run": 41588409417,
+    "android_emulator_f05_result": "SUCCESS",
+    "emulator_fixture_assertions": 257,
+    "source_models_presented": 62,
+    "mqsensorslib_k_source_models": 13,
+    "frozen_source_fail_reasons_explicit": true,
+    "no_fabricated_ppm_for_missing_sensor": true,
+    "mq2_source_presentation_tested": true,
+    "mq8_absent_sensor_reason_tested": true,
+    "no_legacy_warning_color_from_unqualified_source": true,
+    "correct_original_adc_units": true,
+    "source_R_air_preserved": true,
+    "physical_g3_qualified": 0,
+    "physical_gas_identity_or_ppm_certified": false,
+    "apk_release_built": false,
+    "ui_touch_device_validated": false,
+    "pdf_geometry_changed": false,
+    "f05_test_artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/41588409417/artifacts/13208633764",
+    "next_step": "P11.6 inspect R_air calibration UI and source-abstention rendering in PDF content, preserving existing layout; Android screen-touch tests independent."
   }
 }
