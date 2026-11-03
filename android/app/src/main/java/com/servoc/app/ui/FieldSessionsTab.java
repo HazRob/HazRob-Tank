@@ -290,7 +290,27 @@ public final class FieldSessionsTab {
                             showSessionLoadError();
                         }else if(!requestedSite.equals(selectedSiteId)||!requestedSession.equals(selectedSessionId)){
                             refreshQueued=true; // A newer site selection supersedes the DB snapshot.
-                        }else renderSessionUi(result);
+                        }else{
+                            renderSessionUi(result);
+                            // The first valid session may be selected DURING
+                            // rendering. Its cycle rows were queried for the
+                            // previous session; do not leave stale approval or
+                            // Start buttons enabled during the requery.
+                            if(!requestedSession.equals(selectedSessionId)||
+                               !requestedSite.equals(selectedSiteId)){
+                                latestCycleId="";
+                                selectedCanBegin=false;
+                                beginMeasurement.setEnabled(false);
+                                retryMeasurement.setEnabled(false);
+                                approveMeasurement.setEnabled(false);
+                                deleteMeasurement.setEnabled(false);
+                                gasCheck.setEnabled(false);
+                                particleCheck.setEnabled(false);
+                                physicalCheck.setEnabled(false);
+                                cycleStatus.setText("جارٍ تحميل قياس الجلسة المختارة والتحقق من حالته…");
+                                refreshQueued=true;
+                            }
+                        }
                     }catch(RuntimeException ex){
                         android.util.Log.e("TankSessions","Unable to render user sessions",ex);
                         showSessionLoadError();
@@ -342,9 +362,9 @@ public final class FieldSessionsTab {
         if(siteDropdown.getSelectedItemPosition()!=siteIndex)siteDropdown.setSelection(siteIndex);
         siteDropdown.setEnabled(true);selectingScope=false;
         List<FieldSessionRepository.FieldSession> children=data.children;java.util.Map<String,Integer> measureCounts=data.counts;int measurementCount=0;for(Integer count:measureCounts.values())measurementCount+=count;selectedSiteSummary.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+
-            "\\nالجلسات: "+children.size()+" • القياسات المعتمدة: "+data.approved.size()+
+            "\nالجلسات: "+children.size()+" • القياسات المعتمدة: "+data.approved.size()+
             " (قياس واحد لكل جلسة)"+
-            "\\nالمحاولات الفنية المؤرشفة: "+measurementCount+
+            "\nالمحاولات الفنية المؤرشفة: "+measurementCount+
             " • تقرير الموقع يقارن الجلسات المستقلة دون دمج PPM.");List<FieldSessionRepository.FieldSession> approved=data.approved;boolean hasApproved=!approved.isEmpty();siteReportPdf.setEnabled(hasApproved);siteReportXlsx.setEnabled(hasApproved);deleteSite.setEnabled(children.isEmpty());reportScope.setText("الموقع: "+(selected==null?selectedSiteId:selected.name)+" • جلسات معتمدة: "+approved.size());
         ArrayList<String> names=new ArrayList<>();sessionOptionIds.clear();int chosen=0;boolean found=false;
         for(int i=0;i<children.size();i++){FieldSessionRepository.FieldSession q=children.get(i);names.add(q.name+" • "+q.displayStatus()+(q.active()?" (نشطة)":""));sessionOptionIds.add(q.id);if(q.id.equals(selectedSessionId)){found=true;chosen=i;}}
@@ -365,7 +385,7 @@ public final class FieldSessionsTab {
             viewReport.setOnClickListener(v->host.openReportsForSite(q.siteId,q.id));
             reportSessionList.addView(viewReport,UiKit.full(scroll.getContext()));
         }
-        for(FieldSessionRepository.FieldSession q:children){if(!q.id.equals(selectedSessionId))continue;String status=q.displayStatus()+(q.active()?" (نشطة)":"");LinearLayout card=UiKit.card(sessions.getContext());TextView t=UiKit.text(sessions.getContext(),q.name+" • "+status+"\\n"+q.startedTs+
+        for(FieldSessionRepository.FieldSession q:children){if(!q.id.equals(selectedSessionId))continue;String status=q.displayStatus()+(q.active()?" (نشطة)":"");LinearLayout card=UiKit.card(sessions.getContext());TextView t=UiKit.text(sessions.getContext(),q.name+" • "+status+"\n"+q.startedTs+
             " • القياس المعتمد: "+(q.approved()?"1/1":"0/1")+
             " • المحاولات المسجلة: "+(measureCounts.containsKey(q.id)?measureCounts.get(q.id):0));t.setBackgroundColor(0xFFEDEFF2);card.addView(t,UiKit.full(sessions.getContext()));LinearLayout ex=UiKit.hbox(sessions.getContext());Button p=UiKit.button(sessions.getContext(),"تقرير الجلسة PDF • 4–5 صفحات أفقية + ملحق الدورات");p.setEnabled(q.approved());p.setOnClickListener(v->host.requestFieldSessionExport("pdf",q.id));ex.addView(p,UiKit.weight(1.35f));Button x=UiKit.button(sessions.getContext(),"Excel ذكي للجلسة");x.setEnabled(q.approved());x.setOnClickListener(v->host.requestFieldSessionExport("xlsx",q.id));ex.addView(x,UiKit.weight(.65f));card.addView(ex,UiKit.full(sessions.getContext()));
             Button remove=UiKit.button(sessions.getContext(),"حذف الجلسة وبياناتها");remove.setEnabled(!q.active()&&!q.approved());
