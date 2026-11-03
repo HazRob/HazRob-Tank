@@ -26,6 +26,8 @@ def verify(manifest, root):
         try:
             if not isinstance(sid, str) or not sid.strip():
                 raise ValueError("invalid_source_id")
+            sid = sid.strip()
+            result["source_id"] = sid
             if sid in seen_ids:
                 raise ValueError("duplicate_source_id")
             seen_ids.add(sid)
