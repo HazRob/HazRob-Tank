@@ -146,7 +146,18 @@ jobs:
           site=fitz.open(str(Path('/tmp/v6-n06g-approved/n06g_site_two_approved.pdf')))
           assert site.page_count==5
           assert sum(len(p.get_text().strip())>15 for p in site)==5
+          assert 'HazRob Tank' in site[0].get_text()
+          assert 'ChemCore Next' in site[3].get_text()
+          assert 'ChemCore Next' in site[4].get_text()
+          assert all(abs(p.rect.width-842)<1 and abs(p.rect.height-595)<1 for p in site)
           site.close()
+          nextpdf=fitz.open(str(Path('/tmp/v6-n06g-approved/n06g_next_approved_field.pdf')))
+          assert nextpdf.page_count==6
+          assert 'ChemCore Next' in nextpdf[2].get_text()
+          assert 'ChemCore Next' in nextpdf[3].get_text()
+          assert all(abs(p.rect.width-842)<1 and abs(p.rect.height-595)<1 for p in nextpdf)
+          nextpdf.close()
+          print('PASS N06G: every Next field and site evidence chart stays in the original V7 landscape page geometry')
           PY
       - uses: actions/upload-artifact@v4
         if: success()
