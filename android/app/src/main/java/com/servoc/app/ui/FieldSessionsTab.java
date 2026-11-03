@@ -355,7 +355,9 @@ public final class FieldSessionsTab {
         reportScope.setText("تقارير الجلسات غير متاحة حتى إصلاح قاعدة البيانات");
         siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);
         deleteSite.setEnabled(false);siteDropdown.setEnabled(false);sessionDropdown.setEnabled(false);
-        beginMeasurement.setEnabled(false);retryMeasurement.setEnabled(false);approveMeasurement.setEnabled(false);deleteMeasurement.setEnabled(false);
+        clearCycleSelection(relayRecoverySafetyFault?
+            "حالة ريلاي MQ كانت غير مؤكدة قبل فشل قراءة قاعدة البيانات":"");
+        cycleStatus.setText("تعذر التحقق من جلسات القياس؛ جميع أوامر البدء والاعتماد معطلة");
     }
     private void renderSessionUi(SessionData data){
         FieldSessionRepository.FieldSession active=data.active;
@@ -527,11 +529,16 @@ public final class FieldSessionsTab {
     }
     private void renderCycleButtons(String stage){
         boolean locked=relayRecoverySafetyFault||"SAFETY_FAULT".equals(stage)||
+            "BLOCKED".equals(stage)||"DELETING".equals(stage)||
             cycleDriver.busy()||"ARMING".equals(stage)||
             "WARMUP".equals(stage)||"SAMPLING".equals(stage)||
             "SAMPLING_WAIT".equals(stage)||"FINALIZING".equals(stage);
         boolean ready="REVIEW_READY".equals(stage);
-        boolean canApprove=!locked&&!selectedHasApprovedMeasurement&&
+        // A delayed REVIEW_READY callback may belong to a session which the
+        // operator has already left. Never enable approval for an unbound row.
+        // End-of-cycle refreshed() re-reads the selected session's SQLite rows.
+        boolean canApprove=!locked&&!selectedSessionId.isEmpty()&&
+            selectedHasReviewMeasurement&&!selectedHasApprovedMeasurement&&
             !relayRecoverySafetyFault&&ready;
         beginMeasurement.setEnabled(!locked&&selectedCanBegin&&
             !relayRecoverySafetyFault&&latestCycleId.isEmpty());
