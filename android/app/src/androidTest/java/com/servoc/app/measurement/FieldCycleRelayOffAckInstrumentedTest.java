@@ -23,6 +23,27 @@ public final class FieldCycleRelayOffAckInstrumentedTest {
         return (Boolean)method.invoke(null,new JSONObject(payload));
     }
 
+    private boolean on(String payload) throws Exception {
+        Method method=FieldCycleController.class.getDeclaredMethod(
+            "relayOn",JSONObject.class);
+        method.setAccessible(true);
+        return (Boolean)method.invoke(null,new JSONObject(payload));
+    }
+
+    @Test public void acceptsOnlyExplicitConsistentRelayOn() throws Exception {
+        assertTrue(on("{\"relay\":{\"on\":true}}"));
+        assertTrue(on("{\"relay\":{\"mask\":1}}"));
+        assertTrue(on("{\"relay\":{\"on\":true,\"mask\":1}}"));
+        assertFalse(on("{}"));
+        assertFalse(on("{\"relay\":{}}"));
+        assertFalse(on("{\"relay\":{\"on\":false,\"mask\":1}}"));
+        assertFalse(on("{\"relay\":{\"on\":true,\"mask\":0}}"));
+        assertFalse(on("{\"relay\":{\"on\":\"true\"}}"));
+        assertFalse(on("{\"relay\":{\"mask\":\"1\"}}"));
+        assertFalse(on("{\"relay\":{\"mask\":1.5}}"));
+        assertFalse(on("{\"relay\":{\"on\":null}}"));
+    }
+
     @Test public void confirmsOnlyExplicitUnambiguousRelayOff() throws Exception {
         assertTrue(off("{\"device_id\":\"esp32\",\"relay\":{\"on\":false}}"));
         assertTrue(off("{\"device_id\":\"esp32\",\"relay\":{\"mask\":0}}"));
