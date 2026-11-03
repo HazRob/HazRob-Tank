@@ -239,8 +239,9 @@ public final class EmissionsTab {
         handler.removeCallbacks(tick);
         try{
             if(frames<10){
+                refreshSelection();
                 status.setText("لم ينجح القياس: بيانات MQ الحديثة غير كافية، ولم تُحفظ نتيجة جديدة.");
-                refreshSelection();return;
+                return;
             }
             Map<String,Double> avg=new LinkedHashMap<>();
             for(Map.Entry<String,Double> e:sums.entrySet()){
