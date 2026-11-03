@@ -46,11 +46,14 @@ def verify(manifest, root):
             if not path.is_file():
                 raise ValueError("missing_raw_bytes")
             digest = hashlib.sha256()
+            byte_count = 0
             with path.open("rb") as f:
                 for chunk in iter(lambda: f.read(1024 * 1024), b""):
                     digest.update(chunk)
+                    byte_count += len(chunk)
             actual = digest.hexdigest()
             result["actual_sha256"] = actual
+            result["size_bytes"] = byte_count
             result["status"] = "verified" if actual.lower() == expected.lower() else "hash_mismatch"
         except (ValueError, OSError) as exc:
             result["error"] = str(exc)
