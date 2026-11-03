@@ -25,7 +25,7 @@
       "id": "V8-F01",
       "title": "Full tabs, developer/lab, controls and UI",
       "status": "IN_PROGRESS",
-      "note": "Source UI safeguards completed: stale-session controls prevented (2a9e870), persistent relay fault and pending-device warning rendered (1fba66f,0b760be). On-device click/navigate/lifecycle E2E not yet verified. MQ SensorCard UI: missing SensorHealth null guard and pale details fixed (9940411), unverified baseline no longer called embedded (e4f4fa3); G1 source regression three tests and full Java compilation PASS 41574933523 at faffc42. Android runtime UI tap and RTL operator acceptance remain pending. F01 session controls: clear stale cycle when site/session list empty (55f7f07); lock immediately on relay SAFETY_FAULT (ff404169); disable actions on SQLite load failure and require selected session's review-bound row for approval (06b875f,5a1c527). G1 UI inventory PASS 41575070294; new compile/emulator runs pending. Delayed REVIEW_READY callbacks no longer bind cycle IDs directly across site/session changes: UI waits for SQLite selected-session requery (6bf990b,6212722). UI inventory PASS 41575256891; newest compile and Android12 instrumentation pending. F01 science/safety: source UI no longer renders HIGH/ELEVATED MQ cards using InstantMqWarningEngine's R0-normalized fallback in absence of observed baseline; numeric delta suppressed and explicit unverifiable-baseline label (05cad0e); 4 G1 checks + full Android compile PASS 41575491327 at 15250c6; not a hardware gas-alarm qualification.",
+      "note": "Source UI safeguards completed: stale-session controls prevented (2a9e870), persistent relay fault and pending-device warning rendered (1fba66f,0b760be). On-device click/navigate/lifecycle E2E not yet verified. MQ SensorCard UI: missing SensorHealth null guard and pale details fixed (9940411), unverified baseline no longer called embedded (e4f4fa3); G1 source regression three tests and full Java compilation PASS 41574933523 at faffc42. Android runtime UI tap and RTL operator acceptance remain pending. F01 session controls: clear stale cycle when site/session list empty (55f7f07); lock immediately on relay SAFETY_FAULT (ff404169); disable actions on SQLite load failure and require selected session's review-bound row for approval (06b875f,5a1c527). G1 UI inventory PASS 41575070294; new compile/emulator runs pending. Delayed REVIEW_READY callbacks no longer bind cycle IDs directly across site/session changes: UI waits for SQLite selected-session requery (6bf990b,6212722). UI inventory PASS 41575256891; newest compile and Android12 instrumentation pending. F01 science/safety: source UI no longer renders HIGH/ELEVATED MQ cards using InstantMqWarningEngine's R0-normalized fallback in absence of observed baseline; numeric delta suppressed and explicit unverifiable-baseline label (05cad0e); 4 G1 checks + full Android compile PASS 41575491327 at 15250c6; not a hardware gas-alarm qualification. Android12 API31 session+Settings R0 navigation instrumentation run 41574470636 at 55f7f07: 40/40 PASS, zero skipped/failed; initial R0/back/reenter UI covered. Later session-binding changes 6bf990b and fallback MQ card changes remain outside this run; full device tap acceptance still open.",
       "source_sha": "15250c6dab7cb39474cdf86a3e74611cc2f9a27e",
       "ci_run_id": 41575491327,
       "changed_files": [
@@ -147,7 +147,7 @@
       "id": "V8-F10",
       "title": "Full compile / instrumentation automated gates",
       "status": "IN_PROGRESS",
-      "note": "Last verified compile PASS 41573052981 on 2ba345cf; Android 12 R0 instrumented run 41573508821 SUCCESS, 39/39. Source compile and MQ sensor-card regression PASS 41574933523 at faffc42; Android12 suite PASS 41573508821 at older SHA 7647e1b (39/39), not full final SHA run. Latest Java17+MQ UI G1 PASS 41575491327 at 15250c6 after baseline fallback suppression; Android12 device gate still separate.",
+      "note": "Last verified compile PASS 41573052981 on 2ba345cf; Android 12 R0 instrumented run 41573508821 SUCCESS, 39/39. Source compile and MQ sensor-card regression PASS 41574933523 at faffc42; Android12 suite PASS 41573508821 at older SHA 7647e1b (39/39), not full final SHA run. Latest Java17+MQ UI G1 PASS 41575491327 at 15250c6 after baseline fallback suppression; Android12 device gate still separate. API31 device run 41574470636 success 40/40 at 55f7f07; later source SHA must be requalified.",
       "source_sha": null,
       "ci_run_id": 41573161113,
       "changed_files": [],
@@ -445,5 +445,14 @@
     "checks": 4,
     "scope": "SensorCard prevents uncalibrated fallback relative deviation from colored GAS ALARM and hides unverified delta; source checks + Android Java compile only",
     "physical_tank_pass": false
+  },
+  "latest_v8_android12_settings_r0_ui": {
+    "run_id": 41574470636,
+    "sha": "55f7f07caa90373b49c889cb913fb67da90b3ce6",
+    "status": "SUCCESS",
+    "passed": 40,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "Android API31 emulator SQLite, Next, PDF, Settings R0 navigation; not actual Tank, later code requires rerun"
   }
 }
