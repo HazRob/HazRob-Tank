@@ -149,8 +149,12 @@ public final class FieldCycleController {
     /** Recover abandoned reservations following an OS process restart. */
     public void recoverInterrupted(){
         if(disposed||busy)return;
-        host.io().execute(()->{
-            try{
+        // Recovery may command MQ OFF. Reserve the shared operation first,
+        // or another Activity's live measurement could be interrupted.
+        if(!MeasurementSessionRegistry.reserveFieldOperation())return;
+        try{
+            host.io().execute(()->{
+                try{
                 int n=repo.recoverAbandoned();
                 boolean previousSafetyFault=!host.database().getMeta(
                     RELAY_RECOVERY_FAULT_KEY,"").isEmpty();
@@ -187,10 +191,22 @@ public final class FieldCycleController {
                         observer.refreshed();
                     }
                 });
-            }catch(Exception e){
-                android.util.Log.e("TankFieldCycle","Recovery failed",e);
-            }
-        });
+                }catch(Exception e){
+                    android.util.Log.e("TankFieldCycle","Recovery failed",e);
+                }finally{
+                    MeasurementSessionRegistry.endFieldOperation();
+                }
+            });
+        }catch(RuntimeException unavailable){
+            MeasurementSessionRegistry.endFieldOperation();
+            android.util.Log.e("TankFieldCycle","Cannot schedule safe recovery",unavailable);
+            try{host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,
+                "MQ_RELAY_RECOVERY_WORKER_UNAVAILABLE: "+unavailable.getClass().getSimpleName());}
+            catch(Exception dbFailure){android.util.Log.e("TankFieldCycle",
+                "Cannot preserve recovery safety lock",dbFailure);}
+            message("SAFETY_FAULT",
+                "فشل بدء استعادة الجلسة؛ حالة ريلاي MQ غير مؤكدة، افصل الطاقة بأمان","");
+        }
     }
 
     /** The predecessor remains immutable; retry always creates a new numbered attempt. */
