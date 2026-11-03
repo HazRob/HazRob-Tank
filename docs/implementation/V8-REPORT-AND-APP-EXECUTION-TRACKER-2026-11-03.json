@@ -1,6 +1,6 @@
 {
   "schema": "hazrob.tank.v8.frozen_scope_report_app_execution/1",
-  "last_checked": "2026-11-03",
+  "last_checked": "2026-11-03T00:55:00Z",
   "branch": "feature/tank-v8-implementation",
   "repo": "HazRob/HazRob-Tank",
   "scope_freeze_approved": true,
@@ -14,12 +14,12 @@
       "title": "Baseline inventory, approved V7 reports geometry and preservation",
       "status": "SOURCE_VERIFIED",
       "note": "Source tree and V7 matrix inspected; CI still separate",
-      "source_sha": null,
+      "source_sha": "620acf21d9",
       "ci_run_id": null,
       "changed_files": [],
-      "result": null,
+      "result": "Seven production report routes distinguished from blank V7 design fixtures",
       "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "next_action": "Preserve source map and avoid replacing production writer with layout-only preview"
     },
     {
       "id": "V8-F01",
@@ -60,50 +60,53 @@
     {
       "id": "V8-F04",
       "title": "R01 instant and R02 physical PDF chart fidelity",
-      "status": "IN_PROGRESS",
+      "status": "SOURCE_VERIFIED",
       "note": "",
       "source_sha": null,
-      "ci_run_id": null,
-      "changed_files": [],
-      "result": null,
+      "ci_run_id": 41555700519,
+      "changed_files": [
+        "research/v8_implementation/tests/test_v8_report_data_lineage_and_v7_geometry.py",
+        "android/app/src/androidTest/java/com/servoc/app/report/ReportChartDataParityInstrumentedTest.java"
+      ],
+      "result": "R01 Next source telemetry and R02 frozen physical snapshot graph/data tests introduced; Android12 pending",
       "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "next_action": "Review R01 radar and R02 live-source pixel diffs on Android12"
     },
     {
       "id": "V8-F05",
       "title": "R03 field session and R04 site source chart fidelity",
-      "status": "IN_PROGRESS",
+      "status": "SOURCE_VERIFIED",
       "note": "",
       "source_sha": null,
       "ci_run_id": null,
       "changed_files": [],
-      "result": null,
-      "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "result": "R03 production routes through SmartFieldSessionPdfWriter and verified archived session only; R04 source through SiteSummaryReportExporter; V7FieldSessionPdfWriter and V7SiteVisualPdfWriter are deliberately empty design fixtures",
+      "blocking_issue": "Full real archived multi-session PDF-render smoke and Next decision parity with new V8 UI not completed",
+      "next_action": "Create archival SQLite Android12 fixture for R03/R04 with multiple distinct site/session measurements and compare report values"
     },
     {
       "id": "V8-F06",
       "title": "R05 fruit and R06 beef output fidelity",
-      "status": "PLANNED",
+      "status": "SOURCE_VERIFIED",
       "note": "",
       "source_sha": null,
-      "ci_run_id": null,
+      "ci_run_id": 41555700519,
       "changed_files": [],
-      "result": null,
+      "result": "Food writers consume original frozen MQ trace, source study trends and computed study-only models; PDF differential test pending",
       "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "next_action": "Inspect R05/R06 chart pixel diff results and 4/3-page PDF consistency"
     },
     {
       "id": "V8-F07",
       "title": "Emissions per-engine single record and IFC results PDF",
-      "status": "PLANNED",
+      "status": "SOURCE_VERIFIED",
       "note": "",
       "source_sha": null,
-      "ci_run_id": null,
+      "ci_run_id": 41555700519,
       "changed_files": [],
-      "result": null,
+      "result": "One engine one scan, full Next source equation pagination and IFC reference attached; pixel values/report multi-page test pending",
       "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "next_action": "Review multiple engine/source PDF test and no-model state"
     },
     {
       "id": "V8-F08",
@@ -120,26 +123,26 @@
     {
       "id": "V8-F09",
       "title": "Approved PDF geometry and style no-change audit",
-      "status": "PLANNED",
+      "status": "CI_PASS",
       "note": "",
-      "source_sha": null,
-      "ci_run_id": null,
+      "source_sha": "0e8d8695a27b8e075c7166368047c4b8860034c1",
+      "ci_run_id": 41555405022,
       "changed_files": [],
-      "result": null,
+      "result": "Approved V7ReportLayoutKit and V7FieldChartLayout Git blob SHA-1 unchanged; G1 seven-report source tests passed in full Android compile run",
       "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "next_action": "Physical PDF page-image comparison and Arabic clipping not yet covered by G1"
     },
     {
       "id": "V8-F10",
       "title": "Full compile / instrumentation automated gates",
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": null,
+      "ci_run_id": 41555700519,
       "changed_files": [],
-      "result": null,
+      "result": "Compile + static source parity passed 41555405022; report Android12 instrumentation still running",
       "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "next_action": "Read job logs and instrumentation XML; address test failures if any"
     },
     {
       "id": "V8-F11",
@@ -161,5 +164,20 @@
     "V8-F07",
     "V8-F09",
     "V8-F10"
+  ],
+  "source_head_at_last_audit": "620acf21d90b544268d4224a00398dafd1da06e1",
+  "report_ci_instrumented_run": 41555700519,
+  "report_ci_instrumented_status": "IN_PROGRESS",
+  "compile_and_g1_static_test": {
+    "run_id": 41555405022,
+    "status": "SUCCESS",
+    "scope": "full Android debug Java compilation + V7 visual SHA lock and seven production report source-lineage G1; no hardware measurement"
+  },
+  "last_changes": [
+    "V8-FROZEN-SCOPE-REPORTS-EXECUTION-PLAN-2026-11-03_AR.md",
+    "test_v8_report_data_lineage_and_v7_geometry.py",
+    "ReportChartDataParityInstrumentedTest.java",
+    "v8-next-android-device-sqlite-gate.yml",
+    "v8-next-android-compile-gate.yml"
   ]
 }
