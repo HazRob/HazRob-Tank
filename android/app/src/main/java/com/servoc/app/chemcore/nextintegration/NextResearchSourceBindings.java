@@ -2,6 +2,7 @@ package com.servoc.app.chemcore.nextintegration;
 
 import com.hazrob.tank.chemcore.next.ChemCoreNext;
 import com.hazrob.tank.chemcore.next.SourceCurveExpert;
+import com.hazrob.tank.chemcore.next.MQSensorsLibExampleCatalog;
 import com.hazrob.tank.chemcore.v6.SourceCatalog;
 import com.servoc.app.chemical.ChemicalRepository;
 import java.util.ArrayList;
@@ -52,6 +53,23 @@ public final class NextResearchSourceBindings {
                 original.minSourcePpm,original.maxSourcePpm,"");
             bindings.add(new ChemCoreNext.CurveBinding(
                 source,actualDeviceId+":"+model,SourceCurveExpert.Qualification.unverified()));
+        }
+        // The other 13 installed-model MQSensorsLib example formulas have
+        // a DISTINCT mathematical equation and source example K. Do not
+        // merge their denominator into R_air or infer the chemical by label.
+        // These bindings expose explicit abstention inside Next; the separate
+        // dual-reference numerical ledger computes conditional examples.
+        // The 14th original formula (MQ6) is retained in the source register,
+        // but is NOT a physical sensor in this Tank device profile.
+        for(MQSensorsLibExampleCatalog.Model example:
+                MQSensorsLibExampleCatalog.installedModels()){
+            SourceCurveExpert.Curve curve=new SourceCurveExpert.Curve(
+                example.id,example.sourceRoot,example.model,example.label,null,
+                SourceCurveExpert.Equation.PPM_EQUALS_A_TIMES_RATIO_POWER_B,
+                example.a,example.b,null,null,null,"");
+            bindings.add(new ChemCoreNext.CurveBinding(curve,
+                actualDeviceId+":"+example.model,
+                SourceCurveExpert.Qualification.unverified()));
         }
         return List.copyOf(bindings);
     }
