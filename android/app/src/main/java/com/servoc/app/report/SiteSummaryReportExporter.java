@@ -154,7 +154,14 @@ public final class SiteSummaryReportExporter {
 
     public static final class SiteBundle {
         public final FieldSessionRepository.Site site;public final List<SessionSummary> sessions;
-        SiteBundle(FieldSessionRepository.Site site,List<SessionSummary> sessions){this.site=site;this.sessions=Collections.unmodifiableList(sessions);}
+        // The verified original SQLite source is retained for the XLSX-only
+        // source-specific R0 audit. Site PDF never consults this new field.
+        final ExperimentsDb sourceDatabase;
+        SiteBundle(FieldSessionRepository.Site site,List<SessionSummary> sessions,
+                   ExperimentsDb sourceDatabase){
+            this.site=site;this.sessions=Collections.unmodifiableList(sessions);
+            this.sourceDatabase=java.util.Objects.requireNonNull(sourceDatabase);
+        }
     }
 
     public static SiteBundle resolve(ExperimentsDb db,String siteId){
@@ -171,7 +178,7 @@ public final class SiteSummaryReportExporter {
             out.add(new SessionSummary(db,bundle));
         }
         if(out.isEmpty())throw new IllegalStateException("لا توجد جلسات معتمدة لهذا الموقع");
-        return new SiteBundle(site,out);
+        return new SiteBundle(site,out,db);
     }
 
     public static void writePdf(OutputStream out,ExperimentsDb db,String siteId)throws Exception{
