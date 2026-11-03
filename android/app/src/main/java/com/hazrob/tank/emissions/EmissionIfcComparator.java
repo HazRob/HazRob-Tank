@@ -61,13 +61,29 @@ public final class EmissionIfcComparator {
      */
     public static JSONObject evaluate(JSONObject frozen,String profile)
       throws org.json.JSONException {
+        return evaluateInternal(frozen,profile,null);
+    }
+    /** Engine definition drives both IFC reference selection and its scope. */
+    public static JSONObject evaluate(JSONObject frozen,EmissionEngineConfig definition)
+      throws org.json.JSONException {
+        if(definition==null)throw new IllegalArgumentException("Engine definition required");
+        return evaluateInternal(frozen,definition.profile(),definition);
+    }
+    private static JSONObject evaluateInternal(JSONObject frozen,String profile,
+                                               EmissionEngineConfig definition)
+      throws org.json.JSONException {
         if(frozen==null||!knownProfile(profile))
             throw new IllegalArgumentException("Invalid IFC result/profile");
         JSONArray rows=frozen.optJSONArray("pollutants");
         if(rows==null)throw new IllegalArgumentException("Missing emission rows");
         frozen.put("ifc_profile",profile);
         frozen.put("ifc_reference",SOURCE).put("ifc_reference_url",URL);
-        frozen.put("ifc_applicability","VERIFY_FACILITY_3_TO_50_MWTH_OPERATING_500H_30PCT");
+        final String applicability=definition==null?
+            "IFC_SCOPE_UNDETERMINED_MISSING_FACILITY_DATA":definition.applicability();
+        final boolean qualifiedScope=definition!=null&&definition.scopeSatisfied();
+        frozen.put("ifc_applicability",applicability);
+        frozen.put("ifc_scope_verified_by_entered_values",qualifiedScope);
+        if(definition!=null)frozen.put("engine_definition",definition.toJson());
         int matched=0,numeric=0,above=0;
         for(int i=0;i<rows.length();i++){
             JSONObject row=rows.optJSONObject(i);if(row==null)continue;
@@ -99,7 +115,11 @@ public final class EmissionIfcComparator {
                 state="IFC_ENGINE_LIMIT_IS_TOTAL_PM_NOT_SIZE_RESOLVED_AMBIENT_PM";
             }
             reference(row,threshold,unit,state);
+            row.put("ifc_scope_verified",qualifiedScope);
             row.put("ifc_comparable",false).put("exceeded",false);
+            if(definition!=null&&definition.fuelSulfurPercent!=null&&
+               "FUEL_SULFUR_CONTENT_NOT_EXHAUST_SO2".equals(state))
+                row.put("verified_fuel_sulfur_percent",definition.fuelSulfurPercent);
             row.put("ifc_ratio_percent",JSONObject.NULL);
             row.put("ifc_comparison_state",threshold==null?
                 "NO_APPLICABLE_NUMERICAL_LIMIT":"REFERENCE_ONLY_MEASUREMENT_BASIS_NOT_MET");
@@ -113,7 +133,7 @@ public final class EmissionIfcComparator {
                 ("NOX_AS_NO2".equals(row.optString("species_basis"))||
                  "PM_TOTAL".equals(chemical));
             double measured=row.optDouble("measured_mg_nm3",Double.NaN);
-            if(numericBasis&&Double.isFinite(measured)&&measured>=0){
+            if(qualifiedScope&&numericBasis&&Double.isFinite(measured)&&measured>=0){
                 numeric++;
                 double pct=100*measured/threshold;
                 row.put("ifc_ratio_percent",pct);
@@ -125,7 +145,7 @@ public final class EmissionIfcComparator {
             }
             if("FUEL_SULFUR_CONTENT_NOT_EXHAUST_SO2".equals(state)){
                 double fuelSulfur=row.optDouble("verified_fuel_sulfur_percent",Double.NaN);
-                if(Double.isFinite(fuelSulfur)&&fuelSulfur>=0){
+                if(qualifiedScope&&Double.isFinite(fuelSulfur)&&fuelSulfur>=0){
                     numeric++;
                     row.put("ifc_ratio_percent",100*fuelSulfur/threshold);
                     row.put("ifc_comparable",true);
@@ -140,7 +160,9 @@ public final class EmissionIfcComparator {
         frozen.put("ifc_matched_reference_count",matched);
         frozen.put("ifc_numeric_comparison_count",numeric);
         frozen.put("ifc_numeric_above_reference_count",above);
-        frozen.put("ifc_assessment_state",numeric>0?
+        frozen.put("ifc_assessment_state",!qualifiedScope?
+            "IFC_TABLE_SCOPE_NOT_VERIFIED_OR_OUTSIDE_RANGE":
+            numeric>0?
             "NUMERIC_IFC_REFERENCE_COMPARISONS_NOT_FINAL_COMPLIANCE":
             "IFC_REFERENCE_ATTACHED_NO_SAME_BASIS_MEASUREMENT");
         return frozen;
