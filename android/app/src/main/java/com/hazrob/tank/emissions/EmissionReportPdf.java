@@ -37,7 +37,7 @@ public final class EmissionReportPdf {
             "تقرير قياس انبعاثات المحركات","Engine Emissions Measurement",
             new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.US).format(
                 new Date(scan.optLong("measured_at_ms",0))));
-        V7ReportLayoutKit.drawFooter(c,false,1,2);
+        V7ReportLayoutKit.drawFooter(c,false,1,3);
         V7ReportLayoutKit.tableHeader(c,r(27,42),"المحرك المحدد / Engine name: "+engine,true);
         info(c,"Measurement sessions stored: "+count+
             "   |  Latest captured frames: "+scan.optInt("frames")+
@@ -77,7 +77,7 @@ public final class EmissionReportPdf {
             "مرفق الدليل الفني للانبعاثات","Source and Instrument Diagnostic",
             new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.US).format(
                 new Date(scan.optLong("measured_at_ms",0))));
-        V7ReportLayoutKit.drawFooter(c,false,2,2);
+        V7ReportLayoutKit.drawFooter(c,false,2,3);
         V7ReportLayoutKit.tableHeader(c,r(27,44),"المحرك / Engine: "+engine,true);
         info(c,"MQ values below are captured mean source resistance signals, "+
             "not pollutant concentration in ppm or mg/Nm3.",47,67,true);
@@ -102,17 +102,65 @@ public final class EmissionReportPdf {
             "must be qualified before any emissions-compliance comparison.",
             249,278,false);
     }
+    /** Full research model ledger for only the five pollutant families selected.
+     * This does NOT claim emission concentrations or IFC compliance.
+     */
+    private static void pageThree(Canvas c,Context ctx,String engine,JSONObject scan){
+        V7ReportLayoutKit.drawHeader(c,ctx,false,
+            "مخرجات ChemCore Next البحثية","ChemCore Next Source Evidence",
+            new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.US).format(
+                new Date(scan.optLong("measured_at_ms",0))));
+        V7ReportLayoutKit.drawFooter(c,false,3,3);
+        V7ReportLayoutKit.tableHeader(c,r(27,43),
+            "مصدر التحليل / Frozen Next provenance",true);
+        info(c,"Engine: "+engine+" | Next status: "+
+            scan.optString("next_status","NOT_RUN"),45,58,false);
+        info(c,"Next decision: "+scan.optString("next_decision_uid","NOT_RUN")+
+            " | Identity: "+scan.optString("next_decision_status","UNKNOWN"),60,75,false);
+        info(c,"Stable manifest SHA256: "+
+            scan.optString("stable_manifest_sha256","UNAVAILABLE"),77,93,false);
+        V7ReportLayoutKit.tableHeader(c,r(96,109),
+            "مقارنات المنحنيات البحثية / Study curve source hypotheses",true);
+        JSONArray pollutants=scan.optJSONArray("pollutants");
+        int n=0;
+        if(pollutants!=null)for(int i=0;i<pollutants.length();i++){
+            JSONObject pollutant=pollutants.optJSONObject(i);
+            if(pollutant==null)continue;
+            JSONArray list=pollutant.optJSONArray("next_source_hypotheses");
+            if(list==null)continue;
+            for(int k=0;k<list.length()&&n<13;k++){
+                JSONObject fit=list.optJSONObject(k);if(fit==null)continue;
+                float top=112+12*n;
+                String ppm=fit.isNull("research_estimate_ppm")?"NOT_EVALUABLE":
+                    String.format(Locale.US,"%.5g research ppm",
+                        fit.optDouble("research_estimate_ppm",Double.NaN));
+                V7ReportLayoutKit.tableValue(c,r(top,top+12),
+                    pollutant.optString("pollutant")+" / "+
+                    fit.optString("mq_sensor")+" / "+
+                    fit.optString("source_curve_id")+" / "+ppm,false);
+                n++;
+            }
+        }
+        if(n==0)info(c,"No qualified or numerically evaluable source curves "+
+            "were generated for the selected emissions.",118,148,false);
+        info(c,"Research fits reflect alternative source-gas hypotheses. "+
+            "They are NOT validated exhaust concentrations or IFC limits. "+
+            "SOx/NOx and PM require dedicated instruments and reference methods.",
+            275,291,false);
+    }
+
     public static void write(Context ctx,OutputStream output,String name,JSONObject scan,
                              int measurementCount)throws Exception{
         if(ctx==null||output==null||scan==null||name==null)
             throw new IllegalArgumentException("Missing frozen engine emissions");
         PdfDocument pdf=new PdfDocument();
         try{
-            for(int i=1;i<=2;i++){
+            for(int i=1;i<=3;i++){
                 PdfDocument.Page page=V7ReportLayoutKit.open(pdf,i,false);
                 Canvas c=page.getCanvas();c.drawColor(Color.WHITE);
                 if(i==1)pageOne(c,ctx,name,scan,measurementCount);
-                else pageTwo(c,ctx,name,scan);
+                else if(i==2)pageTwo(c,ctx,name,scan);
+                else pageThree(c,ctx,name,scan);
                 pdf.finishPage(page);
             }
             pdf.writeTo(output);
