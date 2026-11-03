@@ -145,11 +145,11 @@
       "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41573052981,
+      "ci_run_id": 41573161113,
       "changed_files": [],
-      "result": "Android compilation G1 PASS 41573052981 at 2ba345c (recovery lease test). Full Android12 initial F02 relay tests 41570919863 SUCCESS (34 tests) at older 679d202a. Current c5498fb+8a09be safety checks and tests have pending Android12 + Gradle runs.",
+      "result": "Latest full Android debug Java compile + V8 F02 structural tests PASS 41573161113 at 8a09be. Initial 34 Android12 instrumented tests PASS 41570919863 at older 679d202a; API31 run 41573131210 for c5498fb remains IN_PROGRESS.",
       "blocking_issue": null,
-      "next_action": "Confirm latest compile 41573161113 and newest API31 Android12 41573131210; rerun if SDK image download or emulator boot fails, never call that a product assertion failure."
+      "next_action": "Validate latest Android12 instrumented run 41573131210 and newer run when available; record emulator SDK failures separately from failures in assertion/production. Physical MQTT telemetry freshness and Tank G3 are outside cloud scope."
     },
     {
       "id": "V8-F11",
@@ -355,8 +355,8 @@
       "c5498fb98b3ce1508def8be5d88b6ea5c3fb3905"
     ],
     "latest_static_test_sha": "8a09be187bed566d55d65a330871b9c19c894111",
-    "latest_verified_compile_run": 41573052981,
-    "latest_compile_pending": 41573161113,
+    "latest_verified_compile_run": 41573161113,
+    "latest_compile_pending": null,
     "latest_android12_pending": 41573131210,
     "known_ci_infra_failure": {
       "run": 41571248213,
@@ -368,7 +368,10 @@
     "device_identity_preflight_before_off": true,
     "recovery_owns_shared_reservation": true,
     "recovery_release_owner_corrected": true,
-    "final_release_ready": false
+    "final_release_ready": false,
+    "latest_compile_sha": "8a09be187bed566d55d65a330871b9c19c894111",
+    "latest_compile_result": "SUCCESS",
+    "known_residual_risk": "Direct/remote RobotApi.snapshot may be cached; must verify freshness after relay command with physical Tank before classifying relay ACK safety-qualified."
   },
   "latest_completed_android12": {
     "run_id": 41569572604,
