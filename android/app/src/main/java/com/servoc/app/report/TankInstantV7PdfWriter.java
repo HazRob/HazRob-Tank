@@ -14,6 +14,7 @@ import android.text.StaticLayout;
 import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
 import com.servoc.app.R;
+import com.servoc.app.chemcore.nextintegration.NextResearchOperatorText;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.OutputStream;
@@ -350,7 +351,26 @@ public final class TankInstantV7PdfWriter {
             double sourcePpm=o.optDouble("estimated_ppm",Double.NaN);
             left(c,"Ref: "+o.optString("source_curve_id","—")+
                 (Double.isFinite(sourcePpm)?" • ppm≈"+format(sourcePpm,3)+" [conditional]":"")+
-                " • "+o.optString("status",""),M+mm(2),rowY+20,w-mm(4),10,false,INK);
+                " • "+o.optString("status",""),M+mm(2),rowY+17,w-mm(4),9,false,INK);
+            // P11.6 uses the THIRD line inside the exact SAME 37pt V7 row.
+            // Status and source-specific reference transfer come exclusively
+            // from the frozen Next scientific diagnostic; no re-computation
+            // or new source qualification happens during PDF export.
+            String reason=o.optString("failure_reason_code","");
+            String provenance;
+            if(!reason.isEmpty()){
+                provenance="سبب عدم الحساب: "+
+                    NextResearchOperatorText.cause(reason);
+            }else if("MQSENSORSLIB_PINNED_LIBRARY_EXAMPLE".equals(
+                    o.optString("source_class",""))){
+                provenance="R_air "+number(o,"device_air_reference_kohm",3)+
+                    " kΩ • K "+number(o,"source_example_clean_air_K",3)+
+                    " • R0 source "+number(o,"source_r0_research_kohm",3)+
+                    " kΩ • UNVERIFIED";
+            }else{
+                provenance="R_air not independently matched to source R0 • RESEARCH ONLY";
+            }
+            right(c,provenance,M+mm(2),rowY+27,w-mm(4),7.4f,false,MEDIUM);
         }
         doc.finishPage(page);
     }
