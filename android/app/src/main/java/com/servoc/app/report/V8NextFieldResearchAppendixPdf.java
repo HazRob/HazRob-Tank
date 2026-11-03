@@ -91,6 +91,19 @@ final class V8NextFieldResearchAppendixPdf {
                 q.quality==CoreContracts.SampleQuality.VALID?0xFF1B5E20:ALERT,false);
             row++;
         }
+        // P11.6: summarize exact source-snapshot eligibility INSIDE the
+        // original reserved margin. This does not re-evaluate a research
+        // curve or infer R0_source: field PDF remains a read-only Next receipt.
+        int noAir=0,nonValid=0;
+        for(CoreContracts.Reading q:n.sourceSnapshot.readings){
+            if(q.rAirKohm==null||!Double.isFinite(q.rAirKohm)||q.rAirKohm<=0)
+                noAir++;
+            if(q.quality!=CoreContracts.SampleQuality.VALID)nonValid++;
+        }
+        write(c,"R_air absent "+noAir+" • MQ quality not VALID "+nonValid+
+                " • Relay "+(n.sourceSnapshot.mqRelayOn?"ON":"OFF")+
+                " • Source R0/K not G3-qualified",
+            42,354,8,MUTED,false);
         write(c,"SOURCE EVIDENCE AND CANDIDATE UIDs • NOT A MOLECULAR IDENTITY CLAIM",
             42,374,9,INK,true);
         Paint line=paint(LINE,1,false);line.setStrokeWidth(.75f);
