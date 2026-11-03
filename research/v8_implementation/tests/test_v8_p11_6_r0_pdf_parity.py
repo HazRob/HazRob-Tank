@@ -51,6 +51,15 @@ class TestP116CalibrationPdf(unittest.TestCase):
         self.assertIn("source_only_estimate_not_a_verified_concentration",DIAG)
         self.assertNotIn("NextScientificDiagnostics.compute(",PDF)
         self.assertNotIn("ManualR0Calibration.save",PDF)
+        self.assertIn("NEXT_PDF_SCIENTIFIC_SNAPSHOT_PROVENANCE_MISMATCH",PDF)
+        self.assertIn("NEXT_PDF_INCONSISTENT_FROZEN_R_AIR_",PDF)
+        self.assertIn('row.put("next_frozen_reference",true)',PDF)
+        self.assertIn('row.put("device_air_reference_kohm",air)',PDF)
+        self.assertIn('row.put("rs_r0_ratio_research",rs/air)',PDF)
+        self.assertIn('nextResearch?"Rs/R_air":"Rs/R0"',PDF)
+        self.assertIn('nextResearch?"R_air":"R0"',PDF)
+        self.assertNotIn('double r0=q.optDouble("r0",Double.NaN);',PDF)
+
     def test_field_appendix_discloses_invalid_baseline_without_new_page(self):
         for key in ("R_air absent ","MQ quality not VALID ","Relay ",
                     "Source R0/K not G3-qualified","q.rAirKohm==null",
