@@ -49,6 +49,15 @@ class V8ProductionReportBindingAudit(unittest.TestCase):
             "decisions.latestPayloadForSession(id)"):
             self.assertIn(invariant,smart)
         self.assertNotIn("V7FieldChartLayout.drawFirstFour(",smart)
+        # Modern Next receipt must never invoke legacy V6 re-analysis or
+        # label a historical appendix as authoritative Next evidence.
+        self.assertIn("v6ReadOnly=next==null?",smart)
+        self.assertIn("V8NextFieldResearchAppendixPdf.draw(",smart)
+        self.assertIn("nextPages=next==null?0:1",smart)
+        next_annex=source("com/servoc/app/report/V8NextFieldResearchAppendixPdf.java")
+        self.assertIn("ChemCore Next •",next_annex)
+        self.assertIn("n.sourceSnapshot.readings",next_annex)
+        self.assertNotIn("ChemCoreTankV6",next_annex)
 
     def test_r01_next_pdf_only_from_same_frozen_source_and_full_references(self):
         router=source("com/servoc/app/report/TankInstantReportPdf.java")
