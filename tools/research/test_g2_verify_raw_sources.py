@@ -43,6 +43,14 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertFalse(result["all_verified"])
         self.assertEqual(result["results"][1]["error"], "duplicate_source_id")
 
+    def test_whitespace_variant_source_identity_is_duplicate(self):
+        entry = self.entry()
+        padded = dict(entry, source_id=" fixture ")
+        result = verify({"sources": [entry, padded]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][1]["error"], "duplicate_source_id")
+        self.assertEqual(result["results"][1]["source_id"], "fixture")
+
     def test_empty_source_identity_blocked(self):
         entry = self.entry()
         entry["source_id"] = " "
