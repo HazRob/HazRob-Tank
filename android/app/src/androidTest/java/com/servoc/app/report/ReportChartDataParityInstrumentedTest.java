@@ -187,6 +187,21 @@ public final class ReportChartDataParityInstrumentedTest {
         }finally{a.recycle();b.recycle();}
     }
 
+    @Test public void explicitlyInvalidPhysicalSensorCannotAppearInReport()
+        throws Exception {
+        JSONObject invalid=new JSONObject().put("env",
+            new JSONObject().put("ok",false).put("temperature",99.9));
+        JSONObject missing=new JSONObject();
+        ByteArrayOutputStream aOut=new ByteArrayOutputStream(),bOut=new ByteArrayOutputStream();
+        V7PhysicalReportPdfWriter.write(aOut,invalid,"2026-11-03T00:00:00Z");
+        V7PhysicalReportPdfWriter.write(bOut,missing,"2026-11-03T00:00:00Z");
+        Bitmap a=page(aOut.toByteArray(),0,-1),b=page(bOut.toByteArray(),0,-1);
+        try{
+            assertEquals("R02 invalid sensor must render identical to missing evidence",
+                0,changed(a,b,45,70,550,770));
+        }finally{a.recycle();b.recycle();}
+    }
+
     private JSONObject emissions(double baseline,int modelCount)throws Exception{
         Map<String,Double> rs=new LinkedHashMap<>();
         Map<String,Integer> n=new LinkedHashMap<>();
