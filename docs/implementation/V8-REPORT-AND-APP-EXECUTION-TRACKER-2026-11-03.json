@@ -185,6 +185,17 @@
       "field_capture": "NextFieldArchiveBridge preserves source-archive digest + decision UID and stores dual-reference diagnostic in SQLite meta",
       "checkpoint": "docs/implementation/V8-P11-DUAL-R0-CHEMCORE-NEXT-2026-11-03_AR.md",
       "next_action": "readback/export of field source ledger in expanded Excel and physical G2/G3"
+    },
+    {
+      "id": "V8-P11.3",
+      "title": "Dual-R0 source-linked field Excel 20-sheet export and strict SQLite replay",
+      "status": "ANDROID_E2E_PASS_RESEARCH_ONLY",
+      "ci_run_id": 41585294386,
+      "source_sha": "8a1ceafa9365347ae4ab22039109156d8f80ffb3",
+      "result": "249 Android emulator fixture checks PASS; original source hash, decision UID, raw Rs and per-source K independently replayed; 62 model rows; XLSX 20 sheets style SHA parity; PDF 6 pages unchanged.",
+      "blocking_issue": "Not a physical gas experiment; manufacturer K/heater and exposure ppm still G3=0; report on device remains to be field verified.",
+      "checkpoint": "docs/implementation/V8-P11-3-DUAL-R0-FIELD-XLSX-READBACK-2026-11-03_AR.md",
+      "next_action": "Inspect full raw field telemetry completeness and site-level dual-R0 research audit; physical Tank G2/G3 separate."
     }
   ],
   "priority_now": [
@@ -519,5 +530,37 @@
     "report_pdf_geometry_changed": false,
     "field_xlsx_export_consumes_new_dual_r0_ledger": false,
     "next_step": "Connect persisted field dual-reference research ledger to expanded Excel and verify mobile SQLite readback; separate physical G2/G3 calibration."
+  },
+  "latest_v8_p11_field_xlsx": {
+    "status": "G1_ANDROID_E2E_PASS_FIELD_XLSX_DUAL_R0_REPLAY",
+    "checkpoint": "docs/implementation/V8-P11-3-DUAL-R0-FIELD-XLSX-READBACK-2026-11-03_AR.md",
+    "commit_verified": "8a1ceafa9365347ae4ab22039109156d8f80ffb3",
+    "android_f05_ci_run": 41585294386,
+    "android_f05_status": "SUCCESS",
+    "emulator_fixture_assertions": 249,
+    "next_field_worksheets": 20,
+    "next_field_numeric_cells": 2187,
+    "next_field_header_cells": 366,
+    "next_site_worksheets": 6,
+    "unchanged_approved_styles_sha256_prefix": "51459c5d1a66dbc07e",
+    "legacy_and_next_excel_styles_equal": true,
+    "source_curves_in_spreadsheet": 62,
+    "mqsensorslib_installed_curves": 13,
+    "source_archived_other_curves": 49,
+    "source_r0_formula": "R0_source=R_air/K_source; ppm_source=A*(K_source*Rs/R_air)^B",
+    "source_archive_and_next_hash_bound": true,
+    "strict_algebraic_replay_before_export": true,
+    "tamper_cases_rejected": [
+      "wrong_next_decision_uid",
+      "wrong_archived_source_sha",
+      "modified_source_K"
+    ],
+    "missing_legacy_p11_metadata_explicitly_reported": true,
+    "preserved_v7_pdf_layout": true,
+    "no_certified_gas_ppm_or_safety_alarms": true,
+    "physical_tank_g3": 0,
+    "released_apk": false,
+    "test_artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/41585294386/artifacts/13206914516",
+    "next_action": "Inspect full raw field telemetry completeness and site-level dual-R0 research audit; physical Tank G2/G3 separate."
   }
 }
