@@ -172,7 +172,8 @@ final class V8NextSiteXlsxWriter {
     private static String evidence(SiteSummaryReportExporter.SiteBundle b,
         Map<String,V8NextDualReferenceXlsxLedger> dualByMeasurement){
         SmartXlsxPackage.Grid g=sheet(b,"كل أدلة Next الأصلية وحالات القرار",
-            38,38,35,53,24,54,30,22,83);
+            38,38,35,53,24,54,30,22,55,
+            48,45,22,23,30,52,42,53,42,22,22,55,55);
         g.header("Field session ID","Decision UID","Decision state",
             "Source root","Expert","Physical sensor UID",
             "Canonical chemical UID","Polarity","Original evidence note");
