@@ -33,8 +33,8 @@
 ## قائمة التقارير المجمدة
 - R01: `TankInstantV7PdfWriter`، مصدر `TankInstantAnalyzer`/Next presentation.
 - R02: `V7PhysicalReportPdfWriter`، مصدر القياسات الفيزيائية المؤرخ.
-- R03: `V7FieldSessionPdfWriter`، مصدر `V7FieldReportSourceSnapshot` من SQLite.
-- R04: `V7SiteVisualPdfWriter`، الجلسات المعتمدة لنفس الموقع.
+- R03 **الإنتاج الفعلي:** `FieldSessionReportExporter.writePdf` → `SmartFieldSessionPdfWriter`، مصدر `FieldSessionReportExporter.resolve` المؤرشف والمتحقق من SHA. أما `V7FieldSessionPdfWriter` فهو قالب تخطيط فقط به رسوم فارغة، ولا يجوز وصله بالتصدير الفعلي قبل استكمال ربط السلاسل.
+- R04 **الإنتاج الفعلي:** `SiteSummaryReportExporter.writePdf`، جميع الجلسات المعتمدة للموقع عبر `FieldSessionReportExporter.resolve`؛ أما `V7SiteVisualPdfWriter` فقالب تخطيط فارغ وليس كاتب الإنتاج.
 - R05: `V7FruitReportPdfWriter`، نتائج الفاكهة والقياس المجمد مع traces.
 - R06: `V7BeefResearchPdfWriter`، نتائج اللحوم والقياس المجمد مع traces.
 - إضافة V8: `EmissionReportPdf`، سجل المحرك الواحد وقرار Next وIFC.
@@ -52,3 +52,6 @@
 4. تشغيل البوابات الآلية ومراجعة الفشل؛ تحديث السجل وبيان الموانع.
 
 **نقطة الاستئناف:** افتح هذا الملف والتراكر، ثم افحص أحدث `GitHub Actions` على نفس الفرع وأحدث commit. لا تعتمد أي نتائج اختبارات قديمة لملفات عُدلت بعدها.
+
+## تحقق F05 — أثر القاعدة الإنتاجية في Excel (2026-11-03)
+كشف اختبار محاكي Android 13، المعتمد على جلسة ميدانية فعلية محفوظة بقاعدة SQLite للاختبار، أن العدد الحالي لأوراق XLSX ليس 14 بل **16**: أربع عشرة ورقة أساسية موجودة في `SmartFieldSessionXlsxWriter` إضافة إلى ورقتَي `V6ResearchXlsxSheets.append` عند وجود دورات غازات مؤهلة للأرشفة. كانت بوابة الاختبار تتوقع **12+2** من تنفيذ أقدم. صُحّح توقع الاختبار فقط ولم تُحذف أي ورقة أو يتغير الشكل أو تُغيّر بيانات جلسة. نتيجة إعادة تشغيل F05 يجب مراجعتها قبل علامة نجاح.
