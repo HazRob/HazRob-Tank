@@ -84,9 +84,9 @@
       "source_sha": "7316d6c7940f0e0e52ea7b3e841dc45518f3640a",
       "ci_run_id": 41563441088,
       "changed_files": [],
-      "result": "Legacy R03/R04 source-vetted PDF+20-sheet XLSX passed run 41563156609; new Next second-session source and per-site recurrence report scenario running",
+      "result": "CI PASS 41563340206: 181 Android13 fixture assertions, old field PDF6, Next field PDF6, site PDF5, Excel20, original SHA and tamper rejection; latest executive rendering d0af pending separate run 41563441088",
       "blocking_issue": "Next-specific Android13 full report not yet completed",
-      "next_action": "Check Next fixture PDF 2 analytical pages and site per-session source-root evidence, run 41563441088"
+      "next_action": "Confirm latest F05 41563441088 after source executive-summary receipt parity changes"
     },
     {
       "id": "V8-F06",
@@ -121,11 +121,11 @@
       "status": "CI_PASS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41563156609,
+      "ci_run_id": 41563340206,
       "changed_files": [],
-      "result": "Previous Android13 real production export test verified 20 worksheets (14 original + 2 V6 + 4 V8) and original source SHA unchanged",
+      "result": "20 Excel worksheets checked with real production facade, no archived evidence tampering; F05 181 assertions PASS",
       "blocking_issue": null,
-      "next_action": "Additional Next-site scenario and manual Excel data quality review"
+      "next_action": "Physical phone open/export and manual source audit if required"
     },
     {
       "id": "V8-F09",
@@ -135,7 +135,7 @@
       "source_sha": "0e8d8695a27b8e075c7166368047c4b8860034c1",
       "ci_run_id": 41563441183,
       "changed_files": [],
-      "result": "Android source and approved V7 layout/hash regression passed at d0afceb; no page box or chart geometry changed",
+      "result": "Complete Android compile and G1 source contract PASS at d0afceb; V7 PDF page grid/layout unchanged",
       "blocking_issue": null,
       "next_action": "Review Android13 Next-source PDF page render and clipping"
     },
@@ -268,5 +268,21 @@
     "status": "IN_PROGRESS",
     "source_commit": "d0afceb147c60b08fe36250358f5e5360b00a274",
     "scope": "Android13 two approved sessions one Next research receipt, full PDF and 20-sheet XLSX QA"
+  },
+  "v8_next_field_site_last_pass": {
+    "run_id": 41563340206,
+    "status": "SUCCESS",
+    "commit": "4605c764f6d0c803480576120fb983213e19a48b",
+    "fixture_assertions": 181,
+    "legacy_field_pdf_pages": 6,
+    "next_field_pdf_pages": 6,
+    "site_pdf_pages": 5,
+    "xlsx_sheets": 20,
+    "site_independent_approved_sessions": 2,
+    "source_root_count": 1,
+    "sha_verified": true,
+    "tamper_rejected": true,
+    "source_data": "ANDROID13_TEST_FIXTURE_NOT_PHYSICAL_TANK",
+    "artifact_id": 13198212754
   }
 }
