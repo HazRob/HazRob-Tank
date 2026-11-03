@@ -28,6 +28,16 @@ final class SmartFieldSessionXlsxWriter {
 
     static void write(OutputStream out,ExperimentsDb db,FieldSessionReportExporter.Bundle b,ChemicalRepository chemicals)throws Exception{
         if(out==null||db==null||b==null)throw new IllegalArgumentException("output/db/session required");
+        // Current V8 field measurements use the actual stored ChemCore Next
+        // decision for EVERY analytical worksheet. Historical sessions without
+        // a Next receipt retain their authentic legacy workbook unchanged.
+        com.servoc.app.chemcore.nextintegration.NextDecisionStore.Receipt next=
+            new com.servoc.app.chemcore.nextintegration.NextDecisionStore(db)
+                .latestForSession(b.primaryMeasurementSessionId);
+        if(next!=null){
+            V8NextFieldXlsxWriter.write(out,db,b,next);
+            return;
+        }
         if(b.analyticalContract==null)throw new IllegalStateException("SmartReport analytical contract missing");
         SmartReportAnalyticalContract contract=b.analyticalContract;
         JSONObject cc=contract.decision(),hazard=CandidateHazardContext.evaluate(db,cc);
@@ -73,10 +83,10 @@ final class SmartFieldSessionXlsxWriter {
     }
 
 
-    private static String sessionMetadata(FieldSessionReportExporter.Bundle b){SmartXlsxPackage.Grid g=grid();identity(g,b,"هوية الموقع والجلسة");g.blank();g.section("بيانات Field Session");g.header("الحقل","القيمة");g.row("Site",b.site.name);g.row("Site ID",b.site.id);g.row("Field Session",b.fieldSession.name);g.row("Field Session ID",b.fieldSession.id);g.row("Status",b.fieldSession.status);g.row("Started",b.fieldSession.startedTs);g.row("Ended",nz(b.fieldSession.endedTs).isEmpty()?"ACTIVE":b.fieldSession.endedTs);g.row("Measurement Session count",b.measurementSessionIds.size());g.row("Derived experiment records",b.records.size());g.row("Primary analytical measurement",nz(b.primaryMeasurementSessionId));g.blank();g.section("Measurement Sessions");g.header("#","Measurement Session ID");for(int i=0;i<b.measurementSessionIds.size();i++)g.row(i+1,b.measurementSessionIds.get(i));return g.finish();}
+    static String sessionMetadata(FieldSessionReportExporter.Bundle b){SmartXlsxPackage.Grid g=grid();identity(g,b,"هوية الموقع والجلسة");g.blank();g.section("بيانات Field Session");g.header("الحقل","القيمة");g.row("Site",b.site.name);g.row("Site ID",b.site.id);g.row("Field Session",b.fieldSession.name);g.row("Field Session ID",b.fieldSession.id);g.row("Status",b.fieldSession.status);g.row("Started",b.fieldSession.startedTs);g.row("Ended",nz(b.fieldSession.endedTs).isEmpty()?"ACTIVE":b.fieldSession.endedTs);g.row("Measurement Session count",b.measurementSessionIds.size());g.row("Derived experiment records",b.records.size());g.row("Primary analytical measurement",nz(b.primaryMeasurementSessionId));g.blank();g.section("Measurement Sessions");g.header("#","Measurement Session ID");for(int i=0;i<b.measurementSessionIds.size();i++)g.row(i+1,b.measurementSessionIds.get(i));return g.finish();}
 
     /** One row per documented attempt, including failed/superseded history. */
-    private static String cycleLedger(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
+    static String cycleLedger(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
         SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(
             18,18,16,34,23,20,22,25,22,22,44,25,34);
         identity(g,b,"سجل دورات الجلسة الموثقة • الاعتماد والتتبع");
@@ -107,7 +117,7 @@ final class SmartFieldSessionXlsxWriter {
 
     private static String qualityUncertainty(FieldSessionReportExporter.Bundle b,ReportIntelligence.ReportPlan plan,JSONObject cc){SmartXlsxPackage.Grid g=grid();identity(g,b,"الجودة وعدم اليقين");g.blank();g.header("المؤشر","القيمة","المعنى");g.row("Report mode",plan.mode.name(),plan.modeAr);g.row("Analytical support %",finite(plan.analyticalConfidencePct),"Positive-evidence index");g.row("Top ranking weight",finite(plan.topPosterior),"Relative model ranking");g.row("Separation margin",finite(plan.separationMargin),"Top minus runner-up");g.row("OOD score",finite(plan.oodScore),"Open-set distance");g.row("Normalized entropy",finite(plan.entropy),"Ambiguity");g.row("PPM reportable",plan.ppmReportable,"Requires accepted quantitative gate");g.row("Safety interpretable",plan.safetyInterpretable,"Does not itself create legal compliance conclusion");if(cc!=null){g.row("Outcome",cc.optString("outcome",""),"");g.row("Evidence tier",cc.optString("evidence_tier",""),"");g.row("Prediction low",num(cc,"prediction_low"),"");g.row("Prediction high",num(cc,"prediction_high"),"");g.row("Quantitative occupational interpretation",cc.optBoolean("quantitative_occupational_interpretation_permitted",false),"");}g.blank();g.section("Planner findings");g.header("Severity","Title","Detail");for(ReportIntelligence.Finding f:plan.findings)g.row(f.severity.name(),f.titleAr,f.detailAr);return g.finish();}
 
-    private static String timeSeries(ExperimentsDb db,FieldSessionReportExporter.Bundle b){SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(28,12,15,15,15,14,14,14,14,14,14,14,14,14,14,14,14,14,14);identity(g,b,"السلاسل الزمنية — لا يتم دمج الجلسات الفنية في منحنى مصطنع");g.blank();List<String> h=new ArrayList<>();h.add("Measurement Session");h.add("t_ms");h.add("Temperature °C");h.add("Humidity %RH");h.add("Pressure hPa");for(HazRobHardwareProfile.Channel q:HazRobHardwareProfile.MQ){h.add(q.key+" Rs/R0");h.add(q.key+" Rs");}g.header(h.toArray(new String[0]));for(String sid:b.measurementSessionIds){SessionSeries.Series s=SessionSeries.byId(db,sid);if(s==null)continue;for(SessionSeries.Sample sample:s.samples){List<Object> r=new ArrayList<>();r.add(sid);r.add(sample.tMs);r.add(finiteObj(sample.env,"temperature"));r.add(finiteObj(sample.env,"humidity"));r.add(finiteObj(sample.env,"pressure"));for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){JSONObject q=SessionSeries.sensor(sample,hw.key);r.add(finiteObj(q,"ratio"));r.add(finiteObj(q,"rs"));}g.row(r.toArray(new Object[0]));}}return g.finish();}
+    static String timeSeries(ExperimentsDb db,FieldSessionReportExporter.Bundle b){SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(28,12,15,15,15,14,14,14,14,14,14,14,14,14,14,14,14,14,14);identity(g,b,"السلاسل الزمنية — لا يتم دمج الجلسات الفنية في منحنى مصطنع");g.blank();List<String> h=new ArrayList<>();h.add("Measurement Session");h.add("t_ms");h.add("Temperature °C");h.add("Humidity %RH");h.add("Pressure hPa");for(HazRobHardwareProfile.Channel q:HazRobHardwareProfile.MQ){h.add(q.key+" Rs/R0");h.add(q.key+" Rs");}g.header(h.toArray(new String[0]));for(String sid:b.measurementSessionIds){SessionSeries.Series s=SessionSeries.byId(db,sid);if(s==null)continue;for(SessionSeries.Sample sample:s.samples){List<Object> r=new ArrayList<>();r.add(sid);r.add(sample.tMs);r.add(finiteObj(sample.env,"temperature"));r.add(finiteObj(sample.env,"humidity"));r.add(finiteObj(sample.env,"pressure"));for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){JSONObject q=SessionSeries.sensor(sample,hw.key);r.add(finiteObj(q,"ratio"));r.add(finiteObj(q,"rs"));}g.row(r.toArray(new Object[0]));}}return g.finish();}
 
     /**
      * V7 audit workbook: one SQLite telemetry row per timestamp and all eight
@@ -116,7 +126,7 @@ final class SmartFieldSessionXlsxWriter {
      * normalized Android snapshot; firmware and phone R0 are separated.
      * Missing fields remain empty and do not create fabricated measurements.
      */
-    private static String rawMqWide(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
+    static String rawMqWide(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
         double[] widths=new double[5+HazRobHardwareProfile.MQ.length*7];
         for(int i=0;i<widths.length;i++)widths[i]=i==0?33:i==1?16:20;
         SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(widths);
@@ -173,7 +183,7 @@ final class SmartFieldSessionXlsxWriter {
      * Exporting unchanged archived channel JSON retains any additional device
      * timing/calibration attributes even when a printed column is absent.
      */
-    private static String rawMqLong(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
+    static String rawMqLong(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
         SmartXlsxPackage.Grid g=new SmartXlsxPackage.Grid(
             36,18,14,20,16,15,19,18,19,18,18,18,18,25,25,18,
             18,20,18,18,18,18,18,18,18,18,20,22,45,55,
@@ -268,7 +278,7 @@ final class SmartFieldSessionXlsxWriter {
     }
     private static String originalJson(JSONObject o){return o==null?"":o.toString();}
 
-    private static String measurementRecords(FieldSessionReportExporter.Bundle b){SmartXlsxPackage.Grid g=wide();identity(g,b,"سجل القياسات الفنية والاشتقاقات");g.blank();g.header("Experiment ID","Measurement Session ID","UTC","Protocol","Capture ID","Chemical UID","Reference kind","Known ppm","Approved","Reference name");for(ExperimentQueries.Record r:b.records)g.row(r.id,nz(r.sessionId),nz(r.ts),nz(r.protocol),r.captureId,r.chemicalUid,nz(r.referenceKind),r.knownPpm,r.approved,nz(r.referenceName));return g.finish();}
+    static String measurementRecords(FieldSessionReportExporter.Bundle b){SmartXlsxPackage.Grid g=wide();identity(g,b,"سجل القياسات الفنية والاشتقاقات");g.blank();g.header("Experiment ID","Measurement Session ID","UTC","Protocol","Capture ID","Chemical UID","Reference kind","Known ppm","Approved","Reference name");for(ExperimentQueries.Record r:b.records)g.row(r.id,nz(r.sessionId),nz(r.ts),nz(r.protocol),r.captureId,r.chemicalUid,nz(r.referenceKind),r.knownPpm,r.approved,nz(r.referenceName));return g.finish();}
 
     private static String contractMetadata(FieldSessionReportExporter.Bundle b){
         SmartXlsxPackage.Grid g=grid();identity(g,b,"عقد ChemCore ↔ SmartReport");g.blank();
@@ -292,7 +302,7 @@ final class SmartFieldSessionXlsxWriter {
 
     private static SmartXlsxPackage.Grid grid(){return new SmartXlsxPackage.Grid(30,44,58);}
     private static SmartXlsxPackage.Grid wide(){return new SmartXlsxPackage.Grid(10,28,18,16,24,22,16,16,20,14,28,30,16,28,16,14,24,20);}
-    private static void identity(SmartXlsxPackage.Grid g,FieldSessionReportExporter.Bundle b,String title){g.title(title);g.header("Site","Site ID","Field Session","Field Session ID");g.row(b.site.name,b.site.id,b.fieldSession.name,b.fieldSession.id);}
+    static void identity(SmartXlsxPackage.Grid g,FieldSessionReportExporter.Bundle b,String title){g.title(title);g.header("Site","Site ID","Field Session","Field Session ID");g.row(b.site.name,b.site.id,b.fieldSession.name,b.fieldSession.id);}
     private static void appendRefs(SmartXlsxPackage.Grid g,int rank,String name,String type,JSONArray refs){if(refs==null)return;for(int i=0;i<refs.length();i++){JSONObject r=refs.optJSONObject(i);if(r==null)continue;g.row(rank,name,type,r.optString("authority",""),r.optString("jurisdiction",""),r.optString("limit_type",""),num(r,"value"),r.optString("unit",""),num(r,"duration_min"),r.optString("notation",""),r.optString("source_id",""),r.optBoolean("comparable_to_candidate_ppm",false),firstFinite(r,"ratio_to_reference","ratio_to_boundary"),firstFinite(r,"percent_of_reference","percent_of_boundary"),r.optString("interpretation",""));}}
     private static String evidenceTypes(JSONObject q){JSONArray a=q==null?null:q.optJSONArray("evidence_observations");List<String> types=new ArrayList<>();if(a!=null)for(int i=0;i<a.length();i++){JSONObject e=a.optJSONObject(i);if(e==null)continue;String t=e.optString("type","UNKNOWN");if(!types.contains(t))types.add(t);}StringBuilder s=new StringBuilder();for(String t:types){if(s.length()>0)s.append(", ");s.append(t);}return s.toString();}
     private static String sensorKeys(JSONObject e){JSONArray a=e==null?null:e.optJSONArray("sensor_keys");if(a==null)return"";StringBuilder s=new StringBuilder();for(int i=0;i<a.length();i++){String k=a.optString(i,"");if(k.isEmpty())continue;if(s.length()>0)s.append(", ");s.append(k);}return s.toString();}
