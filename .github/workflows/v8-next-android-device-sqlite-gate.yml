@@ -6,6 +6,9 @@ on:
     paths:
       - 'android/app/src/androidTest/java/com/servoc/app/chemcore/nextintegration/**'
       - 'android/app/src/androidTest/java/com/servoc/app/food/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/emissions/**'
+      - 'android/app/src/main/java/com/hazrob/tank/emissions/**'
+      - 'android/app/src/main/java/com/servoc/app/ui/EmissionsTab.java'
       - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
       - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
       - 'android/app/src/main/java/com/servoc/app/chemcore/nextintegration/**'
