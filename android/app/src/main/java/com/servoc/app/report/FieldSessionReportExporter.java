@@ -2,6 +2,7 @@ package com.servoc.app.report;
 
 import com.servoc.app.chemical.ChemicalRepository;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
+import com.servoc.app.chemcore.nextintegration.NextDecisionStore;
 import com.servoc.app.data.ExperimentQueries;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.SessionSeries;
@@ -72,6 +73,25 @@ public final class FieldSessionReportExporter {
                 "Report integrity: exactly one approved measurement required per field session");
         List<ExperimentQueries.Record> records=new ArrayList<>();
         for(String sid:sessions)records.addAll(ExperimentQueries.bySessionId(db,sid));
+        // The V8 Next source is already SEALED by verifyApprovedEvidence()
+        // above. Resolve the ONE approved measurement directly, without
+        // invoking legacy ChemCoreReportContract, its V5/144 scoring, or a
+        // potentially stale legacy record. The historical branch below is
+        // exclusively for sessions without a stored verified Next receipt.
+        String onlyMeasurement=sessions.get(0);
+        NextDecisionStore.Receipt next=new NextDecisionStore(db)
+            .latestForSession(onlyMeasurement);
+        if(next!=null){
+            V8NextChartRenderer.requireSameSession(next,onlyMeasurement);
+            if(next.sourceSnapshot.mode!=
+                    com.hazrob.tank.chemcore.next.CoreContracts.Mode.FIELD_SESSION)
+                throw new IllegalStateException(
+                    "Field session report requires a FIELD_SESSION Next snapshot");
+            SessionSeries.Series original=SessionSeries.byId(db,onlyMeasurement);
+            return new Bundle(fs,site,field,new ArrayList<>(sessions),cycleLedger,
+                records,onlyMeasurement,original,null,null);
+        }
+
         ChemCoreDecisionRepository decisions=new ChemCoreDecisionRepository(db);
 
         // Validate every candidate measurement session and select the same strongest analytical session
