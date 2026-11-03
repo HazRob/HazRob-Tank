@@ -404,6 +404,19 @@ public final class FieldSessionsTab {
         selectedCanBegin=active&&!selectedHasApprovedMeasurement&&!hasReview;
         boolean available=!cycleDriver.busy();
         if(available){
+            if(recent!=null&&FieldCycleRepository.FAILED.equals(recent.state)){
+                String cause=recent.failReason==null?"":recent.failReason.trim();
+                if(cause.isEmpty())cause="لا يوجد تفصيل مخزن لسبب الفشل؛ راجع سجل التشخيص";
+                failureDetails.setText("سبب فشل قياس الجلسة: "+cause+
+                    "\nلم يُعتمد هذا القياس. تحقق من السبب وأعد المحاولة.");
+                failureDetails.setVisibility(View.VISIBLE);
+            }else if(recent!=null&&FieldCycleRepository.CANCELLED.equals(recent.state)){
+                failureDetails.setText("أُلغيت محاولة القياس دون اعتماد. يمكنك إعادة المحاولة.");
+                failureDetails.setVisibility(View.VISIBLE);
+            }else{
+                failureDetails.setText("");
+                failureDetails.setVisibility(View.GONE);
+            }
             if(selectedHasApprovedMeasurement)
                 cycleStatus.setText("قياس الجلسة معتمد (1/1). الجلسة أُغلقت آليًا، "+
                     "وأصبح تقريرها جاهزًا. افتح جلسة جديدة لقياس جديد.");
