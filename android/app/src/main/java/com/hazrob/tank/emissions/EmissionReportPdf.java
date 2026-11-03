@@ -32,12 +32,12 @@ public final class EmissionReportPdf {
             new RectF(LEFT+4*MM,top*MM,RIGHT-4*MM,bottom*MM),
             false,bold,12,V7ReportLayoutKit.INK);
     }
-    private static void pageOne(Canvas c,Context ctx,String engine,JSONObject scan,int count){
+    private static void pageOne(Canvas c,Context ctx,String engine,JSONObject scan,int count,int totalPages){
         V7ReportLayoutKit.drawHeader(c,ctx,false,
             "تقرير قياس انبعاثات المحركات","Engine Emissions Measurement",
             new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.US).format(
                 new Date(scan.optLong("measured_at_ms",0))));
-        V7ReportLayoutKit.drawFooter(c,false,1,3);
+        V7ReportLayoutKit.drawFooter(c,false,1,totalPages);
         V7ReportLayoutKit.tableHeader(c,r(27,42),"المحرك المحدد / Engine name: "+engine,true);
         info(c,"Measurement sessions stored: "+count+
             "   |  Latest captured frames: "+scan.optInt("frames")+
@@ -45,8 +45,8 @@ public final class EmissionReportPdf {
                 scan.optLong("duration_ms",0)/1000.0)+" s",46,60,false);
         info(c,"Analysis status: "+scan.optString("mode","PENDING_ENGINE_SELECTION"),
             61,76,true);
-        info(c,"IFC status: "+scan.optString("ifc_assessment_state","NOT_EVALUABLE"),
-            77,95,false);
+        info(c,"IFC source: Table 1.1.2 | Engine category: "+
+            scan.optString("ifc_profile","NOT_CONFIGURED"),77,95,false);
         V7ReportLayoutKit.tableHeader(c,r(99,111),
             "ملوث / Pollutant                       Concentration                    IFC reference",true);
         JSONArray rows=scan.optJSONArray("pollutants");
@@ -59,25 +59,41 @@ public final class EmissionReportPdf {
             V7ReportLayoutKit.tableValue(c,new RectF(a,top*MM,b,bot*MM),
                 data.optString("label"),false);
             boolean numeric=!data.isNull("value_ppm")&&data.has("value_ppm");
-            boolean red=numeric&&data.optBoolean("ifc_comparable",false)&&
+            boolean red=data.optBoolean("ifc_comparable",false)&&
                 data.optBoolean("exceeded",false);
+            String numericLabel=numeric?
+                data.optString("value_ppm")+" "+data.optString("unit","ppm"):"";
+            if(numericLabel.isEmpty()){
+                JSONArray fits=data.optJSONArray("next_source_hypotheses");
+                StringBuilder values=new StringBuilder();
+                if(fits!=null)for(int j=0;j<fits.length();j++){
+                    JSONObject fit=fits.optJSONObject(j);
+                    if(fit==null||fit.isNull("research_estimate_ppm"))continue;
+                    if(values.length()>0)values.append(" | ");
+                    values.append(String.format(Locale.US,"%.4g",fit.optDouble("research_estimate_ppm")));
+                }
+                numericLabel=values.length()>0?values+" ppm (source)":"NOT_EVALUABLE";
+            }
             V7ReportLayoutKit.measuredValue(c,new RectF(b,top*MM,d,bot*MM),
-                numeric?data.optString("value_ppm")+" "+data.optString("unit","ppm"):
-                    "NOT_CALIBRATED",false,red);
+                numericLabel,false,red);
+            String reference=data.isNull("limit")?"NO_MATCHING_LIMIT":
+                data.optString("limit")+" "+data.optString("limit_unit","");
+            if(data.optBoolean("ifc_comparable",false))
+                reference+=" ("+String.format(Locale.US,"%.1f%%",
+                    data.optDouble("ifc_ratio_percent",Double.NaN))+")";
             V7ReportLayoutKit.tableValue(c,new RectF(d,top*MM,RIGHT,bot*MM),
-                data.isNull("limit")?"REFERENCE_PENDING":
-                    data.optString("limit")+" "+data.optString("limit_unit",""),false);
+                reference,false);
         }
         info(c,"Red cells require a real measured value, a valid comparable IFC limit, "+
             "and a verified exceedance. No unverified reading is colored red.",
             259,277,false);
     }
-    private static void pageTwo(Canvas c,Context ctx,String engine,JSONObject scan){
+    private static void pageTwo(Canvas c,Context ctx,String engine,JSONObject scan,int totalPages){
         V7ReportLayoutKit.drawHeader(c,ctx,false,
             "مرفق الدليل الفني للانبعاثات","Source and Instrument Diagnostic",
             new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.US).format(
                 new Date(scan.optLong("measured_at_ms",0))));
-        V7ReportLayoutKit.drawFooter(c,false,2,3);
+        V7ReportLayoutKit.drawFooter(c,false,2,totalPages);
         V7ReportLayoutKit.tableHeader(c,r(27,44),"المحرك / Engine: "+engine,true);
         info(c,"MQ values below are captured mean source resistance signals, "+
             "not pollutant concentration in ppm or mg/Nm3.",47,67,true);
@@ -102,65 +118,77 @@ public final class EmissionReportPdf {
             "must be qualified before any emissions-compliance comparison.",
             249,278,false);
     }
-    /** Full research model ledger for only the five pollutant families selected.
-     * This does NOT claim emission concentrations or IFC compliance.
-     */
-    private static void pageThree(Canvas c,Context ctx,String engine,JSONObject scan){
-        V7ReportLayoutKit.drawHeader(c,ctx,false,
-            "مخرجات ChemCore Next البحثية","ChemCore Next Source Evidence",
-            new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.US).format(
-                new Date(scan.optLong("measured_at_ms",0))));
-        V7ReportLayoutKit.drawFooter(c,false,3,3);
-        V7ReportLayoutKit.tableHeader(c,r(27,43),
-            "مصدر التحليل / Frozen Next provenance",true);
-        info(c,"Engine: "+engine+" | Next status: "+
-            scan.optString("next_status","NOT_RUN"),45,58,false);
-        info(c,"Next decision: "+scan.optString("next_decision_uid","NOT_RUN")+
-            " | Identity: "+scan.optString("next_decision_status","UNKNOWN"),60,75,false);
-        info(c,"Stable manifest SHA256: "+
-            scan.optString("stable_manifest_sha256","UNAVAILABLE"),77,93,false);
-        V7ReportLayoutKit.tableHeader(c,r(96,109),
-            "مقارنات المنحنيات البحثية / Study curve source hypotheses",true);
+    /** All source equations are retained in the report: no arbitrary top-N cap. */
+    private static java.util.List<JSONObject> sourceModels(JSONObject scan){
+        java.util.List<JSONObject> list=new java.util.ArrayList<>();
         JSONArray pollutants=scan.optJSONArray("pollutants");
-        int n=0;
         if(pollutants!=null)for(int i=0;i<pollutants.length();i++){
             JSONObject pollutant=pollutants.optJSONObject(i);
             if(pollutant==null)continue;
-            JSONArray list=pollutant.optJSONArray("next_source_hypotheses");
-            if(list==null)continue;
-            for(int k=0;k<list.length()&&n<13;k++){
-                JSONObject fit=list.optJSONObject(k);if(fit==null)continue;
-                float top=112+12*n;
-                String ppm=fit.isNull("research_estimate_ppm")?"NOT_EVALUABLE":
-                    String.format(Locale.US,"%.5g research ppm",
-                        fit.optDouble("research_estimate_ppm",Double.NaN));
-                V7ReportLayoutKit.tableValue(c,r(top,top+12),
-                    pollutant.optString("pollutant")+" / "+
-                    fit.optString("mq_sensor")+" / "+
-                    fit.optString("source_curve_id")+" / "+ppm,false);
-                n++;
+            JSONArray models=pollutant.optJSONArray("next_source_hypotheses");
+            if(models==null)continue;
+            for(int k=0;k<models.length();k++){
+                JSONObject fit=models.optJSONObject(k);
+                if(fit==null)continue;
+                try{
+                    JSONObject source=new JSONObject(fit.toString());
+                    source.put("pollutant",pollutant.optString("pollutant",""));
+                    list.add(source);
+                }catch(Exception ignored){}
             }
         }
-        if(n==0)info(c,"No qualified or numerically evaluable source curves "+
-            "were generated for the selected emissions.",118,148,false);
-        info(c,"Research fits reflect alternative source-gas hypotheses. "+
-            "They are NOT validated exhaust concentrations or IFC limits. "+
-            "SOx/NOx and PM require dedicated instruments and reference methods.",
-            275,291,false);
+        return list;
     }
-
+    private static void pageSource(Canvas c,Context ctx,String engine,JSONObject scan,
+                                   java.util.List<JSONObject> sources,int start,
+                                   int pageNumber,int totalPages){
+        V7ReportLayoutKit.drawHeader(c,ctx,false,
+            "مخرجات ChemCore Next البحثية","ChemCore Next Source Equations",
+            new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.US).format(
+                new Date(scan.optLong("measured_at_ms",0))));
+        V7ReportLayoutKit.drawFooter(c,false,pageNumber,totalPages);
+        V7ReportLayoutKit.tableHeader(c,r(27,42),
+            "مخرجات المنحنيات / All research source numerical fits",true);
+        info(c,"Engine: "+engine+" | Next: "+scan.optString("next_status","NOT_RUN")+
+            " | Stable SHA: "+scan.optString("stable_manifest_sha256","UNAVAILABLE"),
+            44,66,false);
+        info(c,"IFC: "+scan.optString("ifc_profile","NOT_CONFIGURED")+
+            " | See source table 1.1.2 for exact applicable scope.",67,84,false);
+        int end=Math.min(sources.size(),start+9);
+        if(start>=end){
+            info(c,"No matching source equations for these pollutants.",94,115,false);
+        }else for(int j=start;j<end;j++){
+            JSONObject fit=sources.get(j);
+            float top=88+(j-start)*20;
+            String concentration=fit.isNull("research_estimate_ppm")?
+                "NOT_RUN":String.format(Locale.US,"%.6g ppm source",
+                    fit.optDouble("research_estimate_ppm",Double.NaN));
+            V7ReportLayoutKit.tableValue(c,r(top,top+20),
+                fit.optString("pollutant")+" | "+fit.optString("mq_sensor")+
+                " | "+fit.optString("source_curve_id")+" | "+concentration+
+                (fit.optBoolean("extrapolated")?" | EXTRAPOLATED":"")+
+                "\n"+fit.optString("status")+" | "+fit.optString("source_root"),
+                false);
+        }
+        info(c,"Source-curve ppm remain available regardless of physical G3 status. "+
+            "IFC comparisons are displayed only against matched engine-stack "+
+            "reference units (not ppm of mixed smoke or ambient PM).",
+            274,291,false);
+    }
     public static void write(Context ctx,OutputStream output,String name,JSONObject scan,
                              int measurementCount)throws Exception{
         if(ctx==null||output==null||scan==null||name==null)
             throw new IllegalArgumentException("Missing frozen engine emissions");
+        java.util.List<JSONObject> sources=sourceModels(scan);
+        int totalPages=2+Math.max(1,(sources.size()+8)/9);
         PdfDocument pdf=new PdfDocument();
         try{
-            for(int i=1;i<=3;i++){
+            for(int i=1;i<=totalPages;i++){
                 PdfDocument.Page page=V7ReportLayoutKit.open(pdf,i,false);
                 Canvas c=page.getCanvas();c.drawColor(Color.WHITE);
-                if(i==1)pageOne(c,ctx,name,scan,measurementCount);
-                else if(i==2)pageTwo(c,ctx,name,scan);
-                else pageThree(c,ctx,name,scan);
+                if(i==1)pageOne(c,ctx,name,scan,measurementCount,totalPages);
+                else if(i==2)pageTwo(c,ctx,name,scan,totalPages);
+                else pageSource(c,ctx,name,scan,sources,(i-3)*9,i,totalPages);
                 pdf.finishPage(page);
             }
             pdf.writeTo(output);
