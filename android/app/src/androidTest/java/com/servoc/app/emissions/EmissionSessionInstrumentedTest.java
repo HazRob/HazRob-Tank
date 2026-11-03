@@ -93,6 +93,15 @@ public final class EmissionSessionInstrumentedTest {
             }
             assertEquals(1,db.count(engineOne));
             assertEquals(0,db.count(engineTwo));
+            // User-confirmed remeasurement must UPDATE the sole record,
+            // never append a second scan or affect another named engine.
+            JSONObject redo=new JSONObject(first.toString());
+            redo.put("frames",72).put("measured_at_ms",
+                first.optLong("measured_at_ms",0)+360000);
+            db.replaceMeasurement(engineOne,redo);
+            assertEquals(1,db.count(engineOne));
+            assertEquals(72,db.latest(engineOne).getInt("frames"));
+            assertEquals(0,db.count(engineTwo));
             assertEquals(engineOne,db.latest(engineOne).optLong("engine_id"));
             assertNull(db.latest(engineTwo));
             JSONObject second=EmissionResearchEngine.complete(engineTwo,
