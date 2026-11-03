@@ -15,6 +15,7 @@ E=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextDe
 F=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextScientificDiagnostics.java"
 G=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextAndroidAdapter.java"
 H=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextFieldArchiveBridge.java"
+I=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextResearchSourceBindings.java"
 class SourceRouting(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -26,6 +27,7 @@ class SourceRouting(unittest.TestCase):
         cls.f=F.read_text(encoding="utf-8")
         cls.g=G.read_text(encoding="utf-8")
         cls.h=H.read_text(encoding="utf-8")
+        cls.i=I.read_text(encoding="utf-8")
         assert "public static Result analyzeV6Comparison(" in cls.a
         cls.next_method=cls.a.split("public static Result analyze(android.content.Context androidContext",1)[1].split("public static Result analyzeV6Comparison",1)[0]
     def test_v8_live_invokes_next_core_and_stores_once(self):
@@ -42,7 +44,7 @@ class SourceRouting(unittest.TestCase):
         self.assertIn("NextScientificDiagnostics.compute(frozen,master,next.receipt.sourceSnapshot)",self.next_method)
         self.assertIn('"scientific_source_diagnostics"',self.next_method)
         self.assertIn('"fingerprint_runtime_status"',self.next_method)
-        self.assertIn("List.of(),java.util.List.of(),java.util.List.of(),12)",self.next_method)
+        self.assertIn("catalog,researchCurves,java.util.List.of(),java.util.List.of(),12)",self.next_method)
     def test_scientific_curve_ledger_uses_same_verified_frozen_device_reference(self):
         # These are source-equation research diagnostics, not source-matched
         # ppm or candidate-ranking evidence. Raw firmware r0 is untrusted.
@@ -63,6 +65,15 @@ class SourceRouting(unittest.TestCase):
         self.assertIn('boolean relayOn=relayConfirmedOn(data);',self.g)
         self.assertIn('NextAndroidAdapter.relayConfirmedOn(safe)',self.h)
         self.assertNotIn('relay.optBoolean("on",relay.optInt("mask",0)!=0)',self.h)
+    def test_all_installable_mq_curves_are_abstention_only_next_experts(self):
+        self.assertIn('SourceCatalog.allCurves()',self.i)
+        self.assertIn('SourceCurveExpert.Qualification.unverified()',self.i)
+        self.assertIn('master.all(5000)',self.i)
+        self.assertIn('canonicalByLegacy',self.i)
+        self.assertIn('NextResearchSourceBindings.abstentionOnlyCurves(',self.next_method)
+        self.assertIn('NextResearchSourceBindings.abstentionOnlyCurves(',self.h)
+        self.assertIn('researchCurves,List.of(),List.of(),12',self.h)
+        self.assertIn('"ABSTENTION_ONLY_NO_SOURCE_R0_OR_G3"',self.next_method)
     def test_v6_comparison_explicit_not_inactive_fallback(self):
         v6=self.a.split("public static Result analyzeV6Comparison(",1)[1]
         self.assertIn("TankV6TelemetryAdapter.analyzeSnapshot",v6)
