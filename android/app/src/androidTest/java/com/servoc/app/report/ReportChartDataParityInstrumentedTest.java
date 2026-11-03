@@ -145,29 +145,75 @@ public final class ReportChartDataParityInstrumentedTest {
         }
         return new JSONObject().put("mq",mq);
     }
-    private JSONObject nextEnvelope()throws Exception{
+    /**
+     * P11.6: radar/table parity is tested from the SAME frozen Next source
+     * evidence, never firmware mq.r0 (which could be old factor-scaled R0).
+     * Synthetic unique snapshot hashes distinguish independently captured
+     * fixture vectors and do not qualify gases or Tank G3.
+     */
+    private JSONObject nextEnvelope(double scaling)throws Exception{
+        String digest=scaling==0.0?
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa":
+            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+        String uid=scaling==0.0?"R01-QA-SOURCE-A":"R01-QA-SOURCE-B";
+        JSONArray frozen=new JSONArray();
+        String[] models={"MQ2","MQ3","MQ4","MQ5","MQ7","MQ8","MQ9","MQ135"};
+        for(int i=0;i<models.length;i++){
+            double rs=4.5+0.65*i+scaling*(i%3==0?1.0:0.05);
+            double rAir=12.0+i*0.4;
+            frozen.put(new JSONObject()
+                .put("source_curve_id","R01-QA-FROZEN-MQ-"+models[i])
+                .put("sensor_model",models[i])
+                .put("reference_device_bound",true)
+                .put("rs_kohm",rs)
+                .put("device_air_reference_kohm",rAir)
+                .put("status","RESEARCH_ONLY_SOURCE_HEATER_UNVERIFIED"));
+        }
+        JSONObject science=new JSONObject()
+            .put("source_snapshot_uid",uid)
+            .put("source_snapshot_sha256",digest)
+            .put("all_reference_models",frozen);
         return new JSONObject()
             .put("schema","hazrob.tank.v8.next.decision.presentation/1")
-            .put("decision_uid","R01-QA-DECISION-ONLY")
-            .put("snapshot_sha256","R01-QA-FAKE-SHA-PROVENANCE")
+            .put("decision_uid","R01-QA-DECISION-"+uid)
+            .put("snapshot_sha256",digest)
+            .put("snapshot_uid",uid)
             .put("candidate_count",0)
             .put("candidates",new JSONArray())
             .put("observed_channels",8)
-            .put("decision_status","UNKNOWN");
+            .put("decision_status","UNKNOWN")
+            .put("scientific_source_diagnostics",science);
     }
     @Test public void instantRadarUsesSameFrozenRsR0SourceAsReportTable()throws Exception{
+        JSONObject sourceTelemetry=telemetry(0);
         ByteArrayOutputStream outA=new ByteArrayOutputStream(),outB=new ByteArrayOutputStream();
-        TankInstantReportPdf.write(outA,telemetry(0),nextEnvelope(),"R01-TRACE-TEST",
-            1793664000000L);
-        TankInstantReportPdf.write(outB,telemetry(3.2),nextEnvelope(),"R01-TRACE-TEST",
-            1793664000000L);
-        Bitmap a=page(outA.toByteArray(),0,1),b=page(outB.toByteArray(),0,1);
+        TankInstantReportPdf.write(outA,sourceTelemetry,nextEnvelope(0),
+            "R01-TRACE-TEST",1793664000000L);
+        TankInstantReportPdf.write(outB,sourceTelemetry,nextEnvelope(3.2),
+            "R01-TRACE-TEST",1793664000000L);
+        // Original V7 main page plus 8 frozen source-curve details (1 page).
+        Bitmap a=page(outA.toByteArray(),0,2),b=page(outB.toByteArray(),0,2);
         try{
-            // Original V7 radar uses a box at x14..277,y552..759.
-            assertTrue("R01 fingerprint radar must reflect its own MQ Rs/R0 ledger",
+            assertTrue("R01 radar must vary with frozen Next Rs/R_air, not firmware r0",
                 changed(a,b,35,575,252,743)>15);
-            assertTrue("R01 numeric table must reflect its own frozen sensor values",
+            assertTrue("R01 numeric table must vary with the SAME frozen Next Rs/R_air",
                 changed(a,b,265,232,565,510)>15);
+        }finally{a.recycle();b.recycle();}
+    }
+    @Test public void changingRawFirmwareR0CannotRewriteFrozenNextRadar()throws Exception{
+        JSONObject original=telemetry(0);
+        JSONObject corrupted=telemetry(3.2);
+        ByteArrayOutputStream first=new ByteArrayOutputStream(),second=new ByteArrayOutputStream();
+        TankInstantReportPdf.write(first,original,nextEnvelope(0),
+            "R01-NO-REPLAY",1793664000000L);
+        TankInstantReportPdf.write(second,corrupted,nextEnvelope(0),
+            "R01-NO-REPLAY",1793664000000L);
+        Bitmap a=page(first.toByteArray(),0,2),b=page(second.toByteArray(),0,2);
+        try{
+            assertEquals("Changing firmware MQ resistance must not mutate frozen Next radar",
+                0,changed(a,b,35,575,252,743));
+            assertEquals("Frozen Next sensor table must not use later raw telemetry",
+                0,changed(a,b,265,232,565,510));
         }finally{a.recycle();b.recycle();}
     }
     @Test public void physicalPdfDisplaysSourceSnapshotInsteadOfOtherSample()throws Exception{
