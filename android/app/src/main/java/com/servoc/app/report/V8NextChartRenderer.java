@@ -8,6 +8,8 @@ import android.graphics.RectF;
 import com.hazrob.tank.chemcore.next.CoreContracts;
 import com.servoc.app.chemcore.nextintegration.NextDecisionStore;
 import com.servoc.app.data.SessionSeries;
+import com.servoc.app.hardware.HazRobHardwareProfile;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -156,6 +158,131 @@ public final class V8NextChartRenderer {
         }
         return result;
     }
+    /**
+     * Actual original time evolution, not synthetic manufacturer curves.
+     * Per MQ physical channel draw delta natural-log(Rs/Rs_at_first_valid_scan),
+     * against the captured t_ms, deduplicating repeated firmware scan cycles.
+     * The vertical axis is dimensionless, never ppm.
+     */
+    public static void drawActualMqKinetics(Canvas canvas,RectF r,SessionSeries.Series series){
+        panel(canvas,r,"MQ • تغير ln(Rs/Rs0 الزمنية) • 60s");
+        if(series==null||!series.usable()){
+            lines(canvas,r,"لا توجد سلسلة عينات محفوظة","NOT_AVAILABLE: no actual MQ timeline");return;
+        }
+        Map<String,List<double[]>> traces=new LinkedHashMap<>();
+        long minTime=Long.MAX_VALUE,maxTime=Long.MIN_VALUE;
+        double min=Double.POSITIVE_INFINITY,max=Double.NEGATIVE_INFINITY;
+        for(HazRobHardwareProfile.Channel sensor:HazRobHardwareProfile.MQ){
+            List<double[]> pts=new ArrayList<>();
+            double first=Double.NaN;
+            long lastScan=Long.MIN_VALUE;
+            for(SessionSeries.Sample sample:series.samples){
+                JSONObject q=SessionSeries.sensor(sample,sensor.key);
+                if(q==null||!q.optBoolean("ok",q.optBoolean("valid",false))||
+                   !q.optBoolean("powered",true))continue;
+                double rs=q.optDouble("rs",Double.NaN);
+                if(!Double.isFinite(rs)||rs<=0)continue;
+                if(q.has("scan_cycle")){
+                    long cycle=q.optLong("scan_cycle",-1);
+                    if(cycle<0||cycle==lastScan)continue;
+                    lastScan=cycle;
+                }
+                if(!Double.isFinite(first))first=rs;
+                double value=Math.log(rs/first);
+                if(!Double.isFinite(value))continue;
+                pts.add(new double[]{sample.tMs,value});
+                minTime=Math.min(minTime,sample.tMs);
+                maxTime=Math.max(maxTime,sample.tMs);
+                min=Math.min(min,value);max=Math.max(max,value);
+            }
+            if(pts.size()>=2)traces.put(sensor.key,pts);
+        }
+        if(traces.isEmpty()||maxTime<=minTime){
+            lines(canvas,r,"لا توجد دورتان أصليتان صحيحتان لكل حساس",
+                "No duplicated / interpolated source scans");return;
+        }
+        min=Math.min(0,min);max=Math.max(0,max);
+        if(max-min<0.001){min-=0.02;max+=0.02;}
+        double span=max-min;
+        RectF plot=new RectF(r.left+36,r.top+39,r.right-12,r.bottom-50);
+        Paint axis=paint(0xFFA6B4C1,7,false);axis.setStrokeWidth(0.7f);
+        canvas.drawLine(plot.left,plot.top,plot.left,plot.bottom,axis);
+        canvas.drawLine(plot.left,plot.bottom,plot.right,plot.bottom,axis);
+        float zero=plot.bottom-(float)((0-min)/span)*plot.height();
+        if(zero>=plot.top&&zero<=plot.bottom)
+            canvas.drawLine(plot.left,zero,plot.right,zero,axis);
+        t(canvas,String.format(Locale.US,"%.2g",max),r.left+5,plot.top+8,7,MUTED,false);
+        t(canvas,String.format(Locale.US,"%.2g",min),r.left+5,plot.bottom,7,MUTED,false);
+        t(canvas,String.format(Locale.US,"%.1fs",minTime/1000.0),
+            plot.left,plot.bottom+14,7,MUTED,false);
+        t(canvas,String.format(Locale.US,"%.1fs",maxTime/1000.0),
+            plot.right-31,plot.bottom+14,7,MUTED,false);
+        int[] palette={GREEN,BLUE,0xFFC67C23,0xFF8A4BBB,0xFFC24F58,
+                       0xFF137F8C,0xFF93663B,0xFF5F7837};
+        int index=0;
+        for(Map.Entry<String,List<double[]>> trace:traces.entrySet()){
+            int tint=palette[index%palette.length];
+            Paint pen=paint(tint,7,false);
+            pen.setStyle(Paint.Style.STROKE);pen.setStrokeWidth(1.65f);
+            float previousX=Float.NaN,previousY=Float.NaN;
+            for(double[] point:trace.getValue()){
+                float x=plot.left+(float)((point[0]-minTime)/(double)(maxTime-minTime))
+                    *plot.width();
+                float y=plot.bottom-(float)((point[1]-min)/span)*plot.height();
+                if(Float.isFinite(previousX)&&Float.isFinite(previousY))
+                    canvas.drawLine(previousX,previousY,x,y,pen);
+                previousX=x;previousY=y;
+            }
+            float lx=r.left+12+(index%4)*59,ly=r.bottom-27+(index/4)*12;
+            Paint key=paint(tint,7,false);key.setStrokeWidth(2);
+            canvas.drawLine(lx,ly-3,lx+10,ly-3,key);
+            t(canvas,trace.getKey().toUpperCase(Locale.US),lx+12,ly,6.4f,INK,false);
+            index++;
+        }
+    }
+
+    /** Coverage percentage uses EACH ORIGINAL saved sample, not the last
+     * /diag frame. Repeated firmware scan-cycle IDs count only once.
+     * This is a diagnostic visualization, NOT a calibrated gas result.
+     */
+    public static void drawActualMqCoverage(Canvas canvas,RectF r,SessionSeries.Series series){
+        panel(canvas,r,"صلاحية قنوات MQ الزمنية • % من العينات");
+        if(series==null||!series.usable()){
+            lines(canvas,r,"سلسلة المصدر غير متاحة","No coverage percentage invented");return;
+        }
+        int total=series.samples.size();
+        if(total<=0){lines(canvas,r,"لا توجد عينات");return;}
+        int index=0;
+        float top=r.top+37f;
+        for(HazRobHardwareProfile.Channel sensor:HazRobHardwareProfile.MQ){
+            int valid=0;long lastCycle=Long.MIN_VALUE;
+            for(SessionSeries.Sample sample:series.samples){
+                JSONObject q=SessionSeries.sensor(sample,sensor.key);
+                if(q==null||!q.optBoolean("ok",q.optBoolean("valid",false))||
+                   !q.optBoolean("powered",true))continue;
+                double rs=q.optDouble("rs",Double.NaN);
+                if(!Double.isFinite(rs)||rs<=0)continue;
+                if(q.has("scan_cycle")){
+                    long cycle=q.optLong("scan_cycle",-1);
+                    if(cycle<0||cycle==lastCycle)continue;
+                    lastCycle=cycle;
+                }
+                valid++;
+            }
+            float y=top+index*21.3f;
+            t(canvas,sensor.key.toUpperCase(Locale.US),r.left+9,y+8,7.5f,INK,false);
+            float left=r.left+67,width=Math.max(2,r.width()-122);
+            Paint pen=paint(BLUE,8,false);
+            canvas.drawRoundRect(new RectF(left,y-2,
+                left+(float)valid/total*width,y+10),2,2,pen);
+            t(canvas,String.format(Locale.US,"%.0f%%",valid*100.0/total),
+                r.right-48,y+8,7.5f,INK,true);
+            index++;
+        }
+        t(canvas,"Valid original scan rows / total recorded rows",
+            r.left+9,r.bottom-9,6.9f,MUTED,false);
+    }
+
     public static void requireSameSession(NextDecisionStore.Receipt receipt,String sessionId){
         if(receipt==null||sessionId==null||!receipt.sessionId.equals(sessionId))
             throw new IllegalStateException("NEXT_VISUAL_SOURCE_SESSION_MISMATCH");
@@ -193,7 +320,7 @@ public final class V8NextChartRenderer {
                     "Decision UID: "+shortText(receipt.decisionUid,22),
                     "No certified ppm / Tank G3");break;
             case SOURCE_COVERAGE:
-                bar(canvas,r,"تغطية المرشحين لجذور المصادر",sourceCoverage(d),BLUE);break;
+                drawActualMqKinetics(canvas,r,series);break;
             case RS_SOURCE:
                 bar(canvas,r,"Rs kΩ أصلي • ليست قيمة غاز ppm",measuredRs(snap),GREEN);break;
             case ADC_RAW:
@@ -211,7 +338,9 @@ public final class V8NextChartRenderer {
                 }
                 break;
             case QUALITY:
-                bar(canvas,r,"حالات أهلية قنوات MQ",quality(snap),AMBER);break;
+                if(series!=null&&series.usable())drawActualMqCoverage(canvas,r,series);
+                else bar(canvas,r,"جودة قنوات MQ • المصدر النهائي",quality(snap),AMBER);
+                break;
             default:throw new IllegalArgumentException("NEXT_CHART_KEY_UNSUPPORTED");
         }
     }
@@ -232,9 +361,9 @@ public final class V8NextChartRenderer {
             "Next • المرشحون وعدد المصادر", "Next • جذور أدلة المصادر",
             "Next • البصمة Rs/R_air", "Next • دليل الحساسات",
             "Next • قطبية الدليل", "Next • القرار وبصمة المصدر",
-            "Next • تغطية المصدر للمرشحين", "Next • Rs الأصلي kΩ",
+            "Next • منحنى MQ الزمني الأصلي", "Next • Rs الأصلي kΩ",
             "Next • قيم ADC الخام", "Next • علاقة المصدر بالحساس",
-            "Next • العلاقة مع البيئة", "Next • جودة القنوات"
+            "Next • العلاقة مع البيئة", "Next • اكتمال MQ عبر الوقت"
         };
     }
 }
