@@ -27,6 +27,8 @@ import com.servoc.app.SiteSummaryExportActivity;
 import java.util.ArrayList;
 import com.servoc.app.report.AnalyticalCharts;
 import com.servoc.app.report.TankChartEligibility;
+import com.servoc.app.report.V8NextChartRenderer;
+import com.servoc.app.chemcore.nextintegration.NextDecisionStore;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -298,11 +300,14 @@ public final class ReportsTab {
                     }
                     String sid=row.sessionId==null?"":row.sessionId.trim();
                     JSONObject decision=sid.isEmpty()?null:decisions.latestPayloadForSession(sid);
+                    NextDecisionStore.Receipt next=sid.isEmpty()?null:
+                        new NextDecisionStore(host.database()).latestForSession(sid);
+                    if(next!=null)V8NextChartRenderer.requireSameSession(next,sid);
                     SessionSeries.Series series=SessionSeries.forExperiment(host.database(),row);
                     String fieldId=sid.isEmpty()?"":fieldSessions.fieldSessionIdForMeasurement(sid);
                     scroll.post(()->{
                         if(released||reportGeneration!=request||selectedId!=id)return;
-                        showSelectedReady(row,decision,series,fieldId);
+                        showSelectedReady(row,decision,series,fieldId,next);
                     });
                 }catch(RuntimeException ex){
                     android.util.Log.e("TankReports","Cannot load selected analysis",ex);
@@ -320,7 +325,7 @@ public final class ReportsTab {
 
     /** UI-only rendering of a saved, immutable ChemCore snapshot. */
     private void showSelectedReady(ExperimentQueries.Record r,JSONObject cc,SessionSeries.Series ss,
-                                   String fieldSessionId){
+                                   String fieldSessionId,NextDecisionStore.Receipt next){
         setEnabled(true);
         JSONObject d=json(r.payload),m=d.optJSONObject("measurement"),e=d.optJSONObject("env"),
                 relay=d.optJSONObject("relay"),a=json(r.analytics);
@@ -329,7 +334,27 @@ public final class ReportsTab {
         boolean seriesOk=ss!=null&&ss.usable(),mqOn=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0);String state=m==null?"—":m.optString("state","—");
         sessionCard.setText("الجلسة #"+r.id+"\n"+(sid.isEmpty()?"بدون Session ID":sid)+"\n"+state+(seriesOk?" • "+ss.samples.size()+" عينة":" • لا سلسلة زمنية"));sessionCard.setTextColor(seriesOk?GOOD:WARN);
 
-        if(cc==null){decisionCard.setText("القرار\nلا توجد نتيجة ChemCore");decisionCard.setTextColor(WARN);qualityCard.setText("الجودة\n—");safetyCard.setText("السلامة\nمحجوبة");candidateCard.setText("المرشحون • لا توجد نتيجة مرتبطة");}
+        if(next!=null){
+            var scientific=next.originalDecision;
+            int channels=0;
+            for(var reading:next.sourceSnapshot.readings)
+                if(reading.quality==com.hazrob.tank.chemcore.next.CoreContracts.SampleQuality.VALID)
+                    channels++;
+            String first=scientific.rankedEligibleCandidates.isEmpty()?"UNKNOWN":
+                "UID "+scientific.rankedEligibleCandidates.get(0).canonicalChemicalUid;
+            decisionCard.setText("ChemCore Next • "+scientific.status.name()+
+                "\n"+first+" • أدلة مصادر بحثية");
+            decisionCard.setTextColor(INFO);
+            qualityCard.setText("جودة مصدر Next\nMQ "+channels+"/8"+
+                "\nSource SHA "+shortHash(next.snapshotSha256));
+            qualityCard.setTextColor(channels>=6?GOOD:WARN);
+            safetyCard.setText("السلامة\nنتائج بحثية، ليست قياسًا معتمدًا"+
+                "\nG3=0 • لا ppm مهني");
+            safetyCard.setTextColor(WARN);
+            candidateCard.setText("مرشحو Next: "+scientific.rankedEligibleCandidates.size()+
+                " • جذور الأدلة: "+scientific.evidence.size()+
+                "\n"+first);
+        }else if(cc==null){decisionCard.setText("القرار\nلا توجد نتيجة ChemCore");decisionCard.setTextColor(WARN);qualityCard.setText("الجودة\n—");safetyCard.setText("السلامة\nمحجوبة");candidateCard.setText("المرشحون • لا توجد نتيجة مرتبطة");}
         else{
             String outcome=cc.optString("outcome","—"),tier=cc.optString("evidence_tier","—"),chemical=cc.optString("chemical","—");double post=cc.optDouble("top_posterior",Double.NaN),margin=cc.optDouble("posterior_separation_margin",Double.NaN),ood=cc.optDouble("ood_score",Double.NaN),entropy=cc.optDouble("normalized_entropy",Double.NaN);TankPpmEstimate.Result ppmResult=TankPpmEstimate.from(cc);
             decisionCard.setText("القرار • "+outcome+"\n"+chemical+" • "+pct(post)+"\n"+tier+(ppmResult.available()?" • "+fmt(ppmResult.ppm)+" ppm • "+ppmResult.qualityAr():" • لا توجد نتيجة PPM رقمية"));decisionCard.setTextColor("M4_HAZROB_VALIDATED".equals(tier)?GOOD:INFO);
@@ -338,17 +363,43 @@ public final class ReportsTab {
             candidateCard.setText(candidateSummary(cc));
         }
 
-        StringBuilder t=new StringBuilder("المرجع والتتبّع\n");t.append("Experiment #").append(r.id).append(" • UTC ").append(safe(r.ts)).append("\nProtocol: ").append(safe(r.protocol)).append("\nSession: ").append(sid.isEmpty()?"—":sid).append("\nField Session: ").append(fieldReport?fieldSessionId:"—").append("\nMQ Power: ").append(mqOn?"ON":"OFF");if(relay!=null&&mqOn)t.append(" • ").append(relay.optLong("power_ms",0)).append(" ms");if(e!=null&&e.optBoolean("ok",false))t.append("\nENV: ").append(fmt(e.optDouble("temperature",Double.NaN))).append(" °C • ").append(fmt(e.optDouble("humidity",Double.NaN))).append(" %RH • ").append(fmt(e.optDouble("pressure",Double.NaN))).append(" hPa");t.append("\nStored analytical rows: ").append(a.optJSONArray("results")==null?0:a.optJSONArray("results").length());if(cc!=null){t.append("\n\n").append(ChemCoreAnalysisPresenter.summary(cc));t.append("\n\n").append(ChemCoreAnalysisPresenter.equationsAndResiduals(cc,6));}technical.setText(t.toString());refreshAvailableCharts(ss,cc);
+        StringBuilder t=new StringBuilder("المرجع والتتبّع\n");t.append("Experiment #").append(r.id).append(" • UTC ").append(safe(r.ts)).append("\nProtocol: ").append(safe(r.protocol)).append("\nSession: ").append(sid.isEmpty()?"—":sid).append("\nField Session: ").append(fieldReport?fieldSessionId:"—").append("\nMQ Power: ").append(mqOn?"ON":"OFF");if(relay!=null&&mqOn)t.append(" • ").append(relay.optLong("power_ms",0)).append(" ms");if(e!=null&&e.optBoolean("ok",false))t.append("\nENV: ").append(fmt(e.optDouble("temperature",Double.NaN))).append(" °C • ").append(fmt(e.optDouble("humidity",Double.NaN))).append(" %RH • ").append(fmt(e.optDouble("pressure",Double.NaN))).append(" hPa");t.append("\nStored analytical rows: ").append(a.optJSONArray("results")==null?0:a.optJSONArray("results").length());if(next!=null){
+            t.append("\n\nChemCore Next receipt: ").append(next.decisionUid);
+            t.append("\nSnapshot SHA-256: ").append(next.snapshotSha256);
+            t.append("\nStable SHA-256: ").append(next.sourceSnapshot.stableManifestHash);
+            t.append("\nDecision: ").append(next.originalDecision.status.name());
+            t.append("\nEvidence nodes: ").append(next.originalDecision.evidence.size());
+            for(var evidence:next.originalDecision.evidence)
+                t.append("\nRoot ").append(evidence.sourceRootId)
+                    .append(" • sensor ").append(evidence.sensorUid)
+                    .append(" • ").append(evidence.polarity);
+        }else if(cc!=null){
+            t.append("\n\n").append(ChemCoreAnalysisPresenter.summary(cc));
+            t.append("\n\n").append(ChemCoreAnalysisPresenter.equationsAndResiduals(cc,6));
+        }
+        technical.setText(t.toString());refreshAvailableCharts(ss,cc,next);
     }
 
     /** Only expose diagrams backed by the selected record's actual persisted evidence. */
-    private void refreshAvailableCharts(SessionSeries.Series series,JSONObject chemcore){
+    private void refreshAvailableCharts(SessionSeries.Series series,JSONObject chemcore,
+                                        NextDecisionStore.Receipt next){
         if(released)return;
         chartGeneration++; // invalidate any chart drawing for the previous record
         availableCharts.clear();List<String> labels=new ArrayList<>();
         for(int i=0;i<CHARTS.length;i++){
+            // Actual Next decisions supersede legacy ChemCore chemical charts.
+            // MQ time-series and BME/physical channels still belong to the
+            // original archived measurement, not a chemistry hypothesis.
+            if(next!=null&&i>=3&&i<=10)continue;
             if(TankChartEligibility.hasData(i,series,chemcore)){
                 availableCharts.add(i);labels.add(CHARTS[i]);
+            }
+        }
+        if(next!=null){
+            String[] names=V8NextChartRenderer.nextChartLabels();
+            for(int i=0;i<names.length;i++){
+                availableCharts.add(CHARTS.length+i);
+                labels.add(names[i]);
             }
         }
         chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);
@@ -362,12 +413,17 @@ public final class ReportsTab {
         if(!availableCharts.isEmpty())renderSelectedChart(0);
     }
 
+    private static String shortHash(String hash){
+        return hash==null?"N/A":hash.length()>12?hash.substring(0,12)+"…":hash;
+    }
+
     private void renderSelectedChart(int selectedIndex){
         if(released)return;
         if(selectedIndex<0||selectedIndex>=availableCharts.size()){chartGeneration++;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("المخطط غير متاح لهذه الجلسة");return;}
         final int pos=availableCharts.get(selectedIndex);
         final long experimentId=selectedId,request=++chartGeneration;
-        chartStatus.setText("جارٍ إعداد الرسم • "+CHARTS[pos]);openChart.setEnabled(false);
+        chartStatus.setText("جارٍ إعداد الرسم • "+(pos>=CHARTS.length?
+            V8NextChartRenderer.nextChartLabels()[pos-CHARTS.length]:CHARTS[pos]));openChart.setEnabled(false);
         // DB reconstruction and rasterisation are potentially expensive: never do them on UI.
         host.io().execute(()->{
             try{
@@ -386,8 +442,14 @@ public final class ReportsTab {
                 SessionSeries.Series ss=SessionSeries.forExperiment(host.database(),r);
                 String sid=r.sessionId==null?"":r.sessionId.trim();
                 JSONObject cc=sid.isEmpty()?null:decisions.latestPayloadForSession(sid);
-                boolean needsChem=pos>=3&&pos<=10;
-                boolean ready=TankChartEligibility.hasData(pos,ss,cc);
+                boolean nextChart=pos>=CHARTS.length;
+                NextDecisionStore.Receipt next=sid.isEmpty()?null:
+                    new NextDecisionStore(host.database()).latestForSession(sid);
+                if(nextChart&&next!=null)V8NextChartRenderer.requireSameSession(next,sid);
+                boolean needsChem=nextChart||(pos>=3&&pos<=10);
+                boolean ready=nextChart?next!=null:
+                    TankChartEligibility.hasData(pos,ss,cc);
+                if(next!=null&&pos>=3&&pos<=10)ready=false;
                 if(!ready){
                     scroll.post(()->{if(released||chartGeneration!=request)return;chartView.setImageDrawable(null);chartView.setVisibility(View.GONE);openChart.setEnabled(false);chartStatus.setText("بيانات الرسم غير متوفرة لهذه الجلسة");});
                     return;
@@ -395,7 +457,9 @@ public final class ReportsTab {
                 if(released||chartGeneration!=request)return;
                 Bitmap b=Bitmap.createBitmap(1200,650,Bitmap.Config.ARGB_8888);
                 Canvas canvas=new Canvas(b);canvas.drawColor(Color.WHITE);RectF box=new RectF(12,12,1188,638);
-        switch(pos){
+        if(nextChart){
+            V8NextChartRenderer.draw(canvas,box,next,ss,pos-CHARTS.length);
+        }else switch(pos){
             case 0:AnalyticalCharts.mqRsR0(canvas,box,ss);break;case 1:AnalyticalCharts.fingerprint(canvas,box,ss);break;case 2:AnalyticalCharts.fingerprintRadar(canvas,box,ss);break;
             case 3:AnalyticalCharts.candidates(canvas,box,cc);break;case 4:AnalyticalCharts.candidateScatter(canvas,box,cc);break;case 5:AnalyticalCharts.candidateBubbleMap(canvas,box,cc);break;case 6:AnalyticalCharts.candidateResiduals(canvas,box,cc);break;case 7:AnalyticalCharts.screening144(canvas,box,cc);break;case 8:AnalyticalCharts.screeningDonut(canvas,box,cc);break;case 9:AnalyticalCharts.evidenceTiers(canvas,box,cc);break;case 10:AnalyticalCharts.exposureRatios(canvas,box,cc);break;
             case 11:AnalyticalCharts.mqEnvironmentMatrix(canvas,box,ss);break;case 12:AnalyticalCharts.mqSignalQuality(canvas,box,ss);break;case 13:AnalyticalCharts.mqResponseKinetics(canvas,box,ss);break;case 14:AnalyticalCharts.mqPersistenceMap(canvas,box,ss);break;case 15:AnalyticalCharts.analyticalQualityRadar(canvas,box,ss);break;case 16:AnalyticalCharts.temperature(canvas,box,ss);break;case 17:AnalyticalCharts.humidity(canvas,box,ss);break;case 18:AnalyticalCharts.pressure(canvas,box,ss);break;case 19:AnalyticalCharts.sound(canvas,box,ss);break;
@@ -404,7 +468,10 @@ public final class ReportsTab {
                 scroll.post(()->{
                     if(released||chartGeneration!=request||selectedId!=experimentId){b.recycle();return;}
                     chartView.setImageBitmap(b);chartView.setVisibility(View.VISIBLE);openChart.setEnabled(true);
-                    chartStatus.setText("● "+CHARTS[pos]+" • "+(needsChem?"ChemCore محفوظ":"سلسلة زمنية محفوظة"));
+                    chartStatus.setText("● "+(nextChart?
+                        V8NextChartRenderer.nextChartLabels()[pos-CHARTS.length]:CHARTS[pos])+
+                        " • "+(nextChart?"ChemCore Next الأصلي / SHA محفوظ":
+                        needsChem?"ChemCore سابق":"سلسلة زمنية محفوظة"));
                     chartStatus.setTextColor(GOOD);
                 });
             }catch(Exception failure){
