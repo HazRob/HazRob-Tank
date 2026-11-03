@@ -59,6 +59,7 @@ public final class EmissionsTab {
     private long captureEngineId=-1,startClock=0,startedAtMs=0;
     private int frames=0;
     private boolean capturing=false,capturePM=false,processing=false,refreshingProfiles=false;
+    private boolean replacingExisting=false;
     private JSONObject lastFrozenSource;
     private Runnable tick;
 
@@ -186,7 +187,7 @@ public final class EmissionsTab {
     private void refreshSelection(){
         EmissionSessionStore.Engine e=selected();
         boolean has=e!=null;
-        measure.setEnabled(has&&!capturing&&!processing&&store.count(e.id)==0);
+        measure.setEnabled(has&&!capturing&&!processing);
         delete.setEnabled(has&&!capturing&&!processing);
         create.setEnabled(!capturing&&!processing);
         engineMenu.setEnabled(!capturing&&!processing);
@@ -201,13 +202,15 @@ public final class EmissionsTab {
         includeParticles.setEnabled(!capturing&&!processing);
         JSONObject latest=has?store.latest(e.id):null;
         report.setEnabled(latest!=null&&!capturing&&!processing);
+        measure.setText(latest==null?"▶ قياس الانبعاثات":
+            "↻ إعادة القياس (استبدال النتيجة الوحيدة)");
         if(!capturing&&!processing){
             status.setText(!has?"استحدث محركًا أولًا.":
                 latest!=null?"المحرك «"+e.name+"» لديه قياس واحد محفوظ — التقرير جاهز.":
                     "المحرك المحدد: "+e.name+" — جاهز لقياس واحد. "+
                     "انطباق IFC: "+e.config.applicability());
             if(latest!=null&&has){
-                try{EmissionIfcComparator.evaluate(latest,e.ifcProfile);}
+                try{EmissionIfcComparator.evaluate(latest,e.config);}
                 catch(Exception invalid){host.showToast("تعذر تقييم مرجع IFC");}
             }
             render(latest,has?store.count(e.id):0);
@@ -217,9 +220,22 @@ public final class EmissionsTab {
         EmissionSessionStore.Engine e=selected();
         if(capturing||processing||e==null)return;
         if(store.count(e.id)>0){
-            host.showToast("تم إجراء قياس لهذا المحرك بالفعل؛ لكل محرك قياس واحد فقط");
+            new AlertDialog.Builder(context)
+                .setTitle("تأكيد استبدال قياس المحرك")
+                .setMessage("لهذا المحرك نتيجة واحدة محفوظة. ستستبدل إعادة القياس "+
+                    "النتيجة القديمة نهائيًا ولن تنشئ جلسة إضافية. هل تؤكد؟")
+                .setNegativeButton("إلغاء",(d,w)->{})
+                .setPositiveButton("تأكيد الاستبدال",(d,w)->beginCapture(e,true))
+                .show();
+        }else beginCapture(e,false);
+    }
+    private void beginCapture(EmissionSessionStore.Engine e,boolean replace){
+        if(e==null||capturing||processing)return;
+        if(replace!=(store.count(e.id)>0)){
+            host.showToast("تغيّرت حالة المحرك؛ أعد اختيار المحرك");
             refreshSelection();return;
         }
+        replacingExisting=replace;
         JSONObject latest=host.latestDiagnostics();
         if(latest==null||latest.optJSONObject("mq")==null){
             host.showToast("يلزم الاتصال بالروبوت لبدء قياس انبعاثات");return;
@@ -329,8 +345,9 @@ public final class EmissionsTab {
                 }
                 result.put("engine_definition",spec.toJson());
                 result.put("ifc_applicability_by_entered_information",spec.applicability());
-                EmissionIfcComparator.evaluate(result,profile);
-                store.addMeasurement(engineId,result);
+                EmissionIfcComparator.evaluate(result,spec);
+                if(replacingExisting)store.replaceMeasurement(engineId,result);
+                else store.addMeasurement(engineId,result);
                 String outcome=result.optString("next_status","NOT_RUN");
                 view.post(()->{
                     processing=false;
