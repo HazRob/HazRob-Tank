@@ -3,6 +3,7 @@ package com.servoc.app.report;
 import com.hazrob.tank.chemcore.next.CoreContracts;
 import com.servoc.app.chemcore.nextintegration.NextDecisionStore;
 import com.servoc.app.field.FieldCycleRepository;
+import org.json.JSONObject;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,13 +36,24 @@ final class V8NextSiteXlsxWriter {
         if(out==null||b==null)throw new IllegalArgumentException("site Next XLSX required");
         if(!NextSiteEvidenceCharts.hasAnyNext(b.sessions))
             throw new IllegalArgumentException("Next site workbook requires a real Next receipt");
+        // Each measurement's P11 ledger is verified against ITS OWN immutable
+        // Next snapshot and archive. Never average/merge ppm between sessions.
+        Map<String,V8NextDualReferenceXlsxLedger> dualByMeasurement=
+            new LinkedHashMap<>();
+        for(var session:b.sessions)if(session.hasNext){
+            String measurement=session.bundle.primaryMeasurementSessionId;
+            if(dualByMeasurement.put(measurement,
+                V8NextDualReferenceXlsxLedger.load(
+                    b.sourceDatabase,measurement,session.next))!=null)
+                throw new IllegalStateException("P11_SITE_DUPLICATE_MEASUREMENT");
+        }
         List<SmartXlsxPackage.Sheet> sheets=new ArrayList<>();
-        sheets.add(new SmartXlsxPackage.Sheet("الملخص التنفيذي",summary(b)));
+        sheets.add(new SmartXlsxPackage.Sheet("الملخص التنفيذي",summary(b,dualByMeasurement)));
         sheets.add(new SmartXlsxPackage.Sheet("الجلسات",sessions(b)));
         sheets.add(new SmartXlsxPackage.Sheet("دورات الموقع",cycles(b)));
         sheets.add(new SmartXlsxPackage.Sheet("تكرار مصادر Next",roots(b)));
-        sheets.add(new SmartXlsxPackage.Sheet("أدلة Next والجودة",evidence(b)));
-        sheets.add(new SmartXlsxPackage.Sheet("المنهجية والمصدر",methodology(b)));
+        sheets.add(new SmartXlsxPackage.Sheet("أدلة Next والجودة",evidence(b,dualByMeasurement)));
+        sheets.add(new SmartXlsxPackage.Sheet("المنهجية والمصدر",methodology(b,dualByMeasurement)));
         if(sheets.size()!=6)throw new IllegalStateException("site six-sheet design changed");
         SmartXlsxPackage.write(out,sheets);
     }
@@ -54,7 +66,8 @@ final class V8NextSiteXlsxWriter {
             for(var e:s.next.originalDecision.evidence)roots.add(e.sourceRootId);
         return roots.size();
     }
-    private static String summary(SiteSummaryReportExporter.SiteBundle b){
+    private static String summary(SiteSummaryReportExporter.SiteBundle b,
+        Map<String,V8NextDualReferenceXlsxLedger> dualByMeasurement){
         SmartXlsxPackage.Grid g=sheet(b,"HazRob Tank V8 — ملخص الموقع / ChemCore Next",
             39,32,80);
         g.section("مؤشرات القرار المؤرشف");g.header("Metric","Value","Interpretation");
@@ -73,6 +86,11 @@ final class V8NextSiteXlsxWriter {
             "Occurrences are session-specific, NOT chemical identification");
         g.row("PPM pooled",null,"Not calculated between different field sessions");
         g.row("G3 qualification",false,"Cloud Android tests do not certify sensor calibration");
+        long sourceBound=dualByMeasurement.values().stream().filter(x->x.available).count();
+        g.row("Sessions with archived dual R0 source ledger",sourceBound,
+            "Per approved measurement, no pooled gas identity or PPM");
+        g.row("Sessions without P11 ledger",dualByMeasurement.size()-sourceBound,
+            "Historical Next data stays valid but lacks source-specific R0");
         g.blank();g.section("Recorded source and scientific limits");
         int i=1;for(var s:b.sessions){
             if(!s.hasNext)continue;
@@ -151,7 +169,8 @@ final class V8NextSiteXlsxWriter {
             "Repeated sensors and model curves from one study are one source per session.");
         return g.finish();
     }
-    private static String evidence(SiteSummaryReportExporter.SiteBundle b){
+    private static String evidence(SiteSummaryReportExporter.SiteBundle b,
+        Map<String,V8NextDualReferenceXlsxLedger> dualByMeasurement){
         SmartXlsxPackage.Grid g=sheet(b,"كل أدلة Next الأصلية وحالات القرار",
             38,38,35,53,24,54,30,22,83);
         g.header("Field session ID","Decision UID","Decision state",
@@ -171,9 +190,65 @@ final class V8NextSiteXlsxWriter {
                     s.next.status.name(),e.sourceRootId,e.expertId,
                     e.sensorUid,e.canonicalChemicalUid,e.polarity.name(),e.note);
         }
+        // P11.4: source math remains a PER-SESSION diagnostic, never
+        // aggregated into an occupational PPM, LFL, gas identity, or
+        // cross-session estimate. Retain all 62 source records per P11 session.
+        g.blank();g.section("P11.4 — المرجع المزدوج لكل قياس معتمد مستقل");
+        g.header("Field ID","Measurement ID","Next decision UID",
+            "Dual R0 status","Original source SHA256",
+            "Source curve ID","Physical MQ model","Source R0 K",
+            "Device R_air kΩ","Rs kΩ","Source R0 kΩ derived",
+            "Rs/R_air","Rs/R0 source","ppm RESEARCH ONLY",
+            "Source equation","Source root","Research status",
+            "Source blob","Physical G3 verified",
+            "Safety alarm authorized","Snapshot SHA256","Source caution");
+        for(var session:b.sessions){
+            if(!session.hasNext)continue;
+            String measurement=session.bundle.primaryMeasurementSessionId;
+            V8NextDualReferenceXlsxLedger dual=dualByMeasurement.get(measurement);
+            if(dual==null)
+                throw new IllegalStateException("P11_SITE_DUAL_R0_LEDGER_RESOLUTION_MISSING");
+            if(!dual.available){
+                g.row(session.bundle.fieldSession.id,measurement,session.next.decisionUid,
+                    dual.status,"NOT_CAPTURED_PRE_P11");
+                continue;
+            }
+            for(int i=0;i<dual.rows.length();i++){
+                JSONObject model=dual.rows.optJSONObject(i);
+                if(model==null)
+                    throw new IllegalStateException("P11_SITE_DUAL_R0_MODEL_ROW_MISSING");
+                g.row(session.bundle.fieldSession.id,measurement,session.next.decisionUid,
+                    dual.status,dual.sourceArchiveSha256,
+                    model.optString("source_curve_id",""),
+                    model.optString("sensor_model",""),
+                    scientificNumber(model,"source_example_clean_air_K"),
+                    scientificNumber(model,"device_air_reference_kohm"),
+                    scientificNumber(model,"rs_kohm"),
+                    scientificNumber(model,"source_r0_research_kohm"),
+                    scientificNumber(model,"observed_rs_over_air"),
+                    scientificNumber(model,"observed_rs_r0"),
+                    scientificNumber(model,"estimated_ppm"),
+                    model.optString("source_equation",""),
+                    model.optString("source_root",""),
+                    model.optString("status","NOT_EVALUABLE"),
+                    model.optString("source_blob",""),
+                    model.optBoolean("physical_g3_validated",false),
+                    model.optBoolean("safety_alarm_authorized",false),
+                    session.next.snapshotSha256,
+                    model.optString("caveat","SOURCE_R0_NOT_VERIFIED_FOR_TANK"));
+            }
+        }
+        g.rowStyled(SmartXlsxPackage.WARN,"P11 site interpretation",
+            "Each original Field Session is independent: no mean PPM across sessions; source model calculations are not gas detection or an occupational safety alarm.");
         return g.finish();
     }
-    private static String methodology(SiteSummaryReportExporter.SiteBundle b){
+    private static Object scientificNumber(JSONObject q,String key){
+        if(q==null||!q.has(key)||q.isNull(key))return null;
+        double n=q.optDouble(key,Double.NaN);
+        return Double.isFinite(n)?n:null;
+    }
+    private static String methodology(SiteSummaryReportExporter.SiteBundle b,
+        Map<String,V8NextDualReferenceXlsxLedger> dualByMeasurement){
         SmartXlsxPackage.Grid g=sheet(b,"مصادر العمل وحدود التفسير — ChemCore Next",
             53,120);
         g.header("Rule","Definition");
@@ -186,6 +261,11 @@ final class V8NextSiteXlsxWriter {
         g.row("Site recurrence","One vote per actual source root / physical session, no pooled telemetry");
         g.row("Historical source","Old archive retained and labelled, never represented as ChemCore Next");
         g.row("Concentration","None pooled or averaged across sessions");
+        g.row("Dual R0 reference method","Source-specific R0=R_air/K when source definition requires it; device R_air is never overwritten");
+        g.row("P11 dual R0 per-session source",
+            "Separate 62 research models per accepted measurement, source-hash/decision-bound; no added library of chemicals");
+        g.row("P11 source K qualification",
+            "MQSensorsLib model K and heater protocol remain unqualified on Tank; no certified source ppm");
         g.row("Occupational compliance","NOT_CERTIFIED");
         g.row("G3","NOT_CERTIFIED");
         g.row("Interpretation","Canonical UIDs are research candidates, not validated molecular identities");
