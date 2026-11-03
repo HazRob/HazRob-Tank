@@ -59,4 +59,43 @@ class FieldHandoff(unittest.TestCase):
         s=read("measurement/FieldCycleController.java")
         self.assertIn("FIELD_NEXT_DECISION_NOT_PERSISTED",s)
         self.assertIn("FIELD_COMPLETION_GATE_FAILED",s)
+    def test_f02_any_mq_abort_requires_positive_shutdown_ack(self):
+        s=read("measurement/FieldCycleController.java")
+        aborted=s.split("private boolean failWorker(",1)[1].split("private void end(",1)[0]
+        self.assertIn('host.robotApi().mqPower(false)',aborted)
+        self.assertIn('host.robotApi().snapshot(0,0)',aborted)
+        self.assertIn('relayOffAcknowledged(off)',aborted)
+        self.assertIn('RELAY_RECOVERY_FAULT_KEY',aborted)
+        self.assertIn('host.database().putMeta(',aborted)
+        self.assertIn('MQ_RELAY_OFF_ACK_WRONG_DEVICE',aborted)
+        self.assertLess(aborted.index('relayOffAcknowledged(off)'),
+                        aborted.index('host.database().putMeta('))
+        failed=s.split("private void stopWithFailure(",1)[1].split("private boolean failWorker(",1)[0]
+        self.assertIn("boolean unsafeRelay=failWorker(",failed)
+        self.assertIn('"SAFETY_FAULT"',failed)
+        self.assertNotIn("busy=false",failed)
+    def test_f02_next_archive_off_failure_is_persistent_lock(self):
+        s=read("measurement/FieldCycleController.java")
+        completed=s.split("if(repo.complete(cycleId,deviceId)){",1)[1].split('end("REVIEW_READY"',1)[0]
+        self.assertIn('relayOffAcknowledged(after)',completed)
+        self.assertIn("host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,fault)",completed)
+        self.assertIn("repo.markUnsafeReview(cycleId,fault)",completed)
+        self.assertLess(completed.index("putMeta(RELAY_RECOVERY_FAULT_KEY,fault)"),
+                        completed.index("repo.markUnsafeReview(cycleId,fault)"))
+    def test_f02_recovery_lock_only_clears_after_explicit_off_ack(self):
+        s=read("measurement/FieldCycleController.java")
+        method=s.split("public void recoverInterrupted(){",1)[1].split("public void retry(",1)[0]
+        self.assertIn("previousSafetyFault",method)
+        self.assertIn("n>0||previousSafetyFault",method)
+        self.assertIn("!relayOffAcknowledged(off)",method)
+        self.assertIn('putMeta(RELAY_RECOVERY_FAULT_KEY,"")',method)
+        self.assertIn("relaySafetyFault=true",method)
+        self.assertIn('putMeta(RELAY_RECOVERY_FAULT_KEY,',method)
+        for operation in ("begin(String sessionId", "retry(String predecessor", "approve(String id"):
+            body=s.split("public void "+operation,1)[1].split("host.io().execute(",1)[0]
+            self.assertIn('getMeta(RELAY_RECOVERY_FAULT_KEY,"")',body)
+        ui=read("ui/FieldSessionsTab.java")
+        self.assertIn("relayRecoverySafetyFault",ui)
+        self.assertIn("data.relaySafetyFault",ui)
+        self.assertIn("approveMeasurement.setEnabled(review&&active&&!relayRecoverySafetyFault)",ui)
 if __name__=="__main__":unittest.main(verbosity=2)
