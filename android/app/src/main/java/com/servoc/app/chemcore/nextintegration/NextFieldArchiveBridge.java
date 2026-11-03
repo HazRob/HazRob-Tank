@@ -159,6 +159,21 @@ public final class NextFieldArchiveBridge {
       throw new IllegalStateException("NEXT_RESEARCH_ONLY_DECISION_RECEIPT_FAILED");
     if(!next.receipt.snapshotUid.equals(captureUid))
       throw new IllegalStateException("NEXT_SOURCE_ARCHIVE_HASH_MISMATCH");
+    // Source-specific R0 is derived AFTER the original 60-second archive
+    // is frozen. Persist this ledger separately from the immutable Next
+    // decision: it is NOT evidence of detected chemical identity or ppm.
+    // Preserve both independent denominators and the source archive digest
+    // so later field exports can reproduce every conditional calculation.
+    JSONObject dualReference=NextScientificDiagnostics.compute(
+        combined,master,next.receipt.sourceSnapshot);
+    JSONObject provenance=new JSONObject();
+    provenance.put("schema","hazrob.tank.v8.field.next_dual_reference/1");
+    provenance.put("measurement_session_id",measurementId);
+    provenance.put("source_archive_sha256",source.sourceSha256);
+    provenance.put("next_decision_uid",next.receipt.decisionUid);
+    provenance.put("scientific_source_diagnostics",dualReference);
+    provenance.put("research_only_no_gas_identity_or_safety_alarm",true);
+    db.putMeta("v8_field_next_dual_reference_"+measurementId,provenance.toString());
     return new Outcome(source,next);
   }
 
