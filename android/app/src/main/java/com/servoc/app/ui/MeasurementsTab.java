@@ -1005,6 +1005,11 @@ public final class MeasurementsTab {
             safetyCard.setText("لا يوجد كشف معتمد للغاز أو تحذير تعرض مهني"+
                 "\nرموز GHS للمكتبة ليست دليلًا على وجود المادة");
             exposureStyle(safetyCard,false);
+            // A previous non-Next warning must not carry red/amber styling
+            // into unqualified mathematical source comparisons.
+            screeningWarnings.setBackgroundColor(CARD);
+            screeningWarnings.setTextColor(TEXT);
+            screeningWarnings.setTypeface(Typeface.DEFAULT,Typeface.NORMAL);
             screeningWarnings.setText("الاستنتاج البحثي لا يعتمد هوية الغاز أو ppm أو LEL"+
                 "\nUNKNOWN لا يثبت سلامة الهواء");
             referenceInventory.setText("حدود التعرض: مراجع المواد متاحة مستقلة في المكتبة"+
