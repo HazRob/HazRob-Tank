@@ -125,5 +125,50 @@ public final class R0ReferenceMath {
             qualified?"laboratory-qualified source relationship":"manufacturer K research only; no Tank G3");
     }
 
+    /**
+     * Conditional mathematical transport ONLY. This method intentionally
+     * does not compare heater profiles or assert source laboratory K: a
+     * source example without matched heater evidence must still be inspectable
+     * without being misrepresented as a certified gas measurement.
+     *
+     * Rs/R0_source = K*(Rs/R_air). Return values are never eligible to alter
+     * the device R_air baseline, candidate ranking, G3 or a safety alarm.
+     * The strict compare() method remains the qualification boundary.
+     */
+    public static Comparison researchTransform(Reference physical,Double observedRsKohm,
+                                               SourceK source) {
+        if(physical==null)throw new IllegalArgumentException("device reference required");
+        String root=source==null?"":source.sourceId;
+        if(physical.kind!=ReferenceKind.DEVICE_CLEAN_AIR ||
+           physical.rAirKohm==null)
+            return new Comparison(Status.INVALID_REFERENCE,observedRsKohm,null,
+                null,null,null,false,root,
+                "research transform requires a genuine device clean-air mean");
+        if(observedRsKohm==null||!Double.isFinite(observedRsKohm)||observedRsKohm<=0)
+            return new Comparison(Status.INVALID_REFERENCE,null,physical.rAirKohm,
+                null,null,null,false,root,"positive sensor Rs required");
+        double qAir=observedRsKohm/physical.rAirKohm;
+        if(!Double.isFinite(qAir)||qAir<=0)
+            return new Comparison(Status.INVALID_REFERENCE,observedRsKohm,
+                physical.rAirKohm,null,null,null,false,root,"invalid air response");
+        if(source==null)
+            return new Comparison(Status.SOURCE_K_NOT_SUPPLIED,observedRsKohm,
+                physical.rAirKohm,null,qAir,null,false,root,"source K not supplied");
+        if(!physical.sensorModel.equalsIgnoreCase(source.sensorModel))
+            return new Comparison(Status.SOURCE_MODEL_MISMATCH,observedRsKohm,
+                physical.rAirKohm,null,qAir,null,false,root,
+                "cannot transfer K across distinct sensor models");
+        double sourceR0=physical.rAirKohm/source.cleanAirRatioK;
+        double qSource=qAir*source.cleanAirRatioK;
+        if(!Double.isFinite(sourceR0)||sourceR0<=0||
+           !Double.isFinite(qSource)||qSource<=0)
+            return new Comparison(Status.INVALID_REFERENCE,observedRsKohm,
+                physical.rAirKohm,null,qAir,null,false,root,
+                "source reference conversion not finite");
+        return new Comparison(Status.SOURCE_K_RESEARCH_ONLY,observedRsKohm,
+            physical.rAirKohm,sourceR0,qAir,qSource,false,root,
+            "CONDITIONAL_MATH_ONLY_K_HEATER_DOMAIN_AND_G3_NOT_VERIFIED");
+    }
+
     private static boolean empty(String s){return s==null||s.trim().isEmpty();}
 }
