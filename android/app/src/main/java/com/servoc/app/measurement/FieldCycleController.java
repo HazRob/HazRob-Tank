@@ -68,7 +68,8 @@ public final class FieldCycleController {
 
     public void begin(String sessionId,FieldCycleRepository.Options modes){
         if(disposed||busy)return;
-        if(!host.database().getMeta(RELAY_RECOVERY_FAULT_KEY,"").isEmpty()){
+        if(!host.database().getMeta(RELAY_RECOVERY_FAULT_KEY,"").isEmpty()||
+           !host.database().getMeta(RELAY_EXPECTED_DEVICE_KEY,"").isEmpty()){
             message("SAFETY_FAULT",
                 "تعذر تأكيد إطفاء ريلاي MQ بعد انقطاع سابق؛ أعد الاتصال وأعد فتح الجلسات للتحقق من حالة OFF","");return;
         }
@@ -183,7 +184,8 @@ public final class FieldCycleController {
     /** The predecessor remains immutable; retry always creates a new numbered attempt. */
     public void retry(String predecessor){
         if(disposed||busy)return;
-        if(!host.database().getMeta(RELAY_RECOVERY_FAULT_KEY,"").isEmpty()){
+        if(!host.database().getMeta(RELAY_RECOVERY_FAULT_KEY,"").isEmpty()||
+           !host.database().getMeta(RELAY_EXPECTED_DEVICE_KEY,"").isEmpty()){
             message("SAFETY_FAULT",
                 "إعادة القياس محظورة حتى تأكيد إطفاء ريلاي MQ بعد الانقطاع السابق","");return;
         }
@@ -270,7 +272,8 @@ public final class FieldCycleController {
 
     public void approve(String id){
         if(disposed||busy)return;
-        if(!host.database().getMeta(RELAY_RECOVERY_FAULT_KEY,"").isEmpty()){
+        if(!host.database().getMeta(RELAY_RECOVERY_FAULT_KEY,"").isEmpty()||
+           !host.database().getMeta(RELAY_EXPECTED_DEVICE_KEY,"").isEmpty()){
             message("SAFETY_FAULT",
                 "الاعتماد محظور: إطفاء ريلاي MQ غير مؤكد بعد انقطاع سابق","");return;
         }
