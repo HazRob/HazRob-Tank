@@ -37,6 +37,7 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
     private static final String TIME="2026-10-30T00:00:00.000Z";
     private int asserts=0;
     private int nextReportPageCount=0;
+    private int nextXlsxSheetCount=0,siteXlsxSheetCount=0;
     private void require(boolean yes,String message){
         asserts++;
         if(!yes)throw new AssertionError("N06G "+asserts+": "+message);
@@ -296,6 +297,42 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             output.write(nextPdf.toByteArray());
         }
         require(nextPdf.size()>5500,"real source-bound Next report bytes exist");
+        // Exercise the same production public XLSX facade as the operator.
+        // Next workbook analytical sheets MUST use Next receipts; no legacy
+        // 144/M4/old ChemCore worksheet on the approved V8 measurement.
+        ByteArrayOutputStream nextXlsx=new ByteArrayOutputStream();
+        FieldSessionReportExporter.writeXlsx(nextXlsx,db,
+            "FS-N06G-APPROVED-2",null);
+        File nextXlsxFile=new File(getFilesDir(),"n06g_next_approved_field.xlsx");
+        try(FileOutputStream output=new FileOutputStream(nextXlsxFile)){
+            output.write(nextXlsx.toByteArray());
+        }
+        require(nextXlsx.size()>5500,"Next field XLSX source-bound production bytes");
+        ByteArrayOutputStream siteXlsx=new ByteArrayOutputStream();
+        SmartSiteXlsxWriter.write(siteXlsx,
+            SiteSummaryReportExporter.resolve(db,"SITE-N06G"));
+        File siteXlsxFile=new File(getFilesDir(),"n06g_next_site_two_approved.xlsx");
+        try(FileOutputStream output=new FileOutputStream(siteXlsxFile)){
+            output.write(siteXlsx.toByteArray());
+        }
+        require(siteXlsx.size()>3000,"Next site XLSX source-bound production bytes");
+        try(ZipFile sheetZip=new ZipFile(nextXlsxFile);
+            ZipFile siteZip=new ZipFile(siteXlsxFile)){
+            for(java.util.Enumeration<? extends ZipEntry> entries=sheetZip.entries();
+                    entries.hasMoreElements();){
+                String entry=entries.nextElement().getName();
+                if(entry.matches("xl/worksheets/sheet[0-9]+\\.xml"))
+                    nextXlsxSheetCount++;
+            }
+            for(java.util.Enumeration<? extends ZipEntry> entries=siteZip.entries();
+                    entries.hasMoreElements();){
+                String entry=entries.nextElement().getName();
+                if(entry.matches("xl/worksheets/sheet[0-9]+\\.xml"))
+                    siteXlsxSheetCount++;
+            }
+            require(nextXlsxSheetCount==20&&siteXlsxSheetCount==6,
+                "approved Next 20-sheet field and 6-sheet site Excel styles retained");
+        }
         try(ParcelFileDescriptor descriptor=ParcelFileDescriptor.open(nextFile,
                     ParcelFileDescriptor.MODE_READ_ONLY);
             PdfRenderer nextRenderer=new PdfRenderer(descriptor)){
@@ -478,6 +515,8 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 .put("independent_source_sensor_models",8)
                 .put("pdf_pages",pages).put("xlsx_sheet_count",sheets)
                 .put("next_field_pdf_pages",nextReportPageCount)
+                .put("next_field_xlsx_sheets",nextXlsxSheetCount)
+                .put("next_site_xlsx_sheets",siteXlsxSheetCount)
                 .put("site_next_source_roots",1)
                 .put("next_second_session_source_verified",true)
                 .put("xlsx_v6_measurements_sheet",v6measure)
