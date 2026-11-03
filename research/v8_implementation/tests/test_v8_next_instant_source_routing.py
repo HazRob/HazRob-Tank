@@ -13,6 +13,8 @@ C=ROOT/"android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java"
 D=ROOT/"android/app/src/main/java/com/servoc/app/ui/SettingsTab.java"
 E=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextDecisionEnvelope.java"
 F=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextScientificDiagnostics.java"
+G=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextAndroidAdapter.java"
+H=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextFieldArchiveBridge.java"
 class SourceRouting(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -22,6 +24,8 @@ class SourceRouting(unittest.TestCase):
         cls.d=D.read_text(encoding="utf-8")
         cls.e=E.read_text(encoding="utf-8")
         cls.f=F.read_text(encoding="utf-8")
+        cls.g=G.read_text(encoding="utf-8")
+        cls.h=H.read_text(encoding="utf-8")
         assert "public static Result analyzeV6Comparison(" in cls.a
         cls.next_method=cls.a.split("public static Result analyze(android.content.Context androidContext",1)[1].split("public static Result analyzeV6Comparison",1)[0]
     def test_v8_live_invokes_next_core_and_stores_once(self):
@@ -51,6 +55,14 @@ class SourceRouting(unittest.TestCase):
         self.assertIn('DEVICE_AIR_RS_MEAN_NOT_SOURCE_R0',self.f)
         self.assertIn('firmware_raw_r0_never_used_as_verified_reference',self.f)
         self.assertNotIn('reading.optDouble("r0"',self.f)
+    def test_next_relay_on_requires_consistent_typed_firmware_evidence(self):
+        self.assertIn('relayConfirmedOn(JSONObject data)',self.g)
+        self.assertIn('value instanceof Boolean',self.g)
+        self.assertIn('value instanceof Number',self.g)
+        self.assertIn('doubleValue()!=1.0',self.g)
+        self.assertIn('boolean relayOn=relayConfirmedOn(data);',self.g)
+        self.assertIn('NextAndroidAdapter.relayConfirmedOn(safe)',self.h)
+        self.assertNotIn('relay.optBoolean("on",relay.optInt("mask",0)!=0)',self.h)
     def test_v6_comparison_explicit_not_inactive_fallback(self):
         v6=self.a.split("public static Result analyzeV6Comparison(",1)[1]
         self.assertIn("TankV6TelemetryAdapter.analyzeSnapshot",v6)
