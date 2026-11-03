@@ -45,7 +45,7 @@ public final class FieldSessionsTab {
     private final Button siteReportPdf,siteReportXlsx,deleteSite;
     private final Button beginMeasurement,retryMeasurement,approveMeasurement,deleteMeasurement;
     private final CheckBox gasCheck,particleCheck,physicalCheck;
-    private final TextView cycleStatus;
+    private final TextView cycleStatus,failureDetails;
     private String latestCycleId="";
     private boolean selectedCanBegin=false,selectedHasApprovedMeasurement=false;
     private boolean selectedHasReviewMeasurement=false;
@@ -157,11 +157,15 @@ public final class FieldSessionsTab {
         cycleStatus=UiKit.text(c,"اختر جلسة غير معتمدة لبدء قياسها الوحيد");
         cycleStatus.setTextColor(0xFF17324A);
         cycleCard.addView(cycleStatus,UiKit.full(c));
+        failureDetails=UiKit.text(c,"");
+        failureDetails.setTextColor(0xFFC62828);
+        failureDetails.setVisibility(View.GONE);
+        cycleCard.addView(failureDetails,UiKit.full(c));
         LinearLayout cycleActions=UiKit.hbox(c);
         beginMeasurement=UiKit.button(c,"▶ بدء القياس");
         beginMeasurement.setEnabled(false);
         beginMeasurement.setOnClickListener(v->{
-            if(selectedSessionId.isEmpty())return;
+            if(selectedSessionId.isEmpty()||selectedHasApprovedMeasurement||!selectedCanBegin)return;
             final String id=selectedSessionId;
             try{
                 FieldCycleRepository.Options opts=new FieldCycleRepository.Options(
@@ -412,7 +416,9 @@ public final class FieldSessionsTab {
                     (hasReview?" • اختر الاعتماد أو إعادة المحاولة":"")+
                     (recent.measurementId.isEmpty()?"":" • المصدر "+recent.measurementId));
         }
-        beginMeasurement.setEnabled(available&&selectedCanBegin&&recent==null);
+        beginMeasurement.setEnabled(available&&selectedCanBegin&&(
+            recent==null||FieldCycleRepository.DELETED.equals(recent.state)||
+            FieldCycleRepository.SUPERSEDED.equals(recent.state)));
         boolean review=recent!=null&&recent.reviewReady()&&available&&
             !selectedHasApprovedMeasurement;
         approveMeasurement.setEnabled(review&&active);
