@@ -23,6 +23,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import com.hazrob.tank.emissions.EmissionResearchEngine;
 import com.hazrob.tank.emissions.EmissionNextBridge;
+import com.hazrob.tank.emissions.EmissionIfcComparator;
 import com.servoc.app.chemcore.TankInstantAnalyzer;
 import com.hazrob.tank.emissions.EmissionSessionStore;
 import com.hazrob.tank.emissions.EmissionReportPdf;
@@ -43,7 +44,7 @@ public final class EmissionsTab {
     private final HazRobHost host;
     private final EmissionSessionStore store;
     private final ScrollView view;
-    private final Spinner engineMenu;
+    private final Spinner engineMenu,ifcMenu;
     private final Button create,delete,measure,report;
     private final CheckBox includeParticles;
     private final TextView status,summary;
@@ -57,7 +58,7 @@ public final class EmissionsTab {
     private String captureName="";
     private long captureEngineId=-1,startClock=0,startedAtMs=0;
     private int frames=0;
-    private boolean capturing=false,capturePM=false,processing=false;
+    private boolean capturing=false,capturePM=false,processing=false,refreshingProfiles=false;
     private JSONObject lastFrozenSource;
     private Runnable tick;
 
@@ -83,6 +84,18 @@ public final class EmissionsTab {
         engineMenu=new Spinner(c);
         UiKit.outlinedSpinner(engineMenu);
         root.addView(engineMenu,UiKit.full(c));
+        root.addView(UiKit.title(c,"مرجع المقارنة IFC — نوع المحرك"),UiKit.full(c));
+        ifcMenu=new Spinner(c);
+        UiKit.outlinedSpinner(ifcMenu);
+        ifcMenu.setAdapter(UiKit.lightOptions(c,EmissionIfcComparator.PROFILE_LABELS));
+        root.addView(ifcMenu,UiKit.full(c));
+        TextView scope=UiKit.small(c,
+            "المرجع: IFC EHS، جدول 1.1.2، للمحركات 3–50 MWth. " +
+            "NOx وPM بوحدة mg/Nm³ عند 15% O₂ في غاز جاف؛ " +
+            "حد الكبريت لمحركات الديزل خاص بنسبة الكبريت في الوقود وليس SO₂ في العادم. " +
+            "لا يوجد بهذا الجدول حد مباشر لـCH₄ أو CO₂ أو دخان MQ2.");
+        scope.setTextColor(0xFF435064);
+        root.addView(scope,UiKit.full(c));
 
         includeParticles=new CheckBox(c);
         includeParticles.setText("تضمين قياس الجزيئات PM1 / PM2.5 / PM10 عند توفر الحساس");
@@ -117,9 +130,25 @@ public final class EmissionsTab {
         report.setOnClickListener(v->exportPdf());
         engineMenu.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){
             public void onItemSelected(android.widget.AdapterView<?> p,View v,int pos,long id){
-                if(!capturing)refreshSelection();
+                if(!capturing&&!processing)refreshSelection();
             }
-            public void onNothingSelected(android.widget.AdapterView<?> p){if(!capturing)refreshSelection();}
+            public void onNothingSelected(android.widget.AdapterView<?> p){
+                if(!capturing&&!processing)refreshSelection();
+            }
+        });
+        ifcMenu.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){
+            public void onItemSelected(android.widget.AdapterView<?> p,View v,int pos,long id){
+                if(refreshingProfiles||capturing||processing)return;
+                EmissionSessionStore.Engine engine=selected();
+                if(engine==null||pos<0||pos>=EmissionIfcComparator.PROFILE_CODES.length)return;
+                String profile=EmissionIfcComparator.PROFILE_CODES[pos];
+                if(profile.equals(engine.ifcProfile))return;
+                try{
+                    store.setIfcProfile(engine.id,profile);
+                    reload(engine.id);
+                }catch(Exception ignored){host.showToast("تعذر حفظ فئة محرك IFC");}
+            }
+            public void onNothingSelected(android.widget.AdapterView<?> p){}
         });
         reload(-1);
     }
@@ -174,11 +203,23 @@ public final class EmissionsTab {
         delete.setEnabled(has&&!capturing&&!processing);
         create.setEnabled(!capturing&&!processing);
         engineMenu.setEnabled(!capturing&&!processing);
+        ifcMenu.setEnabled(has&&!capturing&&!processing);
+        refreshingProfiles=true;
+        String profile=has?e.ifcProfile:EmissionIfcComparator.PROFILE_NONE;
+        int selectedProfile=0;
+        for(int i=0;i<EmissionIfcComparator.PROFILE_CODES.length;i++)
+            if(EmissionIfcComparator.PROFILE_CODES[i].equals(profile)){selectedProfile=i;break;}
+        ifcMenu.setSelection(selectedProfile);
+        refreshingProfiles=false;
         includeParticles.setEnabled(!capturing&&!processing);
         JSONObject latest=has?store.latest(e.id):null;
         report.setEnabled(latest!=null&&!capturing&&!processing);
         if(!capturing&&!processing){
             status.setText(has?"المحرك المحدد: "+e.name+" — جاهز للقياس":"استحدث محركًا أولًا.");
+            if(latest!=null&&has){
+                try{EmissionIfcComparator.evaluate(latest,e.ifcProfile);}
+                catch(Exception invalid){host.showToast("تعذر تقييم مرجع IFC");}
+            }
             render(latest,has?store.count(e.id):0);
         }
     }
@@ -196,7 +237,8 @@ public final class EmissionsTab {
         lastFrozenSource=null;
         progress.setProgress(0);
         measure.setEnabled(false);delete.setEnabled(false);create.setEnabled(false);
-        engineMenu.setEnabled(false);includeParticles.setEnabled(false);report.setEnabled(false);
+        engineMenu.setEnabled(false);ifcMenu.setEnabled(false);
+        includeParticles.setEnabled(false);report.setEnabled(false);
         status.setText("بدأ تسجيل مؤشرات انبعاثات "+captureName);
         tick=()->{
             if(!capturing)return;
@@ -260,6 +302,9 @@ public final class EmissionsTab {
         final Map<String,Integer> validCounts=new LinkedHashMap<>(counts);
         final long engineId=captureEngineId,startMs=startedAtMs;
         final String engineName=captureName;
+        final EmissionSessionStore.Engine selectedEngine=selected();
+        final String profile=selectedEngine==null?
+            EmissionIfcComparator.PROFILE_NONE:selectedEngine.ifcProfile;
         final boolean pm=capturePM;
         final int acceptedFrames=frames;
         final JSONObject sealed=lastFrozenSource;
@@ -285,6 +330,7 @@ public final class EmissionsTab {
                             "NEXT_ANALYSIS_FAILED_"+nextFailure.getClass().getSimpleName());
                     }
                 }
+                EmissionIfcComparator.evaluate(result,profile);
                 store.addMeasurement(engineId,result);
                 String outcome=result.optString("next_status","NOT_RUN");
                 view.post(()->{
@@ -337,7 +383,8 @@ public final class EmissionsTab {
             boolean exceeded=row.optBoolean("ifc_comparable",false)&&
                 row.optBoolean("exceeded",false)&&!row.isNull("value_ppm");
             String value=row.isNull("value_ppm")?"لا توجد قراءة معتمدة":row.optString("value_ppm","—");
-            String limit=row.isNull("limit")?"لم يحدد":row.optString("limit","—");
+            String limit=row.isNull("limit")?"لا يوجد حد مطابق":
+                row.optString("limit","—")+" "+row.optString("limit_unit","");
             String code=row.optString("status");
             String state="NEXT_SOURCE_HYPOTHESES".equals(code)?
                 "منحنيات مرجعية محسوبة":("NEXT_MODELS_NOT_EVALUABLE".equals(code)?
@@ -389,6 +436,14 @@ public final class EmissionsTab {
                     numbers.append(" *");
             }
             if(numbers.length()>0)value=numbers.toString();
+            String comparison=row.optString("ifc_comparison_state","");
+            if(row.optBoolean("ifc_comparable",false)){
+                double percent=row.optDouble("ifc_ratio_percent",Double.NaN);
+                state=String.format(Locale.US,"IFC %.1f%% • %s",percent,
+                    row.optBoolean("exceeded",false)?"أعلى من الحد":"ضمن القيمة المرجعية");
+            }else if(row.has("ifc_reference_state")){
+                state+=" • IFC: "+row.optString("ifc_reference_state","");
+            }
             TableRow item=new TableRow(context);
             item.addView(cell(row.optString("label"),false,false),new TableRow.LayoutParams(0,-2,1f));
             item.addView(cell(value,false,exceeded),new TableRow.LayoutParams(0,-2,1f));
@@ -403,6 +458,8 @@ public final class EmissionsTab {
         EmissionSessionStore.Engine e=selected();
         if(e==null||capturing||processing)return;
         JSONObject latest=store.latest(e.id);if(latest==null)return;
+        try{EmissionIfcComparator.evaluate(latest,e.ifcProfile);}
+        catch(Exception wrong){host.showToast("مرجع IFC غير متاح");return;}
         report.setEnabled(false);
         host.io().execute(()->{
             try{
