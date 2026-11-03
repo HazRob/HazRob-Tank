@@ -70,7 +70,10 @@ class V8ProductionReportBindingAudit(unittest.TestCase):
                       "decisions.latestPayloadForSession(cycle.measurementId)",
                       "SiteReportIntelligence.plan(b.sessions)",
                       "matrix(p.getCanvas(),b,chunk)",
-                      "recurrence(p.getCanvas(),plan)"):
+                      "NextSiteEvidenceCharts.rootRecurrence(",
+                      "NextSiteEvidenceCharts.candidateRecurrence(",
+                      "NextDecisionStore(db).latestForSession(",
+                      "recurrence(p.getCanvas(),b,plan)"):
             self.assertIn(field,site)
 
     def test_r05_r06_pdf_lines_bind_actual_frozen_mq_timelines(self):
