@@ -5,6 +5,8 @@ on:
     branches: [feature/tank-v8-implementation]
     paths:
       - 'research/v8_implementation/tests/android/**'
+      - 'research/v8_implementation/tests/test_v8_next_xlsx_style_and_lineage.py'
+      - 'android/app/src/main/java/com/servoc/app/measurement/TelemetryRecorder.java'
       - 'android/app/src/main/java/com/servoc/app/report/**'
       - 'android/app/src/main/java/com/servoc/app/data/**'
       - 'android/app/src/main/java/com/servoc/app/field/**'
