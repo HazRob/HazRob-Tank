@@ -153,6 +153,29 @@ class RawSourceVerificationTests(unittest.TestCase):
         result = verify({"sources": [self.entry("alias/sample.bin")]}, self.root)
         self.assertEqual(result["results"][0]["error"], "unsafe_path")
 
+    def test_nested_regular_file_verifies(self):
+        nested = self.root / "batch" / "sensor"
+        nested.mkdir(parents=True)
+        (nested / "reading.csv").write_bytes(self.payload)
+        result = verify({"sources": [self.entry("batch/sensor/reading.csv")]}, self.root)
+        self.assertTrue(result["all_verified"])
+        self.assertEqual(result["results"][0]["size_bytes"], len(self.payload))
+
+    def test_one_byte_mutation_invalidates_digest(self):
+        path = self.root / "sample.bin"
+        path.write_bytes(self.payload[:-1] + b"!")
+        result = verify({"sources": [self.entry()]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["status"], "hash_mismatch")
+        self.assertEqual(result["results"][0]["size_bytes"], len(self.payload))
+        self.assertFalse(result["scientific_qualification"])
+
+    def test_multiple_sources_fail_closed_if_one_missing(self):
+        second = dict(self.entry("missing.bin"), source_id="missing")
+        result = verify({"sources": [self.entry(), second]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual([x["status"] for x in result["results"]], ["verified", "blocked"])
+
     def test_cli_success_and_failure_exit_codes(self):
         manifest = pathlib.Path(self.tmp.name) / "manifest.json"
         manifest.write_text(json.dumps({"sources": [self.entry()]}), encoding="utf-8")
