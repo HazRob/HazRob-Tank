@@ -10,6 +10,8 @@ on:
       - 'android/app/src/main/java/com/servoc/app/measurement/**'
       - 'android/app/src/main/java/com/servoc/app/ui/**'
       - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
+      - 'android/app/src/main/java/com/hazrob/tank/emissions/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/emissions/**'
       - 'research/food_freshness/**'
       - 'android/app/src/main/java/com/servoc/app/data/**'
       - 'android/app/src/main/java/com/servoc/app/report/**'
