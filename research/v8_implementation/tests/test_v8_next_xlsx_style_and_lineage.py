@@ -104,6 +104,34 @@ for filename, (expected_count, expected_sheets) in TARGETS.items():
             assert b"UNQUALIFIED_CI_SOURCE" in all_raw
             assert b"flame" in aux_sheet
             assert b"source_additional_channels" in all_raw
+            # Audit the actual OOXML CELL VALUES, so an ADC code cannot be
+            # mislabeled or silently copied into a voltage column.
+            root_adc = ET.fromstring(adc_sheet)
+            channel_rows = []
+            def typed_cell(row, column):
+                c = row.find("./"+N+"c[@r='"+column+"']")
+                if c is None:return None
+                if c.get("t")=="n":
+                    v=c.find(N+"v")
+                    return float(v.text) if v is not None and v.text else None
+                if c.get("t")=="inlineStr":
+                    return "".join(c.itertext())
+                return None
+            for row in root_adc.findall(".//"+N+"sheetData/"+N+"row"):
+                row_id=row.get("r")
+                if row_id is None:continue
+                if typed_cell(row,"E"+row_id) == "mq2":
+                    channel_rows.append((typed_cell(row,"C"+row_id),
+                                         typed_cell(row,"F"+row_id),
+                                         typed_cell(row,"G"+row_id),
+                                         typed_cell(row,"H"+row_id)))
+            assert len(channel_rows)==16, channel_rows
+            first=next(x for x in channel_rows if x[0]==200000)
+            second=next(x for x in channel_rows if x[0]==204000)
+            assert first[1:]==(1000.0,2000.0,1.5), first
+            assert second[1:]==(1001.0,2001.0,None), second
+            print("PASS P11.4 ADC source units: raw=1000; firmware adc=2000; "
+                  "verified voltage=1.5 V; missing voltage stays NULL")
             diagnostic = z.read(f"xl/worksheets/sheet{names.index('تشخيص الخبراء')+1}.xml")
             assert b"MQSL-EX-007" in diagnostic and b"MQDATA43-001" in diagnostic
             assert b"SOURCE_BOUND_RESEARCH_ONLY_G3_NOT_QUALIFIED" in diagnostic
