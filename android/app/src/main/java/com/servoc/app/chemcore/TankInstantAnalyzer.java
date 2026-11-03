@@ -60,14 +60,17 @@ public final class TankInstantAnalyzer {
                 com.hazrob.tank.chemcore.next.ResearchCandidateGenerator.MaterialKind.GENERAL_CLASS:
                 com.hazrob.tank.chemcore.next.ResearchCandidateGenerator.MaterialKind.MOLECULAR_CHEMICAL));
         }
-        // Only qualified Tank-linked source assets may be passed here. Those
-        // links are not yet promoted (P11.1 / G3=0), therefore an unknown result
-        // is scientifically required, not an invented legacy 144 shortlist.
+        // Inspect original MQ research sources without claiming that their
+        // reference R0/heater/range is equivalent to this Tank's measurements.
+        // Qualification.unverified() makes these abstention diagnostics only.
+        var researchCurves=com.servoc.app.chemcore.nextintegration
+            .NextResearchSourceBindings.abstentionOnlyCurves(
+                master,frozen.optString("device_id","").trim());
         com.servoc.app.chemcore.nextintegration.NextEngineRouter.Outcome next=
             com.servoc.app.chemcore.nextintegration.NextEngineRouter.analyzeAndPersist(
                 androidContext,db,frozen,uid,uid,timestamp,
                 com.hazrob.tank.chemcore.next.CoreContracts.Mode.INSTANT,
-                catalog,java.util.List.of(),java.util.List.of(),java.util.List.of(),12);
+                catalog,researchCurves,java.util.List.of(),java.util.List.of(),12);
         JSONObject out=com.servoc.app.chemcore.nextintegration.NextDecisionEnvelope
             .fromReceipt(next.receipt);
         out.put("session_id",uid);
@@ -94,6 +97,8 @@ public final class TankInstantAnalyzer {
         for(String diag:next.next.sourceDiagnostics)nextExpertReasons.put(diag);
         out.put("next_algorithm_diagnostics",nextExpertReasons);
         out.put("next_models_inspected",next.next.modelsInspected);
+        out.put("next_curve_qualification","ABSTENTION_ONLY_NO_SOURCE_R0_OR_G3");
+        out.put("next_curve_source_count",researchCurves.size());
         out.put("next_positive_models",next.next.positiveModels);
         out.put("legacy_inference_fallback_used",false);
         out.put("candidate_order_source","PERSISTED_NEXT_DECISION_ONLY");
