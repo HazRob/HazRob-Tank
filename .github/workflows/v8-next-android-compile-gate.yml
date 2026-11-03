@@ -19,6 +19,7 @@ on:
       - 'research/v8_implementation/tests/test_v8_next_instant_source_routing.py'
       - 'research/v8_implementation/tests/test_v8_instant_capture_gate.py'
       - 'research/v8_implementation/tests/test_v8_next_operator_pdf_parity.py'
+      - 'research/v8_implementation/tests/test_v8_p11_5_operator_dual_r0.py'
       - 'research/v8_implementation/tests/test_v8_report_data_lineage_and_v7_geometry.py'
       - 'research/v8_implementation/tests/test_v8_next_field_session_handoff.py'
       - 'research/v8_implementation/tests/test_v8_feedback_local_and_authenticated_sync.py'
@@ -98,6 +99,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m unittest research/v8_implementation/tests/test_v8_next_operator_pdf_parity.py -v
+      - name: P11.5 operator dual-R0 visibility, rejection causes and unverified ADC unit source contract
+        working-directory: tank
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest research/v8_implementation/tests/test_v8_p11_5_operator_dual_r0.py -v
       - name: P09 field 60s stored MQ scans and explicit Next approval contract
         working-directory: tank
         shell: bash
