@@ -76,7 +76,7 @@ public final class MeasurementsTab {
     private final HazRobHost host;
     private final LinearLayout root;
     private final FrameLayout page;
-    private final Button[] tabs=new Button[5];
+    private final Button[] tabs=new Button[6];
     private int selected=1;
     private int analysisSection=0;
     private final PhysicalPane physical;
@@ -101,6 +101,7 @@ public final class MeasurementsTab {
     private String chosenChemical="";
     private final ScrollView particlesView;
     private final FoodFreshnessTab foodFreshness;
+    private final EmissionsTab emissions;
     private final View[] views;
 
     public MeasurementsTab(Context c,HazRobHost host){
@@ -109,7 +110,7 @@ public final class MeasurementsTab {
         root=UiKit.vbox(c);root.setBackgroundColor(BG);
         root.setPadding(UiKit.dp(c,5),UiKit.dp(c,5),UiKit.dp(c,5),UiKit.dp(c,5));
         LinearLayout bar=UiKit.hbox(c);
-        String[] names={"🔎 البحث والتتبع","📊 التحليل","🌡 الفيزيائية","◌ الجزيئات","🍎 نضارة الأغذية"};
+        String[] names={"🔎 البحث والتتبع","📊 التحليل","🌡 الفيزيائية","◌ الجزيئات","🍎 نضارة الأغذية","🏭 الانبعاثات"};
         for(int i=0;i<names.length;i++){
             final int index=i;tabs[i]=UiKit.button(c,names[i]);
             tabs[i].setTextSize(11);
@@ -128,6 +129,7 @@ public final class MeasurementsTab {
         searchView=buildSearchLanding();
         particlesView=buildParticlesLanding();
         foodFreshness=new FoodFreshnessTab(c,host);
+        emissions=new EmissionsTab(c,host);
         analysisShell=UiKit.vbox(c);
         LinearLayout sections=UiKit.hbox(c);
         String[] sectionNames={"⏱ القياس الآني","🧪 ChemCore والمرشحون"};
@@ -140,7 +142,7 @@ public final class MeasurementsTab {
         analysisShell.addView(sections,UiKit.full(c));
         analysisPage=new FrameLayout(c);
         analysisShell.addView(analysisPage,new LinearLayout.LayoutParams(-1,0,1f));
-        views=new View[]{searchView,analysisShell,physical.view,particlesView,foodFreshness.view()};
+        views=new View[]{searchView,analysisShell,physical.view,particlesView,foodFreshness.view(),emissions.view()};
         ensureUnifiedTrackingIdentity();
         showAnalysisSection(0);
         show(1);
@@ -432,6 +434,7 @@ public final class MeasurementsTab {
                 break;
             case 2:physical.refresh();break;
             case 4:foodFreshness.refresh();break;
+            case 5:emissions.refresh();break;
             default:break;
         }
     }
@@ -450,7 +453,7 @@ public final class MeasurementsTab {
         if(selected==1)refresh();
     }
     private void show(int index){
-        selected=Math.max(0,Math.min(4,index));
+        selected=Math.max(0,Math.min(5,index));
         View target=views[selected];
         if(target.getParent() instanceof android.view.ViewGroup)((android.view.ViewGroup)target.getParent()).removeView(target);
         page.removeAllViews();
