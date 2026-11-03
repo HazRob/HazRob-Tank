@@ -282,6 +282,10 @@ public final class FieldSessionsTab {
                         ?new ArrayList<>():cycles.forSession(requestedSession);
                     String relayFault=host.database().getMeta(
                         FieldCycleController.RELAY_RECOVERY_FAULT_KEY,"");
+                    String pendingDevice=host.database().getMeta(
+                        FieldCycleController.RELAY_EXPECTED_DEVICE_KEY,"");
+                    if(relayFault.isEmpty()&&!pendingDevice.isEmpty())
+                        relayFault="MQ_RELAY_OFF_ACK_PENDING_FOR_DEVICE: "+pendingDevice;
                     snapshot=new SessionData(active,ss,id,children,approved,counts,rows,
                         relayFault);
                 }catch(RuntimeException ex){failure=ex;}
