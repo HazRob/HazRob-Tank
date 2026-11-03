@@ -58,7 +58,15 @@ public final class FieldSessionsTab {
         this.cycleDriver=new FieldCycleController(host,new FieldCycleController.Observer(){
             public void changed(String state,String message,String id){
                 main.post(()->{if(disposed)return;
-                    if("REVIEW_READY".equals(state)&&id!=null&&!id.isEmpty())latestCycleId=id;
+                    if("REVIEW_READY".equals(state)){
+                        // The callback may belong to a cycle from a site the
+                        // operator has since left. Never bind its ID directly
+                        // to whichever session is currently displayed.
+                        cycleStatus.setText(message+" • جارٍ ربط النتيجة بالجلسة المختارة...");
+                        renderCycleButtons("FINALIZING");
+                        refresh(); // only SQLite for selected session may enable approval
+                        return;
+                    }
                     // A live safety fault must lock controls immediately,
                     // not only after the asynchronous SQLite refresh returns.
                     if("SAFETY_FAULT".equals(state))relayRecoverySafetyFault=true;
