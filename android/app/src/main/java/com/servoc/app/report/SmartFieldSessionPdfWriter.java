@@ -59,13 +59,17 @@ public final class SmartFieldSessionPdfWriter {
         boolean crossSession=all.size()>1;
         int basePages=crossSession?5:4;
         int cyclePages=Math.max(1,(b.cycleLedger.size()+ROWS_PER_CYCLE_PAGE-1)/ROWS_PER_CYCLE_PAGE);
-        // Source-only V6 pages are appended, never replacing original V5
-        // report sections or changing an approved cycle's stored SHA.
-        JSONObject v6ReadOnly=V6FieldSessionResearchAppendix.analyzeVerified(db,b);
-        JSONArray v6Cycles=v6ReadOnly.optJSONArray("cycles");
+        // Modern Next reports MUST NOT rerun ChemCore V6. Preserve the
+        // exact V7 page slot by rendering a single source-frozen Next appendix.
+        // Historical sessions lacking Next retain their original V6 research
+        // appendix, with no retroactive rewriting of the archived decision.
+        JSONObject v6ReadOnly=next==null?
+            V6FieldSessionResearchAppendix.analyzeVerified(db,b):null;
+        JSONArray v6Cycles=v6ReadOnly==null?null:v6ReadOnly.optJSONArray("cycles");
         int v6Count=v6Cycles==null?0:v6Cycles.length();
-        int v6Pages=(v6Count+1)/2;
-        int total=basePages+cyclePages+v6Pages;
+        int v6Pages=next==null?(v6Count+1)/2:0;
+        int nextPages=next==null?0:1;
+        int total=basePages+cyclePages+v6Pages+nextPages;
         PdfDocument pdf=new PdfDocument();
         PdfDocument.Page p=page(pdf,1);executiveOverview(p.getCanvas(),b,all,primary,plan,hazard,cs,next);chrome(p.getCanvas(),1,total,b,plan,next);pdf.finishPage(p);
         p=page(pdf,2);sensorSix(p.getCanvas(),primary);chrome(p.getCanvas(),2,total,b,plan,next);pdf.finishPage(p);
@@ -94,6 +98,13 @@ public final class SmartFieldSessionPdfWriter {
             p=page(pdf,pageNo);
             v6ResearchAppendixPage(p.getCanvas(),b,v6ReadOnly,chunk);
             v6ResearchChrome(p.getCanvas(),pageNo,total,b);
+            pdf.finishPage(p);
+        }
+        if(next!=null){
+            int pageNo=basePages+cyclePages+1;
+            p=page(pdf,pageNo);
+            V8NextFieldResearchAppendixPdf.draw(p.getCanvas(),next,b.fieldSession.name);
+            chrome(p.getCanvas(),pageNo,total,b,plan,next);
             pdf.finishPage(p);
         }
         pdf.writeTo(out);pdf.close();
