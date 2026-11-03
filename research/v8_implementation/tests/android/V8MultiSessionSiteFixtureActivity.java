@@ -36,6 +36,7 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
     private static final String FS="FS-N06G-APPROVED",SID="MS-N06G-01",CYCLE="FC-N06G-APPROVED";
     private static final String TIME="2026-10-30T00:00:00.000Z";
     private int asserts=0;
+    private int nextReportPageCount=0;
     private void require(boolean yes,String message){
         asserts++;
         if(!yes)throw new AssertionError("N06G "+asserts+": "+message);
@@ -286,6 +287,39 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 }
             }
         }
+        // CI-only: render second independently approved session whose Next
+        // receipt is inside its original hashed source archive.
+        ByteArrayOutputStream nextPdf=new ByteArrayOutputStream();
+        FieldSessionReportExporter.writePdf(nextPdf,db,"FS-N06G-APPROVED-2",null);
+        File nextFile=new File(getFilesDir(),"n06g_next_approved_field.pdf");
+        try(FileOutputStream output=new FileOutputStream(nextFile)){
+            output.write(nextPdf.toByteArray());
+        }
+        require(nextPdf.size()>5500,"real source-bound Next report bytes exist");
+        try(ParcelFileDescriptor descriptor=ParcelFileDescriptor.open(nextFile,
+                    ParcelFileDescriptor.MODE_READ_ONLY);
+            PdfRenderer nextRenderer=new PdfRenderer(descriptor)){
+            nextReportPageCount=nextRenderer.getPageCount();
+            require(nextReportPageCount>=5,
+                "Next PDF retains existing landscape page layout and appendices");
+            for(int pageIndex:new int[]{2,3}){
+                try(PdfRenderer.Page page=nextRenderer.openPage(pageIndex)){
+                    Bitmap image=Bitmap.createBitmap(842,595,Bitmap.Config.ARGB_8888);
+                    try{
+                        page.render(image,null,null,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+                        int ink=0;
+                        for(int yy=85;yy<520;yy+=7)
+                            for(int xx=48;xx<800;xx+=7){
+                                int pixel=image.getPixel(xx,yy);
+                                if(Color.red(pixel)<215||Color.green(pixel)<215||
+                                   Color.blue(pixel)<215)ink++;
+                            }
+                        require(ink>=30,
+                            "Next PDF analytical page contains source-bound ink");
+                    }finally{image.recycle();}
+                }
+            }
+        }
         String sid2="MS-N06G-02";
         String saved;
         try(Cursor c=db.getWritableDatabase().rawQuery(
@@ -443,6 +477,9 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 .put("approved_gas_cycles",1)
                 .put("independent_source_sensor_models",8)
                 .put("pdf_pages",pages).put("xlsx_sheet_count",sheets)
+                .put("next_field_pdf_pages",nextReportPageCount)
+                .put("site_next_source_roots",1)
+                .put("next_second_session_source_verified",true)
                 .put("xlsx_v6_measurements_sheet",v6measure)
                 .put("xlsx_v6_sources_sheet",v6source)
                 .put("xlsx_v8_environment_sheet",envFull)
