@@ -152,6 +152,7 @@ public final class FieldCycleController {
         // Recovery may command MQ OFF. Reserve the shared operation first,
         // or another Activity's live measurement could be interrupted.
         if(!MeasurementSessionRegistry.reserveFieldOperation())return;
+        busy=true; // release() must not release recovery's operation lease.
         try{
             host.io().execute(()->{
                 try{
@@ -195,10 +196,12 @@ public final class FieldCycleController {
                     android.util.Log.e("TankFieldCycle","Recovery failed",e);
                 }finally{
                     MeasurementSessionRegistry.endFieldOperation();
+                    busy=false;
                 }
             });
         }catch(RuntimeException unavailable){
             MeasurementSessionRegistry.endFieldOperation();
+            busy=false;
             android.util.Log.e("TankFieldCycle","Cannot schedule safe recovery",unavailable);
             try{host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,
                 "MQ_RELAY_RECOVERY_WORKER_UNAVAILABLE: "+unavailable.getClass().getSimpleName());}
