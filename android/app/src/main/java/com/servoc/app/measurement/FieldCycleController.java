@@ -415,20 +415,55 @@ public final class FieldCycleController {
     private void stopWithFailure(String reason){
         if(disposed||!busy)return;
         String cid=cycleId;boolean turnOff=gas;
-        busy=false;main.removeCallbacks(tick);
+        // Keep the controller locked while the worker persists failure and
+        // obtains a positive OFF acknowledgement from the physical device.
+        main.removeCallbacks(tick);
         host.io().execute(()->{
-            failWorker(cid,reason,turnOff);
-            main.post(()->end("FAILED",reason,cid));
+            boolean unsafeRelay=failWorker(cid,reason,turnOff);
+            final String message=unsafeRelay?
+                reason+" • خطر: لم يُؤكد إطفاء ريلاي MQ؛ أوقف الطاقة بأمان":
+                reason;
+            main.post(()->end(unsafeRelay?"SAFETY_FAULT":"FAILED",message,cid));
         });
     }
-    private void failWorker(String id,String reason,boolean turnOff){
+    /** Fail closed even when cancellation or Activity destruction interrupted
+     * an MQ capture. A successful HTTP power-off command is NOT device ACK.
+     * Persist the unsafe state for the next Activity/process and prevent a new
+     * measurement or approval until recoverInterrupted verifies OFF.
+     * Return true when physical OFF remains unconfirmed.
+     */
+    private boolean failWorker(String id,String reason,boolean turnOff){
         if(MeasurementSessionRegistry.fieldCaptureRequested()){
             if(MeasurementSessionRegistry.activeSessionId().isEmpty())
                 MeasurementSessionRegistry.clearFieldCapture();
             else MeasurementSessionRegistry.requestFieldStop("error");
         }
-        if(id!=null&&!id.isEmpty())try{repo.fail(id,reason);}catch(Exception ignored){}
-        if(turnOff)try{host.robotApi().mqPower(false);}catch(Exception ignored){}
+        if(id!=null&&!id.isEmpty())try{repo.fail(id,reason);}catch(Exception failure){
+            android.util.Log.e("TankFieldCycle","Unable to persist failed field cycle",failure);
+        }
+        if(!turnOff)return false;
+        try{
+            host.robotApi().mqPower(false);
+            JSONObject off=host.robotApi().snapshot(0,0);
+            String acknowledgedDevice=identity(off);
+            if(acknowledgedDevice.isEmpty()||!relayOffAcknowledged(off))
+                throw new IllegalStateException("MQ_RELAY_OFF_ACK_ABSENT");
+            // If a cycle has a recorded device, a different ESP32 cannot
+            // acknowledge this cycle's relay shutdown.
+            FieldCycleRepository.Cycle original=
+                id==null||id.isEmpty()?null:repo.byId(id);
+            if(original!=null&&!original.deviceId.isEmpty()&&
+                !original.deviceId.equals(acknowledgedDevice))
+                throw new IllegalStateException("MQ_RELAY_OFF_ACK_WRONG_DEVICE");
+            return false;
+        }catch(Exception fault){
+            String detail="MQ_RELAY_SHUTDOWN_UNCONFIRMED: "+
+                fault.getClass().getSimpleName()+": "+fault.getMessage();
+            android.util.Log.e("TankFieldCycle",
+                "MQ relay not confirmed OFF while failing field measurement",fault);
+            host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,detail);
+            return true;
+        }
     }
     private void end(String state,String text,String id){
         if(disposed)return;
