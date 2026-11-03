@@ -166,7 +166,10 @@ public final class TankInstantV7PdfWriter {
         final float h=36,hh=39;
         final float[] widths={81,66,61,61,width-269}; // left to right: state,ratio,r0,rs,sensor
         float xx=x;
-        String[] names={"الحالة / State","Rs/R0","R0","Rs","MQ"};
+        boolean nextResearch=evidence.values().stream().anyMatch(
+            q->q.optBoolean("next_frozen_reference",false));
+        String[] names={"الحالة / State",nextResearch?"Rs/R_air":"Rs/R0",
+            nextResearch?"R_air":"R0","Rs","MQ"};
         for(int j=0;j<5;j++){
             rect(c,xx,y,widths[j],hh,AMBER);border(c,xx,y,widths[j],hh);
             center(c,names[j],xx+mm(2),y+9,widths[j]-mm(4),12,true,BLACK,j==0);
@@ -179,7 +182,11 @@ public final class TankInstantV7PdfWriter {
             JSONObject engine=evidence.get(code);
             String status=engine==null?"—":engine.optBoolean("r0_clean_air_device_evidence_qualified",false)?"موثق / Q":"بحثي / R";
             String ratio=number(engine,"rs_r0_ratio_research",3);
-            String[] cells={status,ratio,number(src,"r0",2),number(src,"rs",2),code};
+            boolean frozen=engine!=null&&engine.optBoolean(
+                "next_frozen_reference",false);
+            String[] cells={status,ratio,
+                frozen?number(engine,"device_air_reference_kohm",2):number(src,"r0",2),
+                frozen?number(engine,"rs_kohm",2):number(src,"rs",2),code};
             float yy=y+hh+i*h;xx=x;
             for(int j=0;j<5;j++){
                 rect(c,xx,yy,widths[j],h,i%2==0?WHITE:0xFFF2F2F2);
@@ -193,7 +200,9 @@ public final class TankInstantV7PdfWriter {
         right(c,"مصفوفة الأدلة / Evidence matrix",x,y-22,width,12,true,INK);
         final float hh=35,h=36,labelWidth=65;
         final float cw=(width-labelWidth)/4f;
-        String[] headers={"Rs","R0","OK","Ratio"};
+        boolean nextResearch=engine.values().stream().anyMatch(
+            q->q.optBoolean("next_frozen_reference",false));
+        String[] headers={"Rs",nextResearch?"R_air":"R0","OK","Ratio"};
         float xx=x;
         for(int i=0;i<5;i++){
             float w=i==0?labelWidth:cw;
@@ -206,8 +215,13 @@ public final class TankInstantV7PdfWriter {
             String key=MQ[i];
             JSONObject raw=mq==null?null:mq.optJSONObject(key.toLowerCase(Locale.US));
             JSONObject e=engine.get(key);
-            boolean[] flags={raw!=null&&Double.isFinite(raw.optDouble("rs",Double.NaN)),
-                raw!=null&&Double.isFinite(raw.optDouble("r0",Double.NaN)),
+            boolean frozen=e!=null&&e.optBoolean("next_frozen_reference",false);
+            boolean[] flags={frozen?
+                    Double.isFinite(e.optDouble("rs_kohm",Double.NaN)):
+                    raw!=null&&Double.isFinite(raw.optDouble("rs",Double.NaN)),
+                frozen?
+                    Double.isFinite(e.optDouble("device_air_reference_kohm",Double.NaN)):
+                    raw!=null&&Double.isFinite(raw.optDouble("r0",Double.NaN)),
                 e!=null&&e.optBoolean("r0_clean_air_device_evidence_qualified",false),
                 e!=null&&e.opt("rs_r0_ratio_research") instanceof Number};
             float yy=y+hh+i*h;
@@ -405,20 +419,52 @@ public final class TankInstantV7PdfWriter {
         presentation.put("open_set_status",
             "Next "+next.optString("decision_status","UNKNOWN")+" • research");
         presentation.put("observed_mq_channels",next.optInt("observed_channels",0));
-        JSONObject mq=telemetry.optJSONObject("mq");
+        // P11.6: the PDF's Rs/R_air must be reconstructed from the SAME
+        // frozen source ledger as Next. Never divide by firmware mq.r0:
+        // legacy firmware R0 may be a factor-scaled value, not R_air.
+        if(science!=null){
+            if(!digest.equals(science.optString("source_snapshot_sha256",""))||
+               !next.optString("snapshot_uid","").equals(
+                   science.optString("source_snapshot_uid","")))
+                throw new IllegalArgumentException(
+                    "NEXT_PDF_SCIENTIFIC_SNAPSHOT_PROVENANCE_MISMATCH");
+        }
+        Map<String,JSONObject> frozenRefs=new HashMap<>();
+        if(curves!=null)for(int i=0;i<curves.length();i++){
+            JSONObject q=curves.optJSONObject(i);
+            if(q==null||!q.optBoolean("reference_device_bound",false))continue;
+            String model=q.optString("sensor_model","").toUpperCase(Locale.US);
+            double rs=q.optDouble("rs_kohm",Double.NaN);
+            double air=q.optDouble("device_air_reference_kohm",Double.NaN);
+            if(!(Double.isFinite(rs)&&rs>0&&Double.isFinite(air)&&air>0))
+                continue;
+            JSONObject previous=frozenRefs.get(model);
+            if(previous!=null){
+                double prevRs=previous.optDouble("rs_kohm",Double.NaN);
+                double prevAir=previous.optDouble(
+                    "device_air_reference_kohm",Double.NaN);
+                if(Math.abs(rs-prevRs)>1e-9*Math.max(1.0,Math.abs(rs))||
+                   Math.abs(air-prevAir)>1e-9*Math.max(1.0,Math.abs(air)))
+                    throw new IllegalArgumentException(
+                        "NEXT_PDF_INCONSISTENT_FROZEN_R_AIR_"+model);
+            }else frozenRefs.put(model,q);
+        }
         JSONArray measured=new JSONArray();
         int realR0=0;
         for(String key:MQ){
-            JSONObject q=mq==null?null:mq.optJSONObject(key.toLowerCase(Locale.US));
-            if(q==null)continue;
-            double rs=q.optDouble("rs",Double.NaN);
-            double r0=q.optDouble("r0",Double.NaN);
             JSONObject row=new JSONObject();
             row.put("sensor_model",key);
-            if(Double.isFinite(rs)&&rs>0&&Double.isFinite(r0)&&r0>0){
-                row.put("rs_r0_ratio_research",rs/r0);
+            row.put("next_frozen_reference",true);
+            JSONObject src=frozenRefs.get(key);
+            if(src!=null){
+                double rs=src.optDouble("rs_kohm",Double.NaN);
+                double air=src.optDouble("device_air_reference_kohm",Double.NaN);
+                row.put("rs_kohm",rs);
+                row.put("device_air_reference_kohm",air);
+                row.put("rs_r0_ratio_research",rs/air);
                 realR0++;
             }
+            // Reference math remains research-only without physical G3.
             row.put("r0_clean_air_device_evidence_qualified",false);
             measured.put(row);
         }
