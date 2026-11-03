@@ -1,5 +1,6 @@
 """Fail-closed regressions for the pinned G2 source snapshot audit."""
 import importlib.util
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -92,6 +93,8 @@ class TestG2CatalogSnapshotDrift(unittest.TestCase):
         self.assertEqual(x["external_datasets_reconciled"], 14)
         self.assertEqual([r["dataset_id"] for r in x["discrepancies"]], ["MQ-EXT-01"])
         self.assertEqual(x["g2_qualified_by_this_audit"], 0)
+        saved = audit.strict_json(root / "G2_SOURCE_SNAPSHOT_DRIFT_2026-11-03.json")
+        self.assertEqual(x, saved)
 
 
 if __name__ == "__main__":
