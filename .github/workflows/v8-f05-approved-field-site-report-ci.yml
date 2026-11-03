@@ -123,6 +123,20 @@ jobs:
           (p/'n06g_verified_manifest.json').write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
           print('PASS N06G FULL V15-APPROVED DB -> REAL PDF 6 PAGES / REAL XLSX 20 SHEETS / ORIGINAL SHA PRESERVED')
           PY
+      - name: Validate unchanged Excel visual standard and one-to-one Next provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          f=Path('source/app/src/main/java/com/servoc/app/report/SmartXlsxPackage.java')
+          b=f.read_bytes()
+          blob=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()
+          assert blob=='84ef6c9cc33c9c36d25388902e2bb2bd8dc8ac03',blob
+          print('PASS: original approved SmartXlsxPackage formatting source unchanged')
+          PY
+          python3 tank/research/v8_implementation/tests/test_v8_next_xlsx_style_and_lineage.py /tmp/v6-n06g-approved
       - name: Inspect current Tank V8 report and independent V6 PDF appendix headers
         shell: bash
         run: |
