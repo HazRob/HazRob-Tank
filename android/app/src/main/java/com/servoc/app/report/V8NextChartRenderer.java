@@ -165,7 +165,7 @@ public final class V8NextChartRenderer {
      * The vertical axis is dimensionless, never ppm.
      */
     public static void drawActualMqKinetics(Canvas canvas,RectF r,SessionSeries.Series series){
-        panel(canvas,r,"MQ • تغير ln(Rs/Rs0 الزمنية) • 60s");
+        panel(canvas,r,"MQ • ln(Rs(t)/Rs(t0)) • زمن حقيقي");
         if(series==null||!series.usable()){
             lines(canvas,r,"لا توجد سلسلة عينات محفوظة","NOT_AVAILABLE: no actual MQ timeline");return;
         }
