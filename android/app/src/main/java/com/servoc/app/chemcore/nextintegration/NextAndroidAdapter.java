@@ -20,6 +20,24 @@ public final class NextAndroidAdapter {
     double x=obj.optDouble(name,Double.NaN);
     return Double.isFinite(x)?x:null;
   }
+  /** Reject contradictory or untyped ON reports. A successful HTTP reply or
+   * a string/float mask is not a firmware relay acknowledgement.
+   * This is firmware-reported state, NOT independent contact-voltage proof.
+   */
+  public static boolean relayConfirmedOn(JSONObject data){
+    JSONObject relay=data==null?null:data.optJSONObject("relay");
+    if(relay==null||(!relay.has("on")&&!relay.has("mask")))return false;
+    if(relay.has("on")){
+      Object value=relay.opt("on");
+      if(!(value instanceof Boolean)||!((Boolean)value))return false;
+    }
+    if(relay.has("mask")){
+      Object value=relay.opt("mask");
+      if(!(value instanceof Number)||!Double.isFinite(((Number)value).doubleValue())||
+         ((Number)value).doubleValue()!=1.0)return false;
+    }
+    return true;
+  }
   private static int rawAdc(JSONObject src){
     if(src==null||!src.has("raw")||src.isNull("raw"))return -1;
     double v=src.optDouble("raw",Double.NaN);
@@ -31,8 +49,7 @@ public final class NextAndroidAdapter {
     final JSONObject data=new JSONObject(original.toString());
     String deviceUid=data.optString("device_id","").trim();
     if(deviceUid.isEmpty())throw new IllegalArgumentException("Tank hardware device_id missing");
-    JSONObject relay=data.optJSONObject("relay");
-    boolean relayOn=relay!=null&&relay.optBoolean("on",relay.optInt("mask",0)!=0);
+    boolean relayOn=relayConfirmedOn(data);
     JSONObject mq=data.optJSONObject("mq"),env=data.optJSONObject("env");
     List<NextTelemetryMapper.Channel> readings=new ArrayList<>();
     for(HazRobHardwareProfile.Channel hw:HazRobHardwareProfile.MQ){
