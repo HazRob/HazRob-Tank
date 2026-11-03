@@ -11,6 +11,7 @@ import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.field.FieldSessionRepository;
 import com.servoc.app.field.FieldCycleRepository;
 import com.servoc.app.chemcore.ChemCoreDecisionRepository;
+import com.servoc.app.chemcore.nextintegration.NextDecisionStore;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,20 +38,30 @@ public final class SiteSummaryReportExporter {
         public final boolean hasAnalysis,ppmReportable;
         public final JSONObject analysis;
         public final JSONObject hazardContext;
+        public final NextDecisionStore.Receipt next;
         public final double ppm,estimatedPpm;
-        CycleSummary(ExperimentsDb db,FieldCycleRepository.Cycle cycle,JSONObject analysis){
+        CycleSummary(ExperimentsDb db,FieldCycleRepository.Cycle cycle,
+                     JSONObject legacyAnalysis,NextDecisionStore.Receipt nextReceipt){
             this.cycle=cycle;
-            // Rejected, cancelled and deleted attempts never contribute to
-            // site-level scientific recurrence or occupational conclusions.
-            hasAnalysis=cycle.approved()&&analysis!=null;
-            this.analysis=hasAnalysis?analysis:null;
-            hazardContext=hasAnalysis?CandidateHazardContext.evaluate(db,analysis):null;
-            outcome=hasAnalysis?analysis.optString("outcome","—"):"—";
-            topCandidate=hasAnalysis?analysis.optString("chemical","—"):"—";
-            evidenceTier=hasAnalysis?analysis.optString("evidence_tier","—"):"—";
-            ppmReportable=hasAnalysis&&analysis.optBoolean("ppm_reportable",false);
+            // Next is the actual immutable V8 decision for this measurement;
+            // never let a stale V5/V6 record override it.
+            next=cycle.approved()?nextReceipt:null;
+            if(next!=null)V8NextChartRenderer.requireSameSession(next,cycle.measurementId);
+            hasAnalysis=cycle.approved()&&(next!=null||legacyAnalysis!=null);
+            analysis=hasAnalysis&&next==null?legacyAnalysis:null;
+            hazardContext=analysis==null?null:CandidateHazardContext.evaluate(db,analysis);
+            outcome=next!=null?next.status.name():
+                analysis==null?"—":analysis.optString("outcome","—");
+            topCandidate=next!=null?NextSiteEvidenceCharts.topUid(next):
+                analysis==null?"—":analysis.optString("chemical","—");
+            evidenceTier=next!=null?"NEXT_SOURCE_RESEARCH":
+                analysis==null?"—":analysis.optString("evidence_tier","—");
+            ppmReportable=next==null&&analysis!=null&&
+                analysis.optBoolean("ppm_reportable",false);
             ppm=ppmReportable?analysis.optDouble("ppm",Double.NaN):Double.NaN;
-            estimatedPpm=hasAnalysis?analysis.optDouble("screening_ppm_estimate",analysis.optDouble("screening_fit_ppm",Double.NaN)):Double.NaN;
+            estimatedPpm=analysis==null?Double.NaN:
+                analysis.optDouble("screening_ppm_estimate",
+                    analysis.optDouble("screening_fit_ppm",Double.NaN));
         }
     }
 
@@ -62,17 +73,38 @@ public final class SiteSummaryReportExporter {
         public final int panelSupportedCount,panelAcceptedCount;
         public final JSONObject candidateHazards;
         public final List<CycleSummary> cycles;
+        public final NextDecisionStore.Receipt next;
+        public final boolean hasNext;
         SessionSummary(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
-            bundle=b;JSONObject q=b.primaryDecision;
-            outcome=q==null?"—":q.optString("outcome","—");chemical=q==null?"—":q.optString("chemical","—");evidenceTier=q==null?"—":q.optString("evidence_tier","—");posterior=q==null?Double.NaN:q.optDouble("top_posterior",Double.NaN);analyticalConfidencePct=q==null?Double.NaN:q.optDouble("analytical_confidence_pct",Double.NaN);ppmReportable=q!=null&&q.optBoolean("ppm_reportable",false);ppm=q==null?Double.NaN:q.optDouble("ppm",Double.NaN);
+            bundle=b;
+            next=new NextDecisionStore(db).latestForSession(b.primaryMeasurementSessionId);
+            if(next!=null)V8NextChartRenderer.requireSameSession(next,b.primaryMeasurementSessionId);
+            hasNext=next!=null;
+            JSONObject q=hasNext?null:b.primaryDecision;
+            outcome=hasNext?next.status.name():
+                q==null?"—":q.optString("outcome","—");
+            chemical=hasNext?NextSiteEvidenceCharts.topUid(next):
+                q==null?"—":q.optString("chemical","—");
+            evidenceTier=hasNext?"NEXT_SOURCE_RESEARCH":
+                q==null?"—":q.optString("evidence_tier","—");
+            posterior=q==null?Double.NaN:q.optDouble("top_posterior",Double.NaN);
+            analyticalConfidencePct=q==null?Double.NaN:
+                q.optDouble("analytical_confidence_pct",Double.NaN);
+            ppmReportable=q!=null&&q.optBoolean("ppm_reportable",false);
+            ppm=q==null?Double.NaN:q.optDouble("ppm",Double.NaN);
             JSONObject panel=q==null?null:q.optJSONObject("screening_144");panelSupportedCount=panel==null?0:panel.optInt("session_candidate_supported_count",0);panelAcceptedCount=panel==null?0:panel.optInt("accepted_identity_count",0);
             JSONObject g=q==null?null:q.optJSONObject("gas_exposure_ppm");candidateHazards=CandidateHazardContext.evaluate(db,q);
             List<CycleSummary> temp=new ArrayList<>();
             ChemCoreDecisionRepository decisions=new ChemCoreDecisionRepository(db);
+            NextDecisionStore nextStore=new NextDecisionStore(db);
             for(FieldCycleRepository.Cycle cycle:b.cycleLedger){
-                JSONObject result=cycle.approved()&&!cycle.measurementId.isEmpty()
-                    ?decisions.latestPayloadForSession(cycle.measurementId):null;
-                temp.add(new CycleSummary(db,cycle,result));
+                NextDecisionStore.Receipt cycleNext=
+                    cycle.approved()&&!cycle.measurementId.isEmpty()?
+                    nextStore.latestForSession(cycle.measurementId):null;
+                JSONObject result=cycleNext==null&&cycle.approved()&&
+                    !cycle.measurementId.isEmpty()?
+                    decisions.latestPayloadForSession(cycle.measurementId):null;
+                temp.add(new CycleSummary(db,cycle,result,cycleNext));
             }
             cycles=Collections.unmodifiableList(temp);
             boolean anyGate=g!=null&&g.optBoolean("input_gate_passed",false);
