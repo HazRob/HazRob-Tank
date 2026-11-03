@@ -170,6 +170,19 @@ jobs:
           assert 'ChemCore Next' in site[4].get_text()
           assert all(abs(p.rect.width-842)<1 and abs(p.rect.height-595)<1 for p in site)
           site.close()
+          # P11.6: the source-refusal code is printable from an immutable
+          # scientific ledger on the ACTUAL V7 instant PDF, without a new page.
+          instant=fitz.open(str(Path('/tmp/v6-n06g-approved/n06g_next_instant_dual_r0.pdf')))
+          expected_pages=1+(62+14)//15
+          assert instant.page_count==expected_pages,(instant.page_count,expected_pages)
+          body='\n'.join(p.get_text() for p in instant)
+          assert 'MQSL-EX-007' in body, 'conditional MQ2 source row missing'
+          assert 'MQSL-EX-013' in body, 'unavailable MQ8 row missing'
+          assert 'MISSING_INSTALLED_MQ_SAMPLE' in body, 'frozen missing sensor reason was not printed'
+          assert 'R0 source' in body and 'UNVERIFIED' in body, 'R0_source was silently equated with device air'
+          assert all(abs(p.rect.width-595)<1 and abs(p.rect.height-842)<1 for p in instant)
+          instant.close()
+          print('PASS P11.6 actual V7 instant PDF: 62 source rows, explicit MQ8 abstention, source K/R0 trace, page geometry unchanged')
           nextpdf=fitz.open(str(Path('/tmp/v6-n06g-approved/n06g_next_approved_field.pdf')))
           assert nextpdf.page_count==6
           assert 'ChemCore Next' in nextpdf[2].get_text()
