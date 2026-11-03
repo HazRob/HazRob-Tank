@@ -59,23 +59,49 @@ public final class EmissionNextBridge {
                 JSONObject hypothesis=new JSONObject()
                     .put("source_curve_id",fit.optString("source_curve_id",""))
                     .put("source_root",fit.optString("source_root",""))
+                    .put("source_class",fit.optString("source_class","SOURCE_NOT_CATEGORIZED"))
                     .put("source_label",fit.optString("gas_or_class",""))
                     .put("mq_sensor",fit.optString("sensor_model",""))
                     .put("research_estimate_ppm",
                          Double.isFinite(ppm)&&ppm>0?ppm:JSONObject.NULL)
+                    .put("source_equivalent_unit","SMOKE".equals(key)?
+                        "ppm source-equivalent (not PM mass)":"ppm (source model)")
                     .put("status",fit.optString("status","NOT_RUN"))
                     .put("extrapolated",fit.optBoolean("extrapolated",false))
-                    .put("device_r0_source_r0_equivalent",false)
+                    .put("reference_min_ppm",fit.opt("reference_min_ppm"))
+                    .put("reference_max_ppm",fit.opt("reference_max_ppm"))
+                    .put("source_equation",fit.optString("source_equation",""))
+                    .put("algorithm",fit.optString("algorithm",""))
+                    .put("model_a",fit.opt("a"))
+                    .put("model_b",fit.opt("b"))
+                    .put("reference_scale_ppm",fit.opt("reference_scale_ppm"))
+                    .put("observed_rs_r0",fit.opt("observed_rs_r0"))
+                    .put("r0_definition",fit.optString("r0_definition",""))
+                    .put("source_r0_equivalence_verified",
+                        fit.optBoolean("source_r0_equivalence_verified",false))
+                    .put("caveat",fit.optString("caveat","DEVICE_R0_TRANSFER_NOT_VERIFIED"))
                     .put("ifc_comparable",false)
                     .put("gas_identity_confirmed",false);
                 hypotheses.put(hypothesis);
                 linked++;
                 if(Double.isFinite(ppm)&&ppm>0)finite++;
             }
+            // Every finite manufacturer/research source model is displayed;
+            // NO arbitrary 1-model/3-model cap, no out-of-domain suppression.
+            // Separate the analytical numbers from certified exhaust ppm.
+            JSONArray numeric=new JSONArray();
+            for(int h=0;h<hypotheses.length();h++){
+                JSONObject source=hypotheses.optJSONObject(h);
+                if(source!=null&&!source.isNull("research_estimate_ppm"))
+                    numeric.put(new JSONObject(source.toString()));
+            }
             row.put("next_source_hypotheses",hypotheses);
             row.put("next_source_hypotheses_count",hypotheses.length());
+            row.put("research_numeric_models",numeric);
+            row.put("research_numeric_models_count",numeric.length());
+            row.put("research_values_visible",true);
             row.put("next_research_ppm_hypotheses",
-                hypotheses.length()>0?"CONDITIONAL_ONLY":"NO_MODEL_AVAILABLE");
+                hypotheses.length()>0?"SOURCE_MODELS_DISPLAYED":"NO_MODEL_AVAILABLE");
             // Keep certified exhaust ppm empty regardless of research inverse
             // curve numerical values. Only a later qualified inference can
             // populate a measured concentration and comparable IFC limit.
@@ -98,6 +124,10 @@ public final class EmissionNextBridge {
         emissions.put("next_analysis",new JSONObject(next.toString()));
         emissions.put("next_source_hypotheses",linked);
         emissions.put("next_finite_ppm_hypotheses",finite);
+        emissions.put("numerical_output_policy",
+            "DISPLAY_ALL_FINITE_SOURCE_CURVE_ESTIMATES_WITH_STATUS_AND_PROVENANCE");
+        emissions.put("source_models_suppressed_due_to_g3",false);
+        emissions.put("source_extrapolations_suppressed",false);
         emissions.put("next_status","SUCCESS_RESEARCH_ONLY");
         emissions.put("ifc_assessment_state","NOT_EVALUABLE_NO_QUALIFIED_EXHAUST_CONCENTRATIONS");
         return emissions;
