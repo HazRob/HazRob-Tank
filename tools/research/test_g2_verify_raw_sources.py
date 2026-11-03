@@ -51,6 +51,22 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertEqual(result["results"][1]["error"], "duplicate_source_id")
         self.assertEqual(result["results"][1]["source_id"], "fixture")
 
+    def test_duplicate_raw_path_across_distinct_ids_blocked(self):
+        first = self.entry()
+        second = dict(first, source_id="another-source")
+        result = verify({"sources": [first, second]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][1]["error"], "duplicate_source_path")
+        self.assertFalse(result["scientific_qualification"])
+
+    def test_distinct_raw_paths_are_allowed(self):
+        (self.root / "second.bin").write_bytes(self.payload)
+        second = self.entry("second.bin")
+        second["source_id"] = "another-source"
+        result = verify({"sources": [self.entry(), second]}, self.root)
+        self.assertTrue(result["all_verified"])
+        self.assertFalse(result["scientific_qualification"])
+
     def test_empty_source_identity_blocked(self):
         entry = self.entry()
         entry["source_id"] = " "
