@@ -100,11 +100,11 @@ jobs:
           with zipfile.ZipFile(xlsx) as z:
             assert z.testzip() is None
             names=z.namelist()
-            assert len([x for x in names if x.startswith('xl/worksheets/sheet') and x.endswith('.xml')])==14
+            assert len([x for x in names if x.startswith('xl/worksheets/sheet') and x.endswith('.xml')])==16
             root=ET.fromstring(z.read('xl/workbook.xml'))
             ns='{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
             names=[x.attrib['name'] for x in root.findall('.//'+ns+'sheet')]
-            assert len(names)==14 and 'V6 بحثي غازات' in names and 'V6 مصادر وتعارضات' in names
+            assert len(names)==16 and 'V6 بحثي غازات' in names and 'V6 مصادر وتعارضات' in names
             for name in z.namelist():
               if name.endswith('.xml') or name.endswith('.rels'):ET.fromstring(z.read(name))
           assert d['archive_digest_before']==d['archive_digest_after']
@@ -116,7 +116,7 @@ jobs:
           d['xlsx_sha256']=hashlib.sha256(xlsx.read_bytes()).hexdigest()
           d['scope']='Actual Android FieldSessionReportExporter and V10 approved fixture; NOT user database or physical Tank/G3'
           (p/'n06g_verified_manifest.json').write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
-          print('PASS N06G FULL V15-APPROVED DB -> REAL PDF 6 PAGES / REAL XLSX 14 SHEETS / ORIGINAL SHA PRESERVED')
+          print('PASS N06G FULL V15-APPROVED DB -> REAL PDF 6 PAGES / REAL XLSX 16 SHEETS / ORIGINAL SHA PRESERVED')
           PY
       - name: Inspect current Tank V8 report and independent V6 PDF appendix headers
         shell: bash
