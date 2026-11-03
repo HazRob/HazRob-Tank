@@ -80,13 +80,13 @@
       "id": "V8-F05",
       "title": "R03 field session and R04 site source chart fidelity",
       "status": "CI_PASS",
-      "note": "",
-      "source_sha": "7316d6c7940f0e0e52ea7b3e841dc45518f3640a",
-      "ci_run_id": 41568248265,
+      "note": "Fixed Next PDF null legacy SmartReport contract at e5f152e, while keeping frozen V7 layout and archived V5/V6 route.",
+      "source_sha": "e5f152ed6b62ed13b2c515bc7106894d056fb5bc",
+      "ci_run_id": 41569572553,
       "changed_files": [],
-      "result": "Android13 PASS Next PDF6 with exclusive Next-only source appendix, historical PDF6 retaining V6, site PDF5 with two independent sessions, SHA tamper checks",
-      "blocking_issue": null,
-      "next_action": "Manual Arabic clipping and long candidate notes page review; device source later"
+      "result": "Android13 F05 PASS 237 assertions: Next field PDF6, legacy field PDF6, site PDF5 for two independent approved sessions; Next field XLSX20, historical XLSX20, mixed site XLSX6; tamper rejected and source SHA stable.",
+      "blocking_issue": "Actual Tank readings, RTL human visual inspection and on-device operator taps remain unverified.",
+      "next_action": "Validate Android12 UI/SQLite gate and inspect Arabic long-label rendering, then physical Tank."
     },
     {
       "id": "V8-F06",
@@ -120,10 +120,10 @@
       "title": "Sessions/sites XLSX lifecycle and exports",
       "status": "CI_PASS",
       "note": "",
-      "source_sha": null,
-      "ci_run_id": 41568248265,
+      "source_sha": "e5f152ed6b62ed13b2c515bc7106894d056fb5bc",
+      "ci_run_id": 41569572553,
       "changed_files": [],
-      "result": "Three workbooks: historical 20, Next field 20, mixed site 6, shared approved SmartXlsxPackage V7 formatting same SHA256, RTL/frozen header/dark style and real numeric cells",
+      "result": "F05 41569572553 PASS: Next 20, historical 20 and mixed site 6 XLSX; environment, raw ADC/ADS, auxiliary channels, original JSON present; original ledger SHA unchanged.",
       "blocking_issue": null,
       "next_action": "Open on actual mobile Excel viewer and verify wide sheet readability"
     },
@@ -145,11 +145,11 @@
       "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41567686809,
+      "ci_run_id": 41569572735,
       "changed_files": [],
-      "result": "Android Java compile + G1 success at 9588cc; Android13 export and F02 atomic approval success 41568248265; Android12 separate entire UI/chem Next gate still requires latest confirmation",
+      "result": "Android compilation PASS 41569572735, V8 UI source inventory PASS 41569572577, F05 approved PDF/XLSX end-to-end PASS 41569572553 (237 assertions), all on e5f152e; Android12 41569572604 pending at this checkpoint.",
       "blocking_issue": null,
-      "next_action": "Review remaining Android12 UI and Next pixel test run; leave APK blocked until all gate evidence"
+      "next_action": "Check Android12 run 41569572604; if FAIL inspect exact native-test failure. No APK release while G3, F01 physical interactions and relay/R0 gates unqualified."
     },
     {
       "id": "V8-F11",
@@ -172,9 +172,9 @@
     "V8-F09",
     "V8-F10"
   ],
-  "source_head_at_last_audit": "c87a8ee3049cd81d68f8c7d7f08ef205cf6c5d3f",
-  "report_ci_instrumented_run": 41555700519,
-  "report_ci_instrumented_status": "IN_PROGRESS",
+  "source_head_at_last_audit": "e5f152ed6b62ed13b2c515bc7106894d056fb5bc",
+  "report_ci_instrumented_run": 41569572553,
+  "report_ci_instrumented_status": "SUCCESS",
   "compile_and_g1_static_test": {
     "run_id": 41555405022,
     "status": "SUCCESS",
@@ -319,5 +319,22 @@
     "status": "IN_PROGRESS",
     "source_commit": "80a6973be6501fdb7442410b257146866a625b78",
     "note": "Additional constraint-safe duplicate attempt test; prior strict attempt PASSED 41568248265"
+  },
+  "latest_v8_next_f05_checkpoint": {
+    "fix_commit": "e5f152ed6b62ed13b2c515bc7106894d056fb5bc",
+    "failed_pre_fix_run": 41568863694,
+    "successful_android_compile_run": 41569572735,
+    "successful_ui_source_inventory_run": 41569572577,
+    "successful_f05_android13_run": 41569572553,
+    "successful_f05_assertions": 237,
+    "android12_run_pending": 41569572604,
+    "field_pdf_pages_legacy": 6,
+    "field_pdf_pages_next": 6,
+    "site_pdf_pages": 5,
+    "field_xlsx_sheets_legacy": 20,
+    "field_xlsx_sheets_next": 20,
+    "site_xlsx_sheets_mixed": 6,
+    "physical_tank_verified": false,
+    "apk_generated": false
   }
 }
