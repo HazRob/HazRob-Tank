@@ -14,16 +14,18 @@ public final class EmissionSessionStore extends SQLiteOpenHelper {
     private static final String DB="hazrob_emissions_v1.db";
     public static final class Engine {
         public final long id;
-        public final String name;
-        public Engine(long id,String name){this.id=id;this.name=name;}
+        public final String name,ifcProfile;
+        public Engine(long id,String name,String ifcProfile){this.id=id;this.name=name;this.ifcProfile=ifcProfile;}
     }
-    public EmissionSessionStore(Context context){super(context.getApplicationContext(),DB,null,1);}
+    public EmissionSessionStore(Context context){super(context.getApplicationContext(),DB,null,2);}
     @Override public void onCreate(SQLiteDatabase db){
-        db.execSQL("CREATE TABLE emission_engines (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL UNIQUE,created_ms INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE emission_engines (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL UNIQUE,created_ms INTEGER NOT NULL,ifc_profile TEXT NOT NULL DEFAULT 'NOT_CONFIGURED')");
         db.execSQL("CREATE TABLE emission_measurements (id INTEGER PRIMARY KEY AUTOINCREMENT,engine_id INTEGER NOT NULL,at_ms INTEGER NOT NULL,results_json TEXT NOT NULL, FOREIGN KEY(engine_id) REFERENCES emission_engines(id) ON DELETE CASCADE)");
         db.execSQL("CREATE INDEX emission_measurements_by_engine ON emission_measurements(engine_id,at_ms DESC)");
     }
-    @Override public void onUpgrade(SQLiteDatabase db,int oldV,int newV){}
+    @Override public void onUpgrade(SQLiteDatabase db,int oldV,int newV){
+        if(oldV<2)db.execSQL("ALTER TABLE emission_engines ADD COLUMN ifc_profile TEXT NOT NULL DEFAULT 'NOT_CONFIGURED'");
+    }
     @Override public void onConfigure(SQLiteDatabase db){
         super.onConfigure(db);db.setForeignKeyConstraintsEnabled(true);
     }
@@ -38,10 +40,18 @@ public final class EmissionSessionStore extends SQLiteOpenHelper {
     public List<Engine> engines(){
         List<Engine> items=new ArrayList<>();
         try(Cursor c=getReadableDatabase().rawQuery(
-            "SELECT id,name FROM emission_engines ORDER BY created_ms DESC,id DESC",null)){
-            while(c.moveToNext())items.add(new Engine(c.getLong(0),c.getString(1)));
+            "SELECT id,name,ifc_profile FROM emission_engines ORDER BY created_ms DESC,id DESC",null)){
+            while(c.moveToNext())items.add(new Engine(c.getLong(0),c.getString(1),c.getString(2)));
         }
         return items;
+    }
+    public void setIfcProfile(long engineId,String profile){
+        if(engineId<=0||!EmissionIfcComparator.knownProfile(profile))
+            throw new IllegalArgumentException("UNKNOWN_IFC_PROFILE");
+        ContentValues v=new ContentValues();v.put("ifc_profile",profile);
+        int changed=getWritableDatabase().update("emission_engines",v,"id=?",
+            new String[]{Long.toString(engineId)});
+        if(changed!=1)throw new IllegalArgumentException("ENGINE_NOT_FOUND");
     }
     public void delete(long id){
         if(id<=0)throw new IllegalArgumentException("INVALID_ENGINE");
