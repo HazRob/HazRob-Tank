@@ -1,6 +1,6 @@
 {
   "schema": "hazrob.tank.v8.frozen_scope_report_app_execution/1",
-  "last_checked": "2026-11-03T00:55:00Z",
+  "last_checked": "2026-11-03T01:10:00Z",
   "branch": "feature/tank-v8-implementation",
   "repo": "HazRob/HazRob-Tank",
   "scope_freeze_approved": true,
@@ -60,7 +60,7 @@
     {
       "id": "V8-F04",
       "title": "R01 instant and R02 physical PDF chart fidelity",
-      "status": "SOURCE_VERIFIED",
+      "status": "CI_PASS",
       "note": "",
       "source_sha": null,
       "ci_run_id": 41556632291,
@@ -69,21 +69,21 @@
         "android/app/src/androidTest/java/com/servoc/app/report/ReportChartDataParityInstrumentedTest.java",
         "android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java"
       ],
-      "result": "R01 Next source radar and R02 raw physical report tests in Android12; physical explicit-invalid numeric filter implemented without layout changes",
+      "result": "Android12 source-validity and R01/R02 frozen-source pixel differential including physical invalid-flag filtering PASS on run 41556632291",
       "blocking_issue": null,
-      "next_action": "Resolve full Android12 pixel differential and source invalid-flag regression before marking PASS"
+      "next_action": "Physical actual Tank fixture and graphical Arabic page clipping check"
     },
     {
       "id": "V8-F05",
       "title": "R03 field session and R04 site source chart fidelity",
-      "status": "SOURCE_VERIFIED",
+      "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": null,
+      "ci_run_id": 41557779295,
       "changed_files": [],
-      "result": "R03 production routes through SmartFieldSessionPdfWriter and verified archived session only; R04 source through SiteSummaryReportExporter; V7FieldSessionPdfWriter and V7SiteVisualPdfWriter are deliberately empty design fixtures",
-      "blocking_issue": "Full real archived multi-session PDF-render smoke and Next decision parity with new V8 UI not completed",
-      "next_action": "Create archival SQLite Android12 fixture for R03/R04 with multiple distinct site/session measurements and compare report values"
+      "result": "F05 Android13 real production 6-page field + 5-page two-session site + XLSX first run 41557242393 failed at obsolete sheet total 14; writer has 14 current baseline +2 V6 =16; corrected test-only assertions and rerun.",
+      "blocking_issue": "Waiting for F05 Android13 source-integrity, 16-sheet Excel and PDF rerun 41557779295",
+      "next_action": "Read result and investigate any new actual failure; do not alter production PDF layouts"
     },
     {
       "id": "V8-F06",
@@ -115,14 +115,14 @@
     {
       "id": "V8-F08",
       "title": "Sessions/sites XLSX lifecycle and exports",
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": null,
+      "ci_run_id": 41557779295,
       "changed_files": [],
-      "result": null,
+      "result": "16 XLSX sheet production inventory identified; test assertion updated without dropping sheet",
       "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "next_action": "Verify sheet XML names/count, original SHA, full source ledger and site independence on F05 run"
     },
     {
       "id": "V8-F09",
@@ -142,11 +142,11 @@
       "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41556632291,
+      "ci_run_id": 41557779295,
       "changed_files": [],
-      "result": "Android12 41555209169 SUCCESS 22 tests for first report suite; latest Android12 41556632291 still running; latest full compile 41556603594 PASS; food G1 41556242090 PASS",
+      "result": "Android12 reports PASS 41556632291; Android full compilation PASS 41556603594; F05 Android13 export rerun pending 41557779295",
       "blocking_issue": null,
-      "next_action": "Check later emulator pixel tests R01 R02 and physical invalid suppression (run 41556632291), then R03/R04 fixture and physical Tank verification"
+      "next_action": "Resolve F05 and then UI/activity lifecycle plus physical G3 separate"
     },
     {
       "id": "V8-F11",
@@ -219,5 +219,18 @@
     "status": "SUCCESS",
     "tests": "22 total, includes R05 fruit, R06 beef, R07 emissions Pixel differential & multi-page",
     "hardware_validated": false
+  },
+  "f05_checkpoint": "docs/implementation/V8-F05-REPORT-EXPORT-CHECKPOINT-2026-11-03_AR.md",
+  "latest_report_pixel_pass": {
+    "run_id": 41556632291,
+    "status": "SUCCESS",
+    "scope": "R01/R02/R05/R06/R07 rendering and source-binding, Android API31 only"
+  },
+  "latest_f05_rerun": {
+    "run_id": 41557779295,
+    "status": "IN_PROGRESS",
+    "sha": "7316d6c79",
+    "expected_xlsx_sheets": 16,
+    "source_data_mutated": false
   }
 }
