@@ -48,6 +48,7 @@ adb exec-out run-as com.servoc.app cat files/n06g_full_approved_field.xlsx > "$O
 
 adb exec-out run-as com.servoc.app cat files/n06g_site_two_approved.pdf > "$OUT/n06g_site_two_approved.pdf"
 adb exec-out run-as com.servoc.app cat files/n06g_next_approved_field.pdf > "$OUT/n06g_next_approved_field.pdf"
+adb exec-out run-as com.servoc.app cat files/n06g_next_instant_dual_r0.pdf > "$OUT/n06g_next_instant_dual_r0.pdf"
 
 adb exec-out run-as com.servoc.app cat files/n06g_next_approved_field.xlsx > "$OUT/n06g_next_approved_field.xlsx"
 adb exec-out run-as com.servoc.app cat files/n06g_next_site_two_approved.xlsx > "$OUT/n06g_next_site_two_approved.xlsx"
