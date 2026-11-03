@@ -65,8 +65,13 @@ public final class NextScientificDiagnostics {
             row.put("a",curve.a);
             row.put("b",curve.b);
             row.put("reference_scale_ppm",curve.outputScale);
+            row.put("source_scale_primary_verified",false);
+            row.put("source_scale_origin",curve.id().startsWith("MQDATA43-")?
+                "V6_ASSUMED_SCALE_SOURCE_ORIGINAL_UNKNOWN":
+                "LITERATURE_DIGITIZED_OR_ALTERNATIVE_UNVERIFIED");
             row.put("reference_min_ppm",curve.minSourcePpm);
             row.put("reference_max_ppm",curve.maxSourcePpm);
+            row.put("source_domain_primary_verified",false);
             row.put("estimated_ppm",JSONObject.NULL);
             row.put("physical_g3_validated",false);
             row.put("safety_alarm_authorized",false);
