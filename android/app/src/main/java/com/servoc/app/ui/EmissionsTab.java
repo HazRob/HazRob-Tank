@@ -22,6 +22,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import com.hazrob.tank.emissions.EmissionResearchEngine;
+import com.hazrob.tank.emissions.EmissionNextBridge;
+import com.servoc.app.chemcore.TankInstantAnalyzer;
 import com.hazrob.tank.emissions.EmissionSessionStore;
 import com.hazrob.tank.emissions.EmissionReportPdf;
 import org.json.JSONArray;
@@ -55,7 +57,8 @@ public final class EmissionsTab {
     private String captureName="";
     private long captureEngineId=-1,startClock=0,startedAtMs=0;
     private int frames=0;
-    private boolean capturing=false,capturePM=false;
+    private boolean capturing=false,capturePM=false,processing=false;
+    private JSONObject lastFrozenSource;
     private Runnable tick;
 
     public EmissionsTab(Context c,HazRobHost host){
@@ -67,7 +70,7 @@ public final class EmissionsTab {
         view.addView(root);
         root.addView(UiKit.title(c,"🏭 قياس انبعاثات المحركات والمولدات"),UiKit.full(c));
         TextView hint=UiKit.small(c,
-            "إدارة محركات مستقلة وقراءات محفوظة لكل محرك. محرك التحليل النهائي ومراجع IFC الكمية سيُعتمدان لاحقًا. الإشارات الحالية لحساسات MQ ليست تركيزات SOx أو NOx أو CO₂ معتمدة.");
+            "إدارة محركات مستقلة؛ التحليل عبر ChemCore Next ومراجع Stable. تظهر بصمات ومنحنيات المصادر المناسبة للمادة، لكن تقديرات MQ البحثية ليست قياسات انبعاثات معتمدة ولا إثباتًا للامتثال لـIFC.");
         hint.setTextColor(0xFF303D4F);
         root.addView(hint,UiKit.full(c));
 
@@ -140,7 +143,7 @@ public final class EmissionsTab {
         refreshSelection();
     }
     private void createEngine(){
-        if(capturing)return;
+        if(capturing||processing)return;
         EditText input=UiKit.input(context,"");
         input.setSingleLine(true);input.setHint("اسم المحرك أو المولد");
         new AlertDialog.Builder(context).setTitle("استحداث محرك جديد")
@@ -155,7 +158,7 @@ public final class EmissionsTab {
             }).show();
     }
     private void deleteSelected(){
-        if(capturing)return;
+        if(capturing||processing)return;
         EmissionSessionStore.Engine e=selected();if(e==null)return;
         new AlertDialog.Builder(context).setTitle("حذف المحرك وقياساته")
             .setMessage("سيُحذف «"+e.name+"» وجميع نتائج القياس الخاصة به نهائيًا.")
@@ -167,21 +170,21 @@ public final class EmissionsTab {
     private void refreshSelection(){
         EmissionSessionStore.Engine e=selected();
         boolean has=e!=null;
-        measure.setEnabled(has&&!capturing);
-        delete.setEnabled(has&&!capturing);
-        create.setEnabled(!capturing);
-        engineMenu.setEnabled(!capturing);
-        includeParticles.setEnabled(!capturing);
+        measure.setEnabled(has&&!capturing&&!processing);
+        delete.setEnabled(has&&!capturing&&!processing);
+        create.setEnabled(!capturing&&!processing);
+        engineMenu.setEnabled(!capturing&&!processing);
+        includeParticles.setEnabled(!capturing&&!processing);
         JSONObject latest=has?store.latest(e.id):null;
-        report.setEnabled(latest!=null&&!capturing);
-        if(!capturing){
+        report.setEnabled(latest!=null&&!capturing&&!processing);
+        if(!capturing&&!processing){
             status.setText(has?"المحرك المحدد: "+e.name+" — جاهز للقياس":"استحدث محركًا أولًا.");
             render(latest,has?store.count(e.id):0);
         }
     }
     private void start(){
         EmissionSessionStore.Engine e=selected();
-        if(capturing||e==null)return;
+        if(capturing||processing||e==null)return;
         JSONObject latest=host.latestDiagnostics();
         if(latest==null||latest.optJSONObject("mq")==null){
             host.showToast("يلزم الاتصال بالروبوت لبدء قياس انبعاثات");return;
@@ -190,6 +193,7 @@ public final class EmissionsTab {
         capturePM=includeParticles.isChecked();
         startClock=SystemClock.elapsedRealtime();startedAtMs=System.currentTimeMillis();
         sums.clear();counts.clear();scanCycles.clear();frames=0;
+        lastFrozenSource=null;
         progress.setProgress(0);
         measure.setEnabled(false);delete.setEnabled(false);create.setEnabled(false);
         engineMenu.setEnabled(false);includeParticles.setEnabled(false);report.setEnabled(false);
@@ -231,34 +235,73 @@ public final class EmissionsTab {
             counts.put(sensor,counts.containsKey(sensor)?counts.get(sensor)+1:1);
             got++;
         }
-        if(got>0)frames++;
+        if(got>0){
+            frames++;
+            // Original robot /data, never a synthetic 60-second mean snapshot.
+            // Clone synchronously so a later polling cycle cannot mutate it.
+            try{lastFrozenSource=new JSONObject(top.toString());}
+            catch(Exception ignored){lastFrozenSource=null;}
+        }
     }
     private void finish(long elapsed){
         if(!capturing)return;
         capturing=false;
         handler.removeCallbacks(tick);
-        try{
-            if(frames<10){
-                refreshSelection();
-                status.setText("لم ينجح القياس: بيانات MQ الحديثة غير كافية، ولم تُحفظ نتيجة جديدة.");
-                return;
-            }
-            Map<String,Double> avg=new LinkedHashMap<>();
-            for(Map.Entry<String,Double> e:sums.entrySet()){
-                int n=counts.containsKey(e.getKey())?counts.get(e.getKey()):0;
-                if(n>0)avg.put(e.getKey(),e.getValue()/n);
-            }
-            JSONObject result=EmissionResearchEngine.complete(captureEngineId,captureName,
-                startedAtMs,elapsed,capturePM,frames,avg,counts);
-            store.addMeasurement(captureEngineId,result);
+        if(frames<10){
             refreshSelection();
-            status.setText("اكتمل تسجيل قياس "+captureName+" • "+frames+
-                " إطارات • التحليل الكمي للملوثات معلّق لحين اعتماد المحرك والمراجع.");
-        }catch(Exception failure){
-            refreshSelection();
-            status.setText("حدث خلل أثناء حفظ القياس ولم تُعتمد نتيجة جديدة.");
-            host.showToast("تعذر حفظ بيانات القياس");
+            status.setText("لم ينجح القياس: بيانات MQ الحديثة غير كافية، ولم تُحفظ نتيجة جديدة.");
+            return;
         }
+        final Map<String,Double> avg=new LinkedHashMap<>();
+        for(Map.Entry<String,Double> e:sums.entrySet()){
+            int n=counts.containsKey(e.getKey())?counts.get(e.getKey()):0;
+            if(n>0)avg.put(e.getKey(),e.getValue()/n);
+        }
+        final Map<String,Integer> validCounts=new LinkedHashMap<>(counts);
+        final long engineId=captureEngineId,startMs=startedAtMs;
+        final String engineName=captureName;
+        final boolean pm=capturePM;
+        final int acceptedFrames=frames;
+        final JSONObject sealed=lastFrozenSource;
+        lastFrozenSource=null;
+        processing=true;
+        status.setText("اكتمل التسجيل؛ يجري تحليل المصدر الفعلي بواسطة ChemCore Next...");
+        host.io().execute(()->{
+            try{
+                JSONObject result=EmissionResearchEngine.complete(engineId,engineName,
+                    startMs,elapsed,pm,acceptedFrames,avg,validCounts);
+                // Feed original firmware snapshot to the same real V8 Next
+                // pipeline used by instantaneous measurements. DO NOT use
+                // made-up 60s averages as original telemetry or a cached result.
+                if(sealed==null){
+                    EmissionNextBridge.unavailable(result,"NO_ORIGINAL_FROZEN_SOURCE_FRAME");
+                }else{
+                    try{
+                        TankInstantAnalyzer.Result computed=TankInstantAnalyzer.analyze(
+                            context,host.database(),sealed,System.currentTimeMillis());
+                        EmissionNextBridge.attach(result,computed);
+                    }catch(Exception nextFailure){
+                        EmissionNextBridge.unavailable(result,
+                            "NEXT_ANALYSIS_FAILED_"+nextFailure.getClass().getSimpleName());
+                    }
+                }
+                store.addMeasurement(engineId,result);
+                String outcome=result.optString("next_status","NOT_RUN");
+                view.post(()->{
+                    processing=false;
+                    refreshSelection();
+                    status.setText("اكتمل قياس "+engineName+" • "+acceptedFrames+
+                        " لقطات • ChemCore Next: "+outcome+
+                        " • الالتزام البيئي يتطلب قياسًا مؤهلًا.");
+                });
+            }catch(Exception failure){
+                view.post(()->{
+                    processing=false;refreshSelection();
+                    status.setText("تعذر اعتماد قياس الانبعاثات؛ لم تُحفظ نتيجة جديدة.");
+                    host.showToast("تعذر حفظ جلسة الانبعاثات");
+                });
+            }
+        });
     }
     private TextView cell(String text,boolean header,boolean exceeded){
         TextView view=UiKit.text(context,text==null?"—":text);
@@ -281,7 +324,9 @@ public final class EmissionsTab {
             summary.setText("لا توجد قياسات محفوظة للمحرك المحدد.");
             return;
         }
-        summary.setText("عدد الجلسات: "+historyCount+" • آخر تسجيل: "+
+        summary.setText("عدد الجلسات: "+historyCount+" • ChemCore Next: "+
+            latest.optString("next_status","NOT_RUN")+" • "+
+            latest.optString("next_decision_status","UNKNOWN")+" • آخر تسجيل: "+
             new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault())
                 .format(new java.util.Date(latest.optLong("measured_at_ms",0)))+
             " • "+latest.optLong("frames",0)+" إطار");
@@ -293,8 +338,26 @@ public final class EmissionsTab {
                 row.optBoolean("exceeded",false)&&!row.isNull("value_ppm");
             String value=row.isNull("value_ppm")?"غير متاح":row.optString("value_ppm","—");
             String limit=row.isNull("limit")?"لم يحدد":row.optString("limit","—");
-            String state="MQ_SIGNAL_ONLY".equals(row.optString("status"))?
-                "إشارة بحثية فقط":"غير معاير";
+            String code=row.optString("status");
+            String state="NEXT_SOURCE_HYPOTHESES".equals(code)?
+                "تقديرات Next بحثية":("NEXT_MODELS_NOT_EVALUABLE".equals(code)?
+                "منحنى غير قابل للحساب":("MQ_SIGNAL_ONLY".equals(code)?
+                "إشارة MQ فقط":"لا قياس نوعي"));
+            JSONArray hypotheses=row.optJSONArray("next_source_hypotheses");
+            String evidence="";
+            if(hypotheses!=null&&hypotheses.length()>0){
+                StringBuilder details=new StringBuilder();
+                for(int j=0;j<hypotheses.length();j++){
+                    JSONObject source=hypotheses.optJSONObject(j);
+                    if(source==null)continue;
+                    if(details.length()>0)details.append("; ");
+                    details.append(source.optString("mq_sensor")).append(" ");
+                    details.append(source.isNull("research_estimate_ppm")?"غير قابل للحساب":
+                        String.format(Locale.US,"%.3g ppm (بحثي)",
+                            source.optDouble("research_estimate_ppm")));
+                }
+                evidence=details.toString();
+            }
             String signal=row.has("mq_average_rs")?
                 row.optString("mq_sensor")+" Rs="+
                 String.format(Locale.US,"%.4g",row.optDouble("mq_average_rs")):
@@ -304,13 +367,14 @@ public final class EmissionsTab {
             item.addView(cell(value,false,exceeded),new TableRow.LayoutParams(0,-2,1f));
             item.addView(cell(limit,false,false),new TableRow.LayoutParams(0,-2,1f));
             item.addView(cell(state,false,false),new TableRow.LayoutParams(0,-2,1f));
-            item.addView(cell(signal,false,false),new TableRow.LayoutParams(0,-2,1f));
+            item.addView(cell(evidence.isEmpty()?signal:evidence,false,false),
+                new TableRow.LayoutParams(0,-2,1f));
             table.addView(item);
         }
     }
     private void exportPdf(){
         EmissionSessionStore.Engine e=selected();
-        if(e==null||capturing)return;
+        if(e==null||capturing||processing)return;
         JSONObject latest=store.latest(e.id);if(latest==null)return;
         report.setEnabled(false);
         host.io().execute(()->{
