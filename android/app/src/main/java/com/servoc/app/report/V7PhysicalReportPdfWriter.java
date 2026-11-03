@@ -87,8 +87,16 @@ public final class V7PhysicalReportPdfWriter {
     private static Reading readNumber(JSONObject o,String key,int decimals,String source){
         Reading r=new Reading();
         if(o==null)return r;
+        // The report is a read-only projection of the original acquisition.
+        // Explicit failed channel validity cannot become a numerical finding.
+        if((o.has("ok")&&!o.optBoolean("ok",false))||
+           (o.has("valid")&&!o.optBoolean("valid",false)))return r;
         // Values in an engine result are either numeric directly or in {value,status}.
         JSONObject embedded=o.optJSONObject(key);
+        if(embedded!=null &&
+           ((embedded.has("ok")&&!embedded.optBoolean("ok",false))||
+            (embedded.has("valid")&&!embedded.optBoolean("valid",false))))
+            return r;
         double val=embedded==null?o.optDouble(key,Double.NaN):
             embedded.optDouble("value",Double.NaN);
         if(!Double.isFinite(val))return r;
