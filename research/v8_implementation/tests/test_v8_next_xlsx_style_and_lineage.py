@@ -83,6 +83,40 @@ for filename, (expected_count, expected_sheets) in TARGETS.items():
             assert b"CHEMCORE_NEXT" in all_text
             assert "CI-RESEARCH-ROOT-ONE".encode() in all_text
             assert b"RESEARCH_CANDIDATES" in all_text
+        if filename == "n06g_next_approved_field.xlsx":
+            # P11.4: inspect real Excel output, not synthetic source strings.
+            # A raw firmware 'adc' integer is NOT declared to be voltage.
+            source_names = {
+                "V8 البيئة الأصلية": "temperature",
+                "V8 ADC ADS الأصلية": "Original firmware adc (unit UNKNOWN)",
+                "V8 القنوات المساعدة": "New/unmapped source channels JSON",
+                "V8 JSON كامل": "Other original device channels",
+            }
+            for sheet_name, required in source_names.items():
+                index = names.index(sheet_name)+1
+                body = z.read(f"xl/worksheets/sheet{index}.xml")
+                assert required.encode() in body, (filename,sheet_name,required)
+            adc_sheet = z.read(f"xl/worksheets/sheet{names.index('V8 ADC ADS الأصلية')+1}.xml")
+            aux_sheet = z.read(f"xl/worksheets/sheet{names.index('V8 القنوات المساعدة')+1}.xml")
+            all_raw = z.read(f"xl/worksheets/sheet{names.index('V8 JSON كامل')+1}.xml")
+            assert b"CI-ADS-RAW-SEALED" in adc_sheet
+            assert b"UNQUALIFIED_CI_SOURCE" in aux_sheet
+            assert b"UNQUALIFIED_CI_SOURCE" in all_raw
+            assert b"flame" in aux_sheet
+            assert b"source_additional_channels" in all_raw
+            diagnostic = z.read(f"xl/worksheets/sheet{names.index('تشخيص الخبراء')+1}.xml")
+            assert b"MQSL-EX-007" in diagnostic and b"MQDATA43-001" in diagnostic
+            assert b"SOURCE_BOUND_RESEARCH_ONLY_G3_NOT_QUALIFIED" in diagnostic
+            print("PASS P11.4: separate original ADC units, ADS acquisition, "
+                  "environment, additional physical channels and 62 source models")
+        if filename == "n06g_next_site_two_approved.xlsx":
+            audit = z.read(f"xl/worksheets/sheet{names.index('أدلة Next والجودة')+1}.xml")
+            assert b"MQSL-EX-007" in audit and b"MQDATA43-001" in audit
+            assert b"MS-N06G-02" in audit and b"FS-N06G-APPROVED-2" in audit
+            assert b"NOT_CAPTURED_PRE_P11" not in audit or b"LEGACY_ARCHIVE" in audit
+            assert b"SOURCE_BOUND_RESEARCH_ONLY_G3_NOT_QUALIFIED" in audit
+            print("PASS P11.4: site research source rows remain per approved "
+                  "measurement, no cross-session pooled ppm")
         print("PASS",filename,"sheets",len(names),
               "numeric cells",total_numeric_cells,"header cells",total_header_cells,
               "style SHA256",styles[filename][:18])
