@@ -130,25 +130,30 @@ public final class FieldCycleController {
         host.io().execute(()->{
             try{
                 int n=repo.recoverAbandoned();
+                boolean relaySafetyFault=false;
                 if(n>0){
                     try{
                         host.robotApi().mqPower(false);
                         JSONObject off=host.robotApi().snapshot(0,0);
-                        if(relayOn(off)||identity(off).isEmpty())
+                        if(!relayOffAcknowledged(off)||identity(off).isEmpty())
                             throw new IllegalStateException("MQ_RELAY_OFF_NOT_ACKNOWLEDGED");
                     }catch(Exception safetyFailure){
+                        relaySafetyFault=true;
                         android.util.Log.e("TankFieldCycle",
                             "Interrupted field run: unable to confirm safe MQ relay OFF",safetyFailure);
                         host.database().putMeta("v8_field_recovery_relay_fault",
                             safetyFailure.getClass().getSimpleName()+":"+
                             safetyFailure.getMessage());
-                        main.post(()->message("SAFETY_FAULT",
-                            "استعادة جلسة منقطعة: لم يُؤكد إطفاء ريلاي MQ؛ افصل طاقة الحساسات بأمان",""));
                     }
                 }
+                final boolean unsafeRelay=relaySafetyFault;
                 if(n>0)main.post(()->{
                     if(!disposed){
-                        message("RECOVERED","تم وسم "+n+" دورة منقطعة بأنها غير صالحة للاعتماد","");observer.refreshed();
+                        message(unsafeRelay?"SAFETY_FAULT":"RECOVERED",
+                            unsafeRelay?
+                                "استعادة جلسة منقطعة: لم يُؤكد إطفاء ريلاي MQ؛ افصل طاقة الحساسات بأمان":
+                                "تم وسم "+n+" دورة منقطعة بأنها غير صالحة للاعتماد","");
+                        observer.refreshed();
                     }
                 });
             }catch(Exception e){
@@ -340,7 +345,7 @@ public final class FieldCycleController {
                                     try{
                                         host.robotApi().mqPower(false);
                                         JSONObject after=host.robotApi().snapshot(0,0);
-                                        if(!deviceId.equals(identity(after))||relayOn(after))
+                                        if(!deviceId.equals(identity(after))||!relayOffAcknowledged(after))
                                             throw new IllegalStateException(
                                                 "MQ_RELAY_SHUTDOWN_ACK_MISSING_OR_STILL_ON");
                                     }catch(Exception off){
@@ -419,6 +424,24 @@ public final class FieldCycleController {
         if(!disposed)observer.changed(state,text,id);
     }
     private static String seconds(long ms){return Long.toString((ms+999)/1000);}
+    /** Confirm actual firmware feedback rather than treating a missing relay
+     * object or an invalid value as OFF. Either 'on' or 'mask' may be present
+     * on an older firmware, but all fields provided must explicitly agree.
+     * No OFF acknowledgement means the measurement remains unapprovable.
+     */
+    private static boolean relayOffAcknowledged(JSONObject d){
+        JSONObject r=d==null?null:d.optJSONObject("relay");
+        if(r==null||(!r.has("on")&&!r.has("mask")))return false;
+        if(r.has("on")){
+            Object state=r.opt("on");
+            if(!(state instanceof Boolean)||((Boolean)state))return false;
+        }
+        if(r.has("mask")){
+            Object mask=r.opt("mask");
+            if(!(mask instanceof Number)||((Number)mask).intValue()!=0)return false;
+        }
+        return true;
+    }
     private static boolean relayOn(JSONObject d){
         JSONObject r=d==null?null:d.optJSONObject("relay");
         return r!=null&&r.optBoolean("on",r.optInt("mask",0)!=0);
