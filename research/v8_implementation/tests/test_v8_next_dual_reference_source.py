@@ -62,7 +62,7 @@ class DualReferenceSource(unittest.TestCase):
                       "SOURCE_MODEL_MISMATCH"):
             self.assertIn(token,self.reference)
         self.assertIn("SOURCE_HEATER_MISMATCH",self.reference)
-        self.assertIn("LEGACY_MQ_FACTOR_SCALED_R0_NOT_AIR_RS",self.mapper)
+        self.assertIn("MQ_FACTOR_SCALED_R0_NOT_AIR_RS",self.reference)
         self.assertIn("DEVICE_CLEAN_AIR_RS_MEAN",self.mapper)
         self.assertNotIn('sourceR0=physical.rAirKohm',self.mapper)
         self.assertIn("ManualR0Calibration.get(hw.key)",self.adapter)
