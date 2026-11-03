@@ -5,6 +5,7 @@ import com.servoc.app.chemcore.nextintegration.NextDecisionStore;
 import com.servoc.app.data.ExperimentsDb;
 import com.servoc.app.data.SessionSeries;
 import com.servoc.app.hardware.HazRobHardwareProfile;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -39,6 +40,9 @@ final class V8NextFieldXlsxWriter {
         V8NextChartRenderer.requireSameSession(next,b.primaryMeasurementSessionId);
         if(b.measurementSessionIds.size()!=1)
             throw new IllegalStateException("V8 field XLSX requires one approved measurement");
+        // Read once from SQLite and verify decision+archive+source math before any bytes are written.
+        V8NextDualReferenceXlsxLedger dual=V8NextDualReferenceXlsxLedger.load(
+            db,b.primaryMeasurementSessionId,next);
         List<SmartXlsxPackage.Sheet> sheets=new ArrayList<>();
         // Exactly 16 approved base/research worksheet slots, plus 4 original
         // per-timepoint raw worksheets: existing workbook style is unchanged.
@@ -50,7 +54,7 @@ final class V8NextFieldXlsxWriter {
         sheets.add(new SmartXlsxPackage.Sheet("المرشحون Next",candidates(b,next)));
         sheets.add(new SmartXlsxPackage.Sheet("مصادر Next المستقلة",roots(b,next)));
         sheets.add(new SmartXlsxPackage.Sheet("الأدلة التحليلية",evidence(b,next)));
-        sheets.add(new SmartXlsxPackage.Sheet("حدود التأهيل",qualification(b,next)));
+        sheets.add(new SmartXlsxPackage.Sheet("حدود التأهيل",qualification(b,next,dual)));
         sheets.add(new SmartXlsxPackage.Sheet("الجودة وعدم اليقين",quality(b,next)));
         sheets.add(new SmartXlsxPackage.Sheet("السلسلة الزمنية",timeline(b,db)));
         sheets.add(new SmartXlsxPackage.Sheet("MQ الثمانية الخام",
@@ -60,8 +64,8 @@ final class V8NextFieldXlsxWriter {
         sheets.add(new SmartXlsxPackage.Sheet("القياسات الفنية",
             SmartFieldSessionXlsxWriter.measurementRecords(b)));
         sheets.add(new SmartXlsxPackage.Sheet("عقد Next",contract(b,next)));
-        sheets.add(new SmartXlsxPackage.Sheet("المنهجية والمصدر",provenance(b,next)));
-        sheets.add(new SmartXlsxPackage.Sheet("تشخيص الخبراء",diagnostics(b,next)));
+        sheets.add(new SmartXlsxPackage.Sheet("المنهجية والمصدر",provenance(b,next,dual)));
+        sheets.add(new SmartXlsxPackage.Sheet("تشخيص الخبراء",diagnostics(b,next,dual)));
         sheets.add(new SmartXlsxPackage.Sheet("خريطة الأدلة Next",map(b,next)));
         V8FieldFullTelemetryXlsx.append(sheets,db,b);
         if(sheets.size()!=20)throw new IllegalStateException("20 source-defined Next sheets required");
@@ -156,7 +160,8 @@ final class V8NextFieldXlsxWriter {
         return g.finish();
     }
     private static String qualification(FieldSessionReportExporter.Bundle b,
-                                        NextDecisionStore.Receipt next){
+                                        NextDecisionStore.Receipt next,
+                                        V8NextDualReferenceXlsxLedger dual){
         SmartXlsxPackage.Grid g=begin(b,"معايرة القنوات وصلاحية الاستنتاج",
             54,43,54);
         g.header("Instrument/qualification item","Archived value","Meaning");
@@ -170,6 +175,12 @@ final class V8NextFieldXlsxWriter {
         g.row("Molecular identity validated",false,"No source-only inference equals identity");
         g.row("G3 physical qualification",next.originalDecision.physicallyValidatedG3,
             "Physical Tank test required");
+        g.row("Dual R0 scientific ledger",dual.status,
+            "Read from SQLite, bound to original Next decision and source archive");
+        g.row("Derived R0 source rows",dual.available?13:0,
+            "R_air stays physical clean-air mean; R0_source=R_air/K for MQSL only");
+        g.row("Conditional source ppm calculations",dual.computedCount,
+            "Source examples only; NOT certified concentration, exposure or gas identity");
         g.row("Occupational exposure limit",null,"No evaluated occupational comparison from Next");
         g.row("LFL/UEL compliance",null,"No certified flammable gas concentration");
         g.blank();
@@ -246,7 +257,8 @@ final class V8NextFieldXlsxWriter {
         return g.finish();
     }
     private static String provenance(FieldSessionReportExporter.Bundle b,
-                                     NextDecisionStore.Receipt next){
+                                     NextDecisionStore.Receipt next,
+                                     V8NextDualReferenceXlsxLedger dual){
         SmartXlsxPackage.Grid g=begin(b,"المنهجية ومرجع ChemCore Next",
             55,112);
         g.header("Metadata","Original value");
@@ -259,6 +271,12 @@ final class V8NextFieldXlsxWriter {
         g.row("Site",b.site.name);
         g.row("Field session",b.fieldSession.name);
         g.row("Measurement session",next.sessionId);
+        g.row("Dual R0 research ledger",dual.status);
+        g.row("Source archive SHA256",dual.available?dual.sourceArchiveSha256:"NOT_CAPTURED");
+        g.row("P11.3 source models",dual.available?dual.rows.length():0);
+        g.row("R0 source formula","R0_source=R_air/K; ppm=A*(K*Rs/R_air)^B");
+        g.row("Derived source K","MQSensorsLib pinned original example coefficients, source-specific");
+        g.row("Research safety policy","No G3, no operator gas identity, no certified ppm or alarm");
         g.row("Allowed source count",b.measurementSessionIds.size());
         g.row("Time-series","Archived telemetry_samples only; preserved IDs/timestamps");
         g.row("Technology","Multiple source experts, source-root deduplication and open-world abstention");
@@ -269,17 +287,81 @@ final class V8NextFieldXlsxWriter {
             "No extrapolated occupational PPM / calibrated molecular identity / G3 qualification.");
         return g.finish();
     }
+    /**
+     * P11.3: retain the original expert/problem records, then append every
+     * saved source equation (49 digitized + 13 MQSensorsLib). Original source
+     * K, the untouched R_air and the derived R0_source remain visibly
+     * separate. No output is recomputed at Excel-export time.
+     */
     private static String diagnostics(FieldSessionReportExporter.Bundle b,
-                                      NextDecisionStore.Receipt next){
-        SmartXlsxPackage.Grid g=begin(b,"أسباب التوقف وتحفظات خبراء Next",
-            15,34,96);
+                                      NextDecisionStore.Receipt next,
+                                      V8NextDualReferenceXlsxLedger dual){
+        SmartXlsxPackage.Grid g=begin(b,
+            "أسباب الامتناع ومراجع R0 المزدوجة — ChemCore Next",
+            21,34,96,46,54,20,20,20,24,24,24,24,
+            24,30,55,23,15,15,52,69,69,90);
         g.header("#","Type","Exact original note");
-        int i=1;for(String p:next.originalDecision.problems)g.row(i++,"NEXT_PROBLEM",p);
+        int i=1;
+        for(String p:next.originalDecision.problems)g.row(i++,"NEXT_PROBLEM",p);
         for(CoreContracts.Reading q:next.sourceSnapshot.readings)
             if(q.quality!=CoreContracts.SampleQuality.VALID)
                 g.row(i++,"SENSOR_"+q.quality.name(),q.sensorUid+" / "+q.heaterPhase);
-        if(i==1)g.row("INFO","No recorded issues","No guarantee of physical calibration");
+        if(i==1)g.row("INFO","No recorded issues",
+            "No guarantee of physical calibration");
+        g.blank();g.section("P11.3 — أصول معادلات المصادر والمرجع المزدوج البحثي");
+        g.rowStyled(SmartXlsxPackage.WARN,"Scope",
+            "R_air أصلي ومحفوظ؛ R0_source مشتق وفق المصدر. PPM حساب بحثي لا يثبت هوية الغاز أو حدود التعرض أو G3.");
+        g.row("Ledger",dual.status);
+        g.row("Decision UID",next.decisionUid);
+        g.row("Source snapshot SHA256",next.snapshotSha256);
+        g.row("Source archive SHA256",
+            dual.available?dual.sourceArchiveSha256:"NOT_CAPTURED_PRE_P11");
+        if(!dual.available){
+            g.rowStyled(SmartXlsxPackage.WARN,"No dual-reference source ledger",
+                "Historical Next decision retained; no replacement or recalculation from newer MQ telemetry.");
+        }else{
+            g.header("Curve ID","Sensor","Source gas/class","Source root",
+                "Original equation","A","B","K source clean-air","Rs kΩ",
+                "Device R_air kΩ","R0 source derived kΩ","Rs/R_air",
+                "Rs/R0 source","Source ppm RESEARCH","Source status",
+                "Source range verified","Physical G3","Safety alarm",
+                "Source blob","Source snapshot SHA256","Archive SHA256",
+                "Caveat / source limitations");
+            for(int k=0;k<dual.rows.length();k++){
+                JSONObject model=dual.rows.optJSONObject(k);
+                if(model==null)continue; // already rejected by strict reader
+                g.row(model.optString("source_curve_id",""),
+                    model.optString("sensor_model",""),
+                    model.optString("gas_or_class",""),
+                    model.optString("source_root",""),
+                    model.optString("source_equation",""),
+                    scientificNumber(model,"a"),scientificNumber(model,"b"),
+                    scientificNumber(model,"source_example_clean_air_K"),
+                    scientificNumber(model,"rs_kohm"),
+                    scientificNumber(model,"device_air_reference_kohm"),
+                    scientificNumber(model,"source_r0_research_kohm"),
+                    scientificNumber(model,"observed_rs_over_air"),
+                    scientificNumber(model,"observed_rs_r0"),
+                    scientificNumber(model,"estimated_ppm"),
+                    model.optString("status","NOT_EVALUABLE"),
+                    model.optBoolean("source_domain_primary_verified",false),
+                    model.optBoolean("physical_g3_validated",false),
+                    model.optBoolean("safety_alarm_authorized",false),
+                    model.optString("source_blob",""),
+                    next.snapshotSha256,dual.sourceArchiveSha256,
+                    model.optString("caveat",
+                        model.optString("source_scale_origin",
+                            "Original source R0 / source-heater match not independently established")));
+            }
+            g.rowStyled(SmartXlsxPackage.WARN,"MQSensorsLib K",
+                "K ليس قيمة موحّدة لكل المنحنيات؛ لا يُطبّق على منحنيات MQDataScience أو قيم R_air المخزنة.");
+        }
         return g.finish();
+    }
+    private static Object scientificNumber(JSONObject model,String field){
+        if(model==null||!model.has(field)||model.isNull(field))return null;
+        double n=model.optDouble(field,Double.NaN);
+        return Double.isFinite(n)?n:null;
     }
     private static String map(FieldSessionReportExporter.Bundle b,
                               NextDecisionStore.Receipt next){
