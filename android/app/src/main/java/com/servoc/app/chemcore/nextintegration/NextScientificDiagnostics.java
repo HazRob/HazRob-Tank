@@ -20,6 +20,26 @@ public final class NextScientificDiagnostics {
     private NextScientificDiagnostics() {}
 
     /**
+     * Explain why a specific source curve cannot be calculated using the
+     * SAME frozen evidence as Next. Return a reason, never an invented Rs/R0.
+     */
+    private static String missingSourceReason(CoreContracts.Snapshot frozen,
+                                              CoreContracts.Reading reading){
+        if(frozen==null)return "MISSING_FROZEN_SNAPSHOT";
+        if(!frozen.mqRelayOn)return "MQ_RELAY_OFF_IN_FROZEN_SNAPSHOT";
+        if(reading==null)return "MISSING_INSTALLED_MQ_SAMPLE";
+        if(reading.quality!=CoreContracts.SampleQuality.VALID)
+            return "SENSOR_QUALITY_"+reading.quality.name();
+        if(reading.r0Definition!=CoreContracts.CalibrationReference.AIR_RS_MEAN)
+            return "WRONG_R0_DEFINITION";
+        if(reading.rAirKohm==null||!Double.isFinite(reading.rAirKohm)||
+           reading.rAirKohm<=0)return "MISSING_AIR_RS_MEAN";
+        if(reading.rsKohm==null||!Double.isFinite(reading.rsKohm)||
+           reading.rsKohm<=0)return "MISSING_POSITIVE_RS";
+        return "MISSING_POSITIVE_RS";
+    }
+
+    /**
      * Historical two-argument entry point deliberately cannot infer a trusted
      * calibration denominator from unverified firmware JSON. Its source rows
      * are retained as NOT_EVALUABLE until a frozen Next snapshot is supplied.
@@ -103,9 +123,11 @@ public final class NextScientificDiagnostics {
             if(!valid || !(Double.isFinite(rs)&&rs>0) ||
                 !(Double.isFinite(r0)&&r0>0)){
                 row.put("status","NOT_EVALUABLE_NO_MATCHED_FROZEN_AIR_REFERENCE");
+                row.put("failure_reason_code",missingSourceReason(frozen,reading));
                 unavailable++;
             }else if(!curve.numericalDefinitionValid()){
                 row.put("status","NOT_EVALUABLE_INVALID_SOURCE_EQUATION");
+                row.put("failure_reason_code","INVALID_SOURCE_EQUATION");
                 unavailable++;
             }else{
                 double ratio=rs/r0;
@@ -123,6 +145,7 @@ public final class NextScientificDiagnostics {
                     computed++;if(extra)outside++;
                 }else{
                     row.put("status","NOT_EVALUABLE_NONFINITE_INVERSE");
+                    row.put("failure_reason_code","NONFINITE_SOURCE_RESULT");
                     unavailable++;
                 }
             }
@@ -188,6 +211,7 @@ public final class NextScientificDiagnostics {
             }
             if(!eligible||rs==null||air==null){
                 row.put("status","NOT_EVALUABLE_NO_MATCHED_FROZEN_AIR_REFERENCE");
+                row.put("failure_reason_code",missingSourceReason(frozen,observed));
                 unavailable++;
             }else{
                 // The source example does NOT provide a Tank heater validation.
@@ -206,6 +230,7 @@ public final class NextScientificDiagnostics {
                 if(calc.status!=R0ReferenceMath.Status.SOURCE_K_RESEARCH_ONLY){
                     row.put("status","NOT_EVALUABLE_SOURCE_REFERENCE_TRANSFORM_"+
                         calc.status.name());
+                    row.put("failure_reason_code","INVALID_SOURCE_REFERENCE_TRANSFORM");
                     unavailable++;
                 }else{
                     row.put("source_r0_research_kohm",calc.sourceR0Kohm);
@@ -217,6 +242,7 @@ public final class NextScientificDiagnostics {
                     double ppm=Math.pow(10.0,logPpm);
                     if(!Double.isFinite(ppm)||ppm<=0){
                         row.put("status","NOT_EVALUABLE_NONFINITE_DIRECT_POWER");
+                        row.put("failure_reason_code","NONFINITE_SOURCE_RESULT");
                         unavailable++;
                     }else{
                         row.put("estimated_ppm",ppm);
