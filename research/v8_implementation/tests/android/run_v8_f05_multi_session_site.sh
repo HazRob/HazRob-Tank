@@ -32,6 +32,8 @@ assert d['archive_digest_before']==d['archive_digest_after']
 assert d['reported_gas_identity']=='UNKNOWN' and d['ppm_reportable'] is False
 assert d['tank_g3']==0 and not d['user_data_used']
 assert d['site_approved_independent_sessions']==2 and d['site_pdf_pages']==5
+assert d['next_field_pdf_pages']>=5 and d['site_next_source_roots']==1
+assert d['next_second_session_source_verified']
 assert d['site_second_session_tamper_rejected'] and not d['site_reportable_ppm']
 assert d['xlsx_v6_measurements_sheet'] and d['xlsx_v6_sources_sheet']
 assert all(d[x] for x in ['xlsx_v8_environment_sheet','xlsx_v8_adc_ads_sheet','xlsx_v8_auxiliary_sheet','xlsx_v8_original_json_sheet'])
@@ -41,3 +43,4 @@ adb exec-out run-as com.servoc.app cat files/n06g_full_approved_field.pdf > "$OU
 adb exec-out run-as com.servoc.app cat files/n06g_full_approved_field.xlsx > "$OUT/n06g_full_approved_field.xlsx"
 
 adb exec-out run-as com.servoc.app cat files/n06g_site_two_approved.pdf > "$OUT/n06g_site_two_approved.pdf"
+adb exec-out run-as com.servoc.app cat files/n06g_next_approved_field.pdf > "$OUT/n06g_next_approved_field.pdf"
