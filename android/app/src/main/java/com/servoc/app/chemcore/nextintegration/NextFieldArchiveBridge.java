@@ -173,7 +173,13 @@ public final class NextFieldArchiveBridge {
     provenance.put("next_decision_uid",next.receipt.decisionUid);
     provenance.put("scientific_source_diagnostics",dualReference);
     provenance.put("research_only_no_gas_identity_or_safety_alarm",true);
-    db.putMeta("v8_field_next_dual_reference_"+measurementId,provenance.toString());
+    String key="v8_field_next_dual_reference_"+measurementId;
+    String sourceBoundLedger=provenance.toString();
+    db.putMeta(key,sourceBoundLedger);
+    // Read-after-write is mandatory: failed storage cannot silently make an
+    // approved measurement appear as a complete dual-reference research row.
+    if(!sourceBoundLedger.equals(db.getMeta(key,"")))
+      throw new IllegalStateException("FIELD_NEXT_DUAL_R0_SQLITE_READBACK_FAILED");
     return new Outcome(source,next);
   }
 
