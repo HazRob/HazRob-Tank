@@ -2,6 +2,7 @@ package com.servoc.app.report;
 
 import com.hazrob.tank.chemcore.next.CoreContracts;
 import com.hazrob.tank.chemcore.next.MQSensorsLibExampleCatalog;
+import com.hazrob.tank.chemcore.v6.SourceCatalog;
 import com.servoc.app.chemcore.nextintegration.NextDecisionStore;
 import com.servoc.app.data.ExperimentsDb;
 import java.util.HashMap;
@@ -87,8 +88,13 @@ final class V8NextDualReferenceXlsxLedger {
             Map<String,MQSensorsLibExampleCatalog.Model> pinned=new HashMap<>();
             for(MQSensorsLibExampleCatalog.Model model:
                     MQSensorsLibExampleCatalog.installedModels())pinned.put(model.id,model);
+            Map<String,SourceCatalog.Curve> original49=new HashMap<>();
+            for(SourceCatalog.Curve curve:SourceCatalog.allCurves())
+                original49.put(curve.id(),curve);
+            require(original49.size()==49,
+                "P11_FIELD_LEDGER_SOURCE_CATALOG_COUNT_INVALID");
             Set<String> sourceIds=new HashSet<>();
-            int measured=0,seenExamples=0;
+            int measured=0,seenExamples=0,seenHistorical=0;
             for(int i=0;i<models.length();i++){
                 JSONObject row=models.optJSONObject(i);
                 require(row!=null,"P11_FIELD_LEDGER_SOURCE_ROW_NOT_JSON");
@@ -138,8 +144,41 @@ final class V8NextDualReferenceXlsxLedger {
                                 near(expected,row.optDouble("estimated_ppm",Double.NaN)),
                             "P11_FIELD_LEDGER_SOURCE_MATH_OR_SNAPSHOT_MISMATCH");
                     }
+                } else {
+                    SourceCatalog.Curve curve=original49.get(curveId);
+                    require(curve!=null && curve.id().equals(curveId) &&
+                            curve.sourceRoot().equals(row.optString("source_root","")) &&
+                            curve.sensorType.equalsIgnoreCase(row.optString("sensor_model","")) &&
+                            near(curve.a,row.optDouble("a",Double.NaN)) &&
+                            near(curve.b,row.optDouble("b",Double.NaN)) &&
+                            near(curve.outputScale,row.optDouble("reference_scale_ppm",Double.NaN)),
+                        "P11_FIELD_LEDGER_HISTORICAL_SOURCE_COEFFICIENT_MISMATCH");
+                    seenHistorical++;
+                    require(!row.optBoolean("source_scale_primary_verified",true) &&
+                            !row.optBoolean("source_domain_primary_verified",true),
+                        "P11_FIELD_LEDGER_UNVERIFIED_HISTORICAL_SOURCE_PROMOTION");
+                    if(computed){
+                        CoreContracts.Reading reading=actual.get(
+                            curve.sensorType.toUpperCase(java.util.Locale.ROOT));
+                        require(reading!=null&&reading.quality==CoreContracts.SampleQuality.VALID
+                                &&reading.r0Definition==CoreContracts.CalibrationReference.AIR_RS_MEAN
+                                &&next.sourceSnapshot.mqRelayOn &&
+                                reading.rsKohm!=null&&reading.rAirKohm!=null,
+                            "P11_FIELD_LEDGER_HISTORICAL_PPM_WITHOUT_FROZEN_SENSOR");
+                        double rs=reading.rsKohm,air=reading.rAirKohm;
+                        double logPpm=Math.log10(curve.outputScale)+
+                            (Math.log10(rs/air)-Math.log10(curve.a))/curve.b;
+                        double expected=Math.pow(10.0,logPpm);
+                        require(near(rs,row.optDouble("rs_kohm",Double.NaN)) &&
+                                near(air,row.optDouble("device_air_reference_kohm",Double.NaN)) &&
+                                near(rs/air,row.optDouble("observed_rs_r0",Double.NaN)) &&
+                                near(expected,row.optDouble("estimated_ppm",Double.NaN)),
+                            "P11_FIELD_LEDGER_HISTORICAL_SOURCE_MATH_MISMATCH");
+                    }
                 }
             }
+            require(seenHistorical==49,
+                "P11_FIELD_LEDGER_HISTORICAL_MODEL_COUNT_INVALID");
             require(seenExamples==13,"P11_FIELD_LEDGER_INSTALLED_EXAMPLE_COUNT_INVALID");
             require(measured==scientific.optInt("computed_ppm_count",-1),
                 "P11_FIELD_LEDGER_COMPUTED_COUNT_MISMATCH");
