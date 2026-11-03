@@ -4,6 +4,12 @@ on:
     branches: [feature/tank-v8-implementation]
     paths:
       - 'research/chemcore_next/experiments/v8_r0_reference_transform_g1.py'
+      - 'research/chemcore_next/tests/java/DualR0SourceExampleSmoke.java'
+      - 'research/v8_implementation/tests/test_v8_next_dual_reference_source.py'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/MQSensorsLibExampleCatalog.java'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/R0ReferenceMath.java'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextScientificDiagnostics.java'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextResearchSourceBindings.java'
       - '.github/workflows/v8-next-r0-reference-equivalence-g1.yml'
   workflow_dispatch:
 
@@ -16,6 +22,21 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Java17 source curve and denominator parity (no Android)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p r0-g1-evidence/classes
+          javac -d r0-g1-evidence/classes \
+            android/app/src/main/java/com/hazrob/tank/chemcore/next/R0ReferenceMath.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/next/MQSensorsLibExampleCatalog.java \
+            research/chemcore_next/tests/java/DualR0SourceExampleSmoke.java
+          java -cp r0-g1-evidence/classes \
+            com.hazrob.tank.chemcore.next.DualR0SourceExampleSmoke | tee r0-g1-evidence/source-reference-java17.log
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -30,12 +51,19 @@ jobs:
           import json
           obj=json.load(open("r0-g1-evidence/dual-r0-research-math.json"))
           assert obj["numeric_assertions_passed"]==2925
+          assert obj["hypothetical_air_normalization_gate_assertions_passed"]==16
+          assert obj["hypothetical_50pct_air_drop_missed_if_source_ratio_used"]==8
           assert obj["curve_count"]==13 and obj["measured_Tank_air_reference_channels"]==8
           assert obj["max_relative_equivalence_error"]<3e-14
           assert obj["physical_Rs_measurements_used"] is False
           assert obj["all_source_gas_identities_and_ppm_qualified"] is False
           print("R0_DUAL_REFERENCE_G1_PASS assertions=2925 no_physical_g3=true")
           PY
+      - name: Check Next integration provenance and R_air preservation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest research/v8_implementation/tests/test_v8_next_dual_reference_source.py -v
       - name: Upload research-only numerical evidence
         uses: actions/upload-artifact@v4
         if: always()
