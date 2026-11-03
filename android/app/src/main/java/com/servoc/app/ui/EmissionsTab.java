@@ -84,7 +84,7 @@ public final class EmissionsTab {
         engineMenu=new Spinner(c);
         UiKit.outlinedSpinner(engineMenu);
         root.addView(engineMenu,UiKit.full(c));
-        root.addView(UiKit.title(c,"مرجع المقارنة IFC — نوع المحرك"),UiKit.full(c));
+        root.addView(UiKit.title(c,"فئة IFC المحددة تلقائيًا من تعريف المحرك"),UiKit.full(c));
         ifcMenu=new Spinner(c);
         UiKit.outlinedSpinner(ifcMenu);
         ifcMenu.setAdapter(UiKit.lightOptions(c,EmissionIfcComparator.PROFILE_LABELS));
@@ -136,20 +136,9 @@ public final class EmissionsTab {
                 if(!capturing&&!processing)refreshSelection();
             }
         });
-        ifcMenu.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){
-            public void onItemSelected(android.widget.AdapterView<?> p,View v,int pos,long id){
-                if(refreshingProfiles||capturing||processing)return;
-                EmissionSessionStore.Engine engine=selected();
-                if(engine==null||pos<0||pos>=EmissionIfcComparator.PROFILE_CODES.length)return;
-                String profile=EmissionIfcComparator.PROFILE_CODES[pos];
-                if(profile.equals(engine.ifcProfile))return;
-                try{
-                    store.setIfcProfile(engine.id,profile);
-                    reload(engine.id);
-                }catch(Exception ignored){host.showToast("تعذر حفظ فئة محرك IFC");}
-            }
-            public void onNothingSelected(android.widget.AdapterView<?> p){}
-        });
+        // IFC profile is derived from the immutable engine definition entered
+        // in the create dialog; no independent selector may alter the record.
+        ifcMenu.setEnabled(false);
         reload(-1);
     }
 
@@ -173,18 +162,16 @@ public final class EmissionsTab {
     }
     private void createEngine(){
         if(capturing||processing)return;
-        EditText input=UiKit.input(context,"");
-        input.setSingleLine(true);input.setHint("اسم المحرك أو المولد");
-        new AlertDialog.Builder(context).setTitle("استحداث محرك جديد")
-            .setView(input).setNegativeButton("إلغاء",(dialog,which)->{})
-            .setPositiveButton("تأكيد",(dialog,which)->{
-                String name=input.getText().toString().trim();
-                if(name.isEmpty()){host.showToast("يجب كتابة اسم المحرك");return;}
-                try{
-                    long id=store.create(name);reload(id);
-                    host.showToast("تم إضافة المحرك: "+name);
-                }catch(Exception e){host.showToast("تعذر الإضافة: الاسم مكرر أو غير صالح");}
-            }).show();
+        EmissionEngineEditor.create(context,new EmissionEngineEditor.Listener(){
+            @Override public void accepted(String engineName,
+                            com.hazrob.tank.emissions.EmissionEngineConfig config){
+                long id=store.create(engineName,config);
+                reload(id);
+                host.showToast("تم استحداث المحرك «"+engineName+
+                    "»؛ قياس واحد مستقل، فئة IFC: "+config.profile());
+            }
+            @Override public void failure(String message){host.showToast(message);}
+        });
     }
     private void deleteSelected(){
         if(capturing||processing)return;
@@ -203,7 +190,7 @@ public final class EmissionsTab {
         delete.setEnabled(has&&!capturing&&!processing);
         create.setEnabled(!capturing&&!processing);
         engineMenu.setEnabled(!capturing&&!processing);
-        ifcMenu.setEnabled(has&&!capturing&&!processing);
+        ifcMenu.setEnabled(false);
         refreshingProfiles=true;
         String profile=has?e.ifcProfile:EmissionIfcComparator.PROFILE_NONE;
         int selectedProfile=0;
@@ -217,7 +204,8 @@ public final class EmissionsTab {
         if(!capturing&&!processing){
             status.setText(!has?"استحدث محركًا أولًا.":
                 latest!=null?"المحرك «"+e.name+"» لديه قياس واحد محفوظ — التقرير جاهز.":
-                    "المحرك المحدد: "+e.name+" — جاهز لقياس واحد.");
+                    "المحرك المحدد: "+e.name+" — جاهز لقياس واحد. "+
+                    "انطباق IFC: "+e.config.applicability());
             if(latest!=null&&has){
                 try{EmissionIfcComparator.evaluate(latest,e.ifcProfile);}
                 catch(Exception invalid){host.showToast("تعذر تقييم مرجع IFC");}
@@ -311,6 +299,9 @@ public final class EmissionsTab {
         final EmissionSessionStore.Engine selectedEngine=selected();
         final String profile=selectedEngine==null?
             EmissionIfcComparator.PROFILE_NONE:selectedEngine.ifcProfile;
+        final com.hazrob.tank.emissions.EmissionEngineConfig spec=
+            selectedEngine==null?com.hazrob.tank.emissions.EmissionEngineConfig.empty():
+                selectedEngine.config;
         final boolean pm=capturePM;
         final int acceptedFrames=frames;
         final JSONObject sealed=lastFrozenSource;
@@ -336,6 +327,8 @@ public final class EmissionsTab {
                             "NEXT_ANALYSIS_FAILED_"+nextFailure.getClass().getSimpleName());
                     }
                 }
+                result.put("engine_definition",spec.toJson());
+                result.put("ifc_applicability_by_entered_information",spec.applicability());
                 EmissionIfcComparator.evaluate(result,profile);
                 store.addMeasurement(engineId,result);
                 String outcome=result.optString("next_status","NOT_RUN");
