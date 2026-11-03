@@ -34,6 +34,7 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertTrue(result["all_verified"])
         self.assertEqual(result["results"][0]["status"], "verified")
         self.assertFalse(result["scientific_qualification"])
+        self.assertEqual(result["results"][0]["size_bytes"], len(self.payload))
 
     def test_empty_manifest_does_not_pass(self):
         self.assertFalse(verify({"sources": []}, self.root)["all_verified"])
@@ -106,6 +107,7 @@ class RawSourceVerificationTests(unittest.TestCase):
     def test_hash_mismatch(self):
         result = verify({"sources": [self.entry(sha="0" * 64)]}, self.root)
         self.assertEqual(result["results"][0]["status"], "hash_mismatch")
+        self.assertEqual(result["results"][0]["size_bytes"], len(self.payload))
 
     def test_parent_traversal(self):
         result = verify({"sources": [self.entry("../sample.bin")]}, self.root)
