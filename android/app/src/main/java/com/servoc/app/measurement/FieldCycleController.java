@@ -163,6 +163,11 @@ public final class FieldCycleController {
                 boolean relaySafetyFault=false;
                 if(n>0||previousSafetyFault||!expectedDevice.isEmpty()){
                     try{
+                        if(!expectedDevice.isEmpty()){
+                            JSONObject beforeOff=host.robotApi().snapshot(0,0);
+                            if(!expectedDevice.equals(identity(beforeOff)))
+                                throw new IllegalStateException("MQ_RELAY_OFF_WRONG_DEVICE_PREFLIGHT");
+                        }
                         host.robotApi().mqPower(false);
                         JSONObject off=host.robotApi().snapshot(0,0);
                         if(!relayOffAcknowledged(off)||identity(off).isEmpty())
@@ -407,6 +412,9 @@ public final class FieldCycleController {
                                 // physical ESP32 feedback before review approval.
                                 if(gas){
                                     try{
+                                        JSONObject beforeOff=host.robotApi().snapshot(0,0);
+                                        if(!deviceId.equals(identity(beforeOff)))
+                                            throw new IllegalStateException("MQ_RELAY_OFF_WRONG_DEVICE_PREFLIGHT");
                                         host.robotApi().mqPower(false);
                                         JSONObject after=host.robotApi().snapshot(0,0);
                                         if(!deviceId.equals(identity(after))||!relayOffAcknowledged(after))
@@ -509,6 +517,12 @@ public final class FieldCycleController {
         }
         if(!turnOff)return false;
         try{
+            String expectedBefore=host.database().getMeta(RELAY_EXPECTED_DEVICE_KEY,"");
+            if(!expectedBefore.isEmpty()){
+                JSONObject beforeOff=host.robotApi().snapshot(0,0);
+                if(!expectedBefore.equals(identity(beforeOff)))
+                    throw new IllegalStateException("MQ_RELAY_OFF_WRONG_DEVICE_PREFLIGHT");
+            }
             host.robotApi().mqPower(false);
             JSONObject off=host.robotApi().snapshot(0,0);
             String acknowledgedDevice=identity(off);
