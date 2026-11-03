@@ -461,7 +461,11 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
         // persisted Next receipt and its separately archived scientific
         // ledger. This is a CI rendering fixture, not another measurement.
         com.servoc.app.chemcore.nextintegration.NextDecisionStore.Receipt
-            storedNext=site.sessions.get(1).next;
+            storedNext=null;
+        for(SiteSummaryReportExporter.SessionSummary sourceSession:site.sessions)
+            if(sourceSession.hasNext&&
+                "MS-N06G-02".equals(sourceSession.bundle.primaryMeasurementSessionId))
+                storedNext=sourceSession.next;
         require(storedNext!=null &&
                 "MS-N06G-02".equals(storedNext.sessionId),
             "P11.6 PDF instant uses exact independently approved Next receipt");
