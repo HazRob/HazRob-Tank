@@ -1,10 +1,14 @@
 package com.servoc.app.chemcore.nextintegration;
 
 import com.hazrob.tank.chemcore.v6.SourceCatalog;
+import com.hazrob.tank.chemcore.next.CoreContracts;
+import com.hazrob.tank.chemcore.next.ChemCoreNext;
 import com.servoc.app.chemical.ChemicalRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.Locale;
+import java.util.Map;
+import java.util.HashMap;
 
 /** Displays source-derived numerical fits without promoting gas identity or alarms.
  * The device clean-air R0 need not equal a research curve's source R0:
@@ -13,11 +17,34 @@ import java.util.Locale;
 public final class NextScientificDiagnostics {
     private NextScientificDiagnostics() {}
 
+    /**
+     * Historical two-argument entry point deliberately cannot infer a trusted
+     * calibration denominator from unverified firmware JSON. Its source rows
+     * are retained as NOT_EVALUABLE until a frozen Next snapshot is supplied.
+     */
+    @Deprecated
     public static JSONObject compute(JSONObject original,ChemicalRepository master)
         throws org.json.JSONException {
+        return compute(original,master,null);
+    }
+
+    /** Research-only source equations evaluated against the SAME frozen,
+     * device-bound clean-air reference used by the persisted Next decision.
+     * Device R_air is not relabelled as a source/datasheet calibration R0.
+     */
+    public static JSONObject compute(JSONObject original,ChemicalRepository master,
+            CoreContracts.Snapshot frozen) throws org.json.JSONException {
         if(original==null||master==null)
             throw new IllegalArgumentException("original data and unified catalog required");
-        JSONObject mq=original.optJSONObject("mq");
+        if(frozen!=null&&!frozen.deviceUid.equals(original.optString("device_id","").trim()))
+            throw new IllegalArgumentException("SCIENTIFIC_DEVICE_ID_SNAPSHOT_MISMATCH");
+        Map<String,CoreContracts.Reading> linked=new HashMap<>();
+        if(frozen!=null)for(CoreContracts.Reading reading:frozen.readings){
+            String uid=reading.sensorUid;
+            int separator=uid.lastIndexOf(':');
+            if(separator<0)throw new IllegalArgumentException("unbound MQ channel UID");
+            linked.put(uid.substring(separator+1).toLowerCase(Locale.ROOT),reading);
+        }
         JSONArray curves=new JSONArray();
         int computed=0,outside=0,unavailable=0;
         for(SourceCatalog.Curve curve:SourceCatalog.allCurves()){
@@ -44,19 +71,31 @@ public final class NextScientificDiagnostics {
             row.put("physical_g3_validated",false);
             row.put("safety_alarm_authorized",false);
             row.put("source_r0_equivalence_verified",false);
-            JSONObject reading=mq==null?null:mq.optJSONObject(curve.sensorType.toLowerCase(Locale.ROOT));
-            double rs=reading==null?Double.NaN:reading.optDouble("rs",Double.NaN);
-            double r0=reading==null?Double.NaN:reading.optDouble("r0",Double.NaN);
-            row.put("r0_definition",reading==null?"MISSING":
-                reading.optString("r0_definition","UNVERIFIED_DEVICE_R0"));
+            // Never use arbitrary firmware mq.r0, even when the firmware
+            // reports ok=true. It may carry a manufacturer-factor or legacy
+            // definition incompatible with the research source equation.
+            String model=curve.sensorType.toLowerCase(Locale.ROOT);
+            CoreContracts.Reading reading=linked.get(model);
+            double rs=reading==null||reading.rsKohm==null?
+                Double.NaN:reading.rsKohm;
+            double r0=reading==null||reading.rAirKohm==null?
+                Double.NaN:reading.rAirKohm;
+            boolean valid=reading!=null&&frozen!=null&&frozen.mqRelayOn&&
+                reading.quality==CoreContracts.SampleQuality.VALID&&
+                reading.r0Definition==CoreContracts.CalibrationReference.AIR_RS_MEAN;
+            row.put("r0_definition",valid?
+                "DEVICE_CLEAN_AIR_RS_MEAN":"MISSING_VERIFIED_DEVICE_AIR_REFERENCE");
+            row.put("reference_denominator","DEVICE_AIR_RS_MEAN_NOT_SOURCE_R0");
+            row.put("reference_device_bound",valid);
+            if(reading!=null)row.put("device_sensor_quality",reading.quality.name());
             if(Double.isFinite(rs)&&rs>0)row.put("rs_kohm",rs);
-            if(Double.isFinite(r0)&&r0>0)row.put("device_r0_kohm",r0);
-            boolean valid=reading!=null &&
-                reading.optBoolean("ok",reading.optBoolean("valid",false)) &&
-                (!reading.has("powered")||reading.optBoolean("powered",false));
+            if(Double.isFinite(r0)&&r0>0) {
+                row.put("device_air_reference_kohm",r0);
+                row.put("device_r0_kohm",r0);
+            }
             if(!valid || !(Double.isFinite(rs)&&rs>0) ||
                 !(Double.isFinite(r0)&&r0>0)){
-                row.put("status","NOT_EVALUABLE_INVALID_SENSOR_OR_REFERENCE");
+                row.put("status","NOT_EVALUABLE_NO_MATCHED_FROZEN_AIR_REFERENCE");
                 unavailable++;
             }else if(!curve.numericalDefinitionValid()){
                 row.put("status","NOT_EVALUABLE_INVALID_SOURCE_EQUATION");
@@ -85,6 +124,11 @@ public final class NextScientificDiagnostics {
         JSONObject result=new JSONObject();
         result.put("schema","hazrob.tank.v8.scientific_source_diagnostics/1");
         result.put("all_reference_models",curves);
+        result.put("source_snapshot_uid",frozen==null?"UNBOUND":frozen.uid);
+        result.put("source_snapshot_sha256",frozen==null?JSONObject.NULL:
+            ChemCoreNext.snapshotHash(frozen));
+        result.put("device_air_reference_is_not_source_r0",true);
+        result.put("firmware_raw_r0_never_used_as_verified_reference",true);
         result.put("source_model_count",curves.length());
         result.put("computed_ppm_count",computed);
         result.put("extrapolated_count",outside);
