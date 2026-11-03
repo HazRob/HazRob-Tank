@@ -56,6 +56,9 @@ class SourceRouting(unittest.TestCase):
         self.assertIn('SCIENTIFIC_DEVICE_ID_SNAPSHOT_MISMATCH',self.f)
         self.assertIn('DEVICE_AIR_RS_MEAN_NOT_SOURCE_R0',self.f)
         self.assertIn('firmware_raw_r0_never_used_as_verified_reference',self.f)
+        self.assertIn('source_scale_primary_verified',self.f)
+        self.assertIn('V6_ASSUMED_SCALE_SOURCE_ORIGINAL_UNKNOWN',self.f)
+        self.assertIn('source_domain_primary_verified',self.f)
         self.assertNotIn('reading.optDouble("r0"',self.f)
     def test_next_relay_on_requires_consistent_typed_firmware_evidence(self):
         self.assertIn('relayConfirmedOn(JSONObject data)',self.g)
