@@ -132,7 +132,7 @@ jobs:
           from pathlib import Path
           f=Path('source/app/src/main/java/com/servoc/app/report/SmartXlsxPackage.java')
           b=f.read_bytes()
-          blob=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()
+          blob=hashlib.sha1(b'blob '+str(len(b)).encode()+bytes([0])+b).hexdigest()
           assert blob=='84ef6c9cc33c9c36d25388902e2bb2bd8dc8ac03',blob
           print('PASS: original approved SmartXlsxPackage formatting source unchanged')
           PY
