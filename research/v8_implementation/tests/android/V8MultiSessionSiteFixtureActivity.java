@@ -37,7 +37,7 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
     private static final String TIME="2026-10-30T00:00:00.000Z";
     private int asserts=0;
     private int nextReportPageCount=0;
-    private int nextInstantPdfExpectedPages=0;
+    private int nextInstantPdfExpectedPages=0, nextInstantPdfCandidateCount=0;
     private int nextXlsxSheetCount=0,siteXlsxSheetCount=0;
     private void require(boolean yes,String message){
         asserts++;
@@ -498,6 +498,7 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 (instantEnvelope.optInt("candidate_count",0)+13)/14+
                 (62+14)/15;
             nextInstantPdfExpectedPages=expectedPages;
+            nextInstantPdfCandidateCount=instantEnvelope.optInt("candidate_count",0);
             require(preview.getPageCount()==expectedPages,
                 "P11.6 no new PDF page added by source refusal reasons");
         }
@@ -848,6 +849,7 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 .put("pdf_pages",pages).put("xlsx_sheet_count",sheets)
                 .put("next_field_pdf_pages",nextReportPageCount)
                 .put("next_instant_pdf_expected_pages",nextInstantPdfExpectedPages)
+                .put("next_instant_pdf_candidate_count",nextInstantPdfCandidateCount)
                 .put("next_field_xlsx_sheets",nextXlsxSheetCount)
                 .put("next_site_xlsx_sheets",siteXlsxSheetCount)
                 .put("site_next_source_roots",1)
