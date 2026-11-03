@@ -88,29 +88,29 @@
     {
       "id": "V8-F06",
       "title": "R05 fruit and R06 beef output fidelity",
-      "status": "SOURCE_VERIFIED",
+      "status": "CI_PASS",
       "note": "Independent 180-second timer across tab switches fixed, duplicate firmware scan cycles rejected; food G1 41556242090 PASS",
       "source_sha": null,
-      "ci_run_id": 41555700519,
+      "ci_run_id": 41555209169,
       "changed_files": [
         "android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java",
         "research/food_freshness/test_food_capture_clock_independent.py"
       ],
-      "result": "Food writers consume original frozen MQ trace, source study trends and computed study-only models; PDF differential test pending",
+      "result": "Android12 API31 emulator successful, 22 tests; fruit/beef real temporal PdfRenderer pixel differential and source-paginated emissions fixture test included",
       "blocking_issue": null,
-      "next_action": "Inspect R05/R06 chart pixel diff results and 4/3-page PDF consistency"
+      "next_action": "Check later changes don't touch source-binding writers; device physical sample required for G3"
     },
     {
       "id": "V8-F07",
       "title": "Emissions per-engine single record and IFC results PDF",
-      "status": "SOURCE_VERIFIED",
+      "status": "CI_PASS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41555700519,
+      "ci_run_id": 41555209169,
       "changed_files": [],
-      "result": "One engine one scan, full Next source equation pagination and IFC reference attached; pixel values/report multi-page test pending",
+      "result": "Android12 API31 emulator successful, 22 tests; fruit/beef real temporal PdfRenderer pixel differential and source-paginated emissions fixture test included",
       "blocking_issue": null,
-      "next_action": "Review multiple engine/source PDF test and no-model state"
+      "next_action": "Check later changes don't touch source-binding writers; device physical sample required for G3"
     },
     {
       "id": "V8-F08",
@@ -144,9 +144,9 @@
       "source_sha": null,
       "ci_run_id": 41556632291,
       "changed_files": [],
-      "result": "Latest completed full compile PASS run 41556241973; food G1 PASS 41556242090; physical invalid-source patch compile and emulator still in progress",
+      "result": "Android12 41555209169 SUCCESS 22 tests for first report suite; latest Android12 41556632291 still running; latest full compile 41556603594 PASS; food G1 41556242090 PASS",
       "blocking_issue": null,
-      "next_action": "Recheck compile run 41556603594 and Android12 41556632291, inspect failures and artifacts"
+      "next_action": "Check later emulator pixel tests R01 R02 and physical invalid suppression (run 41556632291), then R03/R04 fixture and physical Tank verification"
     },
     {
       "id": "V8-F11",
@@ -212,5 +212,12 @@
     "qa": "ReportChartDataParityInstrumentedTest.explicitlyInvalidPhysicalSensorCannotAppearInReport",
     "qa_run": 41556632291,
     "qa_status": "IN_PROGRESS"
+  },
+  "first_report_source_pixel_emulator_pass": {
+    "id": 41555209169,
+    "sha": "a667066bbe4498e21f05c58970fcf9cfb04e23fb",
+    "status": "SUCCESS",
+    "tests": "22 total, includes R05 fruit, R06 beef, R07 emissions Pixel differential & multi-page",
+    "hardware_validated": false
   }
 }
