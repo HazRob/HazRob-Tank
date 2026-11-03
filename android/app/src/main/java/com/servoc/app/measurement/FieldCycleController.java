@@ -25,6 +25,7 @@ public final class FieldCycleController {
     }
     private static final long WARMUP_MS=60000L,SAMPLING_MS=60000L,STALE_MS=6000L;
     public static final String RELAY_RECOVERY_FAULT_KEY="v8_field_recovery_relay_fault";
+    public static final String RELAY_EXPECTED_DEVICE_KEY="v8_field_relay_expected_device_id";
     private final HazRobHost host;
     private final FieldCycleRepository repo;
     private final Handler main=new Handler(Looper.getMainLooper());
@@ -91,7 +92,12 @@ public final class FieldCycleController {
                 String id=identity(before);
                 if(id.isEmpty())throw new IllegalStateException("تعذر التحقق من هوية ESP32");
                 row=repo.begin(sessionId,modes);
-                if(modes.gas)host.robotApi().mqPower(true);
+                if(modes.gas){
+                    // Persist the intended physical controller BEFORE sending
+                    // ON, so crash recovery cannot accept another robot OFF.
+                    host.database().putMeta(RELAY_EXPECTED_DEVICE_KEY,id);
+                    host.robotApi().mqPower(true);
+                }
                 JSONObject verified=host.robotApi().snapshot(0,0);
                 if(!id.equals(identity(verified)))throw new IllegalStateException("تغيرت هوية الروبوت");
                 if(modes.gas&&!relayOn(verified))
@@ -137,14 +143,18 @@ public final class FieldCycleController {
                 int n=repo.recoverAbandoned();
                 boolean previousSafetyFault=!host.database().getMeta(
                     RELAY_RECOVERY_FAULT_KEY,"").isEmpty();
+                String expectedDevice=host.database().getMeta(RELAY_EXPECTED_DEVICE_KEY,"");
                 boolean relaySafetyFault=false;
-                if(n>0||previousSafetyFault){
+                if(n>0||previousSafetyFault||!expectedDevice.isEmpty()){
                     try{
                         host.robotApi().mqPower(false);
                         JSONObject off=host.robotApi().snapshot(0,0);
                         if(!relayOffAcknowledged(off)||identity(off).isEmpty())
                             throw new IllegalStateException("MQ_RELAY_OFF_NOT_ACKNOWLEDGED");
+                        if(!expectedDevice.isEmpty()&&!expectedDevice.equals(identity(off)))
+                            throw new IllegalStateException("MQ_RELAY_OFF_ACK_WRONG_DEVICE");
                         host.database().putMeta(RELAY_RECOVERY_FAULT_KEY,"");
+                        host.database().putMeta(RELAY_EXPECTED_DEVICE_KEY,"");
                     }catch(Exception safetyFailure){
                         relaySafetyFault=true;
                         android.util.Log.e("TankFieldCycle",
@@ -155,7 +165,7 @@ public final class FieldCycleController {
                     }
                 }
                 final boolean unsafeRelay=relaySafetyFault;
-                if(n>0||previousSafetyFault)main.post(()->{
+                if(n>0||previousSafetyFault||!expectedDevice.isEmpty())main.post(()->{
                     if(!disposed){
                         message(unsafeRelay?"SAFETY_FAULT":"RECOVERED",
                             unsafeRelay?
@@ -222,7 +232,10 @@ public final class FieldCycleController {
                     throw new IllegalStateException("حساس الجزيئات غير متاح");
                 String id=identity(before);
                 if(id.isEmpty())throw new IllegalStateException("هوية الروبوت غير متاحة");
-                if(gas)host.robotApi().mqPower(true);
+                if(gas){
+                    host.database().putMeta(RELAY_EXPECTED_DEVICE_KEY,id);
+                    host.robotApi().mqPower(true);
+                }
                 JSONObject verified=host.robotApi().snapshot(0,0);
                 if(!id.equals(identity(verified))||(gas&&!relayOn(verified)))
                     throw new IllegalStateException("تأكيد الريلاي/الجهاز فشل");
@@ -365,6 +378,7 @@ public final class FieldCycleController {
                                         if(!deviceId.equals(identity(after))||!relayOffAcknowledged(after))
                                             throw new IllegalStateException(
                                                 "MQ_RELAY_SHUTDOWN_ACK_MISSING_OR_STILL_ON");
+                                        host.database().putMeta(RELAY_EXPECTED_DEVICE_KEY,"");
                                     }catch(Exception off){
                                         String fault="MQ_RELAY_SHUTDOWN_UNCONFIRMED: "+
                                             off.getClass().getSimpleName()+": "+off.getMessage();
@@ -459,6 +473,10 @@ public final class FieldCycleController {
             if(original!=null&&!original.deviceId.isEmpty()&&
                 !original.deviceId.equals(acknowledgedDevice))
                 throw new IllegalStateException("MQ_RELAY_OFF_ACK_WRONG_DEVICE");
+            String expected=host.database().getMeta(RELAY_EXPECTED_DEVICE_KEY,"");
+            if(!expected.isEmpty()&&!expected.equals(acknowledgedDevice))
+                throw new IllegalStateException("MQ_RELAY_OFF_ACK_WRONG_DEVICE");
+            host.database().putMeta(RELAY_EXPECTED_DEVICE_KEY,"");
             return false;
         }catch(Exception fault){
             String detail="MQ_RELAY_SHUTDOWN_UNCONFIRMED: "+
