@@ -67,26 +67,26 @@ public final class SmartFieldSessionPdfWriter {
         int v6Pages=(v6Count+1)/2;
         int total=basePages+cyclePages+v6Pages;
         PdfDocument pdf=new PdfDocument();
-        PdfDocument.Page p=page(pdf,1);executiveOverview(p.getCanvas(),b,all,primary,plan,hazard,cs,next);chrome(p.getCanvas(),1,total,b,plan);pdf.finishPage(p);
-        p=page(pdf,2);sensorSix(p.getCanvas(),primary);chrome(p.getCanvas(),2,total,b,plan);pdf.finishPage(p);
+        PdfDocument.Page p=page(pdf,1);executiveOverview(p.getCanvas(),b,all,primary,plan,hazard,cs,next);chrome(p.getCanvas(),1,total,b,plan,next);pdf.finishPage(p);
+        p=page(pdf,2);sensorSix(p.getCanvas(),primary);chrome(p.getCanvas(),2,total,b,plan,next);pdf.finishPage(p);
         p=page(pdf,3);
         if(next!=null){
             title(p.getCanvas(),"ChemCore Next • الأدلة والاستدلال • 6 مخططات",42);
             V8NextChartRenderer.drawPdfDecisionSix(p.getCanvas(),grid6(),next,s);
         }else chemCoreSix(p.getCanvas(),primary);
-        chrome(p.getCanvas(),3,total,b,plan);pdf.finishPage(p);
+        chrome(p.getCanvas(),3,total,b,plan,next);pdf.finishPage(p);
         p=page(pdf,4);
         if(next!=null){
             title(p.getCanvas(),"ChemCore Next • مصادر القياس والجودة • 6 مخططات",42);
             V8NextChartRenderer.drawPdfContextSix(p.getCanvas(),grid6(),next,s);
         }else contextSix(p.getCanvas(),primary,plan);
-        chrome(p.getCanvas(),4,total,b,plan);pdf.finishPage(p);
-        if(crossSession){p=page(pdf,5);crossSessionAndMethodology(p.getCanvas(),b,all,primary,plan,chemicals,cs);chrome(p.getCanvas(),5,total,b,plan);pdf.finishPage(p);}
+        chrome(p.getCanvas(),4,total,b,plan,next);pdf.finishPage(p);
+        if(crossSession){p=page(pdf,5);crossSessionAndMethodology(p.getCanvas(),b,all,primary,plan,chemicals,cs);chrome(p.getCanvas(),5,total,b,plan,next);pdf.finishPage(p);}
         for(int chunk=0;chunk<cyclePages;chunk++){
             int pageNo=basePages+chunk+1;
             p=page(pdf,pageNo);
             cycleLedgerPage(p.getCanvas(),b,chunk);
-            chrome(p.getCanvas(),pageNo,total,b,plan);
+            chrome(p.getCanvas(),pageNo,total,b,plan,next);
             pdf.finishPage(p);
         }
         for(int chunk=0;chunk<v6Pages;chunk++){
@@ -107,7 +107,8 @@ public final class SmartFieldSessionPdfWriter {
     private static RectF[] grid6(){RectF[] r=new RectF[6];float left=34,top=68,gx=10,gy=12,w=(PAGE_WIDTH-68-2*gx)/3f,h=(PAGE_HEIGHT-68-38-gy)/2f;for(int row=0;row<2;row++)for(int col=0;col<3;col++){int i=row*3+col;float x=left+col*(w+gx),y=top+row*(h+gy);r[i]=new RectF(x,y,x+w,y+h);}return r;}
 
     private static void executiveOverview(Canvas c,FieldSessionReportExporter.Bundle b,List<Evidence> all,Evidence primary,ReportIntelligence.ReportPlan plan,JSONObject hazard,Consensus cs,NextDecisionStore.Receipt next){
-        title(c,"الملخص التنفيذي • "+plan.modeAr,42);float y=74;String[][] rows={{"الموقع",b.site.name},{"الجلسة",b.fieldSession.name},{"الحالة",b.fieldSession.status},{"جلسات القياس",String.valueOf(all.size())},{"مرجع التحليل",primary==null?"—":shorten(primary.sessionId,32)}};for(String[] r:rows){labelValue(c,r[0],r[1],y);y+=22;}
+        title(c,next==null?"الملخص التنفيذي • "+plan.modeAr:
+        "الملخص التنفيذي • ChemCore Next (بحثي)",42);float y=74;String[][] rows={{"الموقع",b.site.name},{"الجلسة",b.fieldSession.name},{"الحالة",b.fieldSession.status},{"جلسات القياس",String.valueOf(all.size())},{"مرجع التحليل",primary==null?"—":shorten(primary.sessionId,32)}};for(String[] r:rows){labelValue(c,r[0],r[1],y);y+=22;}
         JSONObject q=primary==null?null:primary.decision;
         if(next!=null){
             var result=next.originalDecision;
@@ -130,7 +131,27 @@ public final class SmartFieldSessionPdfWriter {
             metric(c,420,152,178,70,"الجودة",primary==null?"—":(primary.validMq()<0?"MQ —":"MQ "+primary.validMq()+"/8"),"Posterior "+pct(plan.topPosterior)+" • OOD "+fmt(plan.oodScore),0xFFF4F6F8);
             metric(c,610,152,190,70,"مصفوفة 144",plan.panelCandidateSupported+" دعم","Evaluated "+plan.panelEvaluated+"/"+plan.panelTarget,0xFFE0F7FA);
         }
-        text(c,"جلسات القياس الفنية",42,212,11,Color.BLACK,true);String[] h={"Session","Samples","Duration","Outcome","Top candidate","Post.","MQ"};float[] x={42,248,310,380,490,655,735};for(int i=0;i<h.length;i++)text(c,h[i],x[i],236,7.5f,Color.DKGRAY,true);float yy=258;int shown=0;for(Evidence e:all){if(shown++>=7)break;boolean p=primary!=null&&e.sessionId.equals(primary.sessionId);if(p)box(c,36,yy-14,765,23,0xFFE3F2FD);text(c,(p?"★ ":"")+shorten(e.sessionId,29),x[0],yy,7.2f,Color.BLACK,p);text(c,String.valueOf(e.samples()),x[1],yy,7.2f,Color.BLACK,false);text(c,String.format(Locale.US,"%.1fs",e.durationMs()/1000.0),x[2],yy,7.2f,Color.BLACK,false);text(c,shorten(e.outcome(),15),x[3],yy,7.2f,Color.BLACK,false);text(c,shorten(e.topCandidate(),20),x[4],yy,7.2f,Color.BLACK,false);text(c,pct(e.posterior()),x[5],yy,7.2f,Color.BLACK,false);text(c,e.validMq()<0?"—":e.validMq()+"/8",x[6],yy,7.2f,Color.BLACK,false);yy+=25;}
+        text(c,"جلسات القياس الفنية",42,212,11,Color.BLACK,true);String[] h={"Session","Samples","Duration","Outcome","Top candidate","Post.","MQ"};float[] x={42,248,310,380,490,655,735};for(int i=0;i<h.length;i++)text(c,h[i],x[i],236,7.5f,Color.DKGRAY,true);float yy=258;int shown=0;for(Evidence e:all){if(shown++>=7)break;boolean p=primary!=null&&e.sessionId.equals(primary.sessionId);if(p)box(c,36,yy-14,765,23,0xFFE3F2FD);text(c,(p?"★ ":"")+shorten(e.sessionId,29),x[0],yy,7.2f,Color.BLACK,p);
+            text(c,String.valueOf(e.samples()),x[1],yy,7.2f,Color.BLACK,false);
+            text(c,String.format(Locale.US,"%.1fs",e.durationMs()/1000.0),
+                x[2],yy,7.2f,Color.BLACK,false);
+            boolean sourceNext=next!=null&&next.sessionId.equals(e.sessionId);
+            String measurementOutcome=sourceNext?next.status.name():e.outcome();
+            String measurementCandidate=sourceNext?
+                (next.originalDecision.rankedEligibleCandidates.isEmpty()?"UNKNOWN":
+                    "UID "+next.originalDecision.rankedEligibleCandidates.get(0)
+                        .canonicalChemicalUid):e.topCandidate();
+            int genuineNextValid=0;
+            if(sourceNext)for(var sensor:next.sourceSnapshot.readings)
+                if(sensor.quality==
+                    com.hazrob.tank.chemcore.next.CoreContracts.SampleQuality.VALID)
+                    genuineNextValid++;
+            text(c,shorten(measurementOutcome,15),x[3],yy,7.2f,Color.BLACK,false);
+            text(c,shorten(measurementCandidate,20),x[4],yy,7.2f,Color.BLACK,false);
+            text(c,sourceNext?"—":pct(e.posterior()),x[5],yy,7.2f,Color.BLACK,false);
+            text(c,sourceNext?genuineNextValid+"/8":
+                (e.validMq()<0?"—":e.validMq()+"/8"),x[6],yy,7.2f,Color.BLACK,false);
+            yy+=25;}
         if(all.size()>7)text(c,"+ "+(all.size()-7)+" جلسات إضافية في Excel التفصيلي",42,yy+4,8,Color.DKGRAY,false);
         if(next==null&&hazard!=null&&hazard.optJSONArray("candidates")!=null&&
            hazard.optJSONArray("candidates").length()>0)
@@ -141,7 +162,10 @@ public final class SmartFieldSessionPdfWriter {
             text(c,"All chemical conclusions above refer ONLY to this archived measurement",
                 42,492,8.5f,Color.DKGRAY,false);
         }
-        text(c,"Screening لا يساوي هوية مؤكدة أو PPM؛ M4 وحده يسمح بالقياس الكمي المهني.",42,548,8,Color.DKGRAY,false);
+        text(c,next==null?
+            "Screening لا يساوي هوية مؤكدة أو PPM؛ M4 وحده يسمح بالقياس الكمي المهني.":
+            "ChemCore Next • مصادر بحثية وشروط قياس محفوظة؛ لا هوية مؤكدة أو PPM معتمد.",
+            42,548,8,Color.DKGRAY,false);
     }
 
     private static void sensorSix(Canvas c,Evidence e){title(c,"الحساسات والبصمة • 6 مخططات",42);RectF[] r=grid6();if(e==null||!e.seriesOk()){for(RectF x:r)emptyBox(c,x,"السلسلة الزمنية غير متاحة");return;}SessionSeries.Series s=e.series;AnalyticalCharts.mqRsR0(c,r[0],s);AnalyticalCharts.fingerprint(c,r[1],s);SmartReportAdvancedCharts.mqCorrelationMatrix(c,r[2],s);AnalyticalCharts.fingerprintRadar(c,r[3],s);AnalyticalCharts.mqResponseKinetics(c,r[4],s);AnalyticalCharts.mqPersistenceMap(c,r[5],s);}
@@ -273,6 +297,9 @@ public final class SmartFieldSessionPdfWriter {
             PAGE_WIDTH-MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false,Paint.Align.RIGHT);
     }
 
-    private static void chrome(Canvas c,int page,int total,FieldSessionReportExporter.Bundle b,ReportIntelligence.ReportPlan plan){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xFFB0B0B0);p.setStrokeWidth(.7f);c.drawLine(MARGIN,32,PAGE_WIDTH-MARGIN,32,p);c.drawLine(MARGIN,PAGE_HEIGHT-28,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-28,p);text(c,"HazRob Tank "+ReleaseAudit.VERSION,MARGIN,23,10,Color.BLACK,true);text(c,b.site.name+" • "+b.fieldSession.name+" • "+plan.modeAr,PAGE_WIDTH/2f,23,9.5f,Color.BLACK,true,Paint.Align.CENTER);text(c,"صفحة "+page+" من "+total,MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false);text(c,ReleaseAudit.PROJECT_PREPARERS,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false,Paint.Align.RIGHT);}
+    private static void chrome(Canvas c,int page,int total,FieldSessionReportExporter.Bundle b,
+                               ReportIntelligence.ReportPlan plan,
+                               NextDecisionStore.Receipt next){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xFFB0B0B0);p.setStrokeWidth(.7f);c.drawLine(MARGIN,32,PAGE_WIDTH-MARGIN,32,p);c.drawLine(MARGIN,PAGE_HEIGHT-28,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-28,p);text(c,"HazRob Tank "+ReleaseAudit.VERSION,MARGIN,23,10,Color.BLACK,true);text(c,b.site.name+" • "+b.fieldSession.name+" • "+
+            (next==null?plan.modeAr:"ChemCore Next • RESEARCH"),PAGE_WIDTH/2f,23,9.5f,Color.BLACK,true,Paint.Align.CENTER);text(c,"صفحة "+page+" من "+total,MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false);text(c,ReleaseAudit.PROJECT_PREPARERS,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false,Paint.Align.RIGHT);}
     private static void text(Canvas c,String s,float x,float y,float size,int color,boolean bold){text(c,s,x,y,size,color,bold,Paint.Align.LEFT);} private static void text(Canvas c,String s,float x,float y,float size,int color,boolean bold,Paint.Align align){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(color);p.setTextSize(size);p.setFakeBoldText(bold);p.setTextAlign(align);c.drawText(s==null?"":s,x,y,p);} private static String pct(double v){return Double.isFinite(v)?String.format(Locale.US,"%.1f%%",v<=1.000001?v*100:v):"—";} private static String fmt(double v){return Double.isFinite(v)?String.format(Locale.US,"%.3f",v):"—";} private static String shorten(String s,int n){String v=s==null?"":s;return v.length()<=n?v:v.substring(0,Math.max(1,n-1))+"…";}
 }
