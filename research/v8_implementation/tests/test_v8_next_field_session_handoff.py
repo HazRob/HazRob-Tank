@@ -91,10 +91,19 @@ class FieldHandoff(unittest.TestCase):
         self.assertIn('putMeta(RELAY_RECOVERY_FAULT_KEY,"")',method)
         self.assertIn("relaySafetyFault=true",method)
         self.assertIn('putMeta(RELAY_RECOVERY_FAULT_KEY,',method)
+        self.assertIn('String expectedDevice=host.database().getMeta(RELAY_EXPECTED_DEVICE_KEY,"")',method)
+        self.assertIn('"MQ_RELAY_OFF_ACK_WRONG_DEVICE"',method)
+        self.assertLess(method.index("expectedDevice.equals(identity(off))"),
+                        method.index('putMeta(RELAY_RECOVERY_FAULT_KEY,"")'))
+        self.assertIn('putMeta(RELAY_EXPECTED_DEVICE_KEY,"")',method)
         for operation in ("begin(String sessionId", "retry(String predecessor", "approve(String id"):
             body=s.split("public void "+operation,1)[1].split("host.io().execute(",1)[0]
             self.assertIn('getMeta(RELAY_RECOVERY_FAULT_KEY,"")',body)
+            self.assertIn('getMeta(RELAY_EXPECTED_DEVICE_KEY,"")',body)
+        self.assertIn('putMeta(RELAY_EXPECTED_DEVICE_KEY,id)',s)
+        self.assertIn('MQ_RELAY_OFF_ACK_WRONG_DEVICE',s)
         ui=read("ui/FieldSessionsTab.java")
+        self.assertIn('FieldCycleController.RELAY_EXPECTED_DEVICE_KEY',ui)
         self.assertIn("relayRecoverySafetyFault",ui)
         self.assertIn("data.relaySafetyFault",ui)
         self.assertIn("approveMeasurement.setEnabled(review&&active&&!relayRecoverySafetyFault)",ui)
