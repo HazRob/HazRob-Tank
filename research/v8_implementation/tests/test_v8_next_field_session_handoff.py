@@ -82,6 +82,17 @@ class FieldHandoff(unittest.TestCase):
         self.assertIn("repo.markUnsafeReview(cycleId,fault)",completed)
         self.assertLess(completed.index("putMeta(RELAY_RECOVERY_FAULT_KEY,fault)"),
                         completed.index("repo.markUnsafeReview(cycleId,fault)"))
+    def test_f02_recovery_cannot_turn_off_another_live_field_operation(self):
+        s=read("measurement/FieldCycleController.java")
+        method=s.split("public void recoverInterrupted(){",1)[1].split("public void retry(",1)[0]
+        self.assertIn("MeasurementSessionRegistry.reserveFieldOperation()",method)
+        self.assertIn("MeasurementSessionRegistry.endFieldOperation()",method)
+        self.assertIn("finally{",method)
+        self.assertIn("MQ_RELAY_RECOVERY_WORKER_UNAVAILABLE",method)
+        self.assertLess(method.index("reserveFieldOperation()"),
+                        method.index("repo.recoverAbandoned()"))
+        self.assertLess(method.index("reserveFieldOperation()"),
+                        method.index("host.robotApi().mqPower(false)"))
     def test_f02_recovery_lock_only_clears_after_explicit_off_ack(self):
         s=read("measurement/FieldCycleController.java")
         method=s.split("public void recoverInterrupted(){",1)[1].split("public void retry(",1)[0]
