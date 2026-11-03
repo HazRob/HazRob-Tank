@@ -139,17 +139,22 @@ public final class NextFieldArchiveBridge {
         " coverage_ms="+source.coverageMs);
     JSONObject combined=aggregateSource(terminal,source);
     List<ResearchCandidateGenerator.Material> catalog=new ArrayList<>();
-    for(ChemicalRepository.Chemical item:new ChemicalRepository(db).all(5000)){
+    ChemicalRepository master=new ChemicalRepository(db);
+    for(ChemicalRepository.Chemical item:master.all(5000)){
       String cls=item.chemicalClass==null?"":item.chemicalClass.toLowerCase(Locale.ROOT);
       boolean generic=cls.contains("mixture")||cls.contains("generic")||cls.contains("general");
       catalog.add(new ResearchCandidateGenerator.Material(item.uid,item.label(),generic?
           ResearchCandidateGenerator.MaterialKind.GENERAL_CLASS:
           ResearchCandidateGenerator.MaterialKind.MOLECULAR_CHEMICAL));
     }
+    // Every archived scientific curve is evaluated only for provenance and
+    // explicit abstention; no source R0 equivalence, G3 or candidate identity.
+    var researchCurves=NextResearchSourceBindings.abstentionOnlyCurves(
+        master,combined.optString("device_id","").trim());
     String captureUid="FIELD-ARCHIVE-"+source.sourceSha256;
     var next=NextEngineRouter.analyzeAndPersist(app,db,combined,measurementId,
          captureUid,captureEndedUtcMs,CoreContracts.Mode.FIELD_SESSION,catalog,
-         List.of(),List.of(),List.of(),12);
+         researchCurves,List.of(),List.of(),12);
     if(next.receipt==null||next.receipt.originalDecision.physicallyValidatedG3)
       throw new IllegalStateException("NEXT_RESEARCH_ONLY_DECISION_RECEIPT_FAILED");
     if(!next.receipt.snapshotUid.equals(captureUid))
