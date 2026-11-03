@@ -39,9 +39,20 @@ public final class SiteReportIntelligence {
         List<SiteSummaryReportExporter.SessionSummary> src=sessions==null?Collections.emptyList():sessions;Map<Integer,Acc> map=new HashMap<>();int analytical=0,identified=0,quantified=0,critical=0,openSet=0,invalid=0,with144=0,positive144=0;
         for(SiteSummaryReportExporter.SessionSummary s:src){
             if(s==null)continue;
-            JSONObject primary=s.bundle.primaryDecision;
-            // Preserve legacy per-Field-Session decision summaries, while
-            // recurrence below now visits ALL approved child measurement cycles.
+            JSONObject primary=s.hasNext?null:s.bundle.primaryDecision;
+            // ChemCore Next is the authoritative decision when a verified V8
+            // receipt exists. No 144 panel, legacy confidence/ppm, chemical
+            // identification or alarms may be substituted for it.
+            if(s.hasNext){
+                analytical++;
+                String state=s.next.status.name();
+                if("UNKNOWN".equals(state)||"INSUFFICIENT_EVIDENCE".equals(state)||
+                   "MIXTURE_UNRESOLVED".equals(state)||
+                   "NO_INFERENCE_MODEL".equals(state))openSet++;
+                if("INVALID_INPUT".equals(state))invalid++;
+            }
+            // For sessions not analyzed by Next, preserve approved legacy
+            // site reports without overwriting their historical evidence.
             if(primary!=null){
                 analytical++;
                 String outcome=primary.optString("outcome","");
