@@ -15,17 +15,20 @@ import sys
 def verify(manifest, root):
     out = []
     for entry in manifest.get("sources", []):
+        if not isinstance(entry, dict):
+            out.append({"source_id": "", "path": "", "status": "blocked", "error": "invalid_source_entry"})
+            continue
         sid = entry.get("source_id", "")
         rel = entry.get("path", "")
         expected = entry.get("sha256", "")
         result = {"source_id": sid, "path": rel, "status": "blocked"}
         try:
-            if not isinstance(rel, str) or not rel or pathlib.PurePosixPath(rel).is_absolute() or ".." in pathlib.PurePosixPath(rel).parts:
+            if not isinstance(rel, str) or not rel or pathlib.PurePosixPath(rel).is_absolute() or ".." in pathlib.PurePosixPath(rel).parts or "\\\\" in rel or pathlib.PurePosixPath(rel).parts[0] == ".":
                 raise ValueError("unsafe_path")
             if not isinstance(expected, str) or not re.fullmatch(r"[a-fA-F0-9]{64}", expected):
                 raise ValueError("invalid_sha256")
             path = root / rel
-            if path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
+            if any(p.is_symlink() for p in (root / pathlib.PurePosixPath(rel).parts[0], *(root.joinpath(*pathlib.PurePosixPath(rel).parts[:i]) for i in range(2, len(pathlib.PurePosixPath(rel).parts) + 1)))) or not path.resolve().is_relative_to(root.resolve()):
                 raise ValueError("unsafe_path")
             if not path.is_file():
                 raise ValueError("missing_raw_bytes")
