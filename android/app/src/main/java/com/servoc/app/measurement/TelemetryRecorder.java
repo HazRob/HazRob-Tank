@@ -101,6 +101,23 @@ public final class TelemetryRecorder {
             JSONObject adc=snapshot.optJSONObject("adc");if(adc!=null)state.put("adc",adc);
             JSONObject relay=snapshot.optJSONObject("relay");if(relay!=null)state.put("relay",relay);
             JSONObject sensorPower=snapshot.optJSONObject("sensor_power");if(sensorPower!=null)state.put("sensor_power",sensorPower);
+            // Keep previously unknown/new firmware physical channels rather
+            // than dropping them during the V8 60s archive. Env and MQ are
+            // already preserved verbatim in their own indexed SQL columns;
+            // known source sections above are copied without reconstruction.
+            // This extra object is read-only raw evidence, NOT a derived gas
+            // reading or an additional source of alarm decisions.
+            JSONObject additional=new JSONObject();
+            java.util.HashSet<String> standard=new java.util.HashSet<>(
+                java.util.Arrays.asList("env","mq","_transport","drive",
+                    "particles","sound","ir","ldr","adc","relay",
+                    "sensor_power","measurement","measurement_schema"));
+            for(java.util.Iterator<String> it=snapshot.keys();it.hasNext();){
+                String key=it.next();
+                if(!standard.contains(key))
+                    additional.put(key,snapshot.opt(key));
+            }
+            if(additional.length()>0)state.put("source_additional_channels",additional);
             JSONObject measurement=snapshot.optJSONObject("measurement");if(measurement!=null){
                 String measurementState=measurement.optString("state","idle");int stateCode=measurement.optInt("state_code",0);
                 state.put("measurement_state",measurementState);state.put("measurement_state_code",stateCode);state.put("measurement_phase",stateCode);state.put("measurement_mask",measurement.optInt("mask",0));
