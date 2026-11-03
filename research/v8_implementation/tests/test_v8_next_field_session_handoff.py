@@ -167,4 +167,16 @@ class FieldHandoff(unittest.TestCase):
         self.assertIn('جميع أوامر البدء والاعتماد معطلة',loader)
         self.assertIn('beginMeasurement.setEnabled(false)',ui.split('private void clearCycleSelection(',1)[1])
 
+    def test_f01_async_review_ready_is_not_rebound_to_another_session(self):
+        ui=read("ui/FieldSessionsTab.java")
+        callback=ui.split('public void changed(String state,String message,String id){',1)[1].split('public void refreshed()',1)[0]
+        self.assertIn('if("REVIEW_READY".equals(state)){',callback)
+        review=callback.split('if("REVIEW_READY".equals(state)){',1)[1].split('// A live safety fault',1)[0]
+        self.assertNotIn('latestCycleId=id',review)
+        self.assertIn('renderCycleButtons("FINALIZING")',review)
+        self.assertIn('refresh()',review)
+        self.assertIn('return;',review)
+        approved=ui.split('private void renderCycleWorkspace(SessionData data){',1)[1]
+        self.assertIn('latestCycleId=recent==null?"":recent.id;',approved)
+
 if __name__=="__main__":unittest.main(verbosity=2)
