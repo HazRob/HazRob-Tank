@@ -24,7 +24,7 @@ p='/tmp/v6-n06g-approved/n06g_status.json'
 d=json.load(open(p))
 assert d['status']=='PASS',d
 assert d['runtime_sqlite_schema_version']==15,d
-assert d['pdf_pages']==6 and d['xlsx_sheet_count']==14,d
+assert d['pdf_pages']==6 and d['xlsx_sheet_count']==16,d
 assert d['approved_gas_cycles']==1
 assert d['independent_source_sensor_models']==8
 assert d['sqlite_original_approved_source_sha_before_after_equal']
