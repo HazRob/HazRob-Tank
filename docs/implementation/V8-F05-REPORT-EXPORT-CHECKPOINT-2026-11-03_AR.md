@@ -20,3 +20,10 @@
 - Verify Android12 source-bound report run `41556632291` after any writer modifications.
 - Record F05 PASS in machine tracker only after CI verifies full files; obtain source artifacts and inspect chart/content consistency separately.
 - Continue F01 UI navigation, F02 capture+R0+relay, F03 Next Stable parity, F08 XLSX and F11 actual Tank hardware.
+
+## Final F05 run — PASS (2026-11-03)
+- **CI**: `41557779295` — conclusion **SUCCESS**, SHA `7316d6c7940f0e0e52ea7b3e841dc45518f3640a`.
+- Android 13 real SQLite v15 archived-approved test-only fixture: **6-page production field PDF**, **5-page production site PDF** covering **two independent approved measurement sessions**, and **16 XLSX worksheets** (14 original base + 2 V6 appended).
+- Opening/rendering every PDF page, parsing XLSX XML, workbook expected tabs, and source byte-for-byte digest continuity: PASS. Site report rejects deliberate tamper of second archived signed session and resumes after restoring exact bytes.
+- Artifacts: `HazRob-Tank-V8-F05-TEST-ONLY-MultiSessionSite-PDF-XLSX`, artifact ID `13195855319` under the run.
+- **Do not claim** physical Tank validation, real exhaust/food data, direct G3, or release readiness. UI end-to-end controls and full visual human inspection remain outstanding.
