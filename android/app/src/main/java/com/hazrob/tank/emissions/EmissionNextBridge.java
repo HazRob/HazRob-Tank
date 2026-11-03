@@ -33,9 +33,15 @@ public final class EmissionNextBridge {
      */
     public static JSONObject attach(JSONObject emissions,TankInstantAnalyzer.Result analyzed)
         throws org.json.JSONException {
-        if(emissions==null||analyzed==null||analyzed.analysis==null)
+        if(analyzed==null||analyzed.analysis==null)
             throw new IllegalArgumentException("actual Next analysis required");
-        JSONObject next=analyzed.analysis;
+        return attachAnalysis(emissions,analyzed.analysis);
+    }
+    /** Also permits testing the read-only source projection with frozen Next receipts. */
+    public static JSONObject attachAnalysis(JSONObject emissions,JSONObject next)
+        throws org.json.JSONException {
+        if(emissions==null||next==null)
+            throw new IllegalArgumentException("actual Next decision required");
         if(!"hazrob.tank.v8.next.decision.presentation/1".equals(next.optString("schema")))
             throw new IllegalArgumentException("NOT_A_NEXT_DECISION");
         JSONArray rows=emissions.optJSONArray("pollutants");
