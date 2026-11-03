@@ -85,7 +85,8 @@ final class V8FieldFullTelemetryXlsx {
                         cell(env,"sample_us"),cell(state,"sample_seq"),
                         cell(state,"sample_monotonic_ms"),
                         cell(state,"measurement_state"),
-                        json(state.optJSONObject("transport")),c.getString(2));
+                        json(state.optJSONObject("transport")),c.getString(2),
+                        json(state.optJSONObject("source_additional_channels")));
                 }
             }
         }
@@ -93,13 +94,15 @@ final class V8FieldFullTelemetryXlsx {
     }
     private static String adc(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
         SmartXlsxPackage.Grid g=sheet(b,"V8 / complete ADC, ADS1115 and original MQ channel results",
-            36,15,14,18,14,18,18,18,18,18,19,18,20,18,18,18,18,18,18,20,18,19,25,42,80,80);
+            36,15,14,18,14,18,18,18,18,18,18,18,18,19,18,20,18,18,18,18,18,20,18,19,25,42,80,80);
         g.rowStyled(SmartXlsxPackage.WARN,"المصدر",
-            "raw = سجل التحويل الأصلي ADS إن توفر؛ adc/ao = الفولتية المسجلة. "+
+            "raw = رمز ADC الخام إن توفر؛ adc حقل أصلي غير محدد الوحدة ولا يُفسَّر تلقائيًا كفولت. "+
+            "الجهد يؤخذ فقط من adc_voltage_v أو voltage_v المصرح بهما. "+
             "لا تساوي القيم الفارغة صفرًا. كل صف مرتبط بحساس MQ وعينة أصلية محددة.");
         g.header("Measurement ID","Telemetry ID","t_ms","UTC ms","MQ channel",
-            "ADC raw code","ADC voltage V","AO voltage V","Rs recorded",
-            "R0 recorded","Rs/R0 recorded","Firmware R0","R0 source",
+            "ADC raw code","Original firmware adc (unit UNKNOWN)",
+            "Verified ADC voltage V","Alternate voltage_v V","Original AO field",
+            "Rs recorded","R0 recorded","Rs/R0 recorded","Firmware R0","R0 source",
             "ADS index","ADS channel","Scan cycle","Sample us","Offset us",
             "Age us","MQ ok","MQ powered","ADS1 ready","ADS2 ready",
             "ADC acquisition JSON","Original MQ channel JSON","Original adc JSON");
@@ -113,7 +116,8 @@ final class V8FieldFullTelemetryXlsx {
                     for(HazRobHardwareProfile.Channel channel:HazRobHardwareProfile.MQ){
                         JSONObject q=mq.optJSONObject(channel.key);
                         g.row(sid,c.getLong(0),c.getLong(1),cell(state,"sample_utc_ms"),
-                            channel.key,cell(q,"raw"),cell(q,"adc"),cell(q,"ao"),
+                            channel.key,cell(q,"raw"),cell(q,"adc"),
+                            cell(q,"adc_voltage_v"),cell(q,"voltage_v"),cell(q,"ao"),
                             cell(q,"rs"),cell(q,"r0"),cell(q,"ratio"),
                             cell(q,"firmware_r0"),cell(q,"r0_source"),
                             cell(q,"ads"),cell(q,"ch"),cell(q,"scan_cycle"),
@@ -130,7 +134,7 @@ final class V8FieldFullTelemetryXlsx {
     }
     private static String auxiliary(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
         SmartXlsxPackage.Grid g=sheet(b,"V8 / every archived non-MQ auxiliary signal and system state",
-            38,16,16,20,18,14,14,16,16,18,18,18,18,18,18,18,18,20,24,55,60,65,65,65,55,60,60);
+            38,16,16,20,18,14,14,16,16,18,18,18,18,18,18,18,18,20,24,55,60,65,65,65,55,60,60,85);
         g.rowStyled(SmartXlsxPackage.WARN,"المصدر",
             "قيم الدخان/الجزيئات والصوت و IR والريلاي واتجاهات الحركة والاتصال "+
             "تُنقل دون تعديل من motion_payload. غير المتصل أو غير المثبت يبقى فارغًا.");
@@ -139,7 +143,8 @@ final class V8FieldFullTelemetryXlsx {
             "Measure mask","Valid channels","Measure error","Failsafe","Retrace",
             "Safety auto stop","Forward hazard","Forward blocked","Forward reason",
             "Hardware profile","Particles JSON","Sound JSON","IR JSON","LDR JSON",
-            "Relay JSON","Power JSON","Transport JSON","Original motion JSON");
+            "Relay JSON","Power JSON","Transport JSON","Original motion JSON",
+            "New/unmapped source channels JSON");
         for(String sid:b.measurementSessionIds){
             try(Cursor c=db.getReadableDatabase().rawQuery(
                 "SELECT id,t_ms,motion_payload FROM telemetry_samples "+
@@ -169,12 +174,13 @@ final class V8FieldFullTelemetryXlsx {
     }
     private static String rawArchive(ExperimentsDb db,FieldSessionReportExporter.Bundle b){
         SmartXlsxPackage.Grid g=sheet(b,"V8 / full immutable SQLite sample payload per timepoint",
-            36,16,15,20,24,110,130,130);
+            36,16,15,20,24,110,130,130,65,85);
         g.rowStyled(SmartXlsxPackage.WARN,"المصدر",
             "النصوص الثلاثة مأخوذة حرفيًا من SQLite: env_payload / mq_payload / motion_payload. "+
             "لكل عينة معرّف وأزمنة مستقلة لتكرار التحليل خارجيًا دون إعادة تشكيل مصطنعة.");
         g.header("Measurement ID","Telemetry row ID","t_ms","UTC ms","Stored state",
-            "Original environmental JSON","Original MQ JSON","Original auxiliary JSON");
+            "Original environmental JSON","Original MQ JSON","Original auxiliary JSON",
+            "Original ADS / acquisition JSON","Other original device channels");
         for(String sid:b.measurementSessionIds){
             try(Cursor c=db.getReadableDatabase().rawQuery(
                 "SELECT id,t_ms,env_payload,mq_payload,motion_payload "+
@@ -184,7 +190,8 @@ final class V8FieldFullTelemetryXlsx {
                     JSONObject state=parse(c.getString(4));
                     g.row(sid,c.getLong(0),c.getLong(1),cell(state,"sample_utc_ms"),
                         cell(state,"measurement_state"),c.getString(2),c.getString(3),
-                        c.getString(4));
+                        c.getString(4),json(state.optJSONObject("adc")),
+                        json(state.optJSONObject("source_additional_channels")));
                 }
             }
         }
