@@ -157,7 +157,8 @@ public final class NextScientificDiagnostics {
                 "MQSENSORSLIB_EXAMPLE_RS_CLEAN_AIR_OVER_K");
             row.put("estimated_ppm",JSONObject.NULL);
             row.put("chemical_uid",JSONObject.NULL);
-            row.put("source_scale_primary_verified",true);
+            row.put("source_scale_primary_verified",JSONObject.NULL);
+            row.put("source_equation_no_ppm_scale_parameter",true);
             row.put("source_domain_primary_verified",false);
             row.put("source_heater_phase_verified",false);
             row.put("source_r0_equivalence_verified",false);
