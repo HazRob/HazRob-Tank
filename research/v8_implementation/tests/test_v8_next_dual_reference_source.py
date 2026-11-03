@@ -97,6 +97,19 @@ class DualReferenceSource(unittest.TestCase):
             self.assertIn(marker,self.diagnostics)
         self.assertNotIn('reading.optDouble("r0"',self.diagnostics)
         self.assertNotIn('original.optJSONObject("mq").optDouble("r0"',self.diagnostics)
+    def test_field_session_archive_preserves_dual_reference_replay(self):
+        for marker in (
+            'NextScientificDiagnostics.compute(',
+            '"v8_field_next_dual_reference_"+measurementId',
+            '"source_archive_sha256",source.sourceSha256',
+            '"next_decision_uid",next.receipt.decisionUid',
+            '"scientific_source_diagnostics",dualReference',
+            '"research_only_no_gas_identity_or_safety_alarm",true',
+        ):
+            self.assertIn(marker,self.field)
+        self.assertIn("FIELD_MEASUREMENT_DURATION_BELOW_60S",self.field)
+        self.assertIn("NextResearchSourceBindings.abstentionOnlyCurves(",self.field)
+
     def test_research_outputs_are_not_promoted_to_alarm_or_identity(self):
         self.assertIn("SourceCurveExpert.Qualification.unverified()",self.bridge)
         self.assertIn("source_example_lab_reference_validated_on_tank",self.diagnostics)
