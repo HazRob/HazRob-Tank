@@ -41,7 +41,7 @@ class DualReferenceSource(unittest.TestCase):
             self.assertAlmostEqual(float(a),float(src["coefficient_a"]))
             self.assertAlmostEqual(float(b),float(src["coefficient_b"]))
             self.assertEqual(int(line),int(src["source_line"]))
-            self.assertEqual(installed.upper(),src["physical_sensor_present_on_tank"])
+            self.assertEqual("YES" if installed=="true" else "NO",src["physical_sensor_present_on_tank"])
             self.assertAlmostEqual(float(k),{"MQ2":9.83,"MQ3":60,"MQ4":4.4,
                 "MQ5":6.5,"MQ6":10,"MQ7":27.5,"MQ8":70,"MQ9":9.6,
                 "MQ135":3.6}[model])
