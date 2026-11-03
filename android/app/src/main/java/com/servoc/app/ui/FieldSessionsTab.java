@@ -368,7 +368,7 @@ public final class FieldSessionsTab {
         if(ss.isEmpty()){siteOptionIds.clear();sessionOptionIds.clear();reportScope.setText("لا توجد مواقع أو جلسات معتمدة");reportSessionList.removeAllViews();selectedSiteId="";selectedSessionId="";selectingScope=true;
             if(siteDropdown.getAdapter()==null||!boundSiteIds.isEmpty()){siteDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد مواقع"}));boundSiteIds.clear();boundSiteLabels.clear();}
             if(sessionDropdown.getAdapter()==null||!boundSessionIds.isEmpty()){sessionDropdown.setAdapter(UiKit.lightOptions(scroll.getContext(),new String[]{"لا توجد جلسات"}));boundSessionIds.clear();boundSessionLabels.clear();}
-            selectingScope=false;siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);deleteSite.setEnabled(false);selectedSiteSummary.setText("لا توجد مواقع محفوظة.");sites.addView(UiKit.small(sites.getContext(),"لا توجد مواقع محفوظة."),UiKit.full(sites.getContext()));sessions.removeAllViews();renderCycleWorkspace(data);return;}
+            selectingScope=false;siteReportPdf.setEnabled(false);siteReportXlsx.setEnabled(false);deleteSite.setEnabled(false);selectedSiteSummary.setText("لا توجد مواقع محفوظة.");sites.addView(UiKit.small(sites.getContext(),"لا توجد مواقع محفوظة."),UiKit.full(sites.getContext()));sessions.removeAllViews();clearCycleSelection(data.relaySafetyFault);return;}
         boolean exists=false;for(FieldSessionRepository.Site s:ss)if(s.id.equals(selectedSiteId))exists=true;if(!exists)selectedSiteId=ss.get(0).id;
         FieldSessionRepository.Site selected=null;int siteIndex=0;
         ArrayList<String> siteNames=new ArrayList<>();siteOptionIds.clear();for(int i=0;i<ss.size();i++){FieldSessionRepository.Site s=ss.get(i);siteNames.add(s.name);siteOptionIds.add(s.id);if(s.id.equals(selectedSiteId)){selected=s;siteIndex=i;}}
@@ -394,7 +394,7 @@ public final class FieldSessionsTab {
         }
         if(sessionDropdown.getSelectedItemPosition()!=chosen)sessionDropdown.setSelection(chosen);
         sessionDropdown.setEnabled(!children.isEmpty());selectingScope=false;
-        sessions.removeAllViews();if(children.isEmpty()){reportSessionList.removeAllViews();reportSessionList.addView(UiKit.small(scroll.getContext(),"لا توجد جلسات معتمدة لإصدار تقارير."),UiKit.full(scroll.getContext()));sessions.addView(UiKit.small(sessions.getContext(),"لا توجد جلسات تحت هذا الموقع."),UiKit.full(sessions.getContext()));return;}
+        sessions.removeAllViews();if(children.isEmpty()){reportSessionList.removeAllViews();reportSessionList.addView(UiKit.small(scroll.getContext(),"لا توجد جلسات معتمدة لإصدار تقارير."),UiKit.full(scroll.getContext()));sessions.addView(UiKit.small(sessions.getContext(),"لا توجد جلسات تحت هذا الموقع."),UiKit.full(sessions.getContext()));clearCycleSelection(data.relaySafetyFault);return;}
         renderCycleWorkspace(data);
         reportSessionList.removeAllViews();
         if(approved.isEmpty())reportSessionList.addView(UiKit.small(scroll.getContext(),"لا توجد جلسات معتمدة لإصدار تقارير."),UiKit.full(scroll.getContext()));
@@ -421,6 +421,35 @@ public final class FieldSessionsTab {
         item.setPadding(UiKit.dp(c,4),UiKit.dp(c,6),UiKit.dp(c,4),UiKit.dp(c,6));
         item.setChecked(checked);item.setMinHeight(UiKit.dp(c,48));
         return item;
+    }
+
+    /** Empty site/session scopes must never reuse the previous selected
+     * measurement's cycle ID or action button state. Keep the persistent
+     * relay fault visible even when no session is available.
+     */
+    private void clearCycleSelection(String relayFault){
+        latestCycleId="";
+        selectedCanBegin=false;
+        selectedHasApprovedMeasurement=false;
+        selectedHasReviewMeasurement=false;
+        relayRecoverySafetyFault=relayFault!=null&&!relayFault.isEmpty();
+        cycleStatus.setText(relayRecoverySafetyFault?
+            "القياس محظور حتى تأكيد إطفاء ريلاي MQ من الروبوت الأصلي":
+            "لا توجد جلسة قياس محددة في الموقع الحالي");
+        if(relayRecoverySafetyFault){
+            failureDetails.setText("تحذير ريلاي MQ: "+relayFault);
+            failureDetails.setVisibility(View.VISIBLE);
+        }else{
+            failureDetails.setText("");
+            failureDetails.setVisibility(View.GONE);
+        }
+        beginMeasurement.setEnabled(false);
+        retryMeasurement.setEnabled(false);
+        approveMeasurement.setEnabled(false);
+        deleteMeasurement.setEnabled(false);
+        gasCheck.setEnabled(false);
+        particleCheck.setEnabled(false);
+        physicalCheck.setEnabled(false);
     }
 
     private void renderCycleWorkspace(SessionData data){
