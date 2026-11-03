@@ -388,6 +388,96 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
         require(SiteSummaryReportExporter.resolve(db,"SITE-N06G").sessions.size()==2,
             "both sessions recover after exact original byte restoration");
     }
+    /**
+     * V8 F02: verify ONE click approves the ONE measurement and parent session
+     * atomically. All temporary SQLite rows are rolled back after assertions,
+     * leaving the original two approved export fixtures byte-identical.
+     */
+    private void verifyAtomicOneMeasurementApproval(ExperimentsDb db,byte[] original)
+        throws Exception {
+        SQLiteDatabase w=db.getWritableDatabase();
+        w.beginTransaction(); // deliberately no setTransactionSuccessful()
+        try {
+            String field="FS-V8-F02-ATOMIC-CI",sid="MS-V8-F02-ATOMIC-CI";
+            String cycle="FC-V8-F02-ATOMIC-CI",extra="FC-V8-F02-DUPLICATE-CI";
+            String dev="V8-F02-TEST-DEVICE";
+            String terminal=new JSONObject().put("terminal_state","ready")
+                .put("field_60s_capture",true).put("duration_monotonic_ms",60000)
+                .put("sample_count",12)
+                .put("clock_contract","UTC_EPOCH_MS_PLUS_ANDROID_ELAPSED_REALTIME")
+                .toString();
+            String payload=new JSONObject().put("measurement",
+                new JSONObject().put("state","idle")).toString();
+            w.insertOrThrow("field_sessions",null,values(
+                "field_session_id",field,"site_id","SITE-N06G",
+                "name","F02 disposable single-approval test",
+                "status","ACTIVE","started_ts",TIME,"created_ts",TIME,"updated_ts",TIME));
+            w.insertOrThrow("measurement_sessions",null,values(
+                "session_id",sid,"started_ts",TIME,"ended_ts",TIME,
+                "kind","field_gas","operator_role","USER",
+                "payload",payload,"analytics",terminal));
+            w.insertOrThrow("field_session_measurements",null,values(
+                "field_session_id",field,"measurement_session_id",sid,
+                "linked_ts",TIME));
+            for(int i=0;i<12;i++){
+                JSONObject mq=new JSONObject().put("mq4",new JSONObject()
+                    .put("scan_cycle",i).put("ok",true).put("powered",true)
+                    .put("rs",75.0+i));
+                JSONObject env=new JSONObject().put("ok",true)
+                    .put("temperature",25.0).put("last_ok_age_ms",1);
+                w.insertOrThrow("telemetry_samples",null,values(
+                    "session_id",sid,"t_ms",800000L+i*1000,
+                    "mq_payload",mq.toString(),"env_payload",env.toString(),
+                    "motion_payload","{}"));
+            }
+            Method digest=FieldCycleRepository.class.getDeclaredMethod("evidenceDigest",
+                SQLiteDatabase.class,String.class,String.class,String.class,String.class);
+            digest.setAccessible(true);
+            String sha=(String)digest.invoke(null,w,sid,dev,terminal,payload);
+            require(sha.length()==64,"F02 original proof digest is present");
+            w.insertOrThrow("field_measurement_cycles",null,values(
+                "cycle_id",cycle,"field_session_id",field,"sequence_no",1,
+                "attempt_no",1,"measurement_session_id",sid,"include_gas",1,
+                "include_particles",0,"include_physical",1,"state","REVIEW_READY",
+                "started_ts",TIME,"updated_ts",TIME,"completed_ts",TIME,
+                "device_id",dev,"evidence_sha256",sha));
+            FieldCycleRepository controller=new FieldCycleRepository(db);
+            // An unexpected second review item must block approval rather than
+            // silently selecting whichever record the UI last displayed.
+            w.insertOrThrow("field_measurement_cycles",null,values(
+                "cycle_id",extra,"field_session_id",field,"sequence_no",2,
+                "attempt_no",1,"include_gas",1,"include_particles",0,
+                "include_physical",1,"state","REVIEW_READY",
+                "started_ts",TIME,"updated_ts",TIME,"completed_ts",TIME));
+            require(!controller.approve(cycle),
+                "F02 refuses ambiguous two-review measurements in one field session");
+            require("ACTIVE".equals(new com.servoc.app.field.FieldSessionRepository(db)
+                .fieldSessionById(field).status),
+                "F02 failed approval does not partially close parent session");
+            require("REVIEW_READY".equals(controller.byId(cycle).state),
+                "F02 failed approval does not partially approve measurement");
+            w.delete("field_measurement_cycles","cycle_id=?",new String[]{extra});
+            require(controller.approve(cycle),
+                "F02 one-click approval of single verified measurement succeeds");
+            require("APPROVED".equals(new com.servoc.app.field.FieldSessionRepository(db)
+                .fieldSessionById(field).status),
+                "F02 parent session is approved within the SAME transaction");
+            require(controller.byId(cycle).approved(),
+                "F02 exactly one measurement is approved in same transaction");
+            require(!controller.approve(cycle),
+                "F02 double confirmation cannot produce second approved measurement");
+            boolean newScanDenied=false;
+            try{controller.begin(field,FieldCycleRepository.Options.defaults());}
+            catch(IllegalStateException expected){newScanDenied=true;}
+            require(newScanDenied,
+                "F02 new measurement cannot start after session's sole approval");
+        }finally{
+            w.endTransaction(); // rollback ALL test-only source rows
+        }
+        require(java.util.Arrays.equals(original,fileDigest(w)),
+            "F02 standalone transaction preserved original approved archival source");
+    }
+
     private void run()throws Exception{
         // CI-only disposable emulator database: never load a person's real DB.
         deleteDatabase("servoc.db");
@@ -500,8 +590,12 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             catch(IllegalStateException good){unapprovedRefused=true;}
             require(unapprovedRefused,"unapproved field report rejected");
             verifyMultiSessionSite(db,before);
+            verifyAtomicOneMeasurementApproval(db,before);
             JSONObject status=new JSONObject()
                 .put("status","PASS")
+                .put("one_session_one_measurement_atomic_approval",true)
+                .put("duplicate_review_approval_rejected_without_partial_update",true)
+                .put("second_measurement_after_approval_rejected",true)
                 .put("site_approved_independent_sessions",2)
                 .put("site_pdf_pages",5)
                 .put("site_second_session_tamper_rejected",true)
