@@ -351,7 +351,7 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                     }
                 }
             }
-            int sheets=0;boolean v6measure=false,v6source=false;
+            int sheets=0;boolean v6measure=false,v6source=false,envFull=false,adcFull=false,auxFull=false,jsonFull=false;
             try(ZipFile z=new ZipFile(xlsxFile)){
                 for(java.util.Enumeration<? extends ZipEntry> e=z.entries();e.hasMoreElements();){
                     ZipEntry item=e.nextElement();
@@ -367,9 +367,13 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 String xml=bytes.toString("UTF-8");
                 v6measure=xml.contains("V6 بحثي غازات");
                 v6source=xml.contains("V6 مصادر وتعارضات");
+                envFull=xml.contains("V8 البيئة الأصلية");
+                adcFull=xml.contains("V8 ADC ADS الأصلية");
+                auxFull=xml.contains("V8 القنوات المساعدة");
+                jsonFull=xml.contains("V8 JSON كامل");
             }
-            require(sheets==16&&v6measure&&v6source,
-                "all 14 V7 base + 2 V6 research XLSX sheets present");
+            require(sheets==20&&v6measure&&v6source&&envFull&&adcFull&&auxFull&&jsonFull,
+                "14 original + 2 V6 + 4 V8 raw environmental/ADS/auxiliary/JSON XLSX sheets present");
             byte[] after=fileDigest(original);
             require(java.util.Arrays.equals(before,after),
                 "no archived V5 decisions, approvals, Rs/R0 or telemetry modified by exports");
@@ -396,6 +400,10 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 .put("pdf_pages",pages).put("xlsx_sheet_count",sheets)
                 .put("xlsx_v6_measurements_sheet",v6measure)
                 .put("xlsx_v6_sources_sheet",v6source)
+                .put("xlsx_v8_environment_sheet",envFull)
+                .put("xlsx_v8_adc_ads_sheet",adcFull)
+                .put("xlsx_v8_auxiliary_sheet",auxFull)
+                .put("xlsx_v8_original_json_sheet",jsonFull)
                 .put("sqlite_original_approved_source_sha_before_after_equal",true)
                 .put("v5_decisions_modified",false)
                 .put("legacy_fallback_in_v6",false)
