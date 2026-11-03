@@ -75,7 +75,7 @@ public final class TankInstantAnalyzer {
         // Source-model estimates are a parallel, provenance-labelled set of
         // mathematical diagnostics, NOT a replacement for the Next decision.
         JSONObject scientific=com.servoc.app.chemcore.nextintegration
-            .NextScientificDiagnostics.compute(frozen,master);
+            .NextScientificDiagnostics.compute(frozen,master,next.receipt.sourceSnapshot);
         out.put("scientific_source_diagnostics",scientific);
         // Reference thresholds and GHS are sourced from the same unified
         // catalog. Calculated alerts remain conditional research comparisons.
