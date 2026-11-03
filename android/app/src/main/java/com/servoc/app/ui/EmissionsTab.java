@@ -189,8 +189,8 @@ public final class EmissionsTab {
     private void deleteSelected(){
         if(capturing||processing)return;
         EmissionSessionStore.Engine e=selected();if(e==null)return;
-        new AlertDialog.Builder(context).setTitle("حذف المحرك وقياساته")
-            .setMessage("سيُحذف «"+e.name+"» وجميع نتائج القياس الخاصة به نهائيًا.")
+        new AlertDialog.Builder(context).setTitle("حذف المحرك وقياسه")
+            .setMessage("سيُحذف المحرك «"+e.name+"» ونتيجة قياسه وتقريره المرتبطان به نهائيًا.")
             .setNegativeButton("إلغاء",(d,w)->{})
             .setPositiveButton("حذف",(d,w)->{
                 store.delete(e.id);reload(-1);host.showToast("تم حذف المحرك ونتائجه");
@@ -199,7 +199,7 @@ public final class EmissionsTab {
     private void refreshSelection(){
         EmissionSessionStore.Engine e=selected();
         boolean has=e!=null;
-        measure.setEnabled(has&&!capturing&&!processing);
+        measure.setEnabled(has&&!capturing&&!processing&&store.count(e.id)==0);
         delete.setEnabled(has&&!capturing&&!processing);
         create.setEnabled(!capturing&&!processing);
         engineMenu.setEnabled(!capturing&&!processing);
@@ -215,7 +215,9 @@ public final class EmissionsTab {
         JSONObject latest=has?store.latest(e.id):null;
         report.setEnabled(latest!=null&&!capturing&&!processing);
         if(!capturing&&!processing){
-            status.setText(has?"المحرك المحدد: "+e.name+" — جاهز للقياس":"استحدث محركًا أولًا.");
+            status.setText(!has?"استحدث محركًا أولًا.":
+                latest!=null?"المحرك «"+e.name+"» لديه قياس واحد محفوظ — التقرير جاهز.":
+                    "المحرك المحدد: "+e.name+" — جاهز لقياس واحد.");
             if(latest!=null&&has){
                 try{EmissionIfcComparator.evaluate(latest,e.ifcProfile);}
                 catch(Exception invalid){host.showToast("تعذر تقييم مرجع IFC");}
@@ -226,6 +228,10 @@ public final class EmissionsTab {
     private void start(){
         EmissionSessionStore.Engine e=selected();
         if(capturing||processing||e==null)return;
+        if(store.count(e.id)>0){
+            host.showToast("تم إجراء قياس لهذا المحرك بالفعل؛ لكل محرك قياس واحد فقط");
+            refreshSelection();return;
+        }
         JSONObject latest=host.latestDiagnostics();
         if(latest==null||latest.optJSONObject("mq")==null){
             host.showToast("يلزم الاتصال بالروبوت لبدء قياس انبعاثات");return;
@@ -370,7 +376,7 @@ public final class EmissionsTab {
             summary.setText("لا توجد قياسات محفوظة للمحرك المحدد.");
             return;
         }
-        summary.setText("عدد الجلسات: "+historyCount+" • ChemCore Next: "+
+        summary.setText("قياس المحرك: 1 من 1 • ChemCore Next: "+
             latest.optString("next_status","NOT_RUN")+" • "+
             latest.optString("next_decision_status","UNKNOWN")+" • آخر تسجيل: "+
             new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.getDefault())
