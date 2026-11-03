@@ -63,14 +63,15 @@
       "status": "SOURCE_VERIFIED",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41555700519,
+      "ci_run_id": 41556632291,
       "changed_files": [
         "research/v8_implementation/tests/test_v8_report_data_lineage_and_v7_geometry.py",
-        "android/app/src/androidTest/java/com/servoc/app/report/ReportChartDataParityInstrumentedTest.java"
+        "android/app/src/androidTest/java/com/servoc/app/report/ReportChartDataParityInstrumentedTest.java",
+        "android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java"
       ],
-      "result": "R01 Next source telemetry and R02 frozen physical snapshot graph/data tests introduced; Android12 pending",
+      "result": "R01 Next source radar and R02 raw physical report tests in Android12; physical explicit-invalid numeric filter implemented without layout changes",
       "blocking_issue": null,
-      "next_action": "Review R01 radar and R02 live-source pixel diffs on Android12"
+      "next_action": "Resolve full Android12 pixel differential and source invalid-flag regression before marking PASS"
     },
     {
       "id": "V8-F05",
@@ -141,11 +142,11 @@
       "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41556241973,
+      "ci_run_id": 41556632291,
       "changed_files": [],
-      "result": "Latest full debug Java compilation PASS 41556241973; Food source independent G1 PASS 41556242090; Android12 source-sensitive pixel suite 41555990625 RUNNING",
+      "result": "Latest completed full compile PASS run 41556241973; food G1 PASS 41556242090; physical invalid-source patch compile and emulator still in progress",
       "blocking_issue": null,
-      "next_action": "Await actual completed Android12 test conclusion, then inspect XML and resolve failures; multi-session report still open"
+      "next_action": "Recheck compile run 41556603594 and Android12 41556632291, inspect failures and artifacts"
     },
     {
       "id": "V8-F11",
@@ -200,5 +201,16 @@
     "sha": "a93a376ef9"
   },
   "report_source_manifest": "docs/implementation/evidence/V8-REPORT-SOURCE-BINDING-MATRIX-2026-11-03.json",
-  "report_human_review": "docs/implementation/V8-REPORT-CONTENT-AND-VISUAL-QA-2026-11-03_AR.md"
+  "report_human_review": "docs/implementation/V8-REPORT-CONTENT-AND-VISUAL-QA-2026-11-03_AR.md",
+  "current_source_commit": "1b2d57fb4dc57cb2918469d23e22c1b5d6d3b829",
+  "emulator_current_run": 41556632291,
+  "emulator_current_status": "IN_PROGRESS",
+  "last_physical_reading_fix": {
+    "file": "android/app/src/main/java/com/servoc/app/report/V7PhysicalReportPdfWriter.java",
+    "commit": "6b87ace16abf0e8fee3799c73d9a57955d6dbd9a",
+    "summary": "Suppress source numeric values when embedded or enclosing sensor explicitly has ok=false or valid=false; keep original V7 PDF formatting",
+    "qa": "ReportChartDataParityInstrumentedTest.explicitlyInvalidPhysicalSensorCannotAppearInReport",
+    "qa_run": 41556632291,
+    "qa_status": "IN_PROGRESS"
+  }
 }
