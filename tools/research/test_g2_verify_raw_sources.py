@@ -55,6 +55,10 @@ class RawSourceVerificationTests(unittest.TestCase):
         result = verify({"sources": [self.entry(str(self.root / "sample.bin"))]}, self.root)
         self.assertEqual(result["results"][0]["error"], "unsafe_path")
 
+    def test_single_backslash_rejected(self):
+        result = verify({"sources": [self.entry("sub\\\\sample.bin")]}, self.root)
+        self.assertEqual(result["results"][0]["error"], "unsafe_path")
+
     def test_invalid_hash(self):
         result = verify({"sources": [self.entry(sha="invalid")]}, self.root)
         self.assertEqual(result["results"][0]["error"], "invalid_sha256")
