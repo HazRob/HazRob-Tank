@@ -15,6 +15,8 @@ import com.hazrob.tank.foodfreshness.meat.V7BeefResearchPdfWriter;
 import com.hazrob.tank.emissions.EmissionResearchEngine;
 import com.hazrob.tank.emissions.EmissionNextBridge;
 import com.hazrob.tank.emissions.EmissionReportPdf;
+import com.servoc.app.report.TankInstantReportPdf;
+import com.servoc.app.report.V7PhysicalReportPdfWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.json.JSONArray;
@@ -42,7 +44,7 @@ public final class ReportChartDataParityInstrumentedTest {
             try(FileOutputStream out=new FileOutputStream(f)){out.write(bytes);}
             try(ParcelFileDescriptor fd=ParcelFileDescriptor.open(f,ParcelFileDescriptor.MODE_READ_ONLY);
                 PdfRenderer pdf=new PdfRenderer(fd)){
-                assertEquals(pagesExpected,pdf.getPageCount());
+                if(pagesExpected>0)assertEquals(pagesExpected,pdf.getPageCount());
                 try(PdfRenderer.Page p=pdf.openPage(zeroIndex)){
                     Bitmap image=Bitmap.createBitmap(595,842,Bitmap.Config.ARGB_8888);
                     p.render(image,null,null,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
@@ -128,6 +130,60 @@ public final class ReportChartDataParityInstrumentedTest {
         try{
             assertTrue("R06 temporal plot must depend on captured MQ evidence",
                 changed(a,b,55,385,535,490)>30);
+        }finally{a.recycle();b.recycle();}
+    }
+
+
+    private JSONObject telemetry(double scaling)throws Exception{
+        JSONObject mq=new JSONObject();
+        String[] names={"mq2","mq3","mq4","mq5","mq7","mq8","mq9","mq135"};
+        for(int i=0;i<names.length;i++){
+            double measured=4.5+(0.65*i)+scaling*(i%3==0?1.0:0.05);
+            mq.put(names[i],new JSONObject().put("ok",true)
+                .put("powered",true).put("rs",measured)
+                .put("r0",12.0+i*0.4).put("r0_source","DEVICE"));
+        }
+        return new JSONObject().put("mq",mq);
+    }
+    private JSONObject nextEnvelope()throws Exception{
+        return new JSONObject()
+            .put("schema","hazrob.tank.v8.next.decision.presentation/1")
+            .put("decision_uid","R01-QA-DECISION-ONLY")
+            .put("snapshot_sha256","R01-QA-FAKE-SHA-PROVENANCE")
+            .put("candidate_count",0)
+            .put("candidates",new JSONArray())
+            .put("observed_channels",8)
+            .put("decision_status","UNKNOWN");
+    }
+    @Test public void instantRadarUsesSameFrozenRsR0SourceAsReportTable()throws Exception{
+        ByteArrayOutputStream outA=new ByteArrayOutputStream(),outB=new ByteArrayOutputStream();
+        TankInstantReportPdf.write(outA,telemetry(0),nextEnvelope(),"R01-TRACE-TEST",
+            1793664000000L);
+        TankInstantReportPdf.write(outB,telemetry(3.2),nextEnvelope(),"R01-TRACE-TEST",
+            1793664000000L);
+        Bitmap a=page(outA.toByteArray(),0,1),b=page(outB.toByteArray(),0,1);
+        try{
+            // Original V7 radar uses a box at x14..277,y552..759.
+            assertTrue("R01 fingerprint radar must reflect its own MQ Rs/R0 ledger",
+                changed(a,b,35,575,252,743)>15);
+            assertTrue("R01 numeric table must reflect its own frozen sensor values",
+                changed(a,b,265,232,565,510)>15);
+        }finally{a.recycle();b.recycle();}
+    }
+    @Test public void physicalPdfDisplaysSourceSnapshotInsteadOfOtherSample()throws Exception{
+        JSONObject physicalA=new JSONObject().put("env",
+            new JSONObject().put("temperature",22.5).put("humidity",58.0)
+                .put("pressure",1008.2));
+        JSONObject physicalB=new JSONObject().put("env",
+            new JSONObject().put("temperature",45.8).put("humidity",58.0)
+                .put("pressure",1008.2));
+        ByteArrayOutputStream outA=new ByteArrayOutputStream(),outB=new ByteArrayOutputStream();
+        V7PhysicalReportPdfWriter.write(outA,physicalA,"2026-11-03T00:00:00Z");
+        V7PhysicalReportPdfWriter.write(outB,physicalB,"2026-11-03T00:00:00Z");
+        Bitmap a=page(outA.toByteArray(),0,-1),b=page(outB.toByteArray(),0,-1);
+        try{
+            assertTrue("R02 displayed temperature must depend on this snapshot",
+                changed(a,b,125,70,400,770)>10);
         }finally{a.recycle();b.recycle();}
     }
 
