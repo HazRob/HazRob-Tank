@@ -153,18 +153,27 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
      */
     private void addNextResearchSourceFixture(ExperimentsDb db,String sid)
         throws Exception{
+        // TEST ONLY: derive the immutable original archive hash from the
+        // 16 actual SQLite rows (60s), not from a fabricated terminal reading.
+        var sourceArchive=com.servoc.app.chemcore.nextintegration
+            .NextFieldArchiveBridge.fromStoredSamples(db,sid);
+        require(sourceArchive.hasMeasuredEvidence(),
+            "P11 fixture has 60s distinct original source scans");
+        var sensorSummary=sourceArchive.qualifiedChannels.get("mq2");
+        require(sensorSummary!=null,
+            "P11 fixture original MQ2 median derives from archived rows");
         var reading=new com.hazrob.tank.chemcore.next.CoreContracts.Reading(
-            "CI-MQ2-PHYSICAL-1",1000,1.83,81.0,94.0,null,
+            "CI-N06G-SECOND-DEVICE:MQ2",1000,1.83,sensorSummary.medianRsKohm,94.0,null,
             com.hazrob.tank.chemcore.next.CoreContracts.CalibrationReference.AIR_RS_MEAN,
             "MEASURED",com.hazrob.tank.chemcore.next.CoreContracts.SampleQuality.VALID);
         var snapshot=new com.hazrob.tank.chemcore.next.CoreContracts.Snapshot(
-            "CI-NEXT-ARCHIVE-"+sid,"CI-N06G-SECOND-DEVICE",
+            "FIELD-ARCHIVE-"+sourceArchive.sourceSha256,"CI-N06G-SECOND-DEVICE",
             com.hazrob.tank.chemcore.next.CoreContracts.Mode.FIELD_SESSION,
             120000L,24.0,49.0,true,java.util.List.of(reading),
             "a".repeat(64));
         var evidence=new com.hazrob.tank.chemcore.next.CoreContracts.EvidenceNode(
             "CI-RESEARCH-ROOT-ONE","SOURCE_CURVE",
-            "CI-MQ2-PHYSICAL-1",414L,
+            "CI-N06G-SECOND-DEVICE:MQ2",414L,
             com.hazrob.tank.chemcore.next.CoreContracts.EvidencePolarity.POSITIVE,
             "source-only experiment fixture, NOT physical calibration");
         var candidate=new com.hazrob.tank.chemcore.next.CoreContracts.Candidate(
@@ -182,6 +191,29 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             !receipt.originalDecision.reportablePpm&&
             !receipt.originalDecision.physicallyValidatedG3,
             "second field session has immutable Next source-only receipt");
+        // Exercise the SAME immutable source ledger schema the production
+        // NextFieldArchiveBridge persists after a completed 60s field capture.
+        // Not a physical gas exposure or a scientific ppm qualification.
+        JSONObject original=new JSONObject().put("device_id","CI-N06G-SECOND-DEVICE");
+        JSONObject scientific=com.servoc.app.chemcore.nextintegration
+            .NextScientificDiagnostics.compute(original,
+                new com.servoc.app.chemical.ChemicalRepository(db),
+                receipt.sourceSnapshot);
+        require(scientific.getJSONArray("all_reference_models").length()==62,
+            "CI fixture exports complete 49+13 source equation inventory");
+        JSONObject provenance=new JSONObject()
+            .put("schema","hazrob.tank.v8.field.next_dual_reference/1")
+            .put("measurement_session_id",sid)
+            .put("source_archive_sha256",sourceArchive.sourceSha256)
+            .put("next_decision_uid",receipt.decisionUid)
+            .put("scientific_source_diagnostics",scientific)
+            .put("research_only_no_gas_identity_or_safety_alarm",true);
+        db.putMeta("v8_field_next_dual_reference_"+sid,provenance.toString());
+        com.servoc.app.report.V8NextDualReferenceXlsxLedger checked=
+            com.servoc.app.report.V8NextDualReferenceXlsxLedger.load(db,sid,receipt);
+        require(checked.available&&checked.rows.length()==62&&
+            checked.sourceArchiveSha256.equals(sourceArchive.sourceSha256),
+            "P11 dual-R0 original archive/decision/SQLite readback verified");
     }
 
     private void addSecondApprovedSession(ExperimentsDb db)throws Exception{
@@ -217,7 +249,7 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             JSONObject env=new JSONObject().put("temperature",24.0)
                 .put("rh",49.0).put("ok",true).put("last_ok_age_ms",0);
             w.insertOrThrow("telemetry_samples",null,values(
-                "session_id",sid2,"t_ms",200000L+i*1000L,
+                "session_id",sid2,"t_ms",200000L+i*4000L,
                 "mq_payload",gas.toString(),"env_payload",env.toString(),
                 "motion_payload","{}"));
         }
