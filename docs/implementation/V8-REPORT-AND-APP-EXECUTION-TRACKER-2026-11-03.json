@@ -24,14 +24,14 @@
     {
       "id": "V8-F01",
       "title": "Full tabs, developer/lab, controls and UI",
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": null,
+      "ci_run_id": 41555990667,
       "changed_files": [],
-      "result": null,
+      "result": "All-source UI inventory passed 41555990667; this does NOT verify each real click",
       "blocking_issue": null,
-      "next_action": "Inspect source, test data lineage, check actions"
+      "next_action": "Run UI interaction/activity lifecycle tests for all pages, especially Settings calibration and field session"
     },
     {
       "id": "V8-F02",
@@ -88,10 +88,13 @@
       "id": "V8-F06",
       "title": "R05 fruit and R06 beef output fidelity",
       "status": "SOURCE_VERIFIED",
-      "note": "",
+      "note": "Independent 180-second timer across tab switches fixed, duplicate firmware scan cycles rejected; food G1 41556242090 PASS",
       "source_sha": null,
       "ci_run_id": 41555700519,
-      "changed_files": [],
+      "changed_files": [
+        "android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java",
+        "research/food_freshness/test_food_capture_clock_independent.py"
+      ],
       "result": "Food writers consume original frozen MQ trace, source study trends and computed study-only models; PDF differential test pending",
       "blocking_issue": null,
       "next_action": "Inspect R05/R06 chart pixel diff results and 4/3-page PDF consistency"
@@ -138,11 +141,11 @@
       "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41555700519,
+      "ci_run_id": 41556241973,
       "changed_files": [],
-      "result": "Compile + static source parity passed 41555405022; report Android12 instrumentation still running",
+      "result": "Latest full debug Java compilation PASS 41556241973; Food source independent G1 PASS 41556242090; Android12 source-sensitive pixel suite 41555990625 RUNNING",
       "blocking_issue": null,
-      "next_action": "Read job logs and instrumentation XML; address test failures if any"
+      "next_action": "Await actual completed Android12 test conclusion, then inspect XML and resolve failures; multi-session report still open"
     },
     {
       "id": "V8-F11",
@@ -165,7 +168,7 @@
     "V8-F09",
     "V8-F10"
   ],
-  "source_head_at_last_audit": "620acf21d90b544268d4224a00398dafd1da06e1",
+  "source_head_at_last_audit": "c87a8ee3049cd81d68f8c7d7f08ef205cf6c5d3f",
   "report_ci_instrumented_run": 41555700519,
   "report_ci_instrumented_status": "IN_PROGRESS",
   "compile_and_g1_static_test": {
@@ -179,5 +182,23 @@
     "ReportChartDataParityInstrumentedTest.java",
     "v8-next-android-device-sqlite-gate.yml",
     "v8-next-android-compile-gate.yml"
-  ]
+  ],
+  "latest_completed_compile": {
+    "run_id": 41556241973,
+    "status": "SUCCESS",
+    "sha": "c87a8ee304"
+  },
+  "latest_completed_food_g1": {
+    "run_id": 41556242090,
+    "status": "SUCCESS",
+    "sha": "c87a8ee304",
+    "detail": "independent 180s clock source contract + 59 food patterns and independent engine tests"
+  },
+  "latest_pending_android12": {
+    "run_id": 41555990625,
+    "status": "IN_PROGRESS",
+    "sha": "a93a376ef9"
+  },
+  "report_source_manifest": "docs/implementation/evidence/V8-REPORT-SOURCE-BINDING-MATRIX-2026-11-03.json",
+  "report_human_review": "docs/implementation/V8-REPORT-CONTENT-AND-VISUAL-QA-2026-11-03_AR.md"
 }
