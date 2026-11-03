@@ -196,6 +196,17 @@
       "blocking_issue": "Not a physical gas experiment; manufacturer K/heater and exposure ppm still G3=0; report on device remains to be field verified.",
       "checkpoint": "docs/implementation/V8-P11-3-DUAL-R0-FIELD-XLSX-READBACK-2026-11-03_AR.md",
       "next_action": "Inspect full raw field telemetry completeness and site-level dual-R0 research audit; physical Tank G2/G3 separate."
+    },
+    {
+      "id": "V8-P11.4",
+      "title": "Original environmental/ADS/ADC telemetry and independent dual-R0 site workbook",
+      "status": "ANDROID_G1_E2E_PASS_NO_PHYSICAL_G3",
+      "ci_run_id": 41586887553,
+      "source_sha": "a89dc2f30b1ca0fc3afaf42ed2051a8ddb346964",
+      "result": "252 Android emulator assertions PASS; field 20 sheets and site 6 sheets; raw ADC code vs unidentified firmware adc vs explicit V verified; missing volts NULL; per-session 62 source models; PDF V7 geometry and Excel original styles unchanged.",
+      "blocking_issue": "No physical Tank multi-gas reference G2/G3, ppm/identity remains research-only; production APK release not built.",
+      "checkpoint": "docs/implementation/V8-P11-4-RAW-ADC-ENV-SITE-DUAL-R0-2026-11-03_AR.md",
+      "next_action": "Review operator-facing research/NOT_EVALUABLE states and calibration display against frozen dual-R0 ledger; G2/G3 physical separately."
     }
   ],
   "priority_now": [
@@ -562,5 +573,38 @@
     "released_apk": false,
     "test_artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/41585294386/artifacts/13206914516",
     "next_action": "Inspect full raw field telemetry completeness and site-level dual-R0 research audit; physical Tank G2/G3 separate."
+  },
+  "latest_v8_p11_raw_adc_site": {
+    "status": "ANDROID_G1_E2E_PASS_RAW_ADC_ENV_DUAL_R0_SITE_RESEARCH_ONLY",
+    "checkpoint": "docs/implementation/V8-P11-4-RAW-ADC-ENV-SITE-DUAL-R0-2026-11-03_AR.md",
+    "verified_source_sha": "a89dc2f30b1ca0fc3afaf42ed2051a8ddb346964",
+    "ci_run": 41586887553,
+    "ci_result": "SUCCESS",
+    "emulator_android_assertions": 252,
+    "site_worksheets": 6,
+    "site_numeric_cells": 74,
+    "site_header_cells": 85,
+    "field_worksheets": 20,
+    "next_field_numeric_cells": 3883,
+    "next_field_header_cells": 371,
+    "excel_styles_sha256_prefix": "51459c5d1a66dbc07e",
+    "excel_three_templates_style_identical": true,
+    "raw_adc_numeric_checked": {
+      "raw_code": 1000,
+      "unqualified_original_adc_field": 2000,
+      "validated_explicit_voltage_v": 1.5,
+      "missing_voltage_value": null
+    },
+    "ads_acquisition_preserved": true,
+    "future_physical_channels_archived": true,
+    "site_dual_r0_source_rows_per_session": 62,
+    "cross_session_ppm_average": false,
+    "pdf_page_geometry": "842x595",
+    "pdf_replaced": false,
+    "physical_tank_g3_qualified": 0,
+    "physical_gas_ppm_certified": false,
+    "released_apk": false,
+    "test_artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/41586887553/artifacts/13208581408",
+    "next_step": "Review operator-facing research/NOT_EVALUABLE states and calibration display against frozen dual-R0 ledger; G2/G3 physical separately."
   }
 }
