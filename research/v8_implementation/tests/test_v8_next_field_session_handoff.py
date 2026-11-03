@@ -18,7 +18,7 @@ class FieldHandoff(unittest.TestCase):
         for marker in ("telemetry_samples WHERE session_id=? ORDER BY t_ms,id",
                        "SOURCE_ARCHIVE_ELIGIBLE_FOR_RESEARCH_UNKNOWN_ONLY",
                        "SOURCE_ARCHIVE", "medianRsKohm","source.sourceSha256",
-                       "CoreContracts.Mode.FIELD_SESSION","FIELD_RELAY_NOT_ON_AT_CAPTURE_SEAL"):
+                       "CoreContracts.Mode.FIELD_SESSION","FIELD_RELAY_NOT_ON_OR_INCONSISTENT_AT_CAPTURE_SEAL"):
             if marker=="SOURCE_ARCHIVE_ELIGIBLE_FOR_RESEARCH_UNKNOWN_ONLY":continue
             self.assertIn(marker,s)
         source=(ROOT/"android/app/src/main/java/com/hazrob/tank/chemcore/next/NextFieldArchive.java").read_text()
