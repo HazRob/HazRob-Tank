@@ -25,28 +25,28 @@
       "id": "V8-F01",
       "title": "Full tabs, developer/lab, controls and UI",
       "status": "IN_PROGRESS",
-      "note": "",
-      "source_sha": null,
-      "ci_run_id": 41555990667,
+      "note": "Verified source defect: selecting first/next session could reuse stale cycle rows while async refresh rekeys selection; disable measurement controls and requery on selection mismatch; 3 literal newline labels corrected.",
+      "source_sha": "2a9e870d99f3f68b244530ac2a5bbff60682cf67",
+      "ci_run_id": 41570330982,
       "changed_files": [],
-      "result": "All-source UI inventory passed 41555990667; this does NOT verify each real click",
+      "result": "V8 UI inventory PASS 41570330982 and Android Java compile PASS 41570330907 after 2a9e870; source inventory does not demonstrate real user tap success.",
       "blocking_issue": null,
-      "next_action": "Run UI interaction/activity lifecycle tests for all pages, especially Settings calibration and field session"
+      "next_action": "UI Activity navigation/tap/state and process-restart tests on Android device; confirm no obsolete session enables approve/delete."
     },
     {
       "id": "V8-F02",
       "title": "Field cycle, R0, relay and instantaneous stages",
       "status": "CI_PASS",
-      "note": "",
-      "source_sha": null,
+      "note": "F02 atomic approval test 237 assertions PASS in F05 41569572553; safety defect corrected in d26ae9e6 then numeric mask hardening in 8f174f4. Explicit relay OFF ACK required; missing, malformed or contradictory relay never equals OFF. Android12 F02 relay instrumentation commit 8f6cf368; new 41570919863 pending.",
+      "source_sha": "8f174f477eaa3a9a8b8cebabeb1594b20e3f1555",
       "ci_run_id": 41568248265,
       "changed_files": [
         "android/app/src/main/java/com/servoc/app/ui/FieldSessionsTab.java",
         "android/app/src/main/java/com/servoc/app/field/FieldCycleRepository.java"
       ],
       "result": "Android13 PASS 237 fixture assertions: rejects duplicate review without partial approval, atomically approves sole valid measurement and parent session, blocks reapproval and second scan; test-only transaction fully rolled back",
-      "blocking_issue": "Hardware relay OFF ACK / 60s measurements must be checked on physical Tank",
-      "next_action": "Physical Android/Tank timing/retry/relay test; add operator UI tap/navigation test"
+      "blocking_issue": "F02 physical relay OFF feedback, actual Tank 60+60 samples and 3+1 R0 require real robot. New Android12 relay instrumented 41570919863 pending.",
+      "next_action": "Check 41570919863 actual instrumented gate then verify physical ESP32 relay.on / mask transitions and fail reason."
     },
     {
       "id": "V8-F03",
@@ -145,11 +145,11 @@
       "status": "IN_PROGRESS",
       "note": "",
       "source_sha": null,
-      "ci_run_id": 41569572735,
+      "ci_run_id": 41570862608,
       "changed_files": [],
-      "result": "Android compilation PASS 41569572735, V8 UI source inventory PASS 41569572577, F05 approved PDF/XLSX end-to-end PASS 41569572553 (237 assertions), all on e5f152e; Android12 41569572604 pending at this checkpoint.",
+      "result": "Android12 full Next/Food/PDF + SQLite SUCCESS 41569572604 for e5f152e; Android Java compile SUCCESS 41570330907 (F01), 41570826735 (relay OFF) and 41570862608 (mask hardening); UI inventory SUCCESS 41570330982. New Android12 relay test 41570919863 pending.",
       "blocking_issue": null,
-      "next_action": "Check Android12 run 41569572604; if FAIL inspect exact native-test failure. No APK release while G3, F01 physical interactions and relay/R0 gates unqualified."
+      "next_action": "Confirm new Android12 F02 off-ACK instrumented 41570919863; no APK release until real-device F01/F02/F11 gates."
     },
     {
       "id": "V8-F11",
@@ -172,7 +172,7 @@
     "V8-F09",
     "V8-F10"
   ],
-  "source_head_at_last_audit": "e5f152ed6b62ed13b2c515bc7106894d056fb5bc",
+  "source_head_at_last_audit": "679d202a46506bb9ff5b571fb480d6ee3f9982fb",
   "report_ci_instrumented_run": 41569572553,
   "report_ci_instrumented_status": "SUCCESS",
   "compile_and_g1_static_test": {
@@ -336,5 +336,25 @@
     "site_xlsx_sheets_mixed": 6,
     "physical_tank_verified": false,
     "apk_generated": false
+  },
+  "latest_v8_safety_f02_checkpoint": {
+    "corrective_commits": [
+      "d26ae9e6f2cf12e8b9bec02f95d2127b1b59a575",
+      "8f174f477eaa3a9a8b8cebabeb1594b20e3f1555"
+    ],
+    "instrumented_test_commit": "8f6cf368c1fce4aadcd84b36c33587756dad6e47",
+    "workflow_commit": "679d202a46506bb9ff5b571fb480d6ee3f9982fb",
+    "compile_verified_run": 41570862608,
+    "android12_relay_instrumentation_pending": 41570919863,
+    "relay_off_requires_explicit_valid_telemetry": true,
+    "reject_relay_missing": true,
+    "reject_relay_on_mask_conflicts": true,
+    "physical_tank_verified": false
+  },
+  "latest_completed_android12": {
+    "run_id": 41569572604,
+    "status": "SUCCESS",
+    "sha": "e5f152ed6b62ed13b2c515bc7106894d056fb5bc",
+    "scope": "V14/15 SQLite + Next decisions + report rendering Android12 emulator. Prior run 41568863791 failed emulator boot; not product failure."
   }
 }
