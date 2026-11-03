@@ -1,4 +1,4 @@
-name: HazRob Tank V8 Android12 source validation - Next and Food
+name: HazRob Tank V8 Android12 Next, Food and source-bound Reports
 
 on:
   push:
@@ -6,6 +6,8 @@ on:
     paths:
       - 'android/app/src/androidTest/java/com/servoc/app/chemcore/nextintegration/**'
       - 'android/app/src/androidTest/java/com/servoc/app/food/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/report/**'
+      - 'android/app/src/main/java/com/servoc/app/report/**'
       - 'android/app/src/androidTest/java/com/servoc/app/emissions/**'
       - 'android/app/src/main/java/com/hazrob/tank/emissions/**'
       - 'android/app/src/main/java/com/servoc/app/ui/EmissionsTab.java'
@@ -88,7 +90,7 @@ jobs:
           mkdir -p v8-android-test-scope
           echo "runner=${{ github.run_id }}" > v8-android-test-scope/scope.txt
           echo "Android API=31; ephemeral emulator; tests V14->V15 and stored UNKNOWN replay" >> v8-android-test-scope/scope.txt
-          echo "No physical Tank food validation, gas G3, or full UI accessibility test performed" >> v8-android-test-scope/scope.txt
+          echo "Source-bound R05/R06/R07 PDF render/parity tests are emulator fixtures, NOT real Tank data or G3; full UI accessibility not yet tested" >> v8-android-test-scope/scope.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
