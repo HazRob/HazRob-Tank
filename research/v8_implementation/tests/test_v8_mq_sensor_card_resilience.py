@@ -24,6 +24,16 @@ class MqSensorCardResilienceTest(unittest.TestCase):
         self.assertIn('baseline?" • جاهز":" • خط الأساس غير متحقق"', self.sensor)
         self.assertNotIn('" • baseline مدمج"', self.sensor)
 
+    def test_fallback_baseline_cannot_become_a_colored_gas_alarm(self):
+        self.assertIn("&&!warn.usedFallbackBaseline", self.sensor)
+        self.assertIn("else if(!baseline){head.setBackgroundColor(0xFF546E7A)", self.sensor)
+        self.assertIn("لا إنذار غاز", self.sensor)
+        self.assertLess(
+            self.sensor.index("else if(!baseline)"),
+            self.sensor.index("else if(warn.level==InstantMqWarningEngine.Level.HIGH)")
+        )
+        self.assertIn("String delta=baseline&&Double.isFinite(warn.delta)?", self.sensor)
+
     def test_unavailable_diagnostic_does_not_dereference_null_health(self):
         self.assertIn("SensorHealthEngine.Snapshot health=host.sensorHealth(hw.key)", self.sensor)
         self.assertRegex(
