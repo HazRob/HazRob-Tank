@@ -218,6 +218,17 @@
       "blocking_issue": "Actual phone UI interactions and physical Tank source calibration not yet verified; no release APK; G3 0/80.",
       "checkpoint": "docs/implementation/V8-P11-5-NEXT-DUAL-R0-OPERATOR-UI-2026-11-03_AR.md",
       "next_action": "P11.6 inspect R_air calibration UI and source-abstention rendering in PDF content, preserving existing layout; Android screen-touch tests independent."
+    },
+    {
+      "id": "V8-P11.6",
+      "title": "Manual/automatic source-aware R_air presentation and immutable Next PDF R0 parity",
+      "status": "F05_ANDROID_PDF_PASS_ANDROID12_FULL_MATRIX_PENDING_G3_UNTESTED",
+      "f05_run_id": 41591086589,
+      "source_sha": "89efc38997890596263ca03ab0f1ce3de821decc",
+      "result": "261 Android F05 checks; source-matched 7-page instant PDF for 1 research candidate + 62 source curves; verified MQ8 missing sensor and MQ2 source K; 20 field and 6 site Excel sheets; original PDF geometry and style retained.",
+      "remaining": "Android12 full instrumented 41/42 regression tests after correcting stale artificial snapshot/radar fixtures, and actual device UI/G3 still outstanding.",
+      "checkpoint": "docs/implementation/V8-P11-6-R0-CALIBRATION-PDF-2026-11-03_AR.md",
+      "next_action": "Check Android12 41/42 instrumentation suite after source-qualified fixture updates, then F01/F02 UI acceptance and release readiness."
     }
   ],
   "priority_now": [
@@ -643,5 +654,38 @@
     "pdf_geometry_changed": false,
     "f05_test_artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/41588409417/artifacts/13208633764",
     "next_step": "P11.6 inspect R_air calibration UI and source-abstention rendering in PDF content, preserving existing layout; Android screen-touch tests independent."
+  },
+  "latest_v8_p11_r0_pdf_parity": {
+    "status": "ANDROID_COMPILE_AND_F05_PDF_E2E_PASS_ANDROID12_FULL_MATRIX_PENDING",
+    "checkpoint": "docs/implementation/V8-P11-6-R0-CALIBRATION-PDF-2026-11-03_AR.md",
+    "source_verified_commit": "89efc38997890596263ca03ab0f1ce3de821decc",
+    "f05_ci_run_id": 41591086589,
+    "f05_result": "SUCCESS",
+    "emulator_checks_passed": 261,
+    "android_compile_g1_run": 41590052699,
+    "android_compile_result": "SUCCESS",
+    "calibration_ui_definition_explicit": true,
+    "manual_reference_not_promoted_to_r_air": true,
+    "firmware_r0_not_used_in_next_pdf": true,
+    "next_pdf_snapshot_sha_uid_binding_checked": true,
+    "next_pdf_cross_source_denominator_consistency_checked": true,
+    "next_instant_pdf_pages_for_one_candidate_and_62_curves": 7,
+    "next_approved_field_pdf_pages": 6,
+    "next_site_pdf_pages": 5,
+    "site_excel_worksheets": 6,
+    "field_excel_worksheets": 20,
+    "raw_adc_voltage_units_kept_separate": true,
+    "original_pdf_design_preserved": true,
+    "android12_41test_gate": "RERUN_REQUIRED_WITH_UPDATED_FIXTURES",
+    "android12_rerun_ids": [
+      41591426463,
+      41591487234
+    ],
+    "android12_pre_fix_failure": "Old synthetic fixtures failed P11.6 source SHA/UID gate and expected firmware mq.r0 to drive frozen Next radar; corrected fixtures to check frozen scientific source.",
+    "physical_tank_g3": 0,
+    "qualified_gas_ppm": false,
+    "release_apk_built": false,
+    "artifact": "https://github.com/HazRob/HazRob-Tank/actions/runs/41591086589/artifacts/13210845574",
+    "next_step": "Check Android12 41/42 instrumentation suite after source-qualified fixture updates, then F01/F02 UI acceptance and release readiness."
   }
 }
