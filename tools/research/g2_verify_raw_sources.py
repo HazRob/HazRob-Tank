@@ -14,6 +14,7 @@ import sys
 
 def verify(manifest, root):
     out = []
+    seen_ids = set()
     for entry in manifest.get("sources", []):
         if not isinstance(entry, dict):
             out.append({"source_id": "", "path": "", "status": "blocked", "error": "invalid_source_entry"})
@@ -23,6 +24,11 @@ def verify(manifest, root):
         expected = entry.get("sha256", "")
         result = {"source_id": sid, "path": rel, "status": "blocked"}
         try:
+            if not isinstance(sid, str) or not sid.strip():
+                raise ValueError("invalid_source_id")
+            if sid in seen_ids:
+                raise ValueError("duplicate_source_id")
+            seen_ids.add(sid)
             if not isinstance(rel, str) or not rel or pathlib.PurePosixPath(rel).is_absolute() or ".." in pathlib.PurePosixPath(rel).parts or "\\" in rel or pathlib.PurePosixPath(rel).parts[0] == ".":
                 raise ValueError("unsafe_path")
             if not isinstance(expected, str) or not re.fullmatch(r"[a-fA-F0-9]{64}", expected):
