@@ -45,17 +45,42 @@ public final class SmartFieldSessionPdfWriter {
     public static void writePdf(OutputStream out,ExperimentsDb db,String fieldSessionId,ChemicalRepository chemicals)throws Exception{
         if(out==null)throw new IllegalArgumentException("output required");
         FieldSessionReportExporter.Bundle b=FieldSessionReportExporter.resolve(db,fieldSessionId);
-        if(b.analyticalContract==null)throw new IllegalStateException("SmartReport analytical contract missing");
-        SmartReportAnalyticalContract contract=b.analyticalContract;
-        List<Evidence> all=evidence(db,b.measurementSessionIds);Evidence primary=primaryFromBundle(b,contract,all);Consensus cs=consensus(all);
-        // A field session contains one accepted measurement. If its original
-        // ChemCore Next receipt exists, ALL Next panels below MUST bind to
-        // that exact measurement ID, never to a current/live decision.
+        // V8 source contract: a verified Next measurement has NO legacy
+        // SmartReportAnalyticalContract. Resolve its frozen receipt before
+        // accessing any V5/V6 derived scores, hazards or posterior.
         NextDecisionStore.Receipt next=new NextDecisionStore(db)
             .latestForSession(b.primaryMeasurementSessionId);
         if(next!=null)V8NextChartRenderer.requireSameSession(next,b.primaryMeasurementSessionId);
-        SessionSeries.Series s=contract.series();JSONObject q=contract.decision();
-        ReportIntelligence.ReportPlan plan=ReportIntelligence.plan(s,q,b.measurementSessionIds.size());JSONObject hazard=CandidateHazardContext.evaluate(db,q);
+        SmartReportAnalyticalContract contract=b.analyticalContract;
+        if(next==null&&contract==null)
+            throw new IllegalStateException("Historical SmartReport analytical contract missing");
+        final List<Evidence> all;
+        final Evidence primary;
+        final Consensus cs;
+        final SessionSeries.Series s;
+        final JSONObject q;
+        final ReportIntelligence.ReportPlan plan;
+        final JSONObject hazard;
+        if(next!=null){
+            // One approved measurement, archived source samples, immutable
+            // Next decision; never read stale legacy ChemCore/V5 conclusions.
+            s=b.primarySeries;
+            q=null;
+            primary=new Evidence(b.primaryMeasurementSessionId,s,null,b.records.size());
+            all=new ArrayList<>();
+            all.add(primary);
+            cs=consensus(all);
+            plan=null; // Only used by the historical PDF branch.
+            hazard=null;
+        }else{
+            all=evidence(db,b.measurementSessionIds);
+            primary=primaryFromBundle(b,contract,all);
+            cs=consensus(all);
+            s=contract.series();
+            q=contract.decision();
+            plan=ReportIntelligence.plan(s,q,b.measurementSessionIds.size());
+            hazard=CandidateHazardContext.evaluate(db,q);
+        }
         boolean crossSession=all.size()>1;
         int basePages=crossSession?5:4;
         int cyclePages=Math.max(1,(b.cycleLedger.size()+ROWS_PER_CYCLE_PAGE-1)/ROWS_PER_CYCLE_PAGE);
