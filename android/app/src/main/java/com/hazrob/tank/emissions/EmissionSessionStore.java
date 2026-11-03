@@ -17,14 +17,23 @@ public final class EmissionSessionStore extends SQLiteOpenHelper {
         public final String name,ifcProfile;
         public Engine(long id,String name,String ifcProfile){this.id=id;this.name=name;this.ifcProfile=ifcProfile;}
     }
-    public EmissionSessionStore(Context context){super(context.getApplicationContext(),DB,null,2);}
+    public EmissionSessionStore(Context context){super(context.getApplicationContext(),DB,null,3);}
     @Override public void onCreate(SQLiteDatabase db){
         db.execSQL("CREATE TABLE emission_engines (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL UNIQUE,created_ms INTEGER NOT NULL,ifc_profile TEXT NOT NULL DEFAULT 'NOT_CONFIGURED')");
         db.execSQL("CREATE TABLE emission_measurements (id INTEGER PRIMARY KEY AUTOINCREMENT,engine_id INTEGER NOT NULL,at_ms INTEGER NOT NULL,results_json TEXT NOT NULL, FOREIGN KEY(engine_id) REFERENCES emission_engines(id) ON DELETE CASCADE)");
-        db.execSQL("CREATE INDEX emission_measurements_by_engine ON emission_measurements(engine_id,at_ms DESC)");
+        db.execSQL("CREATE UNIQUE INDEX one_emission_measurement_per_engine ON emission_measurements(engine_id)");
     }
     @Override public void onUpgrade(SQLiteDatabase db,int oldV,int newV){
         if(oldV<2)db.execSQL("ALTER TABLE emission_engines ADD COLUMN ifc_profile TEXT NOT NULL DEFAULT 'NOT_CONFIGURED'");
+        if(oldV<3){
+            // Legacy versions allowed multiple scans. Preserve the latest inserted
+            // result for each engine while enforcing exactly one result per engine.
+            db.execSQL("DELETE FROM emission_measurements WHERE id NOT IN "+
+                "(SELECT MAX(id) FROM emission_measurements GROUP BY engine_id)");
+            db.execSQL("DROP INDEX IF EXISTS emission_measurements_by_engine");
+            db.execSQL("CREATE UNIQUE INDEX one_emission_measurement_per_engine "+
+                "ON emission_measurements(engine_id)");
+        }
     }
     @Override public void onConfigure(SQLiteDatabase db){
         super.onConfigure(db);db.setForeignKeyConstraintsEnabled(true);
@@ -60,16 +69,19 @@ public final class EmissionSessionStore extends SQLiteOpenHelper {
     }
     public long addMeasurement(long engineId,JSONObject report){
         if(engineId<=0||report==null)throw new IllegalArgumentException("INVALID_RESULT");
+        if(count(engineId)>0)throw new IllegalStateException(
+            "ENGINE_HAS_ONE_MEASUREMENT_ALREADY_DELETE_ENGINE_TO_START_NEW");
         ContentValues v=new ContentValues();
         v.put("engine_id",engineId);
         v.put("at_ms",report.optLong("measured_at_ms",System.currentTimeMillis()));
         v.put("results_json",report.toString());
         return getWritableDatabase().insertOrThrow("emission_measurements",null,v);
     }
+    public boolean hasMeasurement(long engineId){return count(engineId)>0;}
     public JSONObject latest(long engineId){
         if(engineId<=0)return null;
         try(Cursor c=getReadableDatabase().rawQuery(
-            "SELECT results_json FROM emission_measurements WHERE engine_id=? ORDER BY at_ms DESC,id DESC LIMIT 1",
+            "SELECT results_json FROM emission_measurements WHERE engine_id=? LIMIT 1",
             new String[]{Long.toString(engineId)})){
             if(c.moveToFirst())return new JSONObject(c.getString(0));
         }catch(Exception ignored){}
