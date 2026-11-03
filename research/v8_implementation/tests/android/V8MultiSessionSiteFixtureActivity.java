@@ -145,6 +145,43 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             "started_ts",TIME,"updated_ts",TIME,"fail_reason","FIXTURE_ABORTED"));
     }
 
+    /** TEST-ONLY Next receipt for the second independently approved field
+     * session. Written BEFORE sealing the cycle digest, never injected into
+     * an already approved real measurement or inferred from a PDF.
+     */
+    private void addNextResearchSourceFixture(ExperimentsDb db,String sid)
+        throws Exception{
+        var reading=new com.hazrob.tank.chemcore.next.CoreContracts.Reading(
+            "CI-MQ2-PHYSICAL-1",1000,1.83,81.0,94.0,null,
+            com.hazrob.tank.chemcore.next.CoreContracts.CalibrationReference.AIR_RS_MEAN,
+            "MEASURED",com.hazrob.tank.chemcore.next.CoreContracts.SampleQuality.VALID);
+        var snapshot=new com.hazrob.tank.chemcore.next.CoreContracts.Snapshot(
+            "CI-NEXT-ARCHIVE-"+sid,"CI-N06G-SECOND-DEVICE",
+            com.hazrob.tank.chemcore.next.CoreContracts.Mode.FIELD_SESSION,
+            120000L,24.0,49.0,true,java.util.List.of(reading),
+            "a".repeat(64));
+        var evidence=new com.hazrob.tank.chemcore.next.CoreContracts.EvidenceNode(
+            "CI-RESEARCH-ROOT-ONE","SOURCE_CURVE",
+            "CI-MQ2-PHYSICAL-1",414L,
+            com.hazrob.tank.chemcore.next.CoreContracts.EvidencePolarity.POSITIVE,
+            "source-only experiment fixture, NOT physical calibration");
+        var candidate=new com.hazrob.tank.chemcore.next.CoreContracts.Candidate(
+            414L,"conditional source curve evidence only",
+            java.util.List.of("CI-RESEARCH-ROOT-ONE"));
+        var next=new com.hazrob.tank.chemcore.next.CoreContracts.Result(
+            "CI-CHEMCORE-NEXT-RESEARCH-1",snapshot,
+            com.hazrob.tank.chemcore.next.ChemCoreNext.snapshotHash(snapshot),
+            com.hazrob.tank.chemcore.next.CoreContracts.DecisionStatus.RESEARCH_CANDIDATES,
+            java.util.List.of(evidence),java.util.List.of(candidate),
+            java.util.List.of("test-only source caveat"));
+        var receipt=new com.servoc.app.chemcore.nextintegration.NextDecisionStore(db)
+            .append(sid,1793664000000L,snapshot,next);
+        require(receipt!=null&&receipt.sessionId.equals(sid)&&
+            !receipt.originalDecision.reportablePpm&&
+            !receipt.originalDecision.physicallyValidatedG3,
+            "second field session has immutable Next source-only receipt");
+    }
+
     private void addSecondApprovedSession(ExperimentsDb db)throws Exception{
         SQLiteDatabase w=db.getWritableDatabase();
         final String fs2="FS-N06G-APPROVED-2";
@@ -182,6 +219,9 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 "mq_payload",gas.toString(),"env_payload",env.toString(),
                 "motion_payload","{}"));
         }
+        // This receipt is part of the approved evidence SHA. Adding it AFTER
+        // approval is prohibited and should trigger the existing tamper guard.
+        addNextResearchSourceFixture(db,sid2);
         Method d=FieldCycleRepository.class.getDeclaredMethod("evidenceDigest",
             SQLiteDatabase.class,String.class,String.class,String.class,String.class);
         d.setAccessible(true);
@@ -204,6 +244,11 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             SiteSummaryReportExporter.resolve(db,"SITE-N06G");
         require(site.sessions.size()==2,
             "site summary retains exactly two independent approved sessions");
+        require(site.sessions.stream().filter(x->x.hasNext).count()==1,
+            "second source-qualified Next measurement is not replaced by legacy chemistry");
+        require(com.servoc.app.report.NextSiteEvidenceCharts.independentRoots(
+                site.sessions)==1,
+            "site counts one actual independent Next research source root");
         require(site.sessions.get(0).bundle.measurementSessionIds.size()==1&&
                 site.sessions.get(1).bundle.measurementSessionIds.size()==1,
             "site summary never merges underlying measurement sessions");
