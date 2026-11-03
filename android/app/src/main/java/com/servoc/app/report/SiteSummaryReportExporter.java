@@ -199,12 +199,18 @@ public final class SiteSummaryReportExporter {
             0xFFE0F7FA);metric(c,225,282,170,82,"UNKNOWN / MIXTURE",String.valueOf(plan.openSetOrMixtureSessions),
             "لا تُعامل كهويات مؤكدة",0xFFFFF3E0);metric(c,408,282,170,82,"قياس غير صالح",String.valueOf(plan.invalidSessions),"Quality-only",plan.invalidSessions>0?0xFFFFEBEE:0xFFF5F5F5);metric(c,591,282,170,82,"جلسات حرجة",String.valueOf(plan.criticalSessions),"مرجع صحي/LFL",plan.criticalSessions>0?0xFFFFEBEE:0xFFE8F5E9);
         text(c,"قراءة التقرير",42,405,11,Color.BLACK,true);float y=427;for(int i=0;i<Math.min(4,plan.findings.size());i++){text(c,"• "+shorten(plan.findings.get(i),125),42,y,8.2f,i==0&&plan.criticalSessions>0?0xFFC62828:Color.DKGRAY,false);y+=22;}
-        text(c,"يقارن التقرير الجلسات ككيانات مستقلة ويحلل تكرار الدليل عبر 144 مادة. لا متوسط PPM بين الجلسات، ولا Tracking، ولا تحويل EST إلى إنذار مهني.",42,540,8,Color.DKGRAY,false);
+        text(c,NextSiteEvidenceCharts.hasAnyNext(b.sessions)?
+            "مقارنة جذور مصادر ChemCore Next للقياسات المستقلة؛ لا تُحوَّل إلى هوية أو PPM أو إنذار.":
+            "يقارن التقرير الجلسات ككيانات مستقلة ويحلل تكرار الدليل عبر 144 مادة. لا متوسط PPM بين الجلسات، ولا Tracking، ولا تحويل EST إلى إنذار مهني.",
+            42,540,8,Color.DKGRAY,false);
     }
 
     private static void matrix(Canvas c,SiteBundle b,int chunk){
         int start=chunk*ROWS_PER_MATRIX_PAGE,end=Math.min(b.sessions.size(),start+ROWS_PER_MATRIX_PAGE);title(c,"مصفوفة جلسات الموقع "+(chunk+1),42);float y=76;
-        text(c,"#",29,y,7.2f,Color.DKGRAY,true);text(c,"الجلسة",48,y,7.2f,Color.DKGRAY,true);text(c,"البدء",155,y,7.2f,Color.DKGRAY,true);text(c,"قياس",272,y,7.2f,Color.DKGRAY,true);text(c,"Outcome",309,y,7.2f,Color.DKGRAY,true);text(c,"المادة",390,y,7.2f,Color.DKGRAY,true);text(c,"Support",486,y,7.2f,Color.DKGRAY,true);text(c,"144+",541,y,7.2f,Color.DKGRAY,true);text(c,"الخطر",580,y,7.2f,Color.DKGRAY,true);text(c,"PPM",697,y,7.2f,Color.DKGRAY,true);text(c,"سلامة",774,y,7.2f,Color.DKGRAY,true);y+=18;
+        text(c,"#",29,y,7.2f,Color.DKGRAY,true);text(c,"الجلسة",48,y,7.2f,Color.DKGRAY,true);text(c,"البدء",155,y,7.2f,Color.DKGRAY,true);text(c,"قياس",272,y,7.2f,Color.DKGRAY,true);text(c,"Outcome",309,y,7.2f,Color.DKGRAY,true);text(c,"المادة",390,y,7.2f,Color.DKGRAY,true);text(c,NextSiteEvidenceCharts.hasAnyNext(b.sessions)?"Next/—":"Support",
+            486,y,7.2f,Color.DKGRAY,true);
+        text(c,NextSiteEvidenceCharts.hasAnyNext(b.sessions)?"Roots":"144+",
+            541,y,7.2f,Color.DKGRAY,true);text(c,"الخطر",580,y,7.2f,Color.DKGRAY,true);text(c,"PPM",697,y,7.2f,Color.DKGRAY,true);text(c,"سلامة",774,y,7.2f,Color.DKGRAY,true);y+=18;
         if(start>=end){text(c,"لا توجد جلسات تحت هذا الموقع.",42,112,11,Color.DKGRAY,false);return;}
         for(int i=start;i<end;i++){SessionSummary s=b.sessions.get(i);Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor((i&1)==0?0xFFF7F8FA:Color.WHITE);p.setStyle(Paint.Style.FILL);c.drawRect(new RectF(26,y-13,816,y+7),p);JSONObject h=s.priorityHazard();String hazard=h==null?"—":shorten("#"+h.optInt("rank",0)+" "+h.optString("hazard_symbols","")+" "+hazardLabel(h),16);text(c,String.valueOf(i+1),29,y,6.5f,Color.BLACK,false);text(c,shorten(s.bundle.fieldSession.name,14),48,y,6.5f,Color.BLACK,false);text(c,shorten(s.bundle.fieldSession.startedTs,16),155,y,6.5f,Color.BLACK,false);text(c,String.valueOf(s.bundle.measurementSessionIds.size()),272,y,6.5f,Color.BLACK,false);text(c,shorten(s.outcome,11),309,y,6.5f,Color.BLACK,false);
             text(c,shorten(s.chemical,13),390,y,6.5f,Color.BLACK,false);
@@ -214,7 +220,10 @@ public final class SiteSummaryReportExporter {
                 Integer.toString(s.panelSupportedCount),541,y,6.5f,Color.BLACK,false);
             text(c,s.hasNext?"NEXT RESEARCH":hazard,580,y,6.3f,
                 s.hasNext?Color.DKGRAY:hazardColor(h),false);text(c,s.ppmReportable&&Double.isFinite(s.ppm)?fmt(s.ppm):"—",697,y,6.5f,Color.BLACK,false);text(c,s.critical()?"⚠":s.safetyGate?"OK":"—",788,y,7.3f,s.critical()?0xFFC62828:Color.DKGRAY,true,Paint.Align.CENTER);y+=24;}
-        text(c,"Support = positive-evidence index، وليس احتمالًا. خانة الخطر تعرض المرشح الأعلى أولوية سياقية مع رتبته؛ الإنذار الفعلي يبقى M4-gated.",42,535,7.2f,Color.DKGRAY,false);text(c,"PPM يبقى مرتبطًا بكل جلسة ولا يُجمع أو يُتوسط على مستوى الموقع.",42,551,7.2f,Color.DKGRAY,false);
+        text(c,NextSiteEvidenceCharts.hasAnyNext(b.sessions)?
+            "Roots = عدد أدلة مصادر Next المؤرشفة؛ UID مرشح بحثي وليس هوية مؤكدة أو احتمالًا.":
+            "Support = positive-evidence index، وليس احتمالًا. خانة الخطر تعرض المرشح الأعلى أولوية سياقية مع رتبته؛ الإنذار الفعلي يبقى M4-gated.",
+            42,535,7.2f,Color.DKGRAY,false);text(c,"PPM يبقى مرتبطًا بكل جلسة ولا يُجمع أو يُتوسط على مستوى الموقع.",42,551,7.2f,Color.DKGRAY,false);
     }
 
     /** Cycle-level audit appendix; scientific estimates remain independent by cycle. */
@@ -311,7 +320,7 @@ public final class SiteSummaryReportExporter {
     private static void metric(Canvas c,float x,float y,float w,float h,String label,String value,String note,int color){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(color);p.setStyle(Paint.Style.FILL);c.drawRoundRect(new RectF(x,y,x+w,y+h),8,8,p);text(c,label,x+10,y+20,9,Color.DKGRAY,true);text(c,value,x+10,y+48,20,Color.BLACK,true);text(c,note,x+10,y+70,8,Color.DKGRAY,false);}
     private static void title(Canvas c,String s,float y){text(c,s,42,y,18,Color.BLACK,true);}
     private static void labelValue(Canvas c,String k,String v,float y){text(c,k,42,y,9,Color.DKGRAY,true);text(c,v,190,y,10,Color.BLACK,false);}
-    private static void chrome(Canvas c,int page,int total,SiteBundle b){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xFFB0B0B0);p.setStrokeWidth(.7f);c.drawLine(MARGIN,32,PAGE_WIDTH-MARGIN,32,p);c.drawLine(MARGIN,PAGE_HEIGHT-28,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-28,p);text(c,"HazRob "+ReleaseAudit.VERSION+" • HR069",MARGIN,23,10,Color.BLACK,true);text(c,"تقرير الموقع • "+b.site.name,PAGE_WIDTH/2f,23,10,Color.BLACK,true,Paint.Align.CENTER);text(c,"صفحة "+page+" من "+total,MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false);text(c,ReleaseAudit.PROJECT_PREPARERS,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false,Paint.Align.RIGHT);}
+    private static void chrome(Canvas c,int page,int total,SiteBundle b){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(0xFFB0B0B0);p.setStrokeWidth(.7f);c.drawLine(MARGIN,32,PAGE_WIDTH-MARGIN,32,p);c.drawLine(MARGIN,PAGE_HEIGHT-28,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-28,p);text(c,"HazRob Tank "+ReleaseAudit.VERSION,MARGIN,23,10,Color.BLACK,true);text(c,"تقرير الموقع • "+b.site.name,PAGE_WIDTH/2f,23,10,Color.BLACK,true,Paint.Align.CENTER);text(c,"صفحة "+page+" من "+total,MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false);text(c,ReleaseAudit.PROJECT_PREPARERS,PAGE_WIDTH-MARGIN,PAGE_HEIGHT-10,8.5f,Color.DKGRAY,false,Paint.Align.RIGHT);}
     private static void text(Canvas c,String s,float x,float y,float size,int color,boolean bold){text(c,s,x,y,size,color,bold,Paint.Align.LEFT);}
     private static void text(Canvas c,String s,float x,float y,float size,int color,boolean bold,Paint.Align align){Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);p.setColor(color);p.setTextSize(size);p.setFakeBoldText(bold);p.setTextAlign(align);c.drawText(s==null?"":s,x,y,p);}
     private static String pct100(double v){return Double.isFinite(v)?String.format(Locale.US,"%.1f%%",v):"—";}
