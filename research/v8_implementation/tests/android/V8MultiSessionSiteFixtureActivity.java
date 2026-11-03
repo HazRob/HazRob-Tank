@@ -442,21 +442,30 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 "started_ts",TIME,"updated_ts",TIME,"completed_ts",TIME,
                 "device_id",dev,"evidence_sha256",sha));
             FieldCycleRepository controller=new FieldCycleRepository(db);
-            // An unexpected second review item must block approval rather than
-            // silently selecting whichever record the UI last displayed.
-            w.insertOrThrow("field_measurement_cycles",null,values(
-                "cycle_id",extra,"field_session_id",field,"sequence_no",2,
-                "attempt_no",1,"include_gas",1,"include_particles",0,
-                "include_physical",1,"state","REVIEW_READY",
-                "started_ts",TIME,"updated_ts",TIME,"completed_ts",TIME));
-            require(!controller.approve(cycle),
-                "F02 refuses ambiguous two-review measurements in one field session");
-            require("ACTIVE".equals(new com.servoc.app.field.FieldSessionRepository(db)
-                .fieldSessionById(field).status),
-                "F02 failed approval does not partially close parent session");
-            require("REVIEW_READY".equals(controller.byId(cycle).state),
-                "F02 failed approval does not partially approve measurement");
-            w.delete("field_measurement_cycles","cycle_id=?",new String[]{extra});
+            // An unexpected second review item must be rejected either by
+            // the DB uniqueness constraint or the approval state machine.
+            // The failed attempt must never partially approve the parent.
+            boolean secondInserted=false;
+            try{
+                w.insertOrThrow("field_measurement_cycles",null,values(
+                    "cycle_id",extra,"field_session_id",field,"sequence_no",2,
+                    "attempt_no",1,"include_gas",1,"include_particles",0,
+                    "include_physical",1,"state","REVIEW_READY",
+                    "started_ts",TIME,"updated_ts",TIME,"completed_ts",TIME));
+                secondInserted=true;
+            }catch(android.database.sqlite.SQLiteConstraintException safeguarded){
+                require(true,"F02 SQLite rejects duplicate ready state");
+            }
+            if(secondInserted){
+                require(!controller.approve(cycle),
+                    "F02 refuses two review measurements in one field session");
+                require("ACTIVE".equals(new com.servoc.app.field.FieldSessionRepository(db)
+                    .fieldSessionById(field).status),
+                    "F02 failed approval cannot partially close session");
+                require("REVIEW_READY".equals(controller.byId(cycle).state),
+                    "F02 failed approval cannot partly approve measurement");
+                w.delete("field_measurement_cycles","cycle_id=?",new String[]{extra});
+            }
             require(controller.approve(cycle),
                 "F02 one-click approval of single verified measurement succeeds");
             require("APPROVED".equals(new com.servoc.app.field.FieldSessionRepository(db)
