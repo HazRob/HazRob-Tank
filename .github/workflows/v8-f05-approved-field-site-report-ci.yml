@@ -149,6 +149,7 @@ jobs:
           python3 -m pip install --disable-pip-version-check --quiet PyMuPDF==1.26.7
           python3 - <<'PY'
           from pathlib import Path
+          import json
           import fitz
           p=Path('/tmp/v6-n06g-approved/n06g_full_approved_field.pdf')
           d=fitz.open(str(p))
