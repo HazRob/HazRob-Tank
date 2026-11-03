@@ -7,13 +7,13 @@ import java.util.Map;
 /**
  * Independent EMISSIONS feature boundary.
  * This is deliberately a completed measurement of MQ source signals, NOT a
- * fabricated quantitative exhaust result. The owner will choose the future
- * inference engine and source-validated IFC reference mapping separately.
- * The gas ChemCore Next and Stable catalogs are not altered or coupled here.
+ * fabricated quantitative exhaust result. The owner has selected ChemCore Next; qualified IFC source mappings
+ * remain separately pending.
+ * The gas ChemCore Next is invoked via a separate read-only bridge; Stable models are not modified.
  */
 public final class EmissionResearchEngine {
     public static final String VERSION="emissions-research-capture/1";
-    public static final String INFERENCE="PENDING_ENGINE_SELECTION";
+    public static final String INFERENCE="CHEMCORE_NEXT_ANALYSIS_PENDING";
     private EmissionResearchEngine(){}
     private static boolean valid(Double v){return v!=null&&Double.isFinite(v)&&v>0;}
     private static JSONObject pollutant(String id,String label,String sensor,
