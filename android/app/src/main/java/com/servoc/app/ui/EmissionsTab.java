@@ -70,7 +70,7 @@ public final class EmissionsTab {
         view.addView(root);
         root.addView(UiKit.title(c,"🏭 قياس انبعاثات المحركات والمولدات"),UiKit.full(c));
         TextView hint=UiKit.small(c,
-            "إدارة محركات مستقلة؛ التحليل عبر ChemCore Next ومراجع Stable. تظهر بصمات ومنحنيات المصادر المناسبة للمادة، لكن تقديرات MQ البحثية ليست قياسات انبعاثات معتمدة ولا إثباتًا للامتثال لـIFC.");
+            "يعرض ChemCore Next جميع النتائج العددية للمنحنيات المرجعية المتوفرة، بما فيها المنحنيات المستقرأة خارج مجال المصدر، مع معرّفاتها وحالتها. القيم تقديرات مصدرية وليست شهادة امتثال لـIFC.");
         hint.setTextColor(0xFF303D4F);
         root.addView(hint,UiKit.full(c));
 
@@ -317,7 +317,7 @@ public final class EmissionsTab {
     private void render(JSONObject latest,int historyCount){
         table.removeAllViews();
         TableRow head=new TableRow(context);
-        for(String name:new String[]{"الملوث","التركيز","حد IFC","الحالة","إشارة MQ البحثية"})
+        for(String name:new String[]{"الملوث","تقديرات المنحنيات ppm","حد IFC","الحالة","المراجع والحساسات"})
             head.addView(cell(name,true,false),new TableRow.LayoutParams(0,-2,1f));
         table.addView(head);
         if(latest==null){
@@ -336,11 +336,11 @@ public final class EmissionsTab {
             JSONObject row=list.optJSONObject(i);if(row==null)continue;
             boolean exceeded=row.optBoolean("ifc_comparable",false)&&
                 row.optBoolean("exceeded",false)&&!row.isNull("value_ppm");
-            String value=row.isNull("value_ppm")?"غير متاح":row.optString("value_ppm","—");
+            String value=row.isNull("value_ppm")?"لا توجد قراءة معتمدة":row.optString("value_ppm","—");
             String limit=row.isNull("limit")?"لم يحدد":row.optString("limit","—");
             String code=row.optString("status");
             String state="NEXT_SOURCE_HYPOTHESES".equals(code)?
-                "تقديرات Next بحثية":("NEXT_MODELS_NOT_EVALUABLE".equals(code)?
+                "منحنيات مرجعية محسوبة":("NEXT_MODELS_NOT_EVALUABLE".equals(code)?
                 "منحنى غير قابل للحساب":("MQ_SIGNAL_ONLY".equals(code)?
                 "إشارة MQ فقط":"لا قياس نوعي"));
             JSONArray hypotheses=row.optJSONArray("next_source_hypotheses");
@@ -350,11 +350,21 @@ public final class EmissionsTab {
                 for(int j=0;j<hypotheses.length();j++){
                     JSONObject source=hypotheses.optJSONObject(j);
                     if(source==null)continue;
-                    if(details.length()>0)details.append("; ");
-                    details.append(source.optString("mq_sensor")).append(" ");
-                    details.append(source.isNull("research_estimate_ppm")?"غير قابل للحساب":
-                        String.format(Locale.US,"%.3g ppm (بحثي)",
-                            source.optDouble("research_estimate_ppm")));
+                    if(details.length()>0)details.append("\n");
+                    details.append(source.optString("source_curve_id","مرجع غير محدد"))
+                        .append(" • ").append(source.optString("mq_sensor","—"))
+                        .append(" • ").append(source.optString("source_class","مرجع"))
+                        .append(" • ").append(source.optString("status","NOT_RUN"));
+                    if(source.optBoolean("extrapolated",false))
+                        details.append(" • خارج مجال المنحنى");
+                    if(source.has("reference_min_ppm")&&source.has("reference_max_ppm"))
+                        details.append(" • المجال [")
+                            .append(String.format(Locale.US,"%.3g",
+                                source.optDouble("reference_min_ppm",Double.NaN)))
+                            .append("–")
+                            .append(String.format(Locale.US,"%.3g",
+                                source.optDouble("reference_max_ppm",Double.NaN)))
+                            .append("] ppm");
                 }
                 evidence=details.toString();
             }
@@ -362,6 +372,23 @@ public final class EmissionsTab {
                 row.optString("mq_sensor")+" Rs="+
                 String.format(Locale.US,"%.4g",row.optDouble("mq_average_rs")):
                 "غير متاح";
+            // Numerical source estimates belong in the result matrix itself,
+            // not hidden behind an unqualified-measurement placeholder.
+            StringBuilder numbers=new StringBuilder();
+            if(hypotheses!=null)for(int j=0;j<hypotheses.length();j++){
+                JSONObject source=hypotheses.optJSONObject(j);
+                if(source==null||source.isNull("research_estimate_ppm"))continue;
+                if(numbers.length()>0)numbers.append("\n");
+                numbers.append(String.format(Locale.US,"%.4g",
+                    source.optDouble("research_estimate_ppm")))
+                    .append(" ppm");
+                if("SMOKE".equals(row.optString("pollutant")))
+                    numbers.append(" (مكافئ منحنى)");
+                else numbers.append(" (تقديري)");
+                if(source.optBoolean("extrapolated",false))
+                    numbers.append(" *");
+            }
+            if(numbers.length()>0)value=numbers.toString();
             TableRow item=new TableRow(context);
             item.addView(cell(row.optString("label"),false,false),new TableRow.LayoutParams(0,-2,1f));
             item.addView(cell(value,false,exceeded),new TableRow.LayoutParams(0,-2,1f));
