@@ -368,8 +368,8 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 v6measure=xml.contains("V6 بحثي غازات");
                 v6source=xml.contains("V6 مصادر وتعارضات");
             }
-            require(sheets==14&&v6measure&&v6source,
-                "all 12 V5 + 2 V6 research XLSX sheets present");
+            require(sheets==16&&v6measure&&v6source,
+                "all 14 V7 base + 2 V6 research XLSX sheets present");
             byte[] after=fileDigest(original);
             require(java.util.Arrays.equals(before,after),
                 "no archived V5 decisions, approvals, Rs/R0 or telemetry modified by exports");
