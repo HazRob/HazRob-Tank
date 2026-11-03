@@ -38,6 +38,18 @@ class RawSourceVerificationTests(unittest.TestCase):
     def test_empty_manifest_does_not_pass(self):
         self.assertFalse(verify({"sources": []}, self.root)["all_verified"])
 
+    def test_duplicate_source_identity_blocked(self):
+        result = verify({"sources": [self.entry(), self.entry()]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][1]["error"], "duplicate_source_id")
+
+    def test_empty_source_identity_blocked(self):
+        entry = self.entry()
+        entry["source_id"] = " "
+        result = verify({"sources": [entry]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "invalid_source_id")
+
     def test_missing_source(self):
         result = verify({"sources": [self.entry("missing.bin")]}, self.root)
         self.assertFalse(result["all_verified"])
