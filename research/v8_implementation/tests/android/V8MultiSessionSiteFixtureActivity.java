@@ -457,6 +457,44 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             output.write(nextPdf.toByteArray());
         }
         require(nextPdf.size()>5500,"real source-bound Next report bytes exist");
+        // P11.6: generate the REAL V7-format instant PDF from a frozen,
+        // persisted Next receipt and its separately archived scientific
+        // ledger. This is a CI rendering fixture, not another measurement.
+        com.servoc.app.chemcore.nextintegration.NextDecisionStore.Receipt
+            storedNext=site.sessions.get(1).next;
+        require(storedNext!=null &&
+                "MS-N06G-02".equals(storedNext.sessionId),
+            "P11.6 PDF instant uses exact independently approved Next receipt");
+        JSONObject instantEnvelope=com.servoc.app.chemcore.nextintegration
+            .NextDecisionEnvelope.fromReceipt(storedNext);
+        JSONObject sourceMeta=new JSONObject(db.getMeta(
+            "v8_field_next_dual_reference_MS-N06G-02",""));
+        JSONObject originalScience=sourceMeta.getJSONObject(
+            "scientific_source_diagnostics");
+        require(originalScience.getJSONArray("all_reference_models").length()==62,
+            "P11.6 PDF rendering uses the original 62 frozen source rows");
+        instantEnvelope.put("scientific_source_diagnostics",originalScience);
+        JSONObject sourceTelemetry=new JSONObject().put("mq",new JSONObject());
+        // Absence of firmware R0 in this synthetic telemetry is deliberate.
+        // Scientific R_air comes only from the immutable Next snapshot.
+        ByteArrayOutputStream nextInstantPdf=new ByteArrayOutputStream();
+        TankInstantV7PdfWriter.writeNext(nextInstantPdf,sourceTelemetry,
+            instantEnvelope,"CI-P11-DUAL-R0",storedNext.createdUtcMs);
+        File instantFile=new File(getFilesDir(),"n06g_next_instant_dual_r0.pdf");
+        try(FileOutputStream output=new FileOutputStream(instantFile)){
+            output.write(nextInstantPdf.toByteArray());
+        }
+        require(nextInstantPdf.size()>5500,
+            "P11.6 production instant PDF has source-specific diagnostic bytes");
+        try(ParcelFileDescriptor fd=ParcelFileDescriptor.open(instantFile,
+                    ParcelFileDescriptor.MODE_READ_ONLY);
+            PdfRenderer preview=new PdfRenderer(fd)){
+            int expectedPages=1+
+                (instantEnvelope.optInt("candidate_count",0)+13)/14+
+                (62+14)/15;
+            require(preview.getPageCount()==expectedPages,
+                "P11.6 no new PDF page added by source refusal reasons");
+        }
         // Exercise the same production public XLSX facade as the operator.
         // Next workbook analytical sheets MUST use Next receipts; no legacy
         // 144/M4/old ChemCore worksheet on the approved V8 measurement.
