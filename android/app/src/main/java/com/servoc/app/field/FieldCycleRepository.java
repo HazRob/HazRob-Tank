@@ -113,6 +113,17 @@ public final class FieldCycleRepository {
                 if(!c.moveToFirst()||!FieldSessionRepository.STATUS_ACTIVE.equals(c.getString(0)))
                     throw new IllegalStateException("Field session must be active");
             }
+            // ONE approved measurement per field session; a REVIEW_READY
+            // measurement must be accepted or retried, not measured again.
+            // Historical unapproved attempts stay in the audit trail.
+            try(Cursor previous=w.rawQuery(
+                "SELECT 1 FROM field_measurement_cycles WHERE field_session_id=? "+
+                "AND state IN ('REVIEW_READY','APPROVED','LEGACY_APPROVED') LIMIT 1",
+                new String[]{id})){
+                if(previous.moveToFirst())
+                    throw new IllegalStateException(
+                        "الجلسة لديها قياس مكتمل؛ اعتمد قياسها أو أعد المحاولة قبل الاعتماد");
+            }
             // Only one field cycle can own the physical acquisition system at any time.
             try(Cursor c=w.rawQuery("SELECT 1 FROM field_measurement_cycles "+
                     "WHERE state IN ('ARMED','WARMUP','SAMPLING') LIMIT 1",null)){
@@ -271,31 +282,89 @@ public final class FieldCycleRepository {
         }finally{w.endTransaction();}
     }
 
-    /** Review-to-approval is atomic and re-hashes the entire evidence sequence. */
+    /**
+     * ONE operator action: approve the single measurement AND its parent
+     * field session in the SAME SQLite transaction. There is no second
+     * independent "approve session" step in the V8 user workflow.
+     *
+     * Preserve superseded/failed retries in the immutable audit ledger.
+     * Do not silently migrate any historical multiply-approved session.
+     */
     public boolean approve(String cycleId){
-        String id=required(cycleId);SQLiteDatabase w=db.getWritableDatabase();w.beginTransaction();
+        String id=required(cycleId);
+        SQLiteDatabase w=db.getWritableDatabase();
+        w.beginTransaction();
         try{
-            String ms,device,hash,metadata,payload;
+            String field,measurement,device,hash,metadata,payload;
             try(Cursor c=w.rawQuery(
-                "SELECT c.measurement_session_id,c.device_id,c.evidence_sha256,"+
-                "m.analytics,m.payload FROM field_measurement_cycles c "+
+                "SELECT c.field_session_id,c.measurement_session_id,c.device_id,"+
+                "c.evidence_sha256,m.analytics,m.payload "+
+                "FROM field_measurement_cycles c "+
                 "JOIN measurement_sessions m ON m.session_id=c.measurement_session_id "+
-                "WHERE c.cycle_id=? AND c.state=?",
+                "WHERE c.cycle_id=? AND c.state=? AND m.operator_role='USER' "+
+                "AND m.kind LIKE 'field_%' AND m.ended_ts IS NOT NULL "+
+                "AND TRIM(m.ended_ts)<>''",
                 new String[]{id,REVIEW})){
                 if(!c.moveToFirst())return false;
-                ms=nz(c.getString(0));device=nz(c.getString(1));hash=nz(c.getString(2));
-                metadata=nz(c.getString(3));payload=nz(c.getString(4));
+                field=nz(c.getString(0));
+                measurement=nz(c.getString(1));
+                device=nz(c.getString(2));
+                hash=nz(c.getString(3));
+                metadata=nz(c.getString(4));
+                payload=nz(c.getString(5));
             }
-            if(ms.isEmpty()||device.isEmpty()||hash.length()!=64||
+            if(field.isEmpty()||measurement.isEmpty()||device.isEmpty()||
+                hash.length()!=64||
                 !FieldSessionApprovalPolicy.completedSuccessfully(metadata,payload)||
-                !hash.equalsIgnoreCase(evidenceDigest(w,ms,device,metadata,payload)))return false;
-            ContentValues v=new ContentValues();v.put("state",APPROVED);
-            v.put("approved_ts",utc());v.put("updated_ts",utc());
-            int n=w.update("field_measurement_cycles",v,
-                "cycle_id=? AND state=? AND measurement_session_id=?",
-                new String[]{id,REVIEW,ms});
-            if(n==1)w.setTransactionSuccessful();
-            return n==1;
+                !hash.equalsIgnoreCase(
+                    evidenceDigest(w,measurement,device,metadata,payload)))return false;
+
+            // The selected measurement must actually belong to this session;
+            // a foreign or duplicated link must not finalize either record.
+            try(Cursor parent=w.rawQuery(
+                "SELECT status FROM field_sessions WHERE field_session_id=? LIMIT 1",
+                new String[]{field})){
+                if(!parent.moveToFirst()||
+                   !(FieldSessionRepository.STATUS_ACTIVE.equals(parent.getString(0))||
+                     FieldSessionRepository.STATUS_CLOSED.equals(parent.getString(0))))
+                    return false;
+            }
+            try(Cursor owned=w.rawQuery(
+                "SELECT COUNT(*) FROM field_session_measurements "+
+                "WHERE field_session_id=? AND measurement_session_id=?",
+                new String[]{field,measurement})){
+                if(!owned.moveToFirst()||owned.getInt(0)!=1)return false;
+            }
+            try(Cursor sample=w.rawQuery(
+                "SELECT 1 FROM telemetry_samples WHERE session_id=? LIMIT 1",
+                new String[]{measurement})){
+                if(!sample.moveToFirst())return false;
+            }
+            try(Cursor accepted=w.rawQuery(
+                "SELECT COUNT(*) FROM field_measurement_cycles "+
+                "WHERE field_session_id=? AND state IN "+
+                "('REVIEW_READY','APPROVED','LEGACY_APPROVED')",
+                new String[]{field})){
+                if(!accepted.moveToFirst()||accepted.getInt(0)!=1)return false;
+            }
+
+            String now=utc();
+            ContentValues cycle=new ContentValues();
+            cycle.put("state",APPROVED);cycle.put("approved_ts",now);
+            cycle.put("updated_ts",now);
+            if(w.update("field_measurement_cycles",cycle,
+                "cycle_id=? AND field_session_id=? AND state=? "+
+                "AND measurement_session_id=?",
+                new String[]{id,field,REVIEW,measurement})!=1)return false;
+            ContentValues session=new ContentValues();
+            session.put("status",FieldSessionRepository.STATUS_APPROVED);
+            session.put("ended_ts",now);
+            session.put("updated_ts",now);
+            if(w.update("field_sessions",session,
+                "field_session_id=? AND status IN ('ACTIVE','CLOSED')",
+                new String[]{field})!=1)return false;
+            w.setTransactionSuccessful();
+            return true;
         }finally{w.endTransaction();}
     }
 
@@ -314,6 +383,13 @@ public final class FieldCycleRepository {
                     new String[]{old.fieldSessionId})){
                 if(!c.moveToFirst()||!FieldSessionRepository.STATUS_ACTIVE.equals(c.getString(0)))
                     throw new IllegalStateException("Field session must be active for retry");
+            }
+            try(Cursor c=w.rawQuery(
+                "SELECT 1 FROM field_measurement_cycles WHERE field_session_id=? "+
+                "AND state IN ('APPROVED','LEGACY_APPROVED') LIMIT 1",
+                new String[]{old.fieldSessionId})){
+                if(c.moveToFirst())throw new IllegalStateException(
+                    "قياس الجلسة معتمد بالفعل؛ لا يمكن استبداله بمحاولة جديدة");
             }
             try(Cursor c=w.rawQuery("SELECT 1 FROM field_measurement_cycles "+
                     "WHERE state IN ('ARMED','WARMUP','SAMPLING') LIMIT 1",null)){
