@@ -65,11 +65,12 @@ public final class DeveloperR0Tab {
         root.setPadding(UiKit.dp(c,10),UiKit.dp(c,8),UiKit.dp(c,10),UiKit.dp(c,20));
         root.setBackgroundColor(0xFFF7F8FA);scroll.addView(root);
 
-        root.addView(UiKit.title(c,"معايرة R0 — ثمانية حساسات"),UiKit.full(c));
+        root.addView(UiKit.title(c,"مرجع مقاومة الحساس في الهواء النظيف R_air — ثمانية MQ"),UiKit.full(c));
         TextView instructions=UiKit.small(c,
             "هذه معايرة هواء نظيف خاصة بروبوتك عند اتصال الحساسات؛ يمكن تعديل قيم R0 المحفوظة يدويًا دون إنترنت. وحدة Rs وR0 الحالية هي كيلو أوم (kΩ) وفق افتراض RL = 10 kΩ في الفيرموير، وليست أوم. " +
             "تحقق من قيمة مقاومة الحمل RL الفعلية على كل لوحة MQ قبل اعتماد القيمة؛ 1000 Ω = 1 kΩ. أدخل القيمة بوحدة kΩ بعد ثبات تغذية الحساسات وإحمائها. " +
-            "يتيح الوضع التلقائي حساب خط أساس تشغيلي ميداني من قراءات Rs في الهواء النظيف؛ أما الإدخال اليدوي فيبقى خيارًا مستقلًا. R0 وحدها لا تحقق معايرة PPM مرجعية. " +
+            "يتيح الوضع التلقائي حساب R_air تشغيلي ميداني من قراءات Rs في الهواء النظيف؛ أما الإدخال اليدوي فيبقى مرجعًا غير مؤكد التعريف ما لم تتوفر سجلات مصدره. "+
+            "R0 المشتقة لكل منحنى MQSensorsLib = R_air/K الخاصة بذلك المنحنى ولا تُحفظ فوق قيم الجهاز. R0 وحدها لا تحقق معايرة PPM مرجعية. " +
             "الحفظ معطل أثناء التسجيل/التحليل النشط حتى لا تتغير المعايرة وسط الجلسة. " +
             "حفظ القيم يؤثر في التحليلات الجديدة فقط؛ جلسات القياس المحفوظة لا تُعدّل.");
         instructions.setTextColor(0xFF855300);root.addView(instructions,UiKit.full(c));
@@ -80,8 +81,8 @@ public final class DeveloperR0Tab {
             "المدة المعتمدة: 180 ثانية تسخين و60 ثانية قياس واحدة فقط؛ "+
             "يستمر تشغيل حساسات MQ طوال الأربع دقائق دون فصل الكهرباء "+
             "أو تكرار النوافذ أو فترات راحة. "+
-            "R0 التشغيلية الجديدة = متوسط مقاومة Rs المقاسة في الدقيقة الأخيرة "+
-            "لكل حساس على حدة، دون استخدام معاملات منحنيات المصنع. "+
+            "R_air التشغيلية الجديدة (اسمها R0 في واجهة الفيرموير القديمة) = متوسط مقاومة Rs المقاسة في الدقيقة الأخيرة "+
+            "لكل حساس على حدة، دون استخدام معاملات منحنيات المصنع أو K. "+
             "بعد انتهاء القياس تُعرض القيم للمراجعة، ولا تُحفظ على ESP32 "+
             "أو الهاتف إلا بعد اعتماد المستخدم. "+
             "حفظ R0 ليس شهادة بنقاء الهواء أو تأكيدًا لتركيز غاز بوحدة ppm؛ "+
@@ -109,7 +110,7 @@ public final class DeveloperR0Tab {
         for(int i=0;i<keys.length;i++){
             final int index=i;
             LinearLayout card=UiKit.card(c);
-            card.addView(UiKit.title(c,keys[i].toUpperCase(Locale.US)),UiKit.full(c));
+            card.addView(UiKit.title(c,keys[i].toUpperCase(Locale.US)+" • R0 المخزنة kΩ"),UiKit.full(c));
             entry[i]=UiKit.input(c,"");
             entry[i].setSingleLine(true);
             entry[i].setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -229,12 +230,26 @@ public final class DeveloperR0Tab {
             String k=keys[i];JSONObject sample=mq==null?null:mq.optJSONObject(k);
             double rs=sample==null?Double.NaN:sample.optDouble("rs",Double.NaN);
             String rsLabel=Double.isFinite(rs)&&rs>0?String.format(Locale.US,"%.5f kΩ",rs):"غير متاح";
-            info[i].setText("Rs اللحظية: "+rsLabel+" • المصدر: "+ManualR0Calibration.getSource(k)+
-                "\nآخر حفظ: "+ManualR0Calibration.getUtc(k)+" • جلسة: "+ManualR0Calibration.getSession(k)+
+            String definition=ManualR0Calibration.getDefinition(k);
+            String interpretation="DEVICE_CLEAN_AIR_RS_MEAN".equals(definition)?
+                "R_air مقاس من الهواء النظيف؛ ليس R0 خاصًا بأي منحنى مصنع":
+                "LEGACY_MQ_FACTOR_SCALED_R0_NOT_AIR_RS".equals(definition)?
+                "R0 قديمة مضروبة/مقسومة بمعامل؛ لا تستخدم مكان R_air في Next":
+                "مرجع يدوي/غير مؤهل؛ لا يُعاد تعريفه رياضيًا كـR_air";
+            double saved=ManualR0Calibration.get(k);
+            info[i].setText("Rs اللحظية: "+rsLabel+
+                "\nR0 المحفوظة: "+(Double.isFinite(saved)&&saved>0?
+                    String.format(Locale.US,"%.5f kΩ",saved):"غير متاحة")+
+                " • المصدر: "+ManualR0Calibration.getSource(k)+
+                "\nتعريف المرجع: "+definition+" • "+interpretation+
+                "\nR0 المصدرية = R_air/K_source إن ثبت تعريف المصدر، ولا تغيّر هذا الحقل"+
+                "\nآخر حفظ: "+ManualR0Calibration.getUtc(k)+
+                " • جلسة: "+ManualR0Calibration.getSession(k)+
                 " • عينات R0 الموثقة: "+ManualR0Calibration.getSamples(k));
         }
-        summary.setText("R0 الحالية محفوظة على الهاتف ضمن إعدادات الجهاز ولا تُستبدل بواسطة ChemCore Stable. " +
-            "الإدخال اليدوي لا يغيّر تقارير جلسات قديمة، ولا يثبت معايرة الغاز المرجعي.");
+        summary.setText("R0/R_air المخزنة للجهاز تبقى كما اعتمدها المستخدم على الهاتف ولا تُستبدل بواسطة ChemCore Next أو Stable. "+
+            "التحويل إلى R0_source بحثي ومؤقت لكل منحنى له K موثقة، لا يعيد كتابة المعايرة. "+
+            "الإدخال اليدوي والفيرموير القديم لا يثبتان R_air تلقائيًا، ولا تتغير جلسات قديمة أو تُعتمد تراكيز ppm.");
     }
 
     private void startAutomatic(){
@@ -332,7 +347,8 @@ public final class DeveloperR0Tab {
         String stage="warmup".equals(p.state)?"تسخين":"جمع قراءات R0 في نافذة واحدة";
         long total="warmup".equals(p.state)?p.warmupMs:p.durationMs;
         autoProgress.setText(stage+" • المتبقي "+Math.max(0,(total-p.elapsedMs+999)/1000)+" ثانية من "+(total/1000)+"\n"+
-            "القراءات الصالحة: "+counts+"\nR0: "+p.r0Definition+" • "+p.protocol);
+            "القراءات الصالحة: "+counts+"\nتعريف مرجع الجهاز: "+p.r0Definition+
+            " • "+p.protocol+"\nلا تُحوَّل القيم إلى R0_source ولا ppm في هذه الخطوة.");
         clock.postDelayed(autoTick,1000);
     }
 
