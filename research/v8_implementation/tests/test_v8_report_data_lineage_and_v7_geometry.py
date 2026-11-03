@@ -65,7 +65,12 @@ class V8ProductionReportBindingAudit(unittest.TestCase):
         self.assertIn("public static void writePdf(",site)
         self.assertIn("public static void writeBlankDesign",blank)
         self.assertNotIn("V7SiteVisualPdfWriter",site)
-        for field in ("SessionSeries","ExperimentQueries","SiteReportIntelligence"):
+        for field in ("FieldSessionReportExporter.resolve(db,fs.id)",
+                      "repo.approvedSessionsForSite(id)",
+                      "decisions.latestPayloadForSession(cycle.measurementId)",
+                      "SiteReportIntelligence.plan(b.sessions)",
+                      "matrix(p.getCanvas(),b,chunk)",
+                      "recurrence(p.getCanvas(),plan)"):
             self.assertIn(field,site)
 
     def test_r05_r06_pdf_lines_bind_actual_frozen_mq_timelines(self):
