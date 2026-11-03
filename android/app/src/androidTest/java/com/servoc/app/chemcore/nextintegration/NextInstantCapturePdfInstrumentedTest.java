@@ -130,6 +130,11 @@ public final class NextInstantCapturePdfInstrumentedTest {
       .put("estimated_ppm",120.0+i).put("status","RESEARCH_WITHIN_SOURCE_DOMAIN"));
     science.put("all_reference_models",curves);
     science.put("computed_ppm_count",2);
+    // P11.6: a source-backed Next diagnostic must identify the EXACT frozen
+    // snapshot. Mismatching or missing identifiers are now fail-closed in
+    // production PDF. These are synthetic fixture values, not source data.
+    science.put("source_snapshot_sha256",repeat('a',64));
+    science.put("source_snapshot_uid","PDF-SYNTHETIC-READONLY-001");
     JSONObject ref=new JSONObject().put("reference_role","LFL")
       .put("material_label","synthetic test").put("source_curve_id","TEST_REF")
       .put("level","EARLY_WARNING").put("estimated_ppm",120.0)
@@ -143,6 +148,7 @@ public final class NextInstantCapturePdfInstrumentedTest {
       .put("schema","hazrob.tank.v8.next.decision.presentation/1")
       .put("decision_uid","NEXT-SYN-001").put("decision_status","RESEARCH_CANDIDATES")
       .put("snapshot_sha256",repeat('a',64))
+      .put("snapshot_uid","PDF-SYNTHETIC-READONLY-001")
       .put("stable_manifest_sha256",repeat('b',64))
       .put("model_version","chemcore-next-test")
       .put("candidate_count",1).put("candidates",new JSONArray().put(candidate))
@@ -164,6 +170,32 @@ public final class NextInstantCapturePdfInstrumentedTest {
         }
       }
     }finally{pdf.delete();}
+  }
+
+  @Test public void mismatchedFrozenScientificSnapshotFailsClosed()throws Exception{
+    JSONObject next=new JSONObject()
+      .put("schema","hazrob.tank.v8.next.decision.presentation/1")
+      .put("decision_uid","PDF-TAMPER-TEST")
+      .put("decision_status","UNKNOWN")
+      .put("snapshot_sha256",repeat('a',64))
+      .put("snapshot_uid","PDF-SNAPSHOT-ORIGINAL")
+      .put("candidate_count",0)
+      .put("candidates",new JSONArray());
+    JSONObject scientific=new JSONObject()
+      .put("source_snapshot_sha256",repeat('b',64))
+      .put("source_snapshot_uid","PDF-SNAPSHOT-SWAPPED")
+      .put("all_reference_models",new JSONArray());
+    next.put("scientific_source_diagnostics",scientific);
+    boolean refused=false;
+    try{
+      TankInstantReportPdf.write(new java.io.ByteArrayOutputStream(),
+          diag(11,true,true),next,"PDF-FAIL-CLOSED",1730000000000L);
+    }catch(IllegalArgumentException expected){
+      refused=expected.getMessage()!=null &&
+          expected.getMessage().contains(
+            "NEXT_PDF_SCIENTIFIC_SNAPSHOT_PROVENANCE_MISMATCH");
+    }
+    assertTrue("Unmatched frozen Next scientific reference must refuse PDF",refused);
   }
 
   private static String repeat(char c,int n){
