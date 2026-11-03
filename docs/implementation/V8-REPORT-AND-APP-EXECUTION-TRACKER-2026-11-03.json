@@ -55,14 +55,20 @@
     {
       "id": "V8-F03",
       "title": "ChemCore Next Stable candidate and decision parity",
-      "status": "SOURCE_VERIFIED",
-      "note": "",
-      "source_sha": null,
-      "ci_run_id": 41563441119,
-      "changed_files": [],
-      "result": "Source-bound Next charts, field/site reports and Next Excel writer audited; Android13 source SHA and report outputs PASS run 41568248265",
-      "blocking_issue": "Separate physical-source MQ time chart Android12 and Tank G3 remain unverified at this checkpoint",
-      "next_action": "Review latest Android12 chart pixel suite, then bench on Tank"
+      "status": "CI_PASS_SOURCE_ONLY",
+      "note": " F03 resumed: source-model research ratios now use Next receipt's device-bound frozen AIR_RS_MEAN, not raw firmware r0 (5d788ba,d811548). Relay ON signals validated consistently in instant and field (ef64063,19fcee6). 43+6 archived source curves linked to Next via Qualification.unverified: abstention diagnostics only, no source R0 equivalence/identity/ppm; instant and field wired (43af534,a775ebc,51fd779).",
+      "source_sha": "e0f59f1da3a23a49a8105502d9e1361f62cf4b69",
+      "ci_run_id": 41576799501,
+      "changed_files": [
+        "android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextScientificDiagnostics.java",
+        "android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextAndroidAdapter.java",
+        "android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextFieldArchiveBridge.java",
+        "android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextResearchSourceBindings.java",
+        "android/app/src/main/java/com/servoc/app/chemcore/TankInstantAnalyzer.java"
+      ],
+      "result": "Java17 complete staged Android compile + 47 static source-contract checks PASS run 41576799501 at e0f59f1; Next 49 source curves inspected only for abstention, no physical G3 evidence.",
+      "blocking_issue": "G2/G3 source equivalence, physical Tank, source trained fingerprints and 60 further equations not automatically active; added diagnostic expert outcomes are non-promoting.",
+      "next_action": "Next source reconciliation: compare the 109 formulas ledger (49 mapped vs other 60), qualify source R0/heater/threshold from primary evidence; never populate candidate ranks or ppm without provenance. Do not repeat F01/F02 UI tests by default."
     },
     {
       "id": "V8-F04",
@@ -454,5 +460,15 @@
     "failed": 0,
     "skipped": 0,
     "scope": "Android API31 emulator SQLite, Next, PDF, Settings R0 navigation; not actual Tank, later code requires rerun"
+  },
+  "latest_v8_f03_scientific_linkage": {
+    "status": "SOURCE_COMPILE_G1_PASS_NO_G3",
+    "ci_run": 41576799501,
+    "commit": "e0f59f1da3a23a49a8105502d9e1361f62cf4b69",
+    "source_archive_curves": 49,
+    "unqualified_for_gas_detection": true,
+    "source_record_register": "research/chemcore_next/source_curves/chemcore_next_p03_2_unified_109_formula_register.csv",
+    "checkpoint": "docs/implementation/V8-F03-NEXT-RESEARCH-SOURCE-RECONCILIATION-2026-11-03_AR.md",
+    "remaining_unbound_formulas_subject_to_source_review": 60
   }
 }
