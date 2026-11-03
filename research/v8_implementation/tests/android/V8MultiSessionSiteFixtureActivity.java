@@ -201,6 +201,41 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 receipt.sourceSnapshot);
         require(scientific.getJSONArray("all_reference_models").length()==62,
             "CI fixture exports complete 49+13 source equation inventory");
+        // P11.5: render the SAME persisted research ledger an operator will
+        // see. Verify that conditional ppm stays research-only, absent MQ8
+        // has a named reason, and that missing ledger is not fabricated.
+        String operatorSummary=com.servoc.app.chemcore.nextintegration
+            .NextResearchOperatorText.summary(scientific);
+        require(operatorSummary.contains("62 معادلة مصدرية")&&
+                operatorSummary.contains("لا يثبت وجود غاز")&&
+                operatorSummary.contains("R0 المصدر = R_air ÷ K"),
+            "P11.5 user research summary never implies certified gas/ppm");
+        JSONObject mqsl2=null,mqsl8=null;
+        org.json.JSONArray researchRows=scientific.getJSONArray("all_reference_models");
+        for(int i=0;i<researchRows.length();i++){
+            JSONObject q=researchRows.optJSONObject(i);
+            if(q==null)continue;
+            if("MQSL-EX-007".equals(q.optString("source_curve_id")))mqsl2=q;
+            if("MQSL-EX-013".equals(q.optString("source_curve_id")))mqsl8=q;
+        }
+        require(mqsl2!=null&&mqsl8!=null,
+            "P11.5 MQ2 and absent MQ8 source examples both preserved");
+        String computedPresentation=com.servoc.app.chemcore.nextintegration
+            .NextResearchOperatorText.curveLine(mqsl2);
+        String unavailablePresentation=com.servoc.app.chemcore.nextintegration
+            .NextResearchOperatorText.curveLine(mqsl8);
+        require(computedPresentation.contains("K المصدر = 9.83000")&&
+                computedPresentation.contains("R0 المصدر المشتق =")&&
+                computedPresentation.contains("نتيجة مصدرية بحثية غير معتمدة"),
+            "P11.5 computed formula shows individual K, separate R0 and research caveat");
+        require("MISSING_INSTALLED_MQ_SAMPLE".equals(
+                    mqsl8.optString("failure_reason_code",""))&&
+                unavailablePresentation.contains("لم تُحفظ قراءة لهذا الحساس")&&
+                unavailablePresentation.contains("لم تُحسب قيمة ppm"),
+            "P11.5 source missing sensor produces a concrete Arabic reason without ppm");
+        require(com.servoc.app.chemcore.nextintegration.NextResearchOperatorText
+                .summary(new JSONObject()).contains("لا يوجد سجل علمي"),
+            "P11.5 missing scientific ledger never derives a new reading");
         JSONObject provenance=new JSONObject()
             .put("schema","hazrob.tank.v8.field.next_dual_reference/1")
             .put("measurement_session_id",sid)
