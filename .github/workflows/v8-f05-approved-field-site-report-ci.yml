@@ -113,6 +113,9 @@ jobs:
           assert d['site_pdf_pages']==5 and d['site_second_session_tamper_rejected']
           assert d['next_field_pdf_pages']>=5 and d['site_next_source_roots']==1
           assert d['next_second_session_source_verified']
+          assert d['one_session_one_measurement_atomic_approval']
+          assert d['duplicate_review_approval_rejected_without_partial_update']
+          assert d['second_measurement_after_approval_rejected']
           nextpdf=p/'n06g_next_approved_field.pdf'
           assert nextpdf.read_bytes().startswith(b'%PDF-') and nextpdf.stat().st_size>5500
           sitepdf=p/'n06g_site_two_approved.pdf'
