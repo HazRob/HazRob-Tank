@@ -7,6 +7,8 @@ on:
       - 'android/app/src/androidTest/java/com/servoc/app/chemcore/nextintegration/**'
       - 'android/app/src/androidTest/java/com/servoc/app/food/**'
       - 'android/app/src/androidTest/java/com/servoc/app/report/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/measurement/**'
+      - 'android/app/src/main/java/com/servoc/app/measurement/**'
       - 'android/app/src/androidTest/java/com/servoc/app/data/**'
       - 'android/app/src/main/java/com/servoc/app/report/**'
       - 'android/app/src/androidTest/java/com/servoc/app/emissions/**'
