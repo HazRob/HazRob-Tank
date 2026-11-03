@@ -25,11 +25,15 @@
       "id": "V8-F01",
       "title": "Full tabs, developer/lab, controls and UI",
       "status": "IN_PROGRESS",
-      "note": "Source UI safeguards completed: stale-session controls prevented (2a9e870), persistent relay fault and pending-device warning rendered (1fba66f,0b760be). On-device click/navigate/lifecycle E2E not yet verified.",
-      "source_sha": "2a9e870d99f3f68b244530ac2a5bbff60682cf67",
-      "ci_run_id": 41570330982,
-      "changed_files": [],
-      "result": "Full source UI inventory PASS 41573131251 at c5498fb; prior Android compilation PASS 41573029593 at 0f85c6f. These are not physical UI tap tests.",
+      "note": "Source UI safeguards completed: stale-session controls prevented (2a9e870), persistent relay fault and pending-device warning rendered (1fba66f,0b760be). On-device click/navigate/lifecycle E2E not yet verified. MQ SensorCard UI: missing SensorHealth null guard and pale details fixed (9940411), unverified baseline no longer called embedded (e4f4fa3); G1 source regression three tests and full Java compilation PASS 41574933523 at faffc42. Android runtime UI tap and RTL operator acceptance remain pending.",
+      "source_sha": "faffc42deafcac4f64c20aab834d7b29b699bf1a",
+      "ci_run_id": 41574933523,
+      "changed_files": [
+        "android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java",
+        "research/v8_implementation/tests/test_v8_mq_sensor_card_resilience.py",
+        ".github/workflows/v8-next-android-compile-gate.yml"
+      ],
+      "result": "CI 41574933523 SUCCESS: Java17 compile and MQ SensorCard 3 G1 checks. UI device validation outstanding.",
       "blocking_issue": null,
       "next_action": "Android Activity scenario: first site/session selection, cross-site change during async loading, failed cycle notice, repeated approval, process recovery, PDF/Excel export."
     },
@@ -37,15 +41,15 @@
       "id": "V8-F02",
       "title": "Field cycle, R0, relay and instantaneous stages",
       "status": "IN_PROGRESS",
-      "note": "F02: source-stable 60+60 field capture; relay ON/OFF ACK must be consistent, original ESP32 device_id bound across restarts, and recovery owns field-operation lease. R0 cross-layer Android instrumented 180s+60s one-window test created at 91db787a and wired to device workflow at 7647e1b. Earlier F02 Android12 source gate 41570919863 and 41571856859 SUCCESS; latest R0 test RUNNING, not qualified.",
+      "note": "F02: source-stable 60+60 field capture; relay ON/OFF ACK must be consistent, original ESP32 device_id bound across restarts, and recovery owns field-operation lease. R0 cross-layer Android instrumented 180s+60s one-window test created at 91db787a and wired to device workflow at 7647e1b. Earlier F02 Android12 source gate 41570919863 and 41571856859 SUCCESS; latest R0 test RUNNING, not qualified. Android12 API31 run 41573508821 at 7647e1b passed 39/39 instrumented tests including R0 single-window acceptance contract; no physical electrical proof.",
       "source_sha": "7647e1b3234927ea9dae4b11f4df9baefca749af",
       "ci_run_id": 41573508821,
       "changed_files": [
         "android/app/src/main/java/com/servoc/app/ui/FieldSessionsTab.java",
         "android/app/src/main/java/com/servoc/app/field/FieldCycleRepository.java"
       ],
-      "result": "G1 field safety regression + Android compilation PASSED on earlier commits; original F05 atomic field approval 237 test checks passed. V8 R0 Android instrumentation has not yet completed, and no Tank electrical verification.",
-      "blocking_issue": "Latest Android12 R0 device-run 41573508821 pending; Tank real relay voltage/current OFF acknowledgment, 60+60 telemetry, 180+60 R0 eight-channel reference verification and UI operation remain not tested. Firmware relay.on/mask reports software state, NOT independently verified contact voltage.",
+      "result": "Android12 emulator 39/39 PASS (0 failed/skipped), 41573508821 at 7647e1b; F02 Tank bench and fault observations NOT_RUN.",
+      "blocking_issue": "Real Tank relay voltage/current independent OFF verification, fresh device_id acknowledgment, 60+60 telemetry, physical R0 180+60 across eight MQ channels and operator UI acceptance are NOT_RUN. Android12 emulator PASS cannot prove electrical OFF, Tank calibration or safety-grade identity.",
       "next_action": "Read 41573508821 result and distinguish emulator infra from real assertion failure; then bench test R0/relay and keep a source-signed logs+SOP. No APK release."
     },
     {
@@ -143,11 +147,11 @@
       "id": "V8-F10",
       "title": "Full compile / instrumentation automated gates",
       "status": "IN_PROGRESS",
-      "note": "Last verified compile PASS 41573052981 on 2ba345cf; Android 12 R0 instrumented new run 41573508821 in progress at checkpoint.",
+      "note": "Last verified compile PASS 41573052981 on 2ba345cf; Android 12 R0 instrumented new run 41573508821 in progress at checkpoint. Source compile and MQ sensor-card regression PASS 41574933523 at faffc42; Android12 suite PASS 41573508821 at older SHA 7647e1b (39/39), not full final SHA run.",
       "source_sha": null,
       "ci_run_id": 41573161113,
       "changed_files": [],
-      "result": "Latest full Android debug Java compile + V8 F02 structural tests PASS 41573161113 at 8a09be. Initial 34 Android12 instrumented tests PASS 41570919863 at older 679d202a; API31 run 41573131210 for c5498fb remains IN_PROGRESS.",
+      "result": "Compile+G1 PASS 41574933523 at faffc42; Android12 API31 39/39 PASS 41573508821 at 7647e1b. Final SHA Android12 and Tank hardware NOT_RUN.",
       "blocking_issue": null,
       "next_action": "Verify Android12 run 41573508821 against exact SHA 7647e1b; retain F11 blocking until real Tank, UI RTL and owner acceptance."
     },
@@ -172,7 +176,7 @@
     "V8-F09",
     "V8-F10"
   ],
-  "source_head_at_last_audit": "7647e1b3234927ea9dae4b11f4df9baefca749af",
+  "source_head_at_last_audit": "faffc42deafcac4f64c20aab834d7b29b699bf1a",
   "report_ci_instrumented_run": 41569572553,
   "report_ci_instrumented_status": "SUCCESS",
   "compile_and_g1_static_test": {
@@ -383,7 +387,7 @@
     "test_commit": "91db787a94de0ae97af1042ce20ef89359dff132",
     "workflow_commit": "7647e1b3234927ea9dae4b11f4df9baefca749af",
     "instrumented_run_id": 41573508821,
-    "instrumented_status_at_checkpoint": "IN_PROGRESS",
+    "instrumented_status_at_checkpoint": "SUCCESS",
     "quick_r0_warmup_ms": 180000,
     "quick_r0_sampling_ms": 60000,
     "single_window": true,
@@ -392,6 +396,19 @@
     "firmware_state_only_not_electrical_proof": true,
     "actual_hardware_calibration_validated": false,
     "tank_g3_validated": false,
-    "apk_release_ready": false
+    "apk_release_ready": false,
+    "instrumented_result": "39 Android12 API31 instrumentation PASS, 0 failed/skipped; NOT physical Tank validation",
+    "instrumented_test_count": 39
+  },
+  "latest_v8_f01_mq_sensor_card": {
+    "source_fix_commits": [
+      "9940411fb3f93d5a1b30e79c913a769e2162ace1",
+      "e4f4fa3448108c106f6e2c41409eb33151b128d3"
+    ],
+    "test_commit": "faffc42deafcac4f64c20aab834d7b29b699bf1a",
+    "build_and_regression_run": 41574933523,
+    "result": "SUCCESS",
+    "scope": "3 structural regression assertions, Android Java compile, not physical/display RTL device test",
+    "fixed": "Missing SensorHealth null dereference; pale low-contrast MQ detail text; unverifiable baseline incorrectly called embedded"
   }
 }
