@@ -242,16 +242,30 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
         for(int i=0;i<16;i++){
             JSONObject gas=new JSONObject();
             for(String key:new String[]{"mq2","mq3","mq4","mq5","mq7","mq8","mq9","mq135"}){
-                gas.put(key,new JSONObject().put("scan_cycle",i).put("ok",true)
+                JSONObject channel=new JSONObject()
+                    .put("scan_cycle",i).put("ok",true)
                     .put("powered",true).put("rs",79.0+i*.7)
-                    .put("r0",94.0).put("r0_source","CI_FIXTURE_RESEARCH_ONLY"));
+                    .put("r0",94.0).put("r0_source","CI_FIXTURE_RESEARCH_ONLY")
+                    .put("raw",1000+i).put("adc",2000+i)
+                    .put("ads",key.equals("mq2")?0:1)
+                    .put("ch",key.equals("mq2")?0:1);
+                if((i%2)==0)channel.put("adc_voltage_v",1.5+i*0.01);
+                gas.put(key,channel);
             }
             JSONObject env=new JSONObject().put("temperature",24.0)
                 .put("rh",49.0).put("ok",true).put("last_ok_age_ms",0);
+            JSONObject adc=new JSONObject().put("ads1",true).put("ads2",true)
+                .put("acquisition",new JSONObject().put("mux","CI-ADS-RAW-SEALED"));
+            JSONObject motion=new JSONObject().put("sample_seq",i+1)
+                .put("sample_utc_ms",1793664000000L+i*4000L)
+                .put("adc",adc)
+                .put("source_additional_channels",new JSONObject()
+                    .put("flame",new JSONObject().put("ok",true).put("raw",5+i))
+                    .put("pm2_extra",new JSONObject().put("status","UNQUALIFIED_CI_SOURCE")));
             w.insertOrThrow("telemetry_samples",null,values(
                 "session_id",sid2,"t_ms",200000L+i*4000L,
                 "mq_payload",gas.toString(),"env_payload",env.toString(),
-                "motion_payload","{}"));
+                "motion_payload",motion.toString()));
         }
         // This receipt is part of the approved evidence SHA. Adding it AFTER
         // approval is prohibited and should trigger the existing tamper guard.
@@ -302,6 +316,11 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
                 xml.contains("SOURCE_BOUND_RESEARCH_ONLY_G3_NOT_QUALIFIED")&&
                 xml.contains("R0 source derived")&&xml.contains("RESEARCH"),
                 "actual 20-sheet production XLSX includes 49+13 research formula rows");
+            require(xml.contains("CI-ADS-RAW-SEALED")&&
+                xml.contains("UNQUALIFIED_CI_SOURCE")&&
+                xml.contains("Original firmware adc (unit UNKNOWN)")&&
+                xml.contains("New/unmapped source channels JSON"),
+                "P11 original ADC acquisition and additional physical payload are in Excel");
         }
         for(int attempt=0;attempt<3;attempt++){
             JSONObject altered=new JSONObject(saved);
@@ -423,6 +442,30 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             output.write(siteXlsx.toByteArray());
         }
         require(siteXlsx.size()>3000,"Next site XLSX source-bound production bytes");
+        // The expanded site XLSX must show every research model alongside
+        // its parent Field Session, and never pool ppm across two sessions.
+        try(ZipFile siteReport=new ZipFile(siteXlsxFile)){
+            java.io.ByteArrayOutputStream sourceText=new java.io.ByteArrayOutputStream();
+            for(java.util.Enumeration<? extends ZipEntry> en=siteReport.entries();
+                en.hasMoreElements();){
+                ZipEntry entry=en.nextElement();
+                if(entry.getName().matches("xl/worksheets/sheet[0-9]+\\\\.xml")){
+                    try(java.io.InputStream input=siteReport.getInputStream(entry)){
+                        byte[] bytes=new byte[8192];int n;
+                        while((n=input.read(bytes))>=0)if(n>0)sourceText.write(bytes,0,n);
+                    }
+                }
+            }
+            String xml=sourceText.toString(StandardCharsets.UTF_8.name());
+            require(xml.contains("MQSL-EX-007")&&xml.contains("MQDATA43-001")&&
+                xml.contains("MS-N06G-02")&&xml.contains("FS-N06G-APPROVED-2")&&
+                xml.contains("LEGACY_ARCHIVE")&&
+                xml.contains("SOURCE_BOUND_RESEARCH_ONLY_G3_NOT_QUALIFIED"),
+                "P11 site 6-sheet XLSX retains independent legacy and Next source rows");
+            require(!xml.contains("POOLED_SOURCE_PPM")&&
+                    !xml.contains("CERTIFIED_GAS_IDENTITY"),
+                "P11 site XLSX never invents pooled gas concentrations");
+        }
         try(ZipFile sheetZip=new ZipFile(nextXlsxFile);
             ZipFile siteZip=new ZipFile(siteXlsxFile)){
             for(java.util.Enumeration<? extends ZipEntry> entries=sheetZip.entries();
