@@ -24,7 +24,7 @@ p='/tmp/v6-n06g-approved/n06g_status.json'
 d=json.load(open(p))
 assert d['status']=='PASS',d
 assert d['runtime_sqlite_schema_version']==15,d
-assert d['pdf_pages']==6 and d['xlsx_sheet_count']==16,d
+assert d['pdf_pages']==6 and d['xlsx_sheet_count']==20,d
 assert d['approved_gas_cycles']==1
 assert d['independent_source_sensor_models']==8
 assert d['sqlite_original_approved_source_sha_before_after_equal']
@@ -34,6 +34,7 @@ assert d['tank_g3']==0 and not d['user_data_used']
 assert d['site_approved_independent_sessions']==2 and d['site_pdf_pages']==5
 assert d['site_second_session_tamper_rejected'] and not d['site_reportable_ppm']
 assert d['xlsx_v6_measurements_sheet'] and d['xlsx_v6_sources_sheet']
+assert all(d[x] for x in ['xlsx_v8_environment_sheet','xlsx_v8_adc_ads_sheet','xlsx_v8_auxiliary_sheet','xlsx_v8_original_json_sheet'])
 print("PASS N06G FULL FIELD_SESSION_REPORT_EXPORTER PDF+XLSX E2E",d['assertions'])
 PY
 adb exec-out run-as com.servoc.app cat files/n06g_full_approved_field.pdf > "$OUT/n06g_full_approved_field.pdf"
