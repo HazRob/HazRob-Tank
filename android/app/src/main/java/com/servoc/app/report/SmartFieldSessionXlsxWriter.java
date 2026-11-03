@@ -54,6 +54,9 @@ final class SmartFieldSessionXlsxWriter {
         JSONObject v6Field=V6FieldSessionResearchAppendix.analyzeVerified(db,b);
         V6ResearchXlsxSheets.append(sheets,b.site.name,b.site.id,
             b.fieldSession.name,b.fieldSession.id,v6Field);
+        // V8 adds four separate, source-exact scientific analysis worksheets.
+        // Existing 16 worksheets and their formatting remain unchanged.
+        V8FieldFullTelemetryXlsx.append(sheets,db,b);
         SmartXlsxPackage.write(out,sheets);
     }
 
