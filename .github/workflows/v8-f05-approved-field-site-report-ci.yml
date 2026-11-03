@@ -169,6 +169,12 @@ jobs:
           assert nextpdf.page_count==6
           assert 'ChemCore Next' in nextpdf[2].get_text()
           assert 'ChemCore Next' in nextpdf[3].get_text()
+          # V8 Next must own its appendix: no re-analysis through V6.
+          next_appendix=nextpdf[-1].get_text()
+          assert 'ChemCore Next' in next_appendix
+          assert 'Snapshot SHA256' in next_appendix or 'Snapshot SHA' in next_appendix
+          assert 'ChemCore V6' not in next_appendix
+          assert 'READ ONLY' in next_appendix
           assert all(abs(p.rect.width-842)<1 and abs(p.rect.height-595)<1 for p in nextpdf)
           nextpdf.close()
           print('PASS N06G: every Next field and site evidence chart stays in the original V7 landscape page geometry')
