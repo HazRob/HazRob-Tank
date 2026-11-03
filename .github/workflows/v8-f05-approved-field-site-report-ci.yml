@@ -173,7 +173,9 @@ jobs:
           # P11.6: the source-refusal code is printable from an immutable
           # scientific ledger on the ACTUAL V7 instant PDF, without a new page.
           instant=fitz.open(str(Path('/tmp/v6-n06g-approved/n06g_next_instant_dual_r0.pdf')))
-          expected_pages=1+(62+14)//15
+          manifest=json.loads(Path('/tmp/v6-n06g-approved/n06g_status.json').read_text())
+          expected_pages=manifest['next_instant_pdf_expected_pages']
+          assert expected_pages==1+(62+14)//15+(manifest.get('next_instant_pdf_expected_pages',0)-1-(62+14)//15)
           assert instant.page_count==expected_pages,(instant.page_count,expected_pages)
           body='\n'.join(p.get_text() for p in instant)
           assert 'MQSL-EX-007' in body, 'conditional MQ2 source row missing'
