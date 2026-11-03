@@ -290,7 +290,7 @@ public final class V8MultiSessionSiteFixtureActivity extends Activity {
             for(java.util.Enumeration<? extends ZipEntry> files=report.entries();
                 files.hasMoreElements();){
                 ZipEntry e=files.nextElement();
-                if(e.getName().matches("xl/worksheets/sheet[0-9]+\\\\.xml")){
+                if(e.getName().matches("xl/worksheets/sheet[0-9]+\\.xml")){
                     try(java.io.InputStream input=report.getInputStream(e)){
                         byte[] buffer=new byte[8192];int n;
                         while((n=input.read(buffer))>=0)if(n>0)cells.write(buffer,0,n);
