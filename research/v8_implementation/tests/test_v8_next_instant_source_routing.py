@@ -12,6 +12,7 @@ B=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextEn
 C=ROOT/"android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java"
 D=ROOT/"android/app/src/main/java/com/servoc/app/ui/SettingsTab.java"
 E=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextDecisionEnvelope.java"
+F=ROOT/"android/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextScientificDiagnostics.java"
 class SourceRouting(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -20,6 +21,7 @@ class SourceRouting(unittest.TestCase):
         cls.c=C.read_text(encoding="utf-8")
         cls.d=D.read_text(encoding="utf-8")
         cls.e=E.read_text(encoding="utf-8")
+        cls.f=F.read_text(encoding="utf-8")
         assert "public static Result analyzeV6Comparison(" in cls.a
         cls.next_method=cls.a.split("public static Result analyze(android.content.Context androidContext",1)[1].split("public static Result analyzeV6Comparison",1)[0]
     def test_v8_live_invokes_next_core_and_stores_once(self):
@@ -33,10 +35,22 @@ class SourceRouting(unittest.TestCase):
         for banned in ("byLegacyId(","<144","source_curve_hypotheses\");","TankV6TelemetryAdapter.analyzeSnapshot","ChemCoreTankV6.Result analyzed"):
             if banned=='source_curve_hypotheses\");':continue
             self.assertNotIn(banned,self.next_method)
-        self.assertIn("NextScientificDiagnostics.compute(frozen,master)",self.next_method)
+        self.assertIn("NextScientificDiagnostics.compute(frozen,master,next.receipt.sourceSnapshot)",self.next_method)
         self.assertIn('"scientific_source_diagnostics"',self.next_method)
         self.assertIn('"fingerprint_runtime_status"',self.next_method)
         self.assertIn("List.of(),java.util.List.of(),java.util.List.of(),12)",self.next_method)
+    def test_scientific_curve_ledger_uses_same_verified_frozen_device_reference(self):
+        # These are source-equation research diagnostics, not source-matched
+        # ppm or candidate-ranking evidence. Raw firmware r0 is untrusted.
+        self.assertIn("next.receipt.sourceSnapshot",self.next_method)
+        self.assertIn('CoreContracts.CalibrationReference.AIR_RS_MEAN',self.f)
+        self.assertIn('CoreContracts.SampleQuality.VALID',self.f)
+        self.assertIn('reading.rAirKohm',self.f)
+        self.assertIn('frozen.deviceUid.equals(original.optString("device_id","").trim())',self.f)
+        self.assertIn('SCIENTIFIC_DEVICE_ID_SNAPSHOT_MISMATCH',self.f)
+        self.assertIn('DEVICE_AIR_RS_MEAN_NOT_SOURCE_R0',self.f)
+        self.assertIn('firmware_raw_r0_never_used_as_verified_reference',self.f)
+        self.assertNotIn('reading.optDouble("r0"',self.f)
     def test_v6_comparison_explicit_not_inactive_fallback(self):
         v6=self.a.split("public static Result analyzeV6Comparison(",1)[1]
         self.assertIn("TankV6TelemetryAdapter.analyzeSnapshot",v6)
