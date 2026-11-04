@@ -19,6 +19,7 @@ def verify(manifest, root):
     seen_ids = set()
     seen_paths = set()
     seen_file_objects = set()  # Reject hardlink aliases of the same raw evidence.
+    seen_digests = set()  # Byte-identical copies are not independent evidence.
     for entry in manifest.get("sources", []):
         if not isinstance(entry, dict):
             out.append({"source_id": "", "path": "", "status": "blocked", "error": "invalid_source_entry"})
@@ -71,6 +72,9 @@ def verify(manifest, root):
             actual = digest.hexdigest()
             result["actual_sha256"] = actual
             result["size_bytes"] = byte_count
+            if actual in seen_digests:
+                raise ValueError("duplicate_raw_content")
+            seen_digests.add(actual)
             result["status"] = "verified" if actual.lower() == expected.lower() else "hash_mismatch"
         except (ValueError, OSError) as exc:
             result["error"] = str(exc)
