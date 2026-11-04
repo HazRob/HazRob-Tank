@@ -68,13 +68,22 @@ def verify(manifest, root):
         out.append(result)
     return {"schema": "hazrob-g2-byte-integrity/1", "scientific_qualification": False, "results": out, "all_verified": bool(out) and all(x["status"] == "verified" for x in out)}
 
+def reject_duplicate_json_keys(pairs):
+    """Reject ambiguous manifest keys rather than silently taking the last value."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate_manifest_key: " + key)
+        result[key] = value
+    return result
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("manifest", type=pathlib.Path)
     p.add_argument("--root", type=pathlib.Path, required=True)
     args = p.parse_args()
     try:
-        data = json.loads(args.manifest.read_text(encoding="utf-8"))
+        data = json.loads(args.manifest.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_json_keys)
         if not isinstance(data, dict) or not isinstance(data.get("sources"), list):
             raise ValueError("manifest.sources must be a list")
         result = verify(data, args.root)
