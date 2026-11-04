@@ -112,10 +112,6 @@ public final class ChemCoreNext {
     int count=0,positives=0;
     for(var b:input.curves){
       count++;
-      if(NextResearchSourceQuarantine.blocked(b.curve.sourceRoot,b.curve.id)){
-        reasons.add("SOURCE_TEMPORARILY_EXCLUDED_UCI1081_CURVE "+b.curve.id);
-        continue;
-      }
       var sensor=instances.get(b.physicalSensorUid);
       var reading=readings.get(b.physicalSensorUid);
       if(!input.current.mqRelayOn){
@@ -138,11 +134,6 @@ public final class ChemCoreNext {
     }
     for(var b:input.fingerprints){
       count++;
-      if(NextResearchSourceQuarantine.blocked(b.reference.sourceRoot,
-           b.reference.id,b.reference.featureSpace)){
-        reasons.add("SOURCE_TEMPORARILY_EXCLUDED_UCI1081_FINGERPRINT "+b.reference.id);
-        continue;
-      }
       if(!input.current.mqRelayOn || !instances.containsKey(b.physicalSensorUid)
          ||!readings.containsKey(b.physicalSensorUid)
          ||readings.get(b.physicalSensorUid).quality!=CoreContracts.SampleQuality.VALID) {
@@ -175,14 +166,6 @@ public final class ChemCoreNext {
     // never one vote per MQ channel or per algorithm.
     for(var bundle:input.bundles) {
       count+=bundle.variants.size();
-      boolean quarantined=NextResearchSourceQuarantine.blocked(bundle.sourceRoot,bundle.bundleUid);
-      for(var v:bundle.variants)
-        quarantined |= NextResearchSourceQuarantine.blocked(v.sourceSignature.sourceRoot,
-            v.sourceSignature.id,v.sourceSignature.featureSpace,v.techniqueId);
-      if(quarantined){
-        reasons.add("SOURCE_TEMPORARILY_EXCLUDED_UCI1081_BUNDLE "+bundle.bundleUid);
-        continue;
-      }
       var score=ResearchFingerprintBundle.evaluate(bundle,input.device,input.current);
       reasons.add("SOURCE_BUNDLE "+bundle.bundleUid+" "+score.status+
         " physical_MQ="+score.distinctSensorChannels+
