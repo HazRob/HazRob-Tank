@@ -273,6 +273,18 @@ class RawSourceVerificationTests(unittest.TestCase):
                 self.assertEqual(completed.returncode, 2)
                 self.assertIn("duplicate_manifest_key", json.loads(completed.stdout)["error"])
 
+    def test_cli_rejects_nonfinite_json_constants(self):
+        for token in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(token=token):
+                manifest = pathlib.Path(self.tmp.name) / "nonfinite.json"
+                manifest.write_text('{"sources":[],"metadata":' + token + '}', encoding="utf-8")
+                completed = subprocess.run(
+                    [sys.executable, str(SCRIPT), str(manifest), "--root", str(self.root)],
+                    capture_output=True, text=True, check=False,
+                )
+                self.assertEqual(completed.returncode, 2, completed.stderr)
+                self.assertIn("nonfinite_manifest_constant", json.loads(completed.stdout)["error"])
+
     def test_cli_rejects_malformed_manifest_schema(self):
         manifest = pathlib.Path(self.tmp.name) / "invalid-manifest.json"
         manifest.write_text(json.dumps({"sources": "not-a-list"}), encoding="utf-8")
