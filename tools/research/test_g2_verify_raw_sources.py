@@ -87,6 +87,14 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertFalse(result["all_verified"])
         self.assertEqual(result["results"][0]["error"], "unsafe_path")
 
+    def test_dot_only_path_fails_closed_without_exception(self):
+        for rel in (".", "./", "batch/.."):
+            with self.subTest(path=rel):
+                result = verify({"sources": [self.entry(rel)]}, self.root)
+                self.assertFalse(result["all_verified"])
+                self.assertEqual(result["results"][0]["error"], "unsafe_path")
+                self.assertFalse(result["scientific_qualification"])
+
     def test_rejects_noncanonical_current_directory_component(self):
         result = verify({"sources": [self.entry("./sample.bin")]}, self.root)
         self.assertFalse(result["all_verified"])
