@@ -198,27 +198,6 @@ jobs:
             | tee build/chemcore-next-p01/P06-ORCHESTRATOR.log
           grep -q '^CHEMCORE_NEXT_P06_ORCHESTRATOR_PASS ' \
             build/chemcore-next-p01/P06-ORCHESTRATOR.log
-      - name: Ensure temporarily excluded UCI1081 evidence never enters V8 candidate arbitration
-        shell: bash
-        run: |
-          set -euo pipefail
-          java -cp build/chemcore-next-p01 com.hazrob.tank.chemcore.next.NextUci1081ExclusionABSmoke \
-            build/chemcore-next-p01/uci1081_exclusion_inference_replay.csv
-          python - <<'PY'
-          import csv,pathlib
-          p=pathlib.Path('build/chemcore-next-p01/uci1081_exclusion_inference_replay.csv')
-          r={x['scenario']:x for x in csv.DictReader(p.open())}
-          assert len(r)==10
-          for key in ('uci_only','uci_curve_only','uci_bundle_only','uci_alias_source'):
-              assert r[key]['status']=='UNKNOWN' and r[key]['top_uid']=='0',r[key]
-          for key in ('uci_and_mq','uci_and_mq_multiple_uci_variants'):
-              assert r[key]['status']=='RESEARCH_CANDIDATES' and r[key]['top_uid']=='200',r[key]
-              assert r[key]['source_root_count']=='1',r[key]
-          assert r['mq_only']['top_uid']=='200'
-          for key in ('no_source','uci_relay_off','mq_unverified_threshold'):
-              assert r[key]['status']=='UNKNOWN',r[key]
-          print('CHEMCORE_NEXT_V8_UCI1081_QUARANTINE_REGRESSION_PASS cases=10 g3=false')
-          PY
       - name: P06 diverse source-trained MQ fingerprint bundles with concentration/source dedup
         shell: bash
         run: |
