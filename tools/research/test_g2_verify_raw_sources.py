@@ -144,6 +144,21 @@ class RawSourceVerificationTests(unittest.TestCase):
                     self.assertFalse(result["scientific_qualification"])
                     self.assertEqual(result["results"][0]["error"], error)
 
+    def test_invisible_unicode_format_characters_in_provenance_fail_closed(self):
+        # Bidi overrides and zero-width controls can visually spoof evidence IDs.
+        for field, values, error in (
+            ("source_id", ("fixture\\u202eother", "fixture\\u200bother", "fixture\\u2066other"), "invalid_source_id"),
+            ("path", ("sample\\u202e.bin", "sample\\u200b.bin", "sample\\u2066.bin"), "unsafe_path"),
+        ):
+            for value in values:
+                with self.subTest(field=field, value=repr(value)):
+                    entry = self.entry()
+                    entry[field] = value
+                    result = verify({"sources": [entry]}, self.root)
+                    self.assertFalse(result["all_verified"])
+                    self.assertFalse(result["scientific_qualification"])
+                    self.assertEqual(result["results"][0]["error"], error)
+
     def test_non_string_source_identity_blocked(self):
         entry = dict(self.entry(), source_id=42)
         result = verify({"sources": [entry]}, self.root)
