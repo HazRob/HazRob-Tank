@@ -1,0 +1,21 @@
+name: G2 physical evidence intake preflight
+on:
+  pull_request:
+    paths:
+      - 'research/implementation_execution/g2_physical_intake_gate.py'
+      - '.github/workflows/g2-physical-intake-preflight.yml'
+  workflow_dispatch:
+jobs:
+  physical-intake-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check
+        run: python -m py_compile research/implementation_execution/g2_physical_intake_gate.py
+      - name: Fail-closed regression tests
+        run: python research/implementation_execution/g2_physical_intake_gate.py --self-test
