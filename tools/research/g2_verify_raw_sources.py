@@ -77,13 +77,17 @@ def reject_duplicate_json_keys(pairs):
         result[key] = value
     return result
 
+def reject_nonfinite_json_constant(value):
+    """JSON manifests must not contain NaN or Infinity extensions."""
+    raise ValueError("nonfinite_manifest_constant: " + value)
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("manifest", type=pathlib.Path)
     p.add_argument("--root", type=pathlib.Path, required=True)
     args = p.parse_args()
     try:
-        data = json.loads(args.manifest.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_json_keys)
+        data = json.loads(args.manifest.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_json_keys, parse_constant=reject_nonfinite_json_constant)
         if not isinstance(data, dict) or not isinstance(data.get("sources"), list):
             raise ValueError("manifest.sources must be a list")
         result = verify(data, args.root)
