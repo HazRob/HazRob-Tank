@@ -1,0 +1,173 @@
+name: ChemCore Next V8 UCI1081 temporary quarantine real entrypoint A/B
+
+on:
+  push:
+    branches: [research/chemcore-next-v8-validation-20261105]
+    paths:
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/NextResearchSourceQuarantine.java'
+      - 'research/chemcore_next/tests/java/NextUci1081ExclusionABSmoke.java'
+      - 'research/chemcore_next/tests/java/NextV8QualQuantStressSuite.java'
+      - '.github/workflows/chemcore-next-v8-uci-quarantine-ab.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-ab-compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile unchanged original V8 and temporarily quarantined V8 independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/uci-ab/{original/java/com/hazrob/tank/chemcore/next,original/classes,quarantined/classes,results}
+          git cat-file -e '6a54ee878b638ddc1e2c3aff47623f9931b26ba7^{commit}'
+          git show 6a54ee878b638ddc1e2c3aff47623f9931b26ba7:android/app/src/main/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java \
+            > /tmp/uci-ab/original/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java
+          SRC=android/app/src/main/java/com/hazrob/tank/chemcore/next
+          find "$SRC" -maxdepth 1 -name '*.java' \
+            ! -name ChemCoreNext.java ! -name NextResearchSourceQuarantine.java \
+            -print0 | xargs -0 javac -encoding UTF-8 -d /tmp/uci-ab/original/classes \
+              /tmp/uci-ab/original/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java \
+              research/chemcore_next/tests/java/NextUci1081ExclusionABSmoke.java \
+              research/chemcore_next/tests/java/NextV8QualQuantStressSuite.java
+          find "$SRC" -maxdepth 1 -name '*.java' -print0 \
+            | xargs -0 javac -encoding UTF-8 -d /tmp/uci-ab/quarantined/classes \
+              research/chemcore_next/tests/java/NextUci1081ExclusionABSmoke.java \
+              research/chemcore_next/tests/java/NextV8QualQuantStressSuite.java \
+              research/chemcore_next/tests/java/NextP06MeasuredMqBundleBenchmark.java
+      - name: Compare BEFORE/AFTER actual ChemCoreNext analyze with UCI injected
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp /tmp/uci-ab/original/classes \
+            com.hazrob.tank.chemcore.next.NextUci1081ExclusionABSmoke \
+            /tmp/uci-ab/results/original_10_scenarios.csv
+          java -cp /tmp/uci-ab/quarantined/classes \
+            com.hazrob.tank.chemcore.next.NextUci1081ExclusionABSmoke \
+            /tmp/uci-ab/results/quarantined_10_scenarios.csv
+      - name: Prove 2502 non-UCI full-engine cases are bit-identical before and after
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp /tmp/uci-ab/original/classes \
+            com.hazrob.tank.chemcore.next.NextV8QualQuantStressSuite \
+            /tmp/uci-ab/results/original_simulation
+          java -cp /tmp/uci-ab/quarantined/classes \
+            com.hazrob.tank.chemcore.next.NextV8QualQuantStressSuite \
+            /tmp/uci-ab/results/quarantined_simulation
+          cmp /tmp/uci-ab/results/original_simulation/next_v8_simulated_qual_quant_cases.csv \
+              /tmp/uci-ab/results/quarantined_simulation/next_v8_simulated_qual_quant_cases.csv
+          sha256sum /tmp/uci-ab/results/original_simulation/next_v8_simulated_qual_quant_cases.csv
+      - name: Replay original 6400 real MQ readings (MQ-only category research expert)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv)" \
+            = '451fdd05a18db8531abc219089de071ccc0dd461'
+          java -Xmx768m -cp /tmp/uci-ab/quarantined/classes \
+            com.hazrob.tank.chemcore.next.NextP06MeasuredMqBundleBenchmark \
+            research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv \
+            /tmp/uci-ab/results/mq6400_original_source_only.json \
+            | tee /tmp/uci-ab/results/mq6400_original_source_only.log
+          grep -q '^CHEMCORE_NEXT_REAL_ADC_BUNDLE_STRESS_PASS ' /tmp/uci-ab/results/mq6400_original_source_only.log
+      - name: Compare hypothesis rankings and scientific exclusion boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv,hashlib,json,pathlib
+          root=pathlib.Path('/tmp/uci-ab/results')
+          with (root/'original_10_scenarios.csv').open() as f:
+            base={x['scenario']:x for x in csv.DictReader(f)}
+          with (root/'quarantined_10_scenarios.csv').open() as f:
+            after={x['scenario']:x for x in csv.DictReader(f)}
+          assert len(base)==len(after)==10, (len(base),len(after))
+          expected={
+            'no_source':('UNKNOWN','UNKNOWN',0,0),
+            'mq_only':('RESEARCH_CANDIDATES','RESEARCH_CANDIDATES',200,200),
+            'uci_only':('RESEARCH_CANDIDATES','UNKNOWN',100,0),
+            'uci_and_mq':('MIXTURE_UNRESOLVED','RESEARCH_CANDIDATES',100,200),
+            'uci_curve_only':('RESEARCH_CANDIDATES','UNKNOWN',100,0),
+            'uci_bundle_only':('RESEARCH_CANDIDATES','UNKNOWN',100,0),
+            'uci_relay_off':('UNKNOWN','UNKNOWN',0,0),
+            'mq_unverified_threshold':('UNKNOWN','UNKNOWN',0,0),
+            'uci_alias_source':('RESEARCH_CANDIDATES','UNKNOWN',100,0),
+            'uci_and_mq_multiple_uci_variants':('MIXTURE_UNRESOLVED','RESEARCH_CANDIDATES',100,200)
+          }
+          for name,(b_status,n_status,b_top,n_top) in expected.items():
+            b,n=base[name],after[name]
+            assert b['status']==b_status and n['status']==n_status,(name,b,n)
+            assert int(b['top_uid'])==b_top and int(n['top_uid'])==n_top,(name,b,n)
+            if 'uci' in name and n['status']!='UNKNOWN':
+              assert n['top_uid']=='200' and n['source_root_count']=='1'
+          sim=(root/'original_simulation/next_v8_simulated_qual_quant_cases.csv').read_bytes()
+          other=(root/'quarantined_simulation/next_v8_simulated_qual_quant_cases.csv').read_bytes()
+          assert sim==other,'non-UCI regression must not change'
+          raw=json.loads((root/'mq6400_original_source_only.json').read_text())
+          assert len(raw['bundles'])==5 and all(b['source_test_rows']==6336 for b in raw['bundles'])
+          summary={
+            'schema':'chemcore_next_v8_uci1081_quarantine_ab_1',
+            'source_branch':'research/chemcore-next-v8-validation-20261105',
+            'baseline_core_commit':'6a54ee878b638ddc1e2c3aff47623f9931b26ba7',
+            'source_qualified_uci_injection_synthetic_only':True,
+            'case_details':{k:{'before':base[k],'after':after[k]} for k in expected},
+            'uci_source_cases_suppressed':sum(
+              base[k]['status']!=after[k]['status'] for k in expected),
+            'non_uci_2502_simulation_unchanged':True,
+            'simulation_rows':2502,
+            'simulated_non_uci_csv_sha256':hashlib.sha256(sim).hexdigest(),
+            'source_mq6400_independent_rows_not_proven':True,
+            'source_mq6400_observations_original':6400,
+            'source_mq6400_out_of_sample_rows_each_portfolio':6336,
+            'source_mq6400_6channel_category_accuracy_all_rows':next(x['accuracy_all_test_rows'] for x in raw['bundles'] if x['mode']=='SIX_TANK_MODEL_OVERLAP'),
+            'no_new_tank_empirical_accuracy_claim':True,
+            'no_new_chemcore_accuracy_improvement_claim':True,
+            'physical_Tank_G3':False,
+            'runtime_model_source_import_proven_active':False,
+            'app_apk_rebuilt':False
+          }
+          (root/'ab_summary.json').write_text(json.dumps(summary,indent=2,ensure_ascii=False)+'\n')
+          report=[
+            '# Temporarily excluding UCI1081 sources from ChemCore Next V8',
+            '',
+            '## Proven observations',
+            '- New inference-path policy blocks sources explicitly tagged UCI1081 in curves, fingerprints and bundles.',
+            '- Existing ChemCoreNext only accepts explicitly bound sources; there is no built-in UCI1081 model loaded automatically.',
+            f"- {sum(base[k]['status']!=after[k]['status'] for k in expected)} of 10 SOURCE-INJECTION test scenarios changed as expected.",
+            '- 2502 simulated non-UCI engine scenarios are bit-identical before vs after; therefore UCI exclusion does not fix the general clean-air/UID-rank defect.',
+            '- Independent real MQ 6400 category source replay still works; its accuracy cannot be treated as actual robotic molecular identification.',
+            '- All source qualification flags and measurements of A/B injection are fabricated strictly for testing the policy boundary.',
+            '- No original Tank field accuracy improvement, certified ppm or Tank G3 claimed.',
+            '',
+            '## Immediate next experiment',
+            '- Evaluate physically measured MQ arrays with true gas labels, concentrations and group-disjoint device/day holdouts via Next as a full injected source portfolio.',
+            '- Preserve actual R0 and temperature/humidity and do not label generic Smoke as a chemical CAS.',
+            '- Maintain the source-only quantitative methane Li-Cor reference distinct from the synthetic test.',
+          ]
+          (root/'ab_analysis.md').write_text('\n'.join(report)+'\n')
+          print('UCI1081_TEMP_QUARANTINE_AB_PASS',json.dumps({
+             'changed_test_cases':summary['uci_source_cases_suppressed'],
+             'simulated_non_uci_unchanged':summary['non_uci_2502_simulation_unchanged'],
+             'mq6400_six_channel_source_accuracy':summary['source_mq6400_6channel_category_accuracy_all_rows'],
+             'physical_tank_g3':False
+          }))
+          PY
+      - name: Preserve all reproducible A/B output and archived MQ source-only measurements
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chemcore-next-v8-uci1081-exclusion-ab
+          path: /tmp/uci-ab/results/
+          if-no-files-found: warn
+          retention-days: 90
