@@ -1,0 +1,279 @@
+{
+  "schema_version": "hazrob.chemcore.stable.reference-snapshot.v1",
+  "release": "0.1.0-research-reference-snapshot",
+  "created_on": "2026-10-21",
+  "location": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/",
+  "status": "PUBLISHED_RESEARCH_REFERENCE_SNAPSHOT_NOT_ACTIVATED",
+  "runtime_activation": false,
+  "occupational_safety_ppm_qualified": false,
+  "original_HR069_M4": false,
+  "Tank_MQ8_G3_validated_techniques": 0,
+  "activation_profile": "none",
+  "compatibility": {
+    "original_HR069_app": "RESEARCH_REFERENCE_ONLY_NOT_ACTIVE",
+    "Tank_app": "SEPARATE_PROJECT_DO_NOT_LINK_AS_PRODUCTION",
+    "ESP32": "NONE"
+  },
+  "content_policy": "Source-locked scientific data and references; not production safety results; never infer ppm from source ADC, food classes, or unknown calibration",
+  "source_categories": {
+    "PROVENANCE_OR_RESEARCH_EVIDENCE": 13,
+    "FINGERPRINT_PRIORS_AND_TRANSFERS": 3,
+    "METHOD_CATALOG": 1,
+    "RESEARCH_CURVES": 1,
+    "LITERATURE_REVIEW": 5,
+    "REFERENCE_CATALOG_ALL_SOURCES": 1,
+    "ARABIC_BIBLIOGRAPHY": 1,
+    "SOURCE_AUDIT": 1,
+    "SOURCE_RECOVERY": 1,
+    "STABLE_INTAKE_RESEARCH_AUDIT": 1,
+    "STABLE_INTAKE_REPORT": 1,
+    "RAW_ADC_6400_ROWS_FOUR_CLASSES_NOT_PPM": 1
+  },
+  "pinned_sources": [
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/1_propanol_sjtu_mq_transfer_evidence_v1.json",
+      "source": "library/research/hr069/1_propanol_sjtu_mq_transfer_evidence_v1.json",
+      "sha": "6f5cbd9a62a7196a96ede056b776c23bf41fd584",
+      "bytes": 2741,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/current-manifest.json",
+      "source": "library/research/hr069/current-manifest.json",
+      "sha": "40513a5781466b99d8c3394e672b8cc71999a024",
+      "bytes": 3259,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/electronic_nose_robotic_olfaction_reference_index_v1.json",
+      "source": "library/research/hr069/electronic_nose_robotic_olfaction_reference_index_v1.json",
+      "sha": "825acc50de730004a1f272be53c741b7f00eff9b",
+      "bytes": 13633,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/ethylene_mq3_transfer_evidence_v1.json",
+      "source": "library/research/hr069/ethylene_mq3_transfer_evidence_v1.json",
+      "sha": "78426227c4d66ea2f2154af5fac803cc4048756c",
+      "bytes": 3070,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/food_freshness_headspace_fingerprints_v1.json",
+      "source": "library/research/hr069/food_freshness_headspace_fingerprints_v1.json",
+      "sha": "959aae7574307a0030d218d4b86eb6618a6f72b0",
+      "bytes": 6003,
+      "role": "FINGERPRINT_PRIORS_AND_TRANSFERS"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/gas_analysis_methodology_landscape_2026-10-08.md",
+      "source": "library/research/hr069/gas_analysis_methodology_landscape_2026-10-08.md",
+      "sha": "d67c7e27fdb5236034226d60dda24166b512fe16",
+      "bytes": 7747,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/gas_analysis_technology_reference_index_v1.json",
+      "source": "library/research/hr069/gas_analysis_technology_reference_index_v1.json",
+      "sha": "c2f0a0ac1a3bf8635f27d600076212aad8b9b263",
+      "bytes": 20650,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/identification_fingerprint_priors_v1.json",
+      "source": "library/research/hr069/identification_fingerprint_priors_v1.json",
+      "sha": "5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
+      "bytes": 9029,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/kononov_mox_numeric_transfer_batch_v1.json",
+      "source": "library/research/hr069/kononov_mox_numeric_transfer_batch_v1.json",
+      "sha": "3495571c72b46027e1e6099dd8be7b93f4a13c45",
+      "bytes": 3979,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/methanol_mq_transfer_evidence_v1.json",
+      "source": "library/research/hr069/methanol_mq_transfer_evidence_v1.json",
+      "sha": "462b241bb026fe39dd07ed8501c57ef99f56ba47",
+      "bytes": 3424,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/mq_experiment_source_index_v1.json",
+      "source": "library/research/hr069/mq_experiment_source_index_v1.json",
+      "sha": "0f1a5388d2d28071091df833855238ba8c00804a",
+      "bytes": 8686,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/mq_models_76.json",
+      "source": "library/research/hr069/mq_models_76.json",
+      "sha": "7607764415cb26fbba4e46da9219e7dc861e2c23",
+      "bytes": 12353,
+      "role": "METHOD_CATALOG"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/mq_research_curves_43.json",
+      "source": "library/research/hr069/mq_research_curves_43.json",
+      "sha": "bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1",
+      "bytes": 7995,
+      "role": "RESEARCH_CURVES"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/multimodal_mq_transfer_fingerprints_v1.json",
+      "source": "library/research/hr069/multimodal_mq_transfer_fingerprints_v1.json",
+      "sha": "d94a893f27b24fbbfa5175e6d406d7352933a5d5",
+      "bytes": 5692,
+      "role": "FINGERPRINT_PRIORS_AND_TRANSFERS"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/pubchem_resolution_delta_v1.json",
+      "source": "library/research/hr069/pubchem_resolution_delta_v1.json",
+      "sha": "1124cff3c22aecdab71448f96396992fbf4202a1",
+      "bytes": 4526,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/robofusion_hr069_gasleak_operational_transfer_v1.json",
+      "source": "library/research/hr069/robofusion_hr069_gasleak_operational_transfer_v1.json",
+      "sha": "8484d576926ba8a97dd00d8b4feff6a3bce0f9a1",
+      "bytes": 4656,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/same_sensor_peer_reviewed_identity_evidence_v1.json",
+      "source": "library/research/hr069/same_sensor_peer_reviewed_identity_evidence_v1.json",
+      "sha": "412a9d48eb17b39c88645adba70380ce7a752d17",
+      "bytes": 7913,
+      "role": "PROVENANCE_OR_RESEARCH_EVIDENCE"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/hr069-research/uci_mq135_lowconcentration_transfer_fingerprints_v1.json",
+      "source": "library/research/hr069/uci_mq135_lowconcentration_transfer_fingerprints_v1.json",
+      "sha": "bf3ab5777c3cd8fa570d75a1db117008dc751720",
+      "bytes": 16187,
+      "role": "FINGERPRINT_PRIORS_AND_TRANSFERS"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/ANALYTICAL_SYSTEMS_MIXTURE_UNMIXING_QUANT_FILTERS_2026-10-21_AR.md",
+      "source": "library/reference-bank/external-research/reviews/ANALYTICAL_SYSTEMS_MIXTURE_UNMIXING_QUANT_FILTERS_2026-10-21_AR.md",
+      "sha": "e0ddc34501f2d4d5ddc24131f104dd599c1cc017",
+      "bytes": 14340,
+      "role": "LITERATURE_REVIEW"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/CHINESE_JAPANESE_MQ_MOS_RESEARCH_2026-10-21_AR.md",
+      "source": "library/reference-bank/external-research/reviews/CHINESE_JAPANESE_MQ_MOS_RESEARCH_2026-10-21_AR.md",
+      "sha": "1095ae60a0d899e6703fbada993d64c708b1e712",
+      "bytes": 9882,
+      "role": "LITERATURE_REVIEW"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/MQDATASCIENCE_AND_EXPANDED_DATA_2026-10-21_AR.md",
+      "source": "library/reference-bank/external-research/reviews/MQDATASCIENCE_AND_EXPANDED_DATA_2026-10-21_AR.md",
+      "sha": "664111f17b31e5068c373d24076188c205207faa",
+      "bytes": 16801,
+      "role": "LITERATURE_REVIEW"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/MQ_DATASETS_INITIAL_AUDIT_2026-10-21_AR.md",
+      "source": "library/reference-bank/external-research/reviews/MQ_DATASETS_INITIAL_AUDIT_2026-10-21_AR.md",
+      "sha": "af3048b43f43a1d491e0816b9dacee402be65bfc",
+      "bytes": 13015,
+      "role": "LITERATURE_REVIEW"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/literature/PUBCHEM_QSPR_INVERSE_MOLECULAR_2026-10-21_AR.md",
+      "source": "library/reference-bank/external-research/reviews/PUBCHEM_QSPR_INVERSE_MOLECULAR_2026-10-21_AR.md",
+      "sha": "96967709439a9c6c47eaab6c604c0c6d768fb1d9",
+      "bytes": 15327,
+      "role": "LITERATURE_REVIEW"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/citations/master_catalog.json",
+      "source": "library/reference-bank/external-research/master_catalog.json",
+      "sha": "e0a8191f95516cac6ee77103d99f54e70f6f1528",
+      "bytes": 140362,
+      "role": "REFERENCE_CATALOG_ALL_SOURCES"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/citations/INDEX.md",
+      "source": "library/reference-bank/INDEX.md",
+      "sha": "09c847ce5d64eb1a211f654f3b37f8a0f8560076",
+      "bytes": 19192,
+      "role": "ARABIC_BIBLIOGRAPHY"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/citations/AUDIT_CONVERSATION_COMPLETENESS_2026-10-21_AR.md",
+      "source": "library/reference-bank/external-research/AUDIT_CONVERSATION_COMPLETENESS_2026-10-21_AR.md",
+      "sha": "e9343690f7dc50f98758b8974ca96b31216453e2",
+      "bytes": 2959,
+      "role": "SOURCE_AUDIT"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/citations/RESUME.md",
+      "source": "library/reference-bank/external-research/RESUME.md",
+      "sha": "aa82f37fe4365e85f8cad3e6170e28055233e485",
+      "bytes": 4840,
+      "role": "SOURCE_RECOVERY"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/screening/candidate_register_2026-10-21.json",
+      "source": "library/reference-bank/stable-intake/candidate_register_2026-10-21.json",
+      "sha": "8fe0fc1b78d19feac15ca4cedbd8c6a5cf5b60c5",
+      "bytes": 15382,
+      "role": "STABLE_INTAKE_RESEARCH_AUDIT"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/screening/STABLE_FINGERPRINT_CURVE_LOG_AUDIT_2026-10-21_AR.md",
+      "source": "library/reference-bank/stable-intake/STABLE_FINGERPRINT_CURVE_LOG_AUDIT_2026-10-21_AR.md",
+      "sha": "0e64c6e5a1e8be8016de36f11f3d0adf420a29b3",
+      "bytes": 10290,
+      "role": "STABLE_INTAKE_REPORT"
+    },
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/raw/mq_ext_03_multimodal_github_mirror_6400.csv",
+      "source": "HazRob/HazRob-Tank:research/mq-open-measurements-audit-20261021/research/datasets/external/mq_ext_03_multimodal_github_mirror_6400.csv",
+      "sha": "451fdd05a18db8531abc219089de071ccc0dd461",
+      "bytes": 258009,
+      "role": "RAW_ADC_6400_ROWS_FOUR_CLASSES_NOT_PPM",
+      "source_license": "Original Mendeley reported CC BY 4.0; preserve original paper DOI 10.3390/data7080112 and source rights"
+    }
+  ],
+  "curated_additions": [
+    {
+      "path": "library/chemcore/stable/reference-evidence/snapshots/2026-10-21/curated/mq135_alternative_log_curves_6.json",
+      "record_count": 6,
+      "status": "ALTERNATIVE_DIGITIZED_CURVES_ONLY"
+    }
+  ],
+  "preserved_as_is": {
+    "hr069_research_file_count": 18,
+    "scientific_review_count": 5,
+    "external_raw_MQ_ADC_csv_rows": 6400,
+    "raw_file_count": 1,
+    "central_bibliography_at_snapshot": "72 records",
+    "MQ_a_b_curves": 43,
+    "MQDataScience_models_catalogued": 76,
+    "quantitative_PPM_M4_approved": 0
+  },
+  "validation_requirements": [
+    "Every pinned file's destination Git blob SHA must equal source or raw source SHA",
+    "Generate real SHA256 file manifest in CI from staged snapshot, verify source manifest and record counts",
+    "Unknown molecular gases must remain open-set; no direct activation/ppm alarm calibration"
+  ],
+  "duplication_policy": {
+    "MQDataScience_v7_existing_43_ab_coefficients_identical": "43/43",
+    "MQ3_concentration_output_scale": 50,
+    "Multimodal_GitHub_Mendeley_study": "one dataset mirror",
+    "UCI1081_exposures_reused": 90
+  },
+  "source_trees": [
+    "HazRob/build-harness/library/research/hr069",
+    "HazRob/build-harness/library/reference-bank",
+    "HazRob/HazRob-Tank/research/datasets/external"
+  ],
+  "files_recorded": 31
+}
