@@ -34,7 +34,7 @@ def verify(manifest, root):
             if sid in seen_ids:
                 raise ValueError("duplicate_source_id")
             seen_ids.add(sid)
-            if not isinstance(rel, str) or not rel or pathlib.PurePosixPath(rel).is_absolute() or ".." in pathlib.PurePosixPath(rel).parts or "\\" in rel or pathlib.PurePosixPath(rel).parts[0] == ".":
+            if not isinstance(rel, str) or not rel or pathlib.PurePosixPath(rel).is_absolute() or ".." in pathlib.PurePosixPath(rel).parts or "\\" in rel or not pathlib.PurePosixPath(rel).parts:
                 raise ValueError("unsafe_path")
             normalized_path = pathlib.PurePosixPath(rel).as_posix()
             if rel != normalized_path or any(part in ("", ".") for part in rel.split("/")):
