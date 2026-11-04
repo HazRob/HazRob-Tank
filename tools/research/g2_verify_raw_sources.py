@@ -53,11 +53,15 @@ def verify(manifest, root):
             digest = hashlib.sha256()
             byte_count = 0
             with path.open("rb") as f:
+                opened = pathlib.os.fstat(f.fileno())
+                if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
+                    raise ValueError("raw_source_changed_during_read")
                 for chunk in iter(lambda: f.read(1024 * 1024), b""):
                     digest.update(chunk)
                     byte_count += len(chunk)
+                closed = pathlib.os.fstat(f.fileno())
             after = path.stat()
-            if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns) or byte_count != after.st_size:
+            if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (opened.st_dev, opened.st_ino, opened.st_size, opened.st_mtime_ns, opened.st_ctime_ns) or (opened.st_dev, opened.st_ino, opened.st_size, opened.st_mtime_ns, opened.st_ctime_ns) != (closed.st_dev, closed.st_ino, closed.st_size, closed.st_mtime_ns, closed.st_ctime_ns) or (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns) or byte_count != after.st_size:
                 raise ValueError("raw_source_changed_during_read")
             actual = digest.hexdigest()
             result["actual_sha256"] = actual
