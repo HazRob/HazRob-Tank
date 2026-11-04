@@ -122,7 +122,7 @@ public final class NextV8QualQuantStressSuite {
     StringJoiner ids=new StringJoiner("|");
     for(var x:ranks)ids.add(Long.toString(x.uid));
     int top=ranks.isEmpty()?0:(int)ranks.get(0).uid;
-    Double est=r.quantified==null?r.quantified: r.quantified.researchOnlyPpm;
+    Double est=r.quantified==null?null:r.quantified.researchOnlyPpm;
     Double absolute=est==null||ppm==null?null:Math.abs(est-ppm);
     Double rel=absolute==null||ppm<=0?null:100.0*absolute/ppm;
     String category=truth==null?(other==null?"CLEAN_AIR":"MIXTURE"):
