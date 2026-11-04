@@ -220,24 +220,24 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertEqual([x["status"] for x in result["results"]], ["verified", "blocked"])
 
     def test_detects_source_changed_during_hashing(self):
+        # Mutate the real file metadata after the verifier's pre-read stat.
+        # This avoids relying on the number/order of internal Path.stat calls.
+        import os
         target = self.root / "sample.bin"
-        original_stat = pathlib.Path.stat
-        calls = [0]
+        original_open = pathlib.Path.open
+        mutated = [False]
 
-        def changing_stat(path, *args, **kwargs):
-            result = original_stat(path, *args, **kwargs)
-            if path == target:
-                calls[0] += 1
-                if calls[0] == 3:
-                    return SimpleNamespace(
-                        st_mode=result.st_mode, st_dev=result.st_dev, st_ino=result.st_ino,
-                        st_size=result.st_size, st_mtime_ns=result.st_mtime_ns + 1,
-                        st_ctime_ns=result.st_ctime_ns,
-                    )
-            return result
+        def changing_open(path, *args, **kwargs):
+            handle = original_open(path, *args, **kwargs)
+            if path == target and not mutated[0]:
+                mutated[0] = True
+                before = target.stat()
+                os.utime(target, ns=(before.st_atime_ns, before.st_mtime_ns + 1_000_000_000))
+            return handle
 
-        with mock.patch.object(pathlib.Path, "stat", changing_stat):
+        with mock.patch.object(pathlib.Path, "open", changing_open):
             result = verify({"sources": [self.entry()]}, self.root)
+        self.assertTrue(mutated[0])
         self.assertFalse(result["all_verified"])
         self.assertEqual(result["results"][0]["error"], "raw_source_changed_during_read")
         self.assertFalse(result["scientific_qualification"])
