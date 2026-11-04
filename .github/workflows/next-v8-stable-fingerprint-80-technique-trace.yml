@@ -1,8 +1,9 @@
-name: Research only ChemCore Next V8 Stable fingerprints x 80 technique audit
+name: Research ChemCore Next V8 Stable fingerprints 80 techniques diagnostics
 
 on:
   push:
-    branches: [research/next-stable-fingerprint-cross-technique-audit-20261105]
+    branches:
+      - research/next-stable-fingerprint-cross-technique-audit-20261105
     paths:
       - 'research/chemcore_next/experiments/v8_stable_fingerprint_technique_matrix.py'
       - 'research/chemcore_next/tests/java/NextStableSourceCurveFullEntryAudit.java'
@@ -18,30 +19,29 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - name: Inventory locked Stable source references and technique execution disposition
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p build/stable-v8-audit
-          python3 research/chemcore_next/experiments/v8_stable_fingerprint_technique_matrix.py \
-            --tank . --out build/stable-v8-audit \
-            | tee build/stable-v8-audit/inventory_run.log
-          grep -q '^NEXT_STABLE_80_TECHNIQUE_TRACE_AUDIT_PASS ' build/stable-v8-audit/inventory_run.log
-      - name: Compile EXACT V8 ChemCore Next Java sources plus research experiment
+      - name: Inventory complete source-locked records and 80 technique IDs
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p build/stable-v8-audit/classes
+          test "$(git hash-object research/chemcore_next/tests/source_fixtures/mq4_methane_source_fingerprint_copy_2026_11_02.json)" = acb3e16a79a6795c86d12ff1dbdbd01d6b11cb46
+          test "$(git hash-object research/chemcore_next/tests/source_fixtures/stable_reference_manifest_2026_10_21.json)" = ea4ddf660724f0030d2aa3695c12fe85065fccb0
+          python3 research/chemcore_next/experiments/v8_stable_fingerprint_technique_matrix.py \
+            --tank . --out build/stable-v8-audit \
+            | tee build/stable-v8-audit/inventory_run.log
+          grep -q '^NEXT_STABLE_80_TECHNIQUE_TRACE_AUDIT_PASS ' build/stable-v8-audit/inventory_run.log
+      - name: Compile exact original V8 source experts and arbiter
+        shell: bash
+        run: |
+          set -euo pipefail
           find android/app/src/main/java/com/hazrob/tank/chemcore/next -name '*.java' -print0 \
             | xargs -0 javac -encoding UTF-8 -d build/stable-v8-audit/classes \
               research/chemcore_next/tests/java/NextStableSourceCurveFullEntryAudit.java
-      - name: Run all 43 curves x 7 samples through real engine and source math
+      - name: Replay all 43 curves and evaluate competing sources
         shell: bash
         run: |
           set -euo pipefail
@@ -50,90 +50,67 @@ jobs:
             build/stable-v8-audit/source_curves_43_self_replay_301.csv \
             build/stable-v8-audit/actual_v8_core_43_curve_inference.csv \
             | tee build/stable-v8-audit/actual_core_run.log
-          grep -q '^NEXT_STABLE_CURVE_ACTUAL_V8_CORE_AUDIT_PASS ' \
-            build/stable-v8-audit/actual_core_run.log
-      - name: Consolidate errors, compare software layer with scientific evidence
+          grep -q '^NEXT_STABLE_CURVE_ACTUAL_V8_CORE_AUDIT_PASS ' build/stable-v8-audit/actual_core_run.log
+      - name: Evaluate full engine misranking and protect qualification boundaries
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import csv,json,collections,pathlib,hashlib
+          import csv,json,collections,pathlib
           root=pathlib.Path('build/stable-v8-audit')
           with (root/'actual_v8_core_43_curve_inference.csv').open() as f:
-              data=list(csv.DictReader(f))
-          summary=json.loads((root/'audit_summary.json').read_text())
-          groups={x: [r for r in data if r['scenario']==x] for x in sorted(set(r['scenario'] for r in data))}
-          def rate(name):
-              rows=groups[name]
-              return {'cases':len(rows),'uid_top1':sum(r['top1_equal_source_uid']=='true' for r in rows),
-                  'top1_fraction':sum(r['top1_equal_source_uid']=='true' for r in rows)/len(rows),
-                  'median_candidate_count':sorted(int(r['eligible_count']) for r in rows)[len(rows)//2],
-                  'status_counts':dict(collections.Counter(r['status'] for r in rows))}
-          assert len(groups['ONE_SOURCE_INJECTED'])==len(groups['ALL_43_SOURCES_INJECTED'])==len(groups['ALL_SOURCE_GATES_UNVERIFIED'])==301
+            data=list(csv.DictReader(f))
+          science=json.loads((root/'audit_summary.json').read_text())
+          groups={k:[r for r in data if r['scenario']==k] for k in {r['scenario'] for r in data}}
+          def result(name):
+            rows=groups[name]
+            return {
+              'cases':len(rows),
+              'top1_correct':sum(r['top1_equal_source_uid']=='true' for r in rows),
+              'top1_fraction':sum(r['top1_equal_source_uid']=='true' for r in rows)/len(rows),
+              'median_candidate_count':sorted(int(r['eligible_count']) for r in rows)[len(rows)//2],
+              'status_counts':dict(collections.Counter(r['status'] for r in rows))
+            }
+          assert len(groups['ONE_SOURCE_INJECTED'])==301
+          assert len(groups['ALL_43_SOURCES_INJECTED'])==301
+          assert len(groups['ALL_SOURCE_GATES_UNVERIFIED'])==301
           assert len(groups['CLEAN_AIR_REFERENCE_ALL_43'])==8
-          assert all(r['eligible_count']=='0' for r in groups['ALL_SOURCE_GATES_UNVERIFIED'])
-          assert summary['source_item_technique_pairs']==266*80
-          assert summary['source_math_43_curve_7_concentrations']==301
-          assert summary['source_curve_register_95_active']==0
-          assert summary['new_formula_register_active']==0
-          outcome={
-            'engine':'Exact android/app/src/main/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java',
-            'scenario_qualifications':'All mathematical injection test qualifications and physical R0 fabricated, NOT actual Tank!',
-            'isolated':rate('ONE_SOURCE_INJECTED'),
-            'simultaneous_all_43':rate('ALL_43_SOURCES_INJECTED'),
-            'unverified_source_gates':rate('ALL_SOURCE_GATES_UNVERIFIED'),
-            'clean_air_profiles':{
-                'sensor_models':8,
-                'models_with_eligible_candidates':sum(int(r['eligible_count'])>0 for r in groups['CLEAN_AIR_REFERENCE_ALL_43']),
-                'individual_profiles':[{k:r[k] for k in ('sensor','eligible_count','status','top1_legacy_uid')} for r in groups['CLEAN_AIR_REFERENCE_ALL_43']]},
-            'cannot_claim_real_Tank_identity_accuracy':True,'field_G3':False,
-            'not_a_production_code_change':True
-          }
-          (root/'actual_v8_core_summary.json').write_text(json.dumps(outcome,ensure_ascii=False,indent=2)+'\n')
+          assert all(int(r['eligible_count'])==0 for r in groups['ALL_SOURCE_GATES_UNVERIFIED'])
+          assert science['source_item_technique_pairs']==266*80
+          assert science['new_formula_register_active']==0
+          clean=groups['CLEAN_AIR_REFERENCE_ALL_43']
+          summary={
+            'truth':'SYNTHETIC_SOURCE_ONLY_NOT_PHYSICAL_TANK',
+            'actual_v8_source':'android/app/src/main/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java',
+            'one_curve':result('ONE_SOURCE_INJECTED'),
+            'all_43':result('ALL_43_SOURCES_INJECTED'),
+            'unverified_gates':result('ALL_SOURCE_GATES_UNVERIFIED'),
+            'clean_air_models_with_candidates':sum(int(r['eligible_count'])>0 for r in clean),
+            'clean_air_sensor_profiles':[
+              {k:r[k] for k in ('sensor','eligible_count','status','top1_legacy_uid')} for r in clean],
+            'G3':False,'runtime_modified':False,
+            'identification_accuracy_calibrated':False}
+          (root/'actual_v8_core_summary.json').write_text(json.dumps(summary,indent=2)+'\n')
           with (root/'AUDIT_README.md').open('a') as f:
-              f.write('\n## Exact actual V8 engine injections (all physical qualifications are synthetic!)\n')
-              f.write(f"- Each source curve alone: {outcome['isolated']['uid_top1']}/{outcome['isolated']['cases']} return source legacy UID.\n")
-              f.write(f"- All 43 curves provided: {outcome['simultaneous_all_43']['uid_top1']}/{outcome['simultaneous_all_43']['cases']} return source UID top-1.\n")
-              f.write(f"- No verified source qualification: {outcome['unverified_source_gates']['median_candidate_count']} median eligible candidates.\n")
-              f.write(f"- 8 all-curve clean-air sensor profiles: {outcome['clean_air_profiles']['models_with_eligible_candidates']} contain false candidate(s) under **fabricated true-source qualification**.\n")
-              f.write('- All outcomes are synthetic stress software traces; no Tank real-gas or concentration accuracy can be inferred.\n')
-          print('NEXT_V8_EXACT_CORE_CROSS_CURVE_ANALYSIS',json.dumps(outcome,sort_keys=True))
-          print('NEXT_V8_STABLE_MATRIX_TYPES',json.dumps(summary['matrix_dispositions'],sort_keys=True))
+            f.write('\n## Exact V8 core synthetic qualification stress (not gas accuracy)\n')
+            f.write('One-curve source top1: '+str(summary['one_curve'])+'\n')
+            f.write('All-43 source top1: '+str(summary['all_43'])+'\n')
+            f.write('Clean-air sensor models with at least one false candidate: '+str(summary['clean_air_models_with_candidates'])+'\n')
+          print('NEXT_V8_STABLE_FULL_CORE_AUDIT_PASS',json.dumps(summary,sort_keys=True))
+          print('NEXT_V8_TECHNIQUE_MATRIX_BREAKDOWN',json.dumps(science['matrix_dispositions'],sort_keys=True))
           PY
-      - name: Write reproducibility hashes for output files
+      - name: Record source and result integrity
         shell: bash
         run: |
           set -euo pipefail
-          git rev-parse HEAD > build/stable-v8-audit/tank_research_commit.txt
-          echo 'Source fixtures are bit-identical Git blobs to original HazRob/build-harness Stable reference evidence' > build/stable-v8-audit/stable_reference_origin.txt
-          git hash-object research/chemcore_next/tests/source_fixtures/mq4_methane_source_fingerprint_copy_2026_11_02.json | grep -q '^acb3e16a79a6795c86d12ff1dbdbd01d6b11cb46
-          ( cd build/stable-v8-audit; sha256sum *.csv *.json *.md > file_hashes_sha256.txt )
-      - name: Upload full diagnostic matrix without altering Stable, app or firmware
-        uses: actions/upload-artifact@v4
+          git rev-parse HEAD > build/stable-v8-audit/research_commit.txt
+          cd build/stable-v8-audit
+          sha256sum *.csv *.json *.md > file_hashes_sha256.txt
+      - name: Preserve audit diagnostic artifacts only
         if: always()
-        with:
-          name: ChemCoreNext_V8_STABLE_Fingerprint_x_80_Technique_Diagnostic
-          path: build/stable-v8-audit/
-          if-no-files-found: warn
-          retention-days: 90
-
-          git hash-object research/chemcore_next/tests/source_fixtures/stable_reference_manifest_2026_10_21.json | grep -q '^ea4ddf660724f0030d2aa3695c12fe85065fccb0
-          ( cd build/stable-v8-audit; sha256sum *.csv *.json *.md > file_hashes_sha256.txt )
-      - name: Upload full diagnostic matrix without altering Stable, app or firmware
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: ChemCoreNext_V8_STABLE_Fingerprint_x_80_Technique_Diagnostic
-          path: build/stable-v8-audit/
-          if-no-files-found: warn
-          retention-days: 90
-
-          ( cd build/stable-v8-audit; sha256sum *.csv *.json *.md > file_hashes_sha256.txt )
-      - name: Upload full diagnostic matrix without altering Stable, app or firmware
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: ChemCoreNext_V8_STABLE_Fingerprint_x_80_Technique_Diagnostic
+          name: ChemCoreNext_STABLE_x80_Fingerprint_Diagnostic
           path: build/stable-v8-audit/
           if-no-files-found: warn
           retention-days: 90
