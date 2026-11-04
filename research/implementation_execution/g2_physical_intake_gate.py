@@ -5,6 +5,7 @@ Usage: python g2_physical_intake_gate.py manifest.json
 """
 import hashlib
 import json
+import math
 import pathlib
 import sys
 import unittest
@@ -20,6 +21,8 @@ UNITS = {"ppm_vv", "ppb_vv", "mg_m3"}
 
 def audit(manifest, root):
     errors = []
+    if not isinstance(manifest, dict):
+        return ["manifest_not_object"]
     records = manifest.get("records")
     if not isinstance(records, list) or not records:
         return ["records_missing"]
@@ -35,6 +38,18 @@ def audit(manifest, root):
         for key in REQUIRED:
             if key not in row or row[key] is None or row[key] == "" or row[key] == "UNKNOWN":
                 errors.append(prefix + ":missing_" + key)
+        for key in ("concentration", "reference_uncertainty", "adc_reference_v",
+                    "heater_voltage_v", "load_resistance_ohm", "temperature_c",
+                    "humidity_percent", "sampling_interval_s"):
+            value = row.get(key)
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+                errors.append(prefix + ":invalid_numeric_" + key)
+            elif key in ("concentration", "reference_uncertainty") and value < 0:
+                errors.append(prefix + ":negative_" + key)
+            elif key in ("adc_reference_v", "heater_voltage_v", "load_resistance_ohm", "sampling_interval_s") and value <= 0:
+                errors.append(prefix + ":nonpositive_" + key)
+            elif key == "humidity_percent" and not 0 <= value <= 100:
+                errors.append(prefix + ":humidity_out_of_range")
         part = row.get("partition")
         if part not in PARTITIONS:
             errors.append(prefix + ":invalid_partition")
@@ -50,8 +65,16 @@ def audit(manifest, root):
         raw = row.get("raw_path")
         if not isinstance(raw, str):
             continue
-        p = (root / raw).resolve()
-        if not p.is_relative_to(root) or not p.is_file() or p.is_symlink():
+        raw_rel = pathlib.Path(raw)
+        if raw_rel.is_absolute() or ".." in raw_rel.parts:
+            errors.append(prefix + ":raw_path_invalid")
+            continue
+        p_unresolved = root / raw_rel
+        if any(segment.is_symlink() for segment in (p_unresolved, *p_unresolved.parents) if segment != root and segment.is_relative_to(root)):
+            errors.append(prefix + ":raw_path_symlink")
+            continue
+        p = p_unresolved.resolve()
+        if not p.is_relative_to(root) or not p.is_file():
             errors.append(prefix + ":raw_path_invalid")
             continue
         if p in seen_path:
@@ -71,6 +94,37 @@ def audit(manifest, root):
     return errors
 
 class GateTests(unittest.TestCase):
+    def test_non_object_manifest(self):
+        self.assertEqual(audit([], "."), ["manifest_not_object"])
+
+    def test_invalid_numeric_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = pathlib.Path(d) / "raw.csv"
+            p.write_text("adc\\n123\\n")
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path="raw.csv", sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                       partition="test", concentration_unit="ppm_vv",
+                       concentration=float("nan"), reference_uncertainty=-1,
+                       humidity_percent=110)
+            errors = audit({"records": [row]}, d)
+            self.assertTrue(any("invalid_numeric_concentration" in x for x in errors))
+            self.assertTrue(any("negative_reference_uncertainty" in x for x in errors))
+            self.assertTrue(any("humidity_out_of_range" in x for x in errors))
+
+    def test_symlink_parent_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            (root / "actual").mkdir()
+            p = root / "actual" / "raw.csv"
+            p.write_text("adc\\n123\\n")
+            (root / "alias").symlink_to(root / "actual", target_is_directory=True)
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path="alias/raw.csv", sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                       partition="test", concentration_unit="ppm_vv")
+            self.assertTrue(any("raw_path_symlink" in x for x in audit({"records": [row]}, d)))
+
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
     def test_unknown_not_accepted(self):
