@@ -179,6 +179,21 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertFalse(result["scientific_qualification"])
         self.assertEqual(result["results"][0]["error"], "unsafe_root_symlink")
 
+    def test_symlinked_ancestor_of_raw_root_rejected(self):
+        real_parent = pathlib.Path(self.tmp.name) / "real_parent"
+        real_parent.mkdir()
+        raw_root = real_parent / "raw"
+        raw_root.mkdir()
+        (raw_root / "sample.bin").write_bytes(self.payload)
+        alias_parent = pathlib.Path(self.tmp.name) / "alias_parent"
+        try:
+            alias_parent.symlink_to(real_parent, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks unsupported")
+        result = verify({"sources": [self.entry()]}, alias_parent / "raw")
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "unsafe_root_symlink")
+
     def test_nested_regular_file_verifies(self):
         nested = self.root / "batch" / "sensor"
         nested.mkdir(parents=True)
