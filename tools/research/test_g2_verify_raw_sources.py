@@ -63,11 +63,21 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertFalse(result["scientific_qualification"])
 
     def test_distinct_raw_paths_are_allowed(self):
-        (self.root / "second.bin").write_bytes(self.payload)
-        second = self.entry("second.bin")
+        other_payload = self.payload + b"independent fixture\n"
+        (self.root / "second.bin").write_bytes(other_payload)
+        second = self.entry("second.bin", sha=hashlib.sha256(other_payload).hexdigest())
         second["source_id"] = "another-source"
         result = verify({"sources": [self.entry(), second]}, self.root)
         self.assertTrue(result["all_verified"])
+        self.assertFalse(result["scientific_qualification"])
+
+    def test_byte_identical_copies_cannot_count_as_independent_raw_evidence(self):
+        # Different inodes do not establish independent measurements.
+        (self.root / "copied.bin").write_bytes(self.payload)
+        second = dict(self.entry("copied.bin"), source_id="copied-source")
+        result = verify({"sources": [self.entry(), second]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][1]["error"], "duplicate_raw_content")
         self.assertFalse(result["scientific_qualification"])
 
     def test_hardlink_alias_cannot_count_as_independent_raw_source(self):
