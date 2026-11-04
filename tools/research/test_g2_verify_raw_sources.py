@@ -289,6 +289,33 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertEqual(result["results"][0]["error"], "raw_source_changed_during_read")
         self.assertFalse(result["scientific_qualification"])
 
+    def test_same_size_rewrite_with_restored_mtime_is_detected(self):
+        # An adversarial rewrite may restore mtime and preserve file size.
+        # ctime must still invalidate the pre-read metadata snapshot.
+        import os
+        target = self.root / "sample.bin"
+        original_open = pathlib.Path.open
+        changed = [False]
+
+        def rewritten_open(path, *args, **kwargs):
+            handle = original_open(path, *args, **kwargs)
+            if path == target and not changed[0]:
+                changed[0] = True
+                before = target.stat()
+                with original_open(target, "r+b") as writer:
+                    writer.write(b"X")
+                    writer.flush()
+                    os.fsync(writer.fileno())
+                os.utime(target, ns=(before.st_atime_ns, before.st_mtime_ns))
+            return handle
+
+        with mock.patch.object(pathlib.Path, "open", rewritten_open):
+            result = verify({"sources": [self.entry()]}, self.root)
+        self.assertTrue(changed[0])
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "raw_source_changed_during_read")
+        self.assertFalse(result["scientific_qualification"])
+
     def test_opened_descriptor_must_match_prechecked_file(self):
         # Reproduce a file swap between the path stat and the actual open.
         # The replacement contains identical bytes, so SHA256 alone cannot
