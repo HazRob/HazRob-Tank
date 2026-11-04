@@ -14,7 +14,7 @@ import sys
 
 def verify(manifest, root):
     out = []
-    if root.is_symlink():
+    if any(part.is_symlink() for part in (root, *root.parents)):
         return {"schema": "hazrob-g2-byte-integrity/1", "scientific_qualification": False, "results": [{"source_id": "", "path": "", "status": "blocked", "error": "unsafe_root_symlink"}], "all_verified": False}
     seen_ids = set()
     seen_paths = set()
