@@ -147,8 +147,8 @@ class RawSourceVerificationTests(unittest.TestCase):
     def test_invisible_unicode_format_characters_in_provenance_fail_closed(self):
         # Bidi overrides and zero-width controls can visually spoof evidence IDs.
         for field, values, error in (
-            ("source_id", ("fixture\\u202eother", "fixture\\u200bother", "fixture\\u2066other"), "invalid_source_id"),
-            ("path", ("sample\\u202e.bin", "sample\\u200b.bin", "sample\\u2066.bin"), "unsafe_path"),
+            ("source_id", ("fixture\u202eother", "fixture\u200bother", "fixture\u2066other"), "invalid_source_id"),
+            ("path", ("sample\u202e.bin", "sample\u200b.bin", "sample\u2066.bin"), "unsafe_path"),
         ):
             for value in values:
                 with self.subTest(field=field, value=repr(value)):
