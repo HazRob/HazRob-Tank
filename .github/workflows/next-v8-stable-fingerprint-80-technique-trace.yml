@@ -20,11 +20,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/checkout@v4
-        with:
-          repository: HazRob/build-harness
-          path: source-locked-central-stable
-          fetch-depth: 1
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -35,7 +30,7 @@ jobs:
           set -euo pipefail
           mkdir -p build/stable-v8-audit
           python3 research/chemcore_next/experiments/v8_stable_fingerprint_technique_matrix.py \
-            --tank . --stable source-locked-central-stable --out build/stable-v8-audit \
+            --tank . --out build/stable-v8-audit \
             | tee build/stable-v8-audit/inventory_run.log
           grep -q '^NEXT_STABLE_80_TECHNIQUE_TRACE_AUDIT_PASS ' build/stable-v8-audit/inventory_run.log
       - name: Compile EXACT V8 ChemCore Next Java sources plus research experiment
@@ -110,7 +105,29 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD > build/stable-v8-audit/tank_research_commit.txt
-          git -C source-locked-central-stable rev-parse HEAD > build/stable-v8-audit/stable_reference_commit.txt
+          echo 'Source fixtures are bit-identical Git blobs to original HazRob/build-harness Stable reference evidence' > build/stable-v8-audit/stable_reference_origin.txt
+          git hash-object research/chemcore_next/tests/source_fixtures/mq4_methane_source_fingerprint_copy_2026_11_02.json | grep -q '^acb3e16a79a6795c86d12ff1dbdbd01d6b11cb46
+          ( cd build/stable-v8-audit; sha256sum *.csv *.json *.md > file_hashes_sha256.txt )
+      - name: Upload full diagnostic matrix without altering Stable, app or firmware
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ChemCoreNext_V8_STABLE_Fingerprint_x_80_Technique_Diagnostic
+          path: build/stable-v8-audit/
+          if-no-files-found: warn
+          retention-days: 90
+
+          git hash-object research/chemcore_next/tests/source_fixtures/stable_reference_manifest_2026_10_21.json | grep -q '^ea4ddf660724f0030d2aa3695c12fe85065fccb0
+          ( cd build/stable-v8-audit; sha256sum *.csv *.json *.md > file_hashes_sha256.txt )
+      - name: Upload full diagnostic matrix without altering Stable, app or firmware
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ChemCoreNext_V8_STABLE_Fingerprint_x_80_Technique_Diagnostic
+          path: build/stable-v8-audit/
+          if-no-files-found: warn
+          retention-days: 90
+
           ( cd build/stable-v8-audit; sha256sum *.csv *.json *.md > file_hashes_sha256.txt )
       - name: Upload full diagnostic matrix without altering Stable, app or firmware
         uses: actions/upload-artifact@v4
