@@ -49,12 +49,16 @@ def verify(manifest, root):
                 raise ValueError("unsafe_path")
             if not path.is_file():
                 raise ValueError("missing_raw_bytes")
+            before = path.stat()
             digest = hashlib.sha256()
             byte_count = 0
             with path.open("rb") as f:
                 for chunk in iter(lambda: f.read(1024 * 1024), b""):
                     digest.update(chunk)
                     byte_count += len(chunk)
+            after = path.stat()
+            if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns) or byte_count != after.st_size:
+                raise ValueError("raw_source_changed_during_read")
             actual = digest.hexdigest()
             result["actual_sha256"] = actual
             result["size_bytes"] = byte_count
