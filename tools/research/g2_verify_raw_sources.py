@@ -37,6 +37,8 @@ def verify(manifest, root):
             if not isinstance(rel, str) or not rel or pathlib.PurePosixPath(rel).is_absolute() or ".." in pathlib.PurePosixPath(rel).parts or "\\" in rel or pathlib.PurePosixPath(rel).parts[0] == ".":
                 raise ValueError("unsafe_path")
             normalized_path = pathlib.PurePosixPath(rel).as_posix()
+            if rel != normalized_path or any(part in ("", ".") for part in rel.split("/")):
+                raise ValueError("unsafe_path")
             if normalized_path in seen_paths:
                 raise ValueError("duplicate_source_path")
             seen_paths.add(normalized_path)
