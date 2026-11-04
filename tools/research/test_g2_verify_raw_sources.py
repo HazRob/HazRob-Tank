@@ -105,6 +105,21 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertFalse(result["all_verified"])
         self.assertEqual(result["results"][0]["error"], "unsafe_path")
 
+    def test_control_characters_in_provenance_fields_fail_closed(self):
+        # Control characters can corrupt line-oriented evidence exports and logs.
+        for field, values, error in (
+            ("source_id", ("fixture\nother", "fixture\tother", "fixture\x00other", "fixture\x7fother"), "invalid_source_id"),
+            ("path", ("sample.bin\n", "sample.bin\t", "sample.bin\x00", "sample.bin\x7f"), "unsafe_path"),
+        ):
+            for value in values:
+                with self.subTest(field=field, value=repr(value)):
+                    entry = self.entry()
+                    entry[field] = value
+                    result = verify({"sources": [entry]}, self.root)
+                    self.assertFalse(result["all_verified"])
+                    self.assertFalse(result["scientific_qualification"])
+                    self.assertEqual(result["results"][0]["error"], error)
+
     def test_non_string_source_identity_blocked(self):
         entry = dict(self.entry(), source_id=42)
         result = verify({"sources": [entry]}, self.root)
