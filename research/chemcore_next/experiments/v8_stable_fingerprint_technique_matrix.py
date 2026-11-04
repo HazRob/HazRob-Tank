@@ -25,25 +25,35 @@ def median(v):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--tank",default=".")
-    parser.add_argument("--stable",required=True)
+    parser.add_argument("--stable",required=False)
     parser.add_argument("--out",required=True)
     args=parser.parse_args()
     tank=pathlib.Path(args.tank); stable=pathlib.Path(args.stable)
     out=pathlib.Path(args.out);out.mkdir(parents=True,exist_ok=True)
-    snapshot=stable/"library/chemcore/stable/reference-evidence/snapshots/2026-10-21"
-    curves=load_json(snapshot/"hr069-research/mq_research_curves_43.json")["curves"]
-    alternatives=load_json(snapshot/"curated/mq135_alternative_log_curves_6.json")["formulae"]
+    snapshot=tank/"android/app/src/main/assets/chemcore_v6/reference"
+    fixture=tank/"research/chemcore_next/tests/source_fixtures"
+    curves=load_json(snapshot/"mq_research_curves_43.json")["curves"]
+    alternatives=load_json(snapshot/"mq135_alternative_log_curves_6.json")["formulae"]
     sourcefp=load_json(tank/"research/chemcore_next/fingerprints/chemcore_next_p03_3_source_fingerprints_24.json")["records"]
-    priors=load_json(snapshot/"hr069-research/identification_fingerprint_priors_v1.json")
-    methane=load_json(stable/"library/chemcore/stable/reference-evidence/derived/2026-11-02/mq4_methane_li_cor_quantitative_source_fingerprint_v1.json")
+    priors=load_json(snapshot/"identification_fingerprint_priors_v1.json")
+    methane=load_json(fixture/"mq4_methane_source_fingerprint_copy_2026_11_02.json")
     methods=load_csv(tank/"docs/research/V6-CHEMCORE-TECHNIQUE-80-TRACEABILITY.csv")
     register=load_csv(tank/"research/chemcore_next/source_curves/chemcore_next_p03_2_unified_109_formula_register.csv")
-    summary_manifest=load_json(snapshot/"manifest.json")
+    summary_manifest=load_json(fixture/"stable_reference_manifest_2026_10_21.json")
     assert len(curves)==43 and len(alternatives)==6 and len(sourcefp)==24
     assert len(methane["original_source_reference_bins_15"])==15
     assert len(methane["training_only_holdout_fingerprints_165"])==165
     assert len(methods)==80 and len(register)==109
     assert not summary_manifest["runtime_activation"] and summary_manifest["Tank_MQ8_G3_validated_techniques"]==0
+    expected_snapshot={
+      "mq_research_curves_43.json":"bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1",
+      "identification_fingerprint_priors_v1.json":"5be89c673bb6b2b265acb6ddd6239e7ad5683f31",
+      "mq135_alternative_log_curves_6.json":next(x["sha"] for x in summary_manifest["curated_additions"] if x["path"].endswith("mq135_alternative_log_curves_6.json")) if any("sha" in x for x in summary_manifest["curated_additions"]) else None,
+    }
+    assert expected_snapshot["mq_research_curves_43.json"] in [x["sha"] for x in summary_manifest["pinned_sources"]]
+    derived_manifest=load_json(fixture/"mq4_methane_source_manifest_2026_11_02.json")
+    assert derived_manifest["payload"]["github_git_blob_sha"]=="acb3e16a79a6795c86d12ff1dbdbd01d6b11cb46"
+    assert derived_manifest["qualification"]["g3_actual_tank_validated"] is False
 
     inventory=[]
     for i,c in enumerate(curves,1):
