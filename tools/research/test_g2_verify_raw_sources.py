@@ -80,6 +80,21 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertFalse(result["all_verified"])
         self.assertEqual(result["results"][1]["error"], "unsafe_path")
 
+    def test_rejects_noncanonical_repeated_separator_even_without_alias(self):
+        result = verify({"sources": [self.entry("batch//reading.csv")]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "unsafe_path")
+
+    def test_rejects_noncanonical_current_directory_component(self):
+        result = verify({"sources": [self.entry("./sample.bin")]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "unsafe_path")
+
+    def test_rejects_nested_current_directory_component(self):
+        result = verify({"sources": [self.entry("batch/./reading.csv")]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "unsafe_path")
+
     def test_non_string_source_identity_blocked(self):
         entry = dict(self.entry(), source_id=42)
         result = verify({"sources": [entry]}, self.root)
