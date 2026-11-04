@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--stable",required=False)
     parser.add_argument("--out",required=True)
     args=parser.parse_args()
-    tank=pathlib.Path(args.tank); stable=pathlib.Path(args.stable)
+    tank=pathlib.Path(args.tank); stable=pathlib.Path(args.stable) if args.stable else tank
     out=pathlib.Path(args.out);out.mkdir(parents=True,exist_ok=True)
     snapshot=tank/"android/app/src/main/assets/chemcore_v6/reference"
     fixture=tank/"research/chemcore_next/tests/source_fixtures"
