@@ -70,6 +70,20 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertTrue(result["all_verified"])
         self.assertFalse(result["scientific_qualification"])
 
+    def test_hardlink_alias_cannot_count_as_independent_raw_source(self):
+        # Distinct names may point to one inode; never count twice as evidence.
+        import os
+        alias = self.root / "hardlink.bin"
+        try:
+            os.link(self.root / "sample.bin", alias)
+        except (OSError, NotImplementedError):
+            self.skipTest("hardlinks unsupported")
+        second = dict(self.entry("hardlink.bin"), source_id="hardlink-alias")
+        result = verify({"sources": [self.entry(), second]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][1]["error"], "duplicate_raw_file_identity")
+        self.assertFalse(result["scientific_qualification"])
+
     def test_alias_path_is_detected_as_duplicate(self):
         alias = dict(self.entry(), source_id="alias", path="sub/../sample.bin")
         result = verify({"sources": [self.entry(), alias]}, self.root)
