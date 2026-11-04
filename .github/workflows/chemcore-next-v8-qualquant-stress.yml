@@ -66,7 +66,7 @@ jobs:
                 'quant_median_abs_pct':round(statistics.median(rel),6) if rel else None,
                 'quant_p95_abs_pct':round(sorted(rel)[math.ceil(.95*len(rel))-1],6) if rel else None
               }
-          pure=[r for r in rows if r['expected_uid'] and r['ground_truth']!='MIXTURE']
+          pure=[r for r in rows if r['expected_uid'] and r['ground_truth']!='MIXTURE' and r['mode'] not in ('relay_off','no_source_r0','invalid_channel')]
           modes={m:metrics([r for r in pure if r['mode']==m]) for m in sorted(set(r['mode'] for r in pure))}
           gases={g:metrics([r for r in pure if r['ground_truth']==g]) for g in sorted(set(r['ground_truth'] for r in pure))}
           clean=[r for r in rows if r['ground_truth']=='CLEAN_AIR']
