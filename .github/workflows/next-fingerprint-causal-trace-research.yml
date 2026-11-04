@@ -1,0 +1,44 @@
+name: ChemCore Next original V8 fingerprint causal trace (read-only diagnostic)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/next-stable-fingerprint-cross-technique-audit-20261105]
+    paths:
+      - 'research/chemcore_next/tests/java/NextFingerprintCausalTrace.java'
+      - '.github/workflows/next-fingerprint-causal-trace-research.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  trace-original-engine-without-changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile V8 original source with read-only diagnostic harness
+        run: |
+          set -euo pipefail
+          mkdir -p build/fingerprint-causal-trace
+          find android/app/src/main/java/com/hazrob/tank/chemcore/next -name '*.java' -print0 \
+            | xargs -0 javac -encoding UTF-8 -d build/fingerprint-causal-trace \
+              research/chemcore_next/tests/java/NextFingerprintCausalTrace.java
+      - name: Trace actual reference self-identity through actual V8 classes
+        run: |
+          set -euo pipefail
+          java -cp build/fingerprint-causal-trace com.hazrob.tank.chemcore.next.NextFingerprintCausalTrace \
+            | tee build/fingerprint-causal-trace/causal_trace.log
+          grep -q '^CHEMCORE_NEXT_FINGERPRINT_CAUSAL_TRACE_PASS ' \
+            build/fingerprint-causal-trace/causal_trace.log
+      - name: Preserve verified trace without modifying production sources
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chemcore-next-v8-fingerprint-causal-trace
+          path: build/fingerprint-causal-trace/causal_trace.log
+          retention-days: 30
