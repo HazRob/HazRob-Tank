@@ -242,6 +242,29 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertEqual(result["results"][0]["error"], "raw_source_changed_during_read")
         self.assertFalse(result["scientific_qualification"])
 
+    def test_opened_descriptor_must_match_prechecked_file(self):
+        # Reproduce a file swap between the path stat and the actual open.
+        # The replacement contains identical bytes, so SHA256 alone cannot
+        # establish that the file object being hashed is the checked object.
+        target = self.root / "sample.bin"
+        replacement = self.root / "replacement.bin"
+        replacement.write_bytes(self.payload)
+        original_open = pathlib.Path.open
+        switched = [False]
+
+        def swapped_open(path, *args, **kwargs):
+            if path == target:
+                switched[0] = True
+                return original_open(replacement, *args, **kwargs)
+            return original_open(path, *args, **kwargs)
+
+        with mock.patch.object(pathlib.Path, "open", swapped_open):
+            result = verify({"sources": [self.entry()]}, self.root)
+        self.assertTrue(switched[0])
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "raw_source_changed_during_read")
+        self.assertFalse(result["scientific_qualification"])
+
     def test_zero_byte_source_is_integrity_valid_not_scientifically_qualified(self):
         empty = self.root / "empty.bin"
         empty.write_bytes(b"")
