@@ -66,6 +66,7 @@ jobs:
         run: |
           set -euo pipefail
           javac -encoding UTF-8 -d /tmp/next-real-replay/classes \
+            android/app/src/main/java/com/hazrob/tank/chemcore/next/FingerprintExpert.java \
             android/app/src/main/java/com/hazrob/tank/chemcore/v6/ClassicalLearningV6.java \
             research/chemcore_next/tests/java/NextP06PairedV6UciBenchmark.java \
             research/chemcore_next/tests/java/NextP06FingerprintDeviationAudit.java
