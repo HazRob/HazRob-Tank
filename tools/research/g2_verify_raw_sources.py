@@ -18,6 +18,7 @@ def verify(manifest, root):
         return {"schema": "hazrob-g2-byte-integrity/1", "scientific_qualification": False, "results": [{"source_id": "", "path": "", "status": "blocked", "error": "unsafe_root_symlink"}], "all_verified": False}
     seen_ids = set()
     seen_paths = set()
+    seen_file_objects = set()  # Reject hardlink aliases of the same raw evidence.
     for entry in manifest.get("sources", []):
         if not isinstance(entry, dict):
             out.append({"source_id": "", "path": "", "status": "blocked", "error": "invalid_source_entry"})
@@ -50,6 +51,10 @@ def verify(manifest, root):
             if not path.is_file():
                 raise ValueError("missing_raw_bytes")
             before = path.stat()
+            file_identity = (before.st_dev, before.st_ino)
+            if file_identity in seen_file_objects:
+                raise ValueError("duplicate_raw_file_identity")
+            seen_file_objects.add(file_identity)
             digest = hashlib.sha256()
             byte_count = 0
             with path.open("rb") as f:
