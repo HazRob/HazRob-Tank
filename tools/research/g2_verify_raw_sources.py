@@ -27,14 +27,14 @@ def verify(manifest, root):
         expected = entry.get("sha256", "")
         result = {"source_id": sid, "path": rel, "status": "blocked"}
         try:
-            if not isinstance(sid, str) or not sid.strip():
+            if not isinstance(sid, str) or not sid.strip() or any(ord(ch) < 32 or ord(ch) == 127 for ch in sid):
                 raise ValueError("invalid_source_id")
             sid = sid.strip()
             result["source_id"] = sid
             if sid in seen_ids:
                 raise ValueError("duplicate_source_id")
             seen_ids.add(sid)
-            if not isinstance(rel, str) or not rel or pathlib.PurePosixPath(rel).is_absolute() or ".." in pathlib.PurePosixPath(rel).parts or "\\" in rel or not pathlib.PurePosixPath(rel).parts:
+            if not isinstance(rel, str) or not rel or any(ord(ch) < 32 or ord(ch) == 127 for ch in rel) or pathlib.PurePosixPath(rel).is_absolute() or ".." in pathlib.PurePosixPath(rel).parts or "\\" in rel or not pathlib.PurePosixPath(rel).parts:
                 raise ValueError("unsafe_path")
             normalized_path = pathlib.PurePosixPath(rel).as_posix()
             if rel != normalized_path or any(part in ("", ".") for part in rel.split("/")):
