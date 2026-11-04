@@ -10,6 +10,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
+from types import SimpleNamespace
 
 from g2_verify_raw_sources import verify
 
@@ -216,6 +218,29 @@ class RawSourceVerificationTests(unittest.TestCase):
         result = verify({"sources": [self.entry(), second]}, self.root)
         self.assertFalse(result["all_verified"])
         self.assertEqual([x["status"] for x in result["results"]], ["verified", "blocked"])
+
+    def test_detects_source_changed_during_hashing(self):
+        target = self.root / "sample.bin"
+        original_stat = pathlib.Path.stat
+        calls = [0]
+
+        def changing_stat(path, *args, **kwargs):
+            result = original_stat(path, *args, **kwargs)
+            if path == target:
+                calls[0] += 1
+                if calls[0] == 2:
+                    return SimpleNamespace(
+                        st_dev=result.st_dev, st_ino=result.st_ino,
+                        st_size=result.st_size, st_mtime_ns=result.st_mtime_ns + 1,
+                        st_ctime_ns=result.st_ctime_ns,
+                    )
+            return result
+
+        with mock.patch.object(pathlib.Path, "stat", changing_stat):
+            result = verify({"sources": [self.entry()]}, self.root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "raw_source_changed_during_read")
+        self.assertFalse(result["scientific_qualification"])
 
     def test_cli_success_and_failure_exit_codes(self):
         manifest = pathlib.Path(self.tmp.name) / "manifest.json"
