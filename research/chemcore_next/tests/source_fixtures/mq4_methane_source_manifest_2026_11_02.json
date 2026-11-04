@@ -1,0 +1,74 @@
+{
+  "schema": "hazrob.chemcore.stable.derived-reference-publication.v1",
+  "release": "0.1.0-mq4-methane-external-source-reference",
+  "date": "2026-11-02",
+  "product": "ChemCore Next source-science evidence accepted for ChemCore Stable reference catalog",
+  "status": "PUBLISHED_RESEARCH_SOURCE_REFERENCE_NOT_RUNTIME_ACTIVATED",
+  "source_root": "MQ-EXT-21-FURUTA-LICOR-2022",
+  "canonical_material": {
+    "name": "Methane",
+    "cas": "74-82-8",
+    "formula": "CH4",
+    "legacy_id": 76
+  },
+  "payload": {
+    "relative_path": "mq4_methane_li_cor_quantitative_source_fingerprint_v1.json",
+    "sha256": "ebef3b5efbd5f4ba7a57227a04db55457b4128441db0b3b0a757cc77c1880763",
+    "size_bytes": 117931,
+    "github_git_blob_sha": "acb3e16a79a6795c86d12ff1dbdbd01d6b11cb46",
+    "source_reference_fingerprint_cells": 15,
+    "train_only_fingerprint_cells": 165,
+    "source_rows": 14186,
+    "sources_instances": [
+      "MQ4_1",
+      "MQ4_2",
+      "MQ4_3"
+    ],
+    "independent_acquisition_days": 11,
+    "original_reference_gas": "Li-Cor methane",
+    "original_reference_unit": "ppb",
+    "derived_concentration_unit": "ppm",
+    "physical_sensor_resistance_unit": "ohm",
+    "rs_to_kohm_factor": 0.001,
+    "source_measured_R0_available": false
+  },
+  "reproducibility": {
+    "original_csv_url": "https://conservancy.umn.edu/server/api/core/bitstreams/1542d00c-67b4-4a61-93f3-48ee1dd97208/content",
+    "original_csv_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+    "originating_repository": "HazRob/HazRob-Tank",
+    "reference_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/41386477615",
+    "g2_benchmark_script": "research/chemcore_next/experiments/next_reference_mq4_quantitative.py",
+    "g2_script_blob_sha": "698ff163be984f7d912f775b48e3b3c299309570",
+    "payload_generator_script": "research/chemcore_next/experiments/prepare_stable_methane_quantitative_fingerprint.py",
+    "generator_blob_sha": "49c8fe94c61cb4125550009c8d3788172132e290",
+    "split": "11 whole-day test folds, separate calibration day, 9 training days; 33 instance-plus-day transfer tests"
+  },
+  "measurements_not_independent_claims": {
+    "14186_source_rows": "rows from one original dataset, not 14,186 independent experiments",
+    "15_reference_bins": "source descriptive bins built from full dataset, not independent predictive validation",
+    "165_training_fingerprints": "same physical source data regrouped by 11 train/test folds, 3 sensor units and 5 methane intervals"
+  },
+  "model_comparison": {
+    "no_sensor_train_median_mae_ppm": 0.8436704979550199,
+    "mq4_three_instances_plus_environment_ridge_mae_ppm": 0.8871429954759783,
+    "improvement_over_baseline_ppm": -0.043472497520958386,
+    "supported_claim": "the derived methane reference distributions exist as genuine source quantitative evidence; supervised ridge regression does not beat simple baseline",
+    "model_promoted": false
+  },
+  "qualification": {
+    "fingerprint_state": "TRANSFER",
+    "ppm_state": "TRANSFER",
+    "m4_state": "NONE",
+    "source_quantitative_reference_available": true,
+    "g2_status": "EXPLORATORY_SOURCE_REFERENCE_DATA_WITH_HELDOUT_METRICS_NOT_PROMOTED",
+    "g3_actual_tank_validated": false,
+    "validated_sensor_specific_R0": false,
+    "validated_8_MQ_gas_identity": false,
+    "ppm_field_reporting_authorized": false,
+    "field_alarm_authorized": false,
+    "runtime_activation": false,
+    "hazardous_atmosphere_certified": false,
+    "stable_runtime_manifest_not_changed": true
+  },
+  "source_license_note": "Respect original dataset provider licensing and cite the primary landing page: https://hdl.handle.net/11299/226714"
+}
