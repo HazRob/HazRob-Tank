@@ -242,6 +242,29 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertEqual(result["results"][0]["error"], "raw_source_changed_during_read")
         self.assertFalse(result["scientific_qualification"])
 
+    def test_zero_byte_source_is_integrity_valid_not_scientifically_qualified(self):
+        empty = self.root / "empty.bin"
+        empty.write_bytes(b"")
+        entry = {"source_id": "empty-fixture", "path": "empty.bin", "sha256": hashlib.sha256(b"").hexdigest()}
+        result = verify({"sources": [entry]}, self.root)
+        self.assertTrue(result["all_verified"])
+        self.assertEqual(result["results"][0]["size_bytes"], 0)
+        self.assertFalse(result["scientific_qualification"])
+
+    def test_missing_raw_root_fails_closed(self):
+        missing_root = pathlib.Path(self.tmp.name) / "missing-root"
+        result = verify({"sources": [self.entry()]}, missing_root)
+        self.assertFalse(result["all_verified"])
+        self.assertEqual(result["results"][0]["error"], "missing_raw_bytes")
+
+    def test_cli_rejects_malformed_manifest_schema(self):
+        manifest = pathlib.Path(self.tmp.name) / "invalid-manifest.json"
+        manifest.write_text(json.dumps({"sources": "not-a-list"}), encoding="utf-8")
+        command = [sys.executable, str(SCRIPT), str(manifest), "--root", str(self.root)]
+        completed = subprocess.run(command, capture_output=True, text=True, check=False)
+        self.assertEqual(completed.returncode, 2)
+        self.assertEqual(json.loads(completed.stdout)["status"], "blocked")
+
     def test_cli_success_and_failure_exit_codes(self):
         manifest = pathlib.Path(self.tmp.name) / "manifest.json"
         manifest.write_text(json.dumps({"sources": [self.entry()]}), encoding="utf-8")
