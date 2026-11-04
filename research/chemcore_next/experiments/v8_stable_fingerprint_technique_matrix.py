@@ -118,7 +118,7 @@ def main():
                         false_inverted_ppm=round(pred,8),
                         why="ONE_SENSOR_RATIO_WITHIN_BOTH_ASSUMED_DOMAINS_NOT_IDENTITY_EVIDENCE"))
             source_results.append(dict(curve_id=curve_id,sensor=c["sensor"],gas=c["gas_label"],
-                original_legacy_id=c["legacy_id"],source_scale_assumed=scale,true_ppm=true_ppm,
+                original_legacy_id=c["legacy_id"],source_scale_assumed=scale,source_coeff_a=a,source_coeff_b=b,source_min_ppm=mn,source_max_ppm=mx,true_ppm=true_ppm,
                 synthetic_ratio=observed_ratio,restored_ppm=inverse,
                 self_abs_relative_error_pct=pct_error(inverse,true_ppm),
                 false_other_curves_in_range=len(false_same_sensor),
