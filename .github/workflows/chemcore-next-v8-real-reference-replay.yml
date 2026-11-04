@@ -46,7 +46,7 @@ jobs:
         run: |
           set -euo pipefail
           find android/app/src/main/java/com/hazrob/tank/chemcore/next \
-            -name '*.java' -print0 | xargs -0 javac -encoding UTF-8 -d /tmp/next-real-replay/classes \
+            -name '*.java' -print0 | xargs -0 javac -encoding UTF-8 -cp /tmp/next-real-replay/classes -d /tmp/next-real-replay/classes \
               research/chemcore_next/tests/java/NextRealMqFingerprintBenchmark.java \
               research/chemcore_next/tests/java/NextP06MeasuredMqBundleBenchmark.java
           java -Xmx1g -cp /tmp/next-real-replay/classes com.hazrob.tank.chemcore.next.NextRealMqFingerprintBenchmark \
