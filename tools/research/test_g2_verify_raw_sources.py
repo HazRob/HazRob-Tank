@@ -257,6 +257,22 @@ class RawSourceVerificationTests(unittest.TestCase):
         self.assertFalse(result["all_verified"])
         self.assertEqual(result["results"][0]["error"], "missing_raw_bytes")
 
+    def test_cli_rejects_duplicate_manifest_keys_at_root_and_entry(self):
+        cases = [
+            '{"sources":[],"sources":[]}',
+            '{"sources":[{"source_id":"fixture","source_id":"other","path":"sample.bin","sha256":"0000000000000000000000000000000000000000000000000000000000000000"}]}',
+        ]
+        for index, raw in enumerate(cases):
+            with self.subTest(index=index):
+                manifest = pathlib.Path(self.tmp.name) / f"duplicate-{index}.json"
+                manifest.write_text(raw, encoding="utf-8")
+                completed = subprocess.run(
+                    [sys.executable, str(SCRIPT), str(manifest), "--root", str(self.root)],
+                    capture_output=True, text=True, check=False,
+                )
+                self.assertEqual(completed.returncode, 2)
+                self.assertIn("duplicate_manifest_key", json.loads(completed.stdout)["error"])
+
     def test_cli_rejects_malformed_manifest_schema(self):
         manifest = pathlib.Path(self.tmp.name) / "invalid-manifest.json"
         manifest.write_text(json.dumps({"sources": "not-a-list"}), encoding="utf-8")
