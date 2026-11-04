@@ -1,0 +1,166 @@
+name: ChemCore Next V8 scientific qualitative quantitative full-engine stress
+
+on:
+  push:
+    branches:
+      - research/chemcore-next-v8-validation-20261105
+    paths:
+      - 'research/chemcore_next/tests/java/NextV8QualQuantStressSuite.java'
+      - '.github/workflows/chemcore-next-v8-qualquant-stress.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  run-full-next-inference-stress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile exact V8 ChemCore Next sources (no surrogate)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/next-v8-test/classes build/next-v8-test/results
+          find android/app/src/main/java/com/hazrob/tank/chemcore/next \
+            -name '*.java' -print0 | xargs -0 javac -encoding UTF-8 -d build/next-v8-test/classes \
+            research/chemcore_next/tests/java/NextV8QualQuantStressSuite.java
+      - name: Run deterministic 2502 full-engine research stress cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp build/next-v8-test/classes \
+            com.hazrob.tank.chemcore.next.NextV8QualQuantStressSuite \
+            build/next-v8-test/results \
+            | tee build/next-v8-test/results/execution.log
+          grep -q '^NEXT_V8_REAL_ENGINE_SIMULATION_PASS cases=2502 ' build/next-v8-test/results/execution.log
+      - name: Analyze rankings, quantitative deviation, and abstentions without hiding failures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import collections,csv,json,math,pathlib,statistics,subprocess
+          root=pathlib.Path('build/next-v8-test/results')
+          rows=list(csv.DictReader((root/'next_v8_simulated_qual_quant_cases.csv').open()))
+          assert len(rows)==2502,len(rows)
+          for r in rows:
+              assert r['safety_alarm']=='false' and r['reportable_ppm']=='false' and r['physical_g3']=='false'
+          def metrics(items):
+              pure=[r for r in items if r['expected_uid'] and r['ground_truth']!='MIXTURE']
+              qual_valid=[r for r in pure if r['true_gas_research_ppm']!='']
+              rel=[float(r['relative_error_pct']) for r in qual_valid]
+              return {
+                'cases':len(items),'pure_cases':len(pure),
+                'top1_correct':sum(r['rank_1_uid']==r['expected_uid'] for r in pure),
+                'top1_accuracy':round(sum(r['rank_1_uid']==r['expected_uid'] for r in pure)/len(pure),6) if pure else None,
+                'true_class_present':sum(r['expected_uid'] in r['ranked_uids'].split('|') for r in pure),
+                'pure_mixture_unresolved':sum(r['actual_status']=='MIXTURE_UNRESOLVED' for r in pure),
+                'pure_unknown':sum(r['actual_status']=='UNKNOWN' for r in pure),
+                'quant_research_coverage':round(len(qual_valid)/len(pure),6) if pure else None,
+                'quant_mae_pct':round(statistics.mean(rel),6) if rel else None,
+                'quant_median_abs_pct':round(statistics.median(rel),6) if rel else None,
+                'quant_p95_abs_pct':round(sorted(rel)[math.ceil(.95*len(rel))-1],6) if rel else None
+              }
+          pure=[r for r in rows if r['expected_uid'] and r['ground_truth']!='MIXTURE']
+          modes={m:metrics([r for r in pure if r['mode']==m]) for m in sorted(set(r['mode'] for r in pure))}
+          gases={g:metrics([r for r in pure if r['ground_truth']==g]) for g in sorted(set(r['ground_truth'] for r in pure))}
+          clean=[r for r in rows if r['ground_truth']=='CLEAN_AIR']
+          mixed=[r for r in rows if r['ground_truth']=='MIXTURE']
+          control={m:collections.Counter((r['actual_status'] for r in rows if r['mode']==m)) for m in ['relay_off','no_source_r0','invalid_channel']}
+          assert len(clean)==60 and len(mixed)==60 and len(pure)==2352
+          sample_failures=[r for r in pure if r['rank_1_uid']!=r['expected_uid']][:60]
+          with (root/'failure_examples.csv').open('w',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(sample_failures)
+          summary={
+            'schema':'chemcore_next_v8_full_engine_synthetic_stress_1',
+            'benchmark_type':'deterministic synthetic stress on actual ChemCoreNext.analyze()',
+            'non_claims':['not hardware data','not empirical gas classification accuracy',
+                'no certified ppm','no physical G3','no source calibrations verified'],
+            'V8_source_commit_at_start':'6a54ee878b638ddc1e2c3aff47623f9931b26ba7',
+            'tested_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+            'gas_names':['CH4','ETHANOL','CO','H2S','NH3','ACETONE','O3'],
+            'sensor_models':['MQ4','MQ3','MQ7','MQ136','MQ137','MQ138','MQ131_LOW'],
+            'synthetic_source_gate_flags':True,
+            'same_curve_forward_inverse_circular_baseline':True,
+            'cases_total':len(rows),'pure_cases':len(pure),
+            'pure_overall':metrics(pure),'by_mode':modes,'by_gas':gases,
+            'clean_air_false_positive_fraction':sum(int(r['ranked_count'])>0 for r in clean)/len(clean),
+            'clean_air_non_unknown_fraction':sum(r['actual_status']!='UNKNOWN' for r in clean)/len(clean),
+            'mixture_status_counts':dict(collections.Counter(r['actual_status'] for r in mixed)),
+            'negative_controls':{k:dict(v) for k,v in control.items()},
+            'research_technical_execution_passed':True,
+            'research_performance_gate_min_top1_0_80_clean_fpr_max_0_05_met':
+              metrics(pure)['top1_accuracy']>=.80 and
+              sum(int(r['ranked_count'])>0 for r in clean)/len(clean)<=.05,
+            'g3_tank':False,'field_ppm_authorized':False
+          }
+          (root/'metrics.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
+          text=[
+            '# ChemCore Next V8 simulated full engine inference stress',
+            '',
+            f"Source baseline: {summary['V8_source_commit_at_start']}",
+            f"Stress cases: {summary['cases_total']} (pure: {len(pure)}; clean: {len(clean)}; mixed: {len(mixed)}; negative: 30)",
+            '',
+            '## Results (software simulation only)',
+            '',
+            f"- Overall simulated top-1: {summary['pure_overall']['top1_correct']}/{len(pure)} = {summary['pure_overall']['top1_accuracy']}",
+            f"- Clean-air false-candidate rate: {summary['clean_air_false_positive_fraction']:.3f}",
+            f"- Positive-only research ppm MAE percentage: {summary['pure_overall']['quant_mae_pct']}",
+            f"- Research performance gate: {summary['research_performance_gate_min_top1_0_80_clean_fpr_max_0_05_met']}",
+            '',
+            '## Deviations and limitations',
+            '',
+            'The source curve expert only establishes an in-range hypothesis, not a likelihood or independent gas identity.',
+            'The arbiter ranks by independent source roots, then canonical chemical UID; this can mis-rank pure synthetic challenges or trigger many hypotheses in clean air.',
+            'The quantified estimate is only the SourceCurveExpert research output; ChemCoreNext output never reports certified ppm.',
+            'The ideal forward/inverse self-consistency case is circular by construction and must not count as external accuracy.',
+            'Perturbation cases quantify sensitivity to synthetic noise, R0 bias, humidity shift and transfer-function disagreement.',
+            'External real MQ records and independent Tank G3 experiments are mandatory before empirical identification accuracy can be claimed.',
+            '',
+            '## Detailed artifacts',
+            '- next_v8_simulated_qual_quant_cases.csv',
+            '- failure_examples.csv',
+            '- metrics.json',
+            '- execution.log'
+          ]
+          (root/'failure_analysis.md').write_text('\n'.join(text)+'\n')
+          (root/'reproduce.md').write_text(
+            '# Reproduce\n\n'
+            'Run this GitHub Actions workflow on research/chemcore-next-v8-validation-20261105, '
+            'with JDK 17. It compiles android/app/src/main/java/com/hazrob/tank/chemcore/next/*.java '
+            'and research/chemcore_next/tests/java/NextV8QualQuantStressSuite.java.\n\n'
+            'The synthetic seed is 20261105; all curves, challenge gas concentrations and r0 parameters '
+            'are in the Java source. Qualifying flags are force-enabled solely to stress arbitration.\n'
+          )
+          print('NEXT_V8_METRICS',json.dumps({
+            'pure':summary['pure_overall'],'by_mode':modes,
+            'by_gas':gases,'clean_false_positive_fraction':summary['clean_air_false_positive_fraction'],
+            'mixtures':summary['mixture_status_counts'],'controls':summary['negative_controls'],
+            'research_performance_gate_met':summary['research_performance_gate_min_top1_0_80_clean_fpr_max_0_05_met']},
+            ensure_ascii=False,sort_keys=True))
+          print('NEXT_V8_EVIDENCE_FILES_CREATED',sorted(p.name for p in root.iterdir()))
+          PY
+      - name: Verify source and output SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum \
+            research/chemcore_next/tests/java/NextV8QualQuantStressSuite.java \
+            android/app/src/main/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java \
+            build/next-v8-test/results/*.json \
+            build/next-v8-test/results/*.csv \
+            > build/next-v8-test/results/sha256_manifest.txt
+          head -12 build/next-v8-test/results/sha256_manifest.txt
+      - name: Preserve results, failures and source hash
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chemcore-next-v8-full-engine-qualquant-stress
+          path: build/next-v8-test/results/
+          if-no-files-found: warn
+          retention-days: 90
