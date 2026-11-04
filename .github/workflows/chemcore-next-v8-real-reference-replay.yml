@@ -1,0 +1,131 @@
+name: ChemCore Next V8 real externally labelled MQ source replay
+
+on:
+  push:
+    branches: [research/chemcore-next-v8-validation-20261105]
+    paths:
+      - '.github/workflows/chemcore-next-v8-real-reference-replay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  existing-real-source-mq-v8:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Create evidence directories and preflight locked source hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source /tmp/next-real-replay/{uci,mq4,fingerprints,paired,bundles,deviation,classes}
+          test "$(git hash-object research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv)" = 451fdd05a18db8531abc219089de071ccc0dd461
+          git rev-parse HEAD | tee /tmp/next-real-replay/replay_commit.txt
+      - name: Fetch authentic gas-labelled UCI1081 and independently referenced CH4 records
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_v6/benchmarks/extract_uci1081_verified.py \
+            --out /tmp/source/uci90_features.csv \
+            --manifest /tmp/next-real-replay/uci/source_manifest.json
+          curl --fail --location --retry 3 --max-time 150 \
+            'https://conservancy.umn.edu/server/api/core/bitstreams/1542d00c-67b4-4a61-93f3-48ee1dd97208/content' \
+            -o /tmp/source/mq4_original.csv
+          echo '3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d  /tmp/source/mq4_original.csv' | sha256sum -c -
+      - name: Run actual V8 Next fingerprint expert on UCI MQ135, smoke and Li-Cor CH4
+        shell: bash
+        run: |
+          set -euo pipefail
+          find android/app/src/main/java/com/hazrob/tank/chemcore/next \
+            -name '*.java' -print0 | xargs -0 javac -encoding UTF-8 -d /tmp/next-real-replay/classes \
+              research/chemcore_next/tests/java/NextRealMqFingerprintBenchmark.java \
+              research/chemcore_next/tests/java/NextP06MeasuredMqBundleBenchmark.java
+          java -Xmx1g -cp /tmp/next-real-replay/classes com.hazrob.tank.chemcore.next.NextRealMqFingerprintBenchmark \
+            /tmp/source/uci90_features.csv \
+            research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv \
+            /tmp/source/mq4_original.csv \
+            research/chemcore_next/device_calibration/tank_8mq_v6_quick_clean_air_2026-10-31T032955Z.json \
+            /tmp/next-real-replay/fingerprints | tee /tmp/next-real-replay/fingerprints/run.log
+          grep -q '^CHEMCORE_NEXT_REAL_MQ_FINGERPRINT_BENCHMARK_PASS ' /tmp/next-real-replay/fingerprints/run.log
+          java -Xmx1g -cp /tmp/next-real-replay/classes com.hazrob.tank.chemcore.next.NextP06MeasuredMqBundleBenchmark \
+            research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv \
+            /tmp/next-real-replay/bundles/source_adc_bundle.json \
+            | tee /tmp/next-real-replay/bundles/run.log
+          grep -q '^CHEMCORE_NEXT_REAL_ADC_BUNDLE_STRESS_PASS ' /tmp/next-real-replay/bundles/run.log
+      - name: Re-run paired UCI1081 actual Next vs V6 and deviation ablation
+        shell: bash
+        run: |
+          set -euo pipefail
+          javac -encoding UTF-8 -d /tmp/next-real-replay/classes \
+            android/app/src/main/java/com/hazrob/tank/chemcore/v6/ClassicalLearningV6.java \
+            research/chemcore_next/tests/java/NextP06PairedV6UciBenchmark.java \
+            research/chemcore_next/tests/java/NextP06FingerprintDeviationAudit.java
+          java -cp /tmp/next-real-replay/classes com.hazrob.tank.chemcore.next.NextP06PairedV6UciBenchmark \
+            /tmp/source/uci90_features.csv /tmp/next-real-replay/paired/next_vs_v6.json \
+            | tee /tmp/next-real-replay/paired/run.log
+          java -cp /tmp/next-real-replay/classes com.hazrob.tank.chemcore.next.NextP06FingerprintDeviationAudit \
+            /tmp/source/uci90_features.csv /tmp/next-real-replay/deviation/ablation.json \
+            | tee /tmp/next-real-replay/deviation/run.log
+      - name: Re-run methane quantitative test with independently measured Li-Cor reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-input numpy==2.3.5 pandas==2.2.3 scikit-learn==1.8.0
+          python research/chemcore_next/experiments/next_reference_mq4_quantitative.py \
+            --source /tmp/source/mq4_original.csv --out /tmp/next-real-replay/mq4 \
+            | tee /tmp/next-real-replay/mq4/run.log
+          grep -q '^CHEMCORE_NEXT_MQ4_REAL_REFERENCE_PASS ' /tmp/next-real-replay/mq4/run.log
+      - name: Scientific source-only summary and integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('/tmp/next-real-replay')
+          a=json.loads((p/'fingerprints/next_real_mq_fingerprint_benchmark.json').read_text())
+          b=json.loads((p/'paired/next_vs_v6.json').read_text())
+          c=json.loads((p/'bundles/source_adc_bundle.json').read_text())
+          d=json.loads((p/'mq4/next_mq4_source_experiment.json').read_text())
+          e=json.loads((p/'deviation/ablation.json').read_text())
+          assert a['mq4_source']['rows']==14186
+          assert b['source_test_rows']==90
+          assert len(c['bundles'])==5
+          assert d['distinct_days']==11
+          assert e['original_exposures']==90
+          summary={
+            'tested_real_source_paired_V6_vs_Next':{
+              'total':90,'v6_correct':b['v6_correct'],'next_correct':b['next_correct'],
+              'v6_accuracy':b['v6_accuracy'],'next_accuracy':b['next_accuracy'],
+              'diff_predictions':b['different_prediction_rows']},
+            'observed_mq_source_fingerprints':a['results'],
+            'measured_mq_category_bundles':c['bundles'],
+            'source_methane_independent_LiCor':d['metrics_by_model'],
+            'fingerprint_scale_ablation':e['research_classifiers'],
+            'external_real_measurements_only':True,
+            'actual_Tank_G3':False,
+            'test_full_v8_arbiter':False,
+            'real_gas_exposures_independently_mapped_to_Tank':False,
+            'original_G3_qualification':False}
+          (p/'source_replay_summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+          print('NEXT_V8_REAL_SOURCE_SUMMARY',json.dumps(summary['tested_real_source_paired_V6_vs_Next']))
+          print('NEXT_V8_REAL_METHANE',json.dumps(summary['source_methane_independent_LiCor'],sort_keys=True))
+          print('NEXT_V8_REAL_BUNDLES',json.dumps(summary['measured_mq_category_bundles'],sort_keys=True))
+          print('NEXT_V8_REAL_SOURCE_REPLAY_COMPLETE sensors=',len(a['results']))
+          PY
+      - name: Preserve reproducible original physical-source benchmark outputs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chemcore-next-v8-original-MQ-reference-replay
+          path: /tmp/next-real-replay/
+          if-no-files-found: warn
+          retention-days: 90
