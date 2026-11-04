@@ -230,7 +230,7 @@ class RawSourceVerificationTests(unittest.TestCase):
                 calls[0] += 1
                 if calls[0] == 3:
                     return SimpleNamespace(
-                        st_dev=result.st_dev, st_ino=result.st_ino,
+                        st_mode=result.st_mode, st_dev=result.st_dev, st_ino=result.st_ino,
                         st_size=result.st_size, st_mtime_ns=result.st_mtime_ns + 1,
                         st_ctime_ns=result.st_ctime_ns,
                     )
