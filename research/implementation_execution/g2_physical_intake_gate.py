@@ -74,7 +74,7 @@ def audit(manifest, root):
         # Same physical site and acquisition day cannot be split across holdouts.
         site, day = row.get("site_id"), row.get("day_id")
         if (isinstance(site, str) and site.strip() and
-                isinstance(day, str) and day.strip() and part in PARTITIONS):
+                isinstance(day, str) and day.strip() and isinstance(part, str) and part in PARTITIONS):
             key = (site.strip(), day.strip())
             previous = seen_site_day.setdefault(key, part)
             if previous != part:
