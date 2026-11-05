@@ -1,0 +1,80 @@
+{
+  "schema": "hazrob-tank-v9-execution-tracker/1",
+  "opened_at": "2026-11-06",
+  "repository": "HazRob/HazRob-Tank",
+  "branch": "feature/tank-v9-implementation",
+  "base_branch": "feature/tank-v8-implementation",
+  "base_sha": "6810b9c095d5e5427ca8320e486fc1a544c49406",
+  "scope": {
+    "android": true,
+    "esp32_main": true,
+    "esp32_cam": false
+  },
+  "baseline": {
+    "android": {
+      "source_track": "V8",
+      "readme_test_apk_version": "8.0",
+      "package_id": "com.hazrob.tank",
+      "qualified_release": false
+    },
+    "esp32": {
+      "firmware_identifier": "ESP32-Tank 0.1.6-v6-quickr0-dev",
+      "api": 4,
+      "source_path": "firmware/ESP32-Tank/Config.h"
+    },
+    "data_contract": {
+      "status": "audit_pending",
+      "api_policy": "preserve_until_compatibility_review"
+    }
+  },
+  "tasks": [
+    {
+      "id": "V9-INT-000",
+      "area": "integration",
+      "title": "Create V9 independent branch and documentation",
+      "status": "done",
+      "evidence": "docs/implementation/V9-MASTER-CHANGE-TRACK-2026-11-06_AR.md"
+    },
+    {
+      "id": "V9-APP-001",
+      "area": "android",
+      "title": "Await owner-specified modifications",
+      "status": "awaiting_requirements",
+      "evidence": null
+    },
+    {
+      "id": "V9-FW-001",
+      "area": "esp32",
+      "title": "Await owner-specified modifications",
+      "status": "awaiting_requirements",
+      "evidence": null
+    },
+    {
+      "id": "V9-IF-001",
+      "area": "interface",
+      "title": "Review ESP32-Android commands, /data, field names, timing, safety, schema and GPIO before API change",
+      "status": "not_started",
+      "evidence": null
+    }
+  ],
+  "gates": {
+    "requirements": "open",
+    "api_compatibility": "not_started",
+    "android_build": "not_started",
+    "esp32_arduino_build": "not_started",
+    "tests": "not_started",
+    "hardware_acceptance": "not_started",
+    "release": "not_started"
+  },
+  "artifacts": {
+    "apk_v9": null,
+    "esp32_v9_zip": null,
+    "esp32_v9_bin": null,
+    "sha256": null
+  },
+  "notes": [
+    "Creating a V9 branch is not proof of a compiled V9 release.",
+    "ChemCore Next scientific validation is separate from software build success.",
+    "Preserve all older version branches and backup R0/sites/sessions during migration."
+  ]
+}
