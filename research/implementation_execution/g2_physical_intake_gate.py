@@ -50,6 +50,14 @@ def audit(manifest, root):
                 errors.append(prefix + ":nonpositive_" + key)
             elif key == "humidity_percent" and not 0 <= value <= 100:
                 errors.append(prefix + ":humidity_out_of_range")
+        # Identifiers must be nonempty strings, not containers, booleans or placeholders.
+        # A malformed identifier must never bypass partition-leak detection.
+        for key in ("source_id", "session_id", "device_id", "day_id",
+                    "site_id", "exposure_id", "analyte", "reference_standard",
+                    "sensor_model", "firmware_revision"):
+            value = row.get(key)
+            if not isinstance(value, str) or not value.strip() or value.strip().upper() in ("UNKNOWN", "N/A", "NULL"):
+                errors.append(prefix + ":invalid_identifier_" + key)
         part = row.get("partition")
         if not isinstance(part, str) or part not in PARTITIONS:
             errors.append(prefix + ":invalid_partition")
@@ -181,6 +189,24 @@ class GateTests(unittest.TestCase):
             issues = audit({"records": [row]}, d)
             self.assertTrue(any("invalid_partition" in x for x in issues))
             self.assertTrue(any("unsupported_concentration_unit" in x for x in issues))
+
+    def test_malformed_identifiers_fail_closed(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = pathlib.Path(d) / "raw.csv"
+            p.write_text("adc\\n1\\n")
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                       partition="test", concentration_unit="ppm_vv",
+                       session_id=["not-a-string"], device_id=True,
+                       exposure_id={"id": "x"}, source_id="  ",
+                       concentration=1.0, reference_uncertainty=0.1,
+                       adc_reference_v=3.3, heater_voltage_v=5.0,
+                       load_resistance_ohm=10000.0, temperature_c=25.0,
+                       humidity_percent=50.0, sampling_interval_s=1.0)
+            issues = audit({"records": [row]}, d)
+            for key in ("session_id", "device_id", "exposure_id", "source_id"):
+                self.assertTrue(any("invalid_identifier_" + key in issue for issue in issues), key)
 
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
