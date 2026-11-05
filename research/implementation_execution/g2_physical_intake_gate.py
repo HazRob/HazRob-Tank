@@ -355,6 +355,48 @@ class GateTests(unittest.TestCase):
             issues = audit({"records": rows}, d)
             self.assertTrue(any("partition_leak_site_day" in issue for issue in issues))
 
+    def test_tampered_raw_bytes_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = pathlib.Path(d) / "measurement.csv"
+            original = b"adc\\n100\\n"
+            p.write_bytes(original)
+            claimed = hashlib.sha256(original).hexdigest()
+            p.write_bytes(b"adc\\n999\\n")
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path=p.name, sha256=claimed, partition="test",
+                       concentration_unit="ppm_vv", concentration=10.0,
+                       reference_uncertainty=0.1, adc_reference_v=3.3,
+                       heater_voltage_v=5.0, load_resistance_ohm=10000.0,
+                       temperature_c=25.0, humidity_percent=50.0,
+                       sampling_interval_s=1.0)
+            self.assertTrue(any("sha256_mismatch" in x for x in
+                                audit({"records": [row]}, d)))
+
+    def test_site_day_whitespace_alias_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            rows = []
+            for i, (part, site, day) in enumerate((
+                    ("train", "site_A", "day_1"),
+                    ("test", " site_A ", " day_1 "))):
+                p = pathlib.Path(d) / f"site_day_{i}.csv"
+                p.write_text(f"adc\\n{i}\\n")
+                row = dict.fromkeys(REQUIRED, "measured")
+                row.update(raw_path=p.name,
+                           sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                           partition=part, concentration_unit="ppm_vv",
+                           source_id=f"source_{i}", session_id=f"session_{i}",
+                           exposure_id=f"exposure_{i}", device_id=f"device_{i}",
+                           site_id=site, day_id=day, concentration=10.0,
+                           reference_uncertainty=0.1, adc_reference_v=3.3,
+                           heater_voltage_v=5.0, load_resistance_ohm=10000.0,
+                           temperature_c=25.0, humidity_percent=50.0,
+                           sampling_interval_s=1.0)
+                rows.append(row)
+            self.assertTrue(any("partition_leak_site_day" in x for x in
+                                audit({"records": rows}, d)))
+
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
     def test_unknown_not_accepted(self):
