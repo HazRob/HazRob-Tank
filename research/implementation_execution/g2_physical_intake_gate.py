@@ -92,7 +92,16 @@ def audit(manifest, root):
         if p in seen_path:
             errors.append(prefix + ":duplicate_path")
         seen_path.add(p)
-        digest = hashlib.sha256(p.read_bytes()).hexdigest()
+        # Stream raw evidence rather than loading unbounded files into RAM.
+        hasher = hashlib.sha256()
+        byte_count = 0
+        with p.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                byte_count += len(chunk)
+                hasher.update(chunk)
+        if byte_count == 0:
+            errors.append(prefix + ":empty_raw_file")
+        digest = hasher.hexdigest()
         if digest != row.get("sha256"):
             errors.append(prefix + ":sha256_mismatch")
         if digest in seen_bytes:
@@ -239,6 +248,20 @@ class GateTests(unittest.TestCase):
                        sampling_interval_s=1.0)
             issues = audit({"records": [row]}, d)
             self.assertTrue(any("raw_path_invalid" in x for x in issues))
+
+    def test_empty_raw_file_rejected_even_with_matching_hash(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = pathlib.Path(d) / "empty.csv"
+            p.write_bytes(b"")
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path=p.name, sha256=hashlib.sha256(b"").hexdigest(),
+                       partition="test", concentration_unit="ppm_vv",
+                       concentration=1.0, reference_uncertainty=0.1,
+                       adc_reference_v=3.3, heater_voltage_v=5.0,
+                       load_resistance_ohm=10000.0, temperature_c=25.0,
+                       humidity_percent=50.0, sampling_interval_s=1.0)
+            self.assertTrue(any("empty_raw_file" in x for x in audit({"records": [row]}, d)))
 
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
