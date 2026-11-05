@@ -263,6 +263,27 @@ class GateTests(unittest.TestCase):
                        humidity_percent=50.0, sampling_interval_s=1.0)
             self.assertTrue(any("empty_raw_file" in x for x in audit({"records": [row]}, d)))
 
+    def test_identical_raw_bytes_in_different_partitions_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            rows = []
+            for i, part in enumerate(("train", "test")):
+                p = pathlib.Path(d) / f"replica_{i}.csv"
+                p.write_bytes(b"adc\\n123\\n")
+                row = dict.fromkeys(REQUIRED, "measured")
+                row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                           partition=part, concentration_unit="ppm_vv",
+                           session_id=f"s_{i}", exposure_id=f"e_{i}",
+                           device_id=f"d_{i}", concentration=10.0,
+                           reference_uncertainty=0.1, adc_reference_v=3.3,
+                           heater_voltage_v=5.0, load_resistance_ohm=10000.0,
+                           temperature_c=25.0, humidity_percent=50.0,
+                           sampling_interval_s=1.0)
+                rows.append(row)
+            issues = audit({"records": rows}, d)
+            self.assertTrue(any("duplicate_across_partitions" in x for x in issues))
+            self.assertTrue(any("duplicate_raw_bytes" in x for x in issues))
+
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
     def test_unknown_not_accepted(self):
