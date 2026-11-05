@@ -29,6 +29,7 @@ def audit(manifest, root):
     seen_bytes = {}
     seen_group = {}
     seen_path = set()
+    seen_site_day = {}
     root = pathlib.Path(root).resolve()
     for i, row in enumerate(records):
         prefix = f"records[{i}]"
@@ -70,6 +71,14 @@ def audit(manifest, root):
                 prior = seen_group.setdefault(identity, part)
                 if prior != part:
                     errors.append(prefix + ":partition_leak_" + key)
+        # Same physical site and acquisition day cannot be split across holdouts.
+        site, day = row.get("site_id"), row.get("day_id")
+        if (isinstance(site, str) and site.strip() and
+                isinstance(day, str) and day.strip() and part in PARTITIONS):
+            key = (site.strip(), day.strip())
+            previous = seen_site_day.setdefault(key, part)
+            if previous != part:
+                errors.append(prefix + ":partition_leak_site_day")
         claimed_sha = row.get("sha256")
         if not isinstance(claimed_sha, str) or len(claimed_sha) != 64 or any(c not in "0123456789abcdef" for c in claimed_sha):
             errors.append(prefix + ":invalid_sha256_format")
@@ -157,7 +166,7 @@ class GateTests(unittest.TestCase):
                 row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
                            partition=part, concentration_unit="ppm_vv",
                            session_id=f"session_{i}", exposure_id=f"exposure_{i}",
-                           device_id=f"device_{i}", concentration=10.0,
+                           device_id=f"device_{i}", site_id="site_A", day_id=f"day_{i}", concentration=10.0,
                            reference_uncertainty=0.1, adc_reference_v=3.3,
                            heater_voltage_v=5.0, load_resistance_ohm=10000.0,
                            temperature_c=25.0, humidity_percent=50.0,
@@ -283,6 +292,26 @@ class GateTests(unittest.TestCase):
             issues = audit({"records": rows}, d)
             self.assertTrue(any("duplicate_across_partitions" in x for x in issues))
             self.assertTrue(any("duplicate_raw_bytes" in x for x in issues))
+
+    def test_site_day_group_leak_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            rows = []
+            for i, part in enumerate(("train", "test")):
+                p = pathlib.Path(d) / f"distinct_{i}.csv"
+                p.write_bytes(f"adc\\n{i}\\n".encode())
+                row = dict.fromkeys(REQUIRED, "measured")
+                row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                           partition=part, concentration_unit="ppm_vv",
+                           session_id=f"session_{i}", exposure_id=f"exposure_{i}",
+                           device_id=f"device_{i}", site_id="same_site", day_id="same_day",
+                           concentration=10.0, reference_uncertainty=0.1,
+                           adc_reference_v=3.3, heater_voltage_v=5.0,
+                           load_resistance_ohm=10000.0, temperature_c=25.0,
+                           humidity_percent=50.0, sampling_interval_s=1.0)
+                rows.append(row)
+            issues = audit({"records": rows}, d)
+            self.assertTrue(any("partition_leak_site_day" in issue for issue in issues))
 
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
