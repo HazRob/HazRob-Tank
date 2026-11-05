@@ -67,7 +67,7 @@ def audit(manifest, root):
         for key in ("source_id", "session_id", "exposure_id", "device_id"):
             value = row.get(key)
             if isinstance(value, (str, int)) and not isinstance(value, bool) and value and isinstance(part, str) and part in PARTITIONS:
-                identity = (key, str(value).strip().casefold() if key == "source_id" else str(value).strip())
+                identity = (key, str(value).strip().casefold())
                 prior = seen_group.setdefault(identity, part)
                 if prior != part:
                     errors.append(prefix + ":partition_leak_" + key)
@@ -357,6 +357,30 @@ class GateTests(unittest.TestCase):
                 rows.append(row)
             issues = audit({"records": rows}, d)
             self.assertTrue(any("partition_leak_source_id" in x for x in issues))
+
+    def test_case_alias_session_device_exposure_across_partitions_rejected(self):
+        """Case-only aliases of acquisition identifiers must not leak across holdouts."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            rows = []
+            for i, part in enumerate(("train", "test")):
+                p = pathlib.Path(d) / f"identity_{i}.csv"
+                p.write_text(f"adc\\n{i}\\n")
+                row = dict.fromkeys(REQUIRED, "measured")
+                row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                           partition=part, concentration_unit="ppm_vv",
+                           source_id=f"source_{i}", session_id=("SESSION_9" if i == 0 else "session_9"),
+                           device_id=("DEVICE_4" if i == 0 else "device_4"),
+                           exposure_id=("EXPOSURE_2" if i == 0 else "exposure_2"),
+                           site_id=f"site_{i}", day_id=f"day_{i}",
+                           concentration=10.0, reference_uncertainty=0.1,
+                           adc_reference_v=3.3, heater_voltage_v=5.0,
+                           load_resistance_ohm=10000.0, temperature_c=25.0,
+                           humidity_percent=50.0, sampling_interval_s=1.0)
+                rows.append(row)
+            issues = audit({"records": rows}, d)
+            for key in ("session_id", "device_id", "exposure_id"):
+                self.assertTrue(any("partition_leak_" + key in issue for issue in issues), key)
 
     def test_site_day_group_leak_rejected(self):
         import tempfile
