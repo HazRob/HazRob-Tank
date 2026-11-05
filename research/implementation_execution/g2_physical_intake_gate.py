@@ -51,13 +51,13 @@ def audit(manifest, root):
             elif key == "humidity_percent" and not 0 <= value <= 100:
                 errors.append(prefix + ":humidity_out_of_range")
         part = row.get("partition")
-        if part not in PARTITIONS:
+        if not isinstance(part, str) or part not in PARTITIONS:
             errors.append(prefix + ":invalid_partition")
-        if row.get("concentration_unit") not in UNITS:
+        if not isinstance(row.get("concentration_unit"), str) or row.get("concentration_unit") not in UNITS:
             errors.append(prefix + ":unsupported_concentration_unit")
         for key in ("session_id", "exposure_id", "device_id"):
             value = row.get(key)
-            if value and part in PARTITIONS:
+            if isinstance(value, (str, int)) and not isinstance(value, bool) and value and isinstance(part, str) and part in PARTITIONS:
                 identity = (key, str(value))
                 prior = seen_group.setdefault(identity, part)
                 if prior != part:
@@ -164,6 +164,23 @@ class GateTests(unittest.TestCase):
                              "humidity_out_of_range",
                              "nonpositive_sampling_interval_s"):
                 self.assertTrue(any(expected in error for error in errors), expected)
+
+    def test_malformed_partition_and_unit_fail_closed(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = pathlib.Path(d) / "raw.csv"
+            p.write_text("adc\\n1\\n")
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                       partition=["test"], concentration_unit={"unit": "ppm_vv"},
+                       session_id=["unhashable"], exposure_id={"id": "bad"},
+                       concentration=1.0, reference_uncertainty=0.1,
+                       adc_reference_v=3.3, heater_voltage_v=5.0,
+                       load_resistance_ohm=10000.0, temperature_c=25.0,
+                       humidity_percent=50.0, sampling_interval_s=1.0)
+            issues = audit({"records": [row]}, d)
+            self.assertTrue(any("invalid_partition" in x for x in issues))
+            self.assertTrue(any("unsupported_concentration_unit" in x for x in issues))
 
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
