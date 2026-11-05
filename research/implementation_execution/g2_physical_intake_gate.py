@@ -9,6 +9,7 @@ import math
 import pathlib
 import sys
 import unittest
+import unicodedata
 
 REQUIRED = ("source_id", "raw_path", "sha256", "session_id", "device_id",
             "day_id", "site_id", "partition", "analyte", "concentration",
@@ -18,6 +19,11 @@ REQUIRED = ("source_id", "raw_path", "sha256", "session_id", "device_id",
             "humidity_percent", "sampling_interval_s", "exposure_id")
 PARTITIONS = {"train", "validation", "test"}
 UNITS = {"ppm_vv", "ppb_vv", "mg_m3"}
+
+def normalized_identifier(value):
+    """Canonicalize acquisition IDs before comparing holdout membership."""
+    return unicodedata.normalize("NFKC", value.strip()).casefold()
+
 
 def audit(manifest, root):
     errors = []
@@ -67,7 +73,7 @@ def audit(manifest, root):
         for key in ("source_id", "session_id", "exposure_id", "device_id"):
             value = row.get(key)
             if isinstance(value, (str, int)) and not isinstance(value, bool) and value and isinstance(part, str) and part in PARTITIONS:
-                identity = (key, str(value).strip().casefold())
+                identity = (key, normalized_identifier(str(value)))
                 prior = seen_group.setdefault(identity, part)
                 if prior != part:
                     errors.append(prefix + ":partition_leak_" + key)
@@ -75,7 +81,7 @@ def audit(manifest, root):
         site, day = row.get("site_id"), row.get("day_id")
         if (isinstance(site, str) and site.strip() and
                 isinstance(day, str) and day.strip() and isinstance(part, str) and part in PARTITIONS):
-            key = (site.strip().casefold(), day.strip().casefold())
+            key = (normalized_identifier(site), normalized_identifier(day))
             previous = seen_site_day.setdefault(key, part)
             if previous != part:
                 errors.append(prefix + ":partition_leak_site_day")
@@ -468,6 +474,29 @@ class GateTests(unittest.TestCase):
                 rows.append(row)
             issues = audit({"records": rows}, d)
             self.assertTrue(any("partition_leak_site_day" in x for x in issues))
+
+    def test_unicode_compatibility_alias_across_partitions_rejected(self):
+        """NFKC aliases (fullwidth Latin versus ASCII) must not cross holdouts."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            rows = []
+            for i, (part, source) in enumerate((("train", "SOURCE_17"),
+                                                 ("test", "ＳＯＵＲＣＥ_17"))):
+                p = pathlib.Path(d) / f"unicode_{i}.csv"
+                p.write_text(f"adc\\n{i}\\n")
+                row = dict.fromkeys(REQUIRED, "measured")
+                row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                           partition=part, concentration_unit="ppm_vv",
+                           source_id=source, session_id=f"session_{i}",
+                           exposure_id=f"exposure_{i}", device_id=f"device_{i}",
+                           site_id=f"site_{i}", day_id=f"day_{i}",
+                           concentration=10.0, reference_uncertainty=0.1,
+                           adc_reference_v=3.3, heater_voltage_v=5.0,
+                           load_resistance_ohm=10000.0, temperature_c=25.0,
+                           humidity_percent=50.0, sampling_interval_s=1.0)
+                rows.append(row)
+            issues = audit({"records": rows}, d)
+            self.assertTrue(any("partition_leak_source_id" in x for x in issues))
 
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
