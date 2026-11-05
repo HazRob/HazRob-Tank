@@ -74,7 +74,7 @@ def audit(manifest, root):
         if not isinstance(claimed_sha, str) or len(claimed_sha) != 64 or any(c not in "0123456789abcdef" for c in claimed_sha):
             errors.append(prefix + ":invalid_sha256_format")
         raw = row.get("raw_path")
-        if not isinstance(raw, str) or not raw.strip() or "\\x00" in raw:
+        if not isinstance(raw, str) or not raw.strip() or chr(0) in raw:
             errors.append(prefix + ":raw_path_invalid")
             continue
         raw_rel = pathlib.Path(raw)
@@ -224,6 +224,20 @@ class GateTests(unittest.TestCase):
                        sampling_interval_s=1.0)
             issues = audit({"records": [row]}, d)
             self.assertTrue(any("invalid_sha256_format" in x for x in issues))
+            self.assertTrue(any("raw_path_invalid" in x for x in issues))
+
+    def test_embedded_null_raw_path_rejected_without_exception(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path="raw" + chr(0) + ".csv",
+                       sha256="0" * 64, partition="test",
+                       concentration_unit="ppm_vv", concentration=1.0,
+                       reference_uncertainty=0.1, adc_reference_v=3.3,
+                       heater_voltage_v=5.0, load_resistance_ohm=10000.0,
+                       temperature_c=25.0, humidity_percent=50.0,
+                       sampling_interval_s=1.0)
+            issues = audit({"records": [row]}, d)
             self.assertTrue(any("raw_path_invalid" in x for x in issues))
 
     def test_missing_records(self):
