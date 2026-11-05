@@ -70,8 +70,12 @@ def audit(manifest, root):
                 prior = seen_group.setdefault(identity, part)
                 if prior != part:
                     errors.append(prefix + ":partition_leak_" + key)
+        claimed_sha = row.get("sha256")
+        if not isinstance(claimed_sha, str) or len(claimed_sha) != 64 or any(c not in "0123456789abcdef" for c in claimed_sha):
+            errors.append(prefix + ":invalid_sha256_format")
         raw = row.get("raw_path")
-        if not isinstance(raw, str):
+        if not isinstance(raw, str) or not raw.strip() or "\\x00" in raw:
+            errors.append(prefix + ":raw_path_invalid")
             continue
         raw_rel = pathlib.Path(raw)
         if raw_rel.is_absolute() or ".." in raw_rel.parts:
@@ -207,6 +211,20 @@ class GateTests(unittest.TestCase):
             issues = audit({"records": [row]}, d)
             for key in ("session_id", "device_id", "exposure_id", "source_id"):
                 self.assertTrue(any("invalid_identifier_" + key in issue for issue in issues), key)
+
+    def test_malformed_hash_and_path_fail_closed(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path="", sha256=["not-a-hash"], partition="test",
+                       concentration_unit="ppm_vv", concentration=1.0,
+                       reference_uncertainty=0.1, adc_reference_v=3.3,
+                       heater_voltage_v=5.0, load_resistance_ohm=10000.0,
+                       temperature_c=25.0, humidity_percent=50.0,
+                       sampling_interval_s=1.0)
+            issues = audit({"records": [row]}, d)
+            self.assertTrue(any("invalid_sha256_format" in x for x in issues))
+            self.assertTrue(any("raw_path_invalid" in x for x in issues))
 
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
