@@ -64,7 +64,7 @@ def audit(manifest, root):
             errors.append(prefix + ":invalid_partition")
         if not isinstance(row.get("concentration_unit"), str) or row.get("concentration_unit") not in UNITS:
             errors.append(prefix + ":unsupported_concentration_unit")
-        for key in ("session_id", "exposure_id", "device_id"):
+        for key in ("source_id", "session_id", "exposure_id", "device_id"):
             value = row.get(key)
             if isinstance(value, (str, int)) and not isinstance(value, bool) and value and isinstance(part, str) and part in PARTITIONS:
                 identity = (key, str(value))
@@ -292,6 +292,27 @@ class GateTests(unittest.TestCase):
             issues = audit({"records": rows}, d)
             self.assertTrue(any("duplicate_across_partitions" in x for x in issues))
             self.assertTrue(any("duplicate_raw_bytes" in x for x in issues))
+
+    def test_same_source_across_partitions_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            rows = []
+            for i, part in enumerate(("train", "test")):
+                p = pathlib.Path(d) / f"source_{i}.csv"
+                p.write_text(f"adc\\n{i}\\n")
+                row = dict.fromkeys(REQUIRED, "measured")
+                row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                           partition=part, concentration_unit="ppm_vv",
+                           source_id="shared_acquisition_source",
+                           session_id=f"session_{i}", exposure_id=f"exposure_{i}",
+                           device_id=f"device_{i}", site_id=f"site_{i}", day_id=f"day_{i}",
+                           concentration=10.0, reference_uncertainty=0.1,
+                           adc_reference_v=3.3, heater_voltage_v=5.0,
+                           load_resistance_ohm=10000.0, temperature_c=25.0,
+                           humidity_percent=50.0, sampling_interval_s=1.0)
+                rows.append(row)
+            issues = audit({"records": rows}, d)
+            self.assertTrue(any("partition_leak_source_id" in issue for issue in issues))
 
     def test_site_day_group_leak_rejected(self):
         import tempfile
