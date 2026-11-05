@@ -125,6 +125,46 @@ class GateTests(unittest.TestCase):
                        partition="test", concentration_unit="ppm_vv")
             self.assertTrue(any("raw_path_symlink" in x for x in audit({"records": [row]}, d)))
 
+    def test_valid_distinct_partition_records_preflight_only(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            rows = []
+            for i, part in enumerate(("train", "validation", "test")):
+                p = pathlib.Path(d) / f"sample_{i}.csv"
+                p.write_text(f"adc\\n{i}\\n")
+                row = dict.fromkeys(REQUIRED, "measured")
+                row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                           partition=part, concentration_unit="ppm_vv",
+                           session_id=f"session_{i}", exposure_id=f"exposure_{i}",
+                           device_id=f"device_{i}", concentration=10.0,
+                           reference_uncertainty=0.1, adc_reference_v=3.3,
+                           heater_voltage_v=5.0, load_resistance_ohm=10000.0,
+                           temperature_c=25.0, humidity_percent=50.0,
+                           sampling_interval_s=1.0)
+                rows.append(row)
+            self.assertEqual(audit({"records": rows}, d), [])
+
+    def test_nonfinite_and_boolean_numeric_fields_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = pathlib.Path(d) / "raw.csv"
+            p.write_text("adc\\n1\\n")
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                       partition="test", concentration_unit="ppm_vv",
+                       concentration=True, reference_uncertainty=float("inf"),
+                       adc_reference_v=0, heater_voltage_v=5.0,
+                       load_resistance_ohm=-1, temperature_c=25.0,
+                       humidity_percent=-1, sampling_interval_s=0)
+            errors = audit({"records": [row]}, d)
+            for expected in ("invalid_numeric_concentration",
+                             "invalid_numeric_reference_uncertainty",
+                             "nonpositive_adc_reference_v",
+                             "nonpositive_load_resistance_ohm",
+                             "humidity_out_of_range",
+                             "nonpositive_sampling_interval_s"):
+                self.assertTrue(any(expected in error for error in errors), expected)
+
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
     def test_unknown_not_accepted(self):
