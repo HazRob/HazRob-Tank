@@ -75,7 +75,7 @@ def audit(manifest, root):
         site, day = row.get("site_id"), row.get("day_id")
         if (isinstance(site, str) and site.strip() and
                 isinstance(day, str) and day.strip() and isinstance(part, str) and part in PARTITIONS):
-            key = (site.strip(), day.strip())
+            key = (site.strip().casefold(), day.strip().casefold())
             previous = seen_site_day.setdefault(key, part)
             if previous != part:
                 errors.append(prefix + ":partition_leak_site_day")
@@ -419,6 +419,31 @@ class GateTests(unittest.TestCase):
                 rows.append(row)
             self.assertTrue(any("partition_leak_site_day" in x for x in
                                 audit({"records": rows}, d)))
+
+    def test_site_day_case_alias_rejected(self):
+        """Site/day aliases differing in letter case must not cross partitions."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            rows = []
+            for i, (part, site, day) in enumerate((
+                    ("train", "SITE_A", "DAY_01"),
+                    ("test", "site_a", "day_01"))):
+                p = pathlib.Path(d) / f"case_site_day_{i}.csv"
+                p.write_text(f"adc\\n{i}\\n")
+                row = dict.fromkeys(REQUIRED, "measured")
+                row.update(raw_path=p.name,
+                           sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                           partition=part, concentration_unit="ppm_vv",
+                           source_id=f"source_{i}", session_id=f"session_{i}",
+                           exposure_id=f"exposure_{i}", device_id=f"device_{i}",
+                           site_id=site, day_id=day, concentration=10.0,
+                           reference_uncertainty=0.1, adc_reference_v=3.3,
+                           heater_voltage_v=5.0, load_resistance_ohm=10000.0,
+                           temperature_c=25.0, humidity_percent=50.0,
+                           sampling_interval_s=1.0)
+                rows.append(row)
+            issues = audit({"records": rows}, d)
+            self.assertTrue(any("partition_leak_site_day" in x for x in issues))
 
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
