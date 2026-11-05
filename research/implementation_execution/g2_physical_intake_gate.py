@@ -166,7 +166,7 @@ class GateTests(unittest.TestCase):
                 row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
                            partition=part, concentration_unit="ppm_vv",
                            session_id=f"session_{i}", exposure_id=f"exposure_{i}",
-                           device_id=f"device_{i}", site_id="site_A", day_id=f"day_{i}", concentration=10.0,
+                           device_id=f"device_{i}", source_id=f"source_{i}", site_id="site_A", day_id=f"day_{i}", concentration=10.0,
                            reference_uncertainty=0.1, adc_reference_v=3.3,
                            heater_voltage_v=5.0, load_resistance_ohm=10000.0,
                            temperature_c=25.0, humidity_percent=50.0,
