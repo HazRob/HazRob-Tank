@@ -34,6 +34,14 @@ public final class NextDecisionStore {
     /** R3 trace is null only for historical V15 rows created before trace archiving. */
     public final List<NextAnalysisTrace.Event> executionTrace;
     public final String traceSha256,traceAvailability;
+    /** V8 test/legacy reflection constructor is retained exactly to preserve
+     * binary/test compatibility; absence of original R3 archive is explicit.
+     */
+    private Receipt(String uid,String session,String snapshot,String hash,String engine,
+                    CoreContracts.DecisionStatus status,long time,
+                    CoreContracts.Snapshot captured,CoreContracts.Result output){
+      this(uid,session,snapshot,hash,engine,status,time,captured,output,null);
+    }
     private Receipt(String uid,String session,String snapshot,String hash,String engine,
                     CoreContracts.DecisionStatus status,long time,
                     CoreContracts.Snapshot captured,CoreContracts.Result output,
