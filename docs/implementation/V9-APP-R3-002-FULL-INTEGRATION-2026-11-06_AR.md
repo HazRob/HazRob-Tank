@@ -65,3 +65,13 @@
 - **فحص SQLite/واجهة/PDF/XLSX البرمجي:** نجح 4/4 tests executing original Java SQL تعريفات DB15 وDB16 عبر Python SQLite مع مشغلات منع تعديل السجلات، دون المساس بمعايرة R0.
 - **محاكي Android12 القديم:** كشف التشغيل [42209301111](https://github.com/HazRob/HazRob-Tank/actions/runs/42209301111) عن 3 أخطاء من 46 اختبارًا، جميعها `NoSuchMethodException` لاختبارات تعكس مُنشئ `NextDecisionStore.Receipt` التاريخي. أعيد تنفيذ مُنشئ التوافق التاريخي الذي يمرر إلى مُنشئ R3 الموسع دون تغيير إسناد الأرشيف في التزام `052bfeba81f4484484e2cdede4486adc6fcf2560`. **لا يُعد هذا الاختبار القديم ناجحًا**، وإعادة اختبار المحاكي على الالتزام المصحح مطلوبة.
 - **تشغيل الاستعادة:** [GitHub Actions — V9.1 R3 Android Emulator](https://github.com/HazRob/HazRob-Tank/actions/runs/42211484163)؛ النتيجة النهائية تُؤخذ من صفحة Actions فقط.
+
+## ز. نتائج البناء واختبارات التشغيل المؤكدة
+
+- نجح بناء كامل التطبيق وإنتاج APK ‏9.1 مع DB16 وجميع أوراق Excel وملحقات PDF على [تشغيل GitHub Actions رقم 42212315578](https://github.com/HazRob/HazRob-Tank/actions/runs/42212315578)، والتزام الشيفرة `19d277e9f9579e087fa14e829bec8a68c04a5e91`.
+- [تنزيل أحدث حزمة APK](https://github.com/HazRob/HazRob-Tank/actions/runs/42212315578/artifacts/13499681417)، باسم `HazRob-Tank-V9.1-ChemCore-Next-R3-FULL-TEST.apk`، بصمة SHA-256: `09fae1755e7bd86db3fa1407d482d9f5ea9a9832671f4e1ca7f09b8899913ac1`. توقيع Android Debug SHA-256: `44a30c08c218b042630ec23ef4a88f4b72b23794b8b047190b0998a44b306a12`.
+- فحص المصدر والبناء: 50 تحققًا لمحرّك R2/R3، و57 اختبار عقد احتفاظ V8، و4 اختبارات SQLite/ربط جميع المخرجات؛ نجح تجميع `compileDebugAndroidTestJavaWithJavac` كذلك.
+- **اجتازت اختبارات محاكي Android 12 ‏49/49 حالة** على [تشغيل 42211484163](https://github.com/HazRob/HazRob-Tank/actions/runs/42211484163) بعد إعادة توافق مُنشئ `NextDecisionStore.Receipt` التاريخي؛ لم يسجل هذا الاختبار أي فشل أو تخطٍ.
+- بعد نجاح جولة المحاكي، أضيفت معالجة مشاركة Feedback العامة: **المعلومات الأصلية في SQLite باقية كاملة، لكن حزمة الملاحظات التي قد يوافق المستخدم على نشرها إلى GitHub تحذف معرفات الأجهزة ونصوص أسباب المصدر الحرة** مع الحفاظ على مراحل الاستدلال والأرقام المصدرية وبصمة Trace. وُضع اختبار محاكي جديد؛ [حالة تشغيل 42212307301](https://github.com/HazRob/HazRob-Tank/actions/runs/42212307301) مستقلة ولا يُزعم اجتيازها قبل انتهاء Actions.
+
+**معيار القبول النهائي العلمي:** بناء البرمجيات وتحقق SQL/Android لا يعوضان معايرة G3 واختبارات تشغيل الحساسات والريلاي الفعلية؛ يظل G3 غير مؤهل، وكذلك ملحقات قيادة الذراع وPCA9685 والإنارة غير مقررة في هذا المسار.
