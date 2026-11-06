@@ -27,8 +27,8 @@ def unique_keys(pairs):
 def finite_float(value):
     """Reject exponent-overflow numbers that json.loads otherwise turns into infinity."""
     number = float(value)
-    if not math.isfinite(number):
-        raise ValueError("non-finite JSON numeric literal: " + value)
+    if not math.isfinite(number) or (number == 0.0 and any(d in "123456789" for d in value.split("e")[0].split("E")[0])):
+        raise ValueError("non-representable JSON numeric literal: " + value)
     return number
 
 
