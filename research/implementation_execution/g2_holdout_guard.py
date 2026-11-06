@@ -12,25 +12,27 @@ def unique(pairs):
 def check(doc):
  if not isinstance(doc,dict) or doc.get("schema")!="hazrob.g2.holdout-split.v1" or not isinstance(doc.get("rows"),list):
   return dict(status="INVALID_SCHEMA",g2_approved=False)
- errors=[]; groups=defaultdict(lambda:defaultdict(set)); seen_raw=set()
+ errors=[]; groups=defaultdict(lambda:defaultdict(set)); seen_raw=set(); valid_partitions=set()
  for i,row in enumerate(doc["rows"]):
   if not isinstance(row,dict): errors.append("nonobject row "+str(i));continue
   p=row.get("partition")
   if not isinstance(p,str) or p not in ("train","validation","test"): errors.append("invalid partition "+str(i));continue
+  row_valid=True
   for k in KEYS:
    v=row.get(k)
    if not isinstance(v,str) or not v.strip() or (k=="raw_sha256" and not re.fullmatch("[0-9a-f]{64}",v)):
-    errors.append("missing/invalid "+k+" row "+str(i));continue
+    errors.append("missing/invalid "+k+" row "+str(i));row_valid=False;continue
    if k=="raw_sha256":
     if v in seen_raw: errors.append("duplicate raw_sha256 row "+str(i))
     seen_raw.add(v)
    groups[k][v].add(p)
+  if row_valid: valid_partitions.add(p)
  for k in KEYS:
   for v,ps in sorted(groups[k].items()):
    if len(ps)>1: errors.append("leakage "+k+"="+v)
  if not doc["rows"]: errors.append("no records")
- if not any(isinstance(r,dict) and r.get("partition")=="train" for r in doc["rows"]): errors.append("no train records")
- if not any(isinstance(r,dict) and r.get("partition")=="test" for r in doc["rows"]): errors.append("no sealed test")
+ if "train" not in valid_partitions: errors.append("no train records")
+ if "test" not in valid_partitions: errors.append("no sealed test")
  return dict(status="REJECTED" if errors else "GROUP_PREFLIGHT_ONLY",errors=errors,g2_approved=False)
 if __name__=="__main__":
  try:
