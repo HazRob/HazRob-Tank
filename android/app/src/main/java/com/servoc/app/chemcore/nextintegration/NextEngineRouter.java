@@ -67,10 +67,12 @@ public final class NextEngineRouter {
     if(result.molecularIdentityConfirmed||result.ppmAuthorized||result.g3Qualified||
        result.safetyAlarmAuthorized)
       throw new IllegalStateException("Next research core attempted safety promotion");
-    var persisted=new NextDecisionStore(db).append(
-      sessionUid,createdUtc,frozen.snapshot,result.research);
+    var persisted=new NextDecisionStore(db).appendWithTrace(
+      sessionUid,createdUtc,frozen.snapshot,result.research,result.executionTrace);
     if(!persisted.snapshotSha256.equals(frozen.snapshotSha256)||
-       !persisted.decisionUid.startsWith("NEXT-"))
+       !persisted.decisionUid.startsWith("NEXT-")||
+       persisted.executionTrace==null||
+       persisted.executionTrace.size()!=result.executionTrace.size())
       throw new IllegalStateException("immutable Next readback failed");
     return new Outcome(frozen,result,persisted,route);
   }
