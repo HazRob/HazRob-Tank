@@ -67,9 +67,44 @@ final class V8NextFieldXlsxWriter {
         sheets.add(new SmartXlsxPackage.Sheet("المنهجية والمصدر",provenance(b,next,dual)));
         sheets.add(new SmartXlsxPackage.Sheet("تشخيص الخبراء",diagnostics(b,next,dual)));
         sheets.add(new SmartXlsxPackage.Sheet("خريطة الأدلة Next",map(b,next)));
+        // Original V8 worksheets remain in their approved order. R3 adds a
+        // lossless execution annex only when the original trace was archived.
+        if(next.executionTrace!=null)
+            sheets.add(new SmartXlsxPackage.Sheet("تتبع تقنيات R3",r3Trace(b,next)));
         V8FieldFullTelemetryXlsx.append(sheets,db,b);
-        if(sheets.size()!=20)throw new IllegalStateException("20 source-defined Next sheets required");
+        int required=next.executionTrace==null?20:21;
+        if(sheets.size()!=required)
+            throw new IllegalStateException("Expected "+required+" Next source-linked sheets");
         SmartXlsxPackage.write(out,sheets);
+    }
+    /** All original R3 events are archived under the SAME decision UID.
+     *  No estimator rerun, no posterior or certified gas concentration.
+     */
+    private static String r3Trace(FieldSessionReportExporter.Bundle b,
+                                  NextDecisionStore.Receipt next){
+        if(next.executionTrace==null||next.traceSha256==null)
+            throw new IllegalStateException("R3 source trace missing");
+        SmartXlsxPackage.Grid g=begin(b,"ChemCore Next R3 — سجل كل التقنيات والمخرجات",
+            9,33,60,50,38,23,35,115,35);
+        g.section("Immutable Next R3 source execution • research only");
+        g.row("Decision UID",next.decisionUid,
+            "ربط حصري بالقرار الأصلي المخزن");
+        g.row("Trace SHA-256",next.traceSha256,
+            "تحقق من السجل قبل الكتابة؛ لم يجر إعادة تحليل");
+        g.row("Event count",next.executionTrace.size(),
+            "عدد الأحداث الفعلية؛ لا يعني عدد التقنيات المؤهلة");
+        g.row("Physical Tank G3",false,
+            "لا هوية جزيئية أو PPM أو إنذار كيميائي معتمد");
+        g.blank();
+        g.header("#","Stage","Source asset ID","Source root","Physical sensor UID",
+            "Candidate UID","Result status","Original reason / diagnostics",
+            "Source-only numeric diagnostic");
+        int index=0;
+        for(com.hazrob.tank.chemcore.next.NextAnalysisTrace.Event e:next.executionTrace)
+            g.row(++index,e.stage,e.sourceAssetId,e.sourceRoot,e.sensorUid,
+                e.chemicalUid==null?"UNKNOWN":String.valueOf(e.chemicalUid),
+                e.status,e.reason,e.sourceOnlyDiagnosticValue);
+        return g.finish();
     }
     private static String executive(FieldSessionReportExporter.Bundle b,
                                     NextDecisionStore.Receipt next){
