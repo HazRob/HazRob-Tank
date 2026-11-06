@@ -37,6 +37,24 @@ class InventoryTests(unittest.TestCase):
     def test_non_object_record(self):
         self.check({"schema": SCHEMA, "records": ["bad"]}, 2, "INVALID_RECORD")
 
+    def test_duplicate_top_level_keys_rejected(self):
+        self.check_raw('{"schema":"hazrob.g2.independent-evidence.v1","records":[],"records":[{"id":"hidden"}]}')
+
+    def test_duplicate_nested_keys_rejected(self):
+        self.check_raw('{"schema":"hazrob.g2.independent-evidence.v1","records":[{"id":"a","id":"b"}]}')
+
+    def test_nonfinite_json_constant_rejected(self):
+        self.check_raw('{"schema":"hazrob.g2.independent-evidence.v1","records":[{"value":NaN}]}')
+
+    def check_raw(self, raw):
+        with tempfile.TemporaryDirectory() as d:
+            p = pathlib.Path(d) / "evidence.json"
+            p.write_text(raw, encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()) as out:
+                code = inspect(p)
+            self.assertEqual(code, 3)
+            self.assertEqual(json.loads(out.getvalue())["status"], "INPUT_ERROR")
+
     def test_missing_file(self):
         with contextlib.redirect_stdout(io.StringIO()) as out:
             code = inspect(pathlib.Path("/definitely/missing/g2.json"))
