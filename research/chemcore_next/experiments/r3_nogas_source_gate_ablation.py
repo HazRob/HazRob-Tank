@@ -89,7 +89,7 @@ def main():
               (distTest>quantile)&(gasScore>=cutoff),win,0)
         for name,prediction in pred.items():
           policy.setdefault(name,[]).append(dict(fold=fold,**score(y[test],prediction)))
-    assert len(policy)==17,len(policy)
+    assert len(policy)==16,len(policy)
     rows=[]
     for name,folds in sorted(policy.items()):
         assert len(folds)==5
