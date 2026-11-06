@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+"""Fail-closed inventory of independent G2 evidence. Stdlib only.
+
+Usage: python3 research/implementation_execution/g2_evidence_inventory.py
+       python3 research/implementation_execution/g2_evidence_inventory.py --evidence path.json
+Exit 0 = inventory successfully produced (NOT G2 approval).
+Exit 2 = malformed evidence / unsafe record; exit 3 = unreadable input.
+"""
+import argparse
+import json
+import pathlib
+import sys
+
+SCHEMA = "hazrob.g2.independent-evidence.v1"
+
+def inspect(path):
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        print(json.dumps({"status": "INPUT_ERROR", "detail": str(exc)}, ensure_ascii=False))
+        return 3
+    if not isinstance(data, dict) or data.get("schema") != SCHEMA or not isinstance(data.get("records"), list):
+        print(json.dumps({"status": "INVALID_SCHEMA", "expected": SCHEMA}))
+        return 2
+    records = data["records"]
+    if any(not isinstance(row, dict) for row in records):
+        print(json.dumps({"status": "INVALID_RECORD", "reason": "records must be objects"}))
+        return 2
+    # Presence is not authenticity: acceptance requires separate provenance,
+    # leakage, checksum, calibration and blind-holdout gates.
+    print(json.dumps({
+        "schema": SCHEMA,
+        "record_count": len(records),
+        "independent_evidence_present": bool(records),
+        "g2_approved": False,
+        "status": "NO_INDEPENDENT_RECORDS" if not records else "RECORDS_PRESENT_NOT_VALIDATED",
+        "required_next_gate": "physical intake, provenance, raw SHA-256, group separation, blind holdout and external replication"
+    }, ensure_ascii=False, sort_keys=True))
+    return 0
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--evidence", type=pathlib.Path,
+                        default=pathlib.Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json"))
+    args = parser.parse_args()
+    sys.exit(inspect(args.evidence))
