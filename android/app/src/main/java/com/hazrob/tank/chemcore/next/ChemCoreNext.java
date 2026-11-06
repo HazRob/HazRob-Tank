@@ -259,7 +259,12 @@ public final class ChemCoreNext {
     var graph=EvidenceConflictGraph.construct(ledger);
     var generated=ResearchCandidateGenerator.generate(input.catalog,assets,ledger,
        input.displayLimit);
-    var arbitration=NextResearchDecisionPipeline.evaluate(graph,generated,input.displayLimit);
+    var coherenceScores=new HashMap<Long,Double>();
+    for(var root:sourceCoherence)if(root.selectedResearchUid!=null)
+      for(var match:root.ranked)if(match.uid==root.selectedResearchUid)
+        coherenceScores.merge(match.uid,match.score,Math::min);
+    var arbitration=NextResearchDecisionPipeline.evaluate(
+        graph,generated,input.displayLimit,coherenceScores);
     var result=NextResearchDecisionPipeline.result(input.current,input.sourceSnapshotHash,
        graph,arbitration);
     return new Output(result,arbitration,graph,sourceCoherence,reasons,count,positives);
