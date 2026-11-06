@@ -1,0 +1,100 @@
+name: ChemCore Next all-source trace and dual R0 research replay
+
+on:
+  push:
+    branches: [research/chemcore-next-trace-replay-20261106]
+    paths:
+      - '.github/workflows/chemcore-next-trace-replay-20261106.yml'
+      - 'research/chemcore_next/tests/java/NextReferenceTraceReplay.java'
+      - 'research/chemcore_next/traceability/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trace-all-references:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prepare pinned source-only cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/next-trace/classes /tmp/next-trace/results
+          python research/chemcore_next/traceability/prepare_source_cases.py /tmp/next-trace/results
+      - name: Compile exact Java engine and test harness, no surrogate
+        shell: bash
+        run: |
+          set -euo pipefail
+          find android/app/src/main/java/com/hazrob/tank/chemcore/next -maxdepth 1 -name '*.java' -print0 \
+            | xargs -0 javac -encoding UTF-8 -d /tmp/next-trace/classes \
+              research/chemcore_next/tests/java/NextReferenceTraceReplay.java
+      - name: Self-fingerprint, strict metadata, counterfactual gate, dual-R0 and ranking trace
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp /tmp/next-trace/classes com.hazrob.tank.chemcore.next.NextReferenceTraceReplay \
+            /tmp/next-trace/results/source_cases.tsv /tmp/next-trace/results \
+            | tee /tmp/next-trace/results/replay_run.log
+          grep -q '^TRACE_SOURCE_SELF_REPLAY_PASS fingerprints=24 curves=109 total=133' \
+            /tmp/next-trace/results/replay_run.log
+      - name: Summarize all outcomes without making hardware or 90 percent claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv,json,pathlib,collections,statistics
+          root=pathlib.Path('/tmp/next-trace/results')
+          with (root/'all_reference_stage_trace.tsv').open() as f:
+              rows=list(csv.DictReader(f,delimiter='\t'))
+          with (root/'dual_r0_synthetic_counterfactual.tsv').open() as f:
+              r0=list(csv.DictReader(f,delimiter='\t'))
+          assert len(rows)==134, len(rows)
+          assert len(r0)==13, len(r0)
+          fp=[r for r in rows if r['kind']=='FINGERPRINT']
+          cv=[r for r in rows if r['kind']=='CURVE']
+          assert len(fp)==24 and len(cv)==109
+          assert all(r['final_status']=='UNKNOWN' for r in fp+cv)
+          factors=[float(r['wrong_to_correct_ratio']) for r in r0]
+          summary={
+            'schema':'chemcore_next_all_reference_source_trace/1',
+            'source_fingerprints':len(fp),'source_curves':len(cv),
+            'strict_metadata_candidates':0,
+            'strict_unknown_count':len(fp)+len(cv),
+            'first_block_counts':dict(collections.Counter(r['first_block_stage'] for r in fp+cv)),
+            'fingerprint_direct_evaluator_statuses':dict(collections.Counter(r['expert_reason'] for r in fp)),
+            'raw_formula_self_test_statuses':dict(collections.Counter(r['expert_value'] for r in cv)),
+            'source_r0_curves_tested_hypothetically':len(r0),
+            'source_r0_wrong_divisor_factor_min':min(factors),
+            'source_r0_wrong_divisor_factor_median':statistics.median(factors),
+            'source_r0_wrong_divisor_factor_max':max(factors),
+            'highest_wrong_divisor_cases':sorted([{
+                'id':r['id'],'model':r['model'],'label':r['label'],
+                'factor':float(r['wrong_to_correct_ratio'])} for r in r0],
+                key=lambda r:r['factor'],reverse=True)[:5],
+            'physical_source_exposures':0,
+            'empirical_accuracy':None,
+            'source_qualified_sensor_to_tank_transfer':False,
+            'manufacturer_r0_not_absolute_sensor_resistance':True,
+            'g3_qualified':False,
+            'production_core_unmodified':True,
+            'synthetic_qualifications_are_not_real':True}
+          (root/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
+          print('NEXT_ALL_SOURCE_SUMMARY',json.dumps(summary,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chemcore-next-133-source-stage-trace-dual-r0
+          path: /tmp/next-trace/results/
+          retention-days: 90
+          if-no-files-found: warn
