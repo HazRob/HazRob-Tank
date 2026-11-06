@@ -1,0 +1,299 @@
+{
+  "summary": {
+    "schema": "chemcore.next.stable_methane_source_profiles.audit_20261106/1",
+    "original_repository": "HazRob/build-harness",
+    "original_path": "library/chemcore/stable/reference-evidence/derived/2026-11-02/mq4_methane_li_cor_quantitative_source_fingerprint_v1.json",
+    "original_blob_sha": "acb3e16a79a6795c86d12ff1dbdbd01d6b11cb46",
+    "source_records": 14186,
+    "gas": "CH4",
+    "source_sensor_instances": 3,
+    "source_days": 11,
+    "training_only_profiles": 165,
+    "fold_sensor_curves": 33,
+    "bin_groups": 15,
+    "fold_curves_with_one_or_more_rs_increases": 4,
+    "total_adjacent_bin_increases": 4,
+    "bin_folds_max_min_median": 1.2138107514920828,
+    "bin_folds_max_min_max": 1.3272284350335763,
+    "source_R0_available": false,
+    "source_MQ4_models_only": true,
+    "source_reference_bins_not_independent_exposures": true,
+    "no_tank_data": true,
+    "no_90percent_gas_identity_claim": true,
+    "profiles_not_activated_in_runtime": true
+  },
+  "fold_profiles": [
+    {
+      "day_sensor": "2021-07-21|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.642773600192719
+    },
+    {
+      "day_sensor": "2021-07-21|MQ4_2",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.6271993801626932
+    },
+    {
+      "day_sensor": "2021-07-21|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.643929301003641
+    },
+    {
+      "day_sensor": "2021-07-22|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.6450665108550895
+    },
+    {
+      "day_sensor": "2021-07-22|MQ4_2",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.633806172704951
+    },
+    {
+      "day_sensor": "2021-07-22|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.6557466086478678
+    },
+    {
+      "day_sensor": "2021-07-23|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.9281472001863007
+    },
+    {
+      "day_sensor": "2021-07-23|MQ4_2",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.9291227324497513
+    },
+    {
+      "day_sensor": "2021-07-23|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.901775804661487
+    },
+    {
+      "day_sensor": "2021-07-24|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.9036232318148016
+    },
+    {
+      "day_sensor": "2021-07-24|MQ4_2",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.8859213459131687
+    },
+    {
+      "day_sensor": "2021-07-24|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.901775804661487
+    },
+    {
+      "day_sensor": "2021-07-25|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.5354110328841652
+    },
+    {
+      "day_sensor": "2021-07-25|MQ4_2",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.4808765222175457
+    },
+    {
+      "day_sensor": "2021-07-25|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.498439983975843
+    },
+    {
+      "day_sensor": "2021-07-26|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.3828079650237655
+    },
+    {
+      "day_sensor": "2021-07-26|MQ4_2",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.2929392412823242
+    },
+    {
+      "day_sensor": "2021-07-26|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.3320420586607635
+    },
+    {
+      "day_sensor": "2021-07-27|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.4198159984085519
+    },
+    {
+      "day_sensor": "2021-07-27|MQ4_2",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.3207297924812313
+    },
+    {
+      "day_sensor": "2021-07-27|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.3806478626622511
+    },
+    {
+      "day_sensor": "2021-07-28|MQ4_1",
+      "nonmonotonic_increase_count": 1,
+      "ratio_max_to_min": 1.4601565451359386
+    },
+    {
+      "day_sensor": "2021-07-28|MQ4_2",
+      "nonmonotonic_increase_count": 1,
+      "ratio_max_to_min": 1.3597225624964642
+    },
+    {
+      "day_sensor": "2021-07-28|MQ4_3",
+      "nonmonotonic_increase_count": 1,
+      "ratio_max_to_min": 1.4061267115339984
+    },
+    {
+      "day_sensor": "2021-07-29|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.4786046678278117
+    },
+    {
+      "day_sensor": "2021-07-29|MQ4_2",
+      "nonmonotonic_increase_count": 1,
+      "ratio_max_to_min": 1.412662484206139
+    },
+    {
+      "day_sensor": "2021-07-29|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.4442006400225318
+    },
+    {
+      "day_sensor": "2021-07-30|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.5367355719973887
+    },
+    {
+      "day_sensor": "2021-07-30|MQ4_2",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.5314490416594146
+    },
+    {
+      "day_sensor": "2021-07-30|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.526592943654555
+    },
+    {
+      "day_sensor": "2021-07-31|MQ4_1",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.658997152015845
+    },
+    {
+      "day_sensor": "2021-07-31|MQ4_2",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.6708723281846802
+    },
+    {
+      "day_sensor": "2021-07-31|MQ4_3",
+      "nonmonotonic_increase_count": 0,
+      "ratio_max_to_min": 1.678702321161938
+    }
+  ],
+  "per_source_concentration_bin": [
+    {
+      "key": "MQ4_1|0_2.5",
+      "n": 11,
+      "max_to_min": 1.2173883646219301,
+      "min": 59.24953327232749,
+      "max": 72.1296924150114
+    },
+    {
+      "key": "MQ4_1|2.5_4",
+      "n": 11,
+      "max_to_min": 1.2006968468157229,
+      "min": 51.44507791964741,
+      "max": 61.76994284230981
+    },
+    {
+      "key": "MQ4_1|4_6",
+      "n": 11,
+      "max_to_min": 1.1997312012707226,
+      "min": 47.14594600514111,
+      "max": 56.562462435792575
+    },
+    {
+      "key": "MQ4_1|6_8",
+      "n": 11,
+      "max_to_min": 1.257615666792473,
+      "min": 40.40457319858995,
+      "max": 50.813424264609985
+    },
+    {
+      "key": "MQ4_1|8_11",
+      "n": 11,
+      "max_to_min": 1.2223641345144178,
+      "min": 37.4088100784225,
+      "max": 45.72718775472514
+    },
+    {
+      "key": "MQ4_2|0_2.5",
+      "n": 11,
+      "max_to_min": 1.3272284350335763,
+      "min": 69.06245243230306,
+      "max": 91.6616506613064
+    },
+    {
+      "key": "MQ4_2|2.5_4",
+      "n": 11,
+      "max_to_min": 1.2138107514920828,
+      "min": 61.81473086057502,
+      "max": 75.03138491915541
+    },
+    {
+      "key": "MQ4_2|4_6",
+      "n": 11,
+      "max_to_min": 1.1620142884776476,
+      "min": 59.805111119464065,
+      "max": 69.49439364481069
+    },
+    {
+      "key": "MQ4_2|6_8",
+      "n": 11,
+      "max_to_min": 1.1989590001491028,
+      "min": 51.44507849842707,
+      "max": 61.68053987906623
+    },
+    {
+      "key": "MQ4_2|8_11",
+      "n": 11,
+      "max_to_min": 1.2032052525658,
+      "min": 47.51468069888288,
+      "max": 57.16991339088271
+    },
+    {
+      "key": "MQ4_3|0_2.5",
+      "n": 11,
+      "max_to_min": 1.2602472348731293,
+      "min": 66.92307692307692,
+      "max": 84.33962264150942
+    },
+    {
+      "key": "MQ4_3|2.5_4",
+      "n": 11,
+      "max_to_min": 1.2077510009820953,
+      "min": 58.493150684931514,
+      "max": 70.64516129032258
+    },
+    {
+      "key": "MQ4_3|4_6",
+      "n": 11,
+      "max_to_min": 1.1786735277301317,
+      "min": 55.78947368421052,
+      "max": 65.75757575757576
+    },
+    {
+      "key": "MQ4_3|6_8",
+      "n": 11,
+      "max_to_min": 1.252219531880549,
+      "min": 47.47126436781609,
+      "max": 59.44444444444445
+    },
+    {
+      "key": "MQ4_3|8_11",
+      "n": 11,
+      "max_to_min": 1.219959778783308,
+      "min": 44.34782608695652,
+      "max": 54.1025641025641
+    }
+  ]
+}
