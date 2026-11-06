@@ -15,6 +15,7 @@ on:
       - 'research/chemcore_next/tests/java/NextCoherenceR2Regression.java'
       - 'research/chemcore_next/tests/java/NextIntegrityTraceR3Regression.java'
       - 'tools/prepare_v9_stable_source.py'
+      - 'research/v9_implementation/tests/test_v9_r3_trace_contract.py'
   workflow_dispatch:
 
 permissions:
@@ -157,6 +158,13 @@ jobs:
           grep -q '^NEXT_COHERENCE_R2_REGRESSION_PASS' v9-test-apk/next-r2-compatibility.log
           grep -q '^NEXT_R3_TRACE_INTEGRITY_REGRESSION_PASS' v9-test-apk/next-r3-integrity-trace.log
           rm -rf v9-test-apk/core-classes
+
+      - name: SQLite V15 to V16 live-DDL check and complete trace presentation provenance
+        shell: bash
+        working-directory: tank
+        run: |
+          set -euo pipefail
+          python3 -m unittest research/v9_implementation/tests/test_v9_r3_trace_contract.py -v
 
       - name: Verify existing V8 UI report session and R0 contracts preserved
         shell: bash
