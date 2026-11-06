@@ -282,6 +282,35 @@ public final class ChemCoreNext {
             " rms="+candidate.normalizedRms+" ppm_source_only="+candidate.fittedPpm+
             " channels="+candidate.independentSensorChannels);
       }
+      if(!fit.nonUniqueSourceModels.isEmpty()){
+        // Two genuinely different source equations for the same physical
+        // channel + chemical UID are NOT two votes and cannot silently
+        // corroborate one identity, even if it is the only named compound.
+        // Keep every original CURVE trace above, but prevent this source root
+        // from creating an eligible molecular identification until resolved.
+        var affectedAssetIds=new HashSet<String>();
+        String sensorUid=null;
+        for(var sample:sourceCurveSamples)
+          if(sample.curve.sourceRoot.equals(fit.sourceRoot)){
+            affectedAssetIds.add(sample.curve.id);
+            if(sensorUid==null)sensorUid=sample.physicalSensorUid;
+          }
+        final String unresolvedRoot=fit.sourceRoot;
+        raw.removeIf(node->node.sourceRootId.equals(unresolvedRoot)
+            &&"SOURCE_CURVE".equals(node.expertId));
+        assets.removeIf(asset->asset.sourceRoot.equals(unresolvedRoot)
+            &&affectedAssetIds.contains(asset.sourceAssetUid));
+        raw.add(new CoreContracts.EvidenceNode(fit.sourceRoot,
+            "SOURCE_CURVE_MODEL_CONFLICT",sensorUid,null,
+            CoreContracts.EvidencePolarity.AMBIGUOUS,
+            "Different source equations on identical physical sensor, original records preserved in trace"));
+        trace.add(new NextAnalysisTrace.Event("SOURCE_CURVE_CONFLICT",fit.sourceRoot,
+            fit.sourceRoot,sensorUid,null,"AMBIGUOUS",
+            String.join(" | ",fit.nonUniqueSourceModels),null));
+        reasons.add("SOURCE_DUPLICATE_CURVE_UNRESOLVED "+fit.sourceRoot+
+            " "+String.join("|",fit.nonUniqueSourceModels));
+        continue;
+      }
       if(fit.selectedResearchUid==null)continue;
       boolean nonCurveAtSameRoot=false;
       for(var node:raw)
