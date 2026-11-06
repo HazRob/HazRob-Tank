@@ -1,0 +1,126 @@
+name: ChemCore Next Stable49 original-prior R0 and concentration replay
+
+on:
+  push:
+    branches: [research/chemcore-next-trace-replay-20261106]
+    paths:
+      - 'research/chemcore_next/traceability/stable_matrix_input.py'
+      - 'research/chemcore_next/tests/java/NextStable49MatrixReplay.java'
+      - '.github/workflows/chemcore-next-stable49-r0-matrix-20261106.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stable49-source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Acquire original pinned Stable 49-prior generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stable49/{source,classes,results}
+          curl --fail --location --retry 3 --max-time 100 \
+            'https://raw.githubusercontent.com/sohpany/SERVOC-Android/b17e37ade80d79bcdfd5f320e2eb096093b6d2bb/tools/build_hr069_research_priors.py' \
+            -o /tmp/stable49/source/build_hr069_research_priors.py
+          test "$(git hash-object /tmp/stable49/source/build_hr069_research_priors.py)" = '24e0b912e5b52721d47b08055dbd68205c086dbe'
+          test "$(git hash-object research/chemcore_v6/source_snapshots/hr069/mq_research_curves_43.json)" = 'bd597ffe9ecaee6a0ccfddc5ec1b89c1cccc0ba1'
+          python /tmp/stable49/source/build_hr069_research_priors.py \
+            --curves research/chemcore_v6/source_snapshots/hr069/mq_research_curves_43.json \
+            --out /tmp/stable49/source/stable49_original_response_priors.json
+      - name: Generate all source-only concentration, noise and R0 scenarios
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/traceability/stable_matrix_input.py \
+            --priors /tmp/stable49/source/stable49_original_response_priors.json \
+            --owner-air research/chemcore_next/device_calibration/tank_8mq_v6_quick_clean_air_2026-10-31T032955Z.json \
+            --out /tmp/stable49/results
+      - name: Compile exact ChemCore Next core and experiment
+        shell: bash
+        run: |
+          set -euo pipefail
+          find android/app/src/main/java/com/hazrob/tank/chemcore/next -maxdepth 1 -name '*.java' -print0 \
+            | xargs -0 javac -encoding UTF-8 -d /tmp/stable49/classes \
+              research/chemcore_next/tests/java/NextStable49MatrixReplay.java
+      - name: Replay through actual unchanged Next analyzer; preserve gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -Xmx1g -cp /tmp/stable49/classes \
+            com.hazrob.tank.chemcore.next.NextStable49MatrixReplay \
+            /tmp/stable49/results/stable_49_original_priors.tsv \
+            /tmp/stable49/results/stable_scenarios.tsv \
+            /tmp/stable49/results/next_stable49_runtime_trace.tsv \
+            | tee /tmp/stable49/results/run.log
+          grep -q '^STABLE49_ACTUAL_CHEMCORE_NEXT_MATRIX_PASS ' /tmp/stable49/results/run.log
+      - name: Scientific analysis and stratified failure report
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv,collections,json,math,statistics,pathlib
+          root=pathlib.Path('/tmp/stable49/results')
+          with (root/'next_stable49_runtime_trace.tsv').open(newline='') as f:
+              cases=list(csv.DictReader(f,delimiter='\t'))
+          assert len(cases)>1000 and all(x['strict_status']=='UNKNOWN' for x in cases)
+          def aggregate(rows):
+              n=len(rows)
+              ranked=sum(bool(int(x['synthetic_qualified_rank1'])) for x in rows)
+              correct=sum(int(x['synthetic_qualified_rank1'])==int(x['expected_legacy'])+100000 for x in rows)
+              return {
+                'cases':n,'candidate_coverage':round(ranked/n,6) if n else None,
+                'source_self_top1_all':round(correct/n,6) if n else None,
+                'self_top1_given_ranked':round(correct/ranked,6) if ranked else None,
+                'source_root_ambiguity_fraction':round(sum('AMBIGUOUS' in x['first_deviation_reason'] for x in rows)/n,6) if n else None,
+                'unknown_fraction':round(sum(x['synthetic_qualified_status']=='UNKNOWN' for x in rows)/n,6) if n else None,
+                'positive_model_mean':round(statistics.mean(int(x['positive_curve_models']) for x in rows),4) if rows else None
+              }
+          summary={
+            'schema':'chemcore.next.stable49.counterfactual_r0_matrix/1',
+            'provenance':'actual Stable 49 original prior generator pinned by git blob SHA',
+            'stable_version':'1.0.0-hr069r1',
+            'original_source_model_count':49,
+            'cases_total':len(cases),
+            'strict_no_promotion':True,
+            'all':aggregate(cases),
+            'by_r0_mode':{key:aggregate([x for x in cases if x['R0_mode']==key])
+                          for key in sorted({x['R0_mode'] for x in cases})},
+            'by_perturbation':{key:aggregate([x for x in cases if x['perturbation']==key])
+                          for key in sorted({x['perturbation'] for x in cases})},
+            'by_material':{key:aggregate([x for x in cases if x['material']==key])
+                          for key in sorted({x['material'] for x in cases})},
+            'by_concentration':{key:aggregate([x for x in cases if x['source_ppm']==key])
+                          for key in sorted({x['source_ppm'] for x in cases},key=float)},
+            'first_deviation_counts':dict(collections.Counter(x['first_deviation_reason'] for x in cases)),
+            'limitations':[
+              'all gas vectors reconstructed from Stable source curves not physical exposures',
+              'manufacturer K from distinct MQSensorsLib examples applied only as hypothetical reference',
+              'source_root duplicates are NOT independent evidence',
+              'one physical observation per supported source sensor only; unmodelled cross-responses not fabricated',
+              'synthetic bypass of G2/G3 flags is a diagnostic, not production calibration',
+              'percentage is software self-replay and NOT 90% empirical accuracy',
+              'no user October ethanol experiment used'],
+            'physical_Tank_G3':False,'field_ppm_authorized':False,
+            'chemist_analytical_accuracy_certified':False,
+            'engine_modified':False}
+          (root/'scientific_summary.json').write_text(json.dumps(summary,indent=2,ensure_ascii=False)+'\n')
+          print('NEXT_STABLE49_SCIENTIFIC_RESULT',json.dumps({'n':len(cases),'all':summary['all'],'modes':summary['by_r0_mode'],'deviations':summary['first_deviation_counts']},sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chemcore-next-stable49-original-priors-r0-concentration-matrix
+          path: /tmp/stable49/results/
+          retention-days: 90
+          if-no-files-found: warn
