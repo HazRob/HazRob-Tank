@@ -49,6 +49,15 @@ public final class NextDecisionEnvelope {
       ordered.put(candidate);
     }
     out.put("candidates",ordered);
+    // All R3 source-technique results come from the original immutable
+    // SQLite receipt, never from replaying the engine during rendering.
+    boolean archived=receipt.executionTrace!=null;
+    out.put("trace_schema",NextResearchTraceStore.SCHEMA);
+    out.put("trace_status",receipt.traceAvailability);
+    out.put("trace_sha256",receipt.traceSha256==null?JSONObject.NULL:receipt.traceSha256);
+    out.put("trace_event_count",archived?receipt.executionTrace.size():0);
+    out.put("next_execution_trace",NextResearchTraceStore.asJson(receipt.executionTrace));
+    out.put("trace_missing_is_not_zero_executed_techniques",!archived);
     JSONArray reason=new JSONArray();
     for(String x:projection.problems)reason.put(x);
     out.put("problems",reason);
@@ -68,10 +77,14 @@ public final class NextDecisionEnvelope {
     if(screen==null||exporter==null)throw new IllegalArgumentException("two views required");
     for(String key:new String[]{"decision_uid","session_id","snapshot_uid",
       "snapshot_sha256","stable_manifest_sha256","model_version",
-      "decision_status","candidate_count"}) {
+      "decision_status","candidate_count","trace_schema","trace_status",
+      "trace_sha256","trace_event_count"}) {
       if(!Objects.equals(screen.opt(key),exporter.opt(key)))
         throw new IllegalStateException("Next source of truth changed in "+key);
     }
+    if(!Objects.equals(screen.optJSONArray("next_execution_trace").toString(),
+       exporter.optJSONArray("next_execution_trace").toString()))
+      throw new IllegalStateException("Next R3 source technique traces changed across views");
     if(!Objects.equals(screen.optJSONArray("candidates").toString(),
        exporter.optJSONArray("candidates").toString()))
       throw new IllegalStateException("Next ranked UIDs/order/evidence changed between views");
