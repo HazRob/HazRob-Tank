@@ -11,12 +11,11 @@ JAVA=ROOT/"android/app/src/main/java"
 def read(path):
     return (JAVA/path).read_text(encoding="utf-8")
 def java_sql(source,constant):
-    match=re.search(r"public\\s+static\\s+final\\s+String\\s+"+
-                    re.escape(constant)+r"\\s*=",source)
+    match=re.search(r"public\s+static\s+final\s+String\s+"+
+                    re.escape(constant)+r"\s*=",source)
     if not match:
         raise AssertionError("missing original Java DDL "+constant)
-    # The trigger SQL string contains semicolons; find the terminating Java
-    # semicolon OUTSIDE quoted source strings instead of using a lazy regex.
+    # Stop at the terminating Java semicolon outside any source string.
     quoted=False
     escaped=False
     end=None
@@ -24,7 +23,7 @@ def java_sql(source,constant):
     for i,ch in enumerate(tail):
         if escaped:
             escaped=False
-        elif ch=="\\\\" and quoted:
+        elif ch=="\\" and quoted:
             escaped=True
         elif ch=='"':
             quoted=not quoted
@@ -33,11 +32,11 @@ def java_sql(source,constant):
             break
     if end is None or quoted:
         raise AssertionError("unterminated original SQL literal "+constant)
-    parts=re.findall(r'"((?:[^"\\\\]|\\\\.)*)"',tail[:end])
+    parts=re.findall(r'"((?:[^"\\]|\\.)*)"',tail[:end])
     if not parts:
         raise AssertionError("no SQL string parts "+constant)
-    return "".join(part.replace('\\\\"','"').replace('\\\\\\\\','\\\\')
-        for part in parts)
+    return "".join(part.replace('\\"','"').replace('\\\\','\\')
+                    for part in parts)
 
 class V9R3Integration(unittest.TestCase):
     def test_original_sqlite_v15_to_v16_preserves_immutable_decisions_and_owner_data(self):
