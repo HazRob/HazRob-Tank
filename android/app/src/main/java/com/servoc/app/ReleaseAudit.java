@@ -4,8 +4,8 @@ package com.servoc.app;
 public final class ReleaseAudit {
     private ReleaseAudit(){}
     // V9 Android integration; ESP32 API4 remains version-independent.
-    public static final String VERSION="9.0";
-    public static final String ENGINEERING_REVISION="TANK-V9-CHEMCORE-NEXT-R3-TRACE-COHERENCE-G1";
+    public static final String VERSION="9.1";
+    public static final String ENGINEERING_REVISION="TANK-V9-1-CHEMCORE-NEXT-R3-SQLITE16-PDF-XLSX-G1";
     public static final String PROJECT_PREPARERS="شهاب الصهباني، مجدي ذيبان";
     public static final int DATABASE_SCHEMA=16;
     public static final String ANALYTICAL_ENGINE_VERSION="chemcore-next-research-core/0.3-g1-source-trace";
