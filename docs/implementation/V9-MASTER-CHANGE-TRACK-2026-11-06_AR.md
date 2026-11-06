@@ -1,3 +1,5 @@
+> **النسخة التجريبية الأحدث: V9.1 ChemCore Next R3 Full** — [APK ZIP](https://github.com/HazRob/HazRob-Tank/actions/runs/42211484109/artifacts/13499325810) / SHA-256 `07f42c720be57ab051e2f0e1ffbafb04ee958eec8f2b3b5380d92199c433f05e`. اكتملت إضافة SQLite V16 لسجل الخبراء، والتوصيل بشاشة القياس وPDF/Excel الآني والجلسات والمواقع، مع بقاء اختبارات المحاكي G1 وتقييم العتاد G3 منفصلين. [المواصفة والتوثيق](V9-APP-R3-002-FULL-INTEGRATION-2026-11-06_AR.md).  
+>
 > **تحديث 6 نوفمبر 2026 — Android V9 / ChemCore Next R3:** اكتمل الدمج وتجميع [APK تجريبي 9.0](https://github.com/HazRob/HazRob-Tank/actions/runs/42205497711/artifacts/13496472453) بنجاح؛ SHA-256 `b794bb87e80a5caf3dd69fe262b3ba0f41dbb12251ddd43c49e1dce92b798743`. هذا محور Android محدد بموجب طلب المالك الجديد، ولا يغلق القرارات الميكانيكية والإلكترونية أو تأهيل G3. التفاصيل في [V9-APP-R3-INTEGRATION](V9-APP-R3-INTEGRATION-2026-11-06_AR.md).
 
 # HazRob Tank V9 — مسار تعديلات التطبيق وفريموير ESP32
