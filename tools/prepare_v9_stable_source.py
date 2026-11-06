@@ -25,7 +25,7 @@ assert 'public static final String VERSION="9.0";' in r
 assert 'public static final int DATABASE_SCHEMA=15;' in r
 assert 'public static final String ANALYTICAL_ENGINE_VERSION="chemcore-next-research-core/0.3-g1-source-trace";' in r
 assert "applicationId 'com.hazrob.tank'" in g
-assert "versionName '9.0'" in g and "versionCode 8" in g
+assert "versionName '9.0'" in g and "versionCode 9" in g
 s = generator.read_text(encoding="utf-8")
 for bound in ("min", "max"):
     pattern = r'("' + bound + r'_app_version"\s*:\s*")([^"]+)(")'
