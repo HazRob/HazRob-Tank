@@ -8,6 +8,7 @@ on:
       - 'research/chemcore_next/tests/java/NextStable49MatrixReplay.java'
       - 'research/chemcore_next/traceability/stable_profile_ablation.py'
       - 'research/chemcore_next/traceability/stable_methane_165_source_audit.py'
+      - 'research/chemcore_next/traceability/stable_blank_air_input.py'
       - '.github/workflows/chemcore-next-stable49-r0-matrix-20261106.yml'
   workflow_dispatch:
 
@@ -118,6 +119,42 @@ jobs:
             'engine_modified':False}
           (root/'scientific_summary.json').write_text(json.dumps(summary,indent=2,ensure_ascii=False)+'\n')
           print('NEXT_STABLE49_SCIENTIFIC_RESULT',json.dumps({'n':len(cases),'all':summary['all'],'modes':summary['by_r0_mode'],'deviations':summary['first_deviation_counts']},sort_keys=True))
+          PY
+      - name: Synthetic clean-air reference negative-control replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/traceability/stable_blank_air_input.py \
+            --owner-air research/chemcore_next/device_calibration/tank_8mq_v6_quick_clean_air_2026-10-31T032955Z.json \
+            --out /tmp/stable49/results/stable_blank_air_cases.tsv
+          java -Xmx1g -cp /tmp/stable49/classes \
+            com.hazrob.tank.chemcore.next.NextStable49MatrixReplay \
+            /tmp/stable49/results/stable_49_original_priors.tsv \
+            /tmp/stable49/results/stable_blank_air_cases.tsv \
+            /tmp/stable49/results/stable_blank_air_runtime_trace.tsv \
+            | tee /tmp/stable49/results/stable_blank_air_run.log
+          python - <<'PY'
+          import collections,csv,json,pathlib
+          root=pathlib.Path('/tmp/stable49/results')
+          with (root/'stable_blank_air_runtime_trace.tsv').open(newline='') as f:
+              rows=list(csv.DictReader(f,delimiter='\t'))
+          assert len(rows)==1250
+          assert all(x['strict_status']=='UNKNOWN' for x in rows)
+          modes=sorted(set(x['R0_mode'] for x in rows))
+          info={}
+          for mode in modes:
+              sample=[x for x in rows if x['R0_mode']==mode]
+              count=sum(int(x['synthetic_qualified_rank1'])!=0 for x in sample)
+              info[mode]={'controls':len(sample),'false_research_candidate_count':count,
+                  'synthetic_false_candidate_fraction':round(count/len(sample),6),
+                  'unresolved_source_root_ambiguity_cases':sum(
+                      x['first_deviation_reason']=='SAME_SOURCE_MULTIPLE_IDENTITIES_AMBIGUOUS' for x in sample)}
+          summary={'schema':'chemcore.next.stable49.synthetic_clean_air_negative_control/1',
+                   'cases':len(rows),'by_mode':info,
+                   'g3':False,'fresh_tank_clean_air_measurements':False,
+                   'physical_false_alarm_rate_inferable':False}
+          (root/'stable_blank_air_summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+          print('NEXT_STABLE49_BLANK_AIR_NEGATIVE_CONTROL',json.dumps(summary,sort_keys=True))
           PY
       - name: Research-only multichannel Stable fingerprint matcher ablation
         shell: bash
