@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * V8 device/emulator-only SQLite 14->15 migration plus replay/readback test.
+ * V9 device/emulator-only SQLite 14->16 migration plus replay/readback test.
  * Uses an isolated fresh emulator app database. Never accesses owner Tank.
  */
 @RunWith(AndroidJUnit4.class)
@@ -51,11 +51,11 @@ public final class NextDecisionStoreInstrumentedTest {
       ChemCoreNext.snapshotHash(snapshot),CoreContracts.DecisionStatus.UNKNOWN,
       List.of(),List.of(),List.of("REFERENCE_CHEMICAL_UNQUALIFIED"));
   }
-  @Test public void upgradeV14ToV15PreservesThreeOldTablesAndCreatesNext(){
+  @Test public void upgradeV14ToV16PreservesThreeOldTablesAndCreatesNext(){
     seedV14(ctx);
     helper=new ExperimentsDb(ctx);
     SQLiteDatabase db=helper.getWritableDatabase();
-    assertEquals(15,db.getVersion());
+    assertEquals(16,db.getVersion());
     try(Cursor c=db.rawQuery("SELECT payload FROM experiments WHERE id=91",null)){
       assertTrue(c.moveToFirst());assertEquals("owner-v7-raw-do-not-delete",c.getString(0));
     }
