@@ -46,3 +46,9 @@ Count: 2 drive servos + 4 arm/gripper servos + 4 accessories + 4 lights + 1 buzz
 Sources:
 - NXP PCA9685 product and data sheet: https://www.nxp.com/products/power-drivers/lighting-driver-and-controller-ics/led-drivers/16-channel-12-bit-pwm-fm-plus-ic-bus-led-driver%3APCA9685
 - MPU6050 addresses: https://www.mathworks.com/help/matlab/supportpkg/arduinoio.mpu6050-system-object.html
+
+## Owner clarification — 2026-11-06: arm actuator type
+
+The owner confirmed all currently discussed arm/gripper/base actuators are **servos**, not bare DC motors. The photographed micro servo is labeled TowerPro SG90 9g; manufacturer lists the standard SG90 analog as a nominal 4.8V servo compatible with a regulated 5V supply. The photographed label by itself does not establish whether it is the standard position-limited SG90 (~180 degrees) or a continuous-rotation SG90 variant. Verify actual mechanical range before implementing axis limits or speed controls. Keep arm channel CH2–CH5 as provisional servo signals, pending confirmation of which exact axes use SG90 and which use other servos.
+
+SG90 servo power: servo red -> regulated 5V rail on PCA V+, brown -> common GND, orange/yellow -> respective PWM signal; PCA VCC -> 3.3V ESP32 logic rail. Power the servo rail independently of the ESP32 logic output, sized for aggregate peak/stall current. References: https://towerpro.com.tw/product/sg90-analog/ ; https://towerpro.com.tw/product/sg90-360-degree-continuous-rotation-servo/ ; https://learn.adafruit.com/16-channel-pwm-servo-driver/pinouts
