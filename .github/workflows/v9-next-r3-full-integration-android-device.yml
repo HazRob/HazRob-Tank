@@ -1,0 +1,114 @@
+name: HazRob Tank V9.1 R3 full integration Android12 emulator DB16 and reports
+
+on:
+  push:
+    branches: [feature/tank-v9-implementation]
+    paths:
+      - 'android/app/src/androidTest/java/com/servoc/app/chemcore/nextintegration/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/food/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/report/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/measurement/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/ui/**'
+      - 'android/app/src/main/java/com/servoc/app/ui/SettingsTab.java'
+      - 'android/app/src/main/java/com/servoc/app/ui/FieldSessionsTab.java'
+      - 'android/app/src/androidTest/java/com/servoc/app/calibration/**'
+      - 'android/app/src/main/java/com/servoc/app/calibration/**'
+      - 'android/app/src/main/java/com/servoc/app/measurement/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/data/**'
+      - 'android/app/src/main/java/com/servoc/app/report/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/emissions/**'
+      - 'android/app/src/main/java/com/hazrob/tank/emissions/**'
+      - 'android/app/src/main/java/com/servoc/app/ui/EmissionsTab.java'
+      - 'android/app/src/main/java/com/hazrob/tank/foodfreshness/**'
+      - 'android/app/src/main/java/com/servoc/app/ui/FoodFreshnessTab.java'
+      - 'android/app/src/main/java/com/servoc/app/chemcore/nextintegration/**'
+      - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
+      - 'android/app/src/main/java/com/servoc/app/ReleaseAudit.java'
+      - 'android/app/src/androidTest/java/com/servoc/app/chemcore/nextintegration/NextTraceV16InstrumentedTest.java'
+      - '.github/workflows/v9-next-r3-full-integration-android-device.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sqlite-v15-to-v16-r3-android12:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tank
+      - uses: actions/checkout@v4
+        with:
+          repository: sohpany/SERVOC-Android
+          ref: 6281d3eb7c1c961ce63b0b5e4ae0792874626720
+          token: ${{ secrets.HAZROB_SOURCE_READ_TOKEN }}
+          path: source
+          persist-credentials: false
+      - name: Overlay audited V9.1 R3 code and original device tests in ephemeral workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a tank/android/app/src/main/java/. source/app/src/main/java/
+          mkdir -p source/app/src/androidTest/java
+          cp -a tank/android/app/src/androidTest/java/. source/app/src/androidTest/java/
+          if test -d tank/android/app/src/main/res; then cp -a tank/android/app/src/main/res/. source/app/src/main/res/; fi
+          if test -d tank/android/app/src/main/assets; then mkdir -p source/app/src/main/assets; cp -a tank/android/app/src/main/assets/. source/app/src/main/assets/; fi
+          cat >> source/app/build.gradle <<'EOF'
+
+          android {
+              // TEST-ONLY: use Android's default debug keystore in this ephemeral
+              // emulator workspace. Never modify release/prototype signing.
+              buildTypes {
+                  debug {
+                      signingConfig signingConfigs.debug
+                  }
+              }
+              defaultConfig {
+                  testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+              }
+          }
+          dependencies {
+              androidTestImplementation 'androidx.test:runner:1.6.2'
+              androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+          }
+          EOF
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android API 31 and build tools
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-31" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Run full Android12 regression plus original R3 V16 migration and field/PDF tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          disable-animations: true
+          working-directory: source
+          script: gradle --no-daemon :app:connectedDebugAndroidTest --stacktrace
+      - name: Document Android scope
+        if: always()
+        run: |
+          mkdir -p v9-r3-android-test-scope
+          echo "runner=${{ github.run_id }}" > v9-r3-android-test-scope/scope.txt
+          echo "Android API=31; ephemeral emulator; tests V14/V15->V16 and persisted complete R3 research trace" >> v9-r3-android-test-scope/scope.txt
+          echo "V9.1 R3 archived trace, original MQ record, sessions, R0 and PDF fixture validations run on emulator; NOT physical Tank/G3" >> v9-r3-android-test-scope/scope.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HazRob-Tank-V9.1-R3-Android12-DB16-Tests
+          path: |
+            v9-r3-android-test-scope/
+            source/app/build/outputs/androidTest-results/
+            source/app/build/reports/androidTests/
+          retention-days: 45
+          if-no-files-found: warn
