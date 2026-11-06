@@ -117,7 +117,37 @@ public final class NextFeedbackQueue extends SQLiteOpenHelper {
     message.put("operator_classification","UNVERIFIED_PERSONAL_OBSERVATION");
     message.put("public_share_consent",publicShareConsent);
     message.put("engine_result_research_only",true);
-    message.put("original_analysis",original);
+    // R3's full immutable source trace is local device evidence and MAY
+    // contain a physical device UID in sensor_uid or freeform source reasons.
+    // Public GitHub feedback must never copy those device-bound fields.
+    // Share the SHA of the complete archived trace and only a non-identifying
+    // subset of each stage (stage/status, model, anonymous candidate UID).
+    JSONObject shareable=new JSONObject(original.toString());
+    JSONArray originalTrace=shareable.optJSONArray("next_execution_trace");
+    if(originalTrace!=null){
+      JSONArray redacted=new JSONArray();
+      for(int i=0;i<originalTrace.length();i++){
+        JSONObject event=originalTrace.optJSONObject(i);
+        if(event==null)continue;
+        JSONObject safe=new JSONObject();
+        safe.put("stage",event.optString("stage",""));
+        safe.put("status",event.optString("status",""));
+        String sensor=event.optString("sensor_uid","");
+        String model=sensor.substring(sensor.lastIndexOf(':')+1).toUpperCase(Locale.ROOT);
+        safe.put("sensor_model",model.matches("MQ(?:2|3|4|5|7|8|9|135)")?
+            model:"UNSPECIFIED");
+        safe.put("chemical_uid",event.isNull("chemical_uid")?
+            JSONObject.NULL:event.opt("chemical_uid"));
+        safe.put("source_diagnostic_value",event.isNull("source_diagnostic_value")?
+            JSONObject.NULL:event.opt("source_diagnostic_value"));
+        redacted.put(safe);
+      }
+      shareable.put("next_execution_trace",redacted);
+      shareable.put("trace_redaction",
+          "PUBLIC_RESEARCH_STAGES_ONLY_NO_DEVICE_ID_OR_FREEFORM_SOURCE_REASON");
+      shareable.put("trace_origin_sha256",original.opt("trace_sha256"));
+    }
+    message.put("original_analysis",shareable);
     JSONArray sensors=new JSONArray();
     for(CoreContracts.Reading r:receipt.sourceSnapshot.readings){
       JSONObject sensor=new JSONObject();
