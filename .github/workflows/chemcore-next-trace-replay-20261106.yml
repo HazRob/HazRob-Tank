@@ -2,10 +2,11 @@ name: ChemCore Next all-source trace and dual R0 research replay
 
 on:
   push:
-    branches: [research/chemcore-next-trace-replay-20261106]
+    branches: [research/chemcore-next-coherence-r2-20261106]
     paths:
       - '.github/workflows/chemcore-next-trace-replay-20261106.yml'
       - 'research/chemcore_next/tests/java/NextReferenceTraceReplay.java'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
       - 'research/chemcore_next/traceability/**'
   workflow_dispatch:
 
