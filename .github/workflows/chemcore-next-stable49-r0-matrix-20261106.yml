@@ -7,6 +7,7 @@ on:
       - 'research/chemcore_next/traceability/stable_matrix_input.py'
       - 'research/chemcore_next/tests/java/NextStable49MatrixReplay.java'
       - 'research/chemcore_next/traceability/stable_profile_ablation.py'
+      - 'research/chemcore_next/traceability/stable_methane_165_source_audit.py'
       - '.github/workflows/chemcore-next-stable49-r0-matrix-20261106.yml'
   workflow_dispatch:
 
@@ -128,6 +129,19 @@ jobs:
             --out /tmp/stable49/results \
             | tee /tmp/stable49/results/stable_ablation.log
           grep -q '^STABLE49_RESEARCH_RANKING_ABLATION_PASS ' /tmp/stable49/results/stable_ablation.log
+      - name: Separate Stable published source evidence 165 methane profile audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 120 \
+            'https://raw.githubusercontent.com/HazRob/build-harness/9df346dc28024435927595ef45ce6a799877243e/library/chemcore/stable/reference-evidence/derived/2026-11-02/mq4_methane_li_cor_quantitative_source_fingerprint_v1.json' \
+            -o /tmp/stable49/source/stable_methane_165_original.json
+          test "$(git hash-object /tmp/stable49/source/stable_methane_165_original.json)" = 'acb3e16a79a6795c86d12ff1dbdbd01d6b11cb46'
+          python research/chemcore_next/traceability/stable_methane_165_source_audit.py \
+            --payload /tmp/stable49/source/stable_methane_165_original.json \
+            --out /tmp/stable49/results \
+            | tee /tmp/stable49/results/stable_methane_165.log
+          grep -q '^STABLE_METHANE_165_SOURCE_PROFILE_AUDIT_PASS ' /tmp/stable49/results/stable_methane_165.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
