@@ -3,6 +3,8 @@ package com.hazrob.tank.chemcore.next;
 import java.nio.file.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.io.*;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Executes ORIGINAL ChemCoreNext.analyze using EXACT Stable 49-prior SOURCE
@@ -114,6 +116,12 @@ public final class NextStable49MatrixReplay {
       "eligible_candidates","source_roots","positive_curve_models",
       "expected_material_present","first_deviation_reason","note");
     int n=0,strictUnknown=0,simCandidate=0,simCorrect=0,ambiguous=0,modelsPositive=0;
+    var perEvent=Path.of(args[2]+".all_stages.tsv.gz");
+    try(var eventWriter=new BufferedWriter(new OutputStreamWriter(
+        new GZIPOutputStream(Files.newOutputStream(perEvent)),StandardCharsets.UTF_8))) {
+      eventWriter.write("case_id\\tstage\\tsource_asset\\tsource_root\\tsensor_uid"+
+          "\\tchemical_uid\\tstatus\\treason\\tsource_diagnostic_value");
+      eventWriter.newLine();
     for(String line:lines.subList(1,lines.size())){
       String[] v=fields(line);
       String id=v[0],mode=v[6];
@@ -133,6 +141,17 @@ public final class NextStable49MatrixReplay {
       if(simTop==expected)simCorrect++;
       if(research.graph.hasUnresolvedAlternatives)ambiguous++;
       modelsPositive+=research.positiveModels;
+      long curveCount=research.executionTrace.stream().filter(e->e.stage.equals("CURVE")).count();
+      if(curveCount!=source.size())
+        throw new AssertionError("incomplete per-technique source trace "+id+
+          " got="+curveCount+" expected="+source.size());
+      for(var e:research.executionTrace) {
+        eventWriter.write(id+"\\t"+t(e.stage)+"\\t"+t(e.sourceAssetId)+
+            "\\t"+t(e.sourceRoot)+"\\t"+t(e.sensorUid)+
+            "\\t"+t(e.chemicalUid)+"\\t"+t(e.status)+
+            "\\t"+t(e.reason)+"\\t"+t(e.sourceOnlyDiagnosticValue));
+        eventWriter.newLine();
+      }
       boolean present=research.arbitration.eligibleRanked.stream().anyMatch(x->x.uid==expected);
       String cause;
       if(mode.equals("AIR_RS_MEAN_STRICT_UNQUALIFIED"))cause="SOURCE_R0_DEFINITION_NOT_MATCHED";
@@ -147,6 +166,7 @@ public final class NextStable49MatrixReplay {
           research.positiveModels,present,cause,
           "NO_REAL_GAS; ALL_SOURCE_QUALIFICATIONS_INJECTED_SYNTHETICALLY");
       n++;
+    }
     }
     if(n<1000)throw new AssertionError("matrix must be diverse "+n);
     Files.write(Path.of(args[2]),out,StandardCharsets.UTF_8);
