@@ -92,20 +92,20 @@
       "id": "V9-APP-R3-002",
       "area": "android-chemcore-next-full-integration",
       "title": "Persist immutable complete R3 expert execution trace and link all instant/field/site UI PDF/XLSX to same original archived decision",
-      "status": "done_source_and_signed_apk_emulator_pending",
+      "status": "source_and_APK_passed_emulator_retest_pending",
       "app_version": "9.1",
       "app_version_code": 10,
       "database_schema": 16,
       "engine_version": "chemcore-next-research-core/0.3-g1-source-trace",
       "evidence": "docs/implementation/V9-APP-R3-002-FULL-INTEGRATION-2026-11-06_AR.md",
-      "github_actions_build_run": 42210814434,
-      "build_source_commit": "5c2f0bf4eb356fa2d8f6c16d4d52ebee86314708",
-      "apk_sha256": "e2a001c79ed52aff259bdd52c83836d4ba3f2c6a9c0252f2a5d4a436f94df0ce",
+      "github_actions_build_run": 42211484109,
+      "build_source_commit": "052bfeba81f4484484e2cdede4486adc6fcf2560",
+      "apk_sha256": "07f42c720be57ab051e2f0e1ffbafb04ee958eec8f2b3b5380d92199c433f05e",
       "tests": {
         "core_regression_checks": 50,
         "existing_android_contract_tests": 57,
         "sqlite_and_output_linkage_python_tests": 4,
-        "android_instrumented_tests": "source_compiled_android_emulator_run_in_progress"
+        "android_instrumented_tests": "emulator run 42211484163 pending, historical Receipt constructor restored"
       },
       "scope": {
         "main_esp32_firmware_modified": false,
@@ -118,14 +118,14 @@
   "gates": {
     "requirements": "open",
     "api_compatibility": "not_started",
-    "android_build": "passed_full_v9_1_signed_debug_apk_42210814434",
+    "android_build": "passed_v9_1_signed_debug_apk_after_emulator_constructor_compatibility_fix_run_42211484109",
     "esp32_arduino_build": "not_started",
-    "tests": "passed_50_core_57_android_contract_4_sqlite_full_trace_contract; emulator_in_progress",
+    "tests": "passed_50_core_57_legacy_4_new_source_sqlite_contracts;Android12 emulator_run_42211484163_in_progress",
     "hardware_acceptance": "not_started",
     "release": "experimental_v9_1_signed_apk_available; physical_g3_and_hardware_firmware_releases_open"
   },
   "artifacts": {
-    "apk_v9": "https://github.com/HazRob/HazRob-Tank/actions/runs/42210814434/artifacts/13498872302",
+    "apk_v9": "https://github.com/HazRob/HazRob-Tank/actions/runs/42211484109/artifacts/13499325810",
     "esp32_v9_zip": null,
     "esp32_v9_bin": null,
     "sha256": "b794bb87e80a5caf3dd69fe262b3ba0f41dbb12251ddd43c49e1dce92b798743",
@@ -133,9 +133,9 @@
     "apk_build_sha": "5dfae7440c2df5478e1dac1fe0d87a2beb945af0",
     "apk_debug_signer_sha256": "2a4b8f9357f9fae8c262e20b32439e2459dbcd784ad14f9b7217d621649cbda4",
     "apk_v9_previous_v9_0": "https://github.com/HazRob/HazRob-Tank/actions/runs/42205497711/artifacts/13496472453",
-    "apk_v9_1_sha256": "e2a001c79ed52aff259bdd52c83836d4ba3f2c6a9c0252f2a5d4a436f94df0ce",
-    "apk_v9_1_build_sha": "5c2f0bf4eb356fa2d8f6c16d4d52ebee86314708",
-    "apk_v9_1_debug_signer_sha256": "b953de7f3b974298950dd81529ca535c1eeb3a7a6f2b6a6b5613256a19714070"
+    "apk_v9_1_sha256": "07f42c720be57ab051e2f0e1ffbafb04ee958eec8f2b3b5380d92199c433f05e",
+    "apk_v9_1_build_sha": "052bfeba81f4484484e2cdede4486adc6fcf2560",
+    "apk_v9_1_debug_signer_sha256": "42468c0e981e84241e8e1e3c5aec2711500c9d02dd485747f29f724d56d25af7"
   },
   "notes": [
     "Creating a V9 branch is not proof of a compiled V9 release.",
@@ -145,6 +145,7 @@
     "Approved separate Android app change V9-APP-R3-001 integrates ChemCore Next R3 research engine and V9 9.0 debug APK; GitHub Actions 42205497711 passed and includes SHA-256 verified test APK.",
     "User's hardware, PCA9685, LEDs, mechanical and main ESP32 firmware decisions remain open; no firmware update was performed as part of this Android change.",
     "V9.1 source integrated R3 trace into atomic SQLite16 and instant/field/site PDF and XLSX, original R0 and Stable source unchanged.",
-    "Android12 emulator test run is independent and must not be claimed passed until successful GitHub Actions conclusion."
+    "Android12 emulator test run is independent and must not be claimed passed until successful GitHub Actions conclusion.",
+    "Historical Android V8 Receipt reflection constructor restored to preserve tests and old APIs; original R3 V16 atomic persistence unchanged."
   ]
 }
