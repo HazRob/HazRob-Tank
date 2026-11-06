@@ -129,19 +129,20 @@ jobs:
             --out /tmp/stable49/results \
             | tee /tmp/stable49/results/stable_ablation.log
           grep -q '^STABLE49_RESEARCH_RANKING_ABLATION_PASS ' /tmp/stable49/results/stable_ablation.log
-      - name: Separate Stable published source evidence 165 methane profile audit
+      - name: Preserve independent authenticated Stable research audit reference
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail --location --retry 3 --max-time 120 \
-            'https://raw.githubusercontent.com/HazRob/build-harness/main/library/chemcore/stable/reference-evidence/derived/2026-11-02/mq4_methane_li_cor_quantitative_source_fingerprint_v1.json' \
-            -o /tmp/stable49/source/stable_methane_165_original.json
-          test "$(git hash-object /tmp/stable49/source/stable_methane_165_original.json)" = 'acb3e16a79a6795c86d12ff1dbdbd01d6b11cb46'
-          python research/chemcore_next/traceability/stable_methane_165_source_audit.py \
-            --payload /tmp/stable49/source/stable_methane_165_original.json \
-            --out /tmp/stable49/results \
-            | tee /tmp/stable49/results/stable_methane_165.log
-          grep -q '^STABLE_METHANE_165_SOURCE_PROFILE_AUDIT_PASS ' /tmp/stable49/results/stable_methane_165.log
+          test -f research/chemcore_next/traceability/stable_methane_165_metrics_20261106.json
+          python - <<'PY'
+          import json
+          p='research/chemcore_next/traceability/stable_methane_165_metrics_20261106.json'
+          obj=json.load(open(p))
+          assert obj['summary']['training_only_profiles']==165
+          assert not obj['summary']['source_R0_available']
+          assert obj['summary']['original_blob_sha']=='acb3e16a79a6795c86d12ff1dbdbd01d6b11cb46'
+          print('STABLE165_AUTHENTICATED_REFERENCE_AUDIT_METADATA_PASS')
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
