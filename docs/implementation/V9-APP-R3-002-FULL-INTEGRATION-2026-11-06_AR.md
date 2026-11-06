@@ -58,3 +58,10 @@
 - المتطلبات الميكانيكية والإلكترونية المفتوحة: [V9 Master](V9-MASTER-CHANGE-TRACK-2026-11-06_AR.md) و[Execution Tracker](V9-EXECUTION-TRACKER-2026-11-06.json).
 
 **لا يُعَدّ نجـاح APK دليلًا على دقة كشف المواد أو على سلامة قيادة/تحكم عتاديين.**
+
+## و. اختبارات الانحدار والقبول المستقل
+
+- **البناء APK V9.1 + مصدر R3 + تصدير الجلسات/الموقع:** نجح تشغيل [42210814434](https://github.com/HazRob/HazRob-Tank/actions/runs/42210814434) على SHA `5c2f0bf4eb356fa2d8f6c16d4d52ebee86314708`؛ بصمة APK `e2a001c79ed52aff259bdd52c83836d4ba3f2c6a9c0252f2a5d4a436f94df0ce`. هذا إصدار تجريبي مؤقت إلى حين فحص اختبارات المحاكي واعتماد آخر تصحيح توافقي.
+- **فحص SQLite/واجهة/PDF/XLSX البرمجي:** نجح 4/4 tests executing original Java SQL تعريفات DB15 وDB16 عبر Python SQLite مع مشغلات منع تعديل السجلات، دون المساس بمعايرة R0.
+- **محاكي Android12 القديم:** كشف التشغيل [42209301111](https://github.com/HazRob/HazRob-Tank/actions/runs/42209301111) عن 3 أخطاء من 46 اختبارًا، جميعها `NoSuchMethodException` لاختبارات تعكس مُنشئ `NextDecisionStore.Receipt` التاريخي. أعيد تنفيذ مُنشئ التوافق التاريخي الذي يمرر إلى مُنشئ R3 الموسع دون تغيير إسناد الأرشيف في التزام `052bfeba81f4484484e2cdede4486adc6fcf2560`. **لا يُعد هذا الاختبار القديم ناجحًا**، وإعادة اختبار المحاكي على الالتزام المصحح مطلوبة.
+- **تشغيل الاستعادة:** [GitHub Actions — V9.1 R3 Android Emulator](https://github.com/HazRob/HazRob-Tank/actions/runs/42211484163)؛ النتيجة النهائية تُؤخذ من صفحة Actions فقط.
