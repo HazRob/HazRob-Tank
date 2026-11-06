@@ -182,12 +182,29 @@ public final class SiteSummaryReportExporter {
     }
 
     public static void writePdf(OutputStream out,ExperimentsDb db,String siteId)throws Exception{
-        if(out==null)throw new IllegalArgumentException("output required");SiteBundle b=resolve(db,siteId);SiteReportIntelligence.SitePlan plan=SiteReportIntelligence.plan(b.sessions);int matrixPages=Math.max(1,(b.sessions.size()+ROWS_PER_MATRIX_PAGE-1)/ROWS_PER_MATRIX_PAGE);int cycleCount=cycleRows(b).size();int cyclePages=Math.max(1,(cycleCount+ROWS_PER_CYCLE_PAGE-1)/ROWS_PER_CYCLE_PAGE);int total=3+matrixPages+cyclePages;
+        if(out==null)throw new IllegalArgumentException("output required");SiteBundle b=resolve(db,siteId);SiteReportIntelligence.SitePlan plan=SiteReportIntelligence.plan(b.sessions);int matrixPages=Math.max(1,(b.sessions.size()+ROWS_PER_MATRIX_PAGE-1)/ROWS_PER_MATRIX_PAGE);int cycleCount=cycleRows(b).size();int cyclePages=Math.max(1,(cycleCount+ROWS_PER_CYCLE_PAGE-1)/ROWS_PER_CYCLE_PAGE);int r3TracePages=0;
+        for(var session:b.sessions)
+            if(session.hasNext)
+                r3TracePages+=V9NextR3TracePdfAnnex.pages(session.next);
+        int total=3+matrixPages+cyclePages+r3TracePages;
         PdfDocument pdf=new PdfDocument();int pageNo=1;PdfDocument.Page p=page(pdf,pageNo);overview(p.getCanvas(),b,plan);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);
         for(int chunk=0;chunk<matrixPages;chunk++){p=page(pdf,pageNo);matrix(p.getCanvas(),b,chunk);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);}
         for(int chunk=0;chunk<cyclePages;chunk++){p=page(pdf,pageNo);cycleMatrix(p.getCanvas(),b,chunk);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);}
         p=page(pdf,pageNo);recurrence(p.getCanvas(),b,plan);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);
-        p=page(pdf,pageNo);priority(p.getCanvas(),b,plan);chrome(p.getCanvas(),pageNo,total,b);pdf.finishPage(p);pdf.writeTo(out);pdf.close();
+        p=page(pdf,pageNo);priority(p.getCanvas(),b,plan);chrome(p.getCanvas(),pageNo++,total,b);pdf.finishPage(p);
+        // R3: append all original stored per-session events AFTER the
+        // unchanged site summary/recurrence/priority charts.
+        for(var session:b.sessions){
+            if(!session.hasNext || session.next.executionTrace==null)continue;
+            for(int offset=0;offset<session.next.executionTrace.size();
+                offset+=V9NextR3TracePdfAnnex.ROWS_PER_PAGE){
+                p=page(pdf,pageNo);
+                V9NextR3TracePdfAnnex.draw(p.getCanvas(),session.next,offset);
+                chrome(p.getCanvas(),pageNo++,total,b);
+                pdf.finishPage(p);
+            }
+        }
+        pdf.writeTo(out);pdf.close();
     }
 
     private static PdfDocument.Page page(PdfDocument pdf,int n){return pdf.startPage(new PdfDocument.PageInfo.Builder(PAGE_WIDTH,PAGE_HEIGHT,n).create());}
