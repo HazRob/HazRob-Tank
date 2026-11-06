@@ -1,0 +1,60 @@
+name: ChemCore Next R3 externally labelled MQ category purged CV research
+
+on:
+  push:
+    branches: [research/chemcore-next-r3-integrity-trace-20261106]
+    paths:
+      - 'research/chemcore_next/experiments/r3_mq6400_purged_category_cv.py'
+      - '.github/workflows/chemcore-next-r3-purged-mq6400.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  purged-real-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check frozen raw source blob identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv)" \
+            = '451fdd05a18db8531abc219089de071ccc0dd461'
+          mkdir -p /tmp/next-r3-grouped
+      - name: Install fixed scientific software dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-input \
+            numpy==2.3.5 scikit-learn==1.8.0 scipy==1.16.3
+      - name: Train and test four fixed methods on 5 purged source blocks and forward heldout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/experiments/r3_mq6400_purged_category_cv.py \
+            --source research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv \
+            --out /tmp/next-r3-grouped \
+            | tee /tmp/next-r3-grouped/execution.log
+          grep -q '^R3_MQ6400_PURGED_SOURCE_CV_PASS ' /tmp/next-r3-grouped/execution.log
+          python - <<'PY'
+          import json
+          x=json.load(open('/tmp/next-r3-grouped/r3_mq6400_grouped_cv_summary.json'))
+          assert len(x['all_fold_results'])==72
+          assert x['independent_external_test'] is False
+          assert x['tank_g3_met'] is False
+          print('R3_QA_EXPLICIT_SCIENTIFIC_LIMITS_PASS')
+          PY
+      - name: Preserve all folds, failures and methods
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chemcore-next-r3-mq6400-purged-blocks-source-category-benchmark
+          path: /tmp/next-r3-grouped/
+          retention-days: 90
+          if-no-files-found: warn
