@@ -47,6 +47,13 @@ jobs:
             | tee /tmp/next-trace/results/replay_run.log
           grep -q '^TRACE_SOURCE_SELF_REPLAY_PASS fingerprints=24 curves=109 total=133' \
             /tmp/next-trace/results/replay_run.log
+      - name: Audit all 109 source logarithmic slopes and worst conditioning
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/traceability/log_sensitivity_109.py /tmp/next-trace/results \
+            | tee /tmp/next-trace/results/log_stress_run.log
+          grep -q '^LOG_SENSITIVITY_109_PASS ' /tmp/next-trace/results/log_stress_run.log
       - name: Summarize all outcomes without making hardware or 90 percent claims
         shell: bash
         run: |
