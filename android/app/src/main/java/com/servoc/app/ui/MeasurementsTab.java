@@ -1069,6 +1069,27 @@ public final class MeasurementsTab {
                 .append(p.optInt("next_positive_models",0));
             if(algorithms!=null)for(int i=0;i<algorithms.length();i++)
                 scientificText.append("\n").append(algorithms.optString(i));
+            JSONArray execution=p.optJSONArray("next_execution_trace");
+            scientificText.append("\n\nChemCore Next R3 • سجل تنفيذ التقنيات المحفوظ")
+                .append("\nالحالة: ").append(p.optString("trace_status","غير مؤرشف"))
+                .append(" • عدد الأحداث: ").append(p.optInt("trace_event_count",0))
+                .append("\nبصمة السجل: ").append(p.optString("trace_sha256","غير متاح"));
+            if(execution!=null)for(int i=0;i<execution.length();i++){
+                JSONObject e=execution.optJSONObject(i);
+                if(e==null)continue;
+                scientificText.append("\n").append(i+1).append(". ")
+                    .append(e.optString("stage","—")).append(" • ")
+                    .append(e.optString("status","—"))
+                    .append(" • ").append(e.optString("source_asset","—"))
+                    .append(" • ").append(e.optString("sensor_uid",""));
+                if(!e.isNull("chemical_uid")&&e.has("chemical_uid"))
+                    scientificText.append(" • UID ").append(e.optLong("chemical_uid"));
+                if(e.has("source_diagnostic_value")&&!e.isNull("source_diagnostic_value"))
+                    scientificText.append(" • قيمة مصدرية ")
+                        .append(e.optDouble("source_diagnostic_value"));
+                String why=e.optString("reason","");
+                if(!why.isEmpty())scientificText.append(" • ").append(why);
+            }
             scientificText.append("\nالبصمات: ")
                 .append(p.optString("fingerprint_runtime_status","غير معروف"));
             scientificText.append("\n\nمقارنات المراجع التفصيلية:\n")
