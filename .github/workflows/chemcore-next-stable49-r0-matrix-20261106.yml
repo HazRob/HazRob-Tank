@@ -2,11 +2,12 @@ name: ChemCore Next Stable49 original-prior R0 and concentration replay
 
 on:
   push:
-    branches: [research/chemcore-next-coherence-r2-20261106]
+    branches: [research/chemcore-next-r3-integrity-trace-20261106]
     paths:
       - 'research/chemcore_next/traceability/stable_matrix_input.py'
       - 'research/chemcore_next/tests/java/NextStable49MatrixReplay.java'
       - 'research/chemcore_next/tests/java/NextCoherenceR2Regression.java'
+      - 'research/chemcore_next/tests/java/NextIntegrityTraceR3Regression.java'
       - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
       - 'research/chemcore_next/traceability/stable_profile_ablation.py'
       - 'research/chemcore_next/traceability/stable_methane_165_source_audit.py'
@@ -60,7 +61,8 @@ jobs:
           find android/app/src/main/java/com/hazrob/tank/chemcore/next -maxdepth 1 -name '*.java' -print0 \
             | xargs -0 javac -encoding UTF-8 -d /tmp/stable49/classes \
               research/chemcore_next/tests/java/NextStable49MatrixReplay.java \
-              research/chemcore_next/tests/java/NextCoherenceR2Regression.java
+              research/chemcore_next/tests/java/NextCoherenceR2Regression.java \
+              research/chemcore_next/tests/java/NextIntegrityTraceR3Regression.java
       - name: Verify R2 coherent-source science and safety invariants
         shell: bash
         run: |
@@ -68,7 +70,14 @@ jobs:
           java -cp /tmp/stable49/classes com.hazrob.tank.chemcore.next.NextCoherenceR2Regression \
             | tee /tmp/stable49/results/coherence_r2_regression.log
           grep -q '^NEXT_COHERENCE_R2_REGRESSION_PASS ' /tmp/stable49/results/coherence_r2_regression.log
-      - name: Replay through modified R2 Next analyzer; preserve gates
+      - name: Validate R3 hash provenance and all expert events
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -cp /tmp/stable49/classes com.hazrob.tank.chemcore.next.NextIntegrityTraceR3Regression \
+            | tee /tmp/stable49/results/r3_trace_integrity_regression.log
+          grep -q '^NEXT_R3_TRACE_INTEGRITY_REGRESSION_PASS' /tmp/stable49/results/r3_trace_integrity_regression.log
+      - name: Replay through modified R3 Next analyzer; preserve gates
         shell: bash
         run: |
           set -euo pipefail
