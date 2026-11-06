@@ -5,6 +5,8 @@ def row(v,p):
 def doc(rows): return dict(schema="hazrob.g2.holdout-split.v1",rows=rows)
 class Tests(unittest.TestCase):
  def test_disjoint(self): self.assertEqual(check(doc([row("a","train"),row("b","test")]))["status"],"GROUP_PREFLIGHT_ONLY")
+ def test_test_only_rejected(self): self.assertEqual(check(doc([row("a","test")]))["status"],"REJECTED")
+ def test_train_only_rejected(self): self.assertEqual(check(doc([row("a","train")]))["status"],"REJECTED")
  def test_leakage(self): self.assertEqual(check(doc([row("a","train"),row("a","test")]))["status"],"REJECTED")
  def test_empty(self): self.assertEqual(check(doc([]))["status"],"REJECTED")
  def test_missing(self): self.assertEqual(check(doc([dict(row("a","test"),source_id="")]))["status"],"REJECTED")
