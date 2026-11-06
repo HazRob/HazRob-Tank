@@ -94,7 +94,8 @@ public final class SmartFieldSessionPdfWriter {
         int v6Count=v6Cycles==null?0:v6Cycles.length();
         int v6Pages=next==null?(v6Count+1)/2:0;
         int nextPages=next==null?0:1;
-        int total=basePages+cyclePages+v6Pages+nextPages;
+        int r3TracePages=V9NextR3TracePdfAnnex.pages(next);
+        int total=basePages+cyclePages+v6Pages+nextPages+r3TracePages;
         PdfDocument pdf=new PdfDocument();
         PdfDocument.Page p=page(pdf,1);executiveOverview(p.getCanvas(),b,all,primary,plan,hazard,cs,next);chrome(p.getCanvas(),1,total,b,plan,next);pdf.finishPage(p);
         p=page(pdf,2);sensorSix(p.getCanvas(),primary);chrome(p.getCanvas(),2,total,b,plan,next);pdf.finishPage(p);
@@ -129,6 +130,16 @@ public final class SmartFieldSessionPdfWriter {
             int pageNo=basePages+cyclePages+1;
             p=page(pdf,pageNo);
             V8NextFieldResearchAppendixPdf.draw(p.getCanvas(),next,b.fieldSession.name);
+            chrome(p.getCanvas(),pageNo,total,b,plan,next);
+            pdf.finishPage(p);
+        }
+        // R3 appendix is immutable-source only, never a replay of ChemCore or
+        // an unapproved field measurement. All events, no arbitrary cutoff.
+        for(int k=0;k<r3TracePages;k++){
+            int pageNo=basePages+cyclePages+nextPages+k+1;
+            p=page(pdf,pageNo);
+            V9NextR3TracePdfAnnex.draw(p.getCanvas(),next,
+                k*V9NextR3TracePdfAnnex.ROWS_PER_PAGE);
             chrome(p.getCanvas(),pageNo,total,b,plan,next);
             pdf.finishPage(p);
         }
