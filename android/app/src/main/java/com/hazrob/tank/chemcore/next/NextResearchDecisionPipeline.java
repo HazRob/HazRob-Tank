@@ -10,7 +10,7 @@ import java.util.*;
  */
 public final class NextResearchDecisionPipeline {
   private NextResearchDecisionPipeline(){}
-  public static final String VERSION="chemcore-next-p05-decision/0.2-g1-source-coherence";
+  public static final String VERSION=ChemCoreNext.VERSION;
   public static final class Ranked {
     public final long uid;public final String label;
     public final ResearchCandidateGenerator.MaterialKind kind;
