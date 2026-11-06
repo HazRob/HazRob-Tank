@@ -7,7 +7,7 @@ p=argparse.ArgumentParser()
 p.add_argument("--owner-air",required=True,type=pathlib.Path)
 p.add_argument("--out",required=True,type=pathlib.Path)
 x=p.parse_args()
-air=json.loads(x.owner_air.read_text())["r_air_kohm"]
+air=json.loads(x.owner_air.read_text())["r_air_kohm_by_sensor"]
 assert len(air)==8
 modes=("R0_SOURCE_K_CONDITIONAL","DEVICE_R_AIR_AS_SOURCE_R0","FIXED_10K_FOR_ALL",
        "MQ2_K_FOR_ALL_WRONG","AIR_RS_MEAN_STRICT_UNQUALIFIED")
