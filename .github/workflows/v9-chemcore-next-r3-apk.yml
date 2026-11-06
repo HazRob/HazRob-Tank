@@ -96,7 +96,7 @@ jobs:
           assert 'NextResearchSourceQuarantine' in core
           assert 'NextResearchDecisionPipeline.evaluate(' in core
           assert 'ChemCoreNext.analyze(research)' in router
-          assert 'new NextDecisionStore(db).append(' in router
+          assert 'new NextDecisionStore(db).appendWithTrace(' in router
           assert 'sourceConcentrationCoherenceScore' in arbiter
           store=Path('source/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextDecisionStore.java').read_text()
           assert 'appendWithTrace' in router and 'result.executionTrace' in router
