@@ -29,6 +29,10 @@ on:
       - '.github/workflows/v9-next-r3-full-integration-android-device.yml'
   workflow_dispatch:
 
+concurrency:
+  group: hazrob-v9-r3-android-emulator-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
