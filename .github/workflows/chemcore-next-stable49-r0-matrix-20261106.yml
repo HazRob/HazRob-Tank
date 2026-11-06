@@ -12,6 +12,7 @@ on:
       - 'research/chemcore_next/traceability/stable_methane_165_source_audit.py'
       - 'research/chemcore_next/traceability/stable_blank_air_input.py'
       - 'research/chemcore_next/traceability/r2_clean_air_gate_sweep.py'
+      - 'research/chemcore_next/traceability/stable_mixture_stress_input.py'
       - '.github/workflows/chemcore-next-stable49-r0-matrix-20261106.yml'
   workflow_dispatch:
 
@@ -180,6 +181,48 @@ jobs:
             --out /tmp/stable49/results \
             | tee /tmp/stable49/results/r2_clean_air_gate_sweep.log
           grep -q '^NEXT_R2_CLEAN_AIR_GATE_SWEEP_PASS' /tmp/stable49/results/r2_clean_air_gate_sweep.log
+      - name: Adversarial nonphysical multi-gas source-model blending and abstention
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/traceability/stable_mixture_stress_input.py \
+            --priors /tmp/stable49/results/stable_49_original_priors.tsv \
+            --owner-air research/chemcore_next/device_calibration/tank_8mq_v6_quick_clean_air_2026-10-31T032955Z.json \
+            --out /tmp/stable49/results \
+            | tee /tmp/stable49/results/stable_blend_generation.log
+          java -Xmx1g -cp /tmp/stable49/classes \
+            com.hazrob.tank.chemcore.next.NextStable49MatrixReplay \
+            /tmp/stable49/results/stable_49_original_priors.tsv \
+            /tmp/stable49/results/stable_blend_scenarios.tsv \
+            /tmp/stable49/results/stable_blend_runtime_trace.tsv \
+            | tee /tmp/stable49/results/stable_blend_run.log
+          python - <<'PY'
+          import csv,json,pathlib,collections
+          p=pathlib.Path('/tmp/stable49/results')
+          with (p/'stable_blend_runtime_trace.tsv').open(newline='') as f:
+              rows=list(csv.DictReader(f,delimiter='\t'))
+          with (p/'stable_blend_provenance.tsv').open(newline='') as f:
+              origins={r['case_id']:r for r in csv.DictReader(f,delimiter='\t')}
+          assert len(rows)==len(origins) and len(rows)>1000
+          assert all(x['strict_status']=='UNKNOWN' for x in rows)
+          d={}
+          for mode in sorted(set(x['R0_mode'] for x in rows)):
+              a=[x for x in rows if x['R0_mode']==mode]
+              ranked=[x for x in a if int(x['synthetic_qualified_rank1'])>0]
+              false_single_unsupported=sum(int(x['synthetic_qualified_rank1'])-100000 not in (
+                  int(origins[x['case_id']]['first_source_legacy']),
+                  int(origins[x['case_id']]['second_source_legacy'])) for x in ranked)
+              d[mode]={'cases':len(a),'single_source_candidate_count':len(ranked),
+                       'single_candidate_fraction':round(len(ranked)/len(a),6),
+                       'ranked_not_one_of_two_source_components':false_single_unsupported,
+                       'unknown_or_multi_hypothesis_count':len(a)-len(ranked)}
+          summary={'schema':'next_r2_stable_source_models_blend_stress/1',
+              'total_cases':len(rows),'by_r0_mode':d,
+              'physical_mixtures_measured':0,'mixing_law_not_physical':True,
+              'mixture_recovery_or_safety_qualification':False}
+          (p/'stable_blend_runtime_summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+          print('NEXT_R2_NONPHYSICAL_BLEND_ABSTENTION_STRESS_PASS',json.dumps(summary,sort_keys=True))
+          PY
       - name: Research-only multichannel Stable fingerprint matcher ablation
         shell: bash
         run: |
