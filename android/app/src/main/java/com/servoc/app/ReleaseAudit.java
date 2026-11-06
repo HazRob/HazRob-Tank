@@ -7,10 +7,12 @@ public final class ReleaseAudit {
     public static final String VERSION="9.0";
     public static final String ENGINEERING_REVISION="TANK-V9-CHEMCORE-NEXT-R3-TRACE-COHERENCE-G1";
     public static final String PROJECT_PREPARERS="شهاب الصهباني، مجدي ذيبان";
-    public static final int DATABASE_SCHEMA=15;
+    public static final int DATABASE_SCHEMA=16;
     public static final String ANALYTICAL_ENGINE_VERSION="chemcore-next-research-core/0.3-g1-source-trace";
     public static final boolean NEXT_R3_MULTISENSOR_SOURCE_COHERENCE=true;
     public static final boolean NEXT_R3_IMMUTABLE_EXECUTION_TRACE=true;
+    public static final boolean NEXT_R3_ATOMIC_TRACE_SQLITE_V16=true;
+    public static final boolean NEXT_R3_TRACE_UI_PDF_EXCEL=true;
     public static final boolean NEXT_R3_TANK_G3_VALIDATED=false;
     public static final String ESP32_API="HazRob Tank API4 / dual continuous rotation servos GPIO16/17 / 8 MQ 2xADS1115 I2C21/22 / BME280 I2C13/14 / relay GPIO25 / firmware R_air 180s warmup 60s clean-air Rs capture / per-source R0 derived for unqualified research / no certified gas identity or ppm";
 
