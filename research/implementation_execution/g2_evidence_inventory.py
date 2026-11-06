@@ -8,6 +8,7 @@ Exit 2 = malformed evidence / unsafe record; exit 3 = unreadable input.
 """
 import argparse
 import json
+import math
 import pathlib
 import sys
 
@@ -23,9 +24,17 @@ def unique_keys(pairs):
         obj[key] = value
     return obj
 
+def finite_float(value):
+    """Reject exponent-overflow numbers that json.loads otherwise turns into infinity."""
+    number = float(value)
+    if not math.isfinite(number):
+        raise ValueError("non-finite JSON numeric literal: " + value)
+    return number
+
+
 def inspect(path):
     try:
-        data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_keys,
+        data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_keys, parse_float=finite_float,
                           parse_constant=lambda value: (_ for _ in ()).throw(ValueError("non-finite JSON constant: " + value)))
     except (OSError, UnicodeError, ValueError) as exc:
         print(json.dumps({"status": "INPUT_ERROR", "detail": str(exc)}, ensure_ascii=False))
