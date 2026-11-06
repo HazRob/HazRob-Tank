@@ -46,6 +46,12 @@ class InventoryTests(unittest.TestCase):
     def test_nonfinite_json_constant_rejected(self):
         self.check_raw('{"schema":"hazrob.g2.independent-evidence.v1","records":[{"value":NaN}]}')
 
+    def test_overflowing_exponent_rejected(self):
+        self.check_raw('{"schema":"hazrob.g2.independent-evidence.v1","records":[{"value":1e999}]}')
+
+    def test_negative_overflowing_exponent_rejected(self):
+        self.check_raw('{"schema":"hazrob.g2.independent-evidence.v1","records":[{"value":-1e999}]}')
+
     def check_raw(self, raw):
         with tempfile.TemporaryDirectory() as d:
             p = pathlib.Path(d) / "evidence.json"
