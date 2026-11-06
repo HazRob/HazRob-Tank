@@ -138,6 +138,23 @@ public final class NextTraceV16InstrumentedTest {
       assertTrue(c.moveToFirst());assertEquals(1,c.getInt(0));
     }
   }
+  @Test public void reopeningSameHistoricalMeasurementPrefersNewR3TraceOnEqualCaptureTime(){
+    v15Database();
+    helper=new ExperimentsDb(context);
+    var shot=snap();
+    var old=new CoreContracts.Result("chemcore-next-p05-decision/0.2-g1-source-coherence",
+       shot,ChemCoreNext.snapshotHash(shot),CoreContracts.DecisionStatus.UNKNOWN,
+       List.of(),List.of(),List.of("OLD_RESEARCH_ONLY"));
+    var archive=new NextDecisionStore(helper);
+    var legacy=archive.append("owner-existing-session",1200L,shot,old);
+    assertNull(legacy.executionTrace);
+    var integrated=archive.appendWithTrace("owner-existing-session",1200L,
+        shot,result(shot),trace());
+    assertNotEquals(legacy.decisionUid,integrated.decisionUid);
+    var latest=archive.latestForSession("owner-existing-session");
+    assertEquals(integrated.decisionUid,latest.decisionUid);
+    assertNotNull(latest.executionTrace);
+  }
   @Test public void oldDecisionWithoutTraceIsNotFalselyReconstructed()throws Exception{
     v15Database();
     helper=new ExperimentsDb(context);
