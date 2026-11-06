@@ -55,6 +55,13 @@
       "title": "Review ESP32-Android commands, /data, field names, timing, safety, schema and GPIO before API change",
       "status": "not_started",
       "evidence": null
+    },
+    {
+      "id": "V9-FW-002-DRIVE-ARCH",
+      "area": "esp32",
+      "title": "Preserve left/right continuous servos on ESP32 GPIO16/GPIO17; use PCA9685 for arm and auxiliary controls only",
+      "status": "architecture_decided_implementation_pending",
+      "evidence": "docs/implementation/V9-PCA9685-CHANNELS-AND-I2C-ADDRESSES-DRAFT-2026-11-06.md"
     }
   ],
   "gates": {
@@ -75,6 +82,7 @@
   "notes": [
     "Creating a V9 branch is not proof of a compiled V9 release.",
     "ChemCore Next scientific validation is separate from software build success.",
-    "Preserve all older version branches and backup R0/sites/sessions during migration."
+    "Preserve all older version branches and backup R0/sites/sessions during migration.",
+    "Owner decision 2026-11-06: two large track servos stay on ESP32 GPIO16/17 with separate power; PCA9685 CH0..CH12 allocated provisionally to four arm servos, 4 accessories, 4 light slots, and active buzzer; CH13..15 remain spare."
   ]
 }
