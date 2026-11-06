@@ -23,6 +23,7 @@ public final class NextIntegrityTraceR3Regression {
   private static final SourceCurveExpert.Curve B2=curve("B2",102,"MQ2",10.7);
   private static final SourceCurveExpert.Curve B4=curve("B4",102,"MQ4",10.8);
   private static final SourceCurveExpert.Curve DUP2=curve("DUP2",101,"MQ2",15.);
+  private static final SourceCurveExpert.Curve ALIAS2=curve("ALIAS_A2",101,"MQ2",10.);
   private static final CoreContracts.DeviceProfile DEVICE=new CoreContracts.DeviceProfile(
     "R3_SAMPLE_DEVICE","R3_G1","VIRTUAL",
     List.of(new CoreContracts.SensorInstance("S2","MQ2","ADC_UNKNOWN",PHASE),
@@ -103,6 +104,21 @@ public final class NextIntegrityTraceR3Regression {
         "duplicate diagnostic kept, not hidden");
     check(dupl.arbitration.status==CoreContracts.DecisionStatus.UNKNOWN,
         "duplicate source cannot create confirmed hypothesis");
+    check(dupl.executionTrace.stream().anyMatch(e->e.stage.equals("SOURCE_CURVE_CONFLICT")),
+        "explicit conflict event preserved");
+    var duplicateSingleton=ChemCoreNext.analyze(input(
+        new SourceCurveExpert.Curve[]{A2,A4,DUP2},true,null,10));
+    check(duplicateSingleton.arbitration.status==CoreContracts.DecisionStatus.UNKNOWN,
+        "even one chemical UID cannot override conflicting source curves");
+    check(duplicateSingleton.sourceCoherence.get(0).nonUniqueSourceModels.size()==1,
+        "duplicate singleton original competing models fully retained");
+    var redundantAlias=ChemCoreNext.analyze(input(
+        new SourceCurveExpert.Curve[]{A2,A4,ALIAS2,B2,B4},true,null,10));
+    check(redundantAlias.sourceCoherence.get(0).nonUniqueSourceModels.isEmpty(),
+        "numerically identical source alias must not imply a physical conflict");
+    check(redundantAlias.sourceCoherence.get(0).selectedResearchUid!=null
+        &&redundantAlias.sourceCoherence.get(0).selectedResearchUid==101L,
+        "identical alias should not alter selected source identity");
     var strict=ChemCoreNext.analyze(input(new SourceCurveExpert.Curve[]{A2,A4,B2,B4},
         false,null,10));
     check(strict.arbitration.status==CoreContracts.DecisionStatus.UNKNOWN,
