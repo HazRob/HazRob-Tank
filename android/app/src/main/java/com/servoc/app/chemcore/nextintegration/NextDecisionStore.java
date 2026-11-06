@@ -142,7 +142,9 @@ public final class NextDecisionStore {
     String session=require(originalSessionId,"session");
     SQLiteDatabase r=db.getReadableDatabase();
     try(Cursor c=r.rawQuery("SELECT decision_uid FROM next_research_decisions "+
-         "WHERE session_id=? ORDER BY created_utc_ms DESC,decision_uid DESC LIMIT 1",
+         "WHERE session_id=? ORDER BY created_utc_ms DESC,"+
+         "CASE WHEN engine_version='"+ChemCoreNext.VERSION+"' THEN 1 ELSE 0 END DESC,"+
+         "decision_uid DESC LIMIT 1",
          new String[]{session})){
        return c.moveToFirst()?readBack(r,c.getString(0)):null;
     }
