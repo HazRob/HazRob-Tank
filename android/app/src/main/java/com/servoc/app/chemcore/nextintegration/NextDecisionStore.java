@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import com.hazrob.tank.chemcore.next.ChemCoreNext;
 import com.hazrob.tank.chemcore.next.CoreContracts;
 import com.hazrob.tank.chemcore.next.NextReplayCodec;
+import com.hazrob.tank.chemcore.next.NextAnalysisTrace;
+import java.util.List;
 import com.servoc.app.data.ExperimentsDb;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -29,12 +31,20 @@ public final class NextDecisionStore {
     public final long createdUtcMs;
     public final CoreContracts.Snapshot sourceSnapshot;
     public final CoreContracts.Result originalDecision;
+    /** R3 trace is null only for historical V15 rows created before trace archiving. */
+    public final List<NextAnalysisTrace.Event> executionTrace;
+    public final String traceSha256,traceAvailability;
     private Receipt(String uid,String session,String snapshot,String hash,String engine,
                     CoreContracts.DecisionStatus status,long time,
-                    CoreContracts.Snapshot captured,CoreContracts.Result output){
+                    CoreContracts.Snapshot captured,CoreContracts.Result output,
+                    NextResearchTraceStore.Archive archive){
       decisionUid=uid;sessionId=session;snapshotUid=snapshot;
       snapshotSha256=hash;engineVersion=engine;this.status=status;createdUtcMs=time;
       sourceSnapshot=captured;originalDecision=output;
+      executionTrace=archive==null?null:archive.events;
+      traceSha256=archive==null?null:archive.sha256;
+      traceAvailability=archive==null?"NOT_ARCHIVED_BEFORE_V9_R3":
+          "VERIFIED_R3_IMMUTABLE_TRACE";
     }
   }
   private static String require(String value,String field){
@@ -50,9 +60,22 @@ public final class NextDecisionStore {
       return sb.toString();
     }catch(Exception e){throw new IllegalStateException("SHA-256 unavailable",e);}
   }
-  /** A retry with the same snapshot+engine is idempotent, never a new decision. */
+  /** Legacy V15 API remains compatible; it must NOT fabricate an R3 trace. */
   public Receipt append(String originalSessionId,long utcMs,
                         CoreContracts.Snapshot capture,CoreContracts.Result decision) {
+    return appendInternal(originalSessionId,utcMs,capture,decision,null);
+  }
+  /** R3 decision and every execution-stage event commit in ONE SQLite transaction. */
+  public Receipt appendWithTrace(String originalSessionId,long utcMs,
+                        CoreContracts.Snapshot capture,CoreContracts.Result decision,
+                        List<NextAnalysisTrace.Event> executionTrace) {
+    if(executionTrace==null||executionTrace.isEmpty())
+      throw new IllegalArgumentException("R3 original execution trace required");
+    return appendInternal(originalSessionId,utcMs,capture,decision,executionTrace);
+  }
+  private Receipt appendInternal(String originalSessionId,long utcMs,
+                        CoreContracts.Snapshot capture,CoreContracts.Result decision,
+                        List<NextAnalysisTrace.Event> executionTrace) {
     String session=require(originalSessionId,"measurement session");
     if(utcMs<0||capture==null||decision==null)
       throw new IllegalArgumentException("physical session, time, capture and Next output required");
@@ -91,6 +114,17 @@ public final class NextDecisionStore {
         v.put("research_only",1);v.put("ppm_reportable",0);v.put("g3_physical",0);
         w.insertOrThrow("next_research_decisions",null,v);
         receipt=readBack(w,uid);
+      }
+      // Both writes are within the same transaction: a trace failure rolls back
+      // the newly created decision as well (no half-persisted R3 decision).
+      if(executionTrace!=null){
+        NextResearchTraceStore.append(w,uid,expectedHash,decision.engineVersion,
+            executionTrace,utcMs);
+        receipt=readBack(w,uid);
+        if(receipt==null||receipt.executionTrace==null||
+           receipt.executionTrace.size()!=executionTrace.size()||
+           receipt.traceSha256==null)
+          throw new IllegalStateException("NEXT_R3_ATOMIC_TRACE_READBACK_FAILED");
       }
       if(receipt==null||!receipt.sessionId.equals(session)||
          !receipt.snapshotSha256.equals(expectedHash)||
@@ -133,8 +167,10 @@ public final class NextDecisionStore {
          !c.getString(6).equals(result.status.name())||
          c.getInt(10)!=result.rankedEligibleCandidates.size())
         throw new IllegalStateException("persisted Next evidence metadata differs from immutable replay");
+      NextResearchTraceStore.Archive trace=NextResearchTraceStore.read(
+          db,c.getString(0),c.getString(3),c.getString(5));
       return new Receipt(c.getString(0),c.getString(1),c.getString(2),c.getString(3),
-        c.getString(5),result.status,c.getLong(9),snapshot,result);
+        c.getString(5),result.status,c.getLong(9),snapshot,result,trace);
     }
   }
 }
