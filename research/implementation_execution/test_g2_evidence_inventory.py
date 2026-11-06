@@ -52,6 +52,15 @@ class InventoryTests(unittest.TestCase):
     def test_negative_overflowing_exponent_rejected(self):
         self.check_raw('{"schema":"hazrob.g2.independent-evidence.v1","records":[{"value":-1e999}]}')
 
+    def test_positive_underflowing_exponent_rejected(self):
+        self.check_raw('{"schema":"hazrob.g2.independent-evidence.v1","records":[{"value":1e-999}]}')
+
+    def test_negative_underflowing_exponent_rejected(self):
+        self.check_raw('{"schema":"hazrob.g2.independent-evidence.v1","records":[{"value":-1e-999}]}')
+
+    def test_exact_zero_still_accepted(self):
+        self.check({"schema": SCHEMA, "records": [{"value": 0.0}]}, 0, "RECORDS_PRESENT_NOT_VALIDATED")
+
     def check_raw(self, raw):
         with tempfile.TemporaryDirectory() as d:
             p = pathlib.Path(d) / "evidence.json"
