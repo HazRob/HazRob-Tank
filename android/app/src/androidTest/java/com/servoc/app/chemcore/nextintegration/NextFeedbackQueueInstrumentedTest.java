@@ -125,6 +125,44 @@ public final class NextFeedbackQueueInstrumentedTest {
         new NextDecisionStore(main).byId(decision.decisionUid).decisionUid);
     }
   }
+  @Test public void consentedR3FeedbackRedactsOriginalDeviceUidButKeepsStageOutcome()
+      throws Exception {
+    var reading=new CoreContracts.Reading("private-owner-serial:MQ3",450,2.0,
+      25.0,50.0,null,CoreContracts.CalibrationReference.AIR_RS_MEAN,
+      "UNVERIFIED_SOURCE_HEATER",CoreContracts.SampleQuality.VALID);
+    var snap=new CoreContracts.Snapshot("INSTANT-R3-FEEDBACK-002",
+      "private-owner-serial",CoreContracts.Mode.INSTANT,246000L,24.5,48.0,
+      true,List.of(reading),STABLE);
+    var decision=new CoreContracts.Result(ChemCoreNext.VERSION,snap,
+      ChemCoreNext.snapshotHash(snap),CoreContracts.DecisionStatus.UNKNOWN,
+      List.of(),List.of(),List.of("SOURCE_NOT_QUALIFIED"));
+    var events=List.of(
+      new com.hazrob.tank.chemcore.next.NextAnalysisTrace.Event(
+        "INPUT","CAPTURE",STABLE,"private-owner-serial:MQ3",null,
+        "HASH_VERIFIED","physical device private-owner-serial",null),
+      new com.hazrob.tank.chemcore.next.NextAnalysisTrace.Event(
+        "CURVE","RESEARCH-EXAMPLE","ONE-ROOT","private-owner-serial:MQ3",
+        100L,"ABSTAIN","R0 owner private-owner-serial is not source-qualified",null),
+      new com.hazrob.tank.chemcore.next.NextAnalysisTrace.Event(
+        "FINAL","STATUS","","",null,"UNKNOWN","SOURCE_R0_NOT_PROVEN",null));
+    var persisted=new NextDecisionStore(main).appendWithTrace(
+      "INSTANT-R3-FEEDBACK-002",1730000000100L,snap,decision,events);
+    try(NextFeedbackQueue q=new NextFeedbackQueue(context)){
+      var record=q.add(context,persisted,"أحتاج المزيد من التجارب",true);
+      var payload=new JSONObject(record.payloadJson);
+      JSONObject analysis=payload.getJSONObject("original_analysis");
+      assertEquals(3,analysis.getJSONArray("next_execution_trace").length());
+      assertEquals(persisted.traceSha256,analysis.getString("trace_sha256"));
+      assertEquals("PUBLIC_RESEARCH_STAGES_ONLY_NO_DEVICE_ID_OR_FREEFORM_SOURCE_REASON",
+          analysis.getString("trace_redaction"));
+      assertEquals("MQ3",analysis.getJSONArray("next_execution_trace")
+          .getJSONObject(1).getString("sensor_model"));
+      assertFalse("Public feedback must not leak device-bound source context",
+          analysis.toString().contains("private-owner-serial"));
+      assertNotNull(new NextDecisionStore(main).byId(persisted.decisionUid).executionTrace);
+      assertEquals(NextFeedbackQueue.PENDING_AUTH,record.status);
+    }
+  }
   @Test public void blankCommentCannotEnterOutbox()throws Exception {
     try(NextFeedbackQueue q=new NextFeedbackQueue(context)){
       boolean blocked=false;
