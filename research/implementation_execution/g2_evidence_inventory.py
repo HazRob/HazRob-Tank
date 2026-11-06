@@ -13,10 +13,21 @@ import sys
 
 SCHEMA = "hazrob.g2.independent-evidence.v1"
 
+
+def unique_keys(pairs):
+    """Reject ambiguous JSON objects instead of silently retaining the last key."""
+    obj = {}
+    for key, value in pairs:
+        if key in obj:
+            raise ValueError("duplicate JSON object key: " + key)
+        obj[key] = value
+    return obj
+
 def inspect(path):
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_keys,
+                          parse_constant=lambda value: (_ for _ in ()).throw(ValueError("non-finite JSON constant: " + value)))
+    except (OSError, UnicodeError, ValueError) as exc:
         print(json.dumps({"status": "INPUT_ERROR", "detail": str(exc)}, ensure_ascii=False))
         return 3
     if not isinstance(data, dict) or data.get("schema") != SCHEMA or not isinstance(data.get("records"), list):
