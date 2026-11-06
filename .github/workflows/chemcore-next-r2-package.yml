@@ -1,0 +1,86 @@
+name: Build ChemCore Next R2 research engine source and Java17 JAR
+
+on:
+  push:
+    branches: [research/chemcore-next-coherence-r2-20261106]
+    paths:
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
+      - 'research/chemcore_next/tests/java/NextCoherenceR2Regression.java'
+      - 'research/chemcore_next/releases/**'
+      - '.github/workflows/chemcore-next-r2-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish-r2-build-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile exact standalone core and R2 regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/next-r2/{classes,package,tests}
+          find android/app/src/main/java/com/hazrob/tank/chemcore/next -maxdepth 1 -name '*.java' -print0 \
+            | xargs -0 javac -encoding UTF-8 -d /tmp/next-r2/classes \
+              research/chemcore_next/tests/java/NextCoherenceR2Regression.java \
+              research/chemcore_next/tests/java/NextReferenceTraceReplay.java
+          java -cp /tmp/next-r2/classes com.hazrob.tank.chemcore.next.NextCoherenceR2Regression \
+            | tee /tmp/next-r2/tests/coherence_regression.log
+          grep -q '^NEXT_COHERENCE_R2_REGRESSION_PASS' /tmp/next-r2/tests/coherence_regression.log
+      - name: Verify 24 source fingerprints, 109 source equations and no false promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/traceability/prepare_source_cases.py /tmp/next-r2/tests
+          java -cp /tmp/next-r2/classes com.hazrob.tank.chemcore.next.NextReferenceTraceReplay \
+             /tmp/next-r2/tests/source_cases.tsv /tmp/next-r2/tests \
+             | tee /tmp/next-r2/tests/source_replay.log
+          grep -q '^TRACE_SOURCE_SELF_REPLAY_PASS fingerprints=24 curves=109 total=133' \
+             /tmp/next-r2/tests/source_replay.log
+          python research/chemcore_next/traceability/log_sensitivity_109.py /tmp/next-r2/tests \
+             | tee /tmp/next-r2/tests/log_sensitivity.log
+      - name: Package engine class files and complete corresponding source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          find /tmp/next-r2/classes/com/hazrob/tank/chemcore/next -name 'Next*Regression*' -delete
+          find /tmp/next-r2/classes/com/hazrob/tank/chemcore/next -name 'NextReferenceTraceReplay*' -delete
+          jar --create --file /tmp/next-r2/package/chemcore-next-r2-g1-research-java17.jar \
+            -C /tmp/next-r2/classes .
+          mkdir -p /tmp/next-r2/src/chemcore-next-r2
+          cp -a android/app/src/main/java/com/hazrob/tank/chemcore/next \
+            /tmp/next-r2/src/chemcore-next-r2/java
+          cp research/chemcore_next/tests/java/NextCoherenceR2Regression.java \
+            /tmp/next-r2/src/chemcore-next-r2/
+          cp research/chemcore_next/releases/CHEMCORE_NEXT_R2_RESEARCH_RELEASE_2026_11_06_AR.md \
+            /tmp/next-r2/src/chemcore-next-r2/RELEASE_NOTES_AR.md
+          printf '%s\n' "Git SHA: $(git rev-parse HEAD)" \
+            'R2 engine source, research only; not a validated Tank firmware/APK, G3=0' \
+            > /tmp/next-r2/src/chemcore-next-r2/BUILD_PROVENANCE.txt
+          (cd /tmp/next-r2/src && zip -q -r /tmp/next-r2/package/chemcore-next-r2-g1-source.zip chemcore-next-r2)
+          cp /tmp/next-r2/src/chemcore-next-r2/RELEASE_NOTES_AR.md /tmp/next-r2/package/
+          cp /tmp/next-r2/src/chemcore-next-r2/BUILD_PROVENANCE.txt /tmp/next-r2/package/
+          cp /tmp/next-r2/tests/coherence_regression.log /tmp/next-r2/package/
+          cp /tmp/next-r2/tests/source_replay.log /tmp/next-r2/package/
+          (cd /tmp/next-r2/package && sha256sum *.jar *.zip > SHA256SUMS)
+          test -s /tmp/next-r2/package/chemcore-next-r2-g1-source.zip
+          test -s /tmp/next-r2/package/chemcore-next-r2-g1-research-java17.jar
+          echo "CHEMCORE_NEXT_R2_RESEARCH_PACKAGE_PASS commit=$(git rev-parse HEAD)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chemcore-next-r2-g1-research-core-java17-source-jar
+          path: /tmp/next-r2/package/
+          if-no-files-found: warn
+          retention-days: 90
