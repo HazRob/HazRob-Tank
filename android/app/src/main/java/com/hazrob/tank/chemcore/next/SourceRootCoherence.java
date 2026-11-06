@@ -124,7 +124,7 @@ public final class SourceRootCoherence {
           num+=w*p.beta*(p.log10Observed-p.alpha);
           den+=w*p.beta*p.beta;
         }
-        if(!(den>0)&&Double.isFinite(den))continue;
+        if(!(den>0)||!Double.isFinite(den))continue;
         double x=Math.max(lo,Math.min(hi,num/den));
         if(!Double.isFinite(x))continue;
         double ppm=Math.pow(10,x);
