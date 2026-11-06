@@ -19,6 +19,10 @@ on:
       - 'research/v9_implementation/tests/test_v9_r3_trace_contract.py'
   workflow_dispatch:
 
+concurrency:
+  group: hazrob-v9-r3-full-apk-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
