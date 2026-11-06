@@ -90,6 +90,19 @@ public final class SourceRootCoherence {
       }
     }
   }
+  /** Identical mathematical source records are redundant aliases, not conflicts.
+      Distinct source fits for one UID/channel remain unresolved research models. */
+  private static boolean sameSourceEquation(Sample x,Sample y) {
+    var a=x.curve;var b=y.curve;
+    return a.equation==b.equation && Double.compare(a.a,b.a)==0
+        && Double.compare(a.b,b.b)==0
+        && Objects.equals(a.sourceScalePpm,b.sourceScalePpm)
+        && Objects.equals(a.sourcePpmMin,b.sourcePpmMin)
+        && Objects.equals(a.sourcePpmMax,b.sourcePpmMax)
+        && a.requiredHeaterPhase.equals(b.requiredHeaterPhase)
+        && Double.compare(x.log10Sigma,y.log10Sigma)==0
+        && Double.compare(x.sourceRatio,y.sourceRatio)==0;
+  }
   /** All source hypotheses, including low-coverage and ties, remain inspectable. */
   public static List<RootReport> evaluate(Collection<Sample> qualifiedSamples) {
     if(qualifiedSamples==null)throw new IllegalArgumentException("source samples required");
@@ -117,7 +130,7 @@ public final class SourceRootCoherence {
         boolean duplicateModels=false;
         for(var sample:ce.getValue()){
           Sample old=unique.putIfAbsent(sample.physicalSensorUid,sample);
-          if(old!=null && !old.curve.id.equals(sample.curve.id)) {
+          if(old!=null && !sameSourceEquation(old,sample)) {
             duplicateModels=true;
             ambiguousDuplicates.add("uid="+ce.getKey()+" sensor="+sample.physicalSensorUid+
                 " curves="+old.curve.id+","+sample.curve.id);
