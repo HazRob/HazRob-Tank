@@ -15,7 +15,7 @@ import java.util.*;
  */
 public final class SourceRootCoherence {
   private SourceRootCoherence(){}
-  public static final String VERSION="next-source-root-coherence/0.2-g1-research";
+  public static final String VERSION="next-source-root-coherence/0.3-g1-integrity-trace";
   public static final double RESEARCH_MAX_NORMALIZED_RMS=1.5;
   public static final double RESEARCH_MIN_SCORE_MARGIN=0.15;
   public static final double RESEARCH_COVERAGE_PENALTY=0.55;
@@ -39,12 +39,16 @@ public final class SourceRootCoherence {
     public final long uid;
     public final int independentSensorChannels, availableRootChannels;
     public final double fittedPpm,normalizedRms,coveragePenalty,score;
+    /** Leave-one-channel-out maximum standardized predictive residual.
+        Null if fewer than three distinct physical channels are observed. */
+    public final Double leaveOneChannelOutMaxResidual;
     public final List<String> sensorUids,sourceCurveIds;
     private Match(long id,Set<String> sensors,List<String> curves,int total,double ppm,
-                  double rms,double penalty){
+                  double rms,double penalty,Double looMax){
       uid=id;independentSensorChannels=sensors.size();
       availableRootChannels=total;fittedPpm=ppm;normalizedRms=rms;
       coveragePenalty=penalty;score=rms+penalty;
+      leaveOneChannelOutMaxResidual=looMax;
       sensorUids=List.copyOf(sensors);sourceCurveIds=List.copyOf(curves);
     }
   }
@@ -53,12 +57,16 @@ public final class SourceRootCoherence {
     public final List<Match> ranked;
     public final Long selectedResearchUid;
     public final String decisionReason;
+    /** Unresolved alternatives in original source, including duplicate
+      curve models for one physical sensor and material. */
+    public final List<String> nonUniqueSourceModels;
     public final double runnerUpMargin;
     public final boolean g3Qualified,ppmCertified,identityConfirmed;
     private RootReport(String root,List<Match> ordered,Long selected,
-                       String reason,double gap){
+                       String reason,double gap,List<String> duplicateAssets){
       sourceRoot=root;ranked=List.copyOf(ordered);selectedResearchUid=selected;
       decisionReason=reason;runnerUpMargin=gap;
+      nonUniqueSourceModels=List.copyOf(duplicateAssets);
       g3Qualified=false;ppmCertified=false;identityConfirmed=false;
     }
   }
@@ -100,14 +108,22 @@ public final class SourceRootCoherence {
         byUid.computeIfAbsent(s.curve.canonicalChemicalUid,k->new ArrayList<>()).add(s);
       }
       var ranked=new ArrayList<Match>();
+      var ambiguousDuplicates=new ArrayList<String>();
       for(var ce:byUid.entrySet()){
-        // A second model for the same physical sensor cannot add information.
+        // A second distinct source model on the SAME physical channel is not
+        // an independent observation. In R2 a lexicographic ID silently
+        // decided which curve was used. R3 preserves this as unresolved.
         var unique=new TreeMap<String,Sample>();
-        for(var s:ce.getValue()){
-          Sample old=unique.get(s.physicalSensorUid);
-          if(old==null||s.curve.id.compareTo(old.curve.id)<0)
-            unique.put(s.physicalSensorUid,s);
+        boolean duplicateModels=false;
+        for(var sample:ce.getValue()){
+          Sample old=unique.putIfAbsent(sample.physicalSensorUid,sample);
+          if(old!=null && !old.curve.id.equals(sample.curve.id)) {
+            duplicateModels=true;
+            ambiguousDuplicates.add("uid="+ce.getKey()+" sensor="+sample.physicalSensorUid+
+                " curves="+old.curve.id+","+sample.curve.id);
+          }
         }
+        if(duplicateModels)continue;
         var points=new ArrayList<Point>();
         boolean valid=true;
         double lo=Double.NEGATIVE_INFINITY,hi=Double.POSITIVE_INFINITY;
@@ -136,10 +152,32 @@ public final class SourceRootCoherence {
           sum+=z*z;ids.add(p.sample.curve.id);
         }
         double rms=Math.sqrt(sum/points.size());
+        Double maxLooResidual=null;
+        if(points.size()>=3){
+          double worst=0;
+          for(int held=0;held<points.size();held++){
+            double numRest=0,denRest=0;
+            for(int i=0;i<points.size();i++){
+              if(i==held)continue;
+              Point q=points.get(i);
+              double w=1/(q.sample.log10Sigma*q.sample.log10Sigma);
+              numRest+=w*q.beta*(q.log10Observed-q.alpha);
+              denRest+=w*q.beta*q.beta;
+            }
+            if(!(denRest>0)||!Double.isFinite(denRest)){
+              worst=Double.POSITIVE_INFINITY;break;
+            }
+            double xRest=Math.max(lo,Math.min(hi,numRest/denRest));
+            Point q=points.get(held);
+            worst=Math.max(worst,Math.abs(q.log10Observed-(q.alpha+q.beta*xRest))
+                /q.sample.log10Sigma);
+          }
+          maxLooResidual=worst;
+        }
         double penalty=RESEARCH_COVERAGE_PENALTY*
             (physicalSensors.size()-points.size())/Math.max(1,physicalSensors.size());
         ranked.add(new Match(ce.getKey(),unique.keySet(),ids,physicalSensors.size(),
-            ppm,rms,penalty));
+            ppm,rms,penalty,maxLooResidual));
       }
       ranked.sort(Comparator.comparingDouble((Match m)->m.score)
           .thenComparing((Match m)->-m.independentSensorChannels)
@@ -148,7 +186,9 @@ public final class SourceRootCoherence {
       String reason;
       double margin=ranked.size()<2?Double.POSITIVE_INFINITY:
         ranked.get(1).score-ranked.get(0).score;
-      if(byUid.size()<2)reason="ONLY_ONE_SOURCE_IDENTITY_NO_DISAMBIGUATION_NEEDED";
+      if(!ambiguousDuplicates.isEmpty())
+        reason="DUPLICATE_CURVE_MODELS_SAME_UID_AND_PHYSICAL_SENSOR_UNRESOLVED";
+      else if(byUid.size()<2)reason="ONLY_ONE_SOURCE_IDENTITY_NO_DISAMBIGUATION_NEEDED";
       else if(ranked.isEmpty())reason="NO_SHARED_CONCENTRATION_SOURCE_DOMAIN";
       else if(ranked.get(0).independentSensorChannels<2)
         reason="TOP_HYPOTHESIS_SINGLE_SENSOR_NOT_DISCRIMINATIVE";
@@ -160,7 +200,7 @@ public final class SourceRootCoherence {
         selected=ranked.get(0).uid;
         reason="RESEARCH_MULTISENSOR_CONSISTENT_SINGLE_SOURCE_ROOT";
       }
-      reports.add(new RootReport(entry.getKey(),ranked,selected,reason,margin));
+      reports.add(new RootReport(entry.getKey(),ranked,selected,reason,margin,ambiguousDuplicates));
     }
     return List.copyOf(reports);
   }
