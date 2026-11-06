@@ -1,5 +1,13 @@
 name: G2 physical evidence intake preflight
 on:
+  push:
+    branches:
+      - 'research/chemcore80-central-evidence-gap-analysis-20261021'
+    paths:
+      - 'research/implementation_execution/g2_physical_intake_gate.py'
+      - 'research/implementation_execution/g2_holdout_guard.py'
+      - 'research/implementation_execution/test_g2_holdout_guard.py'
+      - '.github/workflows/g2-physical-intake-preflight.yml'
   pull_request:
     paths:
       - 'research/implementation_execution/g2_physical_intake_gate.py'
