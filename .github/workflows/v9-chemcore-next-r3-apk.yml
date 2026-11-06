@@ -1,4 +1,4 @@
-name: HazRob Tank V9 ChemCore Next R3 owner integration APK
+name: HazRob Tank V9.1 ChemCore Next R3 complete trace integration APK
 
 on:
   push:
@@ -8,6 +8,10 @@ on:
       - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
       - 'android/app/src/main/java/com/servoc/app/chemcore/nextintegration/**'
       - 'android/app/src/main/java/com/servoc/app/ReleaseAudit.java'
+      - 'android/app/src/main/java/com/servoc/app/data/ExperimentsDb.java'
+      - 'android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java'
+      - 'android/app/src/main/java/com/servoc/app/report/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/chemcore/nextintegration/**'
       - 'research/chemcore_next/tests/java/NextCoherenceR2Regression.java'
       - 'research/chemcore_next/tests/java/NextIntegrityTraceR3Regression.java'
       - 'tools/prepare_v9_stable_source.py'
@@ -54,6 +58,9 @@ jobs:
           test -f source/app/src/main/java/com/hazrob/tank/chemcore/next/SourceRootCoherence.java
           test -f source/app/src/main/java/com/hazrob/tank/chemcore/next/NextAnalysisTrace.java
           test -f source/app/src/main/java/com/hazrob/tank/chemcore/next/NextResearchSourceQuarantine.java
+          test -f source/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextResearchTraceStore.java
+          test -f source/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextTraceSchema.java
+          test -f source/app/src/main/java/com/servoc/app/report/V9NextR3TracePdfAnnex.java
           cp tank/tools/prepare_v9_stable_source.py source/tools/prepare_v9_stable_source.py
           python3 - <<'PY'
           from pathlib import Path
@@ -62,8 +69,8 @@ jobs:
           s=gradle.read_text()
           for old,new in (
               ("applicationId 'com.servoc.app'","applicationId 'com.hazrob.tank'"),
-              ("versionName '0.10.2'","versionName '9.0'"),
-              ("versionCode 30","versionCode 9"),
+              ("versionName '0.10.2'","versionName '9.1'"),
+              ("versionCode 30","versionCode 10"),
               ("debug { signingConfig signingConfigs.prototype }","debug { }"),
           ):
               if s.count(old)!=1:raise SystemExit("Pinned Android build identity drift: "+old)
@@ -76,14 +83,14 @@ jobs:
           gradle.write_text(s)
           manifest=Path('source/app/src/main/AndroidManifest.xml')
           m=manifest.read_text()
-          m,n=re.subn(r'android:label="[^"]*"','android:label="HazRob Tank V9"',m,count=1)
+          m,n=re.subn(r'android:label="[^"]*"','android:label="HazRob Tank V9.1"',m,count=1)
           if n!=1:raise SystemExit("Android label not found")
           manifest.write_text(m)
           release=Path('source/app/src/main/java/com/servoc/app/ReleaseAudit.java').read_text()
           core=Path('source/app/src/main/java/com/hazrob/tank/chemcore/next/ChemCoreNext.java').read_text()
           arbiter=Path('source/app/src/main/java/com/hazrob/tank/chemcore/next/NextResearchDecisionPipeline.java').read_text()
           router=Path('source/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextEngineRouter.java').read_text()
-          assert all(v in release for v in ('VERSION="9.0"','DATABASE_SCHEMA=15','CHEMCORE-NEXT-R3','GAS_RESPONSE_AUDIBLE_ALERT=false'))
+          assert all(v in release for v in ('VERSION="9.1"','DATABASE_SCHEMA=16','CHEMCORE-NEXT-R3','GAS_RESPONSE_AUDIBLE_ALERT=false'))
           assert 'chemcore-next-research-core/0.3-g1-source-trace' in core
           assert 'sourceCoherence' in core and 'executionTrace' in core
           assert 'NextResearchSourceQuarantine' in core
@@ -91,6 +98,11 @@ jobs:
           assert 'ChemCoreNext.analyze(research)' in router
           assert 'new NextDecisionStore(db).append(' in router
           assert 'sourceConcentrationCoherenceScore' in arbiter
+          store=Path('source/app/src/main/java/com/servoc/app/chemcore/nextintegration/NextDecisionStore.java').read_text()
+          assert 'appendWithTrace' in router and 'result.executionTrace' in router
+          assert 'NextResearchTraceStore.append(' in store
+          assert 'DB_VERSION=16' in Path('source/app/src/main/java/com/servoc/app/data/ExperimentsDb.java').read_text()
+          assert 'NEXT_R3_ATOMIC_TRACE_SQLITE_V16=true' in release
           print('V9 core integrated into original Android runtime router')
           PY
           python3 source/tools/prepare_v9_stable_source.py source
@@ -107,7 +119,7 @@ jobs:
           root=Path('app/build/generated/hazrobAssets/generated/chemcore/embedded_stable')
           m=json.loads((root/'manifest.json').read_text())
           payload=(root/m['payload_file']).read_bytes()
-          assert m['min_app_version']==m['max_app_version']=='9.0'
+          assert m['min_app_version']==m['max_app_version']=='9.1'
           assert m['chemical_count']==652 and m['calibration_count']==0
           assert m['payload_sha256']==hashlib.sha256(payload).hexdigest()
           assert m['payload_size_bytes']==len(payload)
@@ -170,6 +182,7 @@ jobs:
           set -euo pipefail
           gradle --no-daemon --stacktrace :app:compileDebugJavaWithJavac
           gradle --no-daemon --stacktrace :app:assembleDebug
+          gradle --no-daemon --stacktrace :app:compileDebugAndroidTestJavaWithJavac
 
       - name: Verify V9 APK package, Stable payload and debug signing
         shell: bash
@@ -184,28 +197,30 @@ jobs:
               prefix='assets/generated/chemcore/embedded_stable/'
               manifest=json.loads(z.read(prefix+'manifest.json'))
               payload=z.read(prefix+manifest['payload_file'])
-              assert manifest['min_app_version']==manifest['max_app_version']=='9.0'
+              assert manifest['min_app_version']==manifest['max_app_version']=='9.1'
               assert manifest['chemical_count']==652 and manifest['calibration_count']==0
               assert manifest['payload_sha256']==hashlib.sha256(payload).hexdigest()
               assert 'classes.dex' in z.namelist()
           folder=Path('v9-test-apk')
-          dest=folder/'HazRob-Tank-V9-ChemCore-Next-R3-TEST.apk'
+          dest=folder/'HazRob-Tank-V9.1-ChemCore-Next-R3-FULL-TEST.apk'
           shutil.copyfile(apk,dest)
           digest=hashlib.sha256(dest.read_bytes()).hexdigest()
           (folder/'SHA256SUMS.txt').write_text(digest+'  '+dest.name+'\n')
           (folder/'BUILD-MANIFEST.json').write_text(json.dumps({
-             'application_id':'com.hazrob.tank','version_name':'9.0','version_code':9,
+             'application_id':'com.hazrob.tank','version_name':'9.1','version_code':10,
              'repository':'HazRob/HazRob-Tank','git_commit':os.environ['GITHUB_SHA'],
              'apk_sha256':digest,'apk_size_bytes':dest.stat().st_size,
              'engine':'chemcore-next-research-core/0.3-g1-source-trace',
+             'immutable_r3_trace_persisted_in_sqlite_v16':True,
+             'all_r3_executed_events_exported_to_pdf_excel':True,
              'engine_source_coherence':'next-source-root-coherence/0.3-g1-integrity-trace',
-             'database_schema':15,'embedded_stable_identities':652,
+             'database_schema':16,'embedded_stable_identities':652,
              'stable_calibration_qualifications':0,'firmware':'ESP32 V6 API4 unchanged',
              'signing':'default Android debug signing',
              'g3_validation':False,'field_ppm_certified':False
           },indent=2,ensure_ascii=False)+'\n')
           (folder/'INSTALL-NOTES.txt').write_text(
-              'HazRob Tank V9 ChemCore Next R3 TEST APK.\n'
+              'HazRob Tank V9.1 ChemCore Next R3 FULL TRACE TEST APK.\n'
               'Experimental debug build, NOT certified hazardous-gas detection.\n'
               'Preserves previous R_air settings in source, firmware V6 API4 unchanged.\n'
               'Debug signer may differ from installed V8. Do NOT uninstall before backing up sessions, sites and R0.\n'
@@ -213,18 +228,18 @@ jobs:
               'Hardware, arm PCA9685 and LED changes remain pending separate owner decisions.\n')
           print('V9 APK',dest,'SHA256',digest)
           PY
-          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging v9-test-apk/HazRob-Tank-V9-ChemCore-Next-R3-TEST.apk \
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging v9-test-apk/HazRob-Tank-V9.1-ChemCore-Next-R3-FULL-TEST.apk \
             | tee v9-test-apk/aapt-badging.txt
-          grep -q "package: name='com.hazrob.tank' versionCode='9' versionName='9.0'" v9-test-apk/aapt-badging.txt
+          grep -q "package: name='com.hazrob.tank' versionCode='10' versionName='9.1'" v9-test-apk/aapt-badging.txt
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs \
-            v9-test-apk/HazRob-Tank-V9-ChemCore-Next-R3-TEST.apk \
+            v9-test-apk/HazRob-Tank-V9.1-ChemCore-Next-R3-FULL-TEST.apk \
             | tee v9-test-apk/signing-verification.txt
 
       - name: Publish V9 APK build and reproducible evidence
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: HazRob-Tank-V9-ChemCore-Next-R3-TEST-APK
+          name: HazRob-Tank-V9.1-ChemCore-Next-R3-FULL-TEST-APK
           path: v9-test-apk/
           retention-days: 90
           if-no-files-found: warn
