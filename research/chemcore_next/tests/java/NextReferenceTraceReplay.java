@@ -96,8 +96,8 @@ public final class NextReferenceTraceReplay {
     String ablation="NOT_RUN";
     if(diagnosticExpert.status==FingerprintExpert.Status.RESEARCH_RESIDUAL_ONLY){
       long uid=10000L+index;
-      String testRoot="TRACE_SYNTHETIC_"+id.replaceAll("[^a-zA-Z0-9]","_");
-      var clone=signature(id,testRoot,model,space,uid,mean,sd);
+      String testRoot="TRACE_SYNTHETIC_SOURCE_"+index;
+      var clone=signature("TRACE_MODEL_"+index,testRoot,model,space,uid,mean,sd);
       var q=new FingerprintExpert.Qualification(true,true);
       var b=new ChemCoreNext.FingerprintBinding(clone,obs,q,"TRACE-SENSOR",0.25,true);
       var m=new ResearchCandidateGenerator.Material(uid,"SYNTHETIC_"+label,
@@ -108,7 +108,7 @@ public final class NextReferenceTraceReplay {
       if(top!=uid)throw new AssertionError("synthetic isolated self-match "+id);
       hypotheticalFpMatch++;
       var wrongId=1L;
-      var bad=signature("DISTRACTOR_"+id,"TRACE_DISTRACTOR_"+id,model,space,wrongId,mean,sd);
+      var bad=signature("DISTRACTOR_"+index,"TRACE_DISTRACTOR_SOURCE_"+index,model,space,wrongId,mean,sd);
       var bb=new ChemCoreNext.FingerprintBinding(bad,obs,q,"TRACE-SENSOR",0.25,true);
       var mm=new ResearchCandidateGenerator.Material(wrongId,"INDISTINGUISHABLE_DISTRACTOR",
           ResearchCandidateGenerator.MaterialKind.MOLECULAR_CHEMICAL);
