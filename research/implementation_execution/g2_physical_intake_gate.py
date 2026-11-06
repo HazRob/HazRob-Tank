@@ -63,7 +63,7 @@ def audit(manifest, root):
                     "site_id", "exposure_id", "analyte", "reference_standard",
                     "sensor_model", "firmware_revision"):
             value = row.get(key)
-            if not isinstance(value, str) or not value.strip() or value.strip().upper() in ("UNKNOWN", "N/A", "NULL"):
+            if not isinstance(value, str) or not value.strip() or normalized_identifier(value) in ("unknown", "n/a", "null"):
                 errors.append(prefix + ":invalid_identifier_" + key)
         part = row.get("partition")
         if not isinstance(part, str) or part not in PARTITIONS:
@@ -497,6 +497,25 @@ class GateTests(unittest.TestCase):
                 rows.append(row)
             issues = audit({"records": rows}, d)
             self.assertTrue(any("partition_leak_source_id" in x for x in issues))
+
+    def test_unicode_placeholder_identifiers_rejected(self):
+        """Compatibility-width and case aliases of missing values are invalid."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = pathlib.Path(d) / "raw.csv"
+            p.write_bytes(b"adc\\n1\\n")
+            row = dict.fromkeys(REQUIRED, "measured")
+            row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
+                       partition="test", concentration_unit="ppm_vv",
+                       source_id=" ＵＮＫＮＯＷＮ ", session_id="Ｎ／Ａ",
+                       device_id="ＮＵＬＬ", concentration=1.0,
+                       reference_uncertainty=0.1, adc_reference_v=3.3,
+                       heater_voltage_v=5.0, load_resistance_ohm=10000.0,
+                       temperature_c=25.0, humidity_percent=50.0,
+                       sampling_interval_s=1.0)
+            issues = audit({"records": [row]}, d)
+            for key in ("source_id", "session_id", "device_id"):
+                self.assertTrue(any("invalid_identifier_" + key in issue for issue in issues), key)
 
     def test_missing_records(self):
         self.assertEqual(audit({}, "."), ["records_missing"])
