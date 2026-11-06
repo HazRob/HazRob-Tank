@@ -62,27 +62,55 @@
       "title": "Preserve left/right continuous servos on ESP32 GPIO16/GPIO17; use PCA9685 for arm and auxiliary controls only",
       "status": "architecture_decided_implementation_pending",
       "evidence": "docs/implementation/V9-PCA9685-CHANNELS-AND-I2C-ADDRESSES-DRAFT-2026-11-06.md"
+    },
+    {
+      "id": "V9-APP-R3-001",
+      "area": "android-chemcore-next",
+      "title": "Merge ChemCore Next R3 into V9 Android app, verify pinned Stable, compile and sign experimental APK",
+      "status": "done_experimental_debug_apk",
+      "engine_version": "chemcore-next-research-core/0.3-g1-source-trace",
+      "evidence": "docs/implementation/V9-APP-R3-INTEGRATION-2026-11-06_AR.md",
+      "github_actions_run": 42205497711,
+      "build_source_commit": "5dfae7440c2df5478e1dac1fe0d87a2beb945af0",
+      "app_version": "9.0",
+      "tests": {
+        "r2_r3_checks_passed": 50,
+        "android_source_contract_tests_passed": 57,
+        "android_gradle_build": "success",
+        "apk_signer": "verified"
+      },
+      "constraints": [
+        "physical_tank_G3_not_verified",
+        "mechanical_v9_requirements_still_open",
+        "database_schema_15_preserved",
+        "research_full_trace_not_archived_in_sqlite"
+      ]
     }
   ],
   "gates": {
     "requirements": "open",
     "api_compatibility": "not_started",
-    "android_build": "not_started",
+    "android_build": "passed_experimental_v9_debug_apk_2026_11_06",
     "esp32_arduino_build": "not_started",
-    "tests": "not_started",
+    "tests": "passed_v9_r3_jvm50_and_v8_regression57;hardware_G3_pending",
     "hardware_acceptance": "not_started",
-    "release": "not_started"
+    "release": "experimental_test_apk_available;final_v9_release_open"
   },
   "artifacts": {
-    "apk_v9": null,
+    "apk_v9": "https://github.com/HazRob/HazRob-Tank/actions/runs/42205497711/artifacts/13496472453",
     "esp32_v9_zip": null,
     "esp32_v9_bin": null,
-    "sha256": null
+    "sha256": "b794bb87e80a5caf3dd69fe262b3ba0f41dbb12251ddd43c49e1dce92b798743",
+    "apk_filename": "HazRob-Tank-V9-ChemCore-Next-R3-TEST.apk",
+    "apk_build_sha": "5dfae7440c2df5478e1dac1fe0d87a2beb945af0",
+    "apk_debug_signer_sha256": "2a4b8f9357f9fae8c262e20b32439e2459dbcd784ad14f9b7217d621649cbda4"
   },
   "notes": [
     "Creating a V9 branch is not proof of a compiled V9 release.",
     "ChemCore Next scientific validation is separate from software build success.",
     "Preserve all older version branches and backup R0/sites/sessions during migration.",
-    "Owner decision 2026-11-06: two large track servos stay on ESP32 GPIO16/17 with separate power; PCA9685 CH0..CH12 allocated provisionally to four arm servos, 4 accessories, 4 light slots, and active buzzer; CH13..15 remain spare."
+    "Owner decision 2026-11-06: two large track servos stay on ESP32 GPIO16/17 with separate power; PCA9685 CH0..CH12 allocated provisionally to four arm servos, 4 accessories, 4 light slots, and active buzzer; CH13..15 remain spare.",
+    "Approved separate Android app change V9-APP-R3-001 integrates ChemCore Next R3 research engine and V9 9.0 debug APK; GitHub Actions 42205497711 passed and includes SHA-256 verified test APK.",
+    "User's hardware, PCA9685, LEDs, mechanical and main ESP32 firmware decisions remain open; no firmware update was performed as part of this Android change."
   ]
 }
