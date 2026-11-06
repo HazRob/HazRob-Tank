@@ -240,7 +240,7 @@ public final class NextReferenceTraceReplay {
       else throw new IllegalStateException("bad kind");
     }
     control(traces);
-    if(fingerprints!=24||curves!=109||r0Comparisons!=13 ||algebraicValid!=20)
+    if(fingerprints!=24||curves!=109||r0Comparisons!=13 ||algebraicValid!=30)
        throw new AssertionError("expected counts: "+fingerprints+"/"+curves+"/r0 "+r0Comparisons+
           "/algebraic "+algebraicValid);
     Files.write(output.resolve("all_reference_stage_trace.tsv"),traces,StandardCharsets.UTF_8);
