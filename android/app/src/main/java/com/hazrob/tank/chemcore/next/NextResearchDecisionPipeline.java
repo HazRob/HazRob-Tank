@@ -16,11 +16,16 @@ public final class NextResearchDecisionPipeline {
     public final ResearchCandidateGenerator.MaterialKind kind;
     public final List<String> roots;public final int independentPositiveRoots,conditionalNegativeRoots;
     public final boolean contradicted,ppmAuthorized,identityConfirmed,g3Qualified;
-    private Ranked(ResearchCandidateGenerator.Proposal p,EvidenceConflictGraph.MaterialEvidence evidence){
+    /** Research-only score from an independently-source-rooted multi-MQ fit.
+      * It is not a posterior, safety confidence or Tank validation. */
+    public final Double sourceConcentrationCoherenceScore;
+    private Ranked(ResearchCandidateGenerator.Proposal p,EvidenceConflictGraph.MaterialEvidence evidence,
+                   Double researchCoherence){
       uid=p.material.canonicalUid;label=p.material.label;kind=p.material.kind;
       roots=List.copyOf(evidence.positiveRoots);
       independentPositiveRoots=roots.size();conditionalNegativeRoots=evidence.negativeRoots.size();
       contradicted=evidence.crossSourceContradiction;
+      sourceConcentrationCoherenceScore=researchCoherence;
       ppmAuthorized=false;identityConfirmed=false;g3Qualified=false;
     }
   }
@@ -43,6 +48,21 @@ public final class NextResearchDecisionPipeline {
   }
   public static Decision evaluate(EvidenceConflictGraph.Graph graph,
                                  ResearchCandidateGenerator.Output proposals,int maxDisplay) {
+    return evaluate(graph,proposals,maxDisplay,Map.of());
+  }
+  /** Rank eligible hypotheses by root corroboration then uncalibrated
+   * MULTI-channel source coherence; keep every eligible hypothesis and
+   * unknown/multi-hypothesis states. No root multiplication or invented %.
+   */
+  public static Decision evaluate(EvidenceConflictGraph.Graph graph,
+             ResearchCandidateGenerator.Output proposals,int maxDisplay,
+             Map<Long,Double> researchOnlyCoherenceScores) {
+    if(researchOnlyCoherenceScores==null)
+      throw new IllegalArgumentException("coherence scores map required");
+    for(var e:researchOnlyCoherenceScores.entrySet())
+      if(e.getKey()==null||e.getKey()<=0||e.getValue()==null||
+          !Double.isFinite(e.getValue())||e.getValue()<0)
+        throw new IllegalArgumentException("invalid research coherence score");
     if(graph==null||proposals==null||maxDisplay<0)
       throw new IllegalArgumentException("graph, canonical candidates and display cap required");
     List<Ranked> allowed=new ArrayList<>();List<String> reasons=new ArrayList<>();
@@ -59,11 +79,15 @@ public final class NextResearchDecisionPipeline {
         contradicted++;reasons.add("UNRESOLVED_CROSS_SOURCE_CONTRADICTION uid="+m.uid);
         continue; // fail-closed, not an unqualified molecular exclusion
       }
-      allowed.add(new Ranked(p,m));
+      allowed.add(new Ranked(p,m,researchOnlyCoherenceScores.get(p.material.canonicalUid)));
     }
-    // No arbitrary confidence percentages; deterministic corroboration count,
-    // then canonical UID to break ties without inventing a probability.
+    // No artificial probability, missing coherence always remains eligible.
+    // Prefer a jointly measured multichannel source root over a single
+    // unconstrained curve IF the number of independent roots is identical.
     allowed.sort(Comparator.comparingInt((Ranked x)->x.independentPositiveRoots).reversed()
+        .thenComparingInt(x->x.sourceConcentrationCoherenceScore==null?1:0)
+        .thenComparingDouble(x->x.sourceConcentrationCoherenceScore==null?
+            Double.POSITIVE_INFINITY:x.sourceConcentrationCoherenceScore)
         .thenComparingLong(x->x.uid));
     final CoreContracts.DecisionStatus status;
     if(allowed.isEmpty()){
@@ -97,6 +121,7 @@ public final class NextResearchDecisionPipeline {
     for(var c:decision.eligibleRanked)
       ranked.add(new CoreContracts.Candidate(c.uid,
           "research roots="+c.independentPositiveRoots+
+            "; multi_MQ_source_score="+c.sourceConcentrationCoherenceScore+
             "; false certified ppm/identity; "+decision.status,
           c.roots));
     return new CoreContracts.Result(VERSION,capture,snapshotHash,decision.status,
