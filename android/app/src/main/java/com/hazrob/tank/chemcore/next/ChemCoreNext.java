@@ -195,6 +195,7 @@ public final class ChemCoreNext {
         b.reference.sourceRoot,b.physicalSensorUid,b.reference.canonicalChemicalUid,
         output.status.name(),!b.independentThresholdCalibrationVerified?
         "SOURCE_THRESHOLD_NOT_INDEPENDENTLY_VERIFIED":"COMPARE_COMPLETE",
+        output.researchNormalizedRmsDistance!=null &&
         Double.isFinite(output.researchNormalizedRmsDistance)?
         output.researchNormalizedRmsDistance:null));
       if(output.status!=FingerprintExpert.Status.RESEARCH_RESIDUAL_ONLY
