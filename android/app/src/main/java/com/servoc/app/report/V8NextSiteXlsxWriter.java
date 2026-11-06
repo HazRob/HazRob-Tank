@@ -54,8 +54,46 @@ final class V8NextSiteXlsxWriter {
         sheets.add(new SmartXlsxPackage.Sheet("تكرار مصادر Next",roots(b)));
         sheets.add(new SmartXlsxPackage.Sheet("أدلة Next والجودة",evidence(b,dualByMeasurement)));
         sheets.add(new SmartXlsxPackage.Sheet("المنهجية والمصدر",methodology(b,dualByMeasurement)));
-        if(sheets.size()!=6)throw new IllegalStateException("site six-sheet design changed");
+        boolean hasR3=false;
+        for(var session:b.sessions)
+            if(session.hasNext && session.next.executionTrace!=null)hasR3=true;
+        if(hasR3)sheets.add(new SmartXlsxPackage.Sheet("تتبع R3 للموقع",r3SourceTrace(b)));
+        if(sheets.size()!=(hasR3?7:6))
+            throw new IllegalStateException("site source layout or R3 annex missing");
         SmartXlsxPackage.write(out,sheets);
+    }
+    /** Original source event per approved session; NEVER merge serial
+     *  gas measurements or invent PPM across sessions on the same site.
+     */
+    private static String r3SourceTrace(SiteSummaryReportExporter.SiteBundle b){
+        SmartXlsxPackage.Grid g=sheet(b,"ChemCore Next R3 — أحداث التحليل لكل جلسة",
+            36,55,63,11,26,42,48,44,23,41,95,38);
+        g.section("Original immutable technique trace per independently approved session");
+        g.header("Field session","Measurement ID","Next decision UID","#","Stage",
+            "Source asset","Source root","Physical sensor","Candidate UID",
+            "Status","Reason","Source numeric diagnostic");
+        for(var session:b.sessions){
+            if(!session.hasNext)continue;
+            String field=session.bundle.fieldSession.id;
+            String measure=session.bundle.primaryMeasurementSessionId;
+            var receipt=session.next;
+            if(receipt.executionTrace==null){
+                g.row(field,measure,receipt.decisionUid,0,"NOT_ARCHIVED",
+                    null,null,null,null,"LEGACY_NEXT_BEFORE_R3",
+                    "Old immutable Next decision preserved, no invented events",null);
+                continue;
+            }
+            int n=0;
+            for(var e:receipt.executionTrace)
+                g.row(field,measure,receipt.decisionUid,++n,e.stage,e.sourceAssetId,
+                    e.sourceRoot,e.sensorUid,
+                    e.chemicalUid==null?"UNKNOWN":String.valueOf(e.chemicalUid),
+                    e.status,e.reason,e.sourceOnlyDiagnosticValue);
+            g.row(field,measure,receipt.decisionUid,n,"TRACE_SHA256",
+                receipt.traceSha256,null,null,null,receipt.traceAvailability,
+                "Verified from original immutable SQLite V16 trace",null);
+        }
+        return g.finish();
     }
     private static int nextCount(SiteSummaryReportExporter.SiteBundle b){
         int c=0;for(var s:b.sessions)if(s.hasNext)c++;return c;
