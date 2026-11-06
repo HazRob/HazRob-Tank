@@ -414,7 +414,15 @@ public final class TankInstantV7PdfWriter {
         int ng=ghss==null?0:ghss.length();
         int curvePages=(nc+14)/15,riskPages=(nr+11)/12,ghsPages=(ng+11)/12;
         int candidatePages=(nCandidates+13)/14;
-        int total=1+candidatePages+curvePages+riskPages+ghsPages;
+        JSONArray trace=next.optJSONArray("next_execution_trace");
+        int nTrace=trace==null?0:trace.length();
+        if(nTrace!=next.optInt("trace_event_count",nTrace))
+            throw new IllegalArgumentException("NEXT_R3_PDF_TRACE_COUNT_MISMATCH");
+        if("VERIFIED_R3_IMMUTABLE_TRACE".equals(next.optString("trace_status",""))&&
+            (nTrace<2||next.optString("trace_sha256","").length()!=64))
+            throw new IllegalArgumentException("NEXT_R3_PDF_TRACE_MISSING");
+        int tracePages=(nTrace+11)/12;
+        int total=1+candidatePages+curvePages+riskPages+ghsPages+tracePages;
         JSONObject presentation=new JSONObject(next.toString());
         presentation.put("open_set_status",
             "Next "+next.optString("decision_status","UNKNOWN")+" • research");
@@ -568,6 +576,38 @@ public final class TankInstantV7PdfWriter {
                             c,application,codes,M+285,yy+4,38,4,6);
                     }
                     left(c,codes.toString(),M+285,yy+41,260,9,false,INK);
+                }
+                pdf.finishPage(pg);page++;
+            }
+            // Append all archived R3 execution records without rerunning
+            // scientific models or altering the original PDF sections.
+            for(int offset=0;offset<nTrace;offset+=12){
+                PdfDocument.Page pg=pdf.startPage(
+                    new PdfDocument.PageInfo.Builder(W,H,page).create());
+                Canvas c=pg.getCanvas();c.drawColor(WHITE);
+                header(c,Long.toString(capturedUtcMs));footer(c,page,total);
+                right(c,"ChemCore Next R3 — مراحل الاستدلال المحفوظة",
+                    M,96,W-2*M,14,true,INK);
+                right(c,"نتائج بحثية؛ لا تأكيد هوية أو PPM أو إنذار معتمد",
+                    M,120,W-2*M,11,false,MEDIUM);
+                right(c,"Trace SHA256: "+next.optString("trace_sha256","—"),
+                    M,144,W-2*M,9,false,MEDIUM);
+                for(int i=offset;i<Math.min(nTrace,offset+12);i++){
+                    JSONObject event=trace.optJSONObject(i);
+                    if(event==null)
+                        throw new IllegalArgumentException("NEXT_R3_PDF_TRACE_EVENT_INVALID");
+                    float yy=161+49f*(i-offset),w=W-2*M;
+                    rect(c,M,yy,w,47,i%2==0?WHITE:0xFFF4F4F4);
+                    border(c,M,yy,w,47);
+                    right(c,"#"+(i+1)+" "+event.optString("stage","")+
+                        " • "+event.optString("status",""),
+                        M+5,yy+4,w-10,9.5f,true,INK);
+                    right(c,event.optString("source_asset","")+
+                        " • "+event.optString("sensor_uid","")+
+                        " • UID "+(event.isNull("chemical_uid")?"—":
+                            event.optString("chemical_uid","—")),
+                        M+5,yy+19,w-10,8.5f,false,MEDIUM);
+                    right(c,event.optString("reason",""),M+5,yy+33,w-10,8,false,MEDIUM);
                 }
                 pdf.finishPage(pg);page++;
             }
