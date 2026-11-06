@@ -3,7 +3,7 @@ name: ChemCore Next V8 scientific qualitative quantitative full-engine stress
 on:
   push:
     branches:
-      - research/chemcore-next-coherence-r2-20261106
+      - research/chemcore-next-r3-integrity-trace-20261106
     paths:
       - 'research/chemcore_next/tests/java/NextV8QualQuantStressSuite.java'
       - '.github/workflows/chemcore-next-v8-qualquant-stress.yml'
@@ -132,7 +132,7 @@ jobs:
           (root/'failure_analysis.md').write_text('\n'.join(text)+'\n')
           (root/'reproduce.md').write_text(
             '# Reproduce\n\n'
-            'Run this GitHub Actions workflow on research/chemcore-next-coherence-r2-20261106, '
+            'Run this GitHub Actions workflow on research/chemcore-next-r3-integrity-trace-20261106, '
             'with JDK 17. It compiles android/app/src/main/java/com/hazrob/tank/chemcore/next/*.java '
             'and research/chemcore_next/tests/java/NextV8QualQuantStressSuite.java.\n\n'
             'The synthetic seed is 20261105; all curves, challenge gas concentrations and r0 parameters '
