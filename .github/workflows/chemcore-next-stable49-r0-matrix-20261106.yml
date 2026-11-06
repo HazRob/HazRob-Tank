@@ -11,6 +11,7 @@ on:
       - 'research/chemcore_next/traceability/stable_profile_ablation.py'
       - 'research/chemcore_next/traceability/stable_methane_165_source_audit.py'
       - 'research/chemcore_next/traceability/stable_blank_air_input.py'
+      - 'research/chemcore_next/traceability/r2_clean_air_gate_sweep.py'
       - '.github/workflows/chemcore-next-stable49-r0-matrix-20261106.yml'
   workflow_dispatch:
 
@@ -166,6 +167,19 @@ jobs:
           (root/'stable_blank_air_summary.json').write_text(json.dumps(summary,indent=2)+'\n')
           print('NEXT_STABLE49_BLANK_AIR_NEGATIVE_CONTROL',json.dumps(summary,sort_keys=True))
           PY
+      - name: R2 owner air baseline gate sensitivity sweep
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/traceability/r2_clean_air_gate_sweep.py \
+            --positive-cases /tmp/stable49/results/stable_scenarios.tsv \
+            --positive-trace /tmp/stable49/results/next_stable49_runtime_trace.tsv \
+            --blank-cases /tmp/stable49/results/stable_blank_air_cases.tsv \
+            --blank-trace /tmp/stable49/results/stable_blank_air_runtime_trace.tsv \
+            --owner-air research/chemcore_next/device_calibration/tank_8mq_v6_quick_clean_air_2026-10-31T032955Z.json \
+            --out /tmp/stable49/results \
+            | tee /tmp/stable49/results/r2_clean_air_gate_sweep.log
+          grep -q '^NEXT_R2_CLEAN_AIR_GATE_SWEEP_PASS' /tmp/stable49/results/r2_clean_air_gate_sweep.log
       - name: Research-only multichannel Stable fingerprint matcher ablation
         shell: bash
         run: |
