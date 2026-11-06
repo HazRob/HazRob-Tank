@@ -14,17 +14,25 @@ import java.security.MessageDigest;
  */
 public final class ChemCoreNext {
   private ChemCoreNext() {}
-  public static final String VERSION="chemcore-next-research-core/0.1-g1";
+  public static final String VERSION="chemcore-next-research-core/0.2-g1-coherent-source";
 
   public static final class CurveBinding {
     public final SourceCurveExpert.Curve curve;
     public final String physicalSensorUid;
     public final SourceCurveExpert.Qualification qualification;
+    /** Optional source-provenance log10 response sigma; NOT physical Tank accuracy. */
+    public final Double sourceLog10Sigma;
     public CurveBinding(SourceCurveExpert.Curve model,String sensorUid,
                         SourceCurveExpert.Qualification q){
+      this(model,sensorUid,q,null);
+    }
+    public CurveBinding(SourceCurveExpert.Curve model,String sensorUid,
+                        SourceCurveExpert.Qualification q,Double sigma){
       if(model==null||sensorUid==null||sensorUid.isBlank()||q==null)
         throw new IllegalArgumentException("source curve binding provenance required");
-      curve=model;physicalSensorUid=sensorUid;qualification=q;
+      if(sigma!=null&&(!Double.isFinite(sigma)||sigma<=0))
+        throw new IllegalArgumentException("source sigma must be finite positive");
+      curve=model;physicalSensorUid=sensorUid;qualification=q;sourceLog10Sigma=sigma;
     }
   }
   public static final class FingerprintBinding {
@@ -82,12 +90,16 @@ public final class ChemCoreNext {
     public final CoreContracts.Result research;
     public final NextResearchDecisionPipeline.Decision arbitration;
     public final EvidenceConflictGraph.Graph graph;
+    /** Unbounded per-source hypothesis rankings incl. rejected/tied models. */
+    public final List<SourceRootCoherence.RootReport> sourceCoherence;
     public final List<String> sourceDiagnostics;
     public final int modelsInspected,positiveModels;
     public final boolean safetyAlarmAuthorized,ppmAuthorized,molecularIdentityConfirmed,g3Qualified;
     private Output(CoreContracts.Result result,NextResearchDecisionPipeline.Decision d,
-                   EvidenceConflictGraph.Graph g,List<String> diagnostics,int inspected,int positive){
-      research=result;arbitration=d;graph=g;sourceDiagnostics=List.copyOf(diagnostics);
+                   EvidenceConflictGraph.Graph g,List<SourceRootCoherence.RootReport> rootFits,
+                   List<String> diagnostics,int inspected,int positive){
+      research=result;arbitration=d;graph=g;sourceCoherence=List.copyOf(rootFits);
+      sourceDiagnostics=List.copyOf(diagnostics);
       modelsInspected=inspected;positiveModels=positive;
       safetyAlarmAuthorized=false;ppmAuthorized=false;molecularIdentityConfirmed=false;g3Qualified=false;
     }
@@ -108,6 +120,7 @@ public final class ChemCoreNext {
     }
     List<CoreContracts.EvidenceNode> raw=new ArrayList<>();
     List<ResearchCandidateGenerator.AssetLink> assets=new ArrayList<>();
+    List<SourceRootCoherence.Sample> sourceCurveSamples=new ArrayList<>();
     List<String> reasons=new ArrayList<>();
     int count=0,positives=0;
     for(var b:input.curves){
@@ -131,6 +144,8 @@ public final class ChemCoreNext {
           "source single-gas curve research hypothesis; quantitative result non-reportable"));
         assets.add(new ResearchCandidateGenerator.AssetLink(
           b.curve.sourceRoot,b.curve.id,b.curve.canonicalChemicalUid,true));
+        sourceCurveSamples.add(new SourceRootCoherence.Sample(
+          b.curve,b.physicalSensorUid,reading.sourceRatioOrNaN(),b.sourceLog10Sigma));
         positives++;
       }else {
         reasons.add("CURVE_NOT_ELIGIBLE "+b.curve.id+" "+out.abstention);
@@ -200,6 +215,46 @@ public final class ChemCoreNext {
         positives++;
       }
     }
+    // R2: resolve physically cross-compared channels at ONE source-domain
+    // concentration. No extra source root, no extra votes, and no G3 promotion.
+    // Only positive, source-qualified curve evaluations reach this resolver.
+    var sourceCoherence=SourceRootCoherence.evaluate(sourceCurveSamples);
+    for(var fit:sourceCoherence){
+      reasons.add("SOURCE_COHERENCE root="+fit.sourceRoot+
+          " alternatives="+fit.ranked.size()+" reason="+fit.decisionReason+
+          " margin="+fit.runnerUpMargin);
+      for(var candidate:fit.ranked) {
+        reasons.add("SOURCE_COHERENCE_HYPOTHESIS root="+fit.sourceRoot+
+            " uid="+candidate.uid+" score="+candidate.score+
+            " rms="+candidate.normalizedRms+" ppm_source_only="+candidate.fittedPpm+
+            " channels="+candidate.independentSensorChannels);
+      }
+      if(fit.selectedResearchUid==null)continue;
+      boolean nonCurveAtSameRoot=false;
+      for(var node:raw)
+        if(node.sourceRootId.equals(fit.sourceRoot)&&!"SOURCE_CURVE".equals(node.expertId))
+          nonCurveAtSameRoot=true;
+      if(nonCurveAtSameRoot) {
+        reasons.add("COHERENCE_NOT_APPLIED_MIXED_EXPERT_FAMILY "+fit.sourceRoot);
+        continue;
+      }
+      SourceRootCoherence.Match winner=null;
+      for(var candidate:fit.ranked)
+        if(candidate.uid==fit.selectedResearchUid){winner=candidate;break;}
+      if(winner==null||winner.sourceCurveIds.isEmpty()||winner.sensorUids.size()<2)
+        throw new IllegalStateException("invalid source-coherence winner");
+      raw.removeIf(node->node.sourceRootId.equals(fit.sourceRoot)
+          &&"SOURCE_CURVE".equals(node.expertId));
+      assets.removeIf(asset->asset.sourceRoot.equals(fit.sourceRoot));
+      raw.add(new CoreContracts.EvidenceNode(fit.sourceRoot,
+          "SOURCE_MULTISENSOR_CONCENTRATION_COHERENCE",winner.sensorUids.get(0),
+          winner.uid,CoreContracts.EvidencePolarity.POSITIVE,
+          "One source-root research hypothesis; competing identities retained in coherence trace"));
+      assets.add(new ResearchCandidateGenerator.AssetLink(
+          fit.sourceRoot,winner.sourceCurveIds.get(0),winner.uid,true));
+      reasons.add("SOURCE_COHERENCE_REFINED_RESEARCH_ONLY root="+fit.sourceRoot+
+          " uid="+winner.uid+" matched_sensors="+winner.independentSensorChannels);
+    }
     var ledger=IndependentEvidenceLedger.consolidate(input.current.uid,raw);
     var graph=EvidenceConflictGraph.construct(ledger);
     var generated=ResearchCandidateGenerator.generate(input.catalog,assets,ledger,
@@ -207,7 +262,7 @@ public final class ChemCoreNext {
     var arbitration=NextResearchDecisionPipeline.evaluate(graph,generated,input.displayLimit);
     var result=NextResearchDecisionPipeline.result(input.current,input.sourceSnapshotHash,
        graph,arbitration);
-    return new Output(result,arbitration,graph,reasons,count,positives);
+    return new Output(result,arbitration,graph,sourceCoherence,reasons,count,positives);
   }
   // P01 compatibility: immutable sensor input validation and canonical replay SHA-256.
     public static CoreContracts.Result evaluate(CoreContracts.Snapshot snapshot,
