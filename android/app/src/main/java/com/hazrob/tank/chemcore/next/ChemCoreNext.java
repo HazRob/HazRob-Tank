@@ -14,17 +14,25 @@ import java.security.MessageDigest;
  */
 public final class ChemCoreNext {
   private ChemCoreNext() {}
-  public static final String VERSION="chemcore-next-research-core/0.1-g1";
+  public static final String VERSION="chemcore-next-research-core/0.3-g1-source-trace";
 
   public static final class CurveBinding {
     public final SourceCurveExpert.Curve curve;
     public final String physicalSensorUid;
     public final SourceCurveExpert.Qualification qualification;
+    /** Optional source-provenance log10 response sigma; NOT physical Tank accuracy. */
+    public final Double sourceLog10Sigma;
     public CurveBinding(SourceCurveExpert.Curve model,String sensorUid,
                         SourceCurveExpert.Qualification q){
+      this(model,sensorUid,q,null);
+    }
+    public CurveBinding(SourceCurveExpert.Curve model,String sensorUid,
+                        SourceCurveExpert.Qualification q,Double sigma){
       if(model==null||sensorUid==null||sensorUid.isBlank()||q==null)
         throw new IllegalArgumentException("source curve binding provenance required");
-      curve=model;physicalSensorUid=sensorUid;qualification=q;
+      if(sigma!=null&&(!Double.isFinite(sigma)||sigma<=0))
+        throw new IllegalArgumentException("source sigma must be finite positive");
+      curve=model;physicalSensorUid=sensorUid;qualification=q;sourceLog10Sigma=sigma;
     }
   }
   public static final class FingerprintBinding {
@@ -82,12 +90,20 @@ public final class ChemCoreNext {
     public final CoreContracts.Result research;
     public final NextResearchDecisionPipeline.Decision arbitration;
     public final EvidenceConflictGraph.Graph graph;
+    /** Unbounded per-source hypothesis rankings incl. rejected/tied models. */
+    public final List<SourceRootCoherence.RootReport> sourceCoherence;
+    /** Every called expert/decision stage; retains original labels and rejects. */
+    public final List<NextAnalysisTrace.Event> executionTrace;
     public final List<String> sourceDiagnostics;
     public final int modelsInspected,positiveModels;
     public final boolean safetyAlarmAuthorized,ppmAuthorized,molecularIdentityConfirmed,g3Qualified;
     private Output(CoreContracts.Result result,NextResearchDecisionPipeline.Decision d,
-                   EvidenceConflictGraph.Graph g,List<String> diagnostics,int inspected,int positive){
-      research=result;arbitration=d;graph=g;sourceDiagnostics=List.copyOf(diagnostics);
+                   EvidenceConflictGraph.Graph g,List<SourceRootCoherence.RootReport> rootFits,
+                   List<NextAnalysisTrace.Event> events,
+                   List<String> diagnostics,int inspected,int positive){
+      research=result;arbitration=d;graph=g;sourceCoherence=List.copyOf(rootFits);
+      executionTrace=NextAnalysisTrace.immutable(events);
+      sourceDiagnostics=List.copyOf(diagnostics);
       modelsInspected=inspected;positiveModels=positive;
       safetyAlarmAuthorized=false;ppmAuthorized=false;molecularIdentityConfirmed=false;g3Qualified=false;
     }
@@ -98,6 +114,10 @@ public final class ChemCoreNext {
       throw new IllegalArgumentException("snapshot device does not match physical profile");
     if(input.current.stableManifestHash.isBlank())
       throw new IllegalArgumentException("unversioned Stable source snapshot");
+    // Reject stale or falsely attributed measurements before any inference.
+    // The digest is an integrity fingerprint, not a cryptographic signature.
+    if(!snapshotHash(input.current).equals(input.sourceSnapshotHash))
+      throw new IllegalArgumentException("SNAPSHOT_HASH_MISMATCH source capture changed");
     Map<String,CoreContracts.SensorInstance> instances=new HashMap<>();
     for(var s:input.device.installedSensors)instances.put(s.uid,s);
     Map<String,CoreContracts.Reading> readings=new HashMap<>();
@@ -108,16 +128,33 @@ public final class ChemCoreNext {
     }
     List<CoreContracts.EvidenceNode> raw=new ArrayList<>();
     List<ResearchCandidateGenerator.AssetLink> assets=new ArrayList<>();
+    List<SourceRootCoherence.Sample> sourceCurveSamples=new ArrayList<>();
     List<String> reasons=new ArrayList<>();
+    List<NextAnalysisTrace.Event> trace=new ArrayList<>();
+    trace.add(new NextAnalysisTrace.Event("INPUT","CAPTURE",input.current.stableManifestHash,
+        input.current.deviceUid,null,"HASH_VERIFIED",
+        "SHA256 matches immutable snapshot; not a cryptographic signature",null));
     int count=0,positives=0;
     for(var b:input.curves){
       count++;
+      if(NextResearchSourceQuarantine.blocked(b.curve.sourceRoot,b.curve.id)){
+        reasons.add("SOURCE_TEMPORARILY_EXCLUDED_UCI1081_CURVE "+b.curve.id);
+        trace.add(new NextAnalysisTrace.Event("CURVE",b.curve.id,b.curve.sourceRoot,
+          b.physicalSensorUid,b.curve.canonicalChemicalUid,"QUARANTINED","UCI1081",null));
+        continue;
+      }
       var sensor=instances.get(b.physicalSensorUid);
       var reading=readings.get(b.physicalSensorUid);
       if(!input.current.mqRelayOn){
-        reasons.add("SOURCE_CURVE_BLOCKED_RELAY_OFF "+b.curve.id);continue;
+        reasons.add("SOURCE_CURVE_BLOCKED_RELAY_OFF "+b.curve.id);
+        trace.add(new NextAnalysisTrace.Event("CURVE",b.curve.id,b.curve.sourceRoot,
+          b.physicalSensorUid,b.curve.canonicalChemicalUid,"RELAY_OFF","NO_READING",null));
+        continue;
       }
       var out=SourceCurveExpert.evaluate(b.curve,sensor,reading,b.qualification);
+      trace.add(new NextAnalysisTrace.Event("CURVE",b.curve.id,b.curve.sourceRoot,
+        b.physicalSensorUid,b.curve.canonicalChemicalUid,out.decision.name(),
+        out.abstention.name(),out.researchOnlyPpm));
       // A valid single-source curve is a research HYPOTHESIS ONLY, not molecular identity.
       if(out.decision==SourceCurveExpert.Decision.RESEARCH_SOURCE_QUANTITATIVE_ESTIMATE
          &&b.curve.canonicalChemicalUid!=null){
@@ -127,6 +164,8 @@ public final class ChemCoreNext {
           "source single-gas curve research hypothesis; quantitative result non-reportable"));
         assets.add(new ResearchCandidateGenerator.AssetLink(
           b.curve.sourceRoot,b.curve.id,b.curve.canonicalChemicalUid,true));
+        sourceCurveSamples.add(new SourceRootCoherence.Sample(
+          b.curve,b.physicalSensorUid,reading.sourceRatioOrNaN(),b.sourceLog10Sigma));
         positives++;
       }else {
         reasons.add("CURVE_NOT_ELIGIBLE "+b.curve.id+" "+out.abstention);
@@ -134,12 +173,31 @@ public final class ChemCoreNext {
     }
     for(var b:input.fingerprints){
       count++;
+      if(NextResearchSourceQuarantine.blocked(b.reference.sourceRoot,
+           b.reference.id,b.reference.featureSpace)){
+        reasons.add("SOURCE_TEMPORARILY_EXCLUDED_UCI1081_FINGERPRINT "+b.reference.id);
+        trace.add(new NextAnalysisTrace.Event("FINGERPRINT",b.reference.id,
+          b.reference.sourceRoot,b.physicalSensorUid,b.reference.canonicalChemicalUid,
+          "QUARANTINED","UCI1081",null));
+        continue;
+      }
       if(!input.current.mqRelayOn || !instances.containsKey(b.physicalSensorUid)
          ||!readings.containsKey(b.physicalSensorUid)
          ||readings.get(b.physicalSensorUid).quality!=CoreContracts.SampleQuality.VALID) {
-        reasons.add("FINGERPRINT_PHYSICAL_SENSOR_NOT_ELIGIBLE "+b.reference.id);continue;
+        reasons.add("FINGERPRINT_PHYSICAL_SENSOR_NOT_ELIGIBLE "+b.reference.id);
+        trace.add(new NextAnalysisTrace.Event("FINGERPRINT",b.reference.id,
+          b.reference.sourceRoot,b.physicalSensorUid,b.reference.canonicalChemicalUid,
+          "NOT_EVALUABLE","INVALID_OR_MISSING_PHYSICAL_SENSOR",null));
+        continue;
       }
       var output=FingerprintExpert.compare(b.reference,b.observation,b.qualification);
+      trace.add(new NextAnalysisTrace.Event("FINGERPRINT",b.reference.id,
+        b.reference.sourceRoot,b.physicalSensorUid,b.reference.canonicalChemicalUid,
+        output.status.name(),!b.independentThresholdCalibrationVerified?
+        "SOURCE_THRESHOLD_NOT_INDEPENDENTLY_VERIFIED":"COMPARE_COMPLETE",
+        output.researchNormalizedRmsDistance!=null &&
+        Double.isFinite(output.researchNormalizedRmsDistance)?
+        output.researchNormalizedRmsDistance:null));
       if(output.status!=FingerprintExpert.Status.RESEARCH_RESIDUAL_ONLY
          ||b.reference.canonicalChemicalUid==null
          ||!b.independentThresholdCalibrationVerified
@@ -166,7 +224,23 @@ public final class ChemCoreNext {
     // never one vote per MQ channel or per algorithm.
     for(var bundle:input.bundles) {
       count+=bundle.variants.size();
+      boolean quarantined=NextResearchSourceQuarantine.blocked(bundle.sourceRoot,bundle.bundleUid);
+      for(var v:bundle.variants)
+        quarantined |= NextResearchSourceQuarantine.blocked(v.sourceSignature.sourceRoot,
+            v.sourceSignature.id,v.sourceSignature.featureSpace,v.techniqueId);
+      if(quarantined){
+        reasons.add("SOURCE_TEMPORARILY_EXCLUDED_UCI1081_BUNDLE "+bundle.bundleUid);
+        trace.add(new NextAnalysisTrace.Event("BUNDLE",bundle.bundleUid,
+          bundle.sourceRoot,"",bundle.canonicalChemicalUid,
+          "QUARANTINED","UCI1081",null));
+        continue;
+      }
       var score=ResearchFingerprintBundle.evaluate(bundle,input.device,input.current);
+      trace.add(new NextAnalysisTrace.Event("BUNDLE",bundle.bundleUid,
+        bundle.sourceRoot,"",bundle.canonicalChemicalUid,score.status.name(),
+        "matched_variants="+score.matchedVariants+
+        " sensor_channels="+score.distinctSensorChannels+
+        " feature_families="+score.distinctFeatureFamilies,null));
       reasons.add("SOURCE_BUNDLE "+bundle.bundleUid+" "+score.status+
         " physical_MQ="+score.distinctSensorChannels+
         " feature_families="+score.distinctFeatureFamilies+
@@ -183,14 +257,112 @@ public final class ChemCoreNext {
         positives++;
       }
     }
+    // R2: resolve physically cross-compared channels at ONE source-domain
+    // concentration. No extra source root, no extra votes, and no G3 promotion.
+    // Only positive, source-qualified curve evaluations reach this resolver.
+    var sourceCoherence=SourceRootCoherence.evaluate(sourceCurveSamples);
+    for(var fit:sourceCoherence){
+      trace.add(new NextAnalysisTrace.Event("COHERENCE",fit.sourceRoot,fit.sourceRoot,
+          "",fit.selectedResearchUid,fit.decisionReason,
+          "margin="+fit.runnerUpMargin+
+          " unresolved_models="+fit.nonUniqueSourceModels.size(),null));
+      reasons.add("SOURCE_COHERENCE root="+fit.sourceRoot+
+          " alternatives="+fit.ranked.size()+" reason="+fit.decisionReason+
+          " margin="+fit.runnerUpMargin);
+      for(var candidate:fit.ranked) {
+        trace.add(new NextAnalysisTrace.Event("COHERENCE_HYPOTHESIS",
+            candidate.sourceCurveIds.isEmpty()?fit.sourceRoot:candidate.sourceCurveIds.get(0),
+            fit.sourceRoot,candidate.sensorUids.isEmpty()?"":candidate.sensorUids.get(0),
+            candidate.uid,"SCORED",
+            "channels="+candidate.independentSensorChannels+
+            " ppm_source_only="+candidate.fittedPpm+
+            " loo_max="+candidate.leaveOneChannelOutMaxResidual,candidate.score));
+        reasons.add("SOURCE_COHERENCE_HYPOTHESIS root="+fit.sourceRoot+
+            " uid="+candidate.uid+" score="+candidate.score+
+            " rms="+candidate.normalizedRms+" ppm_source_only="+candidate.fittedPpm+
+            " channels="+candidate.independentSensorChannels);
+      }
+      if(!fit.nonUniqueSourceModels.isEmpty()){
+        // Two genuinely different source equations for the same physical
+        // channel + chemical UID are NOT two votes and cannot silently
+        // corroborate one identity, even if it is the only named compound.
+        // Keep every original CURVE trace above, but prevent this source root
+        // from creating an eligible molecular identification until resolved.
+        var affectedAssetIds=new HashSet<String>();
+        String sensorUid=null;
+        for(var sample:sourceCurveSamples)
+          if(sample.curve.sourceRoot.equals(fit.sourceRoot)){
+            affectedAssetIds.add(sample.curve.id);
+            if(sensorUid==null)sensorUid=sample.physicalSensorUid;
+          }
+        final String unresolvedRoot=fit.sourceRoot;
+        raw.removeIf(node->node.sourceRootId.equals(unresolvedRoot)
+            &&"SOURCE_CURVE".equals(node.expertId));
+        assets.removeIf(asset->asset.sourceRoot.equals(unresolvedRoot)
+            &&affectedAssetIds.contains(asset.sourceAssetUid));
+        raw.add(new CoreContracts.EvidenceNode(fit.sourceRoot,
+            "SOURCE_CURVE_MODEL_CONFLICT",sensorUid,null,
+            CoreContracts.EvidencePolarity.AMBIGUOUS,
+            "Different source equations on identical physical sensor, original records preserved in trace"));
+        trace.add(new NextAnalysisTrace.Event("SOURCE_CURVE_CONFLICT",fit.sourceRoot,
+            fit.sourceRoot,sensorUid,null,"AMBIGUOUS",
+            String.join(" | ",fit.nonUniqueSourceModels),null));
+        reasons.add("SOURCE_DUPLICATE_CURVE_UNRESOLVED "+fit.sourceRoot+
+            " "+String.join("|",fit.nonUniqueSourceModels));
+        continue;
+      }
+      if(fit.selectedResearchUid==null)continue;
+      boolean nonCurveAtSameRoot=false;
+      for(var node:raw)
+        if(node.sourceRootId.equals(fit.sourceRoot)&&!"SOURCE_CURVE".equals(node.expertId))
+          nonCurveAtSameRoot=true;
+      if(nonCurveAtSameRoot) {
+        reasons.add("COHERENCE_NOT_APPLIED_MIXED_EXPERT_FAMILY "+fit.sourceRoot);
+        continue;
+      }
+      SourceRootCoherence.Match winner=null;
+      for(var candidate:fit.ranked)
+        if(candidate.uid==fit.selectedResearchUid){winner=candidate;break;}
+      if(winner==null||winner.sourceCurveIds.isEmpty()||winner.sensorUids.size()<2)
+        throw new IllegalStateException("invalid source-coherence winner");
+      raw.removeIf(node->node.sourceRootId.equals(fit.sourceRoot)
+          &&"SOURCE_CURVE".equals(node.expertId));
+      assets.removeIf(asset->asset.sourceRoot.equals(fit.sourceRoot));
+      raw.add(new CoreContracts.EvidenceNode(fit.sourceRoot,
+          "SOURCE_MULTISENSOR_CONCENTRATION_COHERENCE",winner.sensorUids.get(0),
+          winner.uid,CoreContracts.EvidencePolarity.POSITIVE,
+          "One source-root research hypothesis; competing identities retained in coherence trace"));
+      assets.add(new ResearchCandidateGenerator.AssetLink(
+          fit.sourceRoot,winner.sourceCurveIds.get(0),winner.uid,true));
+      reasons.add("SOURCE_COHERENCE_REFINED_RESEARCH_ONLY root="+fit.sourceRoot+
+          " uid="+winner.uid+" matched_sensors="+winner.independentSensorChannels);
+    }
     var ledger=IndependentEvidenceLedger.consolidate(input.current.uid,raw);
     var graph=EvidenceConflictGraph.construct(ledger);
+    for(var root:ledger.roots)
+      trace.add(new NextAnalysisTrace.Event("LEDGER",root.sourceRootId,
+          root.sourceRootId,root.sensorUids.isEmpty()?"":root.sensorUids.get(0),
+          root.uniqueChemicalUid,root.effectivePolarity.name(),
+          "alternatives="+root.alternativeChemicalUids+
+          " distinct_channels="+root.sensorUids.size(),null));
     var generated=ResearchCandidateGenerator.generate(input.catalog,assets,ledger,
        input.displayLimit);
-    var arbitration=NextResearchDecisionPipeline.evaluate(graph,generated,input.displayLimit);
+    var coherenceScores=new HashMap<Long,Double>();
+    for(var root:sourceCoherence)if(root.selectedResearchUid!=null)
+      for(var match:root.ranked)if(match.uid==root.selectedResearchUid)
+        coherenceScores.merge(match.uid,match.score,Math::min);
+    var arbitration=NextResearchDecisionPipeline.evaluate(
+        graph,generated,input.displayLimit,coherenceScores);
+    for(var candidate:arbitration.eligibleRanked)
+      trace.add(new NextAnalysisTrace.Event("ARBITRATION",Long.toString(candidate.uid),
+          String.join(";",candidate.roots),"",candidate.uid,"RANKED_RESEARCH_ONLY",
+          "source_roots="+candidate.independentPositiveRoots+
+          " score="+candidate.sourceConcentrationCoherenceScore,null));
+    trace.add(new NextAnalysisTrace.Event("FINAL","STATUS","", "",null,
+        arbitration.status.name(),String.join(" | ",arbitration.reasons),null));
     var result=NextResearchDecisionPipeline.result(input.current,input.sourceSnapshotHash,
        graph,arbitration);
-    return new Output(result,arbitration,graph,reasons,count,positives);
+    return new Output(result,arbitration,graph,sourceCoherence,trace,reasons,count,positives);
   }
   // P01 compatibility: immutable sensor input validation and canonical replay SHA-256.
     public static CoreContracts.Result evaluate(CoreContracts.Snapshot snapshot,
