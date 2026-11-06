@@ -535,8 +535,8 @@ class GateTests(unittest.TestCase):
             row = dict.fromkeys(REQUIRED, "measured")
             row.update(raw_path=p.name, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
                        partition="test", concentration_unit="ppm_vv",
-                       source_id="source\\u200bA", session_id="session\\x01A",
-                       device_id="device\\u200dA", concentration=1.0,
+                       source_id="source\u200bA", session_id="session\x01A",
+                       device_id="device\u200dA", concentration=1.0,
                        reference_uncertainty=0.1, adc_reference_v=3.3,
                        heater_voltage_v=5.0, load_resistance_ohm=10000.0,
                        temperature_c=25.0, humidity_percent=50.0,
