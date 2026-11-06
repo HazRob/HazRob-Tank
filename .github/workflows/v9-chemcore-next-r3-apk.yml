@@ -12,6 +12,7 @@ on:
       - 'android/app/src/main/java/com/servoc/app/ui/MeasurementsTab.java'
       - 'android/app/src/main/java/com/servoc/app/report/**'
       - 'android/app/src/androidTest/java/com/servoc/app/chemcore/nextintegration/**'
+      - 'android/app/src/androidTest/java/com/servoc/app/report/**'
       - 'research/chemcore_next/tests/java/NextCoherenceR2Regression.java'
       - 'research/chemcore_next/tests/java/NextIntegrityTraceR3Regression.java'
       - 'tools/prepare_v9_stable_source.py'
