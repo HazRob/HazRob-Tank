@@ -26,6 +26,7 @@ def check(doc):
   for v,ps in sorted(groups[k].items()):
    if len(ps)>1: errors.append("leakage "+k+"="+v)
  if not doc["rows"]: errors.append("no records")
+ if not any(isinstance(r,dict) and r.get("partition")=="train" for r in doc["rows"]): errors.append("no train records")
  if not any(isinstance(r,dict) and r.get("partition")=="test" for r in doc["rows"]): errors.append("no sealed test")
  return dict(status="REJECTED" if errors else "GROUP_PREFLIGHT_ONLY",errors=errors,g2_approved=False)
 if __name__=="__main__":
