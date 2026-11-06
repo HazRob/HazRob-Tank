@@ -1,0 +1,58 @@
+name: ChemCore Next R3 NoGas false-positive and open-set source ablation
+
+on:
+  push:
+    branches: [research/chemcore-next-r3-integrity-trace-20261106]
+    paths:
+      - 'research/chemcore_next/experiments/r3_nogas_source_gate_ablation.py'
+      - '.github/workflows/chemcore-next-r3-nogas-ablation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  no-gas-source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Preserve original 6400 ADC source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv)" \
+            = '451fdd05a18db8531abc219089de071ccc0dd461'
+          mkdir -p /tmp/r3-nogas
+      - name: Install scientific source-only test dependencies
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --no-input \
+            numpy==2.3.5 scikit-learn==1.8.0 scipy==1.16.3
+      - name: 16 fixed diagnostic policies on five purged source-block folds
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/chemcore_next/experiments/r3_nogas_source_gate_ablation.py \
+            --source research/chemcore_v6/source_snapshots/external/mq_ext_03_multimodal_6400_raw.csv \
+            --out /tmp/r3-nogas \
+            | tee /tmp/r3-nogas/run.log
+          grep -q '^R3_NOGAS_SOURCE_ABLATION_PASS' /tmp/r3-nogas/run.log
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/r3-nogas/r3_nogas_binary_gate_summary.json'))
+          assert p['methods']==16 and p['folds']==5
+          assert p['G3_Tank'] is False
+          assert p['source_device']=='NOT_TANK'
+          print('R3_NOGAS_RESEARCH_ONLY_CONTRACT_PASS')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chemcore-next-r3-source-6400-nogas-false-positive-and-open-set
+          path: /tmp/r3-nogas/
+          retention-days: 90
+          if-no-files-found: warn
