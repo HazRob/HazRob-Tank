@@ -37,7 +37,15 @@
 المسار `V9-APP-R3-001` قائم ضمن الفرع. أنشطة البناء والاختبار: راجع `.github/workflows/v9-chemcore-next-r3-apk.yml` وتفاصيل أحدث تشغيل على
 https://github.com/HazRob/HazRob-Tank/actions/workflows/v9-chemcore-next-r3-apk.yml
 
-يُوثَّق رقم تشغيل البناء وبصمة APK في التقرير بعد النجاح. إذا فشل البناء يجب معالجة الخطأ في الفرع نفسه ولا يجوز ذكر APK قابل للتنزيل دون فحص Artifact.
+**نجح بناء APK V9 بالفعل** في [GitHub Actions #42205497711](https://github.com/HazRob/HazRob-Tank/actions/runs/42205497711) على الالتزام `5dfae7440c2df5478e1dac1fe0d87a2beb945af0`، مع نجاح `compileDebugJavaWithJavac` و`assembleDebug`، والتحقق من `aapt` و`apksigner` ونسخة Stable المضمّنة.
+
+- [تنزيل حزمة APK](https://github.com/HazRob/HazRob-Tank/actions/runs/42205497711/artifacts/13496472453): `HazRob-Tank-V9-ChemCore-Next-R3-TEST.apk`.
+- `applicationId=com.hazrob.tank`، `versionName=9.0`، `versionCode=9`، مخطط قاعدة البيانات V15 دون تغيير.
+- البصمة الفعلية للـAPK (SHA-256): `b794bb87e80a5caf3dd69fe262b3ba0f41dbb12251ddd43c49e1dce92b798743`.
+- بصمة شهادة توقيع Debug: `2a4b8f9357f9fae8c262e20b32439e2459dbcd784ad14f9b7217d621649cbda4`.
+- 23 تحققًا R2 + 27 تحققًا R3 + 57 اختبارًا لطبقة Android/الواجهات/التقارير نجحت برمجيًا.
+- فريموير ESP32 V6 API4 لم يتغير، وقرارات PCA9685 والإنارة ما زالت مفتوحة.
+- **هذه نسخة APK تجريبية موقعة Debug وليست إصدارًا نهائيًا مؤهلًا.**
 
 ## 5. مسائل مستمرة
 
