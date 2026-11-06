@@ -2,9 +2,10 @@ name: ChemCore Next V8 real externally labelled MQ source replay
 
 on:
   push:
-    branches: [research/chemcore-next-v8-validation-20261105]
+    branches: [research/chemcore-next-coherence-r2-20261106]
     paths:
       - '.github/workflows/chemcore-next-v8-real-reference-replay.yml'
+      - 'android/app/src/main/java/com/hazrob/tank/chemcore/next/**'
   workflow_dispatch:
 
 permissions:
