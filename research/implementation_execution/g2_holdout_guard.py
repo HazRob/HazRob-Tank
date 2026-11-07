@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Research-only holdout group leakage preflight; never approves G2."""
-import json,re,sys
+import json,re,sys,unicodedata
 from collections import defaultdict
 KEYS=("raw_sha256","source_id","device_id","session_id","exposure_series_id","calibration_episode_id")
 def unique(pairs):
@@ -24,7 +24,7 @@ def check(doc):
     errors.append("missing/invalid "+k+" row "+str(i));row_valid=False;continue
    if v != v.strip():
     errors.append("noncanonical whitespace "+k+" row "+str(i));row_valid=False
-   if any(ord(c)<32 or ord(c)==127 for c in v):
+   if any(unicodedata.category(c) in ('Cc','Cf') for c in v):
     errors.append("control character "+k+" row "+str(i));row_valid=False
    if k=="raw_sha256":
     if v in seen_raw: errors.append("duplicate raw_sha256 row "+str(i))
