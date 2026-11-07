@@ -22,10 +22,12 @@ def check(doc):
    v=row.get(k)
    if not isinstance(v,str) or not v.strip() or (k=="raw_sha256" and not re.fullmatch("[0-9a-f]{64}",v)):
     errors.append("missing/invalid "+k+" row "+str(i));row_valid=False;continue
+   if v != v.strip():
+    errors.append("noncanonical whitespace "+k+" row "+str(i));row_valid=False
    if k=="raw_sha256":
     if v in seen_raw: errors.append("duplicate raw_sha256 row "+str(i))
     seen_raw.add(v)
-   groups[k][v].add(p)
+   groups[k][v.strip()].add(p)
   if row_valid: valid_partitions.add(p)
  for k in KEYS:
   for v,ps in sorted(groups[k].items()):
