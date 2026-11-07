@@ -47,7 +47,7 @@ class Tests(unittest.TestCase):
   self.assertEqual(result["status"],"REJECTED")
   self.assertIn("no train records",result["errors"])
  def test_control_characters_in_group_identifiers_rejected(self):
-  for char in ("\\x00","\\n","\\t","\\x7f"):
+  for char in ("\x00","\n","\t","\x7f"):
    for key in ("source_id","device_id","session_id","exposure_series_id","calibration_episode_id"):
     with self.subTest(char=repr(char),key=key):
      train=row("a","train")
