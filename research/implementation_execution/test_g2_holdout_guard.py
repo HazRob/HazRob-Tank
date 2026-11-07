@@ -56,6 +56,16 @@ class Tests(unittest.TestCase):
      self.assertEqual(result["status"],"REJECTED")
      self.assertTrue(any(e.startswith("control character "+key) for e in result["errors"]))
      self.assertIn("no train records",result["errors"])
+ def test_invisible_unicode_format_characters_rejected(self):
+  for char in ("\u200b","\u200d","\u2060","\ufeff"):
+   for key in ("source_id","device_id","session_id","exposure_series_id","calibration_episode_id"):
+    with self.subTest(char=repr(char),key=key):
+     train=row("a","train")
+     train[key]="source"+char+"identifier"
+     result=check(doc([train,row("b","test")]))
+     self.assertEqual(result["status"],"REJECTED")
+     self.assertTrue(any(e.startswith("control character "+key) for e in result["errors"]))
+     self.assertIn("no train records",result["errors"])
  def test_same_source_within_train_is_allowed(self):
   a=row("a","train")
   b=row("b","train")
