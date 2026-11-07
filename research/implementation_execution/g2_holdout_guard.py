@@ -24,6 +24,8 @@ def check(doc):
     errors.append("missing/invalid "+k+" row "+str(i));row_valid=False;continue
    if v != v.strip():
     errors.append("noncanonical whitespace "+k+" row "+str(i));row_valid=False
+   if any(ord(c)<32 or ord(c)==127 for c in v):
+    errors.append("control character "+k+" row "+str(i));row_valid=False
    if k=="raw_sha256":
     if v in seen_raw: errors.append("duplicate raw_sha256 row "+str(i))
     seen_raw.add(v)
