@@ -24,6 +24,8 @@ def check(doc):
     errors.append("missing/invalid "+k+" row "+str(i));row_valid=False;continue
    if v != v.strip():
     errors.append("noncanonical whitespace "+k+" row "+str(i));row_valid=False
+   if unicodedata.normalize("NFKC",v) != v:
+    errors.append("noncanonical unicode "+k+" row "+str(i));row_valid=False
    if any(unicodedata.category(c) in ('Cc','Cf') for c in v):
     errors.append("control character "+k+" row "+str(i));row_valid=False
    if k=="raw_sha256":
