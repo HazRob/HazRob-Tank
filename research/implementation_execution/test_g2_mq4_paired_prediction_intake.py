@@ -1,0 +1,332 @@
+"""Synthetic-only regression tests for MQ4 paired prediction intake.
+
+No synthetic row is evidence of a physical exposure or a source prediction.
+"""
+import copy
+import hashlib
+import json
+import unittest
+
+from g2_mq4_pairwise_frechet_bounds import EVIDENCE, NAMES, SOURCE
+from g2_mq4_paired_prediction_intake import SCHEMA, SOURCE_DAILY_ROWS, audit, validate_full_fold_partition, validate_pinned_source_folds, classify_future_fit_days
+
+SOURCE_RAW = SOURCE.read_bytes()
+EVIDENCE_RAW = EVIDENCE.read_bytes()
+SOURCE_SHA = hashlib.sha256(SOURCE_RAW).hexdigest()
+
+
+def sample():
+    return {
+        "schema": SCHEMA,
+        "origin": "EXTERNAL_SOURCE_RESEARCH_ONLY",
+        "source_summary_sha256": SOURCE_SHA,
+        "rows": [
+            {
+                "row_id": "synthetic-001",
+                "test_day": "2021-07-22",
+                "fold_test_day": "2021-07-22",
+                "train_days": ["2021-07-21"],
+                "raw_row_sha256": "a" * 64,
+                "reference_positive_4ppm": True,
+                "predicted_positive_4ppm": {name: (i % 2 == 0) for i, name in enumerate(NAMES)},
+            },
+            {
+                "row_id": "synthetic-002",
+                "test_day": "2021-07-22",
+                "fold_test_day": "2021-07-22",
+                "train_days": ["2021-07-21"],
+                "raw_row_sha256": "b" * 64,
+                "reference_positive_4ppm": False,
+                "predicted_positive_4ppm": {name: (i % 2 == 1) for i, name in enumerate(NAMES)},
+            },
+        ],
+    }
+
+
+def check(obj, *, require_full=False, source=SOURCE_RAW, evidence=EVIDENCE_RAW):
+    return audit(json.dumps(obj, sort_keys=True).encode(), source, evidence,
+                 require_full=require_full)
+
+
+class PairedIntakeTests(unittest.TestCase):
+    def test_synthetic_arithmetic_and_no_promotion(self):
+        result = check(sample())
+        self.assertEqual(result["submitted_rows"], 2)
+        self.assertEqual(result["submitted_positive_rows"], 1)
+        self.assertEqual(result["model_confusion_counts_tp_fn_fp_tn"][NAMES[0]], [1, 0, 0, 1])
+        self.assertEqual(result["model_confusion_counts_tp_fn_fp_tn"][NAMES[1]], [0, 1, 1, 0])
+        self.assertEqual(result["pairwise_submitted_rows_both_correct_a_correct_b_wrong_a_wrong_b_correct_both_wrong"][NAMES[0] + "|" + NAMES[1]], [0, 2, 0, 0])
+        self.assertFalse(result["original_raw_archive_row_hashes_independently_verified"])
+        self.assertFalse(result["paired_inferential_test_authorized"])
+        self.assertFalse(result["g2_qualified"])
+        self.assertFalse(result["g3_qualified"])
+
+    def test_future_training_flagged_not_called_prospective(self):
+        obj = sample()
+        for row in obj["rows"]:
+            row["train_days"] = ["2021-07-23"]
+        self.assertEqual(check(obj)["test_days_with_future_training"], ["2021-07-22"])
+
+    def test_full_source_rejects_synthetic_partial_rows(self):
+        with self.assertRaisesRegex(ValueError, "INCOMPLETE_SOURCE_ROWS"):
+            check(sample(), require_full=True)
+
+    def test_duplicate_row_id(self):
+        obj = sample()
+        obj["rows"][1]["row_id"] = obj["rows"][0]["row_id"]
+        with self.assertRaisesRegex(ValueError, "DUPLICATE_ROW_ID"):
+            check(obj)
+
+    def test_missing_model(self):
+        obj = sample()
+        del obj["rows"][0]["predicted_positive_4ppm"][NAMES[0]]
+        with self.assertRaisesRegex(ValueError, "INVALID_MODEL_PREDICTIONS"):
+            check(obj)
+
+    def test_extra_model(self):
+        obj = sample()
+        obj["rows"][0]["predicted_positive_4ppm"]["UNVERIFIED"] = False
+        with self.assertRaisesRegex(ValueError, "INVALID_MODEL_PREDICTIONS"):
+            check(obj)
+
+    def test_nonboolean_prediction(self):
+        obj = sample()
+        obj["rows"][0]["predicted_positive_4ppm"][NAMES[0]] = 1
+        with self.assertRaisesRegex(ValueError, "INVALID_MODEL_PREDICTIONS"):
+            check(obj)
+
+    def test_nonboolean_truth(self):
+        obj = sample()
+        obj["rows"][0]["reference_positive_4ppm"] = 1
+        with self.assertRaisesRegex(ValueError, "INVALID_REFERENCE_LABEL"):
+            check(obj)
+
+    def test_invalid_hash(self):
+        obj = sample()
+        obj["rows"][0]["raw_row_sha256"] = "abc"
+        with self.assertRaisesRegex(ValueError, "INVALID_RAW_ROW_HASH"):
+            check(obj)
+
+    def test_test_fold_mismatch(self):
+        obj = sample()
+        obj["rows"][0]["fold_test_day"] = "2021-07-23"
+        with self.assertRaisesRegex(ValueError, "TEST_FOLD_MISMATCH"):
+            check(obj)
+
+    def test_same_day_training_rejected(self):
+        obj = sample()
+        obj["rows"][0]["train_days"] = ["2021-07-22"]
+        with self.assertRaisesRegex(ValueError, "TRAIN_TEST_DAY_OVERLAP"):
+            check(obj)
+
+    def test_duplicate_training_day_rejected(self):
+        obj = sample()
+        obj["rows"][0]["train_days"] = ["2021-07-21", "2021-07-21"]
+        with self.assertRaisesRegex(ValueError, "TRAIN_TEST_DAY_OVERLAP"):
+            check(obj)
+
+    def test_inconsistent_fold_provenance(self):
+        obj = sample()
+        obj["rows"][1]["train_days"] = ["2021-07-20"]
+        with self.assertRaisesRegex(ValueError, "INCONSISTENT_FOLD_PROVENANCE"):
+            check(obj)
+
+    def test_invalid_calendar_day(self):
+        obj = sample()
+        obj["rows"][0]["test_day"] = "2021-02-30"
+        with self.assertRaisesRegex(ValueError, "INVALID_ISO_DAY"):
+            check(obj)
+
+    def test_empty_rows_rejected(self):
+        obj = sample()
+        obj["rows"] = []
+        with self.assertRaisesRegex(ValueError, "MISSING_PAIRED_ROWS"):
+            check(obj)
+
+    def test_source_lineage_mismatch(self):
+        obj = sample()
+        obj["source_summary_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "SOURCE_LINEAGE_MISMATCH"):
+            check(obj)
+
+    def test_source_bytes_mutated(self):
+        with self.assertRaisesRegex(ValueError, "SOURCE_SHA_MISMATCH"):
+            check(sample(), source=SOURCE_RAW + b" ")
+
+    def test_nonempty_evidence_rejected(self):
+        evidence = b'{"schema":"hazrob.g2.independent-evidence.v1","records":[{"unverified":true}]}'
+        with self.assertRaisesRegex(ValueError, "UNVERIFIED_INDEPENDENT_EVIDENCE"):
+            check(sample(), evidence=evidence)
+
+    def test_duplicate_json_key_rejected(self):
+        raw = json.dumps(sample()).encode()
+        raw = raw.replace(b'"origin": "EXTERNAL_SOURCE_RESEARCH_ONLY"',
+                          b'"origin": "EXTERNAL_SOURCE_RESEARCH_ONLY", "origin": "EXTERNAL_SOURCE_RESEARCH_ONLY"')
+        with self.assertRaisesRegex(ValueError, "DUPLICATE_JSON_KEY"):
+            audit(raw, SOURCE_RAW, EVIDENCE_RAW, require_full=False)
+
+    def test_nonfinite_json_rejected(self):
+        raw = json.dumps(sample()).encode().replace(b'"rows":', b'"bogus": NaN, "rows":')
+        with self.assertRaisesRegex(ValueError, "NONFINITE_JSON_NUMBER"):
+            audit(raw, SOURCE_RAW, EVIDENCE_RAW, require_full=False)
+
+    def test_invalid_origin(self):
+        obj = sample()
+        obj["origin"] = "TANK_G3_VERIFIED"
+        with self.assertRaisesRegex(ValueError, "INVALID_ORIGIN"):
+            check(obj)
+
+
+
+class FullFoldPartitionTests(unittest.TestCase):
+    """Only synthetic day metadata; no source rows or physical observations."""
+
+    @staticmethod
+    def folds():
+        days = [f"2021-07-{day:02d}" for day in range(21, 32)]
+        return {test: tuple(d for d in days if d not in (test, days[(i + 1) % 11]))
+                for i, test in enumerate(days)}
+
+    def test_valid_synthetic_partition_and_inferred_calibration(self):
+        result = validate_full_fold_partition(self.folds())
+        self.assertEqual(len(result), 11)
+        self.assertEqual(result["2021-07-21"], "2021-07-22")
+
+    def test_missing_day_rejected(self):
+        folds = self.folds()
+        del folds["2021-07-31"]
+        with self.assertRaisesRegex(ValueError, "INVALID_FOLD_DAY_COUNT"):
+            validate_full_fold_partition(folds)
+
+    def test_eight_training_days_rejected(self):
+        folds = self.folds()
+        day = next(iter(folds))
+        folds[day] = folds[day][:-1]
+        with self.assertRaisesRegex(ValueError, "INVALID_FOLD_TRAINING_PARTITION"):
+            validate_full_fold_partition(folds)
+
+    def test_unknown_training_day_rejected(self):
+        folds = self.folds()
+        day = next(iter(folds))
+        folds[day] = folds[day][:-1] + ("2021-08-01",)
+        with self.assertRaisesRegex(ValueError, "TRAIN_DAY_NOT_IN_SOURCE_DAYS"):
+            validate_full_fold_partition(folds)
+
+    def test_duplicate_training_day_rejected(self):
+        folds = self.folds()
+        day = next(iter(folds))
+        folds[day] = folds[day][:-1] + (folds[day][0],)
+        with self.assertRaisesRegex(ValueError, "INVALID_FOLD_TRAINING_PARTITION"):
+            validate_full_fold_partition(folds)
+
+    def test_test_day_in_training_rejected(self):
+        folds = self.folds()
+        day = next(iter(folds))
+        folds[day] = folds[day][:-1] + (day,)
+        with self.assertRaisesRegex(ValueError, "INVALID_FOLD_TRAINING_PARTITION"):
+            validate_full_fold_partition(folds)
+
+    def test_future_calibration_without_future_training_is_flagged(self):
+        test_day = "2021-07-30"
+        training = tuple(f"2021-07-{d:02d}" for d in range(21, 30))
+        train, cal, any_future = classify_future_fit_days(
+            {test_day: training}, {test_day: "2021-07-31"})
+        self.assertEqual(train, [])
+        self.assertEqual(cal, [test_day])
+        self.assertEqual(any_future, [test_day])
+
+    def test_future_training_without_future_calibration_is_flagged(self):
+        train, cal, any_future = classify_future_fit_days(
+            {"2021-07-22": ("2021-07-23",)}, {"2021-07-22": "2021-07-21"})
+        self.assertEqual(train, ["2021-07-22"])
+        self.assertEqual(cal, [])
+        self.assertEqual(any_future, ["2021-07-22"])
+
+    def test_future_training_and_calibration_union_is_unique_sorted(self):
+        train, cal, any_future = classify_future_fit_days(
+            {"2021-07-23": ("2021-07-24",), "2021-07-22": ("2021-07-21",)},
+            {"2021-07-23": "2021-07-25", "2021-07-22": "2021-07-25"})
+        self.assertEqual(train, ["2021-07-23"])
+        self.assertEqual(cal, ["2021-07-22", "2021-07-23"])
+        self.assertEqual(any_future, ["2021-07-22", "2021-07-23"])
+
+    def test_full_partition_infers_future_calibration_for_late_test_day(self):
+        folds = self.folds()
+        day = "2021-07-30"
+        folds[day] = tuple(f"2021-07-{d:02d}" for d in range(21, 30))
+        calibration = validate_full_fold_partition(folds)
+        train, cal, any_future = classify_future_fit_days({day: folds[day]}, {day: calibration[day]})
+        self.assertEqual(train, [])
+        self.assertEqual(cal, [day])
+        self.assertEqual(any_future, [day])
+
+    def test_partial_audit_does_not_claim_partition_or_authentication(self):
+        result = check(sample())
+        self.assertEqual(result["declared_calibration_day_by_test_day"], {})
+        self.assertFalse(result["declared_fold_partition_structurally_checked"])
+        self.assertFalse(result["future_calibration_assessed_from_full_declared_partition"])
+        self.assertEqual(result["test_days_with_future_calibration"], [])
+        self.assertFalse(result["original_source_fold_partition_independently_verified"])
+
+
+
+
+
+class PinnedSourceFoldReconciliationTests(unittest.TestCase):
+    """Synthetic metadata only; not authenticated original source rows."""
+
+    @staticmethod
+    def canonical():
+        days = sorted(SOURCE_DAILY_ROWS)
+        return {day: tuple(d for d in days if d not in (day, days[(i - 1) % len(days)]))
+                for i, day in enumerate(days)}
+
+    def test_original_cyclic_previous_day_protocol_and_counts(self):
+        folds = self.canonical()
+        self.assertEqual(validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS)),
+                         validate_full_fold_partition(folds))
+        self.assertEqual(validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS))["2021-07-21"],
+                         "2021-07-31")
+
+    def test_valid_structural_but_wrong_calibration_schedule_rejected(self):
+        folds = self.canonical()
+        days = sorted(SOURCE_DAILY_ROWS)
+        first = days[0]
+        folds[first] = tuple(d for d in days if d not in (first, days[1]))
+        self.assertEqual(validate_full_fold_partition(folds)[first], days[1])
+        with self.assertRaisesRegex(ValueError, "SOURCE_FOLD_PROTOCOL_MISMATCH"):
+            validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS))
+
+    def test_wrong_day_count_rejected(self):
+        counts = dict(SOURCE_DAILY_ROWS)
+        counts["2021-07-21"] += 1
+        with self.assertRaisesRegex(ValueError, "SOURCE_DAY_COUNTS_MISMATCH"):
+            validate_pinned_source_folds(self.canonical(), counts)
+
+    def test_same_total_with_swapped_day_counts_rejected(self):
+        counts = dict(SOURCE_DAILY_ROWS)
+        counts["2021-07-21"] += 1
+        counts["2021-07-22"] -= 1
+        self.assertEqual(sum(counts.values()), sum(SOURCE_DAILY_ROWS.values()))
+        with self.assertRaisesRegex(ValueError, "SOURCE_DAY_COUNTS_MISMATCH"):
+            validate_pinned_source_folds(self.canonical(), counts)
+
+    def test_unknown_source_day_rejected_even_with_eleven_days(self):
+        folds = self.canonical()
+        folds["2021-08-01"] = folds.pop("2021-07-31")
+        with self.assertRaisesRegex(ValueError, "SOURCE_DAY_SCOPE_MISMATCH"):
+            validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS))
+
+    def test_training_day_order_not_semantically_significant(self):
+        folds = {k: tuple(reversed(v)) for k, v in self.canonical().items()}
+        self.assertEqual(len(validate_pinned_source_folds(folds, dict(SOURCE_DAILY_ROWS))), 11)
+
+    def test_partial_intake_never_claims_pinned_reconciliation(self):
+        result = check(sample())
+        self.assertFalse(result["declared_source_day_counts_match_pinned_raw_replay"])
+        self.assertFalse(result["declared_source_fold_schedule_matches_pinned_library_protocol"])
+        self.assertFalse(result["original_raw_archive_row_hashes_independently_verified"])
+
+
+if __name__ == "__main__":
+    unittest.main()

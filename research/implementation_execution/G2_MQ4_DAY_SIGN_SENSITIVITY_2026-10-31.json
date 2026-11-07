@@ -1,0 +1,154 @@
+{
+  "schema": "hazrob.g2.mq4-day-sign-sensitivity.v1",
+  "source_schema": "hazrob.g2.mq4-forward-day-robustness.v1",
+  "raw_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "test_calendar_days": 6,
+  "source_observational_only": true,
+  "claims_family_hypothetical": 80,
+  "bonferroni_per_claim_alpha": {
+    "numerator": 1,
+    "denominator": 1600
+  },
+  "minimum_all_positive_independent_groups_for_80_claim_threshold": 11,
+  "cases": [
+    {
+      "channel": "MQ4_1",
+      "embargo_days": 0,
+      "positive_days": 4,
+      "negative_days": 2,
+      "exact_one_sided_p": {
+        "numerator": 11,
+        "denominator": 32
+      },
+      "conditional_nominal_5pct_reject": false,
+      "conditional_80_claim_bonferroni_reject": false,
+      "mean_day_skill_negative": true,
+      "physically_independent_days_verified": false,
+      "g2_qualified": false
+    },
+    {
+      "channel": "MQ4_1",
+      "embargo_days": 1,
+      "positive_days": 4,
+      "negative_days": 2,
+      "exact_one_sided_p": {
+        "numerator": 11,
+        "denominator": 32
+      },
+      "conditional_nominal_5pct_reject": false,
+      "conditional_80_claim_bonferroni_reject": false,
+      "mean_day_skill_negative": true,
+      "physically_independent_days_verified": false,
+      "g2_qualified": false
+    },
+    {
+      "channel": "MQ4_1",
+      "embargo_days": 2,
+      "positive_days": 4,
+      "negative_days": 2,
+      "exact_one_sided_p": {
+        "numerator": 11,
+        "denominator": 32
+      },
+      "conditional_nominal_5pct_reject": false,
+      "conditional_80_claim_bonferroni_reject": false,
+      "mean_day_skill_negative": true,
+      "physically_independent_days_verified": false,
+      "g2_qualified": false
+    },
+    {
+      "channel": "MQ4_2",
+      "embargo_days": 0,
+      "positive_days": 5,
+      "negative_days": 1,
+      "exact_one_sided_p": {
+        "numerator": 7,
+        "denominator": 64
+      },
+      "conditional_nominal_5pct_reject": false,
+      "conditional_80_claim_bonferroni_reject": false,
+      "mean_day_skill_negative": true,
+      "physically_independent_days_verified": false,
+      "g2_qualified": false
+    },
+    {
+      "channel": "MQ4_2",
+      "embargo_days": 1,
+      "positive_days": 5,
+      "negative_days": 1,
+      "exact_one_sided_p": {
+        "numerator": 7,
+        "denominator": 64
+      },
+      "conditional_nominal_5pct_reject": false,
+      "conditional_80_claim_bonferroni_reject": false,
+      "mean_day_skill_negative": true,
+      "physically_independent_days_verified": false,
+      "g2_qualified": false
+    },
+    {
+      "channel": "MQ4_2",
+      "embargo_days": 2,
+      "positive_days": 5,
+      "negative_days": 1,
+      "exact_one_sided_p": {
+        "numerator": 7,
+        "denominator": 64
+      },
+      "conditional_nominal_5pct_reject": false,
+      "conditional_80_claim_bonferroni_reject": false,
+      "mean_day_skill_negative": true,
+      "physically_independent_days_verified": false,
+      "g2_qualified": false
+    },
+    {
+      "channel": "MQ4_3",
+      "embargo_days": 0,
+      "positive_days": 4,
+      "negative_days": 2,
+      "exact_one_sided_p": {
+        "numerator": 11,
+        "denominator": 32
+      },
+      "conditional_nominal_5pct_reject": false,
+      "conditional_80_claim_bonferroni_reject": false,
+      "mean_day_skill_negative": true,
+      "physically_independent_days_verified": false,
+      "g2_qualified": false
+    },
+    {
+      "channel": "MQ4_3",
+      "embargo_days": 1,
+      "positive_days": 5,
+      "negative_days": 1,
+      "exact_one_sided_p": {
+        "numerator": 7,
+        "denominator": 64
+      },
+      "conditional_nominal_5pct_reject": false,
+      "conditional_80_claim_bonferroni_reject": false,
+      "mean_day_skill_negative": true,
+      "physically_independent_days_verified": false,
+      "g2_qualified": false
+    },
+    {
+      "channel": "MQ4_3",
+      "embargo_days": 2,
+      "positive_days": 5,
+      "negative_days": 1,
+      "exact_one_sided_p": {
+        "numerator": 7,
+        "denominator": 64
+      },
+      "conditional_nominal_5pct_reject": false,
+      "conditional_80_claim_bonferroni_reject": false,
+      "mean_day_skill_negative": true,
+      "physically_independent_days_verified": false,
+      "g2_qualified": false
+    }
+  ],
+  "independent_physical_exposure_records": 0,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "limitations": "The six calendar days are observational and may be dependent, not six validated independent blinded physical exposures. The exact sign tails are conditional sensitivity calculations, not valid inferential p-values without independence and prespecified claims. Reusing nine channel/embargo variants does not create new independent groups. No calibration, ppm accuracy, gas identity, G2 or G3 qualification is established."
+}

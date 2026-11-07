@@ -1,0 +1,65 @@
+{
+  "schema": "hazrob.g2.mq4-raw-receipt-audit.v1",
+  "pinned_git_blob_sha1": "7ac634ff77518748c434bbbafa6934ce61548ca4",
+  "source_scope": {
+    "rows": 14186,
+    "calendar_days": 11,
+    "physical_mq4_units": 3
+  },
+  "correlation_sign_agreement_days": 11,
+  "all_sensor_positive_correlation_days": [
+    "2021-07-22",
+    "2021-07-24"
+  ],
+  "all_sensor_negative_correlation_days": [
+    "2021-07-21",
+    "2021-07-23",
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "reference_4ppm_range_support": {
+    "guaranteed_no_positive_days": [
+      "2021-07-26",
+      "2021-07-31"
+    ],
+    "range_crosses_threshold_days": [
+      "2021-07-21",
+      "2021-07-22",
+      "2021-07-23",
+      "2021-07-24",
+      "2021-07-25",
+      "2021-07-27",
+      "2021-07-28",
+      "2021-07-29",
+      "2021-07-30"
+    ],
+    "guaranteed_no_negative_days": [],
+    "note": "Range support only, not row-level positive/negative counts or sensitivity."
+  },
+  "daily_distinct_value_count_ratio_mq4_1_to_mq4_3": {
+    "2021-07-21": 13,
+    "2021-07-22": 18.6757,
+    "2021-07-23": 24.8511,
+    "2021-07-24": 26.26,
+    "2021-07-25": 24.3529,
+    "2021-07-26": 50.5185,
+    "2021-07-27": 29.1395,
+    "2021-07-28": 19.2969,
+    "2021-07-29": 22.7667,
+    "2021-07-30": 18.9067,
+    "2021-07-31": 18.0769
+  },
+  "ratio_min": 13,
+  "ratio_max": 50.5185,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "independent_tank_exposures": false,
+  "traceable_calibration": false,
+  "blinded_prospective": false,
+  "limitations": "Derived from a pinned compact JSON receipt, not replayed original ZIP. Daily correlations are dependent observational summaries, not independent exposures, causal effects, calibration, gas identification, certified ppm, alarm limits or scientific G2/G3 qualification."
+}

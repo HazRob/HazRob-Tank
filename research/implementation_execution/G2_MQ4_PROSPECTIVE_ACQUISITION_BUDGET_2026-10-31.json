@@ -1,0 +1,83 @@
+{
+  "existing_candidate_calendar_days": 11,
+  "gap_results": {
+    "0": {
+      "candidate_calendar_calibration_days_not_verified_exposures": 2,
+      "nominal_rank_budgets": {
+        "0.9": {
+          "minimum_exchangeable_calibration_groups": 9,
+          "prospective_contiguous_calendar_days_if_one_independent_group_per_day": 18,
+          "prospective_total_independent_exposure_groups_excluding_embargo": 18,
+          "rank_feasible_only_not_scientifically_qualified": true,
+          "shortfall_if_existing_calendar_days_were_valid_groups": 7
+        },
+        "0.95": {
+          "minimum_exchangeable_calibration_groups": 19,
+          "prospective_contiguous_calendar_days_if_one_independent_group_per_day": 28,
+          "prospective_total_independent_exposure_groups_excluding_embargo": 28,
+          "rank_feasible_only_not_scientifically_qualified": true,
+          "shortfall_if_existing_calendar_days_were_valid_groups": 17
+        }
+      }
+    },
+    "1": {
+      "candidate_calendar_calibration_days_not_verified_exposures": 1,
+      "nominal_rank_budgets": {
+        "0.9": {
+          "minimum_exchangeable_calibration_groups": 9,
+          "prospective_contiguous_calendar_days_if_one_independent_group_per_day": 19,
+          "prospective_total_independent_exposure_groups_excluding_embargo": 18,
+          "rank_feasible_only_not_scientifically_qualified": true,
+          "shortfall_if_existing_calendar_days_were_valid_groups": 8
+        },
+        "0.95": {
+          "minimum_exchangeable_calibration_groups": 19,
+          "prospective_contiguous_calendar_days_if_one_independent_group_per_day": 29,
+          "prospective_total_independent_exposure_groups_excluding_embargo": 28,
+          "rank_feasible_only_not_scientifically_qualified": true,
+          "shortfall_if_existing_calendar_days_were_valid_groups": 18
+        }
+      }
+    },
+    "2": {
+      "candidate_calendar_calibration_days_not_verified_exposures": 0,
+      "nominal_rank_budgets": {
+        "0.9": {
+          "minimum_exchangeable_calibration_groups": 9,
+          "prospective_contiguous_calendar_days_if_one_independent_group_per_day": 20,
+          "prospective_total_independent_exposure_groups_excluding_embargo": 18,
+          "rank_feasible_only_not_scientifically_qualified": true,
+          "shortfall_if_existing_calendar_days_were_valid_groups": 9
+        },
+        "0.95": {
+          "minimum_exchangeable_calibration_groups": 19,
+          "prospective_contiguous_calendar_days_if_one_independent_group_per_day": 30,
+          "prospective_total_independent_exposure_groups_excluding_embargo": 28,
+          "rank_feasible_only_not_scientifically_qualified": true,
+          "shortfall_if_existing_calendar_days_were_valid_groups": 19
+        }
+      }
+    }
+  },
+  "gaps_calendar_days": [
+    0,
+    1,
+    2
+  ],
+  "independent_exposure_records_available": 0,
+  "limitations": "Necessary finite-rank counts only. Historical days are not verified independent exposure groups; calendar gaps are not additional independent groups. The prospective count assumes exactly one eligible independent exposure group per consecutive calendar day. Even meeting counts does not prove exchangeability, empirical coverage, calibrated gas identity, transfer to Tank, or G2/G3 eligibility. Six holdout groups are an illustrative locked block, not a validated coverage sample size.",
+  "locked_test_groups": 6,
+  "min_training_groups": 3,
+  "minimum_group_counts": {
+    "0.9": 9,
+    "0.95": 19
+  },
+  "schema": "hazrob.g2.mq4-prospective-acquisition-rank-budget.v1",
+  "scientific_state": {
+    "blinded_holdout_verified": false,
+    "exchangeability_verified": false,
+    "g2_qualified": false,
+    "g3_qualified": false,
+    "traceable_reference_calibration_verified": false
+  }
+}

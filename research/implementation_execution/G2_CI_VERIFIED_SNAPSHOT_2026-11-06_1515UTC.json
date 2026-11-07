@@ -1,0 +1,33 @@
+{
+  "schema": "hazrob.g2.ci-evidence-snapshot.v1",
+  "checked_at_utc": "2026-11-06T15:15:18Z",
+  "repository": "HazRob/HazRob-Tank",
+  "branch": "research/chemcore80-central-evidence-gap-analysis-20261021",
+  "head_sha": "95139b6d558bfd438066c162bc0958c4034a79a1",
+  "workflow_runs_checked": 12,
+  "workflow_run_ids": [
+    42216703587,
+    42216703657,
+    42216703506,
+    42216703536,
+    42216703466,
+    42216703869,
+    42216703499,
+    42216703328,
+    42216703481,
+    42216703565,
+    42216703599,
+    42216703643
+  ],
+  "conclusion": "12/12 completed success for inspected head runs; not a scientific validation",
+  "independent_evidence_file": "research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json",
+  "independent_evidence_blob_sha": "c44f7cbf9aa767c7aeabb750e34eaa339868e43e",
+  "independent_evidence_records": 0,
+  "scientific_g2_complete": false,
+  "stable_modified": false,
+  "limitation": "No independently acquired and documented blinded physical holdout observations. CI success cannot substitute for empirical validation.",
+  "reproduction": {
+    "runs_api": "https://api.github.com/repos/HazRob/HazRob-Tank/actions/runs?branch=research%2Fchemcore80-central-evidence-gap-analysis-20261021&per_page=30",
+    "evidence_file": "https://github.com/HazRob/HazRob-Tank/blob/research/chemcore80-central-evidence-gap-analysis-20261021/research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json"
+  }
+}

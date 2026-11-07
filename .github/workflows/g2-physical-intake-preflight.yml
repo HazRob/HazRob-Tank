@@ -1,0 +1,57 @@
+name: G2 physical evidence intake preflight
+on:
+  push:
+    branches:
+      - 'research/chemcore80-central-evidence-gap-analysis-20261021'
+    paths:
+      - 'research/implementation_execution/g2_physical_intake_gate.py'
+      - 'research/implementation_execution/g2_holdout_guard.py'
+      - 'research/implementation_execution/test_g2_holdout_guard.py'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
+      - '.github/workflows/g2-physical-intake-preflight.yml'
+  pull_request:
+    paths:
+      - 'research/implementation_execution/g2_physical_intake_gate.py'
+      - 'research/implementation_execution/g2_holdout_guard.py'
+      - 'research/implementation_execution/test_g2_holdout_guard.py'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
+      - '.github/workflows/g2-physical-intake-preflight.yml'
+  workflow_dispatch:
+jobs:
+  physical-intake-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check
+        run: python -m py_compile research/implementation_execution/g2_physical_intake_gate.py
+      - name: Fail-closed regression tests
+        run: python research/implementation_execution/g2_physical_intake_gate.py --self-test
+      - name: Holdout leakage guard regression tests (research preflight only)
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_holdout_guard.py' -v
+      - name: Holdout guard syntax check
+        run: python -m py_compile research/implementation_execution/g2_holdout_guard.py research/implementation_execution/test_g2_holdout_guard.py
+      - name: Evidence register schema and no-approval assertion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json")
+          def reject_duplicate(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError(f"duplicate JSON key: {key}")
+                  result[key] = value
+              return result
+          doc = json.loads(p.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate,
+                           parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+          assert isinstance(doc, dict) and doc.get("schema") == "hazrob.g2.independent-evidence.v1"
+          assert isinstance(doc.get("records"), list)
+          assert not doc.get("g2_approved", False), "Evidence register must not grant G2 approval"
+          print(f"Evidence register parsed: {len(doc['records'])} records; no G2 approval granted")
+          PY

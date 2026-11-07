@@ -1,0 +1,71 @@
+{
+  "channels": {
+    "MQ4_1": {
+      "constant_runs_at_least_two": 7,
+      "constant_runs_with_reference_span_at_least_100ppb": 0,
+      "longest_strict_minute_run": 2,
+      "max_reference_span_ppb_in_constant_run": 2.05580000000009,
+      "noncontiguous_equal_pairs_excluded": 0,
+      "strict_equal_pairs_by_later_row_day": {
+        "2021-07-21": 2,
+        "2021-07-22": 2,
+        "2021-07-26": 1,
+        "2021-07-27": 2
+      },
+      "strict_minute_equal_pairs": 7
+    },
+    "MQ4_2": {
+      "constant_runs_at_least_two": 13,
+      "constant_runs_with_reference_span_at_least_100ppb": 0,
+      "longest_strict_minute_run": 2,
+      "max_reference_span_ppb_in_constant_run": 8.30489999999918,
+      "noncontiguous_equal_pairs_excluded": 0,
+      "strict_equal_pairs_by_later_row_day": {
+        "2021-07-21": 1,
+        "2021-07-22": 2,
+        "2021-07-23": 1,
+        "2021-07-24": 1,
+        "2021-07-25": 1,
+        "2021-07-26": 2,
+        "2021-07-27": 4,
+        "2021-07-28": 1
+      },
+      "strict_minute_equal_pairs": 13
+    },
+    "MQ4_3": {
+      "constant_runs_at_least_two": 3430,
+      "constant_runs_with_reference_span_at_least_100ppb": 25,
+      "longest_strict_minute_run": 15,
+      "max_reference_span_ppb_in_constant_run": 1201.7228999999998,
+      "noncontiguous_equal_pairs_excluded": 0,
+      "strict_equal_pairs_by_later_row_day": {
+        "2021-07-21": 330,
+        "2021-07-22": 559,
+        "2021-07-23": 558,
+        "2021-07-24": 592,
+        "2021-07-25": 672,
+        "2021-07-26": 639,
+        "2021-07-27": 697,
+        "2021-07-28": 608,
+        "2021-07-29": 480,
+        "2021-07-30": 500,
+        "2021-07-31": 271
+      },
+      "strict_minute_equal_pairs": 5906
+    }
+  },
+  "g2_qualified": false,
+  "g3_tank_qualified": false,
+  "independent_exposure_groups_verified": false,
+  "interpretation": "Descriptive raw-channel plateau statistics only; no causal sensor diagnosis, independent exposure, calibration, or gas identification.",
+  "non_60_second_gaps": 10,
+  "row_count": 14186,
+  "schema": "hazrob.g2.mq4-gap-aware-plateau.v1",
+  "source_archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_calibration_traceability_verified": false,
+  "source_hashes_verified": true,
+  "source_id": "MQ-ACQ-2026-06",
+  "source_member": "raw/MQ-ACQ-2026-06_umn_10ppm_data_csv.csv",
+  "source_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "strict_minute_adjacent_pairs": 14175
+}

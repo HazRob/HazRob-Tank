@@ -1,0 +1,77 @@
+{
+  "schema": "hazrob.g2.mq4-familywise-nonzero-miss-budget.v1",
+  "family_confidence_one_sided": 0.95,
+  "number_of_predeclared_claims": 80,
+  "bonferroni_per_claim_alpha": 0.000625,
+  "target_coverage_levels": [
+    0.9,
+    0.95
+  ],
+  "allowed_misses": [
+    0,
+    1,
+    2,
+    5
+  ],
+  "results": {
+    "0.9": {
+      "0": {
+        "minimum_independent_locked_holdout_groups_per_claim": 71,
+        "maximum_predeclared_misses": 0,
+        "rejection_tail_at_minimum": 0.0005639208733960174,
+        "scientifically_qualified": false
+      },
+      "1": {
+        "minimum_independent_locked_holdout_groups_per_claim": 94,
+        "maximum_predeclared_misses": 1,
+        "rejection_tail_at_minimum": 0.000571992853271997,
+        "scientifically_qualified": false
+      },
+      "2": {
+        "minimum_independent_locked_holdout_groups_per_claim": 113,
+        "maximum_predeclared_misses": 2,
+        "rejection_tail_at_minimum": 0.0006189755475131121,
+        "scientifically_qualified": false
+      },
+      "5": {
+        "minimum_independent_locked_holdout_groups_per_claim": 165,
+        "maximum_predeclared_misses": 5,
+        "rejection_tail_at_minimum": 0.0006191624034135218,
+        "scientifically_qualified": false
+      }
+    },
+    "0.95": {
+      "0": {
+        "minimum_independent_locked_holdout_groups_per_claim": 144,
+        "maximum_predeclared_misses": 0,
+        "rejection_tail_at_minimum": 0.0006197252075469534,
+        "scientifically_qualified": false
+      },
+      "1": {
+        "minimum_independent_locked_holdout_groups_per_claim": 191,
+        "maximum_predeclared_misses": 1,
+        "rejection_tail_at_minimum": 0.0006147156981509863,
+        "scientifically_qualified": false
+      },
+      "2": {
+        "minimum_independent_locked_holdout_groups_per_claim": 231,
+        "maximum_predeclared_misses": 2,
+        "rejection_tail_at_minimum": 0.0006200090601433074,
+        "scientifically_qualified": false
+      },
+      "5": {
+        "minimum_independent_locked_holdout_groups_per_claim": 336,
+        "maximum_predeclared_misses": 5,
+        "rejection_tail_at_minimum": 0.0006247231475308954,
+        "scientifically_qualified": false
+      }
+    }
+  },
+  "zero_miss_crosscheck_90": 71,
+  "zero_miss_crosscheck_95": 144,
+  "physical_independent_evidence_records": 0,
+  "original_mq4_zip_replayed_this_iteration": false,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "limitations": "Exact conditional one-sided binomial and Bonferroni planning, not an empirical result. Requires fixed prespecified claims, blinded independent representative physical holdout groups within each claim and trustworthy reference truth. Dependence between claims is permitted for Bonferroni, but not pseudoreplication of rows within a claim. Calendar days are not automatically independent physical exposures. More than k misses fails the stated design; no valid scientific qualification follows from this calculation."
+}

@@ -1,0 +1,247 @@
+{
+  "schema": "hazrob.g2.mq4-forward-day-ranking.v1",
+  "source_zip_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_csv_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "calendar_days": [
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "models": [
+    "HGB_MQ4_3_T_RH",
+    "RIDGE_MQ4_1",
+    "RIDGE_MQ4_3",
+    "RIDGE_MQ4_3_T_RH",
+    "TRAIN_MEDIAN_REFERENCE"
+  ],
+  "pooled_mae_ascending": [
+    "RIDGE_MQ4_1",
+    "TRAIN_MEDIAN_REFERENCE",
+    "HGB_MQ4_3_T_RH",
+    "RIDGE_MQ4_3",
+    "RIDGE_MQ4_3_T_RH"
+  ],
+  "pooled_mae_by_model": {
+    "HGB_MQ4_3_T_RH": 0.9556583929780766,
+    "RIDGE_MQ4_1": 0.8221177529562409,
+    "RIDGE_MQ4_3": 1.0555175132789816,
+    "RIDGE_MQ4_3_T_RH": 1.2102898261788209,
+    "TRAIN_MEDIAN_REFERENCE": 0.8412856624718498
+  },
+  "day_first_place_counts": {
+    "HGB_MQ4_3_T_RH": 1,
+    "RIDGE_MQ4_1": 3,
+    "RIDGE_MQ4_3": 0,
+    "RIDGE_MQ4_3_T_RH": 2,
+    "TRAIN_MEDIAN_REFERENCE": 1
+  },
+  "daily": [
+    {
+      "day": "2021-07-25",
+      "rows": 1436,
+      "reference_positives": 246,
+      "mae_ascending": [
+        "RIDGE_MQ4_1",
+        "HGB_MQ4_3_T_RH",
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_3",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "mae_by_model": {
+        "HGB_MQ4_3_T_RH": 0.696716749099293,
+        "RIDGE_MQ4_1": 0.5616213821406836,
+        "RIDGE_MQ4_3": 1.0718625619238786,
+        "RIDGE_MQ4_3_T_RH": 2.7556916903537765,
+        "TRAIN_MEDIAN_REFERENCE": 0.8798911942200558
+      }
+    },
+    {
+      "day": "2021-07-26",
+      "rows": 1440,
+      "reference_positives": 0,
+      "mae_ascending": [
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3_T_RH",
+        "TRAIN_MEDIAN_REFERENCE",
+        "HGB_MQ4_3_T_RH",
+        "RIDGE_MQ4_3"
+      ],
+      "mae_by_model": {
+        "HGB_MQ4_3_T_RH": 0.5979370070091191,
+        "RIDGE_MQ4_1": 0.32232408655930544,
+        "RIDGE_MQ4_3": 0.8700688813510402,
+        "RIDGE_MQ4_3_T_RH": 0.32755047881636845,
+        "TRAIN_MEDIAN_REFERENCE": 0.501708077673611
+      }
+    },
+    {
+      "day": "2021-07-27",
+      "rows": 1437,
+      "reference_positives": 238,
+      "mae_ascending": [
+        "HGB_MQ4_3_T_RH",
+        "RIDGE_MQ4_3",
+        "RIDGE_MQ4_1",
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "mae_by_model": {
+        "HGB_MQ4_3_T_RH": 0.31983763664226267,
+        "RIDGE_MQ4_1": 0.5362742373211228,
+        "RIDGE_MQ4_3": 0.38719122004833706,
+        "RIDGE_MQ4_3_T_RH": 0.9742650911391977,
+        "TRAIN_MEDIAN_REFERENCE": 0.8573234376478774
+      }
+    },
+    {
+      "day": "2021-07-28",
+      "rows": 1437,
+      "reference_positives": 183,
+      "mae_ascending": [
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3",
+        "TRAIN_MEDIAN_REFERENCE",
+        "HGB_MQ4_3_T_RH",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "mae_by_model": {
+        "HGB_MQ4_3_T_RH": 0.6639623319789547,
+        "RIDGE_MQ4_1": 0.393705329488624,
+        "RIDGE_MQ4_3": 0.3949857443196655,
+        "RIDGE_MQ4_3_T_RH": 1.3436409904699338,
+        "TRAIN_MEDIAN_REFERENCE": 0.6266977117606124
+      }
+    },
+    {
+      "day": "2021-07-29",
+      "rows": 1418,
+      "reference_positives": 461,
+      "mae_ascending": [
+        "RIDGE_MQ4_3_T_RH",
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3",
+        "TRAIN_MEDIAN_REFERENCE",
+        "HGB_MQ4_3_T_RH"
+      ],
+      "mae_by_model": {
+        "HGB_MQ4_3_T_RH": 2.2024330434031754,
+        "RIDGE_MQ4_1": 1.31828276021341,
+        "RIDGE_MQ4_3": 1.4042468963282209,
+        "RIDGE_MQ4_3_T_RH": 0.6809519729810201,
+        "TRAIN_MEDIAN_REFERENCE": 1.5865451400211565
+      }
+    },
+    {
+      "day": "2021-07-30",
+      "rows": 1434,
+      "reference_positives": 297,
+      "mae_ascending": [
+        "RIDGE_MQ4_3_T_RH",
+        "TRAIN_MEDIAN_REFERENCE",
+        "HGB_MQ4_3_T_RH",
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3"
+      ],
+      "mae_by_model": {
+        "HGB_MQ4_3_T_RH": 1.0230247019589385,
+        "RIDGE_MQ4_1": 1.2301502609500155,
+        "RIDGE_MQ4_3": 1.651368281429546,
+        "RIDGE_MQ4_3_T_RH": 0.9097196635536596,
+        "TRAIN_MEDIAN_REFERENCE": 0.912488870083682
+      }
+    },
+    {
+      "day": "2021-07-31",
+      "rows": 723,
+      "reference_positives": 0,
+      "mae_ascending": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "HGB_MQ4_3_T_RH",
+        "RIDGE_MQ4_3_T_RH",
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3"
+      ],
+      "mae_by_model": {
+        "HGB_MQ4_3_T_RH": 1.4470427934403018,
+        "RIDGE_MQ4_1": 1.9721604304660862,
+        "RIDGE_MQ4_3": 2.167820844948976,
+        "RIDGE_MQ4_3_T_RH": 1.737410425696479,
+        "TRAIN_MEDIAN_REFERENCE": 0.23269291265560166
+      }
+    }
+  ],
+  "pairwise_pooled_vs_day": {
+    "HGB_MQ4_3_T_RH__vs__RIDGE_MQ4_1": {
+      "pooled_better": "RIDGE_MQ4_1",
+      "agree_days": 4,
+      "reverse_days": 3,
+      "tied_days": 0
+    },
+    "HGB_MQ4_3_T_RH__vs__RIDGE_MQ4_3": {
+      "pooled_better": "HGB_MQ4_3_T_RH",
+      "agree_days": 5,
+      "reverse_days": 2,
+      "tied_days": 0
+    },
+    "HGB_MQ4_3_T_RH__vs__RIDGE_MQ4_3_T_RH": {
+      "pooled_better": "HGB_MQ4_3_T_RH",
+      "agree_days": 4,
+      "reverse_days": 3,
+      "tied_days": 0
+    },
+    "HGB_MQ4_3_T_RH__vs__TRAIN_MEDIAN_REFERENCE": {
+      "pooled_better": "TRAIN_MEDIAN_REFERENCE",
+      "agree_days": 5,
+      "reverse_days": 2,
+      "tied_days": 0
+    },
+    "RIDGE_MQ4_1__vs__RIDGE_MQ4_3": {
+      "pooled_better": "RIDGE_MQ4_1",
+      "agree_days": 6,
+      "reverse_days": 1,
+      "tied_days": 0
+    },
+    "RIDGE_MQ4_1__vs__RIDGE_MQ4_3_T_RH": {
+      "pooled_better": "RIDGE_MQ4_1",
+      "agree_days": 4,
+      "reverse_days": 3,
+      "tied_days": 0
+    },
+    "RIDGE_MQ4_1__vs__TRAIN_MEDIAN_REFERENCE": {
+      "pooled_better": "RIDGE_MQ4_1",
+      "agree_days": 5,
+      "reverse_days": 2,
+      "tied_days": 0
+    },
+    "RIDGE_MQ4_3__vs__RIDGE_MQ4_3_T_RH": {
+      "pooled_better": "RIDGE_MQ4_3",
+      "agree_days": 3,
+      "reverse_days": 4,
+      "tied_days": 0
+    },
+    "RIDGE_MQ4_3__vs__TRAIN_MEDIAN_REFERENCE": {
+      "pooled_better": "TRAIN_MEDIAN_REFERENCE",
+      "agree_days": 4,
+      "reverse_days": 3,
+      "tied_days": 0
+    },
+    "RIDGE_MQ4_3_T_RH__vs__TRAIN_MEDIAN_REFERENCE": {
+      "pooled_better": "TRAIN_MEDIAN_REFERENCE",
+      "agree_days": 4,
+      "reverse_days": 3,
+      "tied_days": 0
+    }
+  },
+  "pairwise_comparisons": 70,
+  "pairwise_reversals": 26,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "independent_tank_exposures": false,
+  "blinded_prospective": false,
+  "traceable_calibration": false,
+  "limitations": "MAE ranks describe seven calendar days of an external observational MQ4 forward-only receipt. Shared training history and repeated readings make days and pairwise comparisons non-independent. Ranking does not establish gas identity, ppm calibration, Tank performance, alarm fitness, confidence intervals, or G2/G3 qualification."
+}

@@ -1,0 +1,342 @@
+{
+  "schema_version": "hazrob.tank.v4.batch03.source-readiness.v1",
+  "date": "2026-10-21",
+  "batch": 3,
+  "ids": [
+    "03.6",
+    "03.7",
+    "03.8",
+    "04.1",
+    "04.2",
+    "04.3",
+    "04.4",
+    "04.5",
+    "04.6",
+    "04.7"
+  ],
+  "central_reference_bank": {
+    "repo": "HazRob/build-harness",
+    "path": "library/reference-bank/external-research/master_catalog.json",
+    "source_blob_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+    "records": 80
+  },
+  "source_qualified_new_benchmarks": 0,
+  "G3_Tank_physical": 0,
+  "items": [
+    {
+      "id": "03.6",
+      "source_ids": [
+        "SYS-01",
+        "SYS-04",
+        "MQ-EXT-11"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "No source-independent physical-device holdout and nested subset tuning established; MQ wood/source archives pending.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    },
+    {
+      "id": "03.7",
+      "source_ids": [
+        "MQ-EXT-10",
+        "MQ-EXT-15",
+        "UCI-EXT-270"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "Existing UCI1081 concentration series is real external source but independent exposure-group validation with this new module was not executed.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    },
+    {
+      "id": "03.8",
+      "source_ids": [
+        "SYS-07",
+        "SYS-08",
+        "SYS-09",
+        "QSPR-REF-09"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-08",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-09",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "QSPR-REF-09",
+          "raw_status": "RAW_NOT_VERIFIED"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "Jacobian synthetic input must be derived from calibrated multi-analyte physical mixtures, not manufacturer gas-class curves.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    },
+    {
+      "id": "04.1",
+      "source_ids": [
+        "TOOL-MQ-01",
+        "CN-MQ-01",
+        "R0-PEER-01"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "TOOL-MQ-01",
+          "raw_status": "CODE_AND_METADATA_INSPECTED"
+        },
+        {
+          "ref": "CN-MQ-01",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "Manufacturer digitized curves and external R0 have no per-Tank sensor calibration; output is hypotheses.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    },
+    {
+      "id": "04.2",
+      "source_ids": [
+        "MQ-EXT-03",
+        "MQ-EXT-11",
+        "MQ-EXT-15"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "MQ-EXT-03 CSV classes Perfume/Smoke/NoGas/Mixture are operational classes; physical exposure group metadata cannot be confirmed from rows.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    },
+    {
+      "id": "04.3",
+      "source_ids": [
+        "SYS-06",
+        "MQ-EXT-03"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "KNN grouped wrapper only exercised on synthetic independent groups; no audited external grouped MQ benchmark.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    },
+    {
+      "id": "04.4",
+      "source_ids": [
+        "MQ-EXT-15",
+        "UCI-EXT-270"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "Softmax raw scores need heldout probability calibration and actual source groups; external model data not yet tested.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    },
+    {
+      "id": "04.5",
+      "source_ids": [
+        "SYS-01",
+        "CN-RSCH-02",
+        "MQ-EXT-15"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-02",
+          "raw_status": "RAW_EXPERIMENT_NOT_AVAILABLE_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "Only linear one-vs-rest SVM exists in this module; trained linear/RBF implementations elsewhere in benchmarks are not yet unified.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    },
+    {
+      "id": "04.6",
+      "source_ids": [
+        "SYS-13",
+        "SYS-04"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "SYS-13",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "Random Forest external/UCI benchmark and ExtraTrees comparison are still missing for this new V4 wrapper.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    },
+    {
+      "id": "04.7",
+      "source_ids": [
+        "SYS-01",
+        "MQ-EXT-15"
+      ],
+      "source_snapshot_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "source_evidence_statuses": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "software_G1": "PASS_GROUPED_SYNTHETIC_AND_LEGACY",
+      "external_source_G2_V4": "NOT_EXECUTED",
+      "Tank_G3": "NOT_VALIDATED",
+      "scientific_blocker": "Boosted decision stumps are NOT XGBoost; actual XGBoost research benchmark must be parity-tested and wrapped separately.",
+      "promotion_requirements": [
+        "Original real MQ or source MOS bytes, units, sensor instance model and traceable gas labels",
+        "Document actual independent exposure/session/device IDs; group train vs final test without data leakage",
+        "Holdout metrics per gas and concentration and negative/unknown class controls",
+        "Candidate accuracy / uncertainty cannot stand in for independently measured ppm or hardware gas safety"
+      ]
+    }
+  ]
+}

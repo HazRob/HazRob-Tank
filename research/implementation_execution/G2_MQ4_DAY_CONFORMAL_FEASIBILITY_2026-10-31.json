@@ -1,0 +1,298 @@
+{
+  "schema": "hazrob.g2.mq4-day-conformal-rank-feasibility.v1",
+  "raw_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "source_rows": 14186,
+  "source_days": [
+    "2021-07-21",
+    "2021-07-22",
+    "2021-07-23",
+    "2021-07-24",
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "rows_by_day": {
+    "2021-07-21": 774,
+    "2021-07-22": 1435,
+    "2021-07-23": 1231,
+    "2021-07-24": 1421,
+    "2021-07-25": 1436,
+    "2021-07-26": 1440,
+    "2021-07-27": 1437,
+    "2021-07-28": 1437,
+    "2021-07-29": 1418,
+    "2021-07-30": 1434,
+    "2021-07-31": 723
+  },
+  "test_days": [
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "holdout_days": 6,
+  "min_train_days": 3,
+  "gaps": [
+    0,
+    1,
+    2
+  ],
+  "nominal_levels": [
+    0.9,
+    0.95
+  ],
+  "minimum_exchangeable_calibration_groups_for_finite_threshold": {
+    "0.9": 9,
+    "0.95": 19
+  },
+  "gap_results": {
+    "0": {
+      "locked_holdout_block_calibration_capacity": {
+        "eligible_past_days_before_locked_test_block": 5,
+        "maximum_calendar_calibration_days": 2,
+        "largest_finite_rank_fraction_if_exchangeable": 0.6666666666666666,
+        "finite_nominal_feasible": {
+          "0.9": false,
+          "0.95": false
+        }
+      },
+      "max_calendar_calibration_days_over_tests": 7,
+      "all_test_days_finite_nominal_feasible": {
+        "0.9": false,
+        "0.95": false
+      },
+      "folds": {
+        "2021-07-26": {
+          "eligible_past_days": 5,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 2,
+          "largest_finite_rank_fraction_if_exchangeable": 0.6666666666666666,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-27": {
+          "eligible_past_days": 6,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 3,
+          "largest_finite_rank_fraction_if_exchangeable": 0.75,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-28": {
+          "eligible_past_days": 7,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 4,
+          "largest_finite_rank_fraction_if_exchangeable": 0.8,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-29": {
+          "eligible_past_days": 8,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 5,
+          "largest_finite_rank_fraction_if_exchangeable": 0.8333333333333334,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-30": {
+          "eligible_past_days": 9,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 6,
+          "largest_finite_rank_fraction_if_exchangeable": 0.8571428571428571,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-31": {
+          "eligible_past_days": 10,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 7,
+          "largest_finite_rank_fraction_if_exchangeable": 0.875,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        }
+      }
+    },
+    "1": {
+      "locked_holdout_block_calibration_capacity": {
+        "eligible_past_days_before_locked_test_block": 4,
+        "maximum_calendar_calibration_days": 1,
+        "largest_finite_rank_fraction_if_exchangeable": 0.5,
+        "finite_nominal_feasible": {
+          "0.9": false,
+          "0.95": false
+        }
+      },
+      "max_calendar_calibration_days_over_tests": 6,
+      "all_test_days_finite_nominal_feasible": {
+        "0.9": false,
+        "0.95": false
+      },
+      "folds": {
+        "2021-07-26": {
+          "eligible_past_days": 4,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 1,
+          "largest_finite_rank_fraction_if_exchangeable": 0.5,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-27": {
+          "eligible_past_days": 5,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 2,
+          "largest_finite_rank_fraction_if_exchangeable": 0.6666666666666666,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-28": {
+          "eligible_past_days": 6,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 3,
+          "largest_finite_rank_fraction_if_exchangeable": 0.75,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-29": {
+          "eligible_past_days": 7,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 4,
+          "largest_finite_rank_fraction_if_exchangeable": 0.8,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-30": {
+          "eligible_past_days": 8,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 5,
+          "largest_finite_rank_fraction_if_exchangeable": 0.8333333333333334,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-31": {
+          "eligible_past_days": 9,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 6,
+          "largest_finite_rank_fraction_if_exchangeable": 0.8571428571428571,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        }
+      }
+    },
+    "2": {
+      "locked_holdout_block_calibration_capacity": {
+        "eligible_past_days_before_locked_test_block": 3,
+        "maximum_calendar_calibration_days": 0,
+        "largest_finite_rank_fraction_if_exchangeable": 0,
+        "finite_nominal_feasible": {
+          "0.9": false,
+          "0.95": false
+        }
+      },
+      "max_calendar_calibration_days_over_tests": 5,
+      "all_test_days_finite_nominal_feasible": {
+        "0.9": false,
+        "0.95": false
+      },
+      "folds": {
+        "2021-07-26": {
+          "eligible_past_days": 3,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 0,
+          "largest_finite_rank_fraction_if_exchangeable": 0,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-27": {
+          "eligible_past_days": 4,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 1,
+          "largest_finite_rank_fraction_if_exchangeable": 0.5,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-28": {
+          "eligible_past_days": 5,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 2,
+          "largest_finite_rank_fraction_if_exchangeable": 0.6666666666666666,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-29": {
+          "eligible_past_days": 6,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 3,
+          "largest_finite_rank_fraction_if_exchangeable": 0.75,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-30": {
+          "eligible_past_days": 7,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 4,
+          "largest_finite_rank_fraction_if_exchangeable": 0.8,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        },
+        "2021-07-31": {
+          "eligible_past_days": 8,
+          "minimum_train_days": 3,
+          "maximum_calendar_calibration_days": 5,
+          "largest_finite_rank_fraction_if_exchangeable": 0.8333333333333334,
+          "finite_nominal_feasible": {
+            "0.9": false,
+            "0.95": false
+          }
+        }
+      }
+    }
+  },
+  "scientific_state": {
+    "g2_qualified": false,
+    "g3_tank_qualified": false,
+    "physical_independence_verified": false,
+    "reference_calibration_verified": false,
+    "blinded_holdout_verified": false
+  },
+  "limitations": "Calendar days are at most candidate groups, not verified independent physical exposures or exchangeable calibration groups. This is only the finite-rank feasibility bound for split conformal, not actual intervals, observed coverage, a safety guarantee, or G2/G3 evidence."
+}
