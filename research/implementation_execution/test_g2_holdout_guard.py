@@ -1,4 +1,5 @@
-import json,unittest
+import json,unittest,subprocess,sys,tempfile
+from pathlib import Path
 from g2_holdout_guard import check,unique
 def row(v,p):
  return dict(raw_sha256=v*64,source_id=v,device_id=v,session_id=v,exposure_series_id=v,calibration_episode_id=v,partition=p)
@@ -55,4 +56,31 @@ class Tests(unittest.TestCase):
     self.assertFalse(result["g2_approved"])
  def test_duplicate(self):
   with self.assertRaises(ValueError): json.loads('{"x":1,"x":2}',object_pairs_hook=unique)
+class CliContractTests(unittest.TestCase):
+ def run_cli(self, payload):
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d)/"split.json"
+   path.write_text(payload,encoding="utf-8")
+   proc=subprocess.run([sys.executable,str(Path(__file__).with_name("g2_holdout_guard.py")),str(path)],capture_output=True,text=True,check=False)
+   return proc,json.loads(proc.stdout)
+ def test_cli_disjoint_preflight_only(self):
+  proc,result=self.run_cli(json.dumps(doc([row("a","train"),row("b","test")])))
+  self.assertEqual(proc.returncode,0)
+  self.assertEqual(result["status"],"GROUP_PREFLIGHT_ONLY")
+  self.assertIs(result["g2_approved"],False)
+ def test_cli_leakage_fails_closed(self):
+  proc,result=self.run_cli(json.dumps(doc([row("a","train"),row("a","test")])))
+  self.assertEqual(proc.returncode,2)
+  self.assertEqual(result["status"],"REJECTED")
+  self.assertIs(result["g2_approved"],False)
+ def test_cli_duplicate_json_keys_fails_closed(self):
+  proc,result=self.run_cli('{"schema":"hazrob.g2.holdout-split.v1","rows":[],"rows":[]}')
+  self.assertEqual(proc.returncode,2)
+  self.assertEqual(result["status"],"INPUT_ERROR")
+  self.assertIs(result["g2_approved"],False)
+ def test_cli_nonfinite_json_fails_closed(self):
+  proc,result=self.run_cli('{"schema":"hazrob.g2.holdout-split.v1","rows":[NaN]}')
+  self.assertEqual(proc.returncode,2)
+  self.assertEqual(result["status"],"INPUT_ERROR")
+  self.assertIs(result["g2_approved"],False)
 if __name__=="__main__": unittest.main()
