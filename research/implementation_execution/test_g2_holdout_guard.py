@@ -66,6 +66,15 @@ class Tests(unittest.TestCase):
      self.assertEqual(result["status"],"REJECTED")
      self.assertTrue(any(e.startswith("control character "+key) for e in result["errors"]))
      self.assertIn("no train records",result["errors"])
+ def test_noncanonical_internal_whitespace_rejected(self):
+  for char in ("\u00a0","\u2003","\u202f","\u3000","\u0085"):
+   for key in ("source_id","device_id","session_id","exposure_series_id","calibration_episode_id"):
+    with self.subTest(char=repr(char),key=key):
+     train=row("a","train")
+     train[key]="prefix"+char+"suffix"
+     result=check(doc([train,row("b","test")]))
+     self.assertEqual(result["status"],"REJECTED")
+     self.assertIn("no train records",result["errors"])
  def test_nfkc_identifier_alias_rejected(self):
   for alias in ("\uff21", "\u212a", "\ufb01"):
    for key in ("source_id","device_id","session_id","exposure_series_id","calibration_episode_id"):
