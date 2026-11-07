@@ -33,6 +33,19 @@ class Tests(unittest.TestCase):
     result=check(doc([train,test]))
     self.assertEqual(result["status"],"REJECTED")
     self.assertTrue(any(e.startswith("leakage "+key+"=") for e in result["errors"]))
+ def test_whitespace_alias_cannot_bypass_group_leakage(self):
+  train=row("a","train")
+  test=row("b","test")
+  test["device_id"]=" "+train["device_id"]+" "
+  result=check(doc([train,test]))
+  self.assertEqual(result["status"],"REJECTED")
+  self.assertTrue(any(e.startswith("leakage device_id=") for e in result["errors"]))
+ def test_whitespace_group_identifier_rejected_even_without_leakage(self):
+  train=row("a","train")
+  train["source_id"]=" source "
+  result=check(doc([train,row("b","test")]))
+  self.assertEqual(result["status"],"REJECTED")
+  self.assertIn("no train records",result["errors"])
  def test_same_source_within_train_is_allowed(self):
   a=row("a","train")
   b=row("b","train")
