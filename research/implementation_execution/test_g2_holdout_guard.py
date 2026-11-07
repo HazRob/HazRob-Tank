@@ -46,6 +46,16 @@ class Tests(unittest.TestCase):
   result=check(doc([train,row("b","test")]))
   self.assertEqual(result["status"],"REJECTED")
   self.assertIn("no train records",result["errors"])
+ def test_control_characters_in_group_identifiers_rejected(self):
+  for char in ("\\x00","\\n","\\t","\\x7f"):
+   for key in ("source_id","device_id","session_id","exposure_series_id","calibration_episode_id"):
+    with self.subTest(char=repr(char),key=key):
+     train=row("a","train")
+     train[key]="prefix"+char+"suffix"
+     result=check(doc([train,row("b","test")]))
+     self.assertEqual(result["status"],"REJECTED")
+     self.assertTrue(any(e.startswith("control character "+key) for e in result["errors"]))
+     self.assertIn("no train records",result["errors"])
  def test_same_source_within_train_is_allowed(self):
   a=row("a","train")
   b=row("b","train")
