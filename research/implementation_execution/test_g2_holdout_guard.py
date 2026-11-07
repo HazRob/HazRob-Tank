@@ -66,6 +66,16 @@ class Tests(unittest.TestCase):
      self.assertEqual(result["status"],"REJECTED")
      self.assertTrue(any(e.startswith("control character "+key) for e in result["errors"]))
      self.assertIn("no train records",result["errors"])
+ def test_nfkc_identifier_alias_rejected(self):
+  for alias in ("\uff21", "\u212a", "\ufb01"):
+   for key in ("source_id","device_id","session_id","exposure_series_id","calibration_episode_id"):
+    with self.subTest(alias=repr(alias),key=key):
+     train=row("a","train")
+     train[key]="prefix"+alias
+     result=check(doc([train,row("b","test")]))
+     self.assertEqual(result["status"],"REJECTED")
+     self.assertTrue(any(e.startswith("noncanonical unicode "+key) for e in result["errors"]))
+     self.assertIn("no train records",result["errors"])
  def test_same_source_within_train_is_allowed(self):
   a=row("a","train")
   b=row("b","train")
