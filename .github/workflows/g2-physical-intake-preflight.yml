@@ -7,12 +7,14 @@ on:
       - 'research/implementation_execution/g2_physical_intake_gate.py'
       - 'research/implementation_execution/g2_holdout_guard.py'
       - 'research/implementation_execution/test_g2_holdout_guard.py'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
       - '.github/workflows/g2-physical-intake-preflight.yml'
   pull_request:
     paths:
       - 'research/implementation_execution/g2_physical_intake_gate.py'
       - 'research/implementation_execution/g2_holdout_guard.py'
       - 'research/implementation_execution/test_g2_holdout_guard.py'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
       - '.github/workflows/g2-physical-intake-preflight.yml'
   workflow_dispatch:
 jobs:
@@ -33,3 +35,23 @@ jobs:
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_holdout_guard.py' -v
       - name: Holdout guard syntax check
         run: python -m py_compile research/implementation_execution/g2_holdout_guard.py research/implementation_execution/test_g2_holdout_guard.py
+      - name: Evidence register schema and no-approval assertion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json")
+          def reject_duplicate(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError(f"duplicate JSON key: {key}")
+                  result[key] = value
+              return result
+          doc = json.loads(p.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate,
+                           parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+          assert isinstance(doc, dict) and doc.get("schema") == "hazrob.g2.independent-evidence.v1"
+          assert isinstance(doc.get("records"), list)
+          assert not doc.get("g2_approved", False), "Evidence register must not grant G2 approval"
+          print(f"Evidence register parsed: {len(doc['records'])} records; no G2 approval granted")
+          PY
