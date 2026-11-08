@@ -43,23 +43,14 @@ jobs:
         run: |
           python -m unittest discover -s research/implementation_execution -p 'test_g2_empty_evidence_negative_control.py' -v
           python research/implementation_execution/g2_empty_evidence_negative_control.py
-      - name: Evidence register schema and no-approval assertion
+      - name: Evidence register strict parse and no-approval assertion
         run: |
           python - <<'PY'
-          import json
+          import sys
           from pathlib import Path
-          p = Path("research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json")
-          def reject_duplicate(pairs):
-              result = {}
-              for key, value in pairs:
-                  if key in result:
-                      raise ValueError(f"duplicate JSON key: {key}")
-                  result[key] = value
-              return result
-          doc = json.loads(p.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate,
-                           parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
-          assert isinstance(doc, dict) and doc.get("schema") == "hazrob.g2.independent-evidence.v1"
-          assert isinstance(doc.get("records"), list)
-          assert not doc.get("g2_approved", False), "Evidence register must not grant G2 approval"
-          print(f"Evidence register parsed: {len(doc['records'])} records; no G2 approval granted")
+          sys.path.insert(0, str(Path("research/implementation_execution").resolve()))
+          from g2_empty_evidence_negative_control import load_register, has_independent_records
+          doc = load_register()
+          present = has_independent_records(doc)
+          print(f"Evidence register parsed: {len(doc['records'])} records; present={present}; no G2/G3 approval granted")
           PY
