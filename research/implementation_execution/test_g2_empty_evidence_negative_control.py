@@ -81,6 +81,14 @@ class EmptyEvidenceNegativeControlTests(unittest.TestCase):
                 with self.subTest(constant=constant), self.assertRaises(ValueError):
                     load_register(path)
 
+    def test_in_memory_nonfinite_numeric_values_rejected(self):
+        for value in (float('nan'), float('inf'), float('-inf')):
+            with self.subTest(value=str(value)), self.assertRaises(ValueError):
+                has_independent_records({'schema': SCHEMA, 'records': [{'raw': {'adc': [value]}}]})
+
+    def test_finite_numeric_values_are_not_approval(self):
+        self.assertTrue(has_independent_records({'schema': SCHEMA, 'records': [{'raw': {'adc': [0.0, 1.0, -1.0]}}]}))
+
     def test_valid_register_round_trip(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "register.json"
