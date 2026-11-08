@@ -52,5 +52,25 @@ class SplitAuditTests(unittest.TestCase):
         c["raw_sha256"] = "xyz"
         self.assertGreaterEqual(len(module.audit([a,b,c])["errors"]),2)
 
+    def test_null_and_missing_fields_rejected_without_exception(self):
+        a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
+        b["device_id"] = None
+        c.pop("raw_sha256")
+        errors = module.audit([a,b,c])["errors"]
+        self.assertTrue(any("missing device_id" in e for e in errors))
+        self.assertTrue(any("missing raw_sha256" in e for e in errors))
+
+    def test_whitespace_cannot_hide_group_leakage(self):
+        a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
+        b["device_id"] = "  " + a["device_id"] + " "
+        self.assertTrue(any("device_id" in e and "leaks" in e
+                            for e in module.audit([a,b,c])["errors"]))
+
+    def test_whitespace_cannot_hide_duplicate_sample(self):
+        a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
+        b["sample_id"] = " " + a["sample_id"] + " "
+        self.assertTrue(any("duplicate sample_id" in e
+                            for e in module.audit([a,b,c])["errors"]))
+
 if __name__ == "__main__":
     unittest.main()
