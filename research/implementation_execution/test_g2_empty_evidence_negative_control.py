@@ -32,7 +32,7 @@ class EmptyEvidenceNegativeControlTests(unittest.TestCase):
 
     def test_approval_fields_rejected_even_when_false(self):
         for field in ("g2_approved", "g3_approved"):
-            for value in (False, True, "yes"):
+            for value in (None, False, True, "yes"):
                 with self.subTest(field=field, value=value), self.assertRaises(ValueError):
                     has_independent_records({"schema": SCHEMA, "records": [], field: value})
 
