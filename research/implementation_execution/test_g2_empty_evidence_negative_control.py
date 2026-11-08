@@ -114,6 +114,20 @@ class EmptyEvidenceNegativeControlTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 has_independent_records(load_register(path))
 
+    def test_escaped_unicode_duplicate_and_nested_approval_rejected(self):
+        # JSON escapes are decoded before duplicate/approval-key checks.
+        cases = (
+            '{"schema":"%s","records":[],"rec\\u006frds":[]}' % SCHEMA,
+            '{"schema":"%s","records":[{"raw":{"G2\\u005fAPPROVED":false}}]}' % SCHEMA,
+            '{"schema":"%s","records":[{"raw":{"sample_id":"A","sample\\u005fid":"B"}}]}' % SCHEMA,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "register.json"
+            for raw in cases:
+                with self.subTest(raw=raw), self.assertRaises(ValueError):
+                    path.write_text(raw, encoding="utf-8")
+                    has_independent_records(load_register(path))
+
     def test_valid_register_round_trip(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "register.json"
