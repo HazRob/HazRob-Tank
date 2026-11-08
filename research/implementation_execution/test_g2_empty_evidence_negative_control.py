@@ -49,6 +49,32 @@ class EmptyEvidenceNegativeControlTests(unittest.TestCase):
                     path.write_text(raw, encoding="utf-8")
                     load_register(path)
 
+    def test_nested_duplicate_keys_and_malformed_json_rejected(self):
+        # Nested duplicates can otherwise silently overwrite provenance fields.
+        cases = (
+            '{"schema":"%s","records":[{"sample_id":"A","sample_id":"B"}]}' % SCHEMA,
+            '{"schema":"%s","records":[{"raw":{"device":"A","device":"B"}}]}' % SCHEMA,
+            '{"schema":"%s","records":[' % SCHEMA,
+            '{"schema":"%s","records":[]}, trailing' % SCHEMA,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "register.json"
+            for raw in cases:
+                with self.subTest(raw=raw), self.assertRaises(ValueError):
+                    path.write_text(raw, encoding="utf-8")
+                    load_register(path)
+
+    def test_nonfinite_numbers_rejected_inside_nested_records(self):
+        for constant in ("NaN", "Infinity", "-Infinity"):
+            with tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "register.json"
+                path.write_text(
+                    '{"schema":"%s","records":[{"raw":{"adc":%s}}]}' % (SCHEMA, constant),
+                    encoding="utf-8",
+                )
+                with self.subTest(constant=constant), self.assertRaises(ValueError):
+                    load_register(path)
+
     def test_valid_register_round_trip(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "register.json"
