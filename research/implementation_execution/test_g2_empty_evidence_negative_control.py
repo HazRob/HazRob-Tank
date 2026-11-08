@@ -150,6 +150,19 @@ class EmptyEvidenceNegativeControlTests(unittest.TestCase):
             )
             self.assertTrue(has_independent_records(load_register(path)))
 
+    def test_noncanonical_reserved_top_level_keys_rejected(self):
+        # Aliased reserved keys must not be silently ignored, even without duplicates.
+        for alias, value in (("ＲＥＣＯＲＤＳ", []), ("Records", []),
+                             ("ＳＣＨＥＭＡ", SCHEMA), ("Schema", SCHEMA)):
+            payload = {"schema": SCHEMA, "records": [], alias: value}
+            with self.subTest(alias=alias), self.assertRaises(ValueError):
+                has_independent_records(payload)
+
+    def test_unrelated_metadata_remains_allowed(self):
+        self.assertFalse(has_independent_records({
+            "schema": SCHEMA, "records": [], "note": "research only"
+        }))
+
     def test_valid_register_round_trip(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "register.json"
