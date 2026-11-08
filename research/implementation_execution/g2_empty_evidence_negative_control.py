@@ -39,6 +39,10 @@ def reject_nested_approval_assertions(value):
 def has_independent_records(payload):
     if not isinstance(payload, dict):
         raise ValueError("Evidence register must be a JSON object")
+    for key in payload:
+        normalized = canonical_evidence_key(key)
+        if normalized in ("schema", "records") and key != normalized:
+            raise ValueError(f"Noncanonical reserved evidence key: {key}")
     if payload.get("schema") != SCHEMA:
         raise ValueError("Unexpected evidence schema")
     reject_nested_approval_assertions(payload)
