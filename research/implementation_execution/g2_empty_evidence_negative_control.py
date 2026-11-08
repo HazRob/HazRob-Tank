@@ -26,7 +26,7 @@ def reject_nested_approval_assertions(value):
     """Prevent approval claims hidden inside nested raw-evidence objects."""
     if isinstance(value, dict):
         for key, child in value.items():
-            if unicodedata.normalize("NFKC", key).casefold() in ("g2_approved", "g3_approved"):
+            if canonical_evidence_key(key) in ("g2_approved", "g3_approved"):
                 raise ValueError(f"Forbidden approval assertion: {key}")
             reject_nested_approval_assertions(child)
     elif isinstance(value, list):
@@ -52,7 +52,7 @@ def reject_duplicate_keys(pairs):
     result = {}
     normalized_keys = set()
     for key, value in pairs:
-        canonical = unicodedata.normalize("NFKC", key).casefold()
+        canonical = canonical_evidence_key(key)
         if canonical in normalized_keys:
             raise ValueError(f"Duplicate normalized evidence JSON key: {key}")
         normalized_keys.add(canonical)
