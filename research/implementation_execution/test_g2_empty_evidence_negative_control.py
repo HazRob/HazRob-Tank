@@ -89,6 +89,21 @@ class EmptyEvidenceNegativeControlTests(unittest.TestCase):
     def test_finite_numeric_values_are_not_approval(self):
         self.assertTrue(has_independent_records({'schema': SCHEMA, 'records': [{'raw': {'adc': [0.0, 1.0, -1.0]}}]}))
 
+    def test_unicode_approval_aliases_and_normalized_duplicate_keys_rejected(self):
+        for key in ("ｇ２＿ａｐｐｒｏｖｅｄ", "G2_APPROVED", "ｇ３＿ａｐｐｒｏｖｅｄ"):
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                has_independent_records({"schema": SCHEMA, "records": [{"metadata": {key: False}}]})
+        cases = (
+            '{"schema":"%s","records":[],"ＲＥＣＯＲＤＳ":[]}' % SCHEMA,
+            '{"schema":"%s","records":[{"sample_id":"a","ＳＡＭＰＬＥ＿ＩＤ":"b"}]}' % SCHEMA,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "register.json"
+            for raw in cases:
+                with self.subTest(raw=raw), self.assertRaises(ValueError):
+                    path.write_text(raw, encoding="utf-8")
+                    load_register(path)
+
     def test_valid_register_round_trip(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "register.json"
