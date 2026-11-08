@@ -104,6 +104,16 @@ class EmptyEvidenceNegativeControlTests(unittest.TestCase):
                     path.write_text(raw, encoding="utf-8")
                     load_register(path)
 
+    def test_invisible_and_control_characters_in_keys_rejected(self):
+        for key in ("g2_\u200bapproved", "g3_\u200dapproved", "g2_approved\u0000"):
+            with self.subTest(key=repr(key)), self.assertRaises(ValueError):
+                has_independent_records({"schema": SCHEMA, "records": [{"metadata": {key: False}}]})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "register.json"
+            path.write_text(json.dumps({"schema": SCHEMA, "records": [{"raw": {"sample\u200bid": "A"}}]}), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                has_independent_records(load_register(path))
+
     def test_valid_register_round_trip(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "register.json"
