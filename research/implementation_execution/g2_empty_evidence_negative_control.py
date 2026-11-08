@@ -16,7 +16,7 @@ def has_independent_records(payload):
         raise ValueError("Evidence register must be a JSON object")
     if payload.get("schema") != SCHEMA:
         raise ValueError("Unexpected evidence schema")
-    if payload.get("g2_approved") is not None or payload.get("g3_approved") is not None:
+    if "g2_approved" in payload or "g3_approved" in payload:
         raise ValueError("Evidence register must not carry approval assertions")
     records = payload.get("records")
     if not isinstance(records, list):
