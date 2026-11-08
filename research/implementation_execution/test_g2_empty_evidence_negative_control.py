@@ -36,6 +36,12 @@ class EmptyEvidenceNegativeControlTests(unittest.TestCase):
                 with self.subTest(field=field, value=value), self.assertRaises(ValueError):
                     has_independent_records({"schema": SCHEMA, "records": [], field: value})
 
+    def test_nested_approval_assertions_rejected(self):
+        for field in ("g2_approved", "g3_approved"):
+            for value in (None, False, True):
+                with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                    has_independent_records({"schema": SCHEMA, "records": [{"raw": {"metadata": [{field: value}]}}]})
+
     def test_duplicate_keys_and_nonfinite_numbers_rejected(self):
         cases = (
             '{"schema":"%s","records":[],"records":[]}' % SCHEMA,
