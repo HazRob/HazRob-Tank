@@ -10,7 +10,7 @@ REQUIRED = ("sample_id", "device_id", "session_id", "day_id", "partition", "raw_
 PARTITIONS = {"train", "validation", "holdout"}
 
 def audit(rows):
-    errors, seen, groups = [], set(), {}
+    errors, seen, groups, raw_groups = [], set(), {}, {}
     counts = {p: 0 for p in sorted(PARTITIONS)}
     for n, row in enumerate(rows, 2):
         missing = [k for k in REQUIRED if not str(row.get(k, "")).strip()]
@@ -27,6 +27,12 @@ def audit(rows):
         digest = row["raw_sha256"]
         if len(digest) != 64 or any(c not in "0123456789abcdefABCDEF" for c in digest):
             errors.append(f"row {n}: invalid raw_sha256")
+        # Identical raw payloads must not cross partitions.
+        if len(digest) == 64 and all(c in "0123456789abcdefABCDEF" for c in digest):
+            digest_key = digest.lower()
+            prior_raw = raw_groups.setdefault(digest_key, partition)
+            if prior_raw != partition:
+                errors.append(f"row {n}: raw_sha256 leaks {prior_raw} -> {partition}")
         counts[partition] += 1
         # Conservative grouping: each device, day, and exposure session is disjoint.
         for key in ("device_id", "day_id", "session_id"):
@@ -50,9 +56,16 @@ def main():
     raw = args.manifest.read_bytes()
     with args.manifest.open(newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
-        if not reader.fieldnames or any(k not in reader.fieldnames for k in REQUIRED):
+        if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)):
+            raise SystemExit("duplicate CSV columns")
+        if any(k is None or not k.strip() for k in reader.fieldnames):
+            raise SystemExit("empty CSV column name")
+        if any(k not in reader.fieldnames for k in REQUIRED):
             raise SystemExit("missing required CSV columns")
-        result = audit(list(reader))
+        rows = list(reader)
+        if any(None in row for row in rows):
+            raise SystemExit("CSV rows contain extra fields")
+        result = audit(rows)
     result["manifest_sha256"] = hashlib.sha256(raw).hexdigest()
     output = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output:
