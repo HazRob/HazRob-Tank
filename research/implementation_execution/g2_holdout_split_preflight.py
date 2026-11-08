@@ -13,18 +13,18 @@ def audit(rows):
     errors, seen, groups, raw_groups = [], set(), {}, {}
     counts = {p: 0 for p in sorted(PARTITIONS)}
     for n, row in enumerate(rows, 2):
-        missing = [k for k in REQUIRED if not str(row.get(k, "")).strip()]
+        missing = [k for k in REQUIRED if row.get(k) is None or not isinstance(row.get(k), str) or not row[k].strip()]
         if missing:
             errors.append(f"row {n}: missing {','.join(missing)}")
             continue
-        sid, partition = row["sample_id"], row["partition"]
+        sid, partition = row["sample_id"].strip(), row["partition"].strip()
         if sid in seen:
             errors.append(f"row {n}: duplicate sample_id {sid}")
         seen.add(sid)
         if partition not in PARTITIONS:
             errors.append(f"row {n}: invalid partition {partition}")
             continue
-        digest = row["raw_sha256"]
+        digest = row["raw_sha256"].strip()
         if len(digest) != 64 or any(c not in "0123456789abcdefABCDEF" for c in digest):
             errors.append(f"row {n}: invalid raw_sha256")
         # Identical raw payloads must not cross partitions.
@@ -36,7 +36,7 @@ def audit(rows):
         counts[partition] += 1
         # Conservative grouping: each device, day, and exposure session is disjoint.
         for key in ("device_id", "day_id", "session_id"):
-            identity = (key, row[key])
+            identity = (key, row[key].strip())
             prior = groups.setdefault(identity, partition)
             if prior != partition:
                 errors.append(f"row {n}: {key}={row[key]} leaks {prior} -> {partition}")
