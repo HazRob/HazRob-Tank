@@ -5,6 +5,7 @@ Run: python3 research/implementation_execution/g2_empty_evidence_negative_contro
 Presence of records is never equivalent to scientific qualification.
 """
 import json
+import math
 from pathlib import Path
 
 EVIDENCE = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
@@ -21,6 +22,8 @@ def reject_nested_approval_assertions(value):
     elif isinstance(value, list):
         for child in value:
             reject_nested_approval_assertions(child)
+    elif isinstance(value, float) and not math.isfinite(value):
+        raise ValueError("Non-finite numeric evidence value")
 
 
 def has_independent_records(payload):
