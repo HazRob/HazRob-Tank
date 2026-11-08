@@ -11,7 +11,7 @@ spec.loader.exec_module(module)
 SHA = "a" * 64
 def row(i, p):
     return dict(sample_id=str(i), device_id=f"dev{i}", day_id=f"day{i}",
-                session_id=f"session{i}", partition=p, raw_sha256=SHA)
+                session_id=f"session{i}", partition=p, raw_sha256=f"{i:064x}")
 
 class SplitAuditTests(unittest.TestCase):
     def test_valid_disjoint_split_not_scientific_approval(self):
@@ -31,6 +31,17 @@ class SplitAuditTests(unittest.TestCase):
         errors = module.audit([a,b,c])["errors"]
         self.assertTrue(any("device_id" in x for x in errors))
         self.assertTrue(any("day_id" in x for x in errors))
+
+    def test_identical_raw_payload_cross_partition_rejected(self):
+        a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
+        c["raw_sha256"] = a["raw_sha256"].upper()
+        errors = module.audit([a,b,c])["errors"]
+        self.assertTrue(any("raw_sha256 leaks" in x for x in errors))
+
+    def test_same_raw_payload_within_partition_allowed_by_split_gate(self):
+        a,b,c,d = row(1,"train"),row(2,"train"),row(3,"validation"),row(4,"holdout")
+        b["raw_sha256"] = a["raw_sha256"]
+        self.assertEqual(module.audit([a,b,c,d])["status"],"PASS_SPLIT_INTEGRITY_ONLY")
 
     def test_missing_holdout_rejected(self):
         self.assertEqual(module.audit([row(1,"train"),row(2,"validation")])["status"],"FAIL")
