@@ -11,13 +11,24 @@ EVIDENCE = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
 SCHEMA = "hazrob.g2.independent-evidence.v1"
 
 
+def reject_nested_approval_assertions(value):
+    """Prevent approval claims hidden inside nested raw-evidence objects."""
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key in ("g2_approved", "g3_approved"):
+                raise ValueError(f"Forbidden approval assertion: {key}")
+            reject_nested_approval_assertions(child)
+    elif isinstance(value, list):
+        for child in value:
+            reject_nested_approval_assertions(child)
+
+
 def has_independent_records(payload):
     if not isinstance(payload, dict):
         raise ValueError("Evidence register must be a JSON object")
     if payload.get("schema") != SCHEMA:
         raise ValueError("Unexpected evidence schema")
-    if "g2_approved" in payload or "g3_approved" in payload:
-        raise ValueError("Evidence register must not carry approval assertions")
+    reject_nested_approval_assertions(payload)
     records = payload.get("records")
     if not isinstance(records, list):
         raise ValueError("Evidence records must be a list")
