@@ -13,6 +13,15 @@ EVIDENCE = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
 SCHEMA = "hazrob.g2.independent-evidence.v1"
 
 
+def canonical_evidence_key(key):
+    """Reject invisible/control key characters before comparing security fields."""
+    if not isinstance(key, str):
+        raise ValueError("Evidence object keys must be strings")
+    if any(unicodedata.category(char) in ("Cf", "Cc", "Cs") for char in key):
+        raise ValueError("Invisible or control character in evidence key")
+    return unicodedata.normalize("NFKC", key).casefold()
+
+
 def reject_nested_approval_assertions(value):
     """Prevent approval claims hidden inside nested raw-evidence objects."""
     if isinstance(value, dict):
