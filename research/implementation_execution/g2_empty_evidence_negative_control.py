@@ -60,10 +60,19 @@ def reject_duplicate_keys(pairs):
     return result
 
 
+def finite_json_float(token):
+    """Reject JSON exponent overflow (e.g. 1e999), not just NaN tokens."""
+    value = float(token)
+    if not math.isfinite(value):
+        raise ValueError("Non-finite JSON numeric evidence value")
+    return value
+
+
 def load_register(path=EVIDENCE):
     return json.loads(
         Path(path).read_text(encoding="utf-8"),
         object_pairs_hook=reject_duplicate_keys,
+        parse_float=finite_json_float,
         parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)),
     )
 
