@@ -6,6 +6,7 @@ Presence of records is never equivalent to scientific qualification.
 """
 import json
 import math
+import unicodedata
 from pathlib import Path
 
 EVIDENCE = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
@@ -16,7 +17,7 @@ def reject_nested_approval_assertions(value):
     """Prevent approval claims hidden inside nested raw-evidence objects."""
     if isinstance(value, dict):
         for key, child in value.items():
-            if key in ("g2_approved", "g3_approved"):
+            if unicodedata.normalize("NFKC", key).casefold() in ("g2_approved", "g3_approved"):
                 raise ValueError(f"Forbidden approval assertion: {key}")
             reject_nested_approval_assertions(child)
     elif isinstance(value, list):
@@ -40,9 +41,12 @@ def has_independent_records(payload):
 
 def reject_duplicate_keys(pairs):
     result = {}
+    normalized_keys = set()
     for key, value in pairs:
-        if key in result:
-            raise ValueError(f"Duplicate evidence JSON key: {key}")
+        canonical = unicodedata.normalize("NFKC", key).casefold()
+        if canonical in normalized_keys:
+            raise ValueError(f"Duplicate normalized evidence JSON key: {key}")
+        normalized_keys.add(canonical)
         result[key] = value
     return result
 
