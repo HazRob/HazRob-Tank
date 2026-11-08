@@ -1,32 +1,54 @@
 #!/usr/bin/env python3
-"""Research-only negative control: empty independent evidence must not qualify G2.
+"""Research-only negative control for independent G2 evidence.
 
 Run: python3 research/implementation_execution/g2_empty_evidence_negative_control.py
-No external dependencies; does not alter Stable or claim scientific validation.
+Presence of records is never equivalent to scientific qualification.
 """
 import json
 from pathlib import Path
 
-EVIDENCE = Path(__file__).with_name('G2_INDEPENDENT_EVIDENCE.json')
+EVIDENCE = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
+SCHEMA = "hazrob.g2.independent-evidence.v1"
 
 
 def has_independent_records(payload):
-    if payload.get('schema') != 'hazrob.g2.independent-evidence.v1':
-        raise ValueError('Unexpected evidence schema')
-    records = payload.get('records')
+    if not isinstance(payload, dict):
+        raise ValueError("Evidence register must be a JSON object")
+    if payload.get("schema") != SCHEMA:
+        raise ValueError("Unexpected evidence schema")
+    if payload.get("g2_approved") is not None or payload.get("g3_approved") is not None:
+        raise ValueError("Evidence register must not carry approval assertions")
+    records = payload.get("records")
     if not isinstance(records, list):
-        raise ValueError('Evidence records must be a list')
+        raise ValueError("Evidence records must be a list")
     return len(records) > 0
 
 
+def reject_duplicate_keys(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"Duplicate evidence JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def load_register(path=EVIDENCE):
+    return json.loads(
+        Path(path).read_text(encoding="utf-8"),
+        object_pairs_hook=reject_duplicate_keys,
+        parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)),
+    )
+
+
 def main():
-    assert not has_independent_records({'schema': 'hazrob.g2.independent-evidence.v1', 'records': []}), 'Empty records must fail G2 eligibility'
-    payload = json.loads(EVIDENCE.read_text(encoding='utf-8'))
+    assert not has_independent_records({"schema": SCHEMA, "records": []})
+    payload = load_register()
     if has_independent_records(payload):
-        print('Evidence records exist: independent provenance and holdout validation still required; no automatic G2 promotion')
+        print("Records present; provenance, independence, and holdout qualification still required; no G2 approval")
     else:
-        print('PASS: empty evidence detected; G2 scientific promotion remains blocked')
+        print("PASS: empty independent evidence register; scientific G2 promotion blocked")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
