@@ -128,6 +128,28 @@ class EmptyEvidenceNegativeControlTests(unittest.TestCase):
                     path.write_text(raw, encoding="utf-8")
                     has_independent_records(load_register(path))
 
+    def test_json_exponent_overflow_rejected(self):
+        # Python json.loads accepts 1e999 as infinity unless parse_float is guarded.
+        cases = ("1e999", "-1e999", "9.99e999")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "register.json"
+            for token in cases:
+                with self.subTest(token=token), self.assertRaises(ValueError):
+                    path.write_text(
+                        '{"schema":"%s","records":[{"raw":{"adc":%s}}]}' % (SCHEMA, token),
+                        encoding="utf-8",
+                    )
+                    load_register(path)
+
+    def test_json_finite_scientific_notation_allowed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "register.json"
+            path.write_text(
+                '{"schema":"%s","records":[{"raw":{"adc":[1e2,-2.5e-3,0.0]}}]}' % SCHEMA,
+                encoding="utf-8",
+            )
+            self.assertTrue(has_independent_records(load_register(path)))
+
     def test_valid_register_round_trip(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "register.json"
