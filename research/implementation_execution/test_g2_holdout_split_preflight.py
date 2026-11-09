@@ -72,5 +72,17 @@ class SplitAuditTests(unittest.TestCase):
         self.assertTrue(any("duplicate sample_id" in e
                             for e in module.audit([a,b,c])["errors"]))
 
+    def test_nfkc_device_alias_cannot_cross_partitions(self):
+        a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
+        b["device_id"] = "ｄｅｖ１"
+        self.assertTrue(any("device_id" in e and "leaks" in e
+                            for e in module.audit([a,b,c])["errors"]))
+
+    def test_nfkc_sample_alias_is_duplicate(self):
+        a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
+        b["sample_id"] = "１"
+        self.assertTrue(any("duplicate sample_id" in e
+                            for e in module.audit([a,b,c])["errors"]))
+
 if __name__ == "__main__":
     unittest.main()
