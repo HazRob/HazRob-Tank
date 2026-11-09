@@ -2,6 +2,8 @@
 import importlib.util
 import pathlib
 import unittest
+import tempfile
+from unittest.mock import patch
 
 path = pathlib.Path(__file__).with_name("g2_holdout_split_preflight.py")
 spec = importlib.util.spec_from_file_location("g2_holdout_split_preflight", path)
@@ -96,6 +98,19 @@ class SplitAuditTests(unittest.TestCase):
         c["session_id"] = "session3\u200b"
         errors = module.audit([a,b,c])["errors"]
         self.assertTrue(any("invalid normalized identifiers session_id" in e for e in errors))
+
+    def test_header_whitespace_alias_rejected(self):
+        # A visually equivalent extra column must not bypass CSV schema checks.
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = pathlib.Path(tmp) / "manifest.csv"
+            manifest.write_text(
+                "sample_id,device_id,session_id,day_id,partition,raw_sha256, sample_id \\n"
+                "1,dev1,s1,d1,train," + "a" * 64 + ",shadow\\n",
+                encoding="utf-8",
+            )
+            with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
+                with self.assertRaisesRegex(SystemExit, "duplicate CSV columns"):
+                    module.main()
 
 
 if __name__ == "__main__":
