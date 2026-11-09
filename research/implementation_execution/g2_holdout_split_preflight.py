@@ -71,7 +71,11 @@ def main():
     raw = args.manifest.read_bytes()
     with args.manifest.open(newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f, strict=True)
-        if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)) or len({unicodedata.normalize("NFKC", k).strip().casefold() for k in reader.fieldnames}) != len(reader.fieldnames):
+        try:
+            header = reader.fieldnames
+        except csv.Error as exc:
+            raise SystemExit(f"malformed CSV header: {exc}") from exc
+        if not header or len(header) != len(set(header)) or len({unicodedata.normalize("NFKC", k).strip().casefold() for k in header}) != len(header):
             raise SystemExit("duplicate CSV columns")
         if any(k is None or not k.strip() for k in reader.fieldnames):
             raise SystemExit("empty CSV column name")
