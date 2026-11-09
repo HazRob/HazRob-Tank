@@ -11,6 +11,12 @@ def canonical_id(value):
     return unicodedata.normalize('NFKC', value).strip()
 
 
+def invalid_id(value):
+    """Reject identifiers empty after normalization or containing control/format characters."""
+    normalized = canonical_id(value)
+    return not normalized or any(unicodedata.category(ch) in ("Cc", "Cf", "Cs") for ch in normalized)
+
+
 REQUIRED = ("sample_id", "device_id", "session_id", "day_id", "partition", "raw_sha256")
 PARTITIONS = {"train", "validation", "holdout"}
 
@@ -21,6 +27,10 @@ def audit(rows):
         missing = [k for k in REQUIRED if row.get(k) is None or not isinstance(row.get(k), str) or not row[k].strip()]
         if missing:
             errors.append(f"row {n}: missing {','.join(missing)}")
+            continue
+        bad_ids = [key for key in ("sample_id", "device_id", "session_id", "day_id") if invalid_id(row[key])]
+        if bad_ids:
+            errors.append(f"row {n}: invalid normalized identifiers {','.join(bad_ids)}")
             continue
         sid, partition = canonical_id(row["sample_id"]), row["partition"].strip()
         if sid in seen:
