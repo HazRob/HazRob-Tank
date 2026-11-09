@@ -3,6 +3,8 @@ import importlib.util
 import pathlib
 import unittest
 import tempfile
+import io
+from contextlib import redirect_stdout
 from unittest.mock import patch
 
 path = pathlib.Path(__file__).with_name("g2_holdout_split_preflight.py")
@@ -100,7 +102,7 @@ class SplitAuditTests(unittest.TestCase):
         self.assertTrue(any("invalid normalized identifiers session_id" in e for e in errors))
 
     def test_header_whitespace_alias_rejected(self):
-        # A visually equivalent extra column must not bypass CSV schema checks.
+        # Verify the actual CSV parser error, not the numeric SystemExit code.
         with tempfile.TemporaryDirectory() as tmp:
             manifest = pathlib.Path(tmp) / "manifest.csv"
             manifest.write_text(
@@ -108,9 +110,13 @@ class SplitAuditTests(unittest.TestCase):
                 "1,dev1,s1,d1,train," + "a" * 64 + ",shadow\\n",
                 encoding="utf-8",
             )
+            output = io.StringIO()
             with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
-                with self.assertRaisesRegex(SystemExit, "duplicate CSV columns"):
-                    module.main()
+                with redirect_stdout(output):
+                    with self.assertRaises(SystemExit) as raised:
+                        module.main()
+            self.assertNotEqual(raised.exception.code, 0)
+            self.assertIn("duplicate CSV columns", output.getvalue())
 
 
 if __name__ == "__main__":
