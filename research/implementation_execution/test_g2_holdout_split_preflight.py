@@ -153,5 +153,16 @@ class SplitAuditTests(unittest.TestCase):
                 with self.assertRaisesRegex(SystemExit, "malformed CSV"):
                     module.main()
 
+    def test_unterminated_quoted_csv_header_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = pathlib.Path(tmp) / "manifest.csv"
+            manifest.write_text(
+                'sample_id,"unterminated,session_id,day_id,partition,raw_sha256\n',
+                encoding="utf-8",
+            )
+            with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
+                with self.assertRaisesRegex(SystemExit, "malformed CSV header"):
+                    module.main()
+
 if __name__ == "__main__":
     unittest.main()
