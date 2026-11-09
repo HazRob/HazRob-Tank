@@ -188,5 +188,17 @@ class SplitAuditTests(unittest.TestCase):
                 with self.assertRaisesRegex(SystemExit, "empty CSV column name"):
                     module.main()
 
+    def test_invisible_format_character_in_extra_header_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = pathlib.Path(tmp) / "manifest.csv"
+            manifest.write_text(
+                "sample_id,device_id,session_id,day_id,partition,raw_sha256,hidden\\u200bcolumn\\n"
+                "1,dev1,s1,d1,train," + "a" * 64 + ",value\\n",
+                encoding="utf-8",
+            )
+            with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
+                with self.assertRaisesRegex(SystemExit, "CSV header contains control or format characters"):
+                    module.main()
+
 if __name__ == "__main__":
     unittest.main()
