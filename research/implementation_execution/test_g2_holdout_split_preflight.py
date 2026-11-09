@@ -164,5 +164,29 @@ class SplitAuditTests(unittest.TestCase):
                 with self.assertRaisesRegex(SystemExit, "malformed CSV header"):
                     module.main()
 
+    def test_empty_csv_header_column_rejected_without_type_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = pathlib.Path(tmp) / "manifest.csv"
+            manifest.write_text(
+                "sample_id,device_id,,day_id,partition,raw_sha256\n"
+                "1,dev1,s1,d1,train," + "a" * 64 + "\n",
+                encoding="utf-8",
+            )
+            with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
+                with self.assertRaisesRegex(SystemExit, "empty CSV column name"):
+                    module.main()
+
+    def test_whitespace_only_csv_header_column_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = pathlib.Path(tmp) / "manifest.csv"
+            manifest.write_text(
+                "sample_id,device_id,  ,day_id,partition,raw_sha256\n"
+                "1,dev1,s1,d1,train," + "a" * 64 + "\n",
+                encoding="utf-8",
+            )
+            with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
+                with self.assertRaisesRegex(SystemExit, "empty CSV column name"):
+                    module.main()
+
 if __name__ == "__main__":
     unittest.main()
