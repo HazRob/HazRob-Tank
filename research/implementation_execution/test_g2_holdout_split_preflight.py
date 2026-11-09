@@ -114,7 +114,7 @@ class SplitAuditTests(unittest.TestCase):
 
 
     def test_nfkc_fullwidth_required_header_alias_rejected(self):
-        # A fullwidth spelling of a required header must not bypass duplicate detection.
+        # Fullwidth spelling of a required header must not bypass duplicate detection.
         with tempfile.TemporaryDirectory() as tmp:
             manifest = pathlib.Path(tmp) / "manifest.csv"
             manifest.write_text(
