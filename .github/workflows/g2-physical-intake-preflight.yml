@@ -6,6 +6,8 @@ on:
     paths:
       - 'research/implementation_execution/g2_physical_intake_gate.py'
       - 'research/implementation_execution/g2_holdout_guard.py'
+      - 'research/implementation_execution/g2_holdout_split_preflight.py'
+      - 'research/implementation_execution/test_g2_holdout_split_preflight.py'
       - 'research/implementation_execution/test_g2_holdout_guard.py'
       - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
       - 'research/implementation_execution/g2_empty_evidence_negative_control.py'
@@ -15,6 +17,8 @@ on:
     paths:
       - 'research/implementation_execution/g2_physical_intake_gate.py'
       - 'research/implementation_execution/g2_holdout_guard.py'
+      - 'research/implementation_execution/g2_holdout_split_preflight.py'
+      - 'research/implementation_execution/test_g2_holdout_split_preflight.py'
       - 'research/implementation_execution/test_g2_holdout_guard.py'
       - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
       - 'research/implementation_execution/g2_empty_evidence_negative_control.py'
@@ -37,6 +41,10 @@ jobs:
         run: python research/implementation_execution/g2_physical_intake_gate.py --self-test
       - name: Holdout leakage guard regression tests (research preflight only)
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_holdout_guard.py' -v
+      - name: Independent physical holdout split regression
+        run: |
+          python -m py_compile research/implementation_execution/g2_holdout_split_preflight.py research/implementation_execution/test_g2_holdout_split_preflight.py
+          python -m unittest discover -s research/implementation_execution -p 'test_g2_holdout_split_preflight.py' -v
       - name: Holdout guard syntax check
         run: python -m py_compile research/implementation_execution/g2_holdout_guard.py research/implementation_execution/test_g2_holdout_guard.py
       - name: Independent evidence negative-control regression
