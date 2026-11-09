@@ -71,7 +71,7 @@ def main():
     raw = args.manifest.read_bytes()
     with args.manifest.open(newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
-        if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)) or len({unicodedata.normalize("NFKC", k).casefold() for k in reader.fieldnames}) != len(reader.fieldnames):
+        if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)) or len({unicodedata.normalize("NFKC", k).strip().casefold() for k in reader.fieldnames}) != len(reader.fieldnames):
             raise SystemExit("duplicate CSV columns")
         if any(k is None or not k.strip() for k in reader.fieldnames):
             raise SystemExit("empty CSV column name")
