@@ -70,14 +70,17 @@ def main():
     args = p.parse_args()
     raw = args.manifest.read_bytes()
     with args.manifest.open(newline="", encoding="utf-8-sig") as f:
-        reader = csv.DictReader(f)
+        reader = csv.DictReader(f, strict=True)
         if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)) or len({unicodedata.normalize("NFKC", k).strip().casefold() for k in reader.fieldnames}) != len(reader.fieldnames):
             raise SystemExit("duplicate CSV columns")
         if any(k is None or not k.strip() for k in reader.fieldnames):
             raise SystemExit("empty CSV column name")
         if any(k not in reader.fieldnames for k in REQUIRED):
             raise SystemExit("missing required CSV columns")
-        rows = list(reader)
+        try:
+            rows = list(reader)
+        except csv.Error as exc:
+            raise SystemExit(f"malformed CSV: {exc}") from exc
         if any(None in row for row in rows):
             raise SystemExit("CSV rows contain extra fields")
         result = audit(rows)
