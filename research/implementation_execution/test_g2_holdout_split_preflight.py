@@ -86,13 +86,13 @@ class SplitAuditTests(unittest.TestCase):
 
     def test_nfkc_whitespace_only_identifier_rejected(self):
         a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
-        b["device_id"] = "\\u3000"
+        b["device_id"] = "\u3000"
         errors = module.audit([a,b,c])["errors"]
         self.assertTrue(any("invalid normalized identifiers device_id" in e for e in errors))
 
     def test_invisible_format_character_identifier_rejected(self):
         a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
-        c["session_id"] = "session3\\u200b"
+        c["session_id"] = "session3\u200b"
         errors = module.audit([a,b,c])["errors"]
         self.assertTrue(any("invalid normalized identifiers session_id" in e for e in errors))
 
