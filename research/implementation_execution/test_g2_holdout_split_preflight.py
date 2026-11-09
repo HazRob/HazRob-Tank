@@ -88,7 +88,8 @@ class SplitAuditTests(unittest.TestCase):
         a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
         b["device_id"] = "\u3000"
         errors = module.audit([a,b,c])["errors"]
-        self.assertTrue(any("invalid normalized identifiers device_id" in e for e in errors))
+        self.assertEqual(module.audit([a,b,c])["status"], "FAIL")
+        self.assertTrue(any("missing device_id" in e or "invalid normalized identifiers device_id" in e for e in errors))
 
     def test_invisible_format_character_identifier_rejected(self):
         a,b,c = row(1,"train"),row(2,"validation"),row(3,"holdout")
