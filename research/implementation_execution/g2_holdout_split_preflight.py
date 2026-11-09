@@ -75,10 +75,10 @@ def main():
             header = reader.fieldnames
         except csv.Error as exc:
             raise SystemExit(f"malformed CSV header: {exc}") from exc
-        if not header or len(header) != len(set(header)) or len({unicodedata.normalize("NFKC", k).strip().casefold() for k in header}) != len(header):
-            raise SystemExit("duplicate CSV columns")
-        if any(k is None or not k.strip() for k in reader.fieldnames):
+        if not header or any(not isinstance(k, str) or not k.strip() for k in header):
             raise SystemExit("empty CSV column name")
+        if len(header) != len(set(header)) or len({unicodedata.normalize("NFKC", k).strip().casefold() for k in header}) != len(header):
+            raise SystemExit("duplicate CSV columns")
         if any(k not in reader.fieldnames for k in REQUIRED):
             raise SystemExit("missing required CSV columns")
         try:
