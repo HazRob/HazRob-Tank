@@ -77,6 +77,8 @@ def main():
             raise SystemExit(f"malformed CSV header: {exc}") from exc
         if not header or any(not isinstance(k, str) or not k.strip() for k in header):
             raise SystemExit("empty CSV column name")
+        if any(any(unicodedata.category(ch) in ("Cc", "Cf", "Cs") for ch in unicodedata.normalize("NFKC", k)) for k in header):
+            raise SystemExit("CSV header contains control or format characters")
         if len(header) != len(set(header)) or len({unicodedata.normalize("NFKC", k).strip().casefold() for k in header}) != len(header):
             raise SystemExit("duplicate CSV columns")
         if any(k not in reader.fieldnames for k in REQUIRED):
