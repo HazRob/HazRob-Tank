@@ -106,8 +106,8 @@ class SplitAuditTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             manifest = pathlib.Path(tmp) / "manifest.csv"
             manifest.write_text(
-                "sample_id,device_id,session_id,day_id,partition,raw_sha256, sample_id \\n"
-                "1,dev1,s1,d1,train," + "a" * 64 + ",shadow\\n",
+                "sample_id,device_id,session_id,day_id,partition,raw_sha256, sample_id \n"
+                "1,dev1,s1,d1,train," + "a" * 64 + ",shadow\n",
                 encoding="utf-8",
             )
             output = io.StringIO()
