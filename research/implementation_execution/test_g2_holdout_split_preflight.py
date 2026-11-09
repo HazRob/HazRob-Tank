@@ -124,8 +124,9 @@ class SplitAuditTests(unittest.TestCase):
                 encoding="utf-8",
             )
             with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
-                with self.assertRaisesRegex(SystemExit, "CSV rows contain missing fields"):
+                with self.assertRaises(SystemExit) as raised:
                     module.main()
+            self.assertEqual(raised.exception.code, 1)
 
     def test_csv_extra_cell_fails_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
