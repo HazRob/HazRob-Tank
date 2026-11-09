@@ -3,8 +3,6 @@ import importlib.util
 import pathlib
 import unittest
 import tempfile
-import io
-from contextlib import redirect_stdout
 from unittest.mock import patch
 
 path = pathlib.Path(__file__).with_name("g2_holdout_split_preflight.py")
@@ -110,13 +108,9 @@ class SplitAuditTests(unittest.TestCase):
                 "1,dev1,s1,d1,train," + "a" * 64 + ",shadow\n",
                 encoding="utf-8",
             )
-            output = io.StringIO()
             with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
-                with redirect_stdout(output):
-                    with self.assertRaises(SystemExit) as raised:
-                        module.main()
-            self.assertNotEqual(raised.exception.code, 0)
-            self.assertIn("duplicate CSV columns", output.getvalue())
+                with self.assertRaisesRegex(SystemExit, "duplicate CSV columns"):
+                    module.main()
 
 
 if __name__ == "__main__":
