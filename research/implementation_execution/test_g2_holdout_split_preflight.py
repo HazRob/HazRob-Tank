@@ -117,23 +117,22 @@ class SplitAuditTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             manifest = pathlib.Path(tmp) / "manifest.csv"
             manifest.write_text(
-                "sample_id,device_id,session_id,day_id,partition,raw_sha256\\n"
-                "1,dev1,s1,d1,train," + "a" * 64 + "\\n"
-                "2,dev2,s2,d2,validation\\n"
-                "3,dev3,s3,d3,holdout," + "c" * 64 + "\\n",
+                "sample_id,device_id,session_id,day_id,partition,raw_sha256\n"
+                "1,dev1,s1,d1,train," + "a" * 64 + "\n"
+                "2,dev2,s2,d2,validation\n"
+                "3,dev3,s3,d3,holdout," + "c" * 64 + "\n",
                 encoding="utf-8",
             )
             with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
-                with self.assertRaises(SystemExit) as raised:
+                with self.assertRaisesRegex(SystemExit, "CSV rows contain missing fields"):
                     module.main()
-            self.assertEqual(raised.exception.code, 1)
 
     def test_csv_extra_cell_fails_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
             manifest = pathlib.Path(tmp) / "manifest.csv"
             manifest.write_text(
-                "sample_id,device_id,session_id,day_id,partition,raw_sha256\\n"
-                "1,dev1,s1,d1,train," + "a" * 64 + ",unexpected\\n",
+                "sample_id,device_id,session_id,day_id,partition,raw_sha256\n"
+                "1,dev1,s1,d1,train," + "a" * 64 + ",unexpected\n",
                 encoding="utf-8",
             )
             with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
