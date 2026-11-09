@@ -5,6 +5,11 @@ import csv
 import hashlib
 import json
 from pathlib import Path
+import unicodedata
+
+def canonical_id(value):
+    return unicodedata.normalize('NFKC', value).strip()
+
 
 REQUIRED = ("sample_id", "device_id", "session_id", "day_id", "partition", "raw_sha256")
 PARTITIONS = {"train", "validation", "holdout"}
@@ -17,7 +22,7 @@ def audit(rows):
         if missing:
             errors.append(f"row {n}: missing {','.join(missing)}")
             continue
-        sid, partition = row["sample_id"].strip(), row["partition"].strip()
+        sid, partition = canonical_id(row["sample_id"]), row["partition"].strip()
         if sid in seen:
             errors.append(f"row {n}: duplicate sample_id {sid}")
         seen.add(sid)
@@ -36,7 +41,7 @@ def audit(rows):
         counts[partition] += 1
         # Conservative grouping: each device, day, and exposure session is disjoint.
         for key in ("device_id", "day_id", "session_id"):
-            identity = (key, row[key].strip())
+            identity = (key, canonical_id(row[key]))
             prior = groups.setdefault(identity, partition)
             if prior != partition:
                 errors.append(f"row {n}: {key}={row[key]} leaks {prior} -> {partition}")
@@ -56,7 +61,7 @@ def main():
     raw = args.manifest.read_bytes()
     with args.manifest.open(newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
-        if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)):
+        if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)) or len({unicodedata.normalize("NFKC", k).casefold() for k in reader.fieldnames}) != len(reader.fieldnames):
             raise SystemExit("duplicate CSV columns")
         if any(k is None or not k.strip() for k in reader.fieldnames):
             raise SystemExit("empty CSV column name")
