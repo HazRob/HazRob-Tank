@@ -113,6 +113,19 @@ class SplitAuditTests(unittest.TestCase):
                     module.main()
 
 
+    def test_nfkc_fullwidth_required_header_alias_rejected(self):
+        # A fullwidth spelling of a required header must not bypass duplicate detection.
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = pathlib.Path(tmp) / "manifest.csv"
+            manifest.write_text(
+                "sample_id,device_id,session_id,day_id,partition,raw_sha256,ｓａｍｐｌｅ＿ｉｄ\n"
+                "1,dev1,s1,d1,train," + "a" * 64 + ",shadow\n",
+                encoding="utf-8",
+            )
+            with patch("sys.argv", ["g2_holdout_split_preflight.py", str(manifest)]):
+                with self.assertRaisesRegex(SystemExit, "duplicate CSV columns"):
+                    module.main()
+
     def test_csv_missing_cell_fails_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
             manifest = pathlib.Path(tmp) / "manifest.csv"
