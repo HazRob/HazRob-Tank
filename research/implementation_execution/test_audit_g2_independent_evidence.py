@@ -59,6 +59,20 @@ class EvidenceGateTests(unittest.TestCase):
         result = audit({"schema": SCHEMA, "records": [record]})
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
+    def test_invalid_calendar_dates_fail_closed(self):
+        for value in ("2026-02-30", "2026-13-01", "yesterday", "2026-1-1", "2026-11-10T00:00:00", 20261110):
+            with self.subTest(value=value):
+                record = valid_record()
+                record["measurement_date"] = value
+                result = audit({"schema": SCHEMA, "records": [record]})
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+    def test_valid_leap_day_remains_metadata_only(self):
+        record = valid_record()
+        record["measurement_date"] = "2024-02-29"
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
