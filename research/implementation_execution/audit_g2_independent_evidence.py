@@ -46,7 +46,7 @@ def audit(data):
             parts = PurePosixPath(normalized).parts
             if (normalized != raw_path or raw_path != raw_path.strip()
                     or raw_path.startswith(("/", "~"))
-                    or any(part in (".", "..") for part in normalized.split("/"))
+                    or any(part in ("", ".", "..") for part in normalized.split("/"))
                     or ":" in normalized.split("/")[0]
                     or any(ord(char) < 32 or ord(char) == 127 for char in raw_path)):
                 errors.append(f"record {index}: unsafe raw_data_path")
@@ -54,6 +54,10 @@ def audit(data):
                 errors.append(f"record {index}: duplicate raw_data_path (first used by record {raw_paths[raw_path]})")
             else:
                 raw_paths[raw_path] = index
+        for field in ("source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
+            value = record.get(field)
+            if isinstance(value, str) and (value != value.strip() or any(ord(c) < 32 or ord(c) == 127 for c in value)):
+                errors.append(f"record {index}: unsafe {field}")
         ident = record.get("source_id")
         if not isinstance(ident, str) or not ident.strip():
             errors.append(f"record {index}: invalid source_id")
