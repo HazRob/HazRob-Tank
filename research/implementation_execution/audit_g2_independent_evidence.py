@@ -23,6 +23,7 @@ def audit(data):
     if not records:
         errors.append("no independent physical measurement records")
     seen = set()
+    raw_paths = {}
     for index, record in enumerate(records):
         if not isinstance(record, dict):
             errors.append(f"record {index}: expected object")
@@ -49,6 +50,10 @@ def audit(data):
                     or ":" in normalized.split("/")[0]
                     or any(ord(char) < 32 or ord(char) == 127 for char in raw_path)):
                 errors.append(f"record {index}: unsafe raw_data_path")
+            elif raw_path in raw_paths:
+                errors.append(f"record {index}: duplicate raw_data_path (first used by record {raw_paths[raw_path]})")
+            else:
+                raw_paths[raw_path] = index
         ident = record.get("source_id")
         if not isinstance(ident, str) or not ident.strip():
             errors.append(f"record {index}: invalid source_id")
