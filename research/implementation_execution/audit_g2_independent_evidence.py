@@ -34,7 +34,7 @@ def audit(data):
             errors.append(f"record {index}: invalid raw_sha256")
         raw_path = record.get("raw_data_path")
         if isinstance(raw_path, str) and raw_path.strip():
-            normalized = raw_path.replace("\\\\", "/")
+            normalized = raw_path.replace("\\", "/")
             parts = PurePosixPath(normalized).parts
             if (normalized != raw_path or raw_path != raw_path.strip()
                     or raw_path.startswith(("/", "~"))
