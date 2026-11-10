@@ -7,6 +7,7 @@ This audit checks provenance completeness, not scientific validity or sensor acc
 """
 import argparse
 import json
+from datetime import date
 from pathlib import Path, PurePosixPath
 
 DEFAULT = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
@@ -29,6 +30,12 @@ def audit(data):
         missing = [k for k in REQUIRED if not isinstance(record.get(k), str) or not record[k].strip()]
         if missing:
             errors.append(f"record {index}: missing provenance: {','.join(missing)}")
+        measured = record.get("measurement_date")
+        try:
+            if not isinstance(measured, str) or len(measured) != 10 or date.fromisoformat(measured).isoformat() != measured:
+                raise ValueError("invalid date")
+        except ValueError:
+            errors.append(f"record {index}: invalid measurement_date (expected YYYY-MM-DD calendar date)")
         sha = record.get("raw_sha256", "")
         if not isinstance(sha, str) or len(sha) != 64 or any(c not in "0123456789abcdefABCDEF" for c in sha):
             errors.append(f"record {index}: invalid raw_sha256")
