@@ -32,6 +32,12 @@ class EvidenceGateTests(unittest.TestCase):
         result = audit({"schema":SCHEMA,"records":[valid_record()]})
         self.assertEqual(result["status"],"PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
+    def test_unhashable_source_id_fails_closed(self):
+        record = valid_record()
+        record["source_id"] = ["bad", "identifier"]
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertFalse(result["scientifically_validated"])
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
