@@ -100,7 +100,7 @@ class EvidenceGateTests(unittest.TestCase):
                 self.assertFalse(result["scientifically_validated"])
     def test_provenance_control_characters_and_outer_whitespace_fail_closed(self):
         for field in ("source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
-            for value in (" value ", "value\\n", "value\\x00"):
+            for value in (" value ", "value" + chr(10), "value" + chr(0)):
                 with self.subTest(field=field, value=repr(value)):
                     record = valid_record()
                     record[field] = value
