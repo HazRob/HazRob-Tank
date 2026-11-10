@@ -38,6 +38,13 @@ class EvidenceGateTests(unittest.TestCase):
         result = audit({"schema": SCHEMA, "records": [record]})
         self.assertEqual(result["status"], "BLOCKED")
         self.assertFalse(result["scientifically_validated"])
+    def test_whitespace_variant_duplicate_source_is_blocked(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = " independent-001 "
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertFalse(result["scientifically_validated"])
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
