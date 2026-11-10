@@ -90,6 +90,23 @@ class EvidenceGateTests(unittest.TestCase):
         result = audit({"schema": SCHEMA, "records": [first, second]})
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
+    def test_ambiguous_relative_paths_fail_closed(self):
+        for path in ("data//raw.csv", "data/raw.csv/", "./data/raw.csv"):
+            with self.subTest(path=path):
+                record = valid_record()
+                record["raw_data_path"] = path
+                result = audit({"schema": SCHEMA, "records": [record]})
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+    def test_provenance_control_characters_and_outer_whitespace_fail_closed(self):
+        for field in ("source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
+            for value in (" value ", "value\\n", "value\\x00"):
+                with self.subTest(field=field, value=repr(value)):
+                    record = valid_record()
+                    record[field] = value
+                    result = audit({"schema": SCHEMA, "records": [record]})
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertFalse(result["scientifically_validated"])
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
