@@ -7,7 +7,7 @@ This audit checks provenance completeness, not scientific validity or sensor acc
 """
 import argparse
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 DEFAULT = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
 REQUIRED = ("source_id", "raw_data_path", "raw_sha256", "measurement_date",
@@ -32,6 +32,16 @@ def audit(data):
         sha = record.get("raw_sha256", "")
         if not isinstance(sha, str) or len(sha) != 64 or any(c not in "0123456789abcdefABCDEF" for c in sha):
             errors.append(f"record {index}: invalid raw_sha256")
+        raw_path = record.get("raw_data_path")
+        if isinstance(raw_path, str) and raw_path.strip():
+            normalized = raw_path.replace("\\\\", "/")
+            parts = PurePosixPath(normalized).parts
+            if (normalized != raw_path or raw_path != raw_path.strip()
+                    or raw_path.startswith(("/", "~"))
+                    or any(part in (".", "..") for part in normalized.split("/"))
+                    or ":" in normalized.split("/")[0]
+                    or any(ord(char) < 32 or ord(char) == 127 for char in raw_path)):
+                errors.append(f"record {index}: unsafe raw_data_path")
         ident = record.get("source_id")
         if not isinstance(ident, str) or not ident.strip():
             errors.append(f"record {index}: invalid source_id")
