@@ -1,0 +1,44 @@
+name: G2 independent evidence provenance regression (research only)
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - 'research/implementation_execution/audit_g2_independent_evidence.py'
+      - 'research/implementation_execution/test_audit_g2_independent_evidence.py'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
+      - '.github/workflows/g2-independent-evidence-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  provenance-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run evidence-gate regression tests
+        run: python3 -m unittest discover -s research/implementation_execution -p 'test_audit_g2_independent_evidence.py' -v
+      - name: Audit evidence manifest (BLOCKED is expected until independent evidence arrives)
+        shell: bash
+        run: |
+          set +e
+          python3 research/implementation_execution/audit_g2_independent_evidence.py --json > g2-provenance-audit.json
+          rc=$?
+          set -e
+          cat g2-provenance-audit.json
+          python3 -c 'import json; d=json.load(open("g2-provenance-audit.json")); assert d["scientifically_validated"] is False; assert d["status"] in ("BLOCKED", "PROVENANCE_REVIEW_REQUIRED")'
+          if [ "$rc" -ne 2 ] && [ "$rc" -ne 0 ]; then exit "$rc"; fi
+          if [ "$rc" -eq 2 ]; then
+            python3 -c 'import json; assert json.load(open("g2-provenance-audit.json"))["status"] == "BLOCKED"'
+          else
+            python3 -c 'import json; assert json.load(open("g2-provenance-audit.json"))["status"] == "PROVENANCE_REVIEW_REQUIRED"'
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: g2-provenance-audit
+          path: g2-provenance-audit.json
+          retention-days: 30
