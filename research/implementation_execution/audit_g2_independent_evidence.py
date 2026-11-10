@@ -15,10 +15,10 @@ REQUIRED = ("source_id", "raw_data_path", "raw_sha256", "measurement_date",
 def audit(data):
     errors = []
     if not isinstance(data, dict) or data.get("schema") != "hazrob.g2.independent-evidence.v1":
-        return {"status": "BLOCKED", "record_count": 0, "errors": ["invalid manifest schema"]}
+        return {"status": "BLOCKED", "record_count": 0, "errors": ["invalid manifest schema"], "scientifically_validated": False}
     records = data.get("records")
     if not isinstance(records, list):
-        return {"status": "BLOCKED", "record_count": 0, "errors": ["records must be an array"]}
+        return {"status": "BLOCKED", "record_count": 0, "errors": ["records must be an array"], "scientifically_validated": False}
     if not records:
         errors.append("no independent physical measurement records")
     seen = set()
@@ -33,9 +33,12 @@ def audit(data):
         if not isinstance(sha, str) or len(sha) != 64 or any(c not in "0123456789abcdefABCDEF" for c in sha):
             errors.append(f"record {index}: invalid raw_sha256")
         ident = record.get("source_id")
-        if ident in seen:
+        if not isinstance(ident, str) or not ident.strip():
+            errors.append(f"record {index}: invalid source_id")
+        elif ident in seen:
             errors.append(f"record {index}: duplicate source_id")
-        seen.add(ident)
+        else:
+            seen.add(ident)
     return {"status": "BLOCKED" if errors else "PROVENANCE_REVIEW_REQUIRED",
             "record_count": len(records), "errors": errors,
             "scientifically_validated": False}
