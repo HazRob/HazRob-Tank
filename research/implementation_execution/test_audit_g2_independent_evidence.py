@@ -45,6 +45,20 @@ class EvidenceGateTests(unittest.TestCase):
         result = audit({"schema": SCHEMA, "records": [first, second]})
         self.assertEqual(result["status"], "BLOCKED")
         self.assertFalse(result["scientifically_validated"])
+    def test_unsafe_raw_paths_fail_closed(self):
+        for path in ("../private.csv", "/tmp/data.csv", "C:/secret.csv", "data/../raw.csv", "data\\\\raw.csv", " raw.csv", "raw.csv\\n"):
+            with self.subTest(path=path):
+                record = valid_record()
+                record["raw_data_path"] = path
+                result = audit({"schema": SCHEMA, "records": [record]})
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+    def test_safe_relative_raw_path_remains_metadata_only(self):
+        record = valid_record()
+        record["raw_data_path"] = "research/raw/source-001.csv"
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
