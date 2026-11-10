@@ -73,6 +73,23 @@ class EvidenceGateTests(unittest.TestCase):
         result = audit({"schema": SCHEMA, "records": [record]})
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
+    def test_duplicate_raw_path_is_blocked_even_with_distinct_source_ids(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = "independent-002"
+        second["raw_sha256"] = "b" * 64
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertTrue(any("duplicate raw_data_path" in error for error in result["errors"]))
+        self.assertFalse(result["scientifically_validated"])
+    def test_distinct_raw_paths_remain_metadata_only(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = "independent-002"
+        second["raw_data_path"] = "data/raw2.csv"
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
