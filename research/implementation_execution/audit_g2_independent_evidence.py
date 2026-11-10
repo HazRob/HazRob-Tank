@@ -35,10 +35,10 @@ def audit(data):
         ident = record.get("source_id")
         if not isinstance(ident, str) or not ident.strip():
             errors.append(f"record {index}: invalid source_id")
-        elif ident in seen:
+        elif ident.strip() in seen:
             errors.append(f"record {index}: duplicate source_id")
         else:
-            seen.add(ident)
+            seen.add(ident.strip())
     return {"status": "BLOCKED" if errors else "PROVENANCE_REVIEW_REQUIRED",
             "record_count": len(records), "errors": errors,
             "scientifically_validated": False}
