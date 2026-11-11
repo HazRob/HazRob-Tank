@@ -169,5 +169,35 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(result["verified_files"], 0)
             self.assertFalse(result["scientifically_validated"])
 
+    def test_malformed_records_and_digests_are_blocked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data = b"measured-raw"
+            Path(directory, "sample.csv").write_bytes(data)
+            cases = [
+                None, [], "not-a-record",
+                {"raw_data_path": "sample.csv", "raw_sha256": "0" * 63},
+                {"raw_data_path": "sample.csv", "raw_sha256": "g" * 64},
+                {"raw_data_path": 123, "raw_sha256": hashlib.sha256(data).hexdigest()},
+            ]
+            for record in cases:
+                with self.subTest(record=record):
+                    result = verify({"records": [record]}, directory)
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertEqual(result["verified_files"], 0)
+                    self.assertFalse(result["scientifically_validated"])
+
+    def test_mixed_valid_and_invalid_records_cannot_pass_batch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data = b"measured-raw"
+            Path(directory, "sample.csv").write_bytes(data)
+            result = verify({"records": [
+                {"raw_data_path": "sample.csv", "raw_sha256": hashlib.sha256(data).hexdigest()},
+                {"raw_data_path": "missing.csv", "raw_sha256": "not-a-digest"},
+            ]}, directory)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertEqual(len(result["errors"]), 1)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
