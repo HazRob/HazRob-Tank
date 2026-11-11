@@ -144,5 +144,30 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertIn("duplicate raw file path", result["errors"][0])
             self.assertFalse(result["scientifically_validated"])
 
+
+    def test_nested_raw_file_is_verified_without_scientific_approval(self):
+        with tempfile.TemporaryDirectory() as directory:
+            nested = Path(directory, "session-001", "raw")
+            nested.mkdir(parents=True)
+            data = b"adc,time\\n1024,0\\n"
+            (nested / "sample.csv").write_bytes(data)
+            result = verify({"records": [{
+                "raw_data_path": "session-001/raw/sample.csv",
+                "raw_sha256": hashlib.sha256(data).hexdigest()
+            }]}, directory)
+            self.assertEqual(result["status"], "RAW_INTEGRITY_VERIFIED_ONLY")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_directory_as_raw_file_is_blocked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            Path(directory, "sample.csv").mkdir()
+            result = verify({"records": [{
+                "raw_data_path": "sample.csv", "raw_sha256": "0" * 64
+            }]}, directory)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
