@@ -20,6 +20,7 @@ def verify(manifest, root):
                 "errors": [f"invalid raw-data root: {exc}"],
                 "scientifically_validated": False}
     verified = 0
+    seen_paths = set()
     for i, record in enumerate(records):
         if not isinstance(record, dict):
             errors.append(f"record {i}: invalid record")
@@ -37,6 +38,9 @@ def verify(manifest, root):
             resolved = root.joinpath(*path.split("/")).resolve(strict=True)
             if not resolved.is_relative_to(root) or not resolved.is_file():
                 raise ValueError("not a regular file inside root")
+            if resolved in seen_paths:
+                raise ValueError("duplicate raw file path")
+            seen_paths.add(resolved)
             h = hashlib.sha256()
             with resolved.open("rb") as stream:
                 for block in iter(lambda: stream.read(1024 * 1024), b""):
