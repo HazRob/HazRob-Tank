@@ -107,6 +107,16 @@ class EvidenceGateTests(unittest.TestCase):
                     result = audit({"schema": SCHEMA, "records": [record]})
                     self.assertEqual(result["status"], "BLOCKED")
                     self.assertFalse(result["scientifically_validated"])
+    def test_invisible_unicode_provenance_is_blocked(self):
+        # Unicode format controls can visually disguise distinct paths and identifiers.
+        for field in ("raw_data_path", "source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
+            for character in ("\u202e", "\u200b", "\ufeff"):
+                with self.subTest(field=field, character=repr(character)):
+                    record = valid_record()
+                    record[field] = record[field] + character
+                    result = audit({"schema": SCHEMA, "records": [record]})
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertFalse(result["scientifically_validated"])
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
