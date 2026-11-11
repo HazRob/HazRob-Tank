@@ -1,0 +1,38 @@
+name: G2 independent raw-byte integrity regression
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - 'research/implementation_execution/verify_g2_raw_integrity.py'
+      - 'research/implementation_execution/test_verify_g2_raw_integrity.py'
+      - '.github/workflows/g2-independent-raw-byte-integrity.yml'
+  pull_request:
+    paths:
+      - 'research/implementation_execution/verify_g2_raw_integrity.py'
+      - 'research/implementation_execution/test_verify_g2_raw_integrity.py'
+      - '.github/workflows/g2-independent-raw-byte-integrity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  raw-byte-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run raw-byte integrity regression suite (not scientific validation)
+        run: python -m unittest discover -s research/implementation_execution -p 'test_verify_g2_raw_integrity.py' -v
+      - name: Check empty independent-evidence registry remains blocked
+        run: |
+          python - <<'PY'
+          import json,sys
+          sys.path.insert(0, "research/implementation_execution")
+          from verify_g2_raw_integrity import verify
+          result = verify({"records":[]}, ".")
+          assert result["status"] == "BLOCKED"
+          assert result["scientifically_validated"] is False
+          print(json.dumps(result, sort_keys=True))
+          PY
