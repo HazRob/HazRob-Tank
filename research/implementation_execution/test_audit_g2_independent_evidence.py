@@ -148,6 +148,23 @@ class EvidenceGateTests(unittest.TestCase):
         result = audit({"schema": SCHEMA, "records": [record]})
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
+    def test_malformed_manifest_shapes_fail_closed(self):
+        for manifest in (None, [], "invalid", {}, {"schema": SCHEMA},
+                         {"schema": SCHEMA, "records": {}},
+                         {"schema": SCHEMA, "records": [None]},
+                         {"schema": SCHEMA, "records": ["invalid"]}):
+            with self.subTest(manifest=repr(manifest)):
+                result = audit(manifest)
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+
+    def test_uppercase_sha256_is_metadata_only(self):
+        record = valid_record()
+        record["raw_sha256"] = "ABCDEF0123456789" * 4
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
