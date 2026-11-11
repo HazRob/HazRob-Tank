@@ -45,14 +45,14 @@ def verify(manifest, root):
             file_id = (file_stat.st_dev, file_stat.st_ino)
             if file_id in seen_file_ids:
                 raise ValueError("duplicate raw file identity (hard link)")
-            seen_paths.add(resolved)
-            seen_file_ids.add(file_id)
             h = hashlib.sha256()
             with resolved.open("rb") as stream:
                 for block in iter(lambda: stream.read(1024 * 1024), b""):
                     h.update(block)
             if h.hexdigest() != digest.lower():
                 raise ValueError("SHA-256 mismatch")
+            seen_paths.add(resolved)
+            seen_file_ids.add(file_id)
             verified += 1
         except (OSError, ValueError, RuntimeError) as exc:
             errors.append(f"record {i}: {exc}")
