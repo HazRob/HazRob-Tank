@@ -127,5 +127,22 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertIn("hard link", result["errors"][0])
             self.assertFalse(result["scientifically_validated"])
 
+    def test_internal_symlink_alias_cannot_inflate_raw_file_count(self):
+        with tempfile.TemporaryDirectory() as directory:
+            original = Path(directory, "original.csv")
+            alias = Path(directory, "alias.csv")
+            data = b"single-source"
+            original.write_bytes(data)
+            alias.symlink_to(original.name)
+            digest = hashlib.sha256(data).hexdigest()
+            result = verify({"records": [
+                {"raw_data_path": "original.csv", "raw_sha256": digest},
+                {"raw_data_path": "alias.csv", "raw_sha256": digest}
+            ]}, directory)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertIn("duplicate raw file path", result["errors"][0])
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
