@@ -14,7 +14,8 @@ import unicodedata
 DEFAULT = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
 def has_disallowed_unicode(value):
     """Reject invisible formatting and control characters in provenance identifiers/paths."""
-    return any(unicodedata.category(char) in ("Cc", "Cf", "Cs") for char in value)
+    return (unicodedata.normalize("NFC", value) != value
+            or any(unicodedata.category(char) in ("Cc", "Cf", "Cs") for char in value))
 
 REQUIRED = ("source_id", "raw_data_path", "raw_sha256", "measurement_date",
             "instrument_id", "calibration_reference", "holdout_split_id")
