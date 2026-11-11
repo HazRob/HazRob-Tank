@@ -117,6 +117,21 @@ class EvidenceGateTests(unittest.TestCase):
                     result = audit({"schema": SCHEMA, "records": [record]})
                     self.assertEqual(result["status"], "BLOCKED")
                     self.assertFalse(result["scientifically_validated"])
+    def test_non_nfc_provenance_is_blocked(self):
+        # Canonically equivalent spellings must not create distinct evidence identities.
+        for field in ("raw_data_path", "source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
+            with self.subTest(field=field):
+                record = valid_record()
+                record[field] += "e\u0301"
+                result = audit({"schema": SCHEMA, "records": [record]})
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+    def test_nfc_provenance_remains_metadata_only(self):
+        record = valid_record()
+        record["source_id"] += "\u00e9"
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
