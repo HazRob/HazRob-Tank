@@ -46,7 +46,7 @@ class EvidenceGateTests(unittest.TestCase):
         self.assertEqual(result["status"], "BLOCKED")
         self.assertFalse(result["scientifically_validated"])
     def test_unsafe_raw_paths_fail_closed(self):
-        for path in ("../private.csv", "/tmp/data.csv", "C:/secret.csv", "data/../raw.csv", "data\\\\raw.csv", " raw.csv", "raw.csv\\n"):
+        for path in ("../private.csv", "/tmp/data.csv", "C:/secret.csv", "data/../raw.csv", "data\\\\raw.csv", " raw.csv", "raw.csv" + chr(10)):
             with self.subTest(path=path):
                 record = valid_record()
                 record["raw_data_path"] = path
