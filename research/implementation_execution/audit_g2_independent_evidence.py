@@ -12,6 +12,15 @@ from pathlib import Path, PurePosixPath
 import unicodedata
 
 DEFAULT = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
+
+def reject_duplicate_json_keys(pairs):
+    """Reject ambiguous JSON objects rather than silently accepting the last value."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
 def has_disallowed_unicode(value):
     """Reject non-NFKC identifiers, invisible formatting, and control characters."""
     return (unicodedata.normalize("NFKC", value) != value
@@ -87,7 +96,7 @@ def main():
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     try:
-        result = audit(json.loads(args.manifest.read_text(encoding="utf-8")))
+        result = audit(json.loads(args.manifest.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_json_keys))
     except (OSError, ValueError) as exc:
         result = {"status": "BLOCKED", "record_count": 0, "errors": [str(exc)], "scientifically_validated": False}
     print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
