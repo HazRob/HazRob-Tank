@@ -7,6 +7,7 @@ This audit checks provenance completeness, not scientific validity or sensor acc
 """
 import argparse
 import json
+import math
 from datetime import date
 from pathlib import Path, PurePosixPath
 import unicodedata
@@ -24,6 +25,13 @@ def reject_duplicate_json_keys(pairs):
 def reject_nonfinite_json_constant(value):
     """Reject NaN and Infinity, which are not permitted by RFC 8259 JSON."""
     raise ValueError(f"non-finite JSON constant: {value}")
+
+def reject_overflow_json_float(value):
+    """Reject JSON numeric exponents that overflow Python floats to infinity."""
+    number = float(value)
+    if not math.isfinite(number):
+        raise ValueError(f"non-finite JSON number: {value}")
+    return number
 
 def has_disallowed_unicode(value):
     """Reject non-NFKC identifiers, invisible formatting, and control characters."""
@@ -101,7 +109,8 @@ def main():
     args = parser.parse_args()
     try:
         result = audit(json.loads(args.manifest.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_json_keys,
-                                       parse_constant=reject_nonfinite_json_constant))
+                                       parse_constant=reject_nonfinite_json_constant,
+                                       parse_float=reject_overflow_json_float))
     except (OSError, ValueError) as exc:
         result = {"status": "BLOCKED", "record_count": 0, "errors": [str(exc)], "scientifically_validated": False}
     print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
