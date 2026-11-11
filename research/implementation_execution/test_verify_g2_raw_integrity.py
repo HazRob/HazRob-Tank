@@ -199,5 +199,29 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(len(result["errors"]), 1)
             self.assertFalse(result["scientifically_validated"])
 
+
+    def test_distinct_files_with_identical_bytes_are_not_independent_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data = b"same-payload-not-independent-observations"
+            digest = hashlib.sha256(data).hexdigest()
+            records = []
+            for name in ("replica-a.csv", "replica-b.csv"):
+                Path(directory, name).write_bytes(data)
+                records.append({"raw_data_path": name, "raw_sha256": digest})
+            result = verify({"records": records}, directory)
+            self.assertEqual(result["status"], "RAW_INTEGRITY_VERIFIED_ONLY")
+            self.assertEqual(result["verified_files"], 2)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_invalid_top_level_manifests_fail_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for manifest in (None, [], "invalid", {"records": None},
+                             {"records": {}}, {"records": "sample.csv"}, {}):
+                with self.subTest(manifest=manifest):
+                    result = verify(manifest, directory)
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertEqual(result["verified_files"], 0)
+                    self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
