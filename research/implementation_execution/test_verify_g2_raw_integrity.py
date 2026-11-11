@@ -237,5 +237,22 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertIn("SHA-256 mismatch", result["errors"][0])
             self.assertFalse(result["scientifically_validated"])
 
+    def test_unsafe_path_forms_fail_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data = b"raw-path-policy"
+            Path(directory, "sample.csv").write_bytes(data)
+            digest = hashlib.sha256(data).hexdigest()
+            for candidate in ("", "/sample.csv", "../sample.csv", "./sample.csv",
+                              "sub//sample.csv", "sub/../sample.csv",
+                              "~/sample.csv", "C:/sample.csv",
+                              "sub\\\\sample.csv"):
+                with self.subTest(path=candidate):
+                    result = verify({"records": [{
+                        "raw_data_path": candidate, "raw_sha256": digest
+                    }]}, directory)
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertEqual(result["verified_files"], 0)
+                    self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
