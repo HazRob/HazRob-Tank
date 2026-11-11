@@ -132,6 +132,22 @@ class EvidenceGateTests(unittest.TestCase):
         result = audit({"schema": SCHEMA, "records": [record]})
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
+    def test_nfkc_compatibility_aliases_fail_closed(self):
+        # Fullwidth and ligature characters can impersonate ASCII identifiers.
+        for field in ("raw_data_path", "source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
+            for suffix in ("\uFF21", "\uFB01", "\u2460"):
+                with self.subTest(field=field, suffix=repr(suffix)):
+                    record = valid_record()
+                    record[field] += suffix
+                    result = audit({"schema": SCHEMA, "records": [record]})
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertFalse(result["scientifically_validated"])
+    def test_nfkc_normalized_unicode_is_metadata_only(self):
+        record = valid_record()
+        record["source_id"] += "A"
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
