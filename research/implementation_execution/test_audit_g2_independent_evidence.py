@@ -4,7 +4,7 @@ Run: python3 -m unittest discover -s research/implementation_execution -p 'test_
 """
 import unittest
 import json
-from audit_g2_independent_evidence import audit, reject_duplicate_json_keys, reject_nonfinite_json_constant
+from audit_g2_independent_evidence import audit, reject_duplicate_json_keys, reject_nonfinite_json_constant, reject_overflow_json_float
 
 SCHEMA = "hazrob.g2.independent-evidence.v1"
 def valid_record():
@@ -221,6 +221,27 @@ class EvidenceGateTests(unittest.TestCase):
         payload = json.dumps({"schema": SCHEMA, "records": [valid_record()], "meta": {"x": 1.5}})
         parsed = json.loads(payload, object_pairs_hook=reject_duplicate_json_keys,
                             parse_constant=reject_nonfinite_json_constant)
+        result = audit(parsed)
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_overflow_exponent_rejected_at_all_depths(self):
+        for payload in (
+            '{"schema":"' + SCHEMA + '","records":[],"extra":1e9999}',
+            '{"schema":"' + SCHEMA + '","records":[{"x":-1e9999}]}',
+            '{"schema":"' + SCHEMA + '","records":[],"meta":{"x":1e309}}',
+        ):
+            with self.subTest(payload=payload):
+                with self.assertRaisesRegex(ValueError, "non-finite JSON number"):
+                    json.loads(payload, object_pairs_hook=reject_duplicate_json_keys,
+                               parse_constant=reject_nonfinite_json_constant,
+                               parse_float=reject_overflow_json_float)
+
+    def test_finite_exponents_stay_metadata_only(self):
+        payload = '{"schema":"' + SCHEMA + '","records":[' + json.dumps(valid_record()) + '],"meta":{"x":1e308,"y":-1e-308}}'
+        parsed = json.loads(payload, object_pairs_hook=reject_duplicate_json_keys,
+                            parse_constant=reject_nonfinite_json_constant,
+                            parse_float=reject_overflow_json_float)
         result = audit(parsed)
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
