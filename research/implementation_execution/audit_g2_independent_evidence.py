@@ -9,8 +9,13 @@ import argparse
 import json
 from datetime import date
 from pathlib import Path, PurePosixPath
+import unicodedata
 
 DEFAULT = Path(__file__).with_name("G2_INDEPENDENT_EVIDENCE.json")
+def has_disallowed_unicode(value):
+    """Reject invisible formatting and control characters in provenance identifiers/paths."""
+    return any(unicodedata.category(char) in ("Cc", "Cf", "Cs") for char in value)
+
 REQUIRED = ("source_id", "raw_data_path", "raw_sha256", "measurement_date",
             "instrument_id", "calibration_reference", "holdout_split_id")
 def audit(data):
@@ -48,7 +53,7 @@ def audit(data):
                     or raw_path.startswith(("/", "~"))
                     or any(part in ("", ".", "..") for part in normalized.split("/"))
                     or ":" in normalized.split("/")[0]
-                    or any(ord(char) < 32 or ord(char) == 127 for char in raw_path)):
+                    or has_disallowed_unicode(raw_path)):
                 errors.append(f"record {index}: unsafe raw_data_path")
             elif raw_path in raw_paths:
                 errors.append(f"record {index}: duplicate raw_data_path (first used by record {raw_paths[raw_path]})")
@@ -56,7 +61,7 @@ def audit(data):
                 raw_paths[raw_path] = index
         for field in ("source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
             value = record.get(field)
-            if isinstance(value, str) and (value != value.strip() or any(ord(c) < 32 or ord(c) == 127 for c in value)):
+            if isinstance(value, str) and (value != value.strip() or has_disallowed_unicode(value)):
                 errors.append(f"record {index}: unsafe {field}")
         ident = record.get("source_id")
         if not isinstance(ident, str) or not ident.strip():
