@@ -3,7 +3,8 @@
 Run: python3 -m unittest discover -s research/implementation_execution -p 'test_audit_g2_independent_evidence.py'
 """
 import unittest
-from audit_g2_independent_evidence import audit
+import json
+from audit_g2_independent_evidence import audit, reject_duplicate_json_keys
 
 SCHEMA = "hazrob.g2.independent-evidence.v1"
 def valid_record():
@@ -184,6 +185,23 @@ class EvidenceGateTests(unittest.TestCase):
         second["raw_data_path"] = "data/independent-002.csv"
         second["raw_sha256"] = "b" * 64
         result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_duplicate_json_keys_rejected_at_every_depth(self):
+        for payload in (
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[],"records":[]}',
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[{"source_id":"a","source_id":"b"}]}',
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[],"meta":{"x":1,"x":2}}',
+        ):
+            with self.subTest(payload=payload):
+                with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
+                    json.loads(payload, object_pairs_hook=reject_duplicate_json_keys)
+
+    def test_unique_json_keys_keep_scientific_approval_false(self):
+        payload = json.dumps({"schema": SCHEMA, "records": [valid_record()]})
+        parsed = json.loads(payload, object_pairs_hook=reject_duplicate_json_keys)
+        result = audit(parsed)
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
 
