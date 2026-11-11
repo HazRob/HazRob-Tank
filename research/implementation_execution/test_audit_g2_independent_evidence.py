@@ -165,6 +165,27 @@ class EvidenceGateTests(unittest.TestCase):
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
 
+    def test_duplicate_raw_digest_is_blocked_across_distinct_paths(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = "independent-002"
+        second["raw_data_path"] = "data/independent-002.csv"
+        second["raw_sha256"] = first["raw_sha256"].upper()
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertTrue(any("duplicate raw_sha256" in error for error in result["errors"]))
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_distinct_raw_digests_and_paths_remain_metadata_only(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = "independent-002"
+        second["raw_data_path"] = "data/independent-002.csv"
+        second["raw_sha256"] = "b" * 64
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
     def test_invalid_schema_is_blocked(self):
         self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
 if __name__ == "__main__":
