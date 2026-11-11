@@ -85,5 +85,29 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(result["status"], "BLOCKED")
             self.assertFalse(result["scientifically_validated"])
 
+    def test_duplicate_raw_path_blocks_batch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data = b"independent-sample"
+            Path(directory, "sample.csv").write_bytes(data)
+            record = {"raw_data_path": "sample.csv",
+                      "raw_sha256": hashlib.sha256(data).hexdigest()}
+            result = verify({"records": [record, dict(record)]}, directory)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertIn("duplicate raw file path", result["errors"][0])
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_distinct_raw_paths_are_integrity_checked_only(self):
+        with tempfile.TemporaryDirectory() as directory:
+            records = []
+            for name, data in (("a.csv", b"a"), ("b.csv", b"b")):
+                Path(directory, name).write_bytes(data)
+                records.append({"raw_data_path": name,
+                                "raw_sha256": hashlib.sha256(data).hexdigest()})
+            result = verify({"records": records}, directory)
+            self.assertEqual(result["status"], "RAW_INTEGRITY_VERIFIED_ONLY")
+            self.assertEqual(result["verified_files"], 2)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
