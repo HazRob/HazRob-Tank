@@ -4,7 +4,7 @@ Run: python3 -m unittest discover -s research/implementation_execution -p 'test_
 """
 import unittest
 import json
-from audit_g2_independent_evidence import audit, reject_duplicate_json_keys
+from audit_g2_independent_evidence import audit, reject_duplicate_json_keys, reject_nonfinite_json_constant
 
 SCHEMA = "hazrob.g2.independent-evidence.v1"
 def valid_record():
@@ -201,6 +201,26 @@ class EvidenceGateTests(unittest.TestCase):
     def test_unique_json_keys_keep_scientific_approval_false(self):
         payload = json.dumps({"schema": SCHEMA, "records": [valid_record()]})
         parsed = json.loads(payload, object_pairs_hook=reject_duplicate_json_keys)
+        result = audit(parsed)
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_nonfinite_json_constants_rejected_at_every_depth(self):
+        # Python's JSON decoder accepts NaN/Infinity by default, contrary to RFC 8259.
+        for payload in (
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[],"extra":NaN}',
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[{"x":Infinity}]}',
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[],"meta":{"x":-Infinity}}',
+        ):
+            with self.subTest(payload=payload):
+                with self.assertRaisesRegex(ValueError, "non-finite JSON constant"):
+                    json.loads(payload, object_pairs_hook=reject_duplicate_json_keys,
+                               parse_constant=reject_nonfinite_json_constant)
+
+    def test_standard_finite_json_remains_metadata_only(self):
+        payload = json.dumps({"schema": SCHEMA, "records": [valid_record()], "meta": {"x": 1.5}})
+        parsed = json.loads(payload, object_pairs_hook=reject_duplicate_json_keys,
+                            parse_constant=reject_nonfinite_json_constant)
         result = audit(parsed)
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
