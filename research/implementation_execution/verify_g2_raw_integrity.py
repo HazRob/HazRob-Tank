@@ -11,7 +11,14 @@ def verify(manifest, root):
     if not isinstance(records, list) or not records:
         return {"status": "BLOCKED", "verified_files": 0,
                 "errors": ["no independent raw records"], "scientifically_validated": False}
-    root = Path(root).resolve(strict=True)
+    try:
+        root = Path(root).resolve(strict=True)
+        if not root.is_dir():
+            raise NotADirectoryError(str(root))
+    except (OSError, RuntimeError) as exc:
+        return {"status": "BLOCKED", "verified_files": 0,
+                "errors": [f"invalid raw-data root: {exc}"],
+                "scientifically_validated": False}
     verified = 0
     for i, record in enumerate(records):
         if not isinstance(record, dict):
