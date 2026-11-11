@@ -39,5 +39,32 @@ class RawIntegrityTests(unittest.TestCase):
                         "raw_sha256": hashlib.sha256(b"raw").hexdigest()}]}, root)
                     self.assertEqual(result["status"], "BLOCKED")
 
+
+    def test_missing_file_blocks_batch_even_when_another_file_passes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data = b"independent-raw-sample"
+            Path(directory, "present.csv").write_bytes(data)
+            digest = hashlib.sha256(data).hexdigest()
+            result = verify({"records": [
+                {"raw_data_path": "present.csv", "raw_sha256": digest},
+                {"raw_data_path": "missing.csv", "raw_sha256": digest}
+            ]}, directory)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertEqual(len(result["errors"]), 1)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_uppercase_sha256_matches_real_bytes_without_approval(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data = b"raw-data-case-check"
+            Path(directory, "sample.csv").write_bytes(data)
+            result = verify({"records": [{
+                "raw_data_path": "sample.csv",
+                "raw_sha256": hashlib.sha256(data).hexdigest().upper()
+            }]}, directory)
+            self.assertEqual(result["status"], "RAW_INTEGRITY_VERIFIED_ONLY")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
