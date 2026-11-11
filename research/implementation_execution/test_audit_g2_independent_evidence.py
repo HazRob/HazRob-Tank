@@ -87,6 +87,7 @@ class EvidenceGateTests(unittest.TestCase):
         second = valid_record()
         second["source_id"] = "independent-002"
         second["raw_data_path"] = "data/raw2.csv"
+        second["raw_sha256"] = "b" * 64
         result = audit({"schema": SCHEMA, "records": [first, second]})
         self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
         self.assertFalse(result["scientifically_validated"])
