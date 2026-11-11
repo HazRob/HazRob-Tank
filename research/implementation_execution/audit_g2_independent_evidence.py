@@ -30,6 +30,7 @@ def audit(data):
         errors.append("no independent physical measurement records")
     seen = set()
     raw_paths = {}
+    raw_digests = {}
     for index, record in enumerate(records):
         if not isinstance(record, dict):
             errors.append(f"record {index}: expected object")
@@ -46,6 +47,12 @@ def audit(data):
         sha = record.get("raw_sha256", "")
         if not isinstance(sha, str) or len(sha) != 64 or any(c not in "0123456789abcdefABCDEF" for c in sha):
             errors.append(f"record {index}: invalid raw_sha256")
+        if isinstance(sha, str) and len(sha) == 64 and all(c in "0123456789abcdefABCDEF" for c in sha):
+            digest = sha.lower()
+            if digest in raw_digests:
+                errors.append(f"record {index}: duplicate raw_sha256 (first used by record {raw_digests[digest]})")
+            else:
+                raw_digests[digest] = index
         raw_path = record.get("raw_data_path")
         if isinstance(raw_path, str) and raw_path.strip():
             normalized = raw_path.replace("\\", "/")
