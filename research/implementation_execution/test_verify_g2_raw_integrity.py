@@ -109,5 +109,23 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(result["verified_files"], 2)
             self.assertFalse(result["scientifically_validated"])
 
+    def test_hardlinked_files_cannot_count_as_independent_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            first = Path(directory, "first.csv")
+            second = Path(directory, "second.csv")
+            data = b"same-inode"
+            first.write_bytes(data)
+            import os
+            os.link(first, second)
+            digest = hashlib.sha256(data).hexdigest()
+            result = verify({"records": [
+                {"raw_data_path": "first.csv", "raw_sha256": digest},
+                {"raw_data_path": "second.csv", "raw_sha256": digest}
+            ]}, directory)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertIn("hard link", result["errors"][0])
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
