@@ -21,6 +21,7 @@ def verify(manifest, root):
                 "scientifically_validated": False}
     verified = 0
     seen_paths = set()
+    seen_file_ids = set()
     for i, record in enumerate(records):
         if not isinstance(record, dict):
             errors.append(f"record {i}: invalid record")
@@ -40,7 +41,12 @@ def verify(manifest, root):
                 raise ValueError("not a regular file inside root")
             if resolved in seen_paths:
                 raise ValueError("duplicate raw file path")
+            file_stat = resolved.stat()
+            file_id = (file_stat.st_dev, file_stat.st_ino)
+            if file_id in seen_file_ids:
+                raise ValueError("duplicate raw file identity (hard link)")
             seen_paths.add(resolved)
+            seen_file_ids.add(file_id)
             h = hashlib.sha256()
             with resolved.open("rb") as stream:
                 for block in iter(lambda: stream.read(1024 * 1024), b""):
