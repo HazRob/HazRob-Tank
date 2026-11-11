@@ -21,6 +21,10 @@ def reject_duplicate_json_keys(pairs):
             raise ValueError(f"duplicate JSON key: {key}")
         result[key] = value
     return result
+def reject_nonfinite_json_constant(value):
+    """Reject NaN and Infinity, which are not permitted by RFC 8259 JSON."""
+    raise ValueError(f"non-finite JSON constant: {value}")
+
 def has_disallowed_unicode(value):
     """Reject non-NFKC identifiers, invisible formatting, and control characters."""
     return (unicodedata.normalize("NFKC", value) != value
@@ -96,7 +100,8 @@ def main():
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     try:
-        result = audit(json.loads(args.manifest.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_json_keys))
+        result = audit(json.loads(args.manifest.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_json_keys,
+                                       parse_constant=reject_nonfinite_json_constant))
     except (OSError, ValueError) as exc:
         result = {"status": "BLOCKED", "record_count": 0, "errors": [str(exc)], "scientifically_validated": False}
     print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
