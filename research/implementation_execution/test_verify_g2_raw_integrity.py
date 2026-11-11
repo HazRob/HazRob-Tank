@@ -223,5 +223,19 @@ class RawIntegrityTests(unittest.TestCase):
                     self.assertEqual(result["verified_files"], 0)
                     self.assertFalse(result["scientifically_validated"])
 
+    def test_failed_digest_does_not_reserve_file_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data = b"valid-raw-payload"
+            Path(directory, "sample.csv").write_bytes(data)
+            result = verify({"records": [
+                {"raw_data_path": "sample.csv", "raw_sha256": "0" * 64},
+                {"raw_data_path": "sample.csv", "raw_sha256": hashlib.sha256(data).hexdigest()},
+            ]}, directory)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertEqual(len(result["errors"]), 1)
+            self.assertIn("SHA-256 mismatch", result["errors"][0])
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
