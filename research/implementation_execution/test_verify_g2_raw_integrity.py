@@ -66,5 +66,24 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(result["verified_files"], 1)
             self.assertFalse(result["scientifically_validated"])
 
+    def test_missing_root_is_blocked_without_exception(self):
+        with tempfile.TemporaryDirectory() as directory:
+            missing = Path(directory, "missing")
+            result = verify({"records": [{"raw_data_path": "sample.csv",
+                "raw_sha256": "0" * 64}]}, missing)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+            self.assertIn("invalid raw-data root", result["errors"][0])
+
+    def test_file_root_is_blocked_without_exception(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root_file = Path(directory, "root.txt")
+            root_file.write_text("not a directory")
+            result = verify({"records": [{"raw_data_path": "sample.csv",
+                "raw_sha256": "0" * 64}]}, root_file)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
