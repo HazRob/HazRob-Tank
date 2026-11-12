@@ -306,5 +306,33 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertIn("SHA-256 mismatch", result["errors"][0])
             self.assertFalse(result["scientifically_validated"])
 
+
+    def test_dangling_symlink_is_blocked_without_crashing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            Path(directory, "missing-link.csv").symlink_to("nonexistent.csv")
+            result = verify({"records": [{
+                "raw_data_path": "missing-link.csv", "raw_sha256": "0" * 64,
+            }]}, directory)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_nested_symlink_escape_is_blocked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory, "root")
+            nested = root / "nested"
+            nested.mkdir(parents=True)
+            outside = Path(directory, "outside.csv")
+            data = b"independent-source-boundary"
+            outside.write_bytes(data)
+            (nested / "alias.csv").symlink_to(outside)
+            result = verify({"records": [{
+                "raw_data_path": "nested/alias.csv",
+                "raw_sha256": hashlib.sha256(data).hexdigest(),
+            }]}, root)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
