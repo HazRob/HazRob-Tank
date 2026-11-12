@@ -553,5 +553,34 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(result["verified_files"], 0)
             self.assertFalse(result["scientifically_validated"])
 
+    def test_cli_rejects_duplicate_json_keys_at_all_levels(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            payload = b"independent-test"
+            (root / "sample.bin").write_bytes(payload)
+            digest = hashlib.sha256(payload).hexdigest()
+            cases = [
+                '{"records":[],"records":[{"raw_data_path":"sample.bin","raw_sha256":"'
+                + digest + '"}]}',
+                '{"records":[{"raw_data_path":"missing.bin","raw_data_path":"sample.bin",'
+                '"raw_sha256":"' + digest + '"}]}',
+                '{"records":[{"raw_data_path":"sample.bin","raw_sha256":"'
+                + "0" * 64 + '","raw_sha256":"' + digest + '"}]}',
+            ]
+            for content in cases:
+                with self.subTest(content=content):
+                    manifest.write_text(content, encoding="utf-8")
+                    process = subprocess.run(
+                        [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                         "--manifest", str(manifest), "--root", str(root)],
+                        capture_output=True, text=True, check=False)
+                    self.assertEqual(process.returncode, 2, process.stderr)
+                    result = json.loads(process.stdout)
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertEqual(result["verified_files"], 0)
+                    self.assertFalse(result["scientifically_validated"])
+                    self.assertIn("duplicate JSON key", result["errors"][0])
+
 if __name__ == "__main__":
     unittest.main()
