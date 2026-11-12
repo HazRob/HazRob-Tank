@@ -254,5 +254,30 @@ class RawIntegrityTests(unittest.TestCase):
                     self.assertEqual(result["verified_files"], 0)
                     self.assertFalse(result["scientifically_validated"])
 
+
+    def test_empty_raw_file_is_hash_verified_without_scientific_approval(self):
+        with tempfile.TemporaryDirectory() as directory:
+            Path(directory, "empty.csv").write_bytes(b"")
+            result = verify({"records": [{
+                "raw_data_path": "empty.csv",
+                "raw_sha256": hashlib.sha256(b"").hexdigest(),
+            }]}, directory)
+            self.assertEqual(result["status"], "RAW_INTEGRITY_VERIFIED_ONLY")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_unicode_filename_is_verified_without_scientific_approval(self):
+        with tempfile.TemporaryDirectory() as directory:
+            filename = "قياس-001.csv"
+            payload = b"adc,time\\n200,1\\n"
+            Path(directory, filename).write_bytes(payload)
+            result = verify({"records": [{
+                "raw_data_path": filename,
+                "raw_sha256": hashlib.sha256(payload).hexdigest(),
+            }]}, directory)
+            self.assertEqual(result["status"], "RAW_INTEGRITY_VERIFIED_ONLY")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
