@@ -603,5 +603,30 @@ class RawIntegrityTests(unittest.TestCase):
                         self.assertFalse(result["scientifically_validated"])
                         self.assertIn("non-finite JSON constant", result["errors"][0])
 
+    def test_deterministic_single_byte_mutations_across_block_boundaries(self):
+        """Seeded corruption matrix; all altered payloads must fail SHA-256."""
+        import random
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            rng = random.Random(20261112)
+            original = bytes(rng.getrandbits(8) for _ in range(1024 * 1024 + 17))
+            digest = hashlib.sha256(original).hexdigest()
+            sample = root / "sample.bin"
+            offsets = [0, 1, 1024 * 1024 - 1, 1024 * 1024,
+                       1024 * 1024 + 1, len(original) - 1]
+            offsets.extend(rng.sample(range(len(original)), 12))
+            for offset in offsets:
+                with self.subTest(offset=offset):
+                    mutated = bytearray(original)
+                    mutated[offset] ^= 0x01
+                    sample.write_bytes(mutated)
+                    result = verify({"records": [{
+                        "raw_data_path": "sample.bin", "raw_sha256": digest
+                    }]}, root)
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertEqual(result["verified_files"], 0)
+                    self.assertFalse(result["scientifically_validated"])
+                    self.assertIn("SHA-256 mismatch", result["errors"][0])
+
 if __name__ == "__main__":
     unittest.main()
