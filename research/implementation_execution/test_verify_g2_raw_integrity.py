@@ -444,5 +444,54 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(len(result["errors"]), 1)
             self.assertFalse(result["scientifically_validated"])
 
+
+    def test_cli_symlink_escape_exits_two_and_blocks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            root = base / "root"
+            root.mkdir()
+            external = base / "outside.bin"
+            payload = b"external-not-independent"
+            external.write_bytes(payload)
+            (root / "alias.bin").symlink_to(external)
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [{
+                "raw_data_path": "alias.bin",
+                "raw_sha256": hashlib.sha256(payload).hexdigest()
+            }]}), encoding="utf-8")
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(manifest), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            result = json.loads(process.stdout)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_cli_duplicate_hardlink_exits_two_and_blocks(self):
+        import os
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            payload = b"one-acquisition-not-two"
+            (root / "first.bin").write_bytes(payload)
+            os.link(root / "first.bin", root / "second.bin")
+            digest = hashlib.sha256(payload).hexdigest()
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [
+                {"raw_data_path": "first.bin", "raw_sha256": digest},
+                {"raw_data_path": "second.bin", "raw_sha256": digest}
+            ]}), encoding="utf-8")
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(manifest), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            result = json.loads(process.stdout)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertTrue(any("hard link" in e for e in result["errors"]))
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
