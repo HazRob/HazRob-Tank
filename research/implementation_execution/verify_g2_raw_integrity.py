@@ -67,7 +67,7 @@ def main():
     try:
         data = json.loads(args.manifest.read_text(encoding="utf-8"))
         result = verify(data, args.root)
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, UnicodeError) as exc:
         result = {"status": "BLOCKED", "verified_files": 0, "errors": [str(exc)],
                   "scientifically_validated": False}
     print(json.dumps(result, sort_keys=True, indent=2))
