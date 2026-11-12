@@ -68,6 +68,10 @@ def reject_duplicate_json_keys(pairs):
         obj[key] = value
     return obj
 
+def reject_nonfinite_json_constant(value):
+    """Reject non-standard NaN/Infinity tokens at any JSON nesting level."""
+    raise ValueError(f"non-finite JSON constant: {value}")
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", type=Path, required=True)
@@ -75,7 +79,8 @@ def main():
     args = parser.parse_args()
     try:
         data = json.loads(args.manifest.read_text(encoding="utf-8"),
-                          object_pairs_hook=reject_duplicate_json_keys)
+                          object_pairs_hook=reject_duplicate_json_keys,
+                          parse_constant=reject_nonfinite_json_constant)
         result = verify(data, args.root)
     except (OSError, ValueError, UnicodeError) as exc:
         result = {"status": "BLOCKED", "verified_files": 0, "errors": [str(exc)],
