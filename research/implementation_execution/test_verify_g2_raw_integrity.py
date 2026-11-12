@@ -403,5 +403,46 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(result["verified_files"], 0)
             self.assertFalse(result["scientifically_validated"])
 
+
+    def test_cli_missing_raw_file_exits_two_and_blocks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [{
+                "raw_data_path": "absent.bin", "raw_sha256": "0" * 64
+            }]}), encoding="utf-8")
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(manifest), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            result = json.loads(process.stdout)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertEqual(len(result["errors"]), 1)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_cli_mixed_batch_exits_two_even_with_verified_raw_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            payload = b"real-raw-bytes"
+            (root / "present.bin").write_bytes(payload)
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [
+                {"raw_data_path": "present.bin",
+                 "raw_sha256": hashlib.sha256(payload).hexdigest()},
+                {"raw_data_path": "absent.bin", "raw_sha256": "0" * 64}
+            ]}), encoding="utf-8")
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(manifest), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            result = json.loads(process.stdout)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertEqual(len(result["errors"]), 1)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
