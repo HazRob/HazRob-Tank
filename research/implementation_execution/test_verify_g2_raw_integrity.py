@@ -1,5 +1,8 @@
 """Raw byte integrity regression tests (stdlib only)."""
 import hashlib
+import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -361,6 +364,41 @@ class RawIntegrityTests(unittest.TestCase):
             result = verify({"records": [
                 {"raw_data_path": "cycle-a", "raw_sha256": "0" * 64},
             ]}, root)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
+
+    def test_cli_valid_raw_bytes_exit_zero_without_scientific_approval(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            payload = b"raw-cli-check"
+            (root / "sample.bin").write_bytes(payload)
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [{
+                "raw_data_path": "sample.bin",
+                "raw_sha256": hashlib.sha256(payload).hexdigest()
+            }]}), encoding="utf-8")
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(manifest), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 0, process.stderr)
+            result = json.loads(process.stdout)
+            self.assertEqual(result["status"], "RAW_INTEGRITY_VERIFIED_ONLY")
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_cli_malformed_manifest_exits_nonzero_and_blocks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            manifest.write_text('{"records": [', encoding="utf-8")
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(manifest), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            result = json.loads(process.stdout)
             self.assertEqual(result["status"], "BLOCKED")
             self.assertEqual(result["verified_files"], 0)
             self.assertFalse(result["scientifically_validated"])
