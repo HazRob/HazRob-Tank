@@ -279,5 +279,32 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(result["verified_files"], 1)
             self.assertFalse(result["scientifically_validated"])
 
+
+    def test_streaming_sha256_across_multiple_read_blocks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            payload = (bytes(range(256)) * 8193) + b"\\x00\\xff\\x00"
+            Path(directory, "binary.bin").write_bytes(payload)
+            result = verify({"records": [{
+                "raw_data_path": "binary.bin",
+                "raw_sha256": hashlib.sha256(payload).hexdigest(),
+            }]}, directory)
+            self.assertEqual(result["status"], "RAW_INTEGRITY_VERIFIED_ONLY")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_streaming_sha256_detects_mutation_after_first_block(self):
+        with tempfile.TemporaryDirectory() as directory:
+            original = bytes(range(256)) * 8193
+            modified = original[:-1] + bytes([original[-1] ^ 1])
+            Path(directory, "binary.bin").write_bytes(modified)
+            result = verify({"records": [{
+                "raw_data_path": "binary.bin",
+                "raw_sha256": hashlib.sha256(original).hexdigest(),
+            }]}, directory)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertIn("SHA-256 mismatch", result["errors"][0])
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
