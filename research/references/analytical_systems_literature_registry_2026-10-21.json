@@ -1,0 +1,467 @@
+{
+  "schema_version": "hazrob-tank-system-architecture-literature-1.0",
+  "date": "2026-10-21",
+  "branch": "research/mq-open-measurements-audit-20261021",
+  "source_scope": "Scientific studies/projects/products; distinguish raw open data from papers and vendor products",
+  "n_records": 24,
+  "records": [
+    {
+      "id": "SYS-01",
+      "year": "2024",
+      "title": "Sensor array optimization for e-nose using different deep learning methods",
+      "identifier": "10.1016/j.snb.2024.135579",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0925400524003083",
+      "sensor_hardware": "MQ2,MQ3,MQ4,MQ5,MQ6,MQ7,MQ8,MQ9",
+      "technical_design": "classification;gas concentration regression;channel ablation;CNN,GRU,LSTM,SVM",
+      "reported_evidence_and_limits": "Article: CNN accuracy 0.986/R2 0.979 with 8 channels, 4 channels accuracy 0.905/R2 0.972; source dataset from previous work, raw not verified",
+      "verification_status": "ARTICLE_VALIDATED_RAW_UNKNOWN",
+      "technique_ids": [
+        "03.5",
+        "03.6",
+        "04.10",
+        "05",
+        "07.10",
+        "08.1",
+        "08.3"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-02",
+      "year": "2025/2026",
+      "title": "Sensing prototype detecting ethanol and acetone vapor mixtures",
+      "identifier": "10.1109/ADACIS65663.2025.11436642",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11436642",
+      "sensor_hardware": "MQ2,MQ7,MQ135",
+      "technical_design": "three sensor time response in flask; compare cross sensitivities to binary mixture and concentration conditions",
+      "reported_evidence_and_limits": "Conference Nov2025; IEEE online Mar2026; four concentration conditions; raw and independent headspace ppm not verified",
+      "verification_status": "ABSTRACT_ONLY_RAW_UNKNOWN",
+      "technique_ids": [
+        "03.5",
+        "04.1",
+        "04.9",
+        "08.8"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-03",
+      "year": "2026",
+      "title": "Multi-gas classification and concentration using compact multitask neural model",
+      "identifier": "10.1016/j.rineng.2026.112284",
+      "url": "https://www.sciencedirect.com/science/article/pii/S2590123026033050",
+      "sensor_hardware": "MQ7,MQ135",
+      "technical_design": "multi-task neural output gas response class & concentration; DS18B20/DHT11 environmental features",
+      "reported_evidence_and_limits": "MQ precise gas generation and ppm calibration to verify; article abstract available",
+      "verification_status": "ABSTRACT_ONLY_RAW_UNKNOWN",
+      "technique_ids": [
+        "04.8",
+        "05.4",
+        "06.7",
+        "08.10"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-04",
+      "year": "2026",
+      "title": "Indoor harmful gases humidity/background ethanol interference",
+      "identifier": "10.1016/j.sna.2026.118162",
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S0924424726007132",
+      "sensor_hardware": "MOS commercial, specific MQ unknown",
+      "technical_design": "dynamic features, SVM 14-to-6 sensor selection; RF concentration trend",
+      "reported_evidence_and_limits": "Article: 7 classes accuracy .950 macroF1 .959; regression RMSEP 4.084 R2 .647; real gas specifics and unit raw not verified",
+      "verification_status": "ABSTRACT_ONLY_RAW_UNKNOWN",
+      "technique_ids": [
+        "01.5",
+        "02.4",
+        "03.5",
+        "03.6",
+        "04.5",
+        "05.6",
+        "08.11"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-05",
+      "year": "2026",
+      "title": "CO–NO2 PWM thermal modulation with MiCS-4514",
+      "identifier": "10.1016/j.sna.2026.117686",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0924424726002372",
+      "sensor_hardware": "MiCS-4514 dual-channel not MQ",
+      "technical_design": "45 PWM heater states, transient fingerprints, PCA/QDA/gradient boost concentration and mixture",
+      "reported_evidence_and_limits": "Article reports controlled 100% classes and >0.99 R2; NOT transferrable to MQ7/MQ9 heater profiles without manufacturer and actual hardware verification",
+      "verification_status": "ARTICLE_VALIDATED_RAW_UNKNOWN",
+      "technique_ids": [
+        "01.4",
+        "02.4",
+        "05.4",
+        "08.8",
+        "08.10"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-06",
+      "year": "2018",
+      "title": "Mixed-gas recognition and concentration with KPCA-KNN-MVRVM",
+      "identifier": "10.3390/s18103264",
+      "url": "https://www.mdpi.com/1424-8220/18/10/3264",
+      "sensor_hardware": "MOS array not specified MQ",
+      "technical_design": "KPCA nonlinear features -> KNN gas mixture identification; multiresponse sparse relevance vector kernel regression CO and CH4 ppm",
+      "reported_evidence_and_limits": "Article: 98.33% recognition, mean relative errors CO 5.58%, CH4 5.38% in original experiments; external validation unknown",
+      "verification_status": "FULL_ARTICLE_OPEN_RAW_UNKNOWN",
+      "technique_ids": [
+        "03.3",
+        "03.4",
+        "04.3",
+        "05.4",
+        "08.8",
+        "08.10"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-07",
+      "year": "2007",
+      "title": "Log main/cross sensitivity mixture inversion SnO2",
+      "identifier": "10.1016/j.snb.2006.11.012",
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S0925400506007623",
+      "sensor_hardware": "SnO2 mixed gas sensors, MQ exact unknown",
+      "technical_design": "logarithmic multiparameter conductance surface; fit least squares; invert mixture gas concentrations",
+      "reported_evidence_and_limits": "H2+CH4,CO+CH4,propane+CH4,ethanol+ammonia,propane+ammonia; reported <=5% in tested mixtures NOT Tank claim; full data not open",
+      "verification_status": "ABSTRACT_ONLY_RAW_UNKNOWN",
+      "technique_ids": [
+        "01.3",
+        "04.9",
+        "05.3",
+        "05.4",
+        "08.8",
+        "08.9",
+        "08.10"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-08",
+      "year": "2005",
+      "title": "Nonlinear least squares sparse gas mixtures inversion",
+      "identifier": "PMC3865908",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3865908/",
+      "sensor_hardware": "multi gas sensor eNose; MQ unknown",
+      "technical_design": "observed pattern y approximated by A x with x nonnegative gas abundance; sparse candidate set, nonlinear least squares",
+      "reported_evidence_and_limits": "Linearity only local approximation; sparsity and identifiability require validation; no Tank standards",
+      "verification_status": "FULL_ARTICLE_OPEN_RAW_UNKNOWN",
+      "technique_ids": [
+        "04.9",
+        "05.4",
+        "06.5",
+        "08.9",
+        "10.1"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-09",
+      "year": "2010",
+      "title": "Multivariate curve resolution alternating least squares",
+      "identifier": "10.1016/j.snb.2009.12.051",
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S0925400509010041",
+      "sensor_hardware": "temperature modulated MOS; MQ unknown",
+      "technical_design": "MCR-ALS alternates latent component profiles and contribution curves; mixtures and concentration/sensitivity profiles",
+      "reported_evidence_and_limits": "Abstract describes initial synthetic dataset; gauge actual physical experimental evidence carefully",
+      "verification_status": "ABSTRACT_ONLY",
+      "technique_ids": [
+        "02.6",
+        "05.4",
+        "08.8",
+        "08.9"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-10",
+      "year": "2015",
+      "title": "Gas sensor array under dynamic binary mixtures UCI322",
+      "identifier": "10.24432/C5WP4C",
+      "url": "https://archive.ics.uci.edu/dataset/322/gas+sensor+array+under+dynamic+gas+mixtures",
+      "sensor_hardware": "16 TGS2600,TGS2602,TGS2610,TGS2620 not MQ",
+      "technical_design": "time plus CO/methane setpoint and ethylene ppm, 16 conductance channels, 100Hz 12 hours for each of two runs",
+      "reported_evidence_and_limits": "4,178,504 TIME ROWS, not independent exposures; two long experiments; academic only license on UCI page requires license review",
+      "verification_status": "PUBLIC_RAW_AVAILABLE_NOT_DOWNLOADED",
+      "technique_ids": [
+        "02.4",
+        "05.4",
+        "08.3",
+        "08.8",
+        "08.10"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-11",
+      "year": "2014",
+      "title": "Gas sensor array under flow modulation UCI308",
+      "identifier": "10.24432/C5WW2F",
+      "url": "https://www.archive.ics.uci.edu/dataset/308/gas+sensor+array+under+flow+modulation",
+      "sensor_hardware": "16 MOS non-MQ",
+      "technical_design": "58 independent trials, 12 classes acetone/ethanol mixtures, fan flow modulation, low/high frequency features, PLS two-output regression",
+      "reported_evidence_and_limits": "Already counted in Tank UCI G2 corpus, aqueous v/v solution labels not verified gas-phase ppm; do not double count",
+      "verification_status": "ALREADY_IN_RESEARCH_UCI",
+      "technique_ids": [
+        "02.4",
+        "05.5",
+        "08.9",
+        "08.10"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-12",
+      "year": "2014",
+      "title": "Gas sensor array turbulent gas mixtures UCI309",
+      "identifier": "10.24432/C5JS5P",
+      "url": "https://archive.ics.uci.edu/dataset/309/gas+sensor+array+exposed+to+turbulent+gas+mixtures.",
+      "sensor_hardware": "8 TGS MOS not MQ",
+      "technical_design": "180 distinct 300s trials; two wind tunnel plumes; 60s baseline,180s exposure,60s purge; GC-MS reports MEAN ppm labels",
+      "reported_evidence_and_limits": "Already counted in Tank UCI G2; per-second fast ppm NOT measured by GCMS; group whole trials",
+      "verification_status": "ALREADY_IN_RESEARCH_UCI",
+      "technique_ids": [
+        "02.4",
+        "05.4",
+        "08.8",
+        "09.2",
+        "09.3"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-13",
+      "year": "2025",
+      "title": "Tree-model gas mixture identification Scientific Reports",
+      "identifier": "10.1038/s41598-025-19063-x",
+      "url": "https://www.nature.com/articles/s41598-025-19063-x",
+      "sensor_hardware": "16 TGS MOS from UCI322 not MQ",
+      "technical_design": "16 features, PCA, DT/RF/ExtraTrees for two binary mixture classes",
+      "reported_evidence_and_limits": "ET 99.15% class recognition in reported folds; same UCI322 input, not independent dataset; not 99.15% separate ppm accuracy",
+      "verification_status": "FULL_ARTICLE_OPEN_REUSED_UCI322",
+      "technique_ids": [
+        "02.3",
+        "03.1",
+        "04.6",
+        "08.8",
+        "08.10"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-14",
+      "year": "2025",
+      "title": "AI VOC mixture classification by temp modulated array",
+      "identifier": "10.1109/JSEN.2025.3576057",
+      "url": "https://ieeexplore.ieee.org/document/11028944/",
+      "sensor_hardware": "4 MOS custom sensors not MQ",
+      "technical_design": "square-triangular heater profiles, RF and CatBoost, acetone/isopropanol/toluene mixtures",
+      "reported_evidence_and_limits": "RF 91% mixture class accuracy; CatBoost 84% class on transformed individual VOC examples; not independent per-gas ppm results",
+      "verification_status": "ABSTRACT_ONLY_RAW_UNKNOWN",
+      "technique_ids": [
+        "01.4",
+        "02.4",
+        "04.6",
+        "08.8",
+        "08.10"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-15",
+      "year": "2026",
+      "title": "MoS2 NH3+NO2 mixed gas quantitative regression",
+      "identifier": "10.1016/j.cej.2026.174760",
+      "url": "https://doi.org/10.1016/j.cej.2026.174760",
+      "sensor_hardware": "modified MoS2 not MQ",
+      "technical_design": "binary gas 15 mix conditions PCA, SVR/MLP/RF separate outputs for ammonia and nitrogen dioxide ppm",
+      "reported_evidence_and_limits": "Paper R2 NH3 .974, NO2 .994 in controlled source, 15 mixture conditions; cross-platform methodology only",
+      "verification_status": "ABSTRACT_ONLY_RAW_UNKNOWN",
+      "technique_ids": [
+        "03.1",
+        "05.4",
+        "08.8",
+        "08.10"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-16",
+      "year": "2023",
+      "title": "Au-decorated oxide array CNN mixture classification",
+      "identifier": "10.1016/j.snb.2023.133767",
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S0925400523004823",
+      "sensor_hardware": "In2O3,SnO2,TiO2 gold nanoparticle sensors not MQ",
+      "technical_design": "specific-sensitivity materials+CNN; NO2+CO and NH3+NO2 binary mixtures",
+      "reported_evidence_and_limits": "High recognition in studied samples is not independent per-component concentration",
+      "verification_status": "ABSTRACT_ONLY_RAW_UNKNOWN",
+      "technique_ids": [
+        "03.3",
+        "04.8",
+        "08.8"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-17",
+      "year": "2019",
+      "title": "Blind deconvolution of slow MOX dynamics",
+      "identifier": "10.3390/s19184029",
+      "url": "https://www.mdpi.com/1424-8220/19/18/4029",
+      "sensor_hardware": "TGS MOS not MQ",
+      "technical_design": "fit nonlinear 1st-order dynamics in log domain by least squares; use two sensors with different tau to recover shared transient inlet without fast PID",
+      "reported_evidence_and_limits": "Reconstructs rapid changes of shared source signal, NOT chemical separation of two gas species",
+      "verification_status": "FULL_ARTICLE_OPEN_RAW_UNKNOWN",
+      "technique_ids": [
+        "01.6",
+        "02.4",
+        "08.6",
+        "08.7",
+        "09.5"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-18",
+      "year": "2026",
+      "title": "RSC gas filtration sorption MOFs and molecular sieve overview",
+      "identifier": "10.1039/D6LF00024J",
+      "url": "https://pubs.rsc.org/en/content/articlehtml/2026/lf/d6lf00024j",
+      "sensor_hardware": "MOX general (not MQ-specific)",
+      "technical_design": "upstream filters adsorb competing VOCs, molecular-sieve pores, catalytic converters, temporal elution; change transmitted fractions",
+      "reported_evidence_and_limits": "Finite capacity/breakthrough, humidity, target adsorption and altered sensor transient can create missed alarms; requires quantitative upstream/downstream calibration",
+      "verification_status": "OPEN_REVIEW",
+      "technique_ids": [
+        "01.6",
+        "04.9",
+        "08.8",
+        "08.11"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-19",
+      "year": "2005",
+      "title": "Zeolite modified metal oxide sensors thesis",
+      "identifier": "UCL:1445742",
+      "url": "https://discovery.ucl.ac.uk/id/eprint/1445742/",
+      "sensor_hardware": "CTO metal oxide not MQ",
+      "technical_design": "zeolite Y/ZSM-5 catalytic filter beds, GC/MS chemistry, 200-400C, sensor selectivity",
+      "reported_evidence_and_limits": "Requires external heated catalytic reactor; not safe simple hobby add-on to Tank MQ chamber",
+      "verification_status": "OPEN_THESIS",
+      "technique_ids": [
+        "01.6",
+        "08.8",
+        "08.11"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-20",
+      "year": "2026",
+      "title": "Bosch BME688 AI-Studio ecosystem",
+      "identifier": "Bosch BME AI Studio",
+      "url": "https://www.bosch-sensortec.com/software/bme/docs/overview/introduction.html",
+      "sensor_hardware": "BME688 microhotplate not MQ",
+      "technical_design": "10-step heater profile, specimens/class training, dataset evaluation, export BSEC firmware config",
+      "reported_evidence_and_limits": "Product verification; closed ecosystem, no claim of quantified unknown gas mixture without training data",
+      "verification_status": "VENDOR_DOCUMENTATION",
+      "technique_ids": [
+        "01.4",
+        "02.4",
+        "04",
+        "07",
+        "08"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-21",
+      "year": "2026",
+      "title": "Alpha MOS HERACLES NEO GC eNose product",
+      "identifier": "AlphaMOS Heracles NEO",
+      "url": "https://www.alpha-mos.co.jp/sensory/am-heraclesneo.html",
+      "sensor_hardware": "dual GC columns+dual FIDs not MQ",
+      "technical_design": "physically chromatographically separate before detect; Tenax preconcentrator trap then dual polarity columns and chromatograms; retention library",
+      "reported_evidence_and_limits": "Strong chemical selectivity but complex high-energy instrumentation; concept belongs central lab not Tank MQ chamber",
+      "verification_status": "VENDOR_SPECIFICATIONS",
+      "technique_ids": [
+        "08.8",
+        "08.9",
+        "CENTRAL_LAB"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-22",
+      "year": "2026",
+      "title": "Alpha MOS FOX MOS electronic nose product",
+      "identifier": "AlphaMOS FOX 4000",
+      "url": "https://www.alpha-mos.co.jp/sensory/am-fox-01.html",
+      "sensor_hardware": "6/12/18 MOS; specific MQ unknown",
+      "technical_design": "pump flow and temperature-controlled chambers, resistive response fingerprints and multivariate classification",
+      "reported_evidence_and_limits": "Detect odor classes/fingerprints not molecular chromatographic separation",
+      "verification_status": "VENDOR_SPECIFICATIONS",
+      "technique_ids": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "CENTRAL_LAB"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-23",
+      "year": "2025",
+      "title": "Juice e-nose design three stage physical sampling",
+      "identifier": "10.3390/s25041205",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11860815/",
+      "sensor_hardware": "10 custom MOS not MQ",
+      "technical_design": "controlled pump 1 sampling; pump 2 clean-air purge; 1.88 L chamber; feature extraction and classification",
+      "reported_evidence_and_limits": "Demonstrates why flow/purge timing, memory and chamber conditions must be modeled",
+      "verification_status": "FULL_ARTICLE_OPEN_RAW_UNKNOWN",
+      "technique_ids": [
+        "01.6",
+        "02.4",
+        "08.11",
+        "09.4"
+      ],
+      "tank_g3_validated": false
+    },
+    {
+      "id": "SYS-24",
+      "year": "2017",
+      "title": "Orthogonal signal correction for drift-resistant vapor regression",
+      "identifier": "10.1155/2017/9851406",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1155/2017/9851406",
+      "sensor_hardware": "MOS unspecified MQ",
+      "technical_design": "baseline manipulation+orthogonal signal correction, PLS regression essential-oil vapor measurement",
+      "reported_evidence_and_limits": "Separates baseline drift from useful chemical signal; do not remove true changing exposure dynamics",
+      "verification_status": "ABSTRACT_ONLY_RAW_UNKNOWN",
+      "technique_ids": [
+        "01.7",
+        "02.1",
+        "05.5",
+        "07.5"
+      ],
+      "tank_g3_validated": false
+    }
+  ],
+  "guardrails": [
+    "Multi-label mixture recognition != independent quantitative unmixing",
+    "Raw 100Hz samples != independent concentration exposures",
+    "Software candidate filtering != chemically selective air filtering",
+    "Do not apply PWM arbitrary to MQ7/MQ9 manufacturer heater cycles",
+    "Source and model metrics not transferable to Tank MQ8 without reference calibration",
+    "Commercial GC-based eNose has physical separation, array eNose generally only discriminatory fingerprints",
+    "No production integration and G3 stays 0/80"
+  ]
+}

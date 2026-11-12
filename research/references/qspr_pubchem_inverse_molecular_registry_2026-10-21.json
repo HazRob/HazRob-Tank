@@ -1,0 +1,181 @@
+{
+  "schema": "hazrob-tank-qspr-literature-1.0",
+  "date": "2026-10-21",
+  "scope": "Research references, not production ChemCore",
+  "verified_publication_count": 10,
+  "confirmed_public_QSPR_to_commercial_MQ_direct_study": false,
+  "experimental_Tank_QSPR_validation": false,
+  "ref_ids": [
+    "QSPR-REF-01",
+    "QSPR-REF-02",
+    "QSPR-REF-03",
+    "QSPR-REF-04",
+    "QSPR-REF-05",
+    "QSPR-REF-06",
+    "QSPR-REF-07",
+    "QSPR-REF-08",
+    "QSPR-REF-09",
+    "QSPR-REF-10"
+  ],
+  "reference_records": [
+    {
+      "id": "QSPR-REF-01",
+      "year": 2005,
+      "title": "Developing sensor activity relationships for the JPL electronic nose sensors using molecular modeling and QSAR techniques",
+      "url": "https://www.researchgate.net/publication/4224523_Developing_sensor_activity_relationships_for_the_JPL_electronic_nose_sensors_using_molecular_modeling_and_QSAR_techniques",
+      "doi": "10.1109/ICSENS.2005.1597683",
+      "type": "primary_conference_paper",
+      "sensor": "polymer-carbon ENose",
+      "link": "measured ppm series -> response coefficient A1 -> molecular descriptors and film analyte interaction energy -> GFA QSAR",
+      "direction": "forward",
+      "mq_direct_validation": false,
+      "data_open_verified": false,
+      "conclusion": "true prior experimental sensing and predictive structure-response method; not commercial MQ"
+    },
+    {
+      "id": "QSPR-REF-02",
+      "year": 2006,
+      "title": "Sensor Material Selection and Response Modeling for the JPL Electronic Nose Using Molecular Modeling Tools",
+      "url": "https://proceedings.aiche.org/conferences/aiche-annual-meeting/2006/proceeding/paper/545b-sensor-material-selection-and-response-modeling-jpl-electronic-nose-using-molecular-modeling",
+      "type": "primary_conference_abstract",
+      "sensor": "polymer-carbon ENose",
+      "link": "Hansen cohesion + analyte molar volume or QSAR/GFA interaction descriptors",
+      "direction": "forward",
+      "mq_direct_validation": false,
+      "data_open_verified": false,
+      "conclusion": "molecular interaction and sensor material features should be modeled separately"
+    },
+    {
+      "id": "QSPR-REF-03",
+      "year": 2010,
+      "title": "Characterization of Unknown Events Observed by the Third Generation JPL Electronic Nose Using Sensor Response Models",
+      "url": "https://www.researchgate.net/publication/268580400_Characterization_of_Unknown_Events_Observed_by_the_Third_Generation_JPL_Electronic_Nose_Using_Sensor_Response_Models",
+      "type": "primary_conference_paper",
+      "sensor": "JPL ISS polymer carbon ENose",
+      "link": "unknown event sensor responses -> QSAR/MD candidate descriptors -> SMAC compound reference list",
+      "direction": "inverse_hypothesis_ranking",
+      "mq_direct_validation": false,
+      "data_open_verified": false,
+      "conclusion": "SF6 proposed as POSSIBLE identity; not definitive identification"
+    },
+    {
+      "id": "QSPR-REF-04",
+      "year": 2024,
+      "title": "Machine-learning-enabled exploitation of gas-sensing descriptors: A case study of five pristine metal oxides",
+      "doi": "10.1016/j.cej.2024.152280",
+      "url": "https://www.sciencedirect.com/science/article/pii/S1385894724037677",
+      "type": "primary_research_paper",
+      "sensor": "SnO2 ZnO In2O3 NiO Cr2O3 fabricated research MOS",
+      "link": "sensor material+gas molecular features+measurement state -> predicted response to eight VOCs",
+      "direction": "forward",
+      "mq_direct_validation": false,
+      "data_open_verified": false,
+      "conclusion": "material/gas dependent forward sensitivity learning; not tested on MQ modules"
+    },
+    {
+      "id": "QSPR-REF-05",
+      "year": 2025,
+      "title": "Machine-learning for discovery of descriptors for gas-sensing: A case study of doped metal oxides",
+      "doi": "10.1016/j.talanta.2025.127594",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0039914025000803",
+      "type": "primary_research_paper",
+      "sensor": "literature-doped MOS sensors",
+      "link": "872 literature examples, 34 descriptive features -> genetic algorithm optimized neural network -> key gas sensing descriptors",
+      "direction": "forward_mechanism",
+      "mq_direct_validation": false,
+      "data_open_verified": false,
+      "conclusion": "cross study sensor chemistry learning with material context"
+    },
+    {
+      "id": "QSPR-REF-06",
+      "year": 2022,
+      "title": "Physicochemical and statistical characterization of gas-sensing behaviors of resonator sensors with carbonaceous films",
+      "url": "https://www.sciencedirect.com/science/article/pii/S221171562200145X",
+      "type": "primary_research_paper",
+      "sensor": "QCR carbonaceous sensor films",
+      "link": "QSPR/LSER descriptors -> gas partition coefficients / sorption response",
+      "direction": "forward",
+      "mq_direct_validation": false,
+      "data_open_verified": false,
+      "conclusion": "separate absorption/partition physics from chemiresistive sensor response"
+    },
+    {
+      "id": "QSPR-REF-07",
+      "year": 2026,
+      "title": "Towards the design of artificial sensing materials via quantum-informed explainable AI",
+      "doi": "10.1186/s13321-026-01232-3",
+      "url": "https://link.springer.com/article/10.1186/s13321-026-01232-3",
+      "type": "primary_research_paper",
+      "sensor": "theoretical graphene receptor systems",
+      "link": "quantum properties/interactions -> CatBoost SHAP prediction binding features",
+      "direction": "forward_material",
+      "mq_direct_validation": false,
+      "data_open_verified": false,
+      "conclusion": "quantum features for sensing material interactions; not calibrated real MQ gas"
+    },
+    {
+      "id": "QSPR-REF-08",
+      "year": 2023,
+      "title": "Comparing molecular representations, e-nose signals, and other featurization, for learning to smell aroma molecules",
+      "doi": "10.1371/journal.pone.0289881",
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0289881",
+      "type": "primary_research_paper",
+      "sensor": "QCM sensor array",
+      "link": "114 odorants with molecule features vs QCM responses for perceptual odor descriptions",
+      "direction": "multi_representation_comparison",
+      "mq_direct_validation": false,
+      "data_open_verified": false,
+      "conclusion": "odor descriptor labels not equivalent to molecular gas identity or ppb"
+    },
+    {
+      "id": "QSPR-REF-09",
+      "year": 2009,
+      "title": "Bio-Benchmarking of Electronic Nose Sensors",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2712691/",
+      "type": "primary_research_paper",
+      "sensor": "MOX comparative array",
+      "link": "measure class similarity and limits of intercompound differentiation",
+      "direction": "mechanistic_limit",
+      "mq_direct_validation": false,
+      "data_open_verified": false,
+      "conclusion": "functional-class discrimination may be stronger than intraclass identification"
+    },
+    {
+      "id": "QSPR-REF-10",
+      "year": 2026,
+      "title": "PubChem PUG REST documented API (2026-09-15)",
+      "url": "https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest",
+      "type": "authoritative_provider_documentation",
+      "sensor": "none; molecular chemistry reference",
+      "link": "CID/InChIKey/SMILES/XLogP/TPSA/H bond donor-acceptor and structural properties",
+      "direction": "descriptor_source_only",
+      "mq_direct_validation": false,
+      "data_open_verified": true,
+      "conclusion": "provides chemical features but no MQ calibration response"
+    }
+  ],
+  "proposed_next_benchmark": {
+    "source": "UCI1081",
+    "sensor_channel": "MQ135 only",
+    "n_unique_exposures_already_counted": 90,
+    "gas_species": 6,
+    "heldout_protocol": "leave-one-concentration-out (3 folds) and separate leave-one-molecule-out for transfer claims",
+    "comparators": [
+      "MQ135-only without descriptors",
+      "Forward molecular descriptor to sensor response prediction",
+      "All candidate inverse ranking with unknown concentration optimized only in defined range",
+      "Fusion with open-set and calibrated abstention"
+    ],
+    "leakage_prohibitions": [
+      "Never supply descriptor of true test gas as per-row feature; do candidate-wise forward predictions",
+      "No pretraining on heldout molecular identity for leave-one-molecule-out claims",
+      "Do not fit scaler, features, probability calibration on heldout data"
+    ],
+    "limits": [
+      "Single MQ channel is non-identifying for multiple gases at unknown concentrations unless sufficient discriminative evidence",
+      "Small six-molecule source inadequate to claim new molecular structure generalization",
+      "No Tank G3 calibration or physical field validation"
+    ]
+  },
+  "caution": "PubChem molecular descriptor data are not measured gas sensor responses; explicit lab data and device-specific calibration are required."
+}
