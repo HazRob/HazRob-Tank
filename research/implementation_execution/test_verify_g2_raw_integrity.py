@@ -522,5 +522,36 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(result["verified_files"], 0)
             self.assertFalse(result["scientifically_validated"])
 
+
+    def test_cli_invalid_utf8_manifest_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            manifest.write_bytes(b"\\xff\\xfe\\x00")
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(manifest), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            result = json.loads(process.stdout)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_cli_scalar_manifest_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            manifest.write_text("null", encoding="utf-8")
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(manifest), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            result = json.loads(process.stdout)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
