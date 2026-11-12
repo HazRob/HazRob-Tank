@@ -493,5 +493,34 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertTrue(any("hard link" in e for e in result["errors"]))
             self.assertFalse(result["scientifically_validated"])
 
+
+    def test_cli_empty_evidence_manifest_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": []}), encoding="utf-8")
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(manifest), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            result = json.loads(process.stdout)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_cli_missing_manifest_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            process = subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                 "--manifest", str(root / "missing.json"), "--root", str(root)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            result = json.loads(process.stdout)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
