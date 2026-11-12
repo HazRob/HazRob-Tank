@@ -582,5 +582,26 @@ class RawIntegrityTests(unittest.TestCase):
                     self.assertFalse(result["scientifically_validated"])
                     self.assertIn("duplicate JSON key", result["errors"][0])
 
+    def test_cli_rejects_nonfinite_json_constants(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            for token in ("NaN", "Infinity", "-Infinity"):
+                for content in ('{"records":[],"extra":' + token + '}',
+                                '{"records":[{"raw_data_path":"sample.bin",'
+                                '"raw_sha256":"' + "0" * 64 + '","extra":' + token + '}]}'):
+                    with self.subTest(token=token, content=content):
+                        manifest.write_text(content, encoding="utf-8")
+                        process = subprocess.run(
+                            [sys.executable, str(Path(__file__).with_name("verify_g2_raw_integrity.py")),
+                             "--manifest", str(manifest), "--root", str(root)],
+                            capture_output=True, text=True, check=False)
+                        self.assertEqual(process.returncode, 2, process.stderr)
+                        result = json.loads(process.stdout)
+                        self.assertEqual(result["status"], "BLOCKED")
+                        self.assertEqual(result["verified_files"], 0)
+                        self.assertFalse(result["scientifically_validated"])
+                        self.assertIn("non-finite JSON constant", result["errors"][0])
+
 if __name__ == "__main__":
     unittest.main()
