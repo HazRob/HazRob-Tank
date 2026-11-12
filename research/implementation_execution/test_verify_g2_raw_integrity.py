@@ -652,5 +652,28 @@ class RawIntegrityTests(unittest.TestCase):
                     self.assertFalse(result["scientifically_validated"])
                     self.assertIn("SHA-256 mismatch", result["errors"][0])
 
+    def test_cli_rejects_actual_invalid_utf8_bytes(self):
+        """Exercise real invalid byte sequences, not backslash-escaped ASCII text."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            for label, payload in (
+                ("invalid_lead", bytes([0xff, 0xfe, 0x00])),
+                ("invalid_continuation", b'{"records":[]}' + bytes([0x80])),
+                ("truncated_multibyte", b'{"records":[]}' + bytes([0xe2, 0x82])),
+            ):
+                with self.subTest(case=label):
+                    manifest.write_bytes(payload)
+                    process = subprocess.run(
+                        [sys.executable, str(Path(__file__).with_name(
+                            "verify_g2_raw_integrity.py")),
+                         "--manifest", str(manifest), "--root", str(root)],
+                        capture_output=True, text=True, check=False)
+                    self.assertEqual(process.returncode, 2, process.stderr)
+                    result = json.loads(process.stdout)
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertEqual(result["verified_files"], 0)
+                    self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
