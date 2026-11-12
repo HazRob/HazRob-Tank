@@ -55,5 +55,14 @@ class RawIntegrityTests(unittest.TestCase):
         self.record["raw_data_path"] = "escape.bin"
         self.assertTrue(self.check([self.record]))
 
+    def test_null_byte_path_blocked_without_exception(self):
+        self.record["raw_data_path"] = "sample\\u0000.bin"
+        self.assertTrue(self.check([self.record]))
+    def test_cyclic_symlink_blocked_without_exception(self):
+        (self.root / "loop-a").symlink_to("loop-b")
+        (self.root / "loop-b").symlink_to("loop-a")
+        self.record["raw_data_path"] = "loop-a"
+        self.assertTrue(self.check([self.record]))
+
 if __name__ == "__main__":
     unittest.main()
