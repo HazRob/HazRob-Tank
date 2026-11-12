@@ -334,5 +334,36 @@ class RawIntegrityTests(unittest.TestCase):
             self.assertEqual(result["verified_files"], 0)
             self.assertFalse(result["scientifically_validated"])
 
+
+    def test_nested_directory_symlink_alias_cannot_double_count_raw_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            nested = root / "session" / "raw"
+            nested.mkdir(parents=True)
+            data = b"single-acquisition-through-directory-alias"
+            (nested / "sample.bin").write_bytes(data)
+            (root / "alias").symlink_to(nested, target_is_directory=True)
+            digest = hashlib.sha256(data).hexdigest()
+            result = verify({"records": [
+                {"raw_data_path": "session/raw/sample.bin", "raw_sha256": digest},
+                {"raw_data_path": "alias/sample.bin", "raw_sha256": digest},
+            ]}, root)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 1)
+            self.assertIn("duplicate raw file path", result["errors"][0])
+            self.assertFalse(result["scientifically_validated"])
+
+    def test_symlink_cycle_is_blocked_without_crashing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "cycle-a").symlink_to("cycle-b")
+            (root / "cycle-b").symlink_to("cycle-a")
+            result = verify({"records": [
+                {"raw_data_path": "cycle-a", "raw_sha256": "0" * 64},
+            ]}, root)
+            self.assertEqual(result["status"], "BLOCKED")
+            self.assertEqual(result["verified_files"], 0)
+            self.assertFalse(result["scientifically_validated"])
+
 if __name__ == "__main__":
     unittest.main()
