@@ -43,8 +43,13 @@ def verify(manifest, root):
         if relative.is_absolute() or ".." in relative.parts or "\\" in record["raw_data_path"]:
             errors.append(prefix + ": unsafe path")
             continue
-        target = (root / str(relative)).resolve()
-        if not target.is_relative_to(root) or not target.is_file():
+        try:
+            target = (root / str(relative)).resolve(strict=False)
+            safe_file = target.is_relative_to(root) and target.is_file()
+        except (OSError, ValueError, RuntimeError) as exc:
+            errors.append(prefix + ": unresolvable raw path: " + str(exc))
+            continue
+        if not safe_file:
             errors.append(prefix + ": raw file absent or outside root")
             continue
         if target in paths:
