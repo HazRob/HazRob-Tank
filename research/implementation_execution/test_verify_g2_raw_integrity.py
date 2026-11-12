@@ -628,5 +628,29 @@ class RawIntegrityTests(unittest.TestCase):
                     self.assertFalse(result["scientifically_validated"])
                     self.assertIn("SHA-256 mismatch", result["errors"][0])
 
+
+    def test_truncation_and_append_corruption_fail_closed(self):
+        """Length changes must invalidate a known SHA-256 across streaming boundaries."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original = bytes(range(256)) * 4097 + b"tail"
+            digest = hashlib.sha256(original).hexdigest()
+            sample = root / "sample.bin"
+            for label, changed in (
+                ("truncate_one", original[:-1]),
+                ("truncate_block", original[:1024 * 1024]),
+                ("append_one", original + b"\\x00"),
+                ("append_block", original + bytes(1024 * 1024)),
+            ):
+                with self.subTest(case=label):
+                    sample.write_bytes(changed)
+                    result = verify({"records": [{
+                        "raw_data_path": "sample.bin", "raw_sha256": digest
+                    }]}, root)
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertEqual(result["verified_files"], 0)
+                    self.assertFalse(result["scientifically_validated"])
+                    self.assertIn("SHA-256 mismatch", result["errors"][0])
+
 if __name__ == "__main__":
     unittest.main()
