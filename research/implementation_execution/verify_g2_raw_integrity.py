@@ -59,13 +59,23 @@ def verify(manifest, root):
     return {"status": "BLOCKED" if errors else "RAW_INTEGRITY_VERIFIED_ONLY",
             "verified_files": verified, "errors": errors, "scientifically_validated": False}
 
+def reject_duplicate_json_keys(pairs):
+    """Fail closed on ambiguous manifest objects, including nested records."""
+    obj = {}
+    for key, value in pairs:
+        if key in obj:
+            raise ValueError(f"duplicate JSON key: {key}")
+        obj[key] = value
+    return obj
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--root", type=Path, required=True)
     args = parser.parse_args()
     try:
-        data = json.loads(args.manifest.read_text(encoding="utf-8"))
+        data = json.loads(args.manifest.read_text(encoding="utf-8"),
+                          object_pairs_hook=reject_duplicate_json_keys)
         result = verify(data, args.root)
     except (OSError, ValueError, UnicodeError) as exc:
         result = {"status": "BLOCKED", "verified_files": 0, "errors": [str(exc)],
