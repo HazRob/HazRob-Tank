@@ -639,7 +639,7 @@ class RawIntegrityTests(unittest.TestCase):
             for label, changed in (
                 ("truncate_one", original[:-1]),
                 ("truncate_block", original[:1024 * 1024]),
-                ("append_one", original + b"\\x00"),
+                ("append_one", original + bytes([0])),
                 ("append_block", original + bytes(1024 * 1024)),
             ):
                 with self.subTest(case=label):
