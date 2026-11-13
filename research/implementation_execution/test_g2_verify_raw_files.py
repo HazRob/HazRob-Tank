@@ -33,6 +33,11 @@ class RawIntegrityTests(unittest.TestCase):
     def test_changed_bytes_blocked(self):
         self.raw.write_bytes(b"tampered")
         self.assertIn("mismatch", " ".join(self.check([self.record])))
+    def test_zero_byte_raw_file_blocked_even_with_matching_digest(self):
+        self.raw.write_bytes(b"")
+        self.record["raw_sha256"] = hashlib.sha256(b"").hexdigest()
+        self.assertIn("empty raw file", " ".join(self.check([self.record])))
+
     def test_missing_file_blocked(self):
         self.raw.unlink()
         self.assertTrue(self.check([self.record]))
