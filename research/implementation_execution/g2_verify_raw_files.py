@@ -7,13 +7,21 @@ import pathlib
 import re
 import sys
 
+def reject_duplicate_keys(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON key: " + key)
+        result[key] = value
+    return result
+
 FIELDS = ("source_id", "raw_data_path", "raw_sha256", "measurement_date",
           "instrument_id", "calibration_reference", "holdout_split_id")
 HEX = re.compile(r"[0-9a-fA-F]{64}\Z")
 def verify(manifest, root):
     errors = []
     try:
-        data = json.loads(pathlib.Path(manifest).read_text(encoding="utf-8"))
+        data = json.loads(pathlib.Path(manifest).read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys)
     except (OSError, ValueError, UnicodeError) as exc:
         return ["manifest unreadable or invalid: " + str(exc)]
     records = data.get("records") if isinstance(data, dict) else None
