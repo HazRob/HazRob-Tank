@@ -36,6 +36,27 @@ class RawIntegrityTests(unittest.TestCase):
         self.manifest.write_text('{"records": [' + record + ']}', encoding="utf-8")
         self.assertIn("duplicate JSON key", " ".join(verify(self.manifest, self.root)))
 
+    def test_nested_duplicate_metadata_key_is_blocked(self):
+        self.manifest.write_text('{"records": [' + json.dumps(self.record) +
+                                 '], "metadata": {"review": "pending", "review": "approved"}}',
+                                 encoding="utf-8")
+        self.assertIn("duplicate JSON key", " ".join(verify(self.manifest, self.root)))
+
+    def test_malformed_manifest_is_blocked(self):
+        self.manifest.write_text('{"records": [', encoding="utf-8")
+        self.assertIn("manifest unreadable or invalid", " ".join(verify(self.manifest, self.root)))
+
+    def test_non_object_record_is_blocked(self):
+        self.assertIn("not an object", " ".join(self.check([None])))
+
+    def test_missing_calibration_reference_is_blocked(self):
+        self.record["calibration_reference"] = ""
+        self.assertIn("missing/invalid required metadata", " ".join(self.check([self.record])))
+
+    def test_uppercase_sha256_is_accepted_for_integrity_only(self):
+        self.record["raw_sha256"] = self.record["raw_sha256"].upper()
+        self.assertEqual([], self.check([self.record]))
+
     def test_empty_is_blocked(self):
         self.assertTrue(self.check([]))
     def test_matching_bytes_pass_integrity_only(self):
