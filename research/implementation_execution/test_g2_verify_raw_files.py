@@ -26,6 +26,16 @@ class RawIntegrityTests(unittest.TestCase):
     def check(self, records):
         self.manifest.write_text(json.dumps({"records": records}), encoding="utf-8")
         return verify(self.manifest, self.root)
+    def test_duplicate_manifest_records_key_is_blocked(self):
+        self.manifest.write_text('{"records": [], "records": [' + json.dumps(self.record) + ']}', encoding="utf-8")
+        self.assertIn("duplicate JSON key", " ".join(verify(self.manifest, self.root)))
+
+    def test_duplicate_record_field_is_blocked(self):
+        record = json.dumps(self.record)
+        record = record.replace('"source_id": "test-only-001"', '"source_id": "shadow", "source_id": "test-only-001"')
+        self.manifest.write_text('{"records": [' + record + ']}', encoding="utf-8")
+        self.assertIn("duplicate JSON key", " ".join(verify(self.manifest, self.root)))
+
     def test_empty_is_blocked(self):
         self.assertTrue(self.check([]))
     def test_matching_bytes_pass_integrity_only(self):
