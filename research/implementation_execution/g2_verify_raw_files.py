@@ -52,6 +52,13 @@ def verify(manifest, root):
         if not safe_file:
             errors.append(prefix + ": raw file absent or outside root")
             continue
+        try:
+            if target.stat().st_size == 0:
+                errors.append(prefix + ": empty raw file")
+                continue
+        except (OSError, ValueError) as exc:
+            errors.append(prefix + ": raw file stat failure: " + str(exc))
+            continue
         if target in paths:
             errors.append(prefix + ": duplicate raw file path")
         paths.add(target)
