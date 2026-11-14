@@ -75,6 +75,22 @@ class RawIntegrityTests(unittest.TestCase):
     def test_path_escape_blocked(self):
         self.record["raw_data_path"] = "../outside.bin"
         self.assertIn("unsafe path", " ".join(self.check([self.record])))
+    def test_absolute_raw_path_is_blocked(self):
+        self.record["raw_data_path"] = str(self.raw.resolve())
+        self.assertIn("unsafe path", " ".join(self.check([self.record])))
+
+    def test_backslash_raw_path_is_blocked(self):
+        self.record["raw_data_path"] = "subdir\\sample.bin"
+        self.assertIn("unsafe path", " ".join(self.check([self.record])))
+
+    def test_duplicate_resolved_path_is_blocked(self):
+        alias = self.root / "alias.bin"
+        alias.symlink_to(self.raw)
+        second = dict(self.record, source_id="test-only-002",
+                      raw_data_path="alias.bin",
+                      raw_sha256="0" * 64)
+        self.assertIn("duplicate raw file path", " ".join(self.check([self.record, second])))
+
     def test_duplicate_digest_blocked(self):
         second = dict(self.record, source_id="test-only-002")
         self.assertIn("duplicate raw SHA-256", " ".join(self.check([self.record, second])))
