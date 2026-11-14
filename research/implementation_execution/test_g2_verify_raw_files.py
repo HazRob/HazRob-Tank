@@ -91,6 +91,23 @@ class RawIntegrityTests(unittest.TestCase):
                       raw_sha256="0" * 64)
         self.assertIn("duplicate raw file path", " ".join(self.check([self.record, second])))
 
+    def test_whitespace_only_instrument_id_is_blocked(self):
+        self.record["instrument_id"] = "   "
+        self.assertIn("missing/invalid required metadata", " ".join(self.check([self.record])))
+
+    def test_duplicate_digest_case_variant_is_blocked(self):
+        second = dict(self.record, source_id="test-only-002",
+                      raw_sha256=self.record["raw_sha256"].upper())
+        self.assertIn("duplicate raw SHA-256", " ".join(self.check([self.record, second])))
+
+    def test_valid_nested_relative_path_passes_integrity_only(self):
+        subdir = self.root / "raw" / "device-01"
+        subdir.mkdir(parents=True)
+        target = subdir / "sample.bin"
+        target.write_bytes(self.raw.read_bytes())
+        self.record["raw_data_path"] = "raw/device-01/sample.bin"
+        self.assertEqual([], self.check([self.record]))
+
     def test_duplicate_digest_blocked(self):
         second = dict(self.record, source_id="test-only-002")
         self.assertIn("duplicate raw SHA-256", " ".join(self.check([self.record, second])))
