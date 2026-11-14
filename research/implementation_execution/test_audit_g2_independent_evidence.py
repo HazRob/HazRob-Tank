@@ -1,0 +1,252 @@
+"""Regression tests for the G2 independent-evidence provenance gate.
+
+Run: python3 -m unittest discover -s research/implementation_execution -p 'test_audit_g2_independent_evidence.py'
+"""
+import unittest
+import json
+from audit_g2_independent_evidence import audit, reject_duplicate_json_keys, reject_nonfinite_json_constant, reject_overflow_json_float
+
+SCHEMA = "hazrob.g2.independent-evidence.v1"
+def valid_record():
+    return {"source_id":"independent-001","raw_data_path":"data/raw.csv",
+            "raw_sha256":"a"*64,"measurement_date":"2026-11-10",
+            "instrument_id":"reference-001","calibration_reference":"cal-001",
+            "holdout_split_id":"holdout-001"}
+
+class EvidenceGateTests(unittest.TestCase):
+    def test_empty_is_blocked(self):
+        result = audit({"schema":SCHEMA,"records":[]})
+        self.assertEqual(result["status"],"BLOCKED")
+        self.assertFalse(result["scientifically_validated"])
+    def test_missing_provenance_is_blocked(self):
+        record = valid_record()
+        del record["calibration_reference"]
+        self.assertEqual(audit({"schema":SCHEMA,"records":[record]})["status"],"BLOCKED")
+    def test_bad_digest_is_blocked(self):
+        record = valid_record()
+        record["raw_sha256"] = "not-a-digest"
+        self.assertEqual(audit({"schema":SCHEMA,"records":[record]})["status"],"BLOCKED")
+    def test_duplicate_source_is_blocked(self):
+        record = valid_record()
+        self.assertEqual(audit({"schema":SCHEMA,"records":[record,record]})["status"],"BLOCKED")
+    def test_complete_metadata_is_not_scientific_approval(self):
+        result = audit({"schema":SCHEMA,"records":[valid_record()]})
+        self.assertEqual(result["status"],"PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+    def test_unhashable_source_id_fails_closed(self):
+        record = valid_record()
+        record["source_id"] = ["bad", "identifier"]
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertFalse(result["scientifically_validated"])
+    def test_whitespace_variant_duplicate_source_is_blocked(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = " independent-001 "
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertFalse(result["scientifically_validated"])
+    def test_unsafe_raw_paths_fail_closed(self):
+        for path in ("../private.csv", "/tmp/data.csv", "C:/secret.csv", "data/../raw.csv", "data\\\\raw.csv", " raw.csv", "raw.csv" + chr(10)):
+            with self.subTest(path=path):
+                record = valid_record()
+                record["raw_data_path"] = path
+                result = audit({"schema": SCHEMA, "records": [record]})
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+    def test_safe_relative_raw_path_remains_metadata_only(self):
+        record = valid_record()
+        record["raw_data_path"] = "research/raw/source-001.csv"
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+    def test_invalid_calendar_dates_fail_closed(self):
+        for value in ("2026-02-30", "2026-13-01", "yesterday", "2026-1-1", "2026-11-10T00:00:00", 20261110):
+            with self.subTest(value=value):
+                record = valid_record()
+                record["measurement_date"] = value
+                result = audit({"schema": SCHEMA, "records": [record]})
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+    def test_valid_leap_day_remains_metadata_only(self):
+        record = valid_record()
+        record["measurement_date"] = "2024-02-29"
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+    def test_duplicate_raw_path_is_blocked_even_with_distinct_source_ids(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = "independent-002"
+        second["raw_sha256"] = "b" * 64
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertTrue(any("duplicate raw_data_path" in error for error in result["errors"]))
+        self.assertFalse(result["scientifically_validated"])
+    def test_distinct_raw_paths_remain_metadata_only(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = "independent-002"
+        second["raw_data_path"] = "data/raw2.csv"
+        second["raw_sha256"] = "b" * 64
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+    def test_ambiguous_relative_paths_fail_closed(self):
+        for path in ("data//raw.csv", "data/raw.csv/", "./data/raw.csv"):
+            with self.subTest(path=path):
+                record = valid_record()
+                record["raw_data_path"] = path
+                result = audit({"schema": SCHEMA, "records": [record]})
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+    def test_provenance_control_characters_and_outer_whitespace_fail_closed(self):
+        for field in ("source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
+            for value in (" value ", "value" + chr(10), "value" + chr(0)):
+                with self.subTest(field=field, value=repr(value)):
+                    record = valid_record()
+                    record[field] = value
+                    result = audit({"schema": SCHEMA, "records": [record]})
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertFalse(result["scientifically_validated"])
+    def test_invisible_unicode_provenance_is_blocked(self):
+        # Unicode format controls can visually disguise distinct paths and identifiers.
+        for field in ("raw_data_path", "source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
+            for character in ("\u202e", "\u200b", "\ufeff"):
+                with self.subTest(field=field, character=repr(character)):
+                    record = valid_record()
+                    record[field] = record[field] + character
+                    result = audit({"schema": SCHEMA, "records": [record]})
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertFalse(result["scientifically_validated"])
+    def test_non_nfc_provenance_is_blocked(self):
+        # Canonically equivalent spellings must not create distinct evidence identities.
+        for field in ("raw_data_path", "source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
+            with self.subTest(field=field):
+                record = valid_record()
+                record[field] += "e\u0301"
+                result = audit({"schema": SCHEMA, "records": [record]})
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+    def test_nfc_provenance_remains_metadata_only(self):
+        record = valid_record()
+        record["source_id"] += "\u00e9"
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+    def test_nfkc_compatibility_aliases_fail_closed(self):
+        # Fullwidth and ligature characters can impersonate ASCII identifiers.
+        for field in ("raw_data_path", "source_id", "instrument_id", "calibration_reference", "holdout_split_id"):
+            for suffix in ("\uFF21", "\uFB01", "\u2460"):
+                with self.subTest(field=field, suffix=repr(suffix)):
+                    record = valid_record()
+                    record[field] += suffix
+                    result = audit({"schema": SCHEMA, "records": [record]})
+                    self.assertEqual(result["status"], "BLOCKED")
+                    self.assertFalse(result["scientifically_validated"])
+    def test_nfkc_normalized_unicode_is_metadata_only(self):
+        record = valid_record()
+        record["source_id"] += "A"
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+    def test_malformed_manifest_shapes_fail_closed(self):
+        for manifest in (None, [], "invalid", {}, {"schema": SCHEMA},
+                         {"schema": SCHEMA, "records": {}},
+                         {"schema": SCHEMA, "records": [None]},
+                         {"schema": SCHEMA, "records": ["invalid"]}):
+            with self.subTest(manifest=repr(manifest)):
+                result = audit(manifest)
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["scientifically_validated"])
+
+    def test_uppercase_sha256_is_metadata_only(self):
+        record = valid_record()
+        record["raw_sha256"] = "ABCDEF0123456789" * 4
+        result = audit({"schema": SCHEMA, "records": [record]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_duplicate_raw_digest_is_blocked_across_distinct_paths(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = "independent-002"
+        second["raw_data_path"] = "data/independent-002.csv"
+        second["raw_sha256"] = first["raw_sha256"].upper()
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertTrue(any("duplicate raw_sha256" in error for error in result["errors"]))
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_distinct_raw_digests_and_paths_remain_metadata_only(self):
+        first = valid_record()
+        second = valid_record()
+        second["source_id"] = "independent-002"
+        second["raw_data_path"] = "data/independent-002.csv"
+        second["raw_sha256"] = "b" * 64
+        result = audit({"schema": SCHEMA, "records": [first, second]})
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_duplicate_json_keys_rejected_at_every_depth(self):
+        for payload in (
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[],"records":[]}',
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[{"source_id":"a","source_id":"b"}]}',
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[],"meta":{"x":1,"x":2}}',
+        ):
+            with self.subTest(payload=payload):
+                with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
+                    json.loads(payload, object_pairs_hook=reject_duplicate_json_keys)
+
+    def test_unique_json_keys_keep_scientific_approval_false(self):
+        payload = json.dumps({"schema": SCHEMA, "records": [valid_record()]})
+        parsed = json.loads(payload, object_pairs_hook=reject_duplicate_json_keys)
+        result = audit(parsed)
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_nonfinite_json_constants_rejected_at_every_depth(self):
+        # Python's JSON decoder accepts NaN/Infinity by default, contrary to RFC 8259.
+        for payload in (
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[],"extra":NaN}',
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[{"x":Infinity}]}',
+            '{"schema":"hazrob.g2.independent-evidence.v1","records":[],"meta":{"x":-Infinity}}',
+        ):
+            with self.subTest(payload=payload):
+                with self.assertRaisesRegex(ValueError, "non-finite JSON constant"):
+                    json.loads(payload, object_pairs_hook=reject_duplicate_json_keys,
+                               parse_constant=reject_nonfinite_json_constant)
+
+    def test_standard_finite_json_remains_metadata_only(self):
+        payload = json.dumps({"schema": SCHEMA, "records": [valid_record()], "meta": {"x": 1.5}})
+        parsed = json.loads(payload, object_pairs_hook=reject_duplicate_json_keys,
+                            parse_constant=reject_nonfinite_json_constant)
+        result = audit(parsed)
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_overflow_exponent_rejected_at_all_depths(self):
+        for payload in (
+            '{"schema":"' + SCHEMA + '","records":[],"extra":1e9999}',
+            '{"schema":"' + SCHEMA + '","records":[{"x":-1e9999}]}',
+            '{"schema":"' + SCHEMA + '","records":[],"meta":{"x":1e309}}',
+        ):
+            with self.subTest(payload=payload):
+                with self.assertRaisesRegex(ValueError, "non-finite JSON number"):
+                    json.loads(payload, object_pairs_hook=reject_duplicate_json_keys,
+                               parse_constant=reject_nonfinite_json_constant,
+                               parse_float=reject_overflow_json_float)
+
+    def test_finite_exponents_stay_metadata_only(self):
+        payload = '{"schema":"' + SCHEMA + '","records":[' + json.dumps(valid_record()) + '],"meta":{"x":1e308,"y":-1e-308}}'
+        parsed = json.loads(payload, object_pairs_hook=reject_duplicate_json_keys,
+                            parse_constant=reject_nonfinite_json_constant,
+                            parse_float=reject_overflow_json_float)
+        result = audit(parsed)
+        self.assertEqual(result["status"], "PROVENANCE_REVIEW_REQUIRED")
+        self.assertFalse(result["scientifically_validated"])
+
+    def test_invalid_schema_is_blocked(self):
+        self.assertEqual(audit({"schema":"other","records":[]})["status"],"BLOCKED")
+if __name__ == "__main__":
+    unittest.main()

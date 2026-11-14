@@ -1,0 +1,22 @@
+name: G2 raw-source integrity regression
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - 'tools/research/g2_verify_raw_sources.py'
+      - 'tools/research/test_g2_verify_raw_sources.py'
+      - '.github/workflows/g2-raw-source-integrity.yml'
+  workflow_dispatch:
+jobs:
+  raw-source-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify source-integrity regression tests
+        run: python -m unittest discover -s tools/research -p 'test_g2_verify_raw_sources.py' -v

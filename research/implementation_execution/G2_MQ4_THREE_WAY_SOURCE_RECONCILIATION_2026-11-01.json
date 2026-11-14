@@ -1,0 +1,23 @@
+{
+  "folds_with_future_calibration": 1,
+  "folds_with_future_training": 10,
+  "folds_without_future_fit_data": 1,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "historical_raw_archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "historical_raw_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "lag120_cross_day_context_rows": 1200,
+  "only_nonfuture_fold_test_days": [
+    "2021-07-31"
+  ],
+  "paired_inferential_test_authorized": false,
+  "physical_independent_exposures_verified": 0,
+  "pinned_library_script_sha256": "367658f9884ff8355c89d803f67eb7ced78ec7299759d58ddd1742ba9a1b368b",
+  "pinned_source_summary_sha256": "0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea",
+  "raw_zip_replayed_in_current_ci": false,
+  "schema": "hazrob.g2.mq4-three-way-source-reconciliation.v1",
+  "source_days": 11,
+  "source_row_hashes_independently_authenticated": false,
+  "source_rows": 14186,
+  "strict_minute_segments": 11
+}

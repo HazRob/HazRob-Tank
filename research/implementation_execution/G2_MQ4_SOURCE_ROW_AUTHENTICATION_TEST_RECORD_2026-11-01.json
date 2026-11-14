@@ -1,0 +1,21 @@
+{
+  "schema": "hazrob.g2.mq4-source-row-authentication-test-record.v1",
+  "date_utc": "2026-11-01",
+  "research_only": true,
+  "code_commit_sha": "c7d266fe4ec2877ab796a033a4b3a602753d6f7b",
+  "github_actions_run_id": 41292981387,
+  "github_actions_run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41292981387",
+  "github_actions_conclusion": "success",
+  "offline_g2_unittest_total": 927,
+  "new_synthetic_regression_tests": 15,
+  "real_original_archive_replayed_in_this_ci": false,
+  "real_submitted_same_row_predictions_authenticated": false,
+  "original_archive_not_in_ci": true,
+  "independent_physical_evidence_records": 0,
+  "g2_pass_candidates": 0,
+  "g2_blocked": 80,
+  "source_blocked": 14,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "scientific_limitation": "Synthetic source-row tamper tests and G2 software gates only; no original ZIP replay, independent source predictions, calibrated physical Tank holdouts or scientific promotion."
+}

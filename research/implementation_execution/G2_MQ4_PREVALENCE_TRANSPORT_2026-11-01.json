@@ -1,0 +1,501 @@
+{
+  "schema": "hazrob.g2.mq4-prevalence-transport-sensitivity.v1",
+  "source_library_summary_sha256": "0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea",
+  "reference_source_rows": 14186,
+  "reference_source_days": 11,
+  "reference_source_gases": 1,
+  "source_threshold_ppm": 4,
+  "threshold_is_safety_limit": false,
+  "prevalence_scenarios_are_hypothetical": true,
+  "conditional_on_fixed_sensitivity_specificity": true,
+  "prospective_or_tank_validation": false,
+  "independent_physical_evidence_records": 0,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "models": [
+    {
+      "model": "TRAIN_MEDIAN_REFERENCE",
+      "source_counts_tp_fn_fp_tn": [
+        0,
+        2346,
+        0,
+        11840
+      ],
+      "hypothetical_prevalence_cases": [
+        {
+          "prevalence": [
+            1,
+            100
+          ],
+          "expected_alarms_per_1000": [
+            0,
+            1
+          ],
+          "expected_false_alarms_per_1000": [
+            0,
+            1
+          ],
+          "precision": null,
+          "negative_predictive_value": [
+            99,
+            100
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            20
+          ],
+          "expected_alarms_per_1000": [
+            0,
+            1
+          ],
+          "expected_false_alarms_per_1000": [
+            0,
+            1
+          ],
+          "precision": null,
+          "negative_predictive_value": [
+            19,
+            20
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            10
+          ],
+          "expected_alarms_per_1000": [
+            0,
+            1
+          ],
+          "expected_false_alarms_per_1000": [
+            0,
+            1
+          ],
+          "precision": null,
+          "negative_predictive_value": [
+            9,
+            10
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            2
+          ],
+          "expected_alarms_per_1000": [
+            0,
+            1
+          ],
+          "expected_false_alarms_per_1000": [
+            0,
+            1
+          ],
+          "precision": null,
+          "negative_predictive_value": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "model": "RIDGE_MQ4_1",
+      "source_counts_tp_fn_fp_tn": [
+        237,
+        2109,
+        799,
+        11041
+      ],
+      "hypothetical_prevalence_cases": [
+        {
+          "prevalence": [
+            1,
+            100
+          ],
+          "expected_alarms_per_1000": [
+            31396171,
+            462944
+          ],
+          "expected_false_alarms_per_1000": [
+            79101,
+            1184
+          ],
+          "precision": [
+            467680,
+            31396171
+          ],
+          "negative_predictive_value": [
+            427386069,
+            431547829
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            20
+          ],
+          "expected_alarms_per_1000": [
+            32017255,
+            462944
+          ],
+          "expected_false_alarms_per_1000": [
+            75905,
+            1184
+          ],
+          "precision": [
+            467680,
+            6403451
+          ],
+          "negative_predictive_value": [
+            4317031,
+            4536071
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            10
+          ],
+          "expected_alarms_per_1000": [
+            16396805,
+            231472
+          ],
+          "expected_false_alarms_per_1000": [
+            35955,
+            592
+          ],
+          "precision": [
+            467680,
+            3279361
+          ],
+          "negative_predictive_value": [
+            38853279,
+            43015039
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            2
+          ],
+          "expected_alarms_per_1000": [
+            19502225,
+            231472
+          ],
+          "expected_false_alarms_per_1000": [
+            19975,
+            592
+          ],
+          "precision": [
+            467680,
+            780089
+          ],
+          "negative_predictive_value": [
+            4317031,
+            8478791
+          ]
+        }
+      ]
+    },
+    {
+      "model": "RIDGE_MQ4_3",
+      "source_counts_tp_fn_fp_tn": [
+        644,
+        1702,
+        1174,
+        10666
+      ],
+      "hypothetical_prevalence_cases": [
+        {
+          "prevalence": [
+            1,
+            100
+          ],
+          "expected_alarms_per_1000": [
+            3046643,
+            30192
+          ],
+          "expected_false_alarms_per_1000": [
+            58113,
+            592
+          ],
+          "precision": [
+            82880,
+            3046643
+          ],
+          "negative_predictive_value": [
+            26926317,
+            27145357
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            20
+          ],
+          "expected_alarms_per_1000": [
+            3258415,
+            30192
+          ],
+          "expected_false_alarms_per_1000": [
+            55765,
+            592
+          ],
+          "precision": [
+            82880,
+            651683
+          ],
+          "negative_predictive_value": [
+            5167677,
+            5386717
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            10
+          ],
+          "expected_alarms_per_1000": [
+            1761565,
+            15096
+          ],
+          "expected_false_alarms_per_1000": [
+            26415,
+            296
+          ],
+          "precision": [
+            82880,
+            352313
+          ],
+          "negative_predictive_value": [
+            2447847,
+            2666887
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            2
+          ],
+          "expected_alarms_per_1000": [
+            2820425,
+            15096
+          ],
+          "expected_false_alarms_per_1000": [
+            14675,
+            296
+          ],
+          "precision": [
+            82880,
+            112817
+          ],
+          "negative_predictive_value": [
+            271983,
+            491023
+          ]
+        }
+      ]
+    },
+    {
+      "model": "RIDGE_MQ4_3_T_RH",
+      "source_counts_tp_fn_fp_tn": [
+        1302,
+        1044,
+        787,
+        11053
+      ],
+      "hypothetical_prevalence_cases": [
+        {
+          "prevalence": [
+            1,
+            100
+          ],
+          "expected_alarms_per_1000": [
+            33033263,
+            462944
+          ],
+          "expected_false_alarms_per_1000": [
+            77913,
+            1184
+          ],
+          "precision": [
+            2569280,
+            33033263
+          ],
+          "negative_predictive_value": [
+            142616859,
+            143303579
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            20
+          ],
+          "expected_alarms_per_1000": [
+            42079515,
+            462944
+          ],
+          "expected_false_alarms_per_1000": [
+            74765,
+            1184
+          ],
+          "precision": [
+            2569280,
+            8415903
+          ],
+          "negative_predictive_value": [
+            82112737,
+            84172897
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            10
+          ],
+          "expected_alarms_per_1000": [
+            26693665,
+            231472
+          ],
+          "expected_false_alarms_per_1000": [
+            35415,
+            592
+          ],
+          "precision": [
+            2569280,
+            5338733
+          ],
+          "negative_predictive_value": [
+            12965169,
+            13651889
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            2
+          ],
+          "expected_alarms_per_1000": [
+            71924925,
+            231472
+          ],
+          "expected_false_alarms_per_1000": [
+            19675,
+            592
+          ],
+          "precision": [
+            2569280,
+            2876997
+          ],
+          "negative_predictive_value": [
+            4321723,
+            6381883
+          ]
+        }
+      ]
+    },
+    {
+      "model": "HGB_MQ4_3_T_RH",
+      "source_counts_tp_fn_fp_tn": [
+        533,
+        1813,
+        1044,
+        10796
+      ],
+      "hypothetical_prevalence_cases": [
+        {
+          "prevalence": [
+            1,
+            100
+          ],
+          "expected_alarms_per_1000": [
+            31097987,
+            347208
+          ],
+          "expected_false_alarms_per_1000": [
+            25839,
+            296
+          ],
+          "precision": [
+            788840,
+            31097987
+          ],
+          "negative_predictive_value": [
+            313426773,
+            316110013
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            20
+          ],
+          "expected_alarms_per_1000": [
+            33028735,
+            347208
+          ],
+          "expected_false_alarms_per_1000": [
+            24795,
+            296
+          ],
+          "precision": [
+            788840,
+            6605747
+          ],
+          "negative_predictive_value": [
+            60152613,
+            62835853
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            10
+          ],
+          "expected_alarms_per_1000": [
+            17721085,
+            173604
+          ],
+          "expected_false_alarms_per_1000": [
+            11745,
+            148
+          ],
+          "precision": [
+            788840,
+            3544217
+          ],
+          "negative_predictive_value": [
+            28493343,
+            31176583
+          ]
+        },
+        {
+          "prevalence": [
+            1,
+            2
+          ],
+          "expected_alarms_per_1000": [
+            27374825,
+            173604
+          ],
+          "expected_false_alarms_per_1000": [
+            6525,
+            148
+          ],
+          "precision": [
+            788840,
+            1094993
+          ],
+          "negative_predictive_value": [
+            3165927,
+            5849167
+          ]
+        }
+      ]
+    }
+  ],
+  "limitations": "Exact rational prevalence projections from retrospective 11-day source confusion counts. Serial rows not independent; 10/11 folds train on future dates. Changing prevalence can also change covariates, sensitivity and specificity. Hypothetical values are NOT prospective predictive values, safety performance, gas identification or Tank calibration."
+}

@@ -1,0 +1,119 @@
+{
+  "schema": "hazrob.g2.mq4-lodo-calendar-fold-context-summary.v1",
+  "source_id": "MQ-ACQ-2026-06",
+  "source_archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "raw_rows": 14186,
+  "strict_minute_segments": 11,
+  "calendar_days": 11,
+  "source_hashes_verified_in_local_raw_replay": true,
+  "local_full_replay_json_sha256": "f18c25fb0647aa9ee84688e05977b173d542d80f8a65313e2434fa80fff04629",
+  "feature_manifest": [
+    "MQ4_1",
+    "MQ4_2",
+    "MQ4_3"
+  ],
+  "reference_target": "licor_ch4",
+  "reference_target_unit": "ppb",
+  "sensor_channel_unit": "ohm",
+  "lag_results": {
+    "1": {
+      "cross_day_context_pairs": 10,
+      "cross_fold_context_rows_summed_across_11_lodo_folds": 20
+    },
+    "5": {
+      "cross_day_context_pairs": 50,
+      "cross_fold_context_rows_summed_across_11_lodo_folds": 100
+    },
+    "15": {
+      "cross_day_context_pairs": 150,
+      "cross_fold_context_rows_summed_across_11_lodo_folds": 300
+    },
+    "30": {
+      "cross_day_context_pairs": 300,
+      "cross_fold_context_rows_summed_across_11_lodo_folds": 600
+    },
+    "60": {
+      "cross_day_context_pairs": 600,
+      "cross_fold_context_rows_summed_across_11_lodo_folds": 1200
+    },
+    "120": {
+      "cross_day_context_pairs": 1200,
+      "cross_fold_context_rows_summed_across_11_lodo_folds": 2400
+    }
+  },
+  "folds": {
+    "2021-07-21": {
+      "holdout_rows": 774,
+      "unique_train_to_holdout_context_rows_any_lag": 0,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 120
+    },
+    "2021-07-22": {
+      "holdout_rows": 1435,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 240
+    },
+    "2021-07-23": {
+      "holdout_rows": 1231,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 240
+    },
+    "2021-07-24": {
+      "holdout_rows": 1421,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 240
+    },
+    "2021-07-25": {
+      "holdout_rows": 1436,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 240
+    },
+    "2021-07-26": {
+      "holdout_rows": 1440,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 240
+    },
+    "2021-07-27": {
+      "holdout_rows": 1437,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 240
+    },
+    "2021-07-28": {
+      "holdout_rows": 1437,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 240
+    },
+    "2021-07-29": {
+      "holdout_rows": 1418,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 240
+    },
+    "2021-07-30": {
+      "holdout_rows": 1434,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 120,
+      "unique_cross_fold_context_rows_any_lag": 240
+    },
+    "2021-07-31": {
+      "holdout_rows": 723,
+      "unique_train_to_holdout_context_rows_any_lag": 120,
+      "unique_holdout_to_train_context_rows_any_lag": 0,
+      "unique_cross_fold_context_rows_any_lag": 120
+    }
+  },
+  "model_feature_use_verified": false,
+  "actual_lodo_training_verified": false,
+  "physical_independence_verified": false,
+  "g2_qualified": false,
+  "g3_tank_qualified": false,
+  "interpretation": "Hypothetical calendar-day LODO, conditional on using lag features; no model trained, no physical independence established."
+}

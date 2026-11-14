@@ -1,0 +1,23 @@
+{
+  "conditional_on_reported_minute_uniqueness": true,
+  "first_day_max_minute_bins": 774,
+  "first_day_reported_rows": 774,
+  "g2_qualified": false,
+  "g3_tank_qualified": false,
+  "last_day_max_minute_bins": 723,
+  "last_day_reported_rows": 723,
+  "limitations": "Cross-checks reported intake, calendar folds and segment metadata only. Minute uniqueness and endpoint timestamps are upstream assertions, not independently replayed raw bytes. No independent exposures, traceable calibration, blinded physical holdouts or scientific qualification.",
+  "original_raw_zip_replayed_by_this_audit": false,
+  "physical_independence_verified": false,
+  "reported_calendar_days": 11,
+  "reported_first_timestamp": "2021-07-21 11:06:00",
+  "reported_last_timestamp": "2021-07-31 12:02:00",
+  "reported_max_daily_rows": 1440,
+  "reported_rows": 14186,
+  "schema": "hazrob.g2.mq4-reported-calendar-minute-capacity.v1",
+  "segment_lengths_reconciled": true,
+  "source_archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_id": "MQ-ACQ-2026-06",
+  "source_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "traceable_calibration_verified": false
+}

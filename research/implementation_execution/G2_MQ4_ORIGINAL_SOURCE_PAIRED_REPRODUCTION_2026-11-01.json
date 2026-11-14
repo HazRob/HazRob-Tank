@@ -1,0 +1,137 @@
+{
+  "schema": "hazrob.g2.mq4-original-archive-recomputed-paired-research.v1",
+  "date": "2026-11-01",
+  "source_archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_csv_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "benchmark_script_sha256": "367658f9884ff8355c89d803f67eb7ced78ec7299759d58ddd1742ba9a1b368b",
+  "source_summary_sha256": "0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea",
+  "source_csv_prediction_output_sha256": "f6707daa79f17c674dfb36c7051420acf67543e854137aa724225228b0719506",
+  "source_csv_fold_output_sha256": "04d9974d207ff160e8e1bf8f8108a3665fff347de02c3763da96c05f26f72f15",
+  "source_csv_summary_output_sha256": "04bf2b7c534281e5030f745b229635500eb10986e42149c23e992c6c160fd904",
+  "source_rows": 14186,
+  "prediction_rows": 70930,
+  "model_count": 5,
+  "folds_per_model": 11,
+  "models": [
+    {
+      "model": "TRAIN_MEDIAN_REFERENCE",
+      "pooled_mae_ppm": "0.876730934817778",
+      "pooled_interval_coverage": "0.7959255604116735",
+      "total_4ppm_true_positive": "0",
+      "total_4ppm_false_negative": "2346",
+      "total_4ppm_false_positive": "0",
+      "total_4ppm_true_negative": "11840"
+    },
+    {
+      "model": "RIDGE_MQ4_1",
+      "pooled_mae_ppm": "0.8601235745570855",
+      "pooled_interval_coverage": "0.7728746651628366",
+      "total_4ppm_true_positive": "237",
+      "total_4ppm_false_negative": "2109",
+      "total_4ppm_false_positive": "799",
+      "total_4ppm_true_negative": "11041"
+    },
+    {
+      "model": "RIDGE_MQ4_3",
+      "pooled_mae_ppm": "0.8474539228805503",
+      "pooled_interval_coverage": "0.8190469476949105",
+      "total_4ppm_true_positive": "644",
+      "total_4ppm_false_negative": "1702",
+      "total_4ppm_false_positive": "1174",
+      "total_4ppm_true_negative": "10666"
+    },
+    {
+      "model": "RIDGE_MQ4_3_T_RH",
+      "pooled_mae_ppm": "0.8415405229103183",
+      "pooled_interval_coverage": "0.819399407866911",
+      "total_4ppm_true_positive": "1302",
+      "total_4ppm_false_negative": "1044",
+      "total_4ppm_false_positive": "787",
+      "total_4ppm_true_negative": "11053"
+    },
+    {
+      "model": "HGB_MQ4_3_T_RH",
+      "pooled_mae_ppm": "0.8020564287788516",
+      "pooled_interval_coverage": "0.8261666431693219",
+      "total_4ppm_true_positive": "533",
+      "total_4ppm_false_negative": "1813",
+      "total_4ppm_false_positive": "1044",
+      "total_4ppm_true_negative": "10796"
+    }
+  ],
+  "paired_error_discordance_descriptive": {
+    "TRAIN_MEDIAN_REFERENCE|RIDGE_MQ4_1": {
+      "both_correct": 11041,
+      "a_correct_b_wrong": 799,
+      "a_wrong_b_correct": 237,
+      "both_wrong": 2109
+    },
+    "TRAIN_MEDIAN_REFERENCE|RIDGE_MQ4_3": {
+      "both_correct": 10666,
+      "a_correct_b_wrong": 1174,
+      "a_wrong_b_correct": 644,
+      "both_wrong": 1702
+    },
+    "TRAIN_MEDIAN_REFERENCE|RIDGE_MQ4_3_T_RH": {
+      "both_correct": 11053,
+      "a_correct_b_wrong": 787,
+      "a_wrong_b_correct": 1302,
+      "both_wrong": 1044
+    },
+    "TRAIN_MEDIAN_REFERENCE|HGB_MQ4_3_T_RH": {
+      "both_correct": 10796,
+      "a_correct_b_wrong": 1044,
+      "a_wrong_b_correct": 533,
+      "both_wrong": 1813
+    },
+    "RIDGE_MQ4_1|RIDGE_MQ4_3": {
+      "both_correct": 10751,
+      "a_correct_b_wrong": 527,
+      "a_wrong_b_correct": 559,
+      "both_wrong": 2349
+    },
+    "RIDGE_MQ4_1|RIDGE_MQ4_3_T_RH": {
+      "both_correct": 10894,
+      "a_correct_b_wrong": 384,
+      "a_wrong_b_correct": 1461,
+      "both_wrong": 1447
+    },
+    "RIDGE_MQ4_1|HGB_MQ4_3_T_RH": {
+      "both_correct": 10285,
+      "a_correct_b_wrong": 993,
+      "a_wrong_b_correct": 1044,
+      "both_wrong": 1864
+    },
+    "RIDGE_MQ4_3|RIDGE_MQ4_3_T_RH": {
+      "both_correct": 10751,
+      "a_correct_b_wrong": 559,
+      "a_wrong_b_correct": 1604,
+      "both_wrong": 1272
+    },
+    "RIDGE_MQ4_3|HGB_MQ4_3_T_RH": {
+      "both_correct": 10098,
+      "a_correct_b_wrong": 1212,
+      "a_wrong_b_correct": 1231,
+      "both_wrong": 1645
+    },
+    "RIDGE_MQ4_3_T_RH|HGB_MQ4_3_T_RH": {
+      "both_correct": 10691,
+      "a_correct_b_wrong": 1664,
+      "a_wrong_b_correct": 638,
+      "both_wrong": 1193
+    }
+  },
+  "retrospective_future_training_folds": 10,
+  "retrospective_future_calibration_folds": 1,
+  "benchmark_script_reexecuted_on_original_archive": true,
+  "same_row_predictions_reproduced_from_original_source": true,
+  "source_label_authentication_from_original_raw_csv": true,
+  "independent_exposure_groups_verified": false,
+  "instrument_calibration_certificate_verified": false,
+  "independent_model_implementation_verified": false,
+  "prospective_validation_verified": false,
+  "paired_inferential_test_authorized": false,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "limits": "Original external-source raw rows and Library research benchmark script rerun twice, not independently collected Tank exposures or prospective validation."
+}

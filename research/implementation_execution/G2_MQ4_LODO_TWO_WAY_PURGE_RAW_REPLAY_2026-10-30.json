@@ -1,0 +1,131 @@
+{
+  "schema": "hazrob.g2.mq4-lodo-two-way-purge-raw-summary.v1",
+  "source": "MQ-ACQ-2026-06",
+  "source_archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "raw_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "raw_rows": 14186,
+  "strict_minute_segments": 11,
+  "calendar_dates": 11,
+  "max_lag_minutes": 120,
+  "eligible_rows_all_lags": 12981,
+  "sum_holdout_excluded_across_folds": 1200,
+  "sum_train_purged_across_folds": 1200,
+  "folds": {
+    "2021-07-21": {
+      "holdout_total": 774,
+      "holdout_timestamp_eligible": 654,
+      "holdout_excluded_training_context": 0,
+      "holdout_remaining": 654,
+      "train_timestamp_eligible": 12327,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 12207,
+      "holdout_history_ineligible": 120
+    },
+    "2021-07-22": {
+      "holdout_total": 1435,
+      "holdout_timestamp_eligible": 1315,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 1195,
+      "train_timestamp_eligible": 11666,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 11546,
+      "holdout_history_ineligible": 120
+    },
+    "2021-07-23": {
+      "holdout_total": 1231,
+      "holdout_timestamp_eligible": 1111,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 991,
+      "train_timestamp_eligible": 11870,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 11750,
+      "holdout_history_ineligible": 120
+    },
+    "2021-07-24": {
+      "holdout_total": 1421,
+      "holdout_timestamp_eligible": 1296,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 1176,
+      "train_timestamp_eligible": 11685,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 11565,
+      "holdout_history_ineligible": 125
+    },
+    "2021-07-25": {
+      "holdout_total": 1436,
+      "holdout_timestamp_eligible": 1316,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 1196,
+      "train_timestamp_eligible": 11665,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 11545,
+      "holdout_history_ineligible": 120
+    },
+    "2021-07-26": {
+      "holdout_total": 1440,
+      "holdout_timestamp_eligible": 1440,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 1320,
+      "train_timestamp_eligible": 11541,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 11421,
+      "holdout_history_ineligible": 0
+    },
+    "2021-07-27": {
+      "holdout_total": 1437,
+      "holdout_timestamp_eligible": 1197,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 1077,
+      "train_timestamp_eligible": 11784,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 11664,
+      "holdout_history_ineligible": 240
+    },
+    "2021-07-28": {
+      "holdout_total": 1437,
+      "holdout_timestamp_eligible": 1317,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 1197,
+      "train_timestamp_eligible": 11664,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 11544,
+      "holdout_history_ineligible": 120
+    },
+    "2021-07-29": {
+      "holdout_total": 1418,
+      "holdout_timestamp_eligible": 1298,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 1178,
+      "train_timestamp_eligible": 11683,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 11563,
+      "holdout_history_ineligible": 120
+    },
+    "2021-07-30": {
+      "holdout_total": 1434,
+      "holdout_timestamp_eligible": 1314,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 1194,
+      "train_timestamp_eligible": 11667,
+      "train_purged_holdout_context": 120,
+      "train_remaining": 11547,
+      "holdout_history_ineligible": 120
+    },
+    "2021-07-31": {
+      "holdout_total": 723,
+      "holdout_timestamp_eligible": 723,
+      "holdout_excluded_training_context": 120,
+      "holdout_remaining": 603,
+      "train_timestamp_eligible": 12258,
+      "train_purged_holdout_context": 0,
+      "train_remaining": 12258,
+      "holdout_history_ineligible": 0
+    }
+  },
+  "raw_replay_verified": true,
+  "model_training_verified": false,
+  "physical_independence_verified": false,
+  "g2_qualified": false,
+  "g3_tank_qualified": false,
+  "interpretation": "Timestamp-only hypothetical LODO. No physical exposure independence, model training, calibrated gas identity or G2/G3 qualification."
+}

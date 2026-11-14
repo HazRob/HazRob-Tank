@@ -1,0 +1,293 @@
+{
+  "schema": "hazrob.g2.mq4-retrospective-protocol-audit.v1",
+  "source_library_summary_sha256": "0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea",
+  "source_library_benchmark_script_sha256": "367658f9884ff8355c89d803f67eb7ced78ec7299759d58ddd1742ba9a1b368b",
+  "source_library_snapshot_not_raw_zip": true,
+  "source_rows": 14186,
+  "source_days": 11,
+  "folds": [
+    {
+      "test_day": "2021-07-21",
+      "calibration_day": "2021-07-31",
+      "training_days": [
+        "2021-07-22",
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30"
+      ],
+      "future_training_days": [
+        "2021-07-22",
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30"
+      ],
+      "future_calibration_day": true,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-22",
+      "calibration_day": "2021-07-21",
+      "training_days": [
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_training_days": [
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_calibration_day": false,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-23",
+      "calibration_day": "2021-07-22",
+      "training_days": [
+        "2021-07-21",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_training_days": [
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_calibration_day": false,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-24",
+      "calibration_day": "2021-07-23",
+      "training_days": [
+        "2021-07-21",
+        "2021-07-22",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_training_days": [
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_calibration_day": false,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-25",
+      "calibration_day": "2021-07-24",
+      "training_days": [
+        "2021-07-21",
+        "2021-07-22",
+        "2021-07-23",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_training_days": [
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_calibration_day": false,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-26",
+      "calibration_day": "2021-07-25",
+      "training_days": [
+        "2021-07-21",
+        "2021-07-22",
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_training_days": [
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_calibration_day": false,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-27",
+      "calibration_day": "2021-07-26",
+      "training_days": [
+        "2021-07-21",
+        "2021-07-22",
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_training_days": [
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_calibration_day": false,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-28",
+      "calibration_day": "2021-07-27",
+      "training_days": [
+        "2021-07-21",
+        "2021-07-22",
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_training_days": [
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_calibration_day": false,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-29",
+      "calibration_day": "2021-07-28",
+      "training_days": [
+        "2021-07-21",
+        "2021-07-22",
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_training_days": [
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "future_calibration_day": false,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-30",
+      "calibration_day": "2021-07-29",
+      "training_days": [
+        "2021-07-21",
+        "2021-07-22",
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-31"
+      ],
+      "future_training_days": [
+        "2021-07-31"
+      ],
+      "future_calibration_day": false,
+      "prospective_valid": false
+    },
+    {
+      "test_day": "2021-07-31",
+      "calibration_day": "2021-07-30",
+      "training_days": [
+        "2021-07-21",
+        "2021-07-22",
+        "2021-07-23",
+        "2021-07-24",
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29"
+      ],
+      "future_training_days": [],
+      "future_calibration_day": false,
+      "prospective_valid": true
+    }
+  ],
+  "folds_with_future_training_days": 10,
+  "folds_with_future_calibration_day": 1,
+  "folds_without_future_training_or_calibration": 1,
+  "models_below_nominal_90pct_pooled_interval_coverage": [
+    "TRAIN_MEDIAN_REFERENCE",
+    "RIDGE_MQ4_1",
+    "RIDGE_MQ4_3",
+    "RIDGE_MQ4_3_T_RH",
+    "HGB_MQ4_3_T_RH"
+  ],
+  "protocol_comparison": {
+    "library_study": "retrospective leave-one-day-out, 9 train, cyclic previous-day calibration",
+    "research_forward_study": "forward-only prior-day training; six common test days; embargo 0/1/2 days",
+    "pooled_metrics_directly_comparable": false,
+    "future_day_training_is_label_leakage_within_group_holdout": false,
+    "future_day_training_invalidates_prospective_claim": true
+  },
+  "physical_independent_reference_records_verified": 0,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "limitations": "This is a protocol audit, not a new raw-data benchmark. Grouped retrospective holdout is not same-day leakage, but 10/11 folds train on future dates and the first fold calibrates on a future date. The original script is hash-pinned and manually inspected; CI does not re-read Library script or raw ZIP. No independent Tank exposures, traceable calibration, multi-gas discrimination, prospective field performance or G2/G3 qualification."
+}

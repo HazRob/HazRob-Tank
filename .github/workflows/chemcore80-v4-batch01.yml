@@ -1,0 +1,49 @@
+name: Tank ChemCore 80 V4 — batch 01 engineering evidence (not G3)
+on:
+  push:
+    paths:
+      - 'research/techniques/01.*/**'
+      - 'research/techniques/02.1/**'
+      - 'research/techniques/02.2/**'
+      - 'research/techniques/02.3/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch01.yml'
+  pull_request:
+    paths:
+      - 'research/techniques/01.*/**'
+      - 'research/techniques/02.1/**'
+      - 'research/techniques/02.2/**'
+      - 'research/techniques/02.3/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch01.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  engineering-only-batch01:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install existing prototype's numeric dependency
+        run: python -m pip install 'numpy>=1.26,<3'
+      - name: Install research-only numerical test dependencies
+        run: python -m pip install numpy
+      - name: Check 80-technique plan, metadata and safe status
+        run: |
+          python research/implementation_execution/validate_plan_v4.py
+      - name: All first ten technique prototypes and source-aware upgrades
+        shell: bash
+        run: |
+          set -euo pipefail
+          for id in 01.1 01.2 01.3 01.4 01.5 01.6 01.7 02.1 02.2 02.3; do
+            echo "=== $id source-specific scientific software tests ==="
+            (cd "research/techniques/$id" && python -m unittest discover -p 'test_*.py' -v)
+          done
+      - name: Delineate actual scientific evidence
+        run: |
+          test ! -e research/implementation_execution/TANK_PHYSICAL_G3_APPROVED
+          echo 'PASS_ENGINEERING_ONLY; ZERO NEW TANK PHYSICAL G3 EVIDENCE'

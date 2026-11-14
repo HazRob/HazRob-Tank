@@ -1,0 +1,41 @@
+name: Tank G2 MQ-EXT-14 original Mendeley source metadata probe (not qualification)
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - research/implementation_execution/g2_mendeley_mq14_source_probe.py
+      - research/implementation_execution/test_g2_mendeley_mq14_source_probe.py
+      - .github/workflows/tank-g2-mq14-source-probe.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-metadata-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check negative scientific controls
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_mendeley_mq14_source_probe.py' -v
+      - name: Probe original public Mendeley metadata
+        run: python research/implementation_execution/g2_mendeley_mq14_source_probe.py --output "$RUNNER_TEMP/mq14_source_metadata.json"
+      - name: Assert metadata is not G2 qualification
+        run: |
+          python - "$RUNNER_TEMP/mq14_source_metadata.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x["dataset_id"]=="MQ-EXT-14"
+          assert not x["raw_bytes_verified"] and not x["sensor_models_verified"]
+          assert not x["physical_grouping_verified"] and not x["g2_qualified"] and not x["g3_tank"]
+          print(x["metadata_fetch_status"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tank-g2-mq14-original-metadata-probe
+          path: ${{ runner.temp }}/mq14_source_metadata.json
+          if-no-files-found: warn

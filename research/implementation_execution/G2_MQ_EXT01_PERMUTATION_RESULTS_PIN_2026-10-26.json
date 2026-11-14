@@ -1,0 +1,47 @@
+{
+  "schema": "hazrob.g2.mq01.permutation-and-paired-results-pin.v1",
+  "date": "2026-10-26",
+  "source_dataset": "MQ-EXT-01",
+  "source_archive_sha256": "fde5a3836fe9ddb04fee90102b9c1a5816f48a78d37bf7125074e66a3f3b5f5a",
+  "code_commit_sha": "373e4cd2083b9e5c9d1e10697ec6587a676f1673",
+  "ci": {
+    "run_id": 40279183126,
+    "conclusion": "success",
+    "tests_passed": 7,
+    "artifact_id": 12631411173,
+    "artifact_sha256": "62e7b42931fbea826a6d9f1baebab0bb222c551057941c7b390265c55dd731e3"
+  },
+  "n_source_files": 50,
+  "n_nominal_days": 5,
+  "n_produce_classes": 10,
+  "n_permutations": 1999,
+  "seed": 20261026,
+  "results": [
+    {
+      "channels": 8,
+      "correct": 11,
+      "total": 50,
+      "conditional_tail_fraction_plus_one": 0.026,
+      "null_p95_correct": 9
+    },
+    {
+      "channels": 9,
+      "correct": 11,
+      "total": 50,
+      "conditional_tail_fraction_plus_one": 0.0285,
+      "null_p95_correct": 9
+    }
+  ],
+  "paired": {
+    "both_correct": 11,
+    "only_eight_correct": 0,
+    "only_nine_correct": 0,
+    "both_wrong": 39
+  },
+  "grouping_independent_physical_sessions_verified": false,
+  "source_signal_units_verified": false,
+  "gas_reference_ppm_verified": false,
+  "g2_qualified": false,
+  "g3_tank": false,
+  "conclusion": "DESCRIPTIVE_NEGATIVE_CONTROL_ONLY"
+}

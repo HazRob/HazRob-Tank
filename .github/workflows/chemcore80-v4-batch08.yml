@@ -1,0 +1,66 @@
+name: Tank ChemCore V4 batch08 research engineering (G1 only)
+on:
+  push:
+    paths:
+      - 'research/techniques/08.10/**'
+      - 'research/techniques/08.11/**'
+      - 'research/techniques/08.12/**'
+      - 'research/techniques/09.*/**'
+      - 'research/techniques/10.1/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch08.yml'
+  pull_request:
+    paths:
+      - 'research/techniques/08.10/**'
+      - 'research/techniques/08.11/**'
+      - 'research/techniques/08.12/**'
+      - 'research/techniques/09.*/**'
+      - 'research/techniques/10.1/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch08.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  v4-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check 80-source plan and no physical Tank G3 promotion
+        run: python research/implementation_execution/validate_plan_v4.py
+  v4-batch08-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        technique: ['08.10','08.11','08.12','09.1','09.2','09.3','09.4','09.5','09.6','10.1']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install legacy scientific test dependency
+        run: python -m pip install 'numpy>=1.26,<3'
+      - name: All research unit tests for current source-linked ID
+        working-directory: research/techniques/${{ matrix.technique }}
+        run: python -m unittest discover -p 'test_*.py' -v
+      - name: 'Research only — no field gas calibration assumed'
+        run: echo 'G1 software tests only, Tank actual G3 remains 0/80'
+
+  v4-batch08-cross-technique:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Batch08 six source guards and negative cases
+        run: python -m unittest discover -s research/implementation_execution -p 'test_batch08_six_gates_v2.py' -v
+      - name: Research only G1 evidence boundary
+        run: echo 'Software-only validation; no G2 or G3 approval'

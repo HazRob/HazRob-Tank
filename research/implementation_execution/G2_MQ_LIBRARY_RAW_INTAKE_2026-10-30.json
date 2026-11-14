@@ -1,0 +1,58 @@
+{
+  "schema": "hazrob.g2.external-library-intake-candidate.v1",
+  "created_date": "2026-10-30",
+  "status": "RESEARCH_INTAKE_ONLY_NOT_CENTRAL_CATALOG_QUALIFIED",
+  "library_archive": "/HazRob/MQ_Reference_Measurements_2026/HazRob_MQ_Reference_Real_Measurements_2026-10-30.zip",
+  "archive_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_entries": [
+    {
+      "source_id": "MQ-ACQ-2026-06",
+      "title": "University of Minnesota methane MOx dataset; Furuta et al. 2022",
+      "doi": "10.13020/13xf-nw93",
+      "raw_zip_member": "raw/MQ-ACQ-2026-06_umn_10ppm_data_csv.csv",
+      "sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+      "bytes": 4787918,
+      "rows": 14186,
+      "columns": 20,
+      "first_timestamp": "2021-07-21 11:06:00",
+      "last_timestamp": "2021-07-31 12:02:00",
+      "distinct_calendar_dates": 11,
+      "unique_timestamps": true,
+      "missing_cells": 0,
+      "reference_methane_column": "licor_ch4",
+      "reference_methane_unit": "ppb",
+      "reference_methane_min_ppb": 1945.53885,
+      "reference_methane_max_ppb": 9997.93065,
+      "mq4_columns": [
+        "MQ4_1",
+        "MQ4_2",
+        "MQ4_3"
+      ],
+      "mq4_unit": "ohm",
+      "raw_preprocessing": "original authors: averaged to minute; points above 10ppm discarded",
+      "independent_sample_count": "UNKNOWN",
+      "physical_holdout": "NOT_AUDITED",
+      "calibration_reference_traceability": "REFERENCE_INSTRUMENT_REPORTED; CALIBRATION_CERTIFICATE_NOT_AUDITED",
+      "g2_qualification": false
+    },
+    {
+      "source_id": "MQ-ACQ-2026-01",
+      "title": "Mobile AQ MQ3/MQ4/MQ8 voltage log",
+      "raw_zip_member": "raw/MQ-ACQ-2026-01_mobile_aq_mq3_mq4_mq8_voltage.csv",
+      "sha256": "9ff45148718003878bca102c28d53df2708b87c7371e7d4ba986ddfd0ba98dc8",
+      "bytes": 7396,
+      "rows": 114,
+      "columns": 7,
+      "co2_valid_rows": 4,
+      "co2_minus_one_sentinel_rows": 110,
+      "gas_identity_reference": "NOT_DOCUMENTED",
+      "gas_concentration_reference": "NOT_DOCUMENTED",
+      "g2_qualification": false
+    }
+  ],
+  "existing_catalog_review_ready": 0,
+  "existing_catalog_external_datasets": 14,
+  "independent_evidence_records": 0,
+  "scientific_promotion": false,
+  "stable_modified": false
+}
