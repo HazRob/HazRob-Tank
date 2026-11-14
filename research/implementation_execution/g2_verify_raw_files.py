@@ -38,6 +38,10 @@ def verify(manifest, root):
         if any(not isinstance(record.get(k), str) or not record[k].strip() for k in FIELDS):
             errors.append(prefix + ": missing/invalid required metadata")
             continue
+        for field in FIELDS:
+            value = record[field]
+            if value != value.strip() or any(ord(char) < 32 or ord(char) == 127 for char in value):
+                errors.append(prefix + ": noncanonical metadata field " + field)
         try:
             date = record["measurement_date"]
             if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", date):
