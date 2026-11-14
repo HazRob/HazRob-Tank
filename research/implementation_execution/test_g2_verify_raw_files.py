@@ -46,6 +46,23 @@ class RawIntegrityTests(unittest.TestCase):
                       raw_sha256=hashlib.sha256(other.read_bytes()).hexdigest())
         self.assertEqual([], self.check([self.record, second]))
 
+    def test_records_as_string_is_blocked(self):
+        self.manifest.write_text(json.dumps({"records": "not-a-list"}), encoding="utf-8")
+        self.assertIn("no independent physical records", " ".join(verify(self.manifest, self.root)))
+
+    def test_required_metadata_non_string_is_blocked(self):
+        self.record["measurement_date"] = 20261114
+        self.assertIn("missing/invalid required metadata", " ".join(self.check([self.record])))
+
+    def test_raw_path_directory_is_blocked(self):
+        (self.root / "folder").mkdir()
+        self.record["raw_data_path"] = "folder"
+        self.assertIn("raw file absent or outside root", " ".join(self.check([self.record])))
+
+    def test_nested_parent_escape_is_blocked(self):
+        self.record["raw_data_path"] = "raw/../../sample.bin"
+        self.assertIn("unsafe path", " ".join(self.check([self.record])))
+
     def test_duplicate_manifest_records_key_is_blocked(self):
         self.manifest.write_text('{"records": [], "records": [' + json.dumps(self.record) + ']}', encoding="utf-8")
         self.assertIn("duplicate JSON key", " ".join(verify(self.manifest, self.root)))
