@@ -8,6 +8,7 @@ on:
       - 'research/implementation_execution/test_verify_g2_raw_integrity.py'
       - 'research/implementation_execution/g2_verify_raw_files.py'
       - 'research/implementation_execution/test_g2_verify_raw_files.py'
+      - 'research/implementation_execution/test_g2_raw_path_controls.py'
       - '.github/workflows/g2-independent-raw-byte-integrity.yml'
   pull_request:
     paths:
@@ -15,6 +16,7 @@ on:
       - 'research/implementation_execution/test_verify_g2_raw_integrity.py'
       - 'research/implementation_execution/g2_verify_raw_files.py'
       - 'research/implementation_execution/test_g2_verify_raw_files.py'
+      - 'research/implementation_execution/test_g2_raw_path_controls.py'
       - '.github/workflows/g2-independent-raw-byte-integrity.yml'
   workflow_dispatch:
 permissions:
@@ -31,6 +33,8 @@ jobs:
         run: python -m unittest discover -s research/implementation_execution -p 'test_verify_g2_raw_integrity.py' -v
       - name: Run independent physical raw-file path and hash regression suite
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_verify_raw_files.py' -v
+      - name: Run control-character raw-path regression (not scientific validation)
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_raw_path_controls.py' -v
       - name: Check empty independent-evidence registry remains blocked
         run: |
           python - <<'PY'
