@@ -145,6 +145,14 @@ class RawIntegrityTests(unittest.TestCase):
         self.record["raw_data_path"] = "raw/device-01/sample.bin"
         self.assertEqual([], self.check([self.record]))
 
+    def test_source_id_with_surrounding_whitespace_is_blocked(self):
+        self.record["source_id"] = " test-only-001 "
+        self.assertIn("noncanonical source_id", " ".join(self.check([self.record])))
+
+    def test_source_id_with_newline_is_blocked(self):
+        self.record["source_id"] = "test-only-001\\nshadow"
+        self.assertIn("noncanonical source_id", " ".join(self.check([self.record])))
+
     def test_duplicate_digest_blocked(self):
         second = dict(self.record, source_id="test-only-002")
         self.assertIn("duplicate raw SHA-256", " ".join(self.check([self.record, second])))
