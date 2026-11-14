@@ -9,6 +9,7 @@ on:
       - 'research/implementation_execution/g2_verify_raw_files.py'
       - 'research/implementation_execution/test_g2_verify_raw_files.py'
       - 'research/implementation_execution/test_g2_raw_path_controls.py'
+      - 'research/implementation_execution/test_g2_date_digest_boundaries.py'
       - '.github/workflows/g2-independent-raw-byte-integrity.yml'
   pull_request:
     paths:
@@ -17,6 +18,7 @@ on:
       - 'research/implementation_execution/g2_verify_raw_files.py'
       - 'research/implementation_execution/test_g2_verify_raw_files.py'
       - 'research/implementation_execution/test_g2_raw_path_controls.py'
+      - 'research/implementation_execution/test_g2_date_digest_boundaries.py'
       - '.github/workflows/g2-independent-raw-byte-integrity.yml'
   workflow_dispatch:
 permissions:
@@ -35,6 +37,8 @@ jobs:
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_verify_raw_files.py' -v
       - name: Run control-character raw-path regression (not scientific validation)
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_raw_path_controls.py' -v
+      - name: Run calendar-date and digest-boundary provenance regressions
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_date_digest_boundaries.py' -v
       - name: Check empty independent-evidence registry remains blocked
         run: |
           python - <<'PY'
