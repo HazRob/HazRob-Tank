@@ -150,7 +150,7 @@ class RawIntegrityTests(unittest.TestCase):
         self.assertIn("noncanonical source_id", " ".join(self.check([self.record])))
 
     def test_source_id_with_newline_is_blocked(self):
-        self.record["source_id"] = "test-only-001\\nshadow"
+        self.record["source_id"] = "test-only-001\nshadow"
         self.assertIn("noncanonical source_id", " ".join(self.check([self.record])))
 
     def test_duplicate_digest_blocked(self):
