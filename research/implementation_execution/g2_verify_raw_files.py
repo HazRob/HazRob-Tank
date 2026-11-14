@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fail-closed, byte-level G2 evidence manifest preflight; NOT scientific validation."""
 import argparse
+import datetime
 import hashlib
 import json
 import pathlib
@@ -36,6 +37,14 @@ def verify(manifest, root):
             continue
         if any(not isinstance(record.get(k), str) or not record[k].strip() for k in FIELDS):
             errors.append(prefix + ": missing/invalid required metadata")
+            continue
+        try:
+            date = record["measurement_date"]
+            if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", date):
+                raise ValueError("noncanonical ISO date")
+            datetime.date.fromisoformat(date)
+        except ValueError:
+            errors.append(prefix + ": invalid measurement_date (expected YYYY-MM-DD calendar date)")
             continue
         source, digest = record["source_id"], record["raw_sha256"].lower()
         if source != source.strip() or any(ord(char) < 32 or ord(char) == 127 for char in source):
