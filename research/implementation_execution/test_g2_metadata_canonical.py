@@ -30,6 +30,17 @@ class MetadataCanonicalTests(unittest.TestCase):
                         manifest.write_text(json.dumps({"records":[record]}), encoding="utf-8")
                         self.assertTrue(mod.verify(manifest, root))
 
+    def test_nonstandard_json_numeric_constants_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            for constant in ("NaN", "Infinity", "-Infinity"):
+                with self.subTest(constant=constant):
+                    manifest.write_text('{"records":[{"extra":' + constant + '}]}', encoding="utf-8")
+                    errors = mod.verify(manifest, root)
+                    self.assertTrue(errors)
+                    self.assertIn("invalid", errors[0])
+
     def test_valid_metadata_passes_integrity_only(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
