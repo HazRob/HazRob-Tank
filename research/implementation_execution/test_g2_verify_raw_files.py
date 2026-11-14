@@ -26,6 +26,26 @@ class RawIntegrityTests(unittest.TestCase):
     def check(self, records):
         self.manifest.write_text(json.dumps({"records": records}), encoding="utf-8")
         return verify(self.manifest, self.root)
+    def test_manifest_top_level_array_is_blocked(self):
+        self.manifest.write_text(json.dumps([self.record]), encoding="utf-8")
+        self.assertIn("no independent physical records", " ".join(verify(self.manifest, self.root)))
+
+    def test_missing_records_key_is_blocked(self):
+        self.manifest.write_text(json.dumps({"metadata": {"status": "pending"}}), encoding="utf-8")
+        self.assertIn("no independent physical records", " ".join(verify(self.manifest, self.root)))
+
+    def test_sha256_wrong_length_is_blocked(self):
+        self.record["raw_sha256"] = "a" * 63
+        self.assertIn("invalid SHA-256", " ".join(self.check([self.record])))
+
+    def test_distinct_raw_files_and_unique_ids_pass_integrity_only(self):
+        other = self.root / "other.bin"
+        other.write_bytes(b"independent-test-bytes-02")
+        second = dict(self.record, source_id="test-only-002",
+                      raw_data_path="other.bin",
+                      raw_sha256=hashlib.sha256(other.read_bytes()).hexdigest())
+        self.assertEqual([], self.check([self.record, second]))
+
     def test_duplicate_manifest_records_key_is_blocked(self):
         self.manifest.write_text('{"records": [], "records": [' + json.dumps(self.record) + ']}', encoding="utf-8")
         self.assertIn("duplicate JSON key", " ".join(verify(self.manifest, self.root)))
