@@ -38,6 +38,9 @@ def verify(manifest, root):
             errors.append(prefix + ": missing/invalid required metadata")
             continue
         source, digest = record["source_id"], record["raw_sha256"].lower()
+        if source != source.strip() or any(ord(char) < 32 or ord(char) == 127 for char in source):
+            errors.append(prefix + ": noncanonical source_id")
+            continue
         if source in ids:
             errors.append(prefix + ": duplicate source_id")
         ids.add(source)
