@@ -1,0 +1,24 @@
+name: G2 metadata canonicalization regression (integrity only)
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - 'research/implementation_execution/g2_verify_raw_files.py'
+      - 'research/implementation_execution/test_g2_metadata_canonical.py'
+      - '.github/workflows/g2-metadata-canonical-regression.yml'
+  workflow_dispatch:
+jobs:
+  metadata-canonical-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate metadata rejection and valid reference fixture
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_metadata_canonical.py' -v
+      - name: Confirm no scientific qualification implied
+        run: echo 'Integrity regression only; independent physical holdout required.'
