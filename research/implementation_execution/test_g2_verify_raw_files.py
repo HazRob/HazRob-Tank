@@ -26,6 +26,18 @@ class RawIntegrityTests(unittest.TestCase):
     def check(self, records):
         self.manifest.write_text(json.dumps({"records": records}), encoding="utf-8")
         return verify(self.manifest, self.root)
+    def test_measurement_date_calendar_and_canonical_format(self):
+        for bad in ("2026-02-29", "2026-13-01", "2026-00-10",
+                    "2026-11-14T12:00:00", "2026-1-4", "2026-11-14 ",
+                    "not-a-date", "2026-04-31"):
+            with self.subTest(date=bad):
+                self.record["measurement_date"] = bad
+                self.assertIn("invalid measurement_date", " ".join(self.check([self.record])))
+        self.record["measurement_date"] = "2024-02-29"
+        self.assertEqual([], self.check([self.record]))
+        self.record["measurement_date"] = "2026-11-14"
+        self.assertEqual([], self.check([self.record]))
+
     def test_manifest_top_level_array_is_blocked(self):
         self.manifest.write_text(json.dumps([self.record]), encoding="utf-8")
         self.assertIn("no independent physical records", " ".join(verify(self.manifest, self.root)))
