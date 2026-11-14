@@ -50,7 +50,11 @@ def verify(manifest, root):
         if digest in hashes:
             errors.append(prefix + ": duplicate raw SHA-256")
         hashes.add(digest)
-        relative = pathlib.PurePosixPath(record["raw_data_path"])
+        raw_path = record["raw_data_path"]
+        if any(ord(char) < 32 or ord(char) == 127 for char in raw_path):
+            errors.append(prefix + ": control character in raw path")
+            continue
+        relative = pathlib.PurePosixPath(raw_path)
         if relative.is_absolute() or ".." in relative.parts or "\\" in record["raw_data_path"]:
             errors.append(prefix + ": unsafe path")
             continue
