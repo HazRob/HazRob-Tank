@@ -83,5 +83,39 @@ class MetadataCanonicalTests(unittest.TestCase):
             manifest.write_text(json.dumps({"records":[record]}), encoding="utf-8")
             self.assertEqual(mod.verify(manifest, root), [])
 
+    def test_raw_byte_tampering_and_empty_file_fail_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = root / "raw.csv"
+            original = b"sample,adc\\n1,128\\n"
+            raw.write_bytes(original)
+            record = dict(source_id="sample", raw_data_path="raw.csv",
+                raw_sha256=hashlib.sha256(original).hexdigest(),
+                measurement_date="2026-11-14", instrument_id="device-01",
+                calibration_reference="cal-01", holdout_split_id="holdout-01")
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [record]}), encoding="utf-8")
+            self.assertEqual(mod.verify(manifest, root), [])
+            raw.write_bytes(original.replace(b"128", b"129"))
+            self.assertTrue(any("SHA-256 mismatch" in e for e in mod.verify(manifest, root)))
+            raw.write_bytes(b"")
+            self.assertTrue(any("empty raw file" in e for e in mod.verify(manifest, root)))
+
+    def test_parent_traversal_and_absolute_paths_fail_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = root / "raw.csv"
+            raw.write_bytes(b"sample\\n")
+            baseline = dict(source_id="sample", raw_data_path="raw.csv",
+                raw_sha256=hashlib.sha256(raw.read_bytes()).hexdigest(),
+                measurement_date="2026-11-14", instrument_id="device-01",
+                calibration_reference="cal-01", holdout_split_id="holdout-01")
+            manifest = root / "manifest.json"
+            for unsafe in ("../raw.csv", "/tmp/raw.csv", r"..\\raw.csv"):
+                with self.subTest(path=unsafe):
+                    record = dict(baseline, raw_data_path=unsafe)
+                    manifest.write_text(json.dumps({"records": [record]}), encoding="utf-8")
+                    self.assertTrue(any("unsafe path" in e for e in mod.verify(manifest, root)))
+
 if __name__ == "__main__":
     unittest.main()
