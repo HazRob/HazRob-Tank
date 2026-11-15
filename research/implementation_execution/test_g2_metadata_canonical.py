@@ -159,5 +159,23 @@ class MetadataCanonicalTests(unittest.TestCase):
                     manifest.write_text(json.dumps({"records": records}), encoding="utf-8")
                     self.assertTrue(any(expected in e for e in mod.verify(manifest, root)))
 
+    def test_noncanonical_raw_path_aliases_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = root / "raw.csv"
+            raw.write_bytes(b"sample,adc\n1,42\n")
+            record = dict(source_id="canonical-case", raw_data_path="raw.csv",
+                raw_sha256=hashlib.sha256(raw.read_bytes()).hexdigest(),
+                measurement_date="2026-11-15", instrument_id="device-01",
+                calibration_reference="cal-01", holdout_split_id="holdout-01")
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [record]}), encoding="utf-8")
+            self.assertEqual(mod.verify(manifest, root), [])
+            for alias in ("./raw.csv", "folder/../raw.csv", "folder//raw.csv",
+                          "folder/./raw.csv", "raw.csv/"):
+                with self.subTest(alias=alias):
+                    manifest.write_text(json.dumps({"records": [dict(record, raw_data_path=alias)]}), encoding="utf-8")
+                    self.assertTrue(any("unsafe path" in e for e in mod.verify(manifest, root)))
+
 if __name__ == "__main__":
     unittest.main()
