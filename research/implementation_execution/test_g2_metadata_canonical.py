@@ -41,6 +41,17 @@ class MetadataCanonicalTests(unittest.TestCase):
                     self.assertTrue(errors)
                     self.assertIn("invalid", errors[0])
 
+    def test_json_exponent_overflow_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            for literal in ("1e999", "-1e999", "9.9e999"):
+                with self.subTest(literal=literal):
+                    manifest.write_text('{"records":[{"extra":' + literal + '}]}', encoding="utf-8")
+                    errors = mod.verify(manifest, root)
+                    self.assertTrue(errors)
+                    self.assertIn("nonfinite JSON float", errors[0])
+
     def test_duplicate_json_keys_rejected_at_all_depths(self):
         # JSON object-pair parsing must reject ambiguous provenance, even in
         # unknown nested metadata, before evaluating physical evidence.
