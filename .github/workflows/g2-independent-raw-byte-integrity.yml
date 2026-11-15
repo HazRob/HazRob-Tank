@@ -11,6 +11,7 @@ on:
       - 'research/implementation_execution/test_g2_raw_path_controls.py'
       - 'research/implementation_execution/test_g2_date_digest_boundaries.py'
       - 'research/implementation_execution/test_g2_metadata_canonical.py'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
       - '.github/workflows/g2-independent-raw-byte-integrity.yml'
   pull_request:
     paths:
@@ -43,6 +44,26 @@ jobs:
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_date_digest_boundaries.py' -v
       - name: Run strict JSON and metadata canonicalization regression
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_metadata_canonical.py' -v
+      - name: Assert checked-in independent evidence registry is blocked until real records exist
+        run: |
+          python - <<'PY'
+          import pathlib
+          import subprocess
+          import sys
+
+          manifest = pathlib.Path("research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json")
+          result = subprocess.run(
+              [sys.executable, "research/implementation_execution/g2_verify_raw_files.py",
+               str(manifest), "research/implementation_execution"],
+              capture_output=True, text=True, check=False
+          )
+          assert result.returncode == 2, (
+              f"Expected fail-closed exit 2 for empty physical evidence; "
+              f"got {result.returncode}: {result.stdout} {result.stderr}"
+          )
+          assert "no independent physical records (BLOCKED)" in result.stderr, result.stderr
+          print("Real checked-in independent evidence registry remains BLOCKED; no scientific qualification.")
+          PY
       - name: Check empty independent-evidence registry remains blocked
         run: |
           python - <<'PY'
