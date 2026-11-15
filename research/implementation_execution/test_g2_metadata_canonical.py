@@ -159,6 +159,28 @@ class MetadataCanonicalTests(unittest.TestCase):
                     manifest.write_text(json.dumps({"records": records}), encoding="utf-8")
                     self.assertTrue(any(expected in e for e in mod.verify(manifest, root)))
 
+    def test_missing_directory_and_case_variant_digest_fail_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = root / "evidence.csv"
+            raw.write_bytes(b"sample,adc\n1,42\n")
+            digest = hashlib.sha256(raw.read_bytes()).hexdigest()
+            baseline = dict(source_id="source-a", raw_data_path="evidence.csv",
+                raw_sha256=digest.upper(), measurement_date="2026-11-15",
+                instrument_id="device-01", calibration_reference="cal-01",
+                holdout_split_id="holdout-01")
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [baseline]}), encoding="utf-8")
+            self.assertEqual(mod.verify(manifest, root), [])
+            duplicate = dict(baseline, source_id="source-b", raw_sha256=digest)
+            manifest.write_text(json.dumps({"records": [baseline, duplicate]}), encoding="utf-8")
+            self.assertTrue(any("duplicate raw SHA-256" in e for e in mod.verify(manifest, root)))
+            for invalid_path in ("missing.csv", "subdir"):
+                with self.subTest(invalid_path=invalid_path):
+                    (root / "subdir").mkdir(exist_ok=True)
+                    manifest.write_text(json.dumps({"records": [dict(baseline, raw_data_path=invalid_path)]}), encoding="utf-8")
+                    self.assertTrue(any("raw file absent" in e for e in mod.verify(manifest, root)))
+
     def test_noncanonical_raw_path_aliases_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
