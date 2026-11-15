@@ -41,6 +41,24 @@ class MetadataCanonicalTests(unittest.TestCase):
                     self.assertTrue(errors)
                     self.assertIn("invalid", errors[0])
 
+    def test_duplicate_json_keys_rejected_at_all_depths(self):
+        # JSON object-pair parsing must reject ambiguous provenance, even in
+        # unknown nested metadata, before evaluating physical evidence.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            cases = (
+                '{"records":[],"records":[]}',
+                '{"records":[{"source_id":"a","source_id":"b"}]}',
+                '{"records":[{"extra":{"instrument":"a","instrument":"b"}}]}',
+            )
+            for payload in cases:
+                with self.subTest(payload=payload):
+                    manifest.write_text(payload, encoding="utf-8")
+                    errors = mod.verify(manifest, root)
+                    self.assertTrue(errors)
+                    self.assertIn("duplicate JSON key", errors[0])
+
     def test_valid_metadata_passes_integrity_only(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
