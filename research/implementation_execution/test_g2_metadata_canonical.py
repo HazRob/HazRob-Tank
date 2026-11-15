@@ -132,7 +132,7 @@ class MetadataCanonicalTests(unittest.TestCase):
                 calibration_reference="cal-01", holdout_split_id="holdout-01")
             manifest = root / "manifest.json"
             manifest.write_text(json.dumps({"records": [record]}), encoding="utf-8")
-            self.assertTrue(any("symlink" in e.lower() or "outside root" in e.lower() for e in mod.verify(manifest, evidence)))
+            self.assertTrue(any("symbolic link" in e.lower() or "symlink" in e.lower() or "outside root" in e.lower() for e in mod.verify(manifest, evidence)))
 
     def test_duplicate_provenance_and_invalid_calendar_date_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
