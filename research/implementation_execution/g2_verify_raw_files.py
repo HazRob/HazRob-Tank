@@ -83,6 +83,18 @@ def verify(manifest, root):
             errors.append(prefix + ": unsafe path")
             continue
         try:
+            # Reject symlink aliases at every path component, even when they stay inside root.
+            # A manifest must name the original file directly, not a mutable indirection.
+            cursor = root
+            for component in relative.parts:
+                cursor = cursor / component
+                if cursor.is_symlink():
+                    errors.append(prefix + ": symbolic link in raw path")
+                    break
+            else:
+                cursor = None
+            if cursor is not None:
+                continue
             target = (root / str(relative)).resolve(strict=False)
             safe_file = target.is_relative_to(root) and target.is_file()
         except (OSError, ValueError, RuntimeError) as exc:
