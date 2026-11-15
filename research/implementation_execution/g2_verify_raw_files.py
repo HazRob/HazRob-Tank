@@ -78,7 +78,8 @@ def verify(manifest, root):
             errors.append(prefix + ": control character in raw path")
             continue
         relative = pathlib.PurePosixPath(raw_path)
-        if relative.is_absolute() or ".." in relative.parts or "\\" in record["raw_data_path"]:
+        if (relative.is_absolute() or ".." in relative.parts or "\\" in raw_path
+                or raw_path != relative.as_posix() or raw_path in ("", ".")):
             errors.append(prefix + ": unsafe path")
             continue
         try:
