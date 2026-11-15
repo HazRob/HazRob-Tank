@@ -11,6 +11,12 @@ import sys
 def reject_nonfinite_constant(value):
     raise ValueError("nonstandard JSON numeric constant: " + value)
 
+def reject_nonfinite_float(value):
+    number = float(value)
+    if not __import__("math").isfinite(number):
+        raise ValueError("nonfinite JSON float: " + value)
+    return number
+
 def reject_duplicate_keys(pairs):
     result = {}
     for key, value in pairs:
@@ -25,7 +31,7 @@ HEX = re.compile(r"[0-9a-fA-F]{64}\Z")
 def verify(manifest, root):
     errors = []
     try:
-        data = json.loads(pathlib.Path(manifest).read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys, parse_constant=reject_nonfinite_constant)
+        data = json.loads(pathlib.Path(manifest).read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys, parse_constant=reject_nonfinite_constant, parse_float=reject_nonfinite_float)
     except (OSError, ValueError, UnicodeError) as exc:
         return ["manifest unreadable or invalid: " + str(exc)]
     records = data.get("records") if isinstance(data, dict) else None
