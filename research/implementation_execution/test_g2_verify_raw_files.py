@@ -138,7 +138,20 @@ class RawIntegrityTests(unittest.TestCase):
         second = dict(self.record, source_id="test-only-002",
                       raw_data_path="alias.bin",
                       raw_sha256="0" * 64)
-        self.assertIn("duplicate raw file path", " ".join(self.check([self.record, second])))
+        self.assertIn("symbolic link in raw path", " ".join(self.check([self.record, second])))
+
+    def test_internal_symlink_file_blocked_even_with_matching_digest(self):
+        (self.root / "alias.bin").symlink_to(self.raw)
+        self.record["raw_data_path"] = "alias.bin"
+        self.assertIn("symbolic link in raw path", " ".join(self.check([self.record])))
+
+    def test_internal_symlink_directory_blocked(self):
+        directory = self.root / "original"
+        directory.mkdir()
+        (directory / "sample.bin").write_bytes(self.raw.read_bytes())
+        (self.root / "aliasdir").symlink_to(directory, target_is_directory=True)
+        self.record["raw_data_path"] = "aliasdir/sample.bin"
+        self.assertIn("symbolic link in raw path", " ".join(self.check([self.record])))
 
     def test_whitespace_only_instrument_id_is_blocked(self):
         self.record["instrument_id"] = "   "
