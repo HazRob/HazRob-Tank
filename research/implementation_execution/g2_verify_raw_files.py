@@ -4,6 +4,7 @@ import argparse
 import datetime
 import hashlib
 import json
+import math
 import pathlib
 import re
 import sys
@@ -13,7 +14,7 @@ def reject_nonfinite_constant(value):
 
 def reject_nonfinite_float(value):
     number = float(value)
-    if not __import__("math").isfinite(number):
+    if not math.isfinite(number):
         raise ValueError("nonfinite JSON float: " + value)
     return number
 
