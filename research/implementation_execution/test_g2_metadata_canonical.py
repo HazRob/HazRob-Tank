@@ -117,5 +117,47 @@ class MetadataCanonicalTests(unittest.TestCase):
                     manifest.write_text(json.dumps({"records": [record]}), encoding="utf-8")
                     self.assertTrue(any("unsafe path" in e for e in mod.verify(manifest, root)))
 
+
+    def test_symlink_escape_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            evidence = root / "evidence"
+            evidence.mkdir()
+            outside = root / "outside.csv"
+            outside.write_bytes(b"sample,adc\\n1,42\\n")
+            (evidence / "linked.csv").symlink_to(outside)
+            record = dict(source_id="symlink-case", raw_data_path="linked.csv",
+                raw_sha256=hashlib.sha256(outside.read_bytes()).hexdigest(),
+                measurement_date="2026-11-15", instrument_id="device-01",
+                calibration_reference="cal-01", holdout_split_id="holdout-01")
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [record]}), encoding="utf-8")
+            self.assertTrue(any("outside root" in e for e in mod.verify(manifest, evidence)))
+
+    def test_duplicate_provenance_and_invalid_calendar_date_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw_a, raw_b = root / "a.csv", root / "b.csv"
+            raw_a.write_bytes(b"sample,adc\\n1,10\\n")
+            raw_b.write_bytes(b"sample,adc\\n1,11\\n")
+            def make_record(source, raw):
+                return dict(source_id=source, raw_data_path=raw.name,
+                    raw_sha256=hashlib.sha256(raw.read_bytes()).hexdigest(),
+                    measurement_date="2026-11-15", instrument_id="device-01",
+                    calibration_reference="cal-01", holdout_split_id="holdout-01")
+            a, b = make_record("a", raw_a), make_record("b", raw_b)
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"records": [a, b]}), encoding="utf-8")
+            self.assertEqual(mod.verify(manifest, root), [])
+            for records, expected in (
+                ([a, dict(b, source_id="a")], "duplicate source_id"),
+                ([a, dict(b, raw_sha256=a["raw_sha256"])], "duplicate raw SHA-256"),
+                ([a, dict(b, raw_data_path="a.csv")], "duplicate raw file path"),
+                ([dict(a, measurement_date="2026-02-30")], "invalid measurement_date"),
+            ):
+                with self.subTest(expected=expected):
+                    manifest.write_text(json.dumps({"records": records}), encoding="utf-8")
+                    self.assertTrue(any(expected in e for e in mod.verify(manifest, root)))
+
 if __name__ == "__main__":
     unittest.main()
