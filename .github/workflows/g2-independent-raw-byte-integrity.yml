@@ -22,6 +22,7 @@ on:
       - 'research/implementation_execution/test_g2_raw_path_controls.py'
       - 'research/implementation_execution/test_g2_date_digest_boundaries.py'
       - 'research/implementation_execution/test_g2_metadata_canonical.py'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
       - '.github/workflows/g2-independent-raw-byte-integrity.yml'
   workflow_dispatch:
 permissions:
@@ -44,9 +45,10 @@ jobs:
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_date_digest_boundaries.py' -v
       - name: Run strict JSON and metadata canonicalization regression
         run: python -m unittest discover -s research/implementation_execution -p 'test_g2_metadata_canonical.py' -v
-      - name: Assert checked-in independent evidence registry is blocked until real records exist
+      - name: Check checked-in evidence registry against physical raw-file integrity gate
         run: |
           python - <<'PY'
+          import json
           import pathlib
           import subprocess
           import sys
@@ -57,12 +59,22 @@ jobs:
                str(manifest), "research/implementation_execution"],
               capture_output=True, text=True, check=False
           )
-          assert result.returncode == 2, (
-              f"Expected fail-closed exit 2 for empty physical evidence; "
-              f"got {result.returncode}: {result.stdout} {result.stderr}"
-          )
-          assert "no independent physical records (BLOCKED)" in result.stderr, result.stderr
-          print("Real checked-in independent evidence registry remains BLOCKED; no scientific qualification.")
+          registry = json.loads(manifest.read_text(encoding="utf-8"))
+          records = registry.get("records")
+          if records == []:
+              assert result.returncode == 2, (
+                  f"Expected fail-closed exit 2 for empty evidence; "
+                  f"got {result.returncode}: {result.stdout} {result.stderr}"
+              )
+              assert "no independent physical records (BLOCKED)" in result.stderr, result.stderr
+              print("Independent evidence registry remains BLOCKED; no scientific qualification.")
+          else:
+              assert result.returncode == 0, (
+                  f"Nonempty registry failed raw-byte integrity preflight: "
+                  f"{result.returncode}: {result.stdout} {result.stderr}"
+              )
+              assert "scientifically_validated=false" in result.stdout, result.stdout
+              print("Raw-byte integrity preflight passed; independent scientific qualification NOT established.")
           PY
       - name: Check empty independent-evidence registry remains blocked
         run: |
