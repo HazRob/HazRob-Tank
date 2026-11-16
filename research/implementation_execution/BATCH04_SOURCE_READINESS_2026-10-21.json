@@ -1,0 +1,229 @@
+{
+  "schema_version": "hazrob.tank.v4.batch04.source-readiness.v1",
+  "date": "2026-10-21",
+  "batch": 4,
+  "technique_ids": [
+    "04.8",
+    "04.9",
+    "04.10",
+    "05.1",
+    "05.2",
+    "05.3",
+    "05.4",
+    "05.5",
+    "05.6",
+    "05.7"
+  ],
+  "central_reference_bank": {
+    "repo": "HazRob/build-harness",
+    "path": "library/reference-bank/external-research/master_catalog.json",
+    "source_blob_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+    "records": 80
+  },
+  "scientific_test_count_new_G2": 0,
+  "Tank_G3": 0,
+  "algorithm_scope_notes": [
+    "04.8 genuine MLP forward training only",
+    "04.9 learned linear ridge descriptor forward surrogate plus inverse candidate ranking, NOT molecular identification",
+    "05.4 multisensor single-target ridge, not composition regression",
+    "05.5 PLS1 not PLS2",
+    "05.6 bagged CART single-output only"
+  ],
+  "items": [
+    {
+      "technique_id": "04.8",
+      "refs": [
+        "CN-RSCH-01",
+        "CN-RSCH-03",
+        "CN-RSCH-04"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "MLP fit/predict runs with grouped synthetic feature data; independent measured source benchmark and probability calibration still required.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    },
+    {
+      "technique_id": "04.9",
+      "refs": [
+        "QSPR-REF-01",
+        "QSPR-REF-03",
+        "QSPR-REF-04",
+        "QSPR-REF-05",
+        "QSPR-REF-10",
+        "SYS-07"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "Source-fitted descriptor/ppm→MQ response surrogate and candidate-wise inversion were tested on synthetic formulae. No direct PubChem-gas-MQ training corpus or source molecular holdout proof.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    },
+    {
+      "technique_id": "04.10",
+      "refs": [
+        "MQ-EXT-15",
+        "UCI-EXT-270",
+        "SYS-10",
+        "SYS-11"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "SHA256 verifies provided JSONL bytes and split group tags, not true provenance or independent lab gas exposure metadata.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    },
+    {
+      "technique_id": "05.1",
+      "refs": [
+        "CN-MQ-01",
+        "CN-MQ-04",
+        "R0-PEER-01",
+        "TOOL-MQ-02"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "Known-gas source Rs to gas ppm curve; per-physical-sensor R0/RL and independent gas phase reference required before any quantitative trust.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    },
+    {
+      "technique_id": "05.2",
+      "refs": [
+        "MQ-EXT-15",
+        "UCI-EXT-270",
+        "MOS-EXT-16"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "Monotonic multipoint interpolation on reported gas ppm; reference trace and standards need physical audit.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    },
+    {
+      "technique_id": "05.3",
+      "refs": [
+        "SYS-07",
+        "SYS-08",
+        "TOOL-MQ-01"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "Nonlinear inverse requires stable monotonic concentration response and grouped reference validation.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    },
+    {
+      "technique_id": "05.4",
+      "refs": [
+        "SYS-06",
+        "SYS-07",
+        "SYS-10",
+        "CN-RSCH-04"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "Current V1 multisensor ridge predicts a SINGLE known gas ppm; NOT a multi-analyte unmixing model.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    },
+    {
+      "technique_id": "05.5",
+      "refs": [
+        "SYS-06",
+        "SYS-11",
+        "CN-PAT-01"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "Current V1 PLS1 predicts SINGLE known gas ppm, NOT validated PLS2 composition regression.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    },
+    {
+      "technique_id": "05.6",
+      "refs": [
+        "SYS-04",
+        "SYS-15"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "Current V1 bagged CART estimates one known gas ppm; it is NOT fully validated multi-output RF / quantile uncertainty.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    },
+    {
+      "technique_id": "05.7",
+      "refs": [
+        "QSPR-REF-03",
+        "SYS-03",
+        "SYS-07"
+      ],
+      "source_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+      "G1": "PASS_SYNTHETIC_SOFTWARE_TESTS",
+      "G2_new": "NOT_VALIDATED_ON_REAL_INDEPENDENT_SOURCE_GROUPS",
+      "G3_Tank": "0_REAL_REFERENCE_TRIALS",
+      "source_blocker": "Identity-conditional route must abstain unless probability and gas-specific calibration provenance provided; caller's claims are not independently verified.",
+      "lab_prerequisites": [
+        "Independently certified gas concentration and blank/source reference",
+        "Physical sensor instance+R0+RL+heater+environment profile",
+        "Source raw bytes SHA256, true independent exposure/session groups",
+        "Calibrated model/identity and final heldout per-analyte error/abstention"
+      ]
+    }
+  ]
+}

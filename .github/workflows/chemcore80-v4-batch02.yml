@@ -1,0 +1,58 @@
+name: Tank ChemCore V4 batch02 research engineering (not Tank G3)
+on:
+  push:
+    paths:
+      - 'research/techniques/02.4/**'
+      - 'research/techniques/02.5/**'
+      - 'research/techniques/02.6/**'
+      - 'research/techniques/02.7/**'
+      - 'research/techniques/02.8/**'
+      - 'research/techniques/03.1/**'
+      - 'research/techniques/03.2/**'
+      - 'research/techniques/03.3/**'
+      - 'research/techniques/03.4/**'
+      - 'research/techniques/03.5/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch02.yml'
+  pull_request:
+    paths:
+      - 'research/techniques/02.4/**'
+      - 'research/techniques/02.5/**'
+      - 'research/techniques/02.6/**'
+      - 'research/techniques/02.7/**'
+      - 'research/techniques/02.8/**'
+      - 'research/techniques/03.1/**'
+      - 'research/techniques/03.2/**'
+      - 'research/techniques/03.3/**'
+      - 'research/techniques/03.4/**'
+      - 'research/techniques/03.5/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch02.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  batch02-software-source-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify 80 unique V4 source-linked tasks
+        run: python research/implementation_execution/validate_plan_v4.py
+      - name: Old and new per-technique research unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          for id in 02.4 02.5 02.6 02.7 02.8 03.1 03.2 03.3 03.4 03.5; do
+            echo "== V4 scientific research technique $id =="
+            (cd "research/techniques/$id" && python -m unittest discover -p 'test_*.py' -v)
+          done
+      - name: Cross-technique source, unit and leakage checks
+        run: python -m unittest -v research/implementation_execution/test_batch02_v2.py
+      - name: Research-only fail-safe
+        run: |
+          test ! -e research/implementation_execution/TANK_PHYSICAL_G3_APPROVED
+          echo "G1 SCIENTIFIC SOFTWARE ENGINEERING ONLY; G2-V4 NOT PROVEN; G3 TANK=0/80"

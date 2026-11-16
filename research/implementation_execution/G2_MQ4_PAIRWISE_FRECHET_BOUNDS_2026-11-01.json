@@ -1,0 +1,841 @@
+{
+  "schema": "hazrob.g2.mq4-pairwise-frechet-bounds.v1",
+  "source_library_summary_sha256": "0df1ed3776aa515973886bad18153498325a038040bdb08d8a0a70ab35f5a1ea",
+  "source_rows": 14186,
+  "source_days": 11,
+  "source_gases": 1,
+  "reference_positive_rows": 2346,
+  "reference_negative_rows": 11840,
+  "threshold_ppm": 4,
+  "threshold_is_safety_limit": false,
+  "pairs": [
+    {
+      "models": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_1"
+      ],
+      "OR": {
+        "tp_range": [
+          237,
+          237
+        ],
+        "fn_range": [
+          2109,
+          2109
+        ],
+        "fp_range": [
+          799,
+          799
+        ],
+        "tn_range": [
+          11041,
+          11041
+        ],
+        "sensitivity_range": [
+          [
+            79,
+            782
+          ],
+          [
+            79,
+            782
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            799,
+            11840
+          ],
+          [
+            799,
+            11840
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          0
+        ],
+        "fn_range": [
+          2346,
+          2346
+        ],
+        "fp_range": [
+          0,
+          0
+        ],
+        "tn_range": [
+          11840,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "models": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_3"
+      ],
+      "OR": {
+        "tp_range": [
+          644,
+          644
+        ],
+        "fn_range": [
+          1702,
+          1702
+        ],
+        "fp_range": [
+          1174,
+          1174
+        ],
+        "tn_range": [
+          10666,
+          10666
+        ],
+        "sensitivity_range": [
+          [
+            14,
+            51
+          ],
+          [
+            14,
+            51
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            587,
+            5920
+          ],
+          [
+            587,
+            5920
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          0
+        ],
+        "fn_range": [
+          2346,
+          2346
+        ],
+        "fp_range": [
+          0,
+          0
+        ],
+        "tn_range": [
+          11840,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "models": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "OR": {
+        "tp_range": [
+          1302,
+          1302
+        ],
+        "fn_range": [
+          1044,
+          1044
+        ],
+        "fp_range": [
+          787,
+          787
+        ],
+        "tn_range": [
+          11053,
+          11053
+        ],
+        "sensitivity_range": [
+          [
+            217,
+            391
+          ],
+          [
+            217,
+            391
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            787,
+            11840
+          ],
+          [
+            787,
+            11840
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          0
+        ],
+        "fn_range": [
+          2346,
+          2346
+        ],
+        "fp_range": [
+          0,
+          0
+        ],
+        "tn_range": [
+          11840,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "models": [
+        "TRAIN_MEDIAN_REFERENCE",
+        "HGB_MQ4_3_T_RH"
+      ],
+      "OR": {
+        "tp_range": [
+          533,
+          533
+        ],
+        "fn_range": [
+          1813,
+          1813
+        ],
+        "fp_range": [
+          1044,
+          1044
+        ],
+        "tn_range": [
+          10796,
+          10796
+        ],
+        "sensitivity_range": [
+          [
+            533,
+            2346
+          ],
+          [
+            533,
+            2346
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            261,
+            2960
+          ],
+          [
+            261,
+            2960
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          0
+        ],
+        "fn_range": [
+          2346,
+          2346
+        ],
+        "fp_range": [
+          0,
+          0
+        ],
+        "tn_range": [
+          11840,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3"
+      ],
+      "OR": {
+        "tp_range": [
+          644,
+          881
+        ],
+        "fn_range": [
+          1465,
+          1702
+        ],
+        "fp_range": [
+          1174,
+          1973
+        ],
+        "tn_range": [
+          9867,
+          10666
+        ],
+        "sensitivity_range": [
+          [
+            14,
+            51
+          ],
+          [
+            881,
+            2346
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            587,
+            5920
+          ],
+          [
+            1973,
+            11840
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          237
+        ],
+        "fn_range": [
+          2109,
+          2346
+        ],
+        "fp_range": [
+          0,
+          799
+        ],
+        "tn_range": [
+          11041,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            79,
+            782
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            799,
+            11840
+          ]
+        ]
+      }
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_1",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "OR": {
+        "tp_range": [
+          1302,
+          1539
+        ],
+        "fn_range": [
+          807,
+          1044
+        ],
+        "fp_range": [
+          799,
+          1586
+        ],
+        "tn_range": [
+          10254,
+          11041
+        ],
+        "sensitivity_range": [
+          [
+            217,
+            391
+          ],
+          [
+            513,
+            782
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            799,
+            11840
+          ],
+          [
+            793,
+            5920
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          237
+        ],
+        "fn_range": [
+          2109,
+          2346
+        ],
+        "fp_range": [
+          0,
+          787
+        ],
+        "tn_range": [
+          11053,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            79,
+            782
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            787,
+            11840
+          ]
+        ]
+      }
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_1",
+        "HGB_MQ4_3_T_RH"
+      ],
+      "OR": {
+        "tp_range": [
+          533,
+          770
+        ],
+        "fn_range": [
+          1576,
+          1813
+        ],
+        "fp_range": [
+          1044,
+          1843
+        ],
+        "tn_range": [
+          9997,
+          10796
+        ],
+        "sensitivity_range": [
+          [
+            533,
+            2346
+          ],
+          [
+            385,
+            1173
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            261,
+            2960
+          ],
+          [
+            1843,
+            11840
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          237
+        ],
+        "fn_range": [
+          2109,
+          2346
+        ],
+        "fp_range": [
+          0,
+          799
+        ],
+        "tn_range": [
+          11041,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            79,
+            782
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            799,
+            11840
+          ]
+        ]
+      }
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_3",
+        "RIDGE_MQ4_3_T_RH"
+      ],
+      "OR": {
+        "tp_range": [
+          1302,
+          1946
+        ],
+        "fn_range": [
+          400,
+          1044
+        ],
+        "fp_range": [
+          1174,
+          1961
+        ],
+        "tn_range": [
+          9879,
+          10666
+        ],
+        "sensitivity_range": [
+          [
+            217,
+            391
+          ],
+          [
+            973,
+            1173
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            587,
+            5920
+          ],
+          [
+            53,
+            320
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          644
+        ],
+        "fn_range": [
+          1702,
+          2346
+        ],
+        "fp_range": [
+          0,
+          787
+        ],
+        "tn_range": [
+          11053,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            14,
+            51
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            787,
+            11840
+          ]
+        ]
+      }
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_3",
+        "HGB_MQ4_3_T_RH"
+      ],
+      "OR": {
+        "tp_range": [
+          644,
+          1177
+        ],
+        "fn_range": [
+          1169,
+          1702
+        ],
+        "fp_range": [
+          1174,
+          2218
+        ],
+        "tn_range": [
+          9622,
+          10666
+        ],
+        "sensitivity_range": [
+          [
+            14,
+            51
+          ],
+          [
+            1177,
+            2346
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            587,
+            5920
+          ],
+          [
+            1109,
+            5920
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          533
+        ],
+        "fn_range": [
+          1813,
+          2346
+        ],
+        "fp_range": [
+          0,
+          1044
+        ],
+        "tn_range": [
+          10796,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            533,
+            2346
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            261,
+            2960
+          ]
+        ]
+      }
+    },
+    {
+      "models": [
+        "RIDGE_MQ4_3_T_RH",
+        "HGB_MQ4_3_T_RH"
+      ],
+      "OR": {
+        "tp_range": [
+          1302,
+          1835
+        ],
+        "fn_range": [
+          511,
+          1044
+        ],
+        "fp_range": [
+          1044,
+          1831
+        ],
+        "tn_range": [
+          10009,
+          10796
+        ],
+        "sensitivity_range": [
+          [
+            217,
+            391
+          ],
+          [
+            1835,
+            2346
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            261,
+            2960
+          ],
+          [
+            1831,
+            11840
+          ]
+        ]
+      },
+      "AND": {
+        "tp_range": [
+          0,
+          533
+        ],
+        "fn_range": [
+          1813,
+          2346
+        ],
+        "fp_range": [
+          0,
+          787
+        ],
+        "tn_range": [
+          11053,
+          11840
+        ],
+        "sensitivity_range": [
+          [
+            0,
+            1
+          ],
+          [
+            533,
+            2346
+          ]
+        ],
+        "false_positive_rate_range": [
+          [
+            0,
+            1
+          ],
+          [
+            787,
+            11840
+          ]
+        ]
+      }
+    }
+  ],
+  "pairwise_predictions_available": false,
+  "independence_assumed": false,
+  "joint_ensemble_performance_measured": false,
+  "prospective_or_tank_validation": false,
+  "independent_physical_evidence_records": 0,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "limitations": "Sharp algebraic bounds from source pooled marginals; pairwise row predictions unavailable. Source is retrospective (10/11 folds use future training dates), serial rows are not independent exposures. No Tank calibration, multi-gas identity, prospective or safety-grade validation."
+}

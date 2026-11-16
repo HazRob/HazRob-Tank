@@ -1,0 +1,379 @@
+{
+  "schema": "hazrob.g2.mq4-false-alert-day-concentration.v1",
+  "scope": "EXTERNAL_MQ4_DESCRIPTIVE_DAY_CLUSTERS_NOT_G2_G3",
+  "source_zip_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_csv_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "calendar_days": [
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "models": {
+    "HGB_MQ4_3_T_RH": {
+      "false_positives": 1392,
+      "reference_negatives": 7900,
+      "false_positive_days": [
+        "2021-07-27",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "daily_false_positives": {
+        "2021-07-25": {
+          "false_positives": 0,
+          "reference_negatives": 1190
+        },
+        "2021-07-26": {
+          "false_positives": 0,
+          "reference_negatives": 1440
+        },
+        "2021-07-27": {
+          "false_positives": 32,
+          "reference_negatives": 1199
+        },
+        "2021-07-28": {
+          "false_positives": 79,
+          "reference_negatives": 1254
+        },
+        "2021-07-29": {
+          "false_positives": 761,
+          "reference_negatives": 957
+        },
+        "2021-07-30": {
+          "false_positives": 286,
+          "reference_negatives": 1137
+        },
+        "2021-07-31": {
+          "false_positives": 234,
+          "reference_negatives": 723
+        }
+      },
+      "worst_false_positive_day_or_ties": [
+        "2021-07-29"
+      ],
+      "worst_day_share_of_false_positives": {
+        "numerator": 761,
+        "denominator": 1392
+      },
+      "leave_one_day_out_min_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-29",
+          "numerator": 631,
+          "denominator": 6943
+        }
+      ],
+      "leave_one_day_out_max_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-26",
+          "numerator": 1392,
+          "denominator": 6460
+        }
+      ]
+    },
+    "RIDGE_MQ4_1": {
+      "false_positives": 1480,
+      "reference_negatives": 7900,
+      "false_positive_days": [
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "daily_false_positives": {
+        "2021-07-25": {
+          "false_positives": 0,
+          "reference_negatives": 1190
+        },
+        "2021-07-26": {
+          "false_positives": 0,
+          "reference_negatives": 1440
+        },
+        "2021-07-27": {
+          "false_positives": 0,
+          "reference_negatives": 1199
+        },
+        "2021-07-28": {
+          "false_positives": 36,
+          "reference_negatives": 1254
+        },
+        "2021-07-29": {
+          "false_positives": 331,
+          "reference_negatives": 957
+        },
+        "2021-07-30": {
+          "false_positives": 534,
+          "reference_negatives": 1137
+        },
+        "2021-07-31": {
+          "false_positives": 579,
+          "reference_negatives": 723
+        }
+      },
+      "worst_false_positive_day_or_ties": [
+        "2021-07-31"
+      ],
+      "worst_day_share_of_false_positives": {
+        "numerator": 579,
+        "denominator": 1480
+      },
+      "leave_one_day_out_min_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-31",
+          "numerator": 901,
+          "denominator": 7177
+        }
+      ],
+      "leave_one_day_out_max_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-26",
+          "numerator": 1480,
+          "denominator": 6460
+        }
+      ]
+    },
+    "RIDGE_MQ4_3": {
+      "false_positives": 2367,
+      "reference_negatives": 7900,
+      "false_positive_days": [
+        "2021-07-25",
+        "2021-07-28",
+        "2021-07-29",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "daily_false_positives": {
+        "2021-07-25": {
+          "false_positives": 135,
+          "reference_negatives": 1190
+        },
+        "2021-07-26": {
+          "false_positives": 0,
+          "reference_negatives": 1440
+        },
+        "2021-07-27": {
+          "false_positives": 0,
+          "reference_negatives": 1199
+        },
+        "2021-07-28": {
+          "false_positives": 97,
+          "reference_negatives": 1254
+        },
+        "2021-07-29": {
+          "false_positives": 776,
+          "reference_negatives": 957
+        },
+        "2021-07-30": {
+          "false_positives": 746,
+          "reference_negatives": 1137
+        },
+        "2021-07-31": {
+          "false_positives": 613,
+          "reference_negatives": 723
+        }
+      },
+      "worst_false_positive_day_or_ties": [
+        "2021-07-29"
+      ],
+      "worst_day_share_of_false_positives": {
+        "numerator": 776,
+        "denominator": 2367
+      },
+      "leave_one_day_out_min_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-29",
+          "numerator": 1591,
+          "denominator": 6943
+        }
+      ],
+      "leave_one_day_out_max_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-26",
+          "numerator": 2367,
+          "denominator": 6460
+        }
+      ]
+    },
+    "RIDGE_MQ4_3_T_RH": {
+      "false_positives": 1955,
+      "reference_negatives": 7900,
+      "false_positive_days": [
+        "2021-07-25",
+        "2021-07-26",
+        "2021-07-30",
+        "2021-07-31"
+      ],
+      "daily_false_positives": {
+        "2021-07-25": {
+          "false_positives": 1145,
+          "reference_negatives": 1190
+        },
+        "2021-07-26": {
+          "false_positives": 4,
+          "reference_negatives": 1440
+        },
+        "2021-07-27": {
+          "false_positives": 0,
+          "reference_negatives": 1199
+        },
+        "2021-07-28": {
+          "false_positives": 0,
+          "reference_negatives": 1254
+        },
+        "2021-07-29": {
+          "false_positives": 0,
+          "reference_negatives": 957
+        },
+        "2021-07-30": {
+          "false_positives": 469,
+          "reference_negatives": 1137
+        },
+        "2021-07-31": {
+          "false_positives": 337,
+          "reference_negatives": 723
+        }
+      },
+      "worst_false_positive_day_or_ties": [
+        "2021-07-25"
+      ],
+      "worst_day_share_of_false_positives": {
+        "numerator": 1145,
+        "denominator": 1955
+      },
+      "leave_one_day_out_min_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-25",
+          "numerator": 810,
+          "denominator": 6710
+        }
+      ],
+      "leave_one_day_out_max_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-26",
+          "numerator": 1951,
+          "denominator": 6460
+        }
+      ]
+    },
+    "TRAIN_MEDIAN_REFERENCE": {
+      "false_positives": 0,
+      "reference_negatives": 7900,
+      "false_positive_days": [],
+      "daily_false_positives": {
+        "2021-07-25": {
+          "false_positives": 0,
+          "reference_negatives": 1190
+        },
+        "2021-07-26": {
+          "false_positives": 0,
+          "reference_negatives": 1440
+        },
+        "2021-07-27": {
+          "false_positives": 0,
+          "reference_negatives": 1199
+        },
+        "2021-07-28": {
+          "false_positives": 0,
+          "reference_negatives": 1254
+        },
+        "2021-07-29": {
+          "false_positives": 0,
+          "reference_negatives": 957
+        },
+        "2021-07-30": {
+          "false_positives": 0,
+          "reference_negatives": 1137
+        },
+        "2021-07-31": {
+          "false_positives": 0,
+          "reference_negatives": 723
+        }
+      },
+      "worst_false_positive_day_or_ties": [],
+      "worst_day_share_of_false_positives": null,
+      "leave_one_day_out_min_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-25",
+          "numerator": 0,
+          "denominator": 6710
+        },
+        {
+          "excluded_day": "2021-07-26",
+          "numerator": 0,
+          "denominator": 6460
+        },
+        {
+          "excluded_day": "2021-07-27",
+          "numerator": 0,
+          "denominator": 6701
+        },
+        {
+          "excluded_day": "2021-07-28",
+          "numerator": 0,
+          "denominator": 6646
+        },
+        {
+          "excluded_day": "2021-07-29",
+          "numerator": 0,
+          "denominator": 6943
+        },
+        {
+          "excluded_day": "2021-07-30",
+          "numerator": 0,
+          "denominator": 6763
+        },
+        {
+          "excluded_day": "2021-07-31",
+          "numerator": 0,
+          "denominator": 7177
+        }
+      ],
+      "leave_one_day_out_max_false_positive_rate": [
+        {
+          "excluded_day": "2021-07-25",
+          "numerator": 0,
+          "denominator": 6710
+        },
+        {
+          "excluded_day": "2021-07-26",
+          "numerator": 0,
+          "denominator": 6460
+        },
+        {
+          "excluded_day": "2021-07-27",
+          "numerator": 0,
+          "denominator": 6701
+        },
+        {
+          "excluded_day": "2021-07-28",
+          "numerator": 0,
+          "denominator": 6646
+        },
+        {
+          "excluded_day": "2021-07-29",
+          "numerator": 0,
+          "denominator": 6943
+        },
+        {
+          "excluded_day": "2021-07-30",
+          "numerator": 0,
+          "denominator": 6763
+        },
+        {
+          "excluded_day": "2021-07-31",
+          "numerator": 0,
+          "denominator": 7177
+        }
+      ]
+    }
+  },
+  "independent_tank_exposures": false,
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "threshold_is_safety_limit": false,
+  "limitations": "Exact arithmetic on seven externally measured calendar-day clusters. Deleting a day is a sensitivity diagnostic, not a new test, confidence interval, calibration uncertainty, prospective Tank validation or certified alarm rate. A zero-alert baseline can have zero false positives while missing every reference positive."
+}

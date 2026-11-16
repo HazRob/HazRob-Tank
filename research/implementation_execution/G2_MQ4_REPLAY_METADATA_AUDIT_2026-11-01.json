@@ -1,0 +1,22 @@
+{
+  "schema": "hazrob.g2.mq4-replay-metadata-regressions.v1",
+  "date": "2026-11-01",
+  "scope": "research-only synthetic ZIP/CSV",
+  "implementation": "research/implementation_execution/g2_mq4_source_row_authentication.py",
+  "tests": "research/implementation_execution/test_g2_mq4_source_row_authentication.py",
+  "new_test_cases": 12,
+  "source_archive_replayed_in_ci": false,
+  "independent_physical_evidence_records": 0,
+  "expected_scientific_status": {
+    "g2_pass_candidates": 0,
+    "g2_blocked": 80,
+    "source_blocked": 14,
+    "g2_qualified": false,
+    "g3_qualified": false
+  },
+  "ci_verification": "passed_on_implementation_commit",
+  "ci_test_count": 948,
+  "ci_run_id": 41301555969,
+  "ci_run_url": "https://github.com/HazRob/HazRob-Tank/actions/runs/41301555969",
+  "ci_commit": "1b1c1f71e22de82d4b40d5f9b0d71ee7f7340bd3"
+}

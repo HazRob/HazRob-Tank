@@ -1,0 +1,2603 @@
+{
+  "schema_version": "hazrob.tank.chemcore80.evidence-gap-crosswalk.v1",
+  "date": "2026-10-21",
+  "scope": "TANK_RESEARCH_ONLY_NOT_PRODUCTION",
+  "source": {
+    "repository": "HazRob/build-harness",
+    "ref": "main",
+    "path": "library/reference-bank/external-research/master_catalog.json",
+    "sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+    "record_count": 80
+  },
+  "techniques": {
+    "repository": "HazRob/HazRob-Tank",
+    "ref": "main",
+    "progress_path": "research/PROGRESS_80.json",
+    "progress_sha": "0919307d46b352a887f2fdbc5e94c752a74b16d0",
+    "definition_path": "research/MASTER_PLAN.md",
+    "definition_sha": "128830333f91e820f273549f67f47f66c1e28193",
+    "count": 80
+  },
+  "decisions": {
+    "REDESIGN_RESEARCH": 23,
+    "UPGRADE_IMPL": 52,
+    "RETAIN_AND_VALIDATE": 5
+  },
+  "priorities": {
+    "P0": 29,
+    "P1": 42,
+    "P2": 9
+  },
+  "evidence_status_summary": {
+    "g1_software_prototypes": 80,
+    "g2_reference_reviewed": 80,
+    "g2_external_usable_or_proxy": 49,
+    "g2_blocked": 29,
+    "g2_theory_only": 2,
+    "g3_real_Tank_device": 0
+  },
+  "governance": [
+    "This is a source-to-technique gap analysis, not new experimental validation or a code implementation",
+    "No SOURCE_CATALOG bibliographic record count implies independent exposures or MQ instrument qualification",
+    "Each mapping is research relevance, not verified feature parity with the original publication",
+    "Candidate source has raw-file and license status from central registry as of source SHA",
+    "Production ChemCore, HR069 and Tank firmware/APK remain untouched"
+  ],
+  "candidate_unassigned_methods": [
+    {
+      "id": "CAND-NEW-A",
+      "name": "Selective intake, sorbent and separation hardware engineering",
+      "status": "PROPOSE_RESEARCH_WORKPACKAGE_NOT_TECHNIQUE_81",
+      "rationale": "Experimental breakthrough/adsorption and physical isolation potentially distinct from 01.6 and 08.11; needs real bench hardware, target retention & time-cost proof.",
+      "source_refs": [
+        "SYS-18",
+        "SYS-19",
+        "SYS-21"
+      ],
+      "existing_scope": [
+        "01.6",
+        "08.11",
+        "09.4"
+      ]
+    },
+    {
+      "id": "CAND-NEW-B",
+      "name": "Dynamic inverse response/deconvolution with physical time constants",
+      "status": "SUBTECHNIQUE_BEFORE_CONSIDERING_NEW_ID",
+      "rationale": "Full temporal blind source and sensor lag removal not explicitly named as standalone item but fits 02.4/08.6/09.5; assess measurable additional gain.",
+      "source_refs": [
+        "SYS-17",
+        "SYS-11"
+      ],
+      "existing_scope": [
+        "02.4",
+        "08.6",
+        "09.5"
+      ]
+    },
+    {
+      "id": "CAND-NEW-C",
+      "name": "PubChem QSPR descriptor-to-MQ forward and inverse hypothesis ranking",
+      "status": "SUBTECHNIQUE_BEFORE_CONSIDERING_NEW_ID",
+      "rationale": "Existing 04.9 and 06.5 cover candidate-wise forward/unknown inference but existing implementation requires known concentration and MQ-specific training is missing.",
+      "source_refs": [
+        "QSPR-REF-01",
+        "QSPR-REF-03",
+        "QSPR-REF-04",
+        "QSPR-REF-10"
+      ],
+      "existing_scope": [
+        "04.9",
+        "03.8",
+        "06.5",
+        "05.7"
+      ]
+    },
+    {
+      "id": "CAND-NEW-D",
+      "name": "Orthogonal drift signal correction / compound-specific baseline segmentation",
+      "status": "SUBTECHNIQUE_BEFORE_CONSIDERING_NEW_ID",
+      "rationale": "Should be benchmarked as 07.5/02.4 ablation, not counted as entirely independent innovation.",
+      "source_refs": [
+        "SYS-24",
+        "CN-RSCH-01"
+      ],
+      "existing_scope": [
+        "07.5",
+        "02.4"
+      ]
+    }
+  ],
+  "matrix": [
+    {
+      "id": "01.1",
+      "name": "ADC to Rs",
+      "stage": "01",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "تثبيت RL/Vc/ADC والمقسم ونطاق الجهد والتحويل الأمثل وتوحيد Ω قبل أي Rs؛ اختبارات دوائر حساسات منفردة",
+      "evidence_refs": [
+        "CN-MQ-01",
+        "CN-MQ-04",
+        "R0-PEER-01",
+        "TOOL-MQ-02"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "CN-MQ-01",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "CN-MQ-04",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "TOOL-MQ-02",
+          "raw_status": "README_INSPECTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "01.2",
+      "name": "R0 calibration",
+      "stage": "01",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "R0 لكل جهاز/طور سخان/غاز مرجعي بوحدات ونسخ معايرة؛ استبعاد المتوسطات الخارجية وتدقيق تعارضات MQ7 وMQ8",
+      "evidence_refs": [
+        "R0-PEER-01",
+        "R0-PEER-02",
+        "R0-PEER-03",
+        "R0-PEER-04",
+        "R0-PEER-05",
+        "R0-PEER-06",
+        "R0-PEER-07",
+        "R0-PEER-08"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "R0-PEER-02",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "R0-PEER-03",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "R0-PEER-04",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "R0-PEER-05",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "R0-PEER-06",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "R0-PEER-07",
+          "raw_status": "EXCERPT_ONLY_ORIGINAL_PDF_NOT_FULLY_AUDITED"
+        },
+        {
+          "ref": "R0-PEER-08",
+          "raw_status": "SELF_REPORTED_PROJECT_NO_RAW_AUDIT"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "01.3",
+      "name": "Sensitivity curves",
+      "stage": "01",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "منحنى مع تعريف R0 والنطاق والغاز والطراز والاعتماد على الهواء؛ 43 منحنى رسوم مصانع ليست 43 معايرة حقيقية",
+      "evidence_refs": [
+        "TOOL-MQ-01",
+        "CN-MQ-01",
+        "CN-MQ-02",
+        "CN-MQ-03",
+        "CN-MQ-04"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "TOOL-MQ-01",
+          "raw_status": "CODE_AND_METADATA_INSPECTED"
+        },
+        {
+          "ref": "CN-MQ-01",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "CN-MQ-02",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "CN-MQ-03",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "CN-MQ-04",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "01.4",
+      "name": "Heater cycles",
+      "stage": "01",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "تمييز تسجيل HIGH/LOW من تشغيل السخان؛ رفض PWM تجريبي غير موثق لـMQ7/MQ9 وتجهيز تجارب آمنة وفق المصنع",
+      "evidence_refs": [
+        "CN-MQ-01",
+        "SYS-05",
+        "SYS-14",
+        "SYS-20"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "CN-MQ-01",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "SYS-05",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-14",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-20",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "01.5",
+      "name": "Environmental correction",
+      "stage": "01",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "تعويض T/RH مشروط بكل طراز وغاز/تركيز مع منع تسرب بيانات الجهاز؛ فصل الرطوبة عن الانجراف",
+      "evidence_refs": [
+        "MQ-EXT-02",
+        "MQ-EXT-05",
+        "SYS-04",
+        "SYS-24"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-02",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-05",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-24",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "01.6",
+      "name": "Signal quality",
+      "stage": "01",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "تحويل جودة الإشارة إلى نموذج تدفق/مكوث/تطهير/انحياز سحب الهواء وحساس معيب وطبقة مرشح فيزيائي مشروطة",
+      "evidence_refs": [
+        "SYS-11",
+        "SYS-18",
+        "SYS-22",
+        "SYS-23",
+        "CN-RSCH-02"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-11",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-18",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-22",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-23",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-02",
+          "raw_status": "RAW_EXPERIMENT_NOT_AVAILABLE_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "01.7",
+      "name": "Drift monitoring",
+      "stage": "01",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "فصل استقرار مقاومة الهواء والانجراف المستمر والتعافي من أثر التعرض مع تسجيل صحة كل حساس",
+      "evidence_refs": [
+        "UCI-EXT-270",
+        "MOS-EXT-17",
+        "JP-FIG-02"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        },
+        {
+          "ref": "MOS-EXT-17",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "JP-FIG-02",
+          "raw_status": "WEB_FIGURES_NOT_DOWNLOADABLE_NUMERIC_TIME_SERIES"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "02.1",
+      "name": "Filtering",
+      "stage": "02",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "فلتر سببي لحظي بأثر زمن معلن يحفظ قمم الإشارة وعدم استقرار السخان ولا ينظر إلى المستقبل",
+      "evidence_refs": [
+        "MQ-EXT-10",
+        "MQ-EXT-02",
+        "SYS-17"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-02",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "SYS-17",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "02.2",
+      "name": "Scaling",
+      "stage": "02",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "توحيد قياس واعتماد وحدات Rs/R0 وADC حسب المصدر وتحجيم fitted على train فقط",
+      "evidence_refs": [
+        "MQ-EXT-03",
+        "MQ-EXT-15",
+        "SYS-11"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "SYS-11",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "02.3",
+      "name": "Static features",
+      "stage": "02",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "ميز peak/baseline/recovery وقناع missing وحالة المضخة والطور لكل سجل لا لكل صف",
+      "evidence_refs": [
+        "MQ-EXT-10",
+        "MQ-EXT-11",
+        "JP-FIG-02"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "JP-FIG-02",
+          "raw_status": "WEB_FIGURES_NOT_DOWNLOADABLE_NUMERIC_TIME_SERIES"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "02.4",
+      "name": "Temporal features",
+      "stage": "02",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "إضافة Segmental Average Differentiation الصينية وdynamic-deconvolution كتجارب مسجلة مقابل خصائص t10/t90/AUC الحالية",
+      "evidence_refs": [
+        "CN-RSCH-01",
+        "SYS-17",
+        "JP-FIG-02",
+        "MQ-EXT-10"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "CN-RSCH-01",
+          "raw_status": "NO_DOWNLOADABLE_RECORDS_VERIFIED"
+        },
+        {
+          "ref": "SYS-17",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "JP-FIG-02",
+          "raw_status": "WEB_FIGURES_NOT_DOWNLOADABLE_NUMERIC_TIME_SERIES"
+        },
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "02.5",
+      "name": "Fingerprints",
+      "stage": "02",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "تصنيف fingerprint إلى مادة نقية/خليط/منتج/نشاط ثم محاذاة القنوات وقياس التكرار والاستقلال الفعلي",
+      "evidence_refs": [
+        "MQ-EXT-03",
+        "MQ-EXT-10",
+        "MQ-EXT-11",
+        "MQ-EXT-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_INCOMPATIBLE_SENSOR_SCHEMA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "02.6",
+      "name": "3D/4D features",
+      "stage": "02",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "3D/4D ليست برهاناً بمجرد تصوير منحنيات؛ استخراج response–time–RH–concentration بتجارب متعددة العوامل",
+      "evidence_refs": [
+        "TOOL-MQ-01",
+        "MQ-EXT-10",
+        "MOS-EXT-16"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "TOOL-MQ-01",
+          "raw_status": "CODE_AND_METADATA_INSPECTED"
+        },
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MOS-EXT-16",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXTERNAL_NUMERIC_ONLY_INPUT_SCHEMA_NONCOMPLIANT",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "02.7",
+      "name": "Feature selection",
+      "stage": "02",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "Nested grouped feature-selection وأثر إسقاط الحساسات لاختيار مصفوفة قوية بدلاً من معيار accuracy واحد",
+      "evidence_refs": [
+        "SYS-01",
+        "SYS-04",
+        "CN-RSCH-02"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-02",
+          "raw_status": "RAW_EXPERIMENT_NOT_AVAILABLE_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "02.8",
+      "name": "Provenance schema",
+      "stage": "02",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "فرض بيانات provenance source/licence/DOI/CAS وحقيقة ppm وR0/RL/طور/جلسة ونوع vector والفصل بين source_raw وderived",
+      "evidence_refs": [
+        "MQ-EXT-03",
+        "MQ-EXT-15",
+        "UCI-EXT-270",
+        "R0-PEER-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        },
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "03.1",
+      "name": "PCA",
+      "stage": "03",
+      "decision": "RETAIN_AND_VALIDATE",
+      "priority": "P1",
+      "action": "PCA على مجموعات مختبرة وتفسير loadings مع قياس تأثير قيود الجهاز والبلانك",
+      "evidence_refs": [
+        "CN-PAT-01",
+        "SYS-06",
+        "MQ-EXT-11"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "CN-PAT-01",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        },
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "03.2",
+      "name": "Similarity",
+      "stage": "03",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "تشابه كيميائي مشروط باستجابة المصدر والظروف وترتيب الحساسات بدل similarity ثابت عبر المصفوفات",
+      "evidence_refs": [
+        "MQ-EXT-03",
+        "MQ-EXT-11",
+        "QSPR-REF-09"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "QSPR-REF-09",
+          "raw_status": "RAW_NOT_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "03.3",
+      "name": "Class overlap",
+      "stage": "03",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "قياس degeneracy والقدرة على الفصل بين عائلات كيميائية متشابهة عند تراكيز مجهولة",
+      "evidence_refs": [
+        "QSPR-REF-09",
+        "SYS-07",
+        "MQ-EXT-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "QSPR-REF-09",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "03.4",
+      "name": "LDA/PLS-DA",
+      "stage": "03",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "LDA/PLS-DA مدربان فعلياً؛ nested holdout للمركب والجهاز والتركيز ومقارنة baseline لا مجرد embedding",
+      "evidence_refs": [
+        "CN-PAT-01",
+        "SYS-06",
+        "MQ-EXT-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "CN-PAT-01",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        },
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "03.5",
+      "name": "Sensor importance",
+      "stage": "03",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "أهمية كل حساس عبر drop-column على جلسات مستقلة وليس تفسير SHAP وحيد",
+      "evidence_refs": [
+        "SYS-01",
+        "SYS-04",
+        "CN-RSCH-02"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-02",
+          "raw_status": "RAW_EXPERIMENT_NOT_AVAILABLE_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "03.6",
+      "name": "Sensor subsets",
+      "stage": "03",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "اختيار أقل عدد حساسات مع ثبات النتائج تحت الرطوبة/التركيز وزمن الاستجابة",
+      "evidence_refs": [
+        "SYS-01",
+        "SYS-04",
+        "MQ-EXT-11"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXTERNAL_REFERENCE_EVALUATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "03.7",
+      "name": "Concentration confounding",
+      "stage": "03",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "اختبار الخلط بين هوية الغاز وشدة التعرض بفصل تركيزات المرجع وحجبها والتمييز بين liquid v/v وgas ppm",
+      "evidence_refs": [
+        "MQ-EXT-10",
+        "MQ-EXT-15",
+        "UCI-EXT-270"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "03.8",
+      "name": "Identifiability limits",
+      "stage": "03",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "إضافة تشخيص رتبة Jacobian/condition number وبصمة الالتباس قبل التصنيف أو الفصل الكمي وإخراج NON_IDENTIFIABLE",
+      "evidence_refs": [
+        "SYS-07",
+        "SYS-08",
+        "SYS-09",
+        "QSPR-REF-09"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-08",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-09",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "QSPR-REF-09",
+          "raw_status": "RAW_NOT_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXTERNAL_REFERENCE_DIAGNOSTIC",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.1",
+      "name": "Curve matching",
+      "stage": "04",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "منحنيات وحساسات من نفس المصنع مع نقاط تحقق فيزيائي؛ لا تصنيف اعتماداً على ملاءمة ستة منحنيات منشأها الرسم نفسه",
+      "evidence_refs": [
+        "TOOL-MQ-01",
+        "CN-MQ-01",
+        "R0-PEER-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "TOOL-MQ-01",
+          "raw_status": "CODE_AND_METADATA_INSPECTED"
+        },
+        {
+          "ref": "CN-MQ-01",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.2",
+      "name": "Fingerprint matching",
+      "stage": "04",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "فصل بصمات الحالات المركبة عن الغاز النقي؛ دعم masked channels/unknown/valid-domain",
+      "evidence_refs": [
+        "MQ-EXT-03",
+        "MQ-EXT-11",
+        "MQ-EXT-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.3",
+      "name": "KNN",
+      "stage": "04",
+      "decision": "RETAIN_AND_VALIDATE",
+      "priority": "P2",
+      "action": "KNN baseline ثابت مع group splits وضبط k على التدريب فقط",
+      "evidence_refs": [
+        "SYS-06",
+        "MQ-EXT-03"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.4",
+      "name": "Logistic regression",
+      "stage": "04",
+      "decision": "RETAIN_AND_VALIDATE",
+      "priority": "P2",
+      "action": "Logistic baseline وتحقق probability calibration مع حجب تركيزات مماثلة",
+      "evidence_refs": [
+        "MQ-EXT-15",
+        "UCI-EXT-270"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.5",
+      "name": "SVM",
+      "stage": "04",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "SVM موجود في benchmark؛ قابلية نقل نفس المعالجة إلى technique module قبل اعتماده، مع مقارنة خطي/RBF",
+      "evidence_refs": [
+        "SYS-01",
+        "CN-RSCH-02",
+        "MQ-EXT-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-02",
+          "raw_status": "RAW_EXPERIMENT_NOT_AVAILABLE_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.6",
+      "name": "Random Forest",
+      "stage": "04",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "RF وExtraTrees ومقارنة أهمية القنوات مع عدم تكرار نفس UCI322 كمصدر جديد",
+      "evidence_refs": [
+        "SYS-13",
+        "SYS-04"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-13",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.7",
+      "name": "XGBoost",
+      "stage": "04",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "XGBoost حقيقي في benchmark؛ تحقق source-heldout ونسخ النموذج وإخفاقاته قبل نقله إلى تنفيذ معتمد",
+      "evidence_refs": [
+        "SYS-01",
+        "MQ-EXT-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.8",
+      "name": "MLP",
+      "stage": "04",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "BP/RBF وMLP متعدد المخارج مع تتبع leakage ومصدر المنشأة والتحديات من الصين",
+      "evidence_refs": [
+        "CN-RSCH-01",
+        "CN-RSCH-03",
+        "CN-RSCH-04"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "CN-RSCH-01",
+          "raw_status": "NO_DOWNLOADABLE_RECORDS_VERIFIED"
+        },
+        {
+          "ref": "CN-RSCH-03",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        },
+        {
+          "ref": "CN-RSCH-04",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.9",
+      "name": "Physics+ML",
+      "stage": "04",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "Physics+ML غير مكتمل للاستدلال المجهول: forward molecular candidates/Rs-response/unknown c + QSPR PubChem وجسر أجهزة المرجع",
+      "evidence_refs": [
+        "QSPR-REF-01",
+        "QSPR-REF-03",
+        "QSPR-REF-04",
+        "QSPR-REF-05",
+        "QSPR-REF-10",
+        "SYS-07"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "QSPR-REF-01",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "QSPR-REF-03",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "QSPR-REF-04",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "QSPR-REF-05",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "QSPR-REF-10",
+          "raw_status": "OPEN_REFERENCE_NOT_RAW_MQ_DATA"
+        },
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "04.10",
+      "name": "Benchmarking",
+      "stage": "04",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "بروتوكول benchmark مشترك لبيانات المصدر والبلانك والجلسة/الجهاز والتراكيز مع بيانات عدم الدلالة الإحصائية",
+      "evidence_refs": [
+        "MQ-EXT-15",
+        "UCI-EXT-270",
+        "SYS-10",
+        "SYS-11"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        },
+        {
+          "ref": "SYS-10",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-11",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "EXTERNAL_REFERENCE_BENCHMARK",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "05.1",
+      "name": "Single-sensor calibration",
+      "stage": "05",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "Single-sensor ppm مشروط بالغاز/R0 ومعايرة مستقلة؛ يمنع تحويل ADC أو رسوم المصنع إلى حد تعرض",
+      "evidence_refs": [
+        "CN-MQ-01",
+        "CN-MQ-04",
+        "R0-PEER-01",
+        "TOOL-MQ-02"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "CN-MQ-01",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "CN-MQ-04",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        },
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "TOOL-MQ-02",
+          "raw_status": "README_INSPECTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_INDEPENDENT_PHYSICAL_CALIBRATION",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "05.2",
+      "name": "Multipoint calibration",
+      "stage": "05",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "معايرة متعددة نقاط بمرجع ppb/ppm معلوم وفصل الصفر/البلانك وإعادة الإنتاج بين أيام/الأجهزة",
+      "evidence_refs": [
+        "MQ-EXT-15",
+        "UCI-EXT-270",
+        "MOS-EXT-16"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        },
+        {
+          "ref": "MOS-EXT-16",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "05.3",
+      "name": "Nonlinear regression",
+      "stage": "05",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "مقارنة nonlinear inverse curve/log cross terms ومعايير max residual/valid domain/ill-conditioning",
+      "evidence_refs": [
+        "SYS-07",
+        "SYS-08",
+        "TOOL-MQ-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-08",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "TOOL-MQ-01",
+          "raw_status": "CODE_AND_METADATA_INSPECTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "05.4",
+      "name": "Multisensor regression",
+      "stage": "05",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "Joint regression تقدّر ppm لكل مركب بمشاهدات خلائط مرجعية، لا coefficients غير معايرة أو نقاط سائلة",
+      "evidence_refs": [
+        "SYS-06",
+        "SYS-07",
+        "SYS-10",
+        "CN-RSCH-04"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-10",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-04",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "05.5",
+      "name": "PLS regression",
+      "stage": "05",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "PLS/PLS2 مع validation لكل مكون وfeature scaling على التدريب فقط",
+      "evidence_refs": [
+        "SYS-06",
+        "SYS-11",
+        "CN-PAT-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-11",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-PAT-01",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "05.6",
+      "name": "Tree regression",
+      "stage": "05",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "Multioutput RF/XGBoost مع quantile intervals وتقييم linearly vs nonlinear interactions",
+      "evidence_refs": [
+        "SYS-04",
+        "SYS-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-15",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "05.7",
+      "name": "Identity-conditional estimates",
+      "stage": "05",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "تقدير التركيز بعد احتمال الهوية/الخليط، مع marginalization على احتمالات المرشحين بدل تمرير true gas label",
+      "evidence_refs": [
+        "QSPR-REF-03",
+        "SYS-03",
+        "SYS-07"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "QSPR-REF-03",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "SYS-03",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "05.8",
+      "name": "LOD/LOQ",
+      "stage": "05",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "LOD/LOQ عتبات blank/reference detection وuncertainty لا أدلة UCI source threshold المبدئية",
+      "evidence_refs": [
+        "MQ-EXT-15",
+        "R0-PEER-01",
+        "CN-MQ-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "CN-MQ-01",
+          "raw_status": "DATASHEET_SPEC_NOT_EXPERIMENTAL_RAW"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_NUMERIC_PROXY_NOT_PHYSICAL_LOD_LOQ",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "05.9",
+      "name": "Unseen concentrations",
+      "stage": "05",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "حجب تراكيز كاملة واختبار الاستقراء وتقرير OUT_OF_CALIBRATION بدلاً من رقم ppm زائف",
+      "evidence_refs": [
+        "UCI-EXT-270",
+        "MQ-EXT-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PROTOTYPE",
+      "source_G2_status": "METRIC_INTEGRATION_ONLY",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "06.1",
+      "name": "Evidence fusion",
+      "stage": "06",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "Evidence fusion مع نموذج ترابط الحساسات والنماذج لمنع مضاعفة evidence ذات المصدر الواحد",
+      "evidence_refs": [
+        "SYS-06",
+        "QSPR-REF-03",
+        "TOOL-MQ-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "QSPR-REF-03",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "TOOL-MQ-01",
+          "raw_status": "CODE_AND_METADATA_INSPECTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "06.2",
+      "name": "Bayesian inference",
+      "stage": "06",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "Bayesian joint likelihood calibrated by environmental condition and confounders؛ prior لا يصبح evidence مضاعف",
+      "evidence_refs": [
+        "QSPR-REF-03",
+        "SYS-07"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "QSPR-REF-03",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "06.3",
+      "name": "Probability calibration",
+      "stage": "06",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "Platt/isotonic/temperature scaling على مجموعة calibration منفصلة وECE/Brier/NLL",
+      "evidence_refs": [
+        "MQ-EXT-15",
+        "UCI-EXT-270"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_REFERENCE_CALIBRATION_EXPERIMENT",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "06.4",
+      "name": "Conformal prediction",
+      "stage": "06",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "Conformal set مع توضيح exchangeability coverage under drift وعدم ضمان التغطية الميدانية",
+      "evidence_refs": [
+        "UCI-EXT-270",
+        "MOS-EXT-17"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        },
+        {
+          "ref": "MOS-EXT-17",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "06.5",
+      "name": "Open-set recognition",
+      "stage": "06",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "Reject gas unseen, overlapping chemistry and novel complex products؛ calibrate threshold on gas-heldout only",
+      "evidence_refs": [
+        "QSPR-REF-03",
+        "QSPR-REF-09",
+        "MQ-EXT-11"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "QSPR-REF-03",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "QSPR-REF-09",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_REFERENCE_OPEN_SET_EXPERIMENT",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "06.6",
+      "name": "OOD detection",
+      "stage": "06",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "كشف OOD/unknown physical fault separate; heldout temp,concentration,device and gas",
+      "evidence_refs": [
+        "UCI-EXT-270",
+        "MOS-EXT-17",
+        "MQ-EXT-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        },
+        {
+          "ref": "MOS-EXT-17",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "06.7",
+      "name": "Evidence conflicts",
+      "stage": "06",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "conflicts when concentration/temperature/heater invalid; evidence negative is not independent zero detection",
+      "evidence_refs": [
+        "R0-PEER-01",
+        "SYS-04",
+        "JP-FIG-02"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "JP-FIG-02",
+          "raw_status": "WEB_FIGURES_NOT_DOWNLOADABLE_NUMERIC_TIME_SERIES"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "06.8",
+      "name": "SHAP",
+      "stage": "06",
+      "decision": "RETAIN_AND_VALIDATE",
+      "priority": "P2",
+      "action": "SHAP interpretability audit only, not scientific proof; reference sampling and correlated features caveat",
+      "evidence_refs": [
+        "QSPR-REF-05",
+        "QSPR-REF-07"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "QSPR-REF-05",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "QSPR-REF-07",
+          "raw_status": "RAW_NOT_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "06.9",
+      "name": "Abstention",
+      "stage": "06",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P0",
+      "action": "abstention on conditional risk, coverage, missing RL/R0, and failure/out-of-domain cases",
+      "evidence_refs": [
+        "SYS-07",
+        "QSPR-REF-09"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "QSPR-REF-09",
+          "raw_status": "RAW_NOT_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.1",
+      "name": "Cross-session tests",
+      "stage": "07",
+      "decision": "RETAIN_AND_VALIDATE",
+      "priority": "P1",
+      "action": "Group whole session / day, avoid random split of temporal rows across training-test",
+      "evidence_refs": [
+        "MQ-EXT-02",
+        "MQ-EXT-10",
+        "MQ-EXT-11"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-02",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.2",
+      "name": "Cross-device tests",
+      "stage": "07",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "cross-device checks need physical sensor_instance_id; distinct experimental unit not batch identity or duplicate file",
+      "evidence_refs": [
+        "MQ-EXT-12",
+        "MOS-EXT-18",
+        "UCI-EXT-270"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-12",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MOS-EXT-18",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_ONE_PHYSICAL_DEVICE",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.3",
+      "name": "Cross-concentration tests",
+      "stage": "07",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "leave concentration groups whole + low concentration below detection interpretability",
+      "evidence_refs": [
+        "MQ-EXT-15",
+        "UCI-EXT-270"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_REFERENCE_SPLIT_VERIFIED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.4",
+      "name": "Drift detection",
+      "stage": "07",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "online drift alert with blank/reference and delayed response monitor, not re-training during hazardous exposure",
+      "evidence_refs": [
+        "MOS-EXT-17",
+        "UCI-EXT-270"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MOS-EXT-17",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.5",
+      "name": "Drift compensation",
+      "stage": "07",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "OSC/orthogonal correction and physical reference drift; evaluate negative transfer in chronological batches",
+      "evidence_refs": [
+        "SYS-24",
+        "UCI-EXT-270",
+        "MOS-EXT-17"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-24",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        },
+        {
+          "ref": "MOS-EXT-17",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.6",
+      "name": "Domain adaptation",
+      "stage": "07",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "domain adaptation conditional on MQ vs TGS and humidity/device, never blind transfer of quantitative R0",
+      "evidence_refs": [
+        "MOS-EXT-18",
+        "UCI-EXT-270"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MOS-EXT-18",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.7",
+      "name": "Transfer learning",
+      "stage": "07",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "transfer learning with sample efficiency and leave-device/source evaluation; report negative transfer",
+      "evidence_refs": [
+        "MOS-EXT-18",
+        "JP-FIG-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MOS-EXT-18",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "JP-FIG-01",
+          "raw_status": "MANUFACTURER_SPEC_NOT_MQ_RAW"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.8",
+      "name": "Active learning/DoE",
+      "stage": "07",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P1",
+      "action": "active learning/DoE as experiment-loop selecting gas, concentration, humidity, run and standard result before model update",
+      "evidence_refs": [
+        "CN-RSCH-02",
+        "SYS-04",
+        "MQ-EXT-15"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "CN-RSCH-02",
+          "raw_status": "RAW_EXPERIMENT_NOT_AVAILABLE_VERIFIED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.9",
+      "name": "Continual learning",
+      "stage": "07",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P2",
+      "action": "continual model only after external verification + drift audit; lock baseline and allow rollback",
+      "evidence_refs": [
+        "MOS-EXT-17",
+        "UCI-EXT-270"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MOS-EXT-17",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ON_REAL_EXTERNAL_ARRAY_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "07.10",
+      "name": "Resource profiling",
+      "stage": "07",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "benchmark CPU/memory/power on actual Android and MCU; NN training stays lab; TinyML only when measurable",
+      "evidence_refs": [
+        "SYS-20",
+        "TOOL-MQ-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-20",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "TOOL-MQ-01",
+          "raw_status": "CODE_AND_METADATA_INSPECTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXECUTED_ANALYTICAL_ONLY_NOT_TANK_PROFILE",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.1",
+      "name": "1D-CNN",
+      "stage": "08",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "CNN Conv1d trained benchmark -> versioned module parity; feature attribution and group holdout",
+      "evidence_refs": [
+        "SYS-01",
+        "MQ-EXT-10"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.2",
+      "name": "TCN",
+      "stage": "08",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "TCN strictly causal, with future/purge masks and heldout experimental sessions",
+      "evidence_refs": [
+        "SYS-17",
+        "MQ-EXT-10"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-17",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.3",
+      "name": "LSTM/GRU",
+      "stage": "08",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "GRU/LSTM separately with correct masks and time series; avoid tuning on final UCI benchmark",
+      "evidence_refs": [
+        "SYS-01",
+        "CN-PAT-03",
+        "MQ-EXT-12"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-PAT-03",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-12",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.4",
+      "name": "GNN",
+      "stage": "08",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P2",
+      "action": "GNN learned topology must improve independent heldout results over identity graph; otherwise deprioritize",
+      "evidence_refs": [
+        "SYS-01",
+        "MOS-EXT-18"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MOS-EXT-18",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.5",
+      "name": "Temporal ensemble",
+      "stage": "08",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "temporal ensemble prevent reuse of correlated model outputs as independent confidence",
+      "evidence_refs": [
+        "SYS-17",
+        "CN-RSCH-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-17",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-01",
+          "raw_status": "NO_DOWNLOADABLE_RECORDS_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.6",
+      "name": "Simulation",
+      "stage": "08",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P1",
+      "action": "first-order adsorption/kinetic simulator conditioned on humidity/heater/chamber airflow; synthetic tests ≠ validation",
+      "evidence_refs": [
+        "SYS-17",
+        "SYS-23",
+        "TOOL-MQ-01"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-17",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-23",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "TOOL-MQ-01",
+          "raw_status": "CODE_AND_METADATA_INSPECTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "SYNTHETIC_ONLY_THEORETICAL",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.7",
+      "name": "Sim-to-real",
+      "stage": "08",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P1",
+      "action": "simulate-to-real requires matched Rs/R0, heater trace, chamber, gas reference, and source provenance",
+      "evidence_refs": [
+        "SYS-17",
+        "SYS-05",
+        "MOS-EXT-16"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-17",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-05",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MOS-EXT-16",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "NUMERIC_ONLY_NONCOMPLIANT_PHYSICAL_MODEL",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.8",
+      "name": "Mixture detection",
+      "stage": "08",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "simple fingerprint residual is ambiguity flag, not mixture proof; compare against unknown gas, faults and drift with heldout mixtures",
+      "evidence_refs": [
+        "SYS-02",
+        "SYS-11",
+        "SYS-12",
+        "SYS-13"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-02",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-11",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-12",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-13",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.9",
+      "name": "Unmixing",
+      "stage": "08",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "replace two-component fixed linear grid with identifiability-gated NNLS, nonlinear coupled response, MCR-ALS, sparse priors, confidence; not guaranteed physical separation",
+      "evidence_refs": [
+        "SYS-06",
+        "SYS-07",
+        "SYS-08",
+        "SYS-09",
+        "SYS-10"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-08",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-09",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-10",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.10",
+      "name": "Multi-analyte regression",
+      "stage": "08",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "multi-analyte ppm with multioutput ML and per-analyte calibration/reference chemistry, abstain on non-identifiable composition",
+      "evidence_refs": [
+        "SYS-06",
+        "SYS-10",
+        "SYS-15",
+        "CN-RSCH-04"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-10",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-15",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-04",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_NUMERIC_EXPLORATORY_NOT_CHEMICALLY_CALIBRATED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.11",
+      "name": "Interference",
+      "stage": "08",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "interference vs adsorption/filter breakthrough/compound selectivity in controlled chamber; risk physical filter removes target gas",
+      "evidence_refs": [
+        "SYS-18",
+        "SYS-19",
+        "SYS-23",
+        "SYS-04"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-18",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-19",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-23",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_REQUIRED_PHYSICAL_REFERENCE_DATA",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "08.12",
+      "name": "Complex products",
+      "stage": "08",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "complex food/wood/vegetable headspace must be classified as product not pure gas and cannot borrow ppm",
+      "evidence_refs": [
+        "MQ-EXT-01",
+        "MQ-EXT-02",
+        "MQ-EXT-11",
+        "MQ-EXT-13"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "MQ-EXT-01",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-02",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-13",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_WHOLE_PRODUCT_LABELS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "09.1",
+      "name": "Robotic olfaction",
+      "stage": "09",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P2",
+      "action": "robotic olfaction requires physical gas plume and time/location context; no claim chemical identity from pose alone",
+      "evidence_refs": [
+        "SYS-12",
+        "SYS-23"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-12",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-23",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "EXTERNAL_SIGNAL_OPERATION_NOT_CHEMICALLY_VALIDATED",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "09.2",
+      "name": "Gas mapping",
+      "stage": "09",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P2",
+      "action": "gas mapping with sensor response latency, baseline and uncertainty; pressure/flow bias",
+      "evidence_refs": [
+        "SYS-12",
+        "SYS-17"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-12",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-17",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_ROBOT_SPATIAL_SOURCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "09.3",
+      "name": "Source localization",
+      "stage": "09",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P2",
+      "action": "source localization by temporal/plume cues only with wind/reference position and independent known point source",
+      "evidence_refs": [
+        "SYS-12",
+        "SYS-23"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-12",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-23",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_ROBOT_SPATIAL_SOURCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "09.4",
+      "name": "Active sampling",
+      "stage": "09",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P1",
+      "action": "active sampling should include pump on/off, controlled purge, residence time and cost/risk, not simple waypoint rankings",
+      "evidence_refs": [
+        "SYS-11",
+        "SYS-23",
+        "CN-RSCH-02"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-11",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-23",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-02",
+          "raw_status": "RAW_EXPERIMENT_NOT_AVAILABLE_VERIFIED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "09.5",
+      "name": "Spatiotemporal fusion",
+      "stage": "09",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P1",
+      "action": "spatiotemporal fusion + deconvolution of sensor lag without confusing recovery tail with fresh gas",
+      "evidence_refs": [
+        "SYS-17",
+        "SYS-12"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-17",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-12",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "09.6",
+      "name": "Motion decisions",
+      "stage": "09",
+      "decision": "UPGRADE_IMPL",
+      "priority": "P2",
+      "action": "motion decisions require confidence gate, fail safe and separate obstacle control from chemical unverified inferences",
+      "evidence_refs": [
+        "SYS-23",
+        "SYS-12"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "SYS-23",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-12",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "10.1",
+      "name": "Negative Evidence & Sensor-Guided Exclusion",
+      "stage": "10",
+      "decision": "REDESIGN_RESEARCH",
+      "priority": "P0",
+      "action": "negative evidence: no independent sensor likelihood multiplication unless correlation tested; no absolute exclusion without calibration",
+      "evidence_refs": [
+        "QSPR-REF-09",
+        "R0-PEER-01",
+        "SYS-07"
+      ],
+      "source_status_of_evidence": [
+        {
+          "ref": "QSPR-REF-09",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        },
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        }
+      ],
+      "current_implementation_status": "PARTIAL_PROTOTYPE",
+      "source_G2_status": "BLOCKED_MISSING_PHYSICAL_TANK_REFERENCE_FIELDS",
+      "empirical_Tank_G3": "NOT_VALIDATED",
+      "deployment_status": "NOT_AUTHORIZED"
+    }
+  ]
+}

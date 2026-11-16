@@ -1,0 +1,83 @@
+{
+  "schema": "hazrob.tank.chemcore80.batch06.source-readiness.v1",
+  "date": "2026-10-23",
+  "research_branch": "research/chemcore80-central-evidence-gap-analysis-20261021",
+  "source_catalog_pinned_blob": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+  "test_run": "https://github.com/HazRob/HazRob-Tank/actions/runs/39911351493",
+  "V4_G1_software_tested_ids": [
+    "06.9",
+    "07.1",
+    "07.2",
+    "07.3",
+    "07.4",
+    "07.5",
+    "07.6",
+    "07.7",
+    "07.8",
+    "07.9"
+  ],
+  "new_shared_negative_and_positive_tests": 29,
+  "older_tests": 171,
+  "new_V4_G2_empirical_reference_claims": 0,
+  "tank_physical_g3": 0,
+  "physical_reference_blocked_per_id": {
+    "06.9": {
+      "blocking_data": "Independent calibration and final test events, known correctness and physical session IDs, source-specific risk/cost model; heldout risk not a safety guarantee",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    },
+    "07.1": {
+      "blocking_data": "True physical experiment/session identifiers from original MQ time traces (not individual time rows), independent physical exposure counts",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    },
+    "07.2": {
+      "blocking_data": "Physical device IDs and per-instance sensor serials; UCI270 acquisition batch IDs do not establish independent devices",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    },
+    "07.3": {
+      "blocking_data": "Reference gas ppm per independent concentration and session plus source traceability; 50/100/200 ppb UCI1081 MQ135 cannot validate Tank ppm",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    },
+    "07.4": {
+      "blocking_data": "Repeated matching blank gas conditions across days with same sensor, BME T/RH, MQ7/MQ9 heater trace and fan context",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    },
+    "07.5": {
+      "blocking_data": "Before/after clean blank on same channel order with matched heater/chamber/environment and independently qualified analyte recovery",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    },
+    "07.6": {
+      "blocking_data": "Separate physical source/target devices with same chemical sensor identity and traceable known gases; no blind MOS TGS-to-MQ transfer",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    },
+    "07.7": {
+      "blocking_data": "Frozen model baseline and transfer candidate predictions on genuinely independent labeled sessions/devices, repeated across gas classes",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    },
+    "07.8": {
+      "blocking_data": "Certified/controlled lab approval, calibrant gas independently measured, chamber/exposure plan and hazard review; no robot autonomous exposure",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    },
+    "07.9": {
+      "blocking_data": "Independent replay cases across gases and device sessions, human-approved ground truth and reviewed rollback/deployment procedure",
+      "real_Tank_reference_available": false,
+      "status": "NEEDS_INDEPENDENT_PHYSICAL_REFERENCE_OR_SOURCE_GROUP_AUDIT"
+    }
+  },
+  "negative_findings": [
+    "One syntax issue in 06.9 caught by CI on initial attempt; corrected and retested",
+    "Disjoint test sessions are enforced for 06.9; threshold is calibrated on separate events but not chemical-safety certified",
+    "07.5 additive blank correction is a conditional research proposal, not a guarantee under nonlinear gas adsorption",
+    "07.6 mean-shift covariate alignment may remove analyte signal; prohibited for automatic ppm transfer",
+    "07.8 is a prioritization proposal only; the software does not prepare or dispense physical gases",
+    "07.9 never modifies model weights or authorizes production deployment"
+  ]
+}

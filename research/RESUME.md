@@ -1,3 +1,25 @@
+# ChemCore80 V4 — ACTIVE RESEARCH IMPLEMENTATION CHECKPOINT (2026-10-26)
+
+**For the live 80-technique implementation, open [implementation_execution/RESUME.md](implementation_execution/RESUME.md), then [execution ledger](implementation_execution/EXECUTION_LEDGER_2026-10-21.json), [latest verified local engineering audit](implementation_execution/LOCAL_AUDIT_2026-10-26_AR.md), and [plan for all 80](implementation_execution/PLAN_80_V4.json).** Historical notes below are retained.
+
+Current state: **60/80 G1 V4 verified via prior CI**; Batch07 ten modules committed but CI blocked before steps (not 70), Batch08 two partial research modules 08.10/10.1 with synthetic local tests. **28 local cases PASS** across 08.9/08.10/10.1, exact file Git blobs verified; no current full-batch CI green. External source-eligibility G2 historical 80/80 is a different stage; **actual HazRob Tank MQ8 G3 0/80**, no recognized device ppm or chemical safety conclusions. PR [#6](https://github.com/HazRob/HazRob-Tank/pull/6) remains DRAFT. Production APK, MCU firmware, original HR069 and production ChemCore Stable untouched.
+
+---
+
+# RESEARCH BRANCH V4 CURRENT CHECKPOINT — 2026-10-21, BATCH 01 COMPLETE AT SOFTWARE G1 ONLY
+
+**Research PR:** https://github.com/HazRob/HazRob-Tank/pull/6 (draft); **branch:** `research/chemcore80-central-evidence-gap-analysis-20261021`.
+
+All **80 named techniques** have documented individual V4 work orders in `research/implementation_execution/PLAN_80_V4.json` and Arabic plan `PLAN_80_V4_AR.md` plus source-to-technique evidence crosswalk. New implementation work is separately tracked in `research/implementation_execution/EXECUTION_LEDGER_2026-10-21.json`, batch report `BATCH01_EVIDENCE_AR.md` and recovery checkpoint `RESUME.md`.
+
+**Batch01 software G1 upgrade: 10/10** (01.1..01.7,02.1..02.3), each a new research-only v2 module + independent tests, total **336 legacy+new unit tests PASS** in [ten-job CI #39545356321](https://github.com/HazRob/HazRob-Tank/actions/runs/39545356321) code SHA `420908b38fee01e3c7c4ffc1a167b6254f86fff2`. [Full engineering/plan CI #39545362103](https://github.com/HazRob/HazRob-Tank/actions/runs/39545362103) PASS. The branch's latest commit contains checkpoint documentation after the code-tested SHA; confirm newest V4 CI before edits.
+
+**Limits:** The original G1/G2 baseline of 80/80 remains unchanged. *New V2 external-source G2 evaluation has not been completed*, and measured physical Tank eight-MQ G3 remains **0/80**. No runtime integration, APK, ESP32, ESP32-CAM, original HazRob, shared ChemCore Stable activation or safety ppm validation performed.
+
+**Resume next:** begin batch02 IDs `02.4,02.5,02.6,02.7,02.8,03.1,03.2,03.3,03.4,03.5`, requiring sensor-source and whole-exposure-group provenance; run actual grouped-source experiments and record all failures separately from unit checks. Read implementation RESUME and the ledger first.
+
+---
+
 # CURRENT CHECKPOINT — 2026-10-21: EIGHT G2 UCI BATCHES COMPLETE + TRAINED ALGORITHM EXTENSION + G3 DATA READINESS
 
 **CANONICAL COUNT:** 80/80 distinct technique IDs completed G2 source-eligibility review: **49 external sensor numeric/metadata operations** (some proxy or nonphysical), **29 blocked** for missing required measured physical fields, **2 theoretical/simulated-only**. Original 80/80 G1 unit-pass baseline contains **1261 historical tests**. Four distinct UCI external datasets add **14,238 unique exposure records**: UCI1081 90 + UCI270 13,910 + UCI308 58 + UCI309 180; do not double count UCI224 or UCI309 raw/downsampled. No actual Tank 8-MQ device reference exposures ingested, so **G3 physical scientific validation 0/80**. [Canonical JSON](PROGRESS_80.json). All production APK, firmware, ChemCore and original HazRob unaffected.

@@ -1,0 +1,119 @@
+{
+  "schema": "hazrob.g2.uci1081.multichannel-measured-summary.v1",
+  "source_archive_sha256": "813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab",
+  "run_id": 40254297596,
+  "artifact_id": 12621533193,
+  "artifact_zip_sha256": "61f8509377062f18546f9a9826f984a66361b5db028b10964e1b844776777008",
+  "n_unique_exposures": 90,
+  "n_known_unique_test_exposures_reused_across_folds": 18,
+  "n_known_evaluations_per_config": 90,
+  "n_unknown_unique_exposures_per_config": 90,
+  "method": "known-only calibration, leave-one-gas-out; late baseline delta, no R0",
+  "per_config": [
+    {
+      "channels": "MQ135_ONLY",
+      "metric": "EUCLIDEAN",
+      "known_accepted": 90,
+      "known_correct_and_accepted": 43,
+      "unknown_rejected": 4,
+      "unknown_rejected_by_gas": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        0
+      ]
+    },
+    {
+      "channels": "MQ135_ONLY",
+      "metric": "MANHATTAN",
+      "known_accepted": 90,
+      "known_correct_and_accepted": 43,
+      "unknown_rejected": 4,
+      "unknown_rejected_by_gas": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        0
+      ]
+    },
+    {
+      "channels": "MQ135_MQ137_MQ138",
+      "metric": "EUCLIDEAN",
+      "known_accepted": 85,
+      "known_correct_and_accepted": 46,
+      "unknown_rejected": 9,
+      "unknown_rejected_by_gas": [
+        3,
+        0,
+        4,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "channels": "MQ135_MQ137_MQ138",
+      "metric": "MANHATTAN",
+      "known_accepted": 85,
+      "known_correct_and_accepted": 42,
+      "unknown_rejected": 13,
+      "unknown_rejected_by_gas": [
+        4,
+        2,
+        4,
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "channels": "ALL_SOURCE_10",
+      "metric": "EUCLIDEAN",
+      "known_accepted": 85,
+      "known_correct_and_accepted": 56,
+      "unknown_rejected": 10,
+      "unknown_rejected_by_gas": [
+        1,
+        1,
+        2,
+        1,
+        5,
+        0
+      ]
+    },
+    {
+      "channels": "ALL_SOURCE_10",
+      "metric": "MANHATTAN",
+      "known_accepted": 90,
+      "known_correct_and_accepted": 55,
+      "unknown_rejected": 8,
+      "unknown_rejected_by_gas": [
+        0,
+        0,
+        2,
+        1,
+        5,
+        0
+      ]
+    }
+  ],
+  "gas_order": [
+    "ethanol",
+    "acetone",
+    "toluene",
+    "ethyl acetate",
+    "isopropanol",
+    "hexane"
+  ],
+  "source_signal_units": "UNVERIFIED",
+  "r0_mode": "NOT_USED",
+  "grouping_verified": false,
+  "g2_qualified": false,
+  "g3_tank": false,
+  "safety_grade": false,
+  "note": "Pinned exact integer counts from original GitHub Actions artifact; the full per-fold result remains in the run artifact."
+}

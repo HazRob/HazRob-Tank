@@ -1,0 +1,177 @@
+{
+  "schema_version": "hazrob.tank.batch05.source-readiness.v1",
+  "date": "2026-10-23",
+  "batch": 5,
+  "ids": [
+    "05.8",
+    "05.9",
+    "06.1",
+    "06.2",
+    "06.3",
+    "06.4",
+    "06.5",
+    "06.6",
+    "06.7",
+    "06.8"
+  ],
+  "reference_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+  "research_testing_CI": "https://github.com/HazRob/HazRob-Tank/actions/runs/39905840537",
+  "legacy_and_new_G1_tests": 182,
+  "new_scientifically_qualified_G2": 0,
+  "Tank_G3": 0,
+  "source_file_Sha256_actual_verified_for_new_lab_experiments": false,
+  "readiness": [
+    {
+      "id": "05.8",
+      "name": "LOD/LOQ",
+      "source_ids": [
+        "MQ-EXT-15",
+        "R0-PEER-01",
+        "CN-MQ-01"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "Independent blanks and near-threshold certified low-gas spike series across days/devices are unavailable; 3/10sigma source-signal cutoffs not certified LOD/LOQ",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    },
+    {
+      "id": "05.9",
+      "name": "Unseen concentrations",
+      "source_ids": [
+        "UCI-EXT-270",
+        "MQ-EXT-15"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "Concentration ppm trace and source-verified session IDs required before estimating heldout interpolation/extrapolation error on real MQ hardware",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    },
+    {
+      "id": "06.1",
+      "name": "Evidence fusion",
+      "source_ids": [
+        "SYS-06",
+        "QSPR-REF-03",
+        "TOOL-MQ-01"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "Evidence correlation matrix or joint probability source data across identical physical arrays required; group labels are researcher claims",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    },
+    {
+      "id": "06.2",
+      "name": "Bayesian inference",
+      "source_ids": [
+        "QSPR-REF-03",
+        "SYS-07"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "Independent class conditional likelihoods and dependency assessment absent; multiplying outputs from one exposure not valid Bayes",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    },
+    {
+      "id": "06.3",
+      "name": "Probability calibration",
+      "source_ids": [
+        "MQ-EXT-15",
+        "UCI-EXT-270"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "Independent model train/calibration/final test partitions with physical gas identity and measured probability calibration missing",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    },
+    {
+      "id": "06.4",
+      "name": "Conformal prediction",
+      "source_ids": [
+        "UCI-EXT-270",
+        "MOS-EXT-17"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "Real independent exchangeable calibration exposures and drift shift stress test required for even marginal set coverage",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    },
+    {
+      "id": "06.5",
+      "name": "Open-set recognition",
+      "source_ids": [
+        "QSPR-REF-03",
+        "QSPR-REF-09",
+        "MQ-EXT-11"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "Sufficient genuine unseen gas species with independent sessions/concentrations; current training-distance rejection threshold optimistic",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    },
+    {
+      "id": "06.6",
+      "name": "OOD detection",
+      "source_ids": [
+        "UCI-EXT-270",
+        "MOS-EXT-17",
+        "MQ-EXT-15"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "OOD data from unseen humidity, temperature, device and sensor fault; envelope is neither physical certificate nor calibrated OOD probability",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    },
+    {
+      "id": "06.7",
+      "name": "Evidence conflicts",
+      "source_ids": [
+        "R0-PEER-01",
+        "SYS-04",
+        "JP-FIG-02"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "Empirically verified candidate gas detection power and false-negative model per sensor/conditions absent, negative evidence cannot hard-exclude",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    },
+    {
+      "id": "06.8",
+      "name": "SHAP",
+      "source_ids": [
+        "QSPR-REF-05",
+        "QSPR-REF-07"
+      ],
+      "software_G1": "PASSED_SYNTHETIC_AND_NEGATIVE_TESTS",
+      "G2": "BLOCKED_NO_INDEPENDENT_REAL_SOURCE_BENCHMARK",
+      "G3": "BLOCKED_NO_TANK_PHYSICAL_REFERENCE",
+      "blocking_reason": "Real source grouped global baseline and realistic interventional support for correlated MQ channels absent; attribution not chemical causality",
+      "required_evidence": "Independent Tank MQ8 actual known-gas/blank physical source with traceable concentration, per-device R0/RL/heater/env and heldout validation",
+      "authorized_runtime": false
+    }
+  ],
+  "next_source_actions": [
+    "Acquire external experimental source raw bytes and independently verify source SHA256",
+    "Record actual instrument model, R0/RL/heater phase and environmental calibration",
+    "Enforce holdout by exposure, session and physical device (not merely time samples)",
+    "Record positive as well as negative model controls; do not infer missing concentration units",
+    "Benchmark with scoped gas identity, conditionally quantified ppm, abstention and uncertainty"
+  ]
+}

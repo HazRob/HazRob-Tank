@@ -1,0 +1,63 @@
+name: "Tank V4 G2 — UCI1081 multi-channel open-set source benchmark"
+on:
+  push:
+    branches:
+      - research/chemcore80-central-evidence-gap-analysis-20261021
+    paths:
+      - 'research/benchmarks/uci1081_g2_multichannel_open_set.py'
+      - 'research/benchmarks/test_uci1081_g2_multichannel_open_set.py'
+      - '.github/workflows/g2-uci1081-multichannel-open-set.yml'
+  pull_request:
+    paths:
+      - 'research/benchmarks/uci1081_g2_multichannel_open_set.py'
+      - 'research/benchmarks/test_uci1081_g2_multichannel_open_set.py'
+      - '.github/workflows/g2-uci1081-multichannel-open-set.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-domain-uci1081-multichannel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: "Run predeclared split and leakage controls"
+        run: |
+          python -m compileall -q research/benchmarks/uci1081_g2_multichannel_open_set.py
+          cd research/benchmarks
+          python -m unittest -v test_uci1081_g2_multichannel_open_set
+      - name: "Download verified UCI1081 source measurements"
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 20 --max-time 180 \
+            'https://archive.ics.uci.edu/static/public/1081/gas%2Bsensor%2Barray%2Blow-concentration.zip' \
+            --output uci1081_original.zip
+          echo '813ebb7d00ed9172114b68d27ab3213170d6c220b8b23907dce91e9838cd48ab  uci1081_original.zip' | sha256sum --check
+      - name: "Run six heldout gases x six predeclared channel/metric baselines"
+        run: |
+          python research/benchmarks/uci1081_g2_multichannel_open_set.py uci1081_original.zip \
+            --output uci1081_g2_multichannel_open_set_results.json | tee uci1081_g2_multichannel_open_set_summary.txt
+          python - <<'PY'
+          import json
+          x=json.load(open('uci1081_g2_multichannel_open_set_results.json'))
+          assert x['n_exposures']==90 and x['n_folds']==6 and x['n_predeclared_configurations']==6
+          assert len(x['per_fold'])==36 and len(x['aggregate'])==6
+          assert all((r['n_train'],r['n_cal'],r['n_known_test'],r['n_unknown_test'])==(45,15,15,15) for r in x['per_fold'])
+          assert all(r['known_total']==r['unknown_total']==90 for r in x['aggregate'])
+          assert x['r0_mode']=='NOT_USED' and not x['r0_subtracted']
+          assert not x['G2_qualified'] and not x['Tank_G3'] and not x['ppm_calibrated']
+          PY
+      - name: "Upload source-qualified exploratory results, not G2 approval"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uci1081-g2-multichannel-open-set-exploratory
+          path: |
+            uci1081_g2_multichannel_open_set_results.json
+            uci1081_g2_multichannel_open_set_summary.txt
+          if-no-files-found: ignore

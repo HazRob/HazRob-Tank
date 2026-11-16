@@ -1,0 +1,1700 @@
+{
+  "schema": "hazrob.g2.mq4-forward-day-pair-stress.v1",
+  "source_zip_sha256": "7112a370c7b21445f9e6ebb6d50e08059c352290ee6da23b0b735f5a9583afc9",
+  "source_csv_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "calendar_days": [
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "excluded_calendar_days_per_stress": 2,
+  "remaining_calendar_days_per_stress": 5,
+  "combinations_per_model": 21,
+  "models": {
+    "HGB_MQ4_3_T_RH": {
+      "sensitivity_range": [
+        0.3559539052496799,
+        0.891156462585034
+      ],
+      "specificity_range": [
+        0.7358633776091081,
+        0.9405787116775749
+      ],
+      "worst_sensitivity_excluded_days": [
+        "2021-07-28",
+        "2021-07-29"
+      ],
+      "worst_specificity_excluded_days": [
+        "2021-07-25",
+        "2021-07-26"
+      ],
+      "subsets": [
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-26"
+          ],
+          "remaining_rows": 6449,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5270,
+          "false_negatives": 270,
+          "false_positives": 1392,
+          "sensitivity": 0.7709923664122137,
+          "specificity": 0.7358633776091081,
+          "false_positive_rate": 0.26413662239089186,
+          "balanced_accuracy": 0.7534278720106609
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 941,
+          "remaining_reference_negatives": 5511,
+          "false_negatives": 175,
+          "false_positives": 1360,
+          "sensitivity": 0.8140276301806588,
+          "specificity": 0.7532208310651425,
+          "false_positive_rate": 0.24677916893485755,
+          "balanced_accuracy": 0.7836242306229007
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 996,
+          "remaining_reference_negatives": 5456,
+          "false_negatives": 269,
+          "false_positives": 1313,
+          "sensitivity": 0.7299196787148594,
+          "specificity": 0.7593475073313783,
+          "false_positive_rate": 0.2406524926686217,
+          "balanced_accuracy": 0.7446335930231189
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6471,
+          "remaining_reference_positives": 718,
+          "remaining_reference_negatives": 5753,
+          "false_negatives": 270,
+          "false_positives": 631,
+          "sensitivity": 0.6239554317548747,
+          "specificity": 0.8903180949070051,
+          "false_positive_rate": 0.10968190509299496,
+          "balanced_accuracy": 0.7571367633309398
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6455,
+          "remaining_reference_positives": 882,
+          "remaining_reference_negatives": 5573,
+          "false_negatives": 96,
+          "false_positives": 1106,
+          "sensitivity": 0.891156462585034,
+          "specificity": 0.8015431544948861,
+          "false_positive_rate": 0.19845684550511394,
+          "balanced_accuracy": 0.8463498085399601
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7166,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5987,
+          "false_negatives": 270,
+          "false_positives": 1158,
+          "sensitivity": 0.7709923664122137,
+          "specificity": 0.8065809253382329,
+          "false_positive_rate": 0.19341907466176717,
+          "balanced_accuracy": 0.7887866458752233
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5261,
+          "false_negatives": 409,
+          "false_positives": 1360,
+          "sensitivity": 0.6554338668913227,
+          "specificity": 0.7414940125451435,
+          "false_positive_rate": 0.2585059874548565,
+          "balanced_accuracy": 0.6984639397182331
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5206,
+          "false_negatives": 503,
+          "false_positives": 1313,
+          "sensitivity": 0.5950080515297906,
+          "specificity": 0.747791010372647,
+          "false_positive_rate": 0.25220898962735305,
+          "balanced_accuracy": 0.6713995309512188
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6467,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 5503,
+          "false_negatives": 504,
+          "false_positives": 631,
+          "sensitivity": 0.47717842323651455,
+          "specificity": 0.8853352716699981,
+          "false_positive_rate": 0.11466472833000181,
+          "balanced_accuracy": 0.6812568474532563
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 5323,
+          "false_negatives": 330,
+          "false_positives": 1106,
+          "sensitivity": 0.7074468085106383,
+          "specificity": 0.792222430959985,
+          "false_positive_rate": 0.20777756904001504,
+          "balanced_accuracy": 0.7498346197353116
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7162,
+          "remaining_reference_positives": 1425,
+          "remaining_reference_negatives": 5737,
+          "false_negatives": 504,
+          "false_positives": 1158,
+          "sensitivity": 0.6463157894736842,
+          "specificity": 0.7981523444308872,
+          "false_positive_rate": 0.20184765556911277,
+          "balanced_accuracy": 0.7222340669522858
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1004,
+          "remaining_reference_negatives": 5447,
+          "false_negatives": 408,
+          "false_positives": 1281,
+          "sensitivity": 0.5936254980079682,
+          "specificity": 0.7648246741325501,
+          "false_positive_rate": 0.23517532586744996,
+          "balanced_accuracy": 0.6792250860702591
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 726,
+          "remaining_reference_negatives": 5744,
+          "false_negatives": 409,
+          "false_positives": 599,
+          "sensitivity": 0.4366391184573003,
+          "specificity": 0.895717270194986,
+          "false_positive_rate": 0.10428272980501392,
+          "balanced_accuracy": 0.6661781943261431
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 890,
+          "remaining_reference_negatives": 5564,
+          "false_negatives": 235,
+          "false_positives": 1074,
+          "sensitivity": 0.7359550561797753,
+          "specificity": 0.8069734004313444,
+          "false_positive_rate": 0.19302659956865564,
+          "balanced_accuracy": 0.7714642283055598
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5978,
+          "false_negatives": 409,
+          "false_positives": 1126,
+          "sensitivity": 0.6554338668913227,
+          "specificity": 0.8116426898628304,
+          "false_positive_rate": 0.1883573101371696,
+          "balanced_accuracy": 0.7335382783770765
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 781,
+          "remaining_reference_negatives": 5689,
+          "false_negatives": 503,
+          "false_positives": 552,
+          "sensitivity": 0.3559539052496799,
+          "specificity": 0.9029706451045878,
+          "false_positive_rate": 0.0970293548954122,
+          "balanced_accuracy": 0.6294622751771338
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 945,
+          "remaining_reference_negatives": 5509,
+          "false_negatives": 329,
+          "false_positives": 1027,
+          "sensitivity": 0.6518518518518519,
+          "specificity": 0.813577781811581,
+          "false_positive_rate": 0.18642221818841895,
+          "balanced_accuracy": 0.7327148168317165
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5923,
+          "false_negatives": 503,
+          "false_positives": 1079,
+          "sensitivity": 0.5950080515297906,
+          "specificity": 0.8178288029714672,
+          "false_positive_rate": 0.18217119702853285,
+          "balanced_accuracy": 0.7064184272506289
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6473,
+          "remaining_reference_positives": 667,
+          "remaining_reference_negatives": 5806,
+          "false_negatives": 330,
+          "false_positives": 345,
+          "sensitivity": 0.5052473763118441,
+          "specificity": 0.9405787116775749,
+          "false_positive_rate": 0.059421288322425075,
+          "balanced_accuracy": 0.7229130439947096
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7184,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 6220,
+          "false_negatives": 504,
+          "false_positives": 397,
+          "sensitivity": 0.47717842323651455,
+          "specificity": 0.9361736334405145,
+          "false_positive_rate": 0.06382636655948554,
+          "balanced_accuracy": 0.7066760283385145
+        },
+        {
+          "excluded_days": [
+            "2021-07-30",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7168,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 6040,
+          "false_negatives": 330,
+          "false_positives": 872,
+          "sensitivity": 0.7074468085106383,
+          "specificity": 0.8556291390728477,
+          "false_positive_rate": 0.14437086092715232,
+          "balanced_accuracy": 0.781537973791743
+        }
+      ]
+    },
+    "RIDGE_MQ4_1": {
+      "sensitivity_range": [
+        0.1874062968515742,
+        0.9011689691817216
+      ],
+      "specificity_range": [
+        0.7186846607108914,
+        0.9392384105960265
+      ],
+      "worst_sensitivity_excluded_days": [
+        "2021-07-29",
+        "2021-07-30"
+      ],
+      "worst_specificity_excluded_days": [
+        "2021-07-26",
+        "2021-07-27"
+      ],
+      "subsets": [
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-26"
+          ],
+          "remaining_rows": 6449,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5270,
+          "false_negatives": 331,
+          "false_positives": 1480,
+          "sensitivity": 0.719253604749788,
+          "specificity": 0.7191650853889943,
+          "false_positive_rate": 0.2808349146110057,
+          "balanced_accuracy": 0.719209345069391
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 941,
+          "remaining_reference_negatives": 5511,
+          "false_negatives": 93,
+          "false_positives": 1480,
+          "sensitivity": 0.9011689691817216,
+          "specificity": 0.7314461985120668,
+          "false_positive_rate": 0.26855380148793323,
+          "balanced_accuracy": 0.8163075838468943
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 996,
+          "remaining_reference_negatives": 5456,
+          "false_negatives": 273,
+          "false_positives": 1444,
+          "sensitivity": 0.7259036144578314,
+          "specificity": 0.7353372434017595,
+          "false_positive_rate": 0.26466275659824046,
+          "balanced_accuracy": 0.7306204289297955
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6471,
+          "remaining_reference_positives": 718,
+          "remaining_reference_negatives": 5753,
+          "false_negatives": 296,
+          "false_positives": 1149,
+          "sensitivity": 0.5877437325905293,
+          "specificity": 0.8002781157656874,
+          "false_positive_rate": 0.19972188423431253,
+          "balanced_accuracy": 0.6940109241781083
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6455,
+          "remaining_reference_positives": 882,
+          "remaining_reference_negatives": 5573,
+          "false_negatives": 331,
+          "false_positives": 946,
+          "sensitivity": 0.6247165532879818,
+          "specificity": 0.8302530055625337,
+          "false_positive_rate": 0.16974699443746635,
+          "balanced_accuracy": 0.7274847794252577
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7166,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5987,
+          "false_negatives": 331,
+          "false_positives": 901,
+          "sensitivity": 0.719253604749788,
+          "specificity": 0.849507265742442,
+          "false_positive_rate": 0.15049273425755805,
+          "balanced_accuracy": 0.784380435246115
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5261,
+          "false_negatives": 339,
+          "false_positives": 1480,
+          "sensitivity": 0.7144060657118787,
+          "specificity": 0.7186846607108914,
+          "false_positive_rate": 0.2813153392891085,
+          "balanced_accuracy": 0.7165453632113851
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5206,
+          "false_negatives": 519,
+          "false_positives": 1444,
+          "sensitivity": 0.5821256038647343,
+          "specificity": 0.7226277372262774,
+          "false_positive_rate": 0.2773722627737226,
+          "balanced_accuracy": 0.6523766705455059
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6467,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 5503,
+          "false_negatives": 542,
+          "false_positives": 1149,
+          "sensitivity": 0.43775933609958506,
+          "specificity": 0.7912047973832455,
+          "false_positive_rate": 0.2087952026167545,
+          "balanced_accuracy": 0.6144820667414153
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 5323,
+          "false_negatives": 577,
+          "false_positives": 946,
+          "sensitivity": 0.48847517730496454,
+          "specificity": 0.8222806687957919,
+          "false_positive_rate": 0.17771933120420816,
+          "balanced_accuracy": 0.6553779230503782
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7162,
+          "remaining_reference_positives": 1425,
+          "remaining_reference_negatives": 5737,
+          "false_negatives": 577,
+          "false_positives": 901,
+          "sensitivity": 0.5950877192982457,
+          "specificity": 0.842949276625414,
+          "false_positive_rate": 0.15705072337458603,
+          "balanced_accuracy": 0.7190184979618298
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1004,
+          "remaining_reference_negatives": 5447,
+          "false_negatives": 281,
+          "false_positives": 1444,
+          "sensitivity": 0.7201195219123506,
+          "specificity": 0.7348999449238113,
+          "false_positive_rate": 0.2651000550761887,
+          "balanced_accuracy": 0.7275097334180809
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 726,
+          "remaining_reference_negatives": 5744,
+          "false_negatives": 304,
+          "false_positives": 1149,
+          "sensitivity": 0.581267217630854,
+          "specificity": 0.7999651810584958,
+          "false_positive_rate": 0.20003481894150418,
+          "balanced_accuracy": 0.6906161993446749
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 890,
+          "remaining_reference_negatives": 5564,
+          "false_negatives": 339,
+          "false_positives": 946,
+          "sensitivity": 0.6191011235955056,
+          "specificity": 0.8299784327821711,
+          "false_positive_rate": 0.1700215672178289,
+          "balanced_accuracy": 0.7245397781888383
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5978,
+          "false_negatives": 339,
+          "false_positives": 901,
+          "sensitivity": 0.7144060657118787,
+          "specificity": 0.8492806958849114,
+          "false_positive_rate": 0.15071930411508866,
+          "balanced_accuracy": 0.7818433807983951
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 781,
+          "remaining_reference_negatives": 5689,
+          "false_negatives": 484,
+          "false_positives": 1113,
+          "sensitivity": 0.38028169014084506,
+          "specificity": 0.80435928985762,
+          "false_positive_rate": 0.19564071014238002,
+          "balanced_accuracy": 0.5923204899992325
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 945,
+          "remaining_reference_negatives": 5509,
+          "false_negatives": 519,
+          "false_positives": 910,
+          "sensitivity": 0.4507936507936508,
+          "specificity": 0.8348157560355781,
+          "false_positive_rate": 0.16518424396442186,
+          "balanced_accuracy": 0.6428047034146145
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5923,
+          "false_negatives": 519,
+          "false_positives": 865,
+          "sensitivity": 0.5821256038647343,
+          "specificity": 0.8539591423265237,
+          "false_positive_rate": 0.14604085767347627,
+          "balanced_accuracy": 0.718042373095629
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6473,
+          "remaining_reference_positives": 667,
+          "remaining_reference_negatives": 5806,
+          "false_negatives": 542,
+          "false_positives": 615,
+          "sensitivity": 0.1874062968515742,
+          "specificity": 0.8940750947295901,
+          "false_positive_rate": 0.10592490527040992,
+          "balanced_accuracy": 0.5407406957905821
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7184,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 6220,
+          "false_negatives": 542,
+          "false_positives": 570,
+          "sensitivity": 0.43775933609958506,
+          "specificity": 0.9083601286173634,
+          "false_positive_rate": 0.09163987138263666,
+          "balanced_accuracy": 0.6730597323584742
+        },
+        {
+          "excluded_days": [
+            "2021-07-30",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7168,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 6040,
+          "false_negatives": 577,
+          "false_positives": 367,
+          "sensitivity": 0.48847517730496454,
+          "specificity": 0.9392384105960265,
+          "false_positive_rate": 0.06076158940397351,
+          "balanced_accuracy": 0.7138567939504955
+        }
+      ]
+    },
+    "RIDGE_MQ4_3": {
+      "sensitivity_range": [
+        0.7961019490254873,
+        1
+      ],
+      "specificity_range": [
+        0.5500855350693784,
+        0.85446090251464
+      ],
+      "worst_sensitivity_excluded_days": [
+        "2021-07-29",
+        "2021-07-30"
+      ],
+      "worst_specificity_excluded_days": [
+        "2021-07-26",
+        "2021-07-27"
+      ],
+      "subsets": [
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-26"
+          ],
+          "remaining_rows": 6449,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5270,
+          "false_negatives": 135,
+          "false_positives": 2232,
+          "sensitivity": 0.8854961832061069,
+          "specificity": 0.5764705882352941,
+          "false_positive_rate": 0.4235294117647059,
+          "balanced_accuracy": 0.7309833857207004
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 941,
+          "remaining_reference_negatives": 5511,
+          "false_negatives": 0,
+          "false_positives": 2232,
+          "sensitivity": 1,
+          "specificity": 0.5949918345127926,
+          "false_positive_rate": 0.4050081654872074,
+          "balanced_accuracy": 0.7974959172563962
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 996,
+          "remaining_reference_negatives": 5456,
+          "false_negatives": 135,
+          "false_positives": 2135,
+          "sensitivity": 0.8644578313253012,
+          "specificity": 0.6086876832844574,
+          "false_positive_rate": 0.3913123167155425,
+          "balanced_accuracy": 0.7365727573048793
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6471,
+          "remaining_reference_positives": 718,
+          "remaining_reference_negatives": 5753,
+          "false_negatives": 135,
+          "false_positives": 1456,
+          "sensitivity": 0.8119777158774373,
+          "specificity": 0.7469146532244046,
+          "false_positive_rate": 0.25308534677559535,
+          "balanced_accuracy": 0.779446184550921
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6455,
+          "remaining_reference_positives": 882,
+          "remaining_reference_negatives": 5573,
+          "false_negatives": 135,
+          "false_positives": 1486,
+          "sensitivity": 0.8469387755102041,
+          "specificity": 0.733357258209223,
+          "false_positive_rate": 0.26664274179077696,
+          "balanced_accuracy": 0.7901480168597136
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7166,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5987,
+          "false_negatives": 135,
+          "false_positives": 1619,
+          "sensitivity": 0.8854961832061069,
+          "specificity": 0.729580758309671,
+          "false_positive_rate": 0.27041924169032905,
+          "balanced_accuracy": 0.807538470757889
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5261,
+          "false_negatives": 1,
+          "false_positives": 2367,
+          "sensitivity": 0.9991575400168492,
+          "specificity": 0.5500855350693784,
+          "false_positive_rate": 0.44991446493062154,
+          "balanced_accuracy": 0.7746215375431138
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5206,
+          "false_negatives": 136,
+          "false_positives": 2270,
+          "sensitivity": 0.8904991948470209,
+          "specificity": 0.5639646561659624,
+          "false_positive_rate": 0.43603534383403764,
+          "balanced_accuracy": 0.7272319255064916
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6467,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 5503,
+          "false_negatives": 136,
+          "false_positives": 1591,
+          "sensitivity": 0.8589211618257261,
+          "specificity": 0.7108849718335454,
+          "false_positive_rate": 0.2891150281664547,
+          "balanced_accuracy": 0.7849030668296357
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 5323,
+          "false_negatives": 136,
+          "false_positives": 1621,
+          "sensitivity": 0.8794326241134752,
+          "specificity": 0.6954724779259815,
+          "false_positive_rate": 0.3045275220740184,
+          "balanced_accuracy": 0.7874525510197283
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7162,
+          "remaining_reference_positives": 1425,
+          "remaining_reference_negatives": 5737,
+          "false_negatives": 136,
+          "false_positives": 1754,
+          "sensitivity": 0.9045614035087719,
+          "specificity": 0.6942652954505839,
+          "false_positive_rate": 0.3057347045494161,
+          "balanced_accuracy": 0.7994133494796779
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1004,
+          "remaining_reference_negatives": 5447,
+          "false_negatives": 1,
+          "false_positives": 2270,
+          "sensitivity": 0.999003984063745,
+          "specificity": 0.583256838626767,
+          "false_positive_rate": 0.416743161373233,
+          "balanced_accuracy": 0.791130411345256
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 726,
+          "remaining_reference_negatives": 5744,
+          "false_negatives": 1,
+          "false_positives": 1591,
+          "sensitivity": 0.9986225895316805,
+          "specificity": 0.7230153203342619,
+          "false_positive_rate": 0.27698467966573814,
+          "balanced_accuracy": 0.8608189549329712
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 890,
+          "remaining_reference_negatives": 5564,
+          "false_negatives": 1,
+          "false_positives": 1621,
+          "sensitivity": 0.998876404494382,
+          "specificity": 0.7086628324946082,
+          "false_positive_rate": 0.2913371675053918,
+          "balanced_accuracy": 0.8537696184944951
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5978,
+          "false_negatives": 1,
+          "false_positives": 1754,
+          "sensitivity": 0.9991575400168492,
+          "specificity": 0.7065908330545333,
+          "false_positive_rate": 0.2934091669454667,
+          "balanced_accuracy": 0.8528741865356912
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 781,
+          "remaining_reference_negatives": 5689,
+          "false_negatives": 136,
+          "false_positives": 1494,
+          "sensitivity": 0.8258642765685019,
+          "specificity": 0.7373879416417648,
+          "false_positive_rate": 0.2626120583582352,
+          "balanced_accuracy": 0.7816261091051333
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 945,
+          "remaining_reference_negatives": 5509,
+          "false_negatives": 136,
+          "false_positives": 1524,
+          "sensitivity": 0.8560846560846561,
+          "specificity": 0.7233617716463968,
+          "false_positive_rate": 0.2766382283536032,
+          "balanced_accuracy": 0.7897232138655265
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5923,
+          "false_negatives": 136,
+          "false_positives": 1657,
+          "sensitivity": 0.8904991948470209,
+          "specificity": 0.72024312004052,
+          "false_positive_rate": 0.27975687995948,
+          "balanced_accuracy": 0.8053711574437705
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6473,
+          "remaining_reference_positives": 667,
+          "remaining_reference_negatives": 5806,
+          "false_negatives": 136,
+          "false_positives": 845,
+          "sensitivity": 0.7961019490254873,
+          "specificity": 0.85446090251464,
+          "false_positive_rate": 0.14553909748535998,
+          "balanced_accuracy": 0.8252814257700636
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7184,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 6220,
+          "false_negatives": 136,
+          "false_positives": 978,
+          "sensitivity": 0.8589211618257261,
+          "specificity": 0.8427652733118971,
+          "false_positive_rate": 0.1572347266881029,
+          "balanced_accuracy": 0.8508432175688116
+        },
+        {
+          "excluded_days": [
+            "2021-07-30",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7168,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 6040,
+          "false_negatives": 136,
+          "false_positives": 1008,
+          "sensitivity": 0.8794326241134752,
+          "specificity": 0.833112582781457,
+          "false_positive_rate": 0.16688741721854305,
+          "balanced_accuracy": 0.8562726034474661
+        }
+      ]
+    },
+    "RIDGE_MQ4_3_T_RH": {
+      "sensitivity_range": [
+        0.42278860569715143,
+        0.9272908366533864
+      ],
+      "specificity_range": [
+        0.6252401075681906,
+        0.9388121299120761
+      ],
+      "worst_sensitivity_excluded_days": [
+        "2021-07-29",
+        "2021-07-30"
+      ],
+      "worst_specificity_excluded_days": [
+        "2021-07-26",
+        "2021-07-28"
+      ],
+      "subsets": [
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-26"
+          ],
+          "remaining_rows": 6449,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5270,
+          "false_negatives": 458,
+          "false_positives": 806,
+          "sensitivity": 0.6115351993214588,
+          "specificity": 0.8470588235294118,
+          "false_positive_rate": 0.15294117647058825,
+          "balanced_accuracy": 0.7292970114254353
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 941,
+          "remaining_reference_negatives": 5511,
+          "false_negatives": 249,
+          "false_positives": 810,
+          "sensitivity": 0.7353878852284803,
+          "specificity": 0.8530212302667393,
+          "false_positive_rate": 0.14697876973326074,
+          "balanced_accuracy": 0.7942045577476098
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 996,
+          "remaining_reference_negatives": 5456,
+          "false_negatives": 282,
+          "false_positives": 810,
+          "sensitivity": 0.7168674698795181,
+          "specificity": 0.8515395894428153,
+          "false_positive_rate": 0.14846041055718476,
+          "balanced_accuracy": 0.7842035296611667
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6471,
+          "remaining_reference_positives": 718,
+          "remaining_reference_negatives": 5753,
+          "false_negatives": 385,
+          "false_positives": 810,
+          "sensitivity": 0.4637883008356546,
+          "specificity": 0.8592038936207196,
+          "false_positive_rate": 0.1407961063792804,
+          "balanced_accuracy": 0.6614960972281871
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6455,
+          "remaining_reference_positives": 882,
+          "remaining_reference_negatives": 5573,
+          "false_negatives": 458,
+          "false_positives": 341,
+          "sensitivity": 0.48072562358276644,
+          "specificity": 0.9388121299120761,
+          "false_positive_rate": 0.061187870087923917,
+          "balanced_accuracy": 0.7097688767474213
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7166,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5987,
+          "false_negatives": 458,
+          "false_positives": 473,
+          "sensitivity": 0.6115351993214588,
+          "specificity": 0.9209954902288291,
+          "false_positive_rate": 0.07900450977117086,
+          "balanced_accuracy": 0.766265344775144
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5261,
+          "false_negatives": 249,
+          "false_positives": 1951,
+          "sensitivity": 0.7902274641954508,
+          "specificity": 0.6291579547614522,
+          "false_positive_rate": 0.3708420452385478,
+          "balanced_accuracy": 0.7096927094784515
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5206,
+          "false_negatives": 282,
+          "false_positives": 1951,
+          "sensitivity": 0.7729468599033816,
+          "specificity": 0.6252401075681906,
+          "false_positive_rate": 0.37475989243180946,
+          "balanced_accuracy": 0.6990934837357861
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6467,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 5503,
+          "false_negatives": 385,
+          "false_positives": 1951,
+          "sensitivity": 0.6006224066390041,
+          "specificity": 0.6454661093948755,
+          "false_positive_rate": 0.35453389060512447,
+          "balanced_accuracy": 0.6230442580169397
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 5323,
+          "false_negatives": 458,
+          "false_positives": 1482,
+          "sensitivity": 0.5939716312056738,
+          "specificity": 0.7215855720458388,
+          "false_positive_rate": 0.2784144279541612,
+          "balanced_accuracy": 0.6577786016257563
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7162,
+          "remaining_reference_positives": 1425,
+          "remaining_reference_negatives": 5737,
+          "false_negatives": 458,
+          "false_positives": 1614,
+          "sensitivity": 0.6785964912280702,
+          "specificity": 0.7186682935332055,
+          "false_positive_rate": 0.2813317064667945,
+          "balanced_accuracy": 0.6986323923806379
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1004,
+          "remaining_reference_negatives": 5447,
+          "false_negatives": 73,
+          "false_positives": 1955,
+          "sensitivity": 0.9272908366533864,
+          "specificity": 0.6410868367908941,
+          "false_positive_rate": 0.35891316320910593,
+          "balanced_accuracy": 0.7841888367221402
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 726,
+          "remaining_reference_negatives": 5744,
+          "false_negatives": 176,
+          "false_positives": 1955,
+          "sensitivity": 0.7575757575757576,
+          "specificity": 0.6596448467966574,
+          "false_positive_rate": 0.34035515320334264,
+          "balanced_accuracy": 0.7086103021862075
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 890,
+          "remaining_reference_negatives": 5564,
+          "false_negatives": 249,
+          "false_positives": 1486,
+          "sensitivity": 0.7202247191011236,
+          "specificity": 0.7329259525521208,
+          "false_positive_rate": 0.2670740474478792,
+          "balanced_accuracy": 0.7265753358266223
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5978,
+          "false_negatives": 249,
+          "false_positives": 1618,
+          "sensitivity": 0.7902274641954508,
+          "specificity": 0.7293409166945467,
+          "false_positive_rate": 0.27065908330545335,
+          "balanced_accuracy": 0.7597841904449987
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 781,
+          "remaining_reference_negatives": 5689,
+          "false_negatives": 209,
+          "false_positives": 1955,
+          "sensitivity": 0.7323943661971831,
+          "specificity": 0.6563543680787485,
+          "false_positive_rate": 0.3436456319212515,
+          "balanced_accuracy": 0.6943743671379659
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 945,
+          "remaining_reference_negatives": 5509,
+          "false_negatives": 282,
+          "false_positives": 1486,
+          "sensitivity": 0.7015873015873015,
+          "specificity": 0.7302595752405155,
+          "false_positive_rate": 0.26974042475948445,
+          "balanced_accuracy": 0.7159234384139086
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5923,
+          "false_negatives": 282,
+          "false_positives": 1618,
+          "sensitivity": 0.7729468599033816,
+          "specificity": 0.7268276211379369,
+          "false_positive_rate": 0.27317237886206314,
+          "balanced_accuracy": 0.7498872405206592
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6473,
+          "remaining_reference_positives": 667,
+          "remaining_reference_negatives": 5806,
+          "false_negatives": 385,
+          "false_positives": 1486,
+          "sensitivity": 0.42278860569715143,
+          "specificity": 0.7440578711677575,
+          "false_positive_rate": 0.2559421288322425,
+          "balanced_accuracy": 0.5834232384324545
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7184,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 6220,
+          "false_negatives": 385,
+          "false_positives": 1618,
+          "sensitivity": 0.6006224066390041,
+          "specificity": 0.739871382636656,
+          "false_positive_rate": 0.26012861736334403,
+          "balanced_accuracy": 0.67024689463783
+        },
+        {
+          "excluded_days": [
+            "2021-07-30",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7168,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 6040,
+          "false_negatives": 458,
+          "false_positives": 1149,
+          "sensitivity": 0.5939716312056738,
+          "specificity": 0.8097682119205298,
+          "false_positive_rate": 0.1902317880794702,
+          "balanced_accuracy": 0.7018699215631018
+        }
+      ]
+    },
+    "TRAIN_MEDIAN_REFERENCE": {
+      "sensitivity_range": [
+        0,
+        0
+      ],
+      "specificity_range": [
+        1,
+        1
+      ],
+      "worst_sensitivity_excluded_days": [
+        "2021-07-25",
+        "2021-07-26"
+      ],
+      "worst_specificity_excluded_days": [
+        "2021-07-25",
+        "2021-07-26"
+      ],
+      "subsets": [
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-26"
+          ],
+          "remaining_rows": 6449,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5270,
+          "false_negatives": 1179,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 941,
+          "remaining_reference_negatives": 5511,
+          "false_negatives": 941,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6452,
+          "remaining_reference_positives": 996,
+          "remaining_reference_negatives": 5456,
+          "false_negatives": 996,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6471,
+          "remaining_reference_positives": 718,
+          "remaining_reference_negatives": 5753,
+          "false_negatives": 718,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6455,
+          "remaining_reference_positives": 882,
+          "remaining_reference_negatives": 5573,
+          "false_negatives": 882,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-25",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7166,
+          "remaining_reference_positives": 1179,
+          "remaining_reference_negatives": 5987,
+          "false_negatives": 1179,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-27"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5261,
+          "false_negatives": 1187,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6448,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5206,
+          "false_negatives": 1242,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6467,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 5503,
+          "false_negatives": 964,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 5323,
+          "false_negatives": 1128,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-26",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7162,
+          "remaining_reference_positives": 1425,
+          "remaining_reference_negatives": 5737,
+          "false_negatives": 1425,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-28"
+          ],
+          "remaining_rows": 6451,
+          "remaining_reference_positives": 1004,
+          "remaining_reference_negatives": 5447,
+          "false_negatives": 1004,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 726,
+          "remaining_reference_negatives": 5744,
+          "false_negatives": 726,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 890,
+          "remaining_reference_negatives": 5564,
+          "false_negatives": 890,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-27",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1187,
+          "remaining_reference_negatives": 5978,
+          "false_negatives": 1187,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-29"
+          ],
+          "remaining_rows": 6470,
+          "remaining_reference_positives": 781,
+          "remaining_reference_negatives": 5689,
+          "false_negatives": 781,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6454,
+          "remaining_reference_positives": 945,
+          "remaining_reference_negatives": 5509,
+          "false_negatives": 945,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-28",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7165,
+          "remaining_reference_positives": 1242,
+          "remaining_reference_negatives": 5923,
+          "false_negatives": 1242,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-30"
+          ],
+          "remaining_rows": 6473,
+          "remaining_reference_positives": 667,
+          "remaining_reference_negatives": 5806,
+          "false_negatives": 667,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-29",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7184,
+          "remaining_reference_positives": 964,
+          "remaining_reference_negatives": 6220,
+          "false_negatives": 964,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        },
+        {
+          "excluded_days": [
+            "2021-07-30",
+            "2021-07-31"
+          ],
+          "remaining_rows": 7168,
+          "remaining_reference_positives": 1128,
+          "remaining_reference_negatives": 6040,
+          "false_negatives": 1128,
+          "false_positives": 0,
+          "sensitivity": 0,
+          "specificity": 1,
+          "false_positive_rate": 0,
+          "balanced_accuracy": 0.5
+        }
+      ]
+    }
+  },
+  "g2_qualified": false,
+  "g3_qualified": false,
+  "independent_tank_exposures": false,
+  "blinded_prospective": false,
+  "traceable_calibration": false,
+  "limitations": "Descriptive leave-two-calendar-days-out sensitivity analysis on a pinned external observational MQ4 forward-only receipt. These overlapping subsets share data and training histories; they are not independent validation folds, confidence intervals, Tank measurements, or a safety-alarm assessment."
+}

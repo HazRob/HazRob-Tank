@@ -1,0 +1,349 @@
+{
+  "schema_version": "hazrob.tank.batch02.external-source-eligibility.v1",
+  "as_of": "2026-10-21",
+  "work_plan_sha": "a120ec7cc3d01ba664cc7e2439597b7e4a289729",
+  "reference_catalogue_sha": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+  "counts": {
+    "ids": 10,
+    "external_source_new_v4_tested": 0,
+    "tank_physical_G3_approved": 0
+  },
+  "research_scope": "Scientific implementation planning; source bibliographic relevance is NOT numeric source validation",
+  "items": [
+    {
+      "technique_id": "02.4",
+      "source_refs": [
+        "CN-RSCH-01",
+        "SYS-17",
+        "JP-FIG-02",
+        "MQ-EXT-10"
+      ],
+      "sources": [
+        {
+          "ref": "CN-RSCH-01",
+          "raw_status": "NO_DOWNLOADABLE_RECORDS_VERIFIED"
+        },
+        {
+          "ref": "SYS-17",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "JP-FIG-02",
+          "raw_status": "WEB_FIGURES_NOT_DOWNLOADABLE_NUMERIC_TIME_SERIES"
+        },
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "Chinese SDA source numeric traces not fetched; current implementation is an independently specified segmentation variant",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    },
+    {
+      "technique_id": "02.5",
+      "source_refs": [
+        "MQ-EXT-03",
+        "MQ-EXT-10",
+        "MQ-EXT-11",
+        "MQ-EXT-15"
+      ],
+      "sources": [
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "Source-independent empirical benchmark with separately grouped exposures is still pending",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    },
+    {
+      "technique_id": "02.6",
+      "source_refs": [
+        "TOOL-MQ-01",
+        "MQ-EXT-10",
+        "MOS-EXT-16"
+      ],
+      "sources": [
+        {
+          "ref": "TOOL-MQ-01",
+          "raw_status": "CODE_AND_METADATA_INSPECTED"
+        },
+        {
+          "ref": "MQ-EXT-10",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "MOS-EXT-16",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "Source-independent empirical benchmark with separately grouped exposures is still pending",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    },
+    {
+      "technique_id": "02.7",
+      "source_refs": [
+        "SYS-01",
+        "SYS-04",
+        "CN-RSCH-02"
+      ],
+      "sources": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-02",
+          "raw_status": "RAW_EXPERIMENT_NOT_AVAILABLE_VERIFIED"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "Source-independent empirical benchmark with separately grouped exposures is still pending",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    },
+    {
+      "technique_id": "02.8",
+      "source_refs": [
+        "MQ-EXT-03",
+        "MQ-EXT-15",
+        "UCI-EXT-270",
+        "R0-PEER-01"
+      ],
+      "sources": [
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "UCI-EXT-270",
+          "raw_status": "ALREADY_ACQUIRED_AND_BENCHMARKED_IN_TANK_G2"
+        },
+        {
+          "ref": "R0-PEER-01",
+          "raw_status": "PAPER_OR_THESIS_TEXT_FIGURES_CHECKED_NO_RAW_TRACE"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "Historical catalogue references provide study design not byte-verified new upstream source in this batch",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    },
+    {
+      "technique_id": "03.1",
+      "source_refs": [
+        "CN-PAT-01",
+        "SYS-06",
+        "MQ-EXT-11"
+      ],
+      "sources": [
+        {
+          "ref": "CN-PAT-01",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        },
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "Source-independent empirical benchmark with separately grouped exposures is still pending",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    },
+    {
+      "technique_id": "03.2",
+      "source_refs": [
+        "MQ-EXT-03",
+        "MQ-EXT-11",
+        "QSPR-REF-09"
+      ],
+      "sources": [
+        {
+          "ref": "MQ-EXT-03",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        },
+        {
+          "ref": "MQ-EXT-11",
+          "raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING"
+        },
+        {
+          "ref": "QSPR-REF-09",
+          "raw_status": "RAW_NOT_VERIFIED"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "Source-independent empirical benchmark with separately grouped exposures is still pending",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    },
+    {
+      "technique_id": "03.3",
+      "source_refs": [
+        "QSPR-REF-09",
+        "SYS-07",
+        "MQ-EXT-15"
+      ],
+      "sources": [
+        {
+          "ref": "QSPR-REF-09",
+          "raw_status": "RAW_NOT_VERIFIED"
+        },
+        {
+          "ref": "SYS-07",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "Source-independent empirical benchmark with separately grouped exposures is still pending",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    },
+    {
+      "technique_id": "03.4",
+      "source_refs": [
+        "CN-PAT-01",
+        "SYS-06",
+        "MQ-EXT-15"
+      ],
+      "sources": [
+        {
+          "ref": "CN-PAT-01",
+          "raw_status": "NO_PUBLIC_RAW_DATA_VERIFIED"
+        },
+        {
+          "ref": "SYS-06",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "MQ-EXT-15",
+          "raw_status": "RAW_INSPECTED_OR_PREVIOUSLY_VERIFIED"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "UCI real multiclass LDA and PLS-DA training already exists in separate benchmark but new grouped binary wrapper has only software fixtures; no per-new-module UCI v4 result",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    },
+    {
+      "technique_id": "03.5",
+      "source_refs": [
+        "SYS-01",
+        "SYS-04",
+        "CN-RSCH-02"
+      ],
+      "sources": [
+        {
+          "ref": "SYS-01",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "SYS-04",
+          "raw_status": "NOT_IMPORTED"
+        },
+        {
+          "ref": "CN-RSCH-02",
+          "raw_status": "RAW_EXPERIMENT_NOT_AVAILABLE_VERIFIED"
+        }
+      ],
+      "external_G2_v4": "NOT_NEWLY_VALIDATED",
+      "reason": "Source-independent empirical benchmark with separately grouped exposures is still pending",
+      "conditions_to_promote": [
+        "Source original raw files / SHA256 / licence verified",
+        "Physical sensor model and column units documented",
+        "Exposure/session/device true grouping supplied",
+        "No test-train leakage, no duplicate source treated as new experimental sample",
+        "Performance with baseline and negative cases reported, not only unit tests"
+      ],
+      "G3_Tank_device": "NOT_VALIDATED"
+    }
+  ]
+}

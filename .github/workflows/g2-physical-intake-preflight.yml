@@ -1,0 +1,64 @@
+name: G2 physical evidence intake preflight
+on:
+  push:
+    branches:
+      - 'research/chemcore80-central-evidence-gap-analysis-20261021'
+    paths:
+      - 'research/implementation_execution/g2_physical_intake_gate.py'
+      - 'research/implementation_execution/g2_holdout_guard.py'
+      - 'research/implementation_execution/g2_holdout_split_preflight.py'
+      - 'research/implementation_execution/test_g2_holdout_split_preflight.py'
+      - 'research/implementation_execution/test_g2_holdout_guard.py'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
+      - 'research/implementation_execution/g2_empty_evidence_negative_control.py'
+      - 'research/implementation_execution/test_g2_empty_evidence_negative_control.py'
+      - '.github/workflows/g2-physical-intake-preflight.yml'
+  pull_request:
+    paths:
+      - 'research/implementation_execution/g2_physical_intake_gate.py'
+      - 'research/implementation_execution/g2_holdout_guard.py'
+      - 'research/implementation_execution/g2_holdout_split_preflight.py'
+      - 'research/implementation_execution/test_g2_holdout_split_preflight.py'
+      - 'research/implementation_execution/test_g2_holdout_guard.py'
+      - 'research/implementation_execution/G2_INDEPENDENT_EVIDENCE.json'
+      - 'research/implementation_execution/g2_empty_evidence_negative_control.py'
+      - 'research/implementation_execution/test_g2_empty_evidence_negative_control.py'
+      - '.github/workflows/g2-physical-intake-preflight.yml'
+  workflow_dispatch:
+jobs:
+  physical-intake-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check
+        run: python -m py_compile research/implementation_execution/g2_physical_intake_gate.py
+      - name: Fail-closed regression tests
+        run: python research/implementation_execution/g2_physical_intake_gate.py --self-test
+      - name: Holdout leakage guard regression tests (research preflight only)
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_holdout_guard.py' -v
+      - name: Independent physical holdout split regression
+        run: |
+          python -m py_compile research/implementation_execution/g2_holdout_split_preflight.py research/implementation_execution/test_g2_holdout_split_preflight.py
+          python -m unittest discover -s research/implementation_execution -p 'test_g2_holdout_split_preflight.py' -v
+      - name: Holdout guard syntax check
+        run: python -m py_compile research/implementation_execution/g2_holdout_guard.py research/implementation_execution/test_g2_holdout_guard.py
+      - name: Independent evidence negative-control regression
+        run: |
+          python -m unittest discover -s research/implementation_execution -p 'test_g2_empty_evidence_negative_control.py' -v
+          python research/implementation_execution/g2_empty_evidence_negative_control.py
+      - name: Evidence register strict parse and no-approval assertion
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path("research/implementation_execution").resolve()))
+          from g2_empty_evidence_negative_control import load_register, has_independent_records
+          doc = load_register()
+          present = has_independent_records(doc)
+          print(f"Evidence register parsed: {len(doc['records'])} records; present={present}; no G2/G3 approval granted")
+          PY

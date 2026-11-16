@@ -1,0 +1,58 @@
+name: Tank ChemCore V4 batch03 grouped research software (not G2/G3)
+on:
+  push:
+    paths:
+      - 'research/techniques/03.6/**'
+      - 'research/techniques/03.7/**'
+      - 'research/techniques/03.8/**'
+      - 'research/techniques/04.1/**'
+      - 'research/techniques/04.2/**'
+      - 'research/techniques/04.3/**'
+      - 'research/techniques/04.4/**'
+      - 'research/techniques/04.5/**'
+      - 'research/techniques/04.6/**'
+      - 'research/techniques/04.7/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch03.yml'
+  pull_request:
+    paths:
+      - 'research/techniques/03.6/**'
+      - 'research/techniques/03.7/**'
+      - 'research/techniques/03.8/**'
+      - 'research/techniques/04.1/**'
+      - 'research/techniques/04.2/**'
+      - 'research/techniques/04.3/**'
+      - 'research/techniques/04.4/**'
+      - 'research/techniques/04.5/**'
+      - 'research/techniques/04.6/**'
+      - 'research/techniques/04.7/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch03.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scientific-software-g1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm 80-technique research plan and zero G3 claim
+        run: python research/implementation_execution/validate_plan_v4.py
+      - name: Ten directory research modules historical and current regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          for id in 03.6 03.7 03.8 04.1 04.2 04.3 04.4 04.5 04.6 04.7; do
+            echo "=== Tank V4 research $id ==="
+            (cd "research/techniques/$id" && python -m unittest discover -p 'test_*.py' -v)
+          done
+      - name: Cross-technique independent-exposure group and method contract checks
+        run: python -m unittest -v research/implementation_execution/test_batch03_v2.py
+      - name: Confirm this workflow does not activate runtime or G3
+        run: |
+          test ! -e research/implementation_execution/TANK_PHYSICAL_G3_APPROVED
+          echo 'PASS: V4 G1 software checks only. 0 validated physical Tank exposures.'

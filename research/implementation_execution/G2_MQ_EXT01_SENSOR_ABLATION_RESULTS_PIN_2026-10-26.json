@@ -1,0 +1,141 @@
+{
+  "schema": "hazrob.g2.mq-ext01.prespecified-sensor-ablation.v1",
+  "date": "2026-10-26",
+  "source_id": "MQ-EXT-01",
+  "source_uri": "https://zenodo.org/records/17285312",
+  "source_zip_sha256": "fde5a3836fe9ddb04fee90102b9c1a5816f48a78d37bf7125074e66a3f3b5f5a",
+  "source_zip_publisher_md5": "008b8ccb62d7a7d51ff9ffcfd698a1e5",
+  "ci_run_id": 40287072270,
+  "ci_artifact_id": 12634895827,
+  "ci_code_commit": "26b7e7cc90bb5818848239182ea48953cdff0cda",
+  "source_files": 50,
+  "classes": 10,
+  "nominal_file_day_folds": 5,
+  "grouping_verified_as_independent_physical_session": false,
+  "source_signal_units_verified": false,
+  "r0_mode": "NOT_USED",
+  "task": "single-produce source-class classification, not gas identity or ppm",
+  "model": "1NN standardized Euclidean; training-file statistics only",
+  "configs": [
+    {
+      "id": "TANK8",
+      "channels": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ7",
+        "MQ8",
+        "MQ9",
+        "MQ135"
+      ],
+      "correct": 11,
+      "total": 50
+    },
+    {
+      "id": "TANK6_EXCLUDE_MQ7_MQ9",
+      "channels": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ8",
+        "MQ135"
+      ],
+      "correct": 9,
+      "total": 50
+    },
+    {
+      "id": "MQ7_MQ9_ONLY",
+      "channels": [
+        "MQ7",
+        "MQ9"
+      ],
+      "correct": 11,
+      "total": 50
+    },
+    {
+      "id": "SOURCE9",
+      "channels": [
+        "MQ2",
+        "MQ3",
+        "MQ4",
+        "MQ5",
+        "MQ6",
+        "MQ7",
+        "MQ8",
+        "MQ9",
+        "MQ135"
+      ],
+      "correct": 11,
+      "total": 50
+    },
+    {
+      "id": "DROP_MQ2",
+      "correct": 14,
+      "total": 50,
+      "delta_vs_tank8": 3
+    },
+    {
+      "id": "DROP_MQ3",
+      "correct": 12,
+      "total": 50,
+      "delta_vs_tank8": 1
+    },
+    {
+      "id": "DROP_MQ4",
+      "correct": 15,
+      "total": 50,
+      "delta_vs_tank8": 4
+    },
+    {
+      "id": "DROP_MQ5",
+      "correct": 12,
+      "total": 50,
+      "delta_vs_tank8": 1
+    },
+    {
+      "id": "DROP_MQ7",
+      "correct": 11,
+      "total": 50,
+      "delta_vs_tank8": 0
+    },
+    {
+      "id": "DROP_MQ8",
+      "correct": 11,
+      "total": 50,
+      "delta_vs_tank8": 0
+    },
+    {
+      "id": "DROP_MQ9",
+      "correct": 10,
+      "total": 50,
+      "delta_vs_tank8": -1
+    },
+    {
+      "id": "DROP_MQ135",
+      "correct": 11,
+      "total": 50,
+      "delta_vs_tank8": 0
+    }
+  ],
+  "negative_control": {
+    "n_permutations": 1999,
+    "seed": 20261026,
+    "null_p95_correct": 9,
+    "tank8_conditional_tail_fraction_plus_one": 0.026,
+    "source9_conditional_tail_fraction_plus_one": 0.0285,
+    "interpretation": "DESCRIPTIVE_LABEL_PERMUTATION_WITHIN_NOMINAL_FILEDAY_NOT_INDEPENDENT_SESSION_SIGNIFICANCE"
+  },
+  "paired_tank8_vs_source9": {
+    "both_correct": 11,
+    "only_tank8_correct": 0,
+    "only_source9_correct": 0,
+    "both_wrong": 39
+  },
+  "model_selected_using_heldout_scores": false,
+  "g2_qualified": false,
+  "g3_tank": false,
+  "safety_grade": false,
+  "note": "Exact 12 configuration counts transcribed from successful CI job log; full per-file predictions in CI artifact. Leave-one-out comparisons are exploratory and not independent validation."
+}

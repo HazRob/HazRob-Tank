@@ -1,0 +1,21 @@
+{
+  "schema": "hazrob.g2.source-snapshot-drift.v1",
+  "scope": "SOURCE_CLAIMS_ONLY_NO_G2_OR_G3_PROMOTION",
+  "pinned_catalog_blob_sha1": "1b3e0ce87f3625c0b6e5d514090abbfcb0911c7f",
+  "external_datasets_reconciled": 14,
+  "discrepancy_count": 1,
+  "discrepancies": [
+    {
+      "dataset_id": "MQ-EXT-01",
+      "issue": "REPORTED_ORIGINAL_ARCHIVE_RECEIPT_NOT_REFLECTED_IN_PINNED_READINESS",
+      "readiness_source_status": "archive_listed_not_downloaded",
+      "readiness_raw_status": "SOURCE_DESCRIPTION_VERIFIED_RAW_PENDING",
+      "candidate_raw_status": "ORIGINAL_ARCHIVE_SHA256_AND_PUBLISHER_MD5_VERIFIED",
+      "candidate_claimed_sha256": "fde5a3836fe9ddb04fee90102b9c1a5816f48a78d37bf7125074e66a3f3b5f5a",
+      "candidate_claimed_ci_run_id": 40287072270,
+      "effect": "SOURCE_REVIEW_REMAINS_BLOCKED_PENDING_RAW_REPLAY_AND_NEW_PINNED_CATALOG_AUDIT"
+    }
+  ],
+  "g2_qualified_by_this_audit": 0,
+  "g3_qualified_by_this_audit": 0
+}

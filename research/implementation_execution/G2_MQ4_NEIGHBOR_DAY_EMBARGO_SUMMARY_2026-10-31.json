@@ -1,0 +1,125 @@
+{
+  "schema": "hazrob.g2.mq4-neighbor-day-embargo-probe.v1",
+  "raw_member_sha256": "3c27c4f8b8e8aab54b6433acfa41de00890a9eefd19376259a2371f22a48ff2d",
+  "rows": 14186,
+  "days": [
+    "2021-07-21",
+    "2021-07-22",
+    "2021-07-23",
+    "2021-07-24",
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31"
+  ],
+  "day_rows": {
+    "2021-07-21": 774,
+    "2021-07-22": 1435,
+    "2021-07-23": 1231,
+    "2021-07-24": 1421,
+    "2021-07-25": 1436,
+    "2021-07-26": 1440,
+    "2021-07-27": 1437,
+    "2021-07-28": 1437,
+    "2021-07-29": 1418,
+    "2021-07-30": 1434,
+    "2021-07-31": 723
+  },
+  "embargo_days": [
+    0,
+    1,
+    2
+  ],
+  "method": "calendar-day LODO univariate OLS with symmetric calendar-day embargo; fold-specific training-mean baseline",
+  "channels": {
+    "MQ4_1": {
+      "0": {
+        "pooled_rmse_model_ppb": 1248.259767028264,
+        "pooled_rmse_baseline_ppb": 1376.3403609493594,
+        "pooled_skill_vs_train_mean": 0.1774576749506026,
+        "macro_mean_day_rmse_model_ppb": 1150.8291683605491,
+        "worst_day_rmse_model_ppb": 2161.9268540953713,
+        "days_worse_than_training_mean": 4
+      },
+      "1": {
+        "pooled_rmse_model_ppb": 1271.3062450902776,
+        "pooled_rmse_baseline_ppb": 1390.3691307299887,
+        "pooled_skill_vs_train_mean": 0.16393483842931544,
+        "macro_mean_day_rmse_model_ppb": 1186.4882319418414,
+        "worst_day_rmse_model_ppb": 2128.6139901007386,
+        "days_worse_than_training_mean": 5
+      },
+      "2": {
+        "pooled_rmse_model_ppb": 1282.1799197869473,
+        "pooled_rmse_baseline_ppb": 1391.180536789614,
+        "pooled_skill_vs_train_mean": 0.15056342655946287,
+        "macro_mean_day_rmse_model_ppb": 1218.3415953397807,
+        "worst_day_rmse_model_ppb": 2128.233215009104,
+        "days_worse_than_training_mean": 5
+      }
+    },
+    "MQ4_2": {
+      "0": {
+        "pooled_rmse_model_ppb": 1287.2843804796614,
+        "pooled_rmse_baseline_ppb": 1376.3403609493594,
+        "pooled_skill_vs_train_mean": 0.12522309636847995,
+        "macro_mean_day_rmse_model_ppb": 1184.335900171153,
+        "worst_day_rmse_model_ppb": 2255.637118569291,
+        "days_worse_than_training_mean": 4
+      },
+      "1": {
+        "pooled_rmse_model_ppb": 1293.8545674253112,
+        "pooled_rmse_baseline_ppb": 1390.3691307299887,
+        "pooled_skill_vs_train_mean": 0.13401435560687525,
+        "macro_mean_day_rmse_model_ppb": 1198.0649456797694,
+        "worst_day_rmse_model_ppb": 2204.3325993167473,
+        "days_worse_than_training_mean": 4
+      },
+      "2": {
+        "pooled_rmse_model_ppb": 1315.1620263382645,
+        "pooled_rmse_baseline_ppb": 1391.180536789614,
+        "pooled_skill_vs_train_mean": 0.10630045837143243,
+        "macro_mean_day_rmse_model_ppb": 1242.3580787560138,
+        "worst_day_rmse_model_ppb": 2190.9571653521602,
+        "days_worse_than_training_mean": 4
+      }
+    },
+    "MQ4_3": {
+      "0": {
+        "pooled_rmse_model_ppb": 1266.9874005688544,
+        "pooled_rmse_baseline_ppb": 1376.3403609493594,
+        "pooled_skill_vs_train_mean": 0.1525913342449574,
+        "macro_mean_day_rmse_model_ppb": 1166.3516421241325,
+        "worst_day_rmse_model_ppb": 2211.7995074927026,
+        "days_worse_than_training_mean": 4
+      },
+      "1": {
+        "pooled_rmse_model_ppb": 1281.6389150856712,
+        "pooled_rmse_baseline_ppb": 1390.3691307299887,
+        "pooled_skill_vs_train_mean": 0.1502892015209586,
+        "macro_mean_day_rmse_model_ppb": 1192.067103801481,
+        "worst_day_rmse_model_ppb": 2171.0030058915195,
+        "days_worse_than_training_mean": 4
+      },
+      "2": {
+        "pooled_rmse_model_ppb": 1294.1930021730814,
+        "pooled_rmse_baseline_ppb": 1391.180536789614,
+        "pooled_skill_vs_train_mean": 0.13457166906433582,
+        "macro_mean_day_rmse_model_ppb": 1227.4036368229993,
+        "worst_day_rmse_model_ppb": 2166.755447646162,
+        "days_worse_than_training_mean": 4
+      }
+    }
+  },
+  "scientific_state": {
+    "g2_qualified": false,
+    "g3_tank_qualified": false,
+    "physical_independence_verified": false,
+    "reference_calibration_verified": false,
+    "blinded_holdout_verified": false
+  },
+  "limitations": "Calendar-day exclusion is not independent physical exposure holdout. Source-reported licor_ch4 ppb and uncalibrated raw MQ4 channels; no Tank transfer or gas identity/ppm validation."
+}

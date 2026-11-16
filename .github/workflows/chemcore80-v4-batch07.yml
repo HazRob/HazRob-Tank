@@ -1,0 +1,112 @@
+name: Tank ChemCore V4 batch07 numerical kernels and mixture identifiability (G1 only)
+on:
+  push:
+    paths:
+      - 'research/techniques/07.10/**'
+      - 'research/techniques/08.*/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch07.yml'
+  pull_request:
+    paths:
+      - 'research/techniques/07.10/**'
+      - 'research/techniques/08.*/**'
+      - 'research/implementation_execution/**'
+      - '.github/workflows/chemcore80-v4-batch07.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  v4-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python research/implementation_execution/validate_plan_v4.py
+  source-id:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {tid: '07.10', module: cpython_research_profile_v2, selector: test_0710}
+          - {tid: '08.1', module: conv1d_research_reference_v2, selector: test_081}
+          - {tid: '08.2', module: causal_dilated_tcn_v2, selector: test_082}
+          - {tid: '08.3', module: recurrent_state_isolation_v2, selector: test_083}
+          - {tid: '08.4', module: graph_topology_source_v2, selector: test_084}
+          - {tid: '08.5', module: dependent_ensemble_v2, selector: test_085}
+          - {tid: '08.6', module: first_order_gas_simulator_v2, selector: test_086}
+          - {tid: '08.7', module: paired_sim_real_gap_v2, selector: test_087}
+          - {tid: '08.8', module: mixture_hypothesis_competition_v2, selector: test_088}
+          - {tid: '08.9', module: nonnegative_rank_guard_v2, selector: test_089}
+    name: V4 scientific source ${{ matrix.tid }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile scientific code and group fixture
+        run: |
+          python -m py_compile research/techniques/${{ matrix.tid }}/${{ matrix.module }}.py
+          python -m py_compile research/implementation_execution/test_batch07_v2.py
+      - name: Legacy per-ID behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd research/techniques/${{ matrix.tid }} && python -m unittest discover -p 'test_*.py' -v)
+      - name: New source-heldout and physical-invalidity tests per ID
+        run: python -m unittest -v research/implementation_execution/test_batch07_v2.py -k ${{ matrix.selector }}
+      - name: Assert no gas or production qualification
+        run: echo "RESEARCH ONLY; G2 physical source validation missing; Tank G3=0/80"
+
+  batch08-cross-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify Batch08 six scientific gates and negative cases
+        run: python -m unittest discover -s research/implementation_execution -p 'test_batch08_six_gates_v2.py' -v
+      - name: Guard research-only interpretation
+        run: echo 'No G2 or physical G3 inference from software tests'
+
+  batch08-per-technique:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        tid: ['08.10','08.11','08.12','09.1','09.2','09.3','09.4','09.5','09.6','10.1']
+    name: Batch08 source ${{ matrix.tid }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install scientific test dependency
+        run: python -m pip install 'numpy>=1.26,<3'
+      - name: Run all source-local G1 tests
+        working-directory: research/techniques/${{ matrix.tid }}
+        run: python -m unittest discover -p 'test_*.py' -v
+      - name: Record research-only scope
+        run: echo 'G1 software validation only; no gas G3 approval'
+
+  g2-source-evidence-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: G2 fail-closed adversarial tests
+        run: python -m unittest discover -s research/implementation_execution -p 'test_g2_evidence_audit.py' -v
+      - name: Run 80-source empirical evidence audit
+        run: python research/implementation_execution/g2_evidence_audit.py --output /tmp/g2_audit_results.json
+      - name: Check no unsupported G2 approvals
+        run: python -c "import json; x=json.load(open('/tmp/g2_audit_results.json')); assert x['g2_pass_candidates']==0 and x['g2_blocked']==80, x"
