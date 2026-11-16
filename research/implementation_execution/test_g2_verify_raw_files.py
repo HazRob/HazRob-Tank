@@ -105,12 +105,12 @@ class RawIntegrityTests(unittest.TestCase):
         self.assertIn("nonfinite JSON float", " ".join(verify(self.manifest, self.root)))
 
     def test_metadata_control_character_is_blocked(self):
-        self.record["instrument_id"] = "instrument\\nshadow"
+        self.record["instrument_id"] = "instrument\nshadow"
         self.assertIn("noncanonical metadata field instrument_id",
                       " ".join(self.check([self.record])))
 
     def test_raw_path_control_character_is_blocked(self):
-        self.record["raw_data_path"] = "sample\\n.bin"
+        self.record["raw_data_path"] = "sample\n.bin"
         self.assertIn("control character in raw path",
                       " ".join(self.check([self.record])))
 
