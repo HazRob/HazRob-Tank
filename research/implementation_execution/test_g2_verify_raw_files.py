@@ -91,6 +91,29 @@ class RawIntegrityTests(unittest.TestCase):
                                  encoding="utf-8")
         self.assertIn("duplicate JSON key", " ".join(verify(self.manifest, self.root)))
 
+    def test_nonfinite_json_constants_are_blocked(self):
+        for literal in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(literal=literal):
+                self.manifest.write_text('{"records": [' + json.dumps(self.record) +
+                                         '], "diagnostic": ' + literal + '}', encoding="utf-8")
+                self.assertIn("nonstandard JSON numeric constant",
+                              " ".join(verify(self.manifest, self.root)))
+
+    def test_nonfinite_float_overflow_is_blocked(self):
+        self.manifest.write_text('{"records": [' + json.dumps(self.record) +
+                                 '], "diagnostic": 1e999}', encoding="utf-8")
+        self.assertIn("nonfinite JSON float", " ".join(verify(self.manifest, self.root)))
+
+    def test_metadata_control_character_is_blocked(self):
+        self.record["instrument_id"] = "instrument\\nshadow"
+        self.assertIn("noncanonical metadata field instrument_id",
+                      " ".join(self.check([self.record])))
+
+    def test_raw_path_control_character_is_blocked(self):
+        self.record["raw_data_path"] = "sample\\n.bin"
+        self.assertIn("control character in raw path",
+                      " ".join(self.check([self.record])))
+
     def test_malformed_manifest_is_blocked(self):
         self.manifest.write_text('{"records": [', encoding="utf-8")
         self.assertIn("manifest unreadable or invalid", " ".join(verify(self.manifest, self.root)))
